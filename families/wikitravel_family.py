@@ -1,6 +1,6 @@
 import family, config
-    
-# The wikimedia family that is known as wikitravel
+
+# The wikitravel family
 
 # Translation used on all wikitravels for the 'article' text.
 # A language not mentioned here is not known by the robot

@@ -953,8 +953,8 @@ class Family(family.Family):
 
     def dbName(self, code):
         # returns the name of the MySQL database
-        # for historic reasons, the databases are called wikixx instead of
-        # wikipediaxx for Wikipedias.
+        # for historic reasons, the databases are called xxwiki instead of
+        # xxwikipedia for Wikipedias.
         return '%swiki' % code
 
     def code2encodings(self, code):

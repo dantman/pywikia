@@ -2279,7 +2279,7 @@ class Family:
             'zwiki':            'zwiki',
             'zzz wiki':         'zzz wiki',
         }
-        
+
         # A list of disambiguation template names in different languages
         self.disambiguationTemplates = {
             '_default': []
@@ -2293,19 +2293,18 @@ class Family:
 
         # On most wikis page names must start with a capital letter, but some
         # languages don't use this.
-    
         self.nocapitalize = []
-    
+
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
         self.interwiki_attop = []
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
         self.interwiki_on_one_line = []
-        
+
         # String used as separator between interwiki links and the text
         self.interwiki_text_separator = '\r\n\r\n'
-        
+
         # Similar for category
         self.category_attop = []
         # on_one_line is a list of languages that want the category links
@@ -2314,7 +2313,7 @@ class Family:
 
         # String used as separator between category links and the text
         self.category_text_separator = '\r\n\r\n'
-        
+
         # When both at the bottom should categories come after interwikilinks?
         self.categories_last = []
 
@@ -2324,20 +2323,13 @@ class Family:
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-    
         self.interwiki_putfirst = {}
 
         # Languages in interwiki_putfirst_doubled should have a number plus a list
         # of languages. If there are at least the number of interwiki links, all
         # languages in the list should be placed at the front as well as in the
         # normal list.
-
         self.interwiki_putfirst_doubled = {}
-
-        # Which language codes do no longer exist and by which language code should
-        # they be replaced. If for example the language with code xx: now should get
-        # code yy:, add {'xx':'yy'} to obsolete.
-        # If all links to language xx: shall be removed, add {'xx': None}.
 
         # Some families, e. g. commons and meta, are not multilingual and
         # forward interlanguage links to another family (wikipedia).
@@ -2345,11 +2337,14 @@ class Family:
         # family.
         self.interwiki_forward = None
 
+        # Which language codes do no longer exist and by which language code should
+        # they be replaced. If for example the language with code xx: now should get
+        # code yy:, add {'xx':'yy'} to obsolete.
+        # If all links to language xx: shall be removed, add {'xx': None}.
         self.obsolete = {}
-        
+
         # Language codes of the largest wikis. They should be roughly sorted
         # by size.
-        
         self.languages_by_size = []
 
         # Some languages belong to a group where the possibility is high that
@@ -2498,27 +2493,27 @@ class Family:
     # fallback = None.
     def special_namespace(self, code, fallback = '_default'):
         return self.namespace(code, -1, fallback)
-    
+
     def special_namespace_url(self, code, fallback = '_default'):
         encoded_title = self.namespace(code, -1, fallback).encode(self.code2encoding(code))
         return urllib.quote(encoded_title)
-    
+
     def image_namespace(self, code, fallback = '_default'):
         return self.namespace(code, 6, fallback)
-    
+
     def image_namespace_url(self, code, fallback = '_default'):
         encoded_title = self.namespace(code, 6, fallback).encode(self.code2encoding(code))
         return urllib.quote(encoded_title)
-    
+
     def mediawiki_namespace(self, code, fallback = '_default'):
         return self.namespace(code, 8, fallback)
-    
+
     def template_namespace(self, code, fallback = '_default'):
         return self.namespace(code, 10, fallback)
-    
+
     def category_namespace(self, code, fallback = '_default'):
         return self.namespace(code, 14, fallback)
-    
+
     def category_namespaces(self, code):
         namespaces = []
         namespace_title = self.namespace(code, 14)
@@ -2608,10 +2603,7 @@ class Family:
             pos2 += [p,p.lower()]
         return pos2
 
-
-        
     # Methods
-    
     def protocol(self, code):
         """
         Can be overridden to return 'https'.
@@ -2621,7 +2613,7 @@ class Family:
 
     def hostname(self, code):
         return self.langs[code]
-    
+
     def path(self, code):
         return '/w/index.php'
 
@@ -2639,11 +2631,10 @@ class Family:
         return '%s%s' % (code, self.name)
 
     # Which version of MediaWiki is used?
-
     def version(self, code):
         # Don't use this, use versionnumber() instead. This only exists
         # to not break family files.
-        return "1.5"
+        return "1.12alpha"
 
     def versionnumber(self, code):
         R = re.compile(r"(\d+).(\d+)")
@@ -2655,7 +2646,7 @@ class Family:
 
     def page_action_address(self, code, name, action):
         return '%s?title=%s&action=%s' % (self.path(code), name, action)
-        
+
     def put_address(self, code, name):
         return '%s?title=%s&action=submit' % (self.path(code), name)
 
@@ -2665,7 +2656,7 @@ class Family:
     # The URL to get a page, in the format indexed by Google.
     def nice_get_address(self, code, name):
         return '/wiki/%s' % (name)
-        
+
     def edit_address(self, code, name):
         return '%s?title=%s&action=edit' % (self.path(code), name)
 
@@ -2814,13 +2805,13 @@ class Family:
 
     def uncategorizedcategories_address(self, code, limit=500):
         return "%s?title=%s:Uncategorizedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
-    
+
     def uncategorizedimages_address(self, code, limit=500):
         return "%s?title=%s:Uncategorizedimages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
-    
+
     def uncategorizedpages_address(self, code, limit=500):
         return "%s?title=%s:Uncategorizedpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
-    
+
     def unusedcategories_address(self, code, limit=500):
         return "%s?title=%s:Unusedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
@@ -2841,6 +2832,7 @@ class Family:
             return cmp(self.name, otherfamily.name)
         except AttributeError:
             return cmp(id(self), id(otherfamily))
+
     def __hash__(self):
         return hash(self.name)
 
@@ -2858,7 +2850,7 @@ class Family:
     def has_query_api(self,code):
         """Is query.php installed in the wiki?"""
         return False
-        
+
     def shared_image_repository(self, code):
         """Return the shared image repository, if any."""
         return (None, None)
