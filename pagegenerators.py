@@ -772,6 +772,12 @@ class GeneratorFactory:
                 if namespace:
                     prefix = prefix[colon+1:]
             gen = PrefixingPageGenerator(prefix = prefix, namespace = namespace)
+        elif arg.startswith('-newimages'):
+            if len(arg) == 10:
+                limit = wikipedia.input(u'How many images do you want to check?')
+            else:
+                limit = arg[11:]
+            gen = newImages(limit, wikipedia.getSite())
         elif arg.startswith('-new'):
             if len(arg) >=5:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
