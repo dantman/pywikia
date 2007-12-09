@@ -155,7 +155,7 @@ def main():
         mysite = wikipedia.getSite()
         ns = mysite.image_namespace()
 
-        oldImagePage = wikipedia.Page(mysite, ns + ':' + oldImage)
+        oldImagePage = wikipedia.ImagePage(mysite, ns + ':' + oldImage)
 
         gen = pagegenerators.FileLinksGenerator(oldImagePage)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
