@@ -28,8 +28,7 @@ class Family:
            'si','simple','sd','ss','sk','sl','cu','so','sr','sh','su','fi','sv','tl',
            'ta','kab','roa-tara','tt','te','tet','th','vi','ti','tg','tpi','to','chr','chy','ve',
            'tr','tk','tw','udm','bug','uk','ur','vec','vo','fiu-vro','wa',
-           'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg','zh',
-           'zh-tw','zh-cn']
+           'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg','zh']
 
         # knownlanguages is the same list but sorted by code
         self.knownlanguages = list(self.alphabetic)

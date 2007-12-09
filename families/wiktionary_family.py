@@ -7,26 +7,22 @@ __version__ = '$Id$'
 
 # The Wikimedia family that is known as Wiktionary
 
-# Known wiktionary languages, given as a dictionary mapping the language code
-# to the hostname of the site hosting that wiktionary. For human consumption,
-# the full name of the language is given behind each line as a comment
-
 class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wiktionary'
         self.langs = {
+            'dk':'da.wiktionary.org',
+            'jp':'ja.wiktionary.org',
             'minnan':'zh-min-nan.wiktionary.org',
             'nb':'no.wiktionary.org',
             'zh-cn':'zh.wiktionary.org',
             'zh-tw':'zh.wiktionary.org'
             }
-        
+
         for lang in self.knownlanguages:
             if not lang in ['ee','ht','ny', 'se', 'tum']:
                 self.langs[lang] = lang+'.wiktionary.org'
-        
-        # Most namespaces are inherited from family.Family.
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikipedysta'
@@ -64,7 +60,7 @@ class Family(family.Family):
             'kk': u'Уикисөздік',
             'ko': u'위키낱말사전',
             'la': u'Victionarium',
-            'ml': u'വിക്കി‌‌ നിഘണ്ടു',
+            'ml': u'വിക്കിനിഘണ്ടു',
             'ms': u'Wiktionary',
             'nl': u'WikiWoordenboek',
             'oc': u'Wikiccionari',
@@ -80,9 +76,9 @@ class Family(family.Family):
             'ur': u'وکی لغت',
             'uz': u'Vikilug‘at',
             'vo': u'Vükivödabuk',
-            'yi': u'װיקיװערטערבוך',
+            'yi': [u'װיקיװערטערבוך', u'וויקיווערטערבוך'],
         }
-        
+
         self.namespaces[5] = {
             '_default': [u'Wiktionary talk', self.namespaces[5]['_default']],
             'ab': u'Обсуждение Wiktionary',
@@ -130,7 +126,7 @@ class Family(family.Family):
             'ia': u'Discussion Wiktionary',
             'id': u'Pembicaraan Wiktionary',
             'io': u'Wikivortaro Debato',
-            'is': u'Wikiorðabókarspjall',
+            'is': [u'Wikiorðabókarspjall', u'Wikiorðabókspjall'],
             'it': u'Discussioni Wikizionario',
             'ja': u'Wiktionary‐ノート',
             'jv': u'Dhiskusi Wiktionary',
@@ -146,7 +142,7 @@ class Family(family.Family):
             'lt': u'Wiktionary aptarimas',
             'lv': u'Wiktionary diskusija',
             'mk': u'Разговор за Wiktionary',
-            'ml': u'വിക്കി‌‌ നിഘണ്ടു സംവാദം',
+            'ml': u'വിക്കിനിഘണ്ടു സംവാദം',
             'mr': u'Wiktionary चर्चा',
             'ms': u'Perbincangan Wiktionary',
             'nah': u'Wiktionary Discusión',
@@ -183,102 +179,104 @@ class Family(family.Family):
             'vo': u'Bespik dö Vükivödabuk',
             'wa': u'Wiktionary copene',
             'wo': u'Discussion Wiktionary',
-            'yi': u'װיקיװערטערבוך רעדן',
+            'yi': [u'װיקיװערטערבוך רעדן', u'וויקיווערטערבוך רעדן'],
         }
 
         self.namespaces[100] = {
-            '_default': u'Appendix',
             'bg': u'Словоформи',
             'bs': u'Portal',
             'cy': u'Atodiad',
+            'en': u'Appendix',
             'fi': u'Liite',
             'fr': u'Annexe',
             'he': u'נספח',
             'it': u'Appendice',
             'ko': u'부록',
+            'oc': u'Annèxa',
             'pl': u'Aneks',
             'pt': u'Apêndice',
             'ro': u'Portal',
-            'ru': u'Приложение',
+            'ru': [u'Приложение', u'Appendix'],
             'sr': u'Портал',
             'sv': u'WT',
         }
         self.namespaces[101] = {
-            '_default': u'Appendix talk',
             'bg': u'Словоформи беседа',
             'bs': u'Razgovor o Portalu',
             'cy': u'Sgwrs Atodiad',
+            'en': u'Appendix talk',
             'fi': u'Keskustelu liitteestä',
             'fr': u'Discussion Annexe',
             'he': u'שיחת נספח',
             'it': u'Discussioni appendice',
             'ko': u'부록 토론',
+            'oc': u'Discussion Annèxa',
             'pl': u'Dyskusja aneksu',
             'pt': u'Apêndice Discussão',
             'ro': u'Discuţie Portal',
-            'ru': u'Обсуждение приложения',
+            'ru': [u'Обсуждение приложения', u'Appendix talk'],
             'sr': u'Разговор о порталу',
             'sv': u'WT-diskussion',
         }
 
         self.namespaces[102] = {
-            '_default': u'Concordance',
             'bs': u'Indeks',
             'cy': u'Odliadur',
             'de': u'Verzeichnis',
+            'en': u'Concordance',
             'fr': u'Transwiki',
             'pl': u'Indeks',
             'pt': u'Vocabulário',
             'ro': u'Apendice',
-            'ru': u'Конкорданс',
+            'ru': [u'Конкорданс', u'Concordance'],
             'sv': u'Appendix',
         }
 
         self.namespaces[103] = {
-            '_default': u'Concordance talk',
             'bs': u'Razgovor o Indeksu',
             'cy': u'Sgwrs Odliadur',
             'de': u'Verzeichnis Diskussion',
+            'en': u'Concordance talk',
             'fr': u'Discussion Transwiki',
             'pl': u'Dyskusja indeksu',
             'pt': u'Vocabulário Discussão',
             'ro': u'Discuţie Apendice',
-            'ru': u'Обсуждение конкорданса',
+            'ru': [u'Обсуждение конкорданса', u'Concordance talk'],
             'sv': u'Appendixdiskussion',
         }
 
         self.namespaces[104] = {
-            '_default': u'Index',
             'bs': u'Dodatak',
             'cy': u'WiciSawrws',
+            'en': u'Index',
             'fr': u'Portail',
             'pl': u'Portal',
             'pt': u'Rimas',
-            'ru': u'Индекс',
+            'ru': [u'Индекс', u'Index'],
         }
 
         self.namespaces[105] = {
-            '_default': u'Index talk',
             'bs': u'Razgovor o Dodatku',
             'cy': u'Sgwrs WiciSawrws',
+            'en': u'Index talk',
             'fr': u'Discussion Portail',
             'pl': u'Dyskusja portalu',
             'pt': u'Rimas Discussão',
-            'ru': u'Обсуждение индекса',
+            'ru': [u'Обсуждение индекса', u'Index talk'],
         }
 
         self.namespaces[106] = {
             'en': u'Rhymes',
             'is': u'Viðauki',
             'pt': u'Portal',
-            'ru': u'Рифмы',
+            'ru': [u'Рифмы', u'Rhymes'],
         }
 
         self.namespaces[107] = {
             'en': u'Rhymes talk',
             'is': u'Viðaukaspjall',
             'pt': u'Portal Discussão',
-            'ru': u'Обсуждение рифм',
+            'ru': [u'Обсуждение рифм', u'Rhymes talk'],
         }
 
         self.namespaces[108] = {
@@ -305,23 +303,35 @@ class Family(family.Family):
             'en': u'WT talk',
         }
 
+        self.namespaces[114] = {
+            'en': u'Citations',
+        }
+
+        self.namespaces[115] = {
+            'en': u'Citations talk',
+        }
+
         # Other than most Wikipedias, page names must not start with a capital
         # letter on ALL Wiktionaries.
-
         self.nocapitalize = self.langs.keys()
-    
-        self.obsolete = {'nb':'no',
-                    'minnan':'zh-min-nan',
-                    'zh-tw':'zh',
-                    'zh-cn':'zh'}
-    
+
+        self.obsolete = {
+            'dk': 'da',
+            'jp': 'ja',
+            'minnan':'zh-min-nan',
+            'nb': 'no',
+            'tokipona': None,
+            'zh-tw': 'zh',
+            'zh-cn': 'zh'
+        }
+
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-    
+
         self.interwiki_putfirst = {
             'en': self.alphabetic,
             'et': self.alphabetic,
@@ -332,7 +342,7 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic
             }
-            
+
         self.languages_by_size = [
             'en', 'fr', 'vi', 'zh', 'io', 'el', 'pl', 'it', 'de', 'hu',
             'fi', 'nl', 'bg', 'pt', 'ku', 'es', 'gl', 'sr', 'id', 'sv',
@@ -344,14 +354,14 @@ class Family(family.Family):
             'mr', 'be', 'rw', 'tl', 'eu', 'ms', 'ast', 'an', 'ga', 'pa',
             'nah', 'ha', 'oc'
             ]
-        
+
         self.interwiki_on_one_line = ['pl']
 
         self.interwiki_attop = ['pl']
 
     def version(self, code):
-        return "1.11"
-    
+        return "1.12alpha"
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 

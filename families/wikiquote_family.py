@@ -243,7 +243,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.11alpha"
+        return "1.12alpha"
 
     def code2encodings(self, code):
         """
@@ -255,5 +255,6 @@ class Family(family.Family):
         if code == 'ru':
             return 'utf-8', 'iso8859-5'
         return self.code2encoding(code),
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')

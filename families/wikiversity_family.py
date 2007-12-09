@@ -12,7 +12,7 @@ class Family(family.Family):
         self.name = 'wikiversity'
 
         self.langs = {
-            'beta':'beta.wikiversity.org'
+            'beta': 'beta.wikiversity.org',
         }
 
         for lang in self.knownlanguages:
@@ -38,61 +38,65 @@ class Family(family.Family):
         }
 
         self.namespaces[100] = {
-            '_default': u'School',
+            'en': u'School',
             'it': u'Facoltà',
         }
         self.namespaces[101] = {
-            '_default': u'School talk',
+            'en': u'School talk',
             'it': u'Discussioni facoltà',
         }
         self.namespaces[102] = {
-            '_default': u'Portal',
+            'en': u'Portal',
             'fr': u'Projet',
             'it': u'Corso',
         }
         self.namespaces[103] = {
-            '_default': u'Portal talk',
+            'en': u'Portal talk',
             'fr': u'Discussion Projet',
             'it': u'Discussioni corso',
         }
         self.namespaces[104] = {
-            '_default': u'Topic',
+            'en': u'Topic',
             'it': u'Materia',
         }
         self.namespaces[105] = {
-            '_default': u'Topic talk',
+            'en': u'Topic talk',
             'it': u'Discussioni materia',
         }
         self.namespaces[106] = {
-            '_default': u'',
             'de': u'Kurs',
             'fr': u'Faculté',
-			'it': u'Dipartimento',
+            'it': u'Dipartimento',
         }
         self.namespaces[107] = {
-            '_default': u'',
             'de': u'Kurs Diskussion',
             'fr': u'Discussion Faculté',
-			'it': u'Discussioni dipartimento',
+            'it': u'Discussioni dipartimento',
         }
         self.namespaces[108] = {
-            '_default': u'',
             'de': u'Projekt',
             'fr': u'Département',
         }
         self.namespaces[109] = {
-            '_default': u'',
             'de': u'Projekt Diskussion',
             'fr': u'Discussion Département',
         }
         self.namespaces[110] = {
-            '_default': u'',
             'fr': u'Transwiki',
         }
         self.namespaces[111] = {
-            '_default': u'',
             'fr': u'Discussion Transwiki',
         }
+
+        self.obsolete = {
+            'dk': 'da',
+            'jp': 'ja',
+            'minnan':'zh-min-nan',
+            'nb': 'no',
+            'zh-tw': 'zh',
+            'zh-cn': 'zh'
+        }
+
         self.mainpages = {
             'de': u'Hauptseite',
             'fr': u'Accueil',
@@ -100,6 +104,7 @@ class Family(family.Family):
         }
 
     def version(self,code):
-        return "1.11alpha"
+        return "1.12alpha"
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')
