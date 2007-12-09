@@ -10,7 +10,7 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikiquote'
-        
+
         self.langs = {
             'dk':'da.wikiquote.org',
             'minnan':'zh-min-nan.wikiquote.org',
@@ -28,10 +28,10 @@ class Family(family.Family):
                      'za','te','kr','qu','uz','tt','ur','af','vo','bm',
                      'cr','na','nds','ky','su','als','be','ug','gu','zh-min-nan',
                      'hy','ga','kk','ks','kw','tk',]
-        
-        for lang in self.languages_by_size:            
+
+        for lang in self.languages_by_size:
             self.langs[lang] = lang+'.wikiquote.org'
-    
+
         # Most namespaces are inherited from family.Family()
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
@@ -57,7 +57,7 @@ class Family(family.Family):
             'hr': u'Wikicitat',
             'hu': u'Wikidézet',
             'is': u'Wikivitnun',
-            'ka': u'ვიკიციტატა',
+            'ka': [u'ვიკიციტატა', u'Wikiquote'],
             'kk': u'Уикидәйек',
             'la': u'Vicicitatio',
             'ml': u'വിക്കി ചൊല്ലുകള്‍',
@@ -107,7 +107,7 @@ class Family(family.Family):
             'is': u'Wikivitnunspjall',
             'it': u'Discussioni Wikiquote',
             'ja': u'Wikiquote‐ノート',
-            'ka': u'ვიკიციტატა განხილვა',
+            'ka': [u'ვიკიციტატა განხილვა', u'Wikiquote განხილვა'],
             'kk': u'Уикидәйек талқылауы',
             'kn': u'Wikiquote ಚರ್ಚೆ',
             'ko': u'Wikiquote토론',
@@ -145,13 +145,13 @@ class Family(family.Family):
             'vo': u'Bespik dö Wikiquote',
             'wo': u'Discussion Wikiquote',
         }
-        
+
         self.namespaces[100] = {
             'de': u'Portal',
             'he': u'פורטל',
             'fr': u'Portail',
             }
-        
+
         self.namespaces[101] = {
             'de': u'Portal Diskussion',
             'he': u'שיחת פורטל',
@@ -181,7 +181,7 @@ class Family(family.Family):
         self.namespaces[109] = {
             'fr': u'Discussion Transwiki',
             }
-         
+
         self.disambiguationTemplates = {
             '_default': [u''],
             'ka':       [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
@@ -195,20 +195,20 @@ class Family(family.Family):
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
         self.interwiki_on_one_line = []
-        
+
         # Similar for category
         self.category_attop = []
 
         # List of languages that want the category on_one_line.
         self.category_on_one_line = []
-        
+
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-        
+
         alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
                     'ca','chr','co','cs','cy','da','de','als','et',
                     'el','en','es','eo','eu','fa','fr','fy','ga','gv',
@@ -220,7 +220,7 @@ class Family(family.Family):
                     'fi','sv','ta','tt','th','ur','vi',
                     'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
                     'zh-tw']
-            
+
         self.interwiki_putfirst = {
             'en': alphabetic,
             'fi': alphabetic,
@@ -246,7 +246,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.11alpha"    
+        return "1.11alpha"
 
     def code2encodings(self, code):
         """
