@@ -10,7 +10,13 @@ Parameters:
 -always         Doesn't ask every time if the bot should make the change or not, do it always.
 -page           Work only on one page
 
-Note: This script uses also genfactory, you can use these generator as default.
+Note: This script uses also genfactory, you can use those generator as default.
+
+Example of how to use the script:
+
+python blockpageschecker.py -always
+
+python blockpageschecker.py -cat:Geography -always
 
 """
 #
@@ -26,7 +32,6 @@ import re
 import wikipedia, catlib, pagegenerators
 
 # Use only regex!
-#fr regexes added by Darkoneko 09 oct 07, THEY ARE UNTESTED at the moment, please check !
 templateToRemove = {
             'en':[r'\{\{(?:[Tt]emplate:|)[Pp]p-protected\}\}', r'{\{([Tt]emplate:|)[Pp]p-dispute\}\}',
                   r'{\{(?:[Tt]emplate:|)[Pp]p-template\}\}', r'{\{([Tt]emplate:|)[Pp]p-usertalk\}\}'],
@@ -49,12 +54,11 @@ comment = {
             }
 
 def main():
-    global templateToRemove
-    global categoryToCheck
-    global comment
-    always = False
-    generator = False
-    genFactory = pagegenerators.GeneratorFactory()
+    # Loading the comments
+    global templateToRemove; global categoryToCheck; global comment
+    # always, define a generator to understand if the user sets one, defining what's genFactory
+    always = False; generator = False; genFactory = pagegenerators.GeneratorFactory()
+    # To prevent Infinite loops
     errorCount = 0
     # Loading the default options.
     for arg in wikipedia.handleArgs():
@@ -73,16 +77,19 @@ def main():
     TTR = wikipedia.translate(site, templateToRemove)
     category = wikipedia.translate(site, categoryToCheck)
     commentUsed = wikipedia.translate(site, comment)
-    # Define the category
     if not generator:
+        # Define the category if no other generator has been setted
         for CAT in category:
             cat = catlib.Category(site, CAT)
             # Define the generator
             generator = pagegenerators.CategorizedPageGenerator(cat)
+    # Main Loop
     for page in generator:
         pagename = page.title()
         wikipedia.output('Loading %s...' % pagename)
         try:
+            # The same as .get() but it loads also the editRestriction var, that's what we
+            # need to understand if the page is protected or not.
             (text, useless, editRestriction) = page._getEditPage()
         except wikipedia.NoPage:
             wikipedia.output("%s doesn't exist! Skipping..." % pagename)
@@ -98,9 +105,11 @@ def main():
             wikipedia.output(u'The page is editable for all, deleting the template...')
             # Only to see if the text is the same or not...
             oldtext = text
+            # Deleting the template because the page doesn't need it.
             for replaceToPerform in TTR:
                 text = re.sub(replaceToPerform, '', text)
             if oldtext != text:
+                # Ok, asking if the change has to be performed and do it.
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                 wikipedia.showDiff(oldtext, text)
                 choice = ''
@@ -118,12 +127,15 @@ def main():
                             wikipedia.output(u'Edit conflict! skip!')
                             break
                         except wikipedia.ServerError:
+                            # Sometimes there is this error that's quite annoying because
+                            # can block the whole process for nothing. 
                             errorCount += 1
                             if errorCount < 5:
                                 wikipedia.output(u'Server Error! Wait..')
                                 time.sleep(3)
                                 continue
                             else:
+                                # Prevent Infinite Loops
                                 raise wikipedia.ServerError(u'Fifth Server Error!')
                         except wikipedia.SpamfilterError, e:
                             wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
@@ -135,7 +147,7 @@ def main():
                             wikipedia.output(u'The page is still protected. Skipping...')
                             break
                         else:
-                            # Break only if the errors are one after the other...
+                            # Break only if the errors are one after the other
                             errorCount = 0
                             break
 if __name__ == "__main__":
