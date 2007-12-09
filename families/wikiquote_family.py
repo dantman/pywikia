@@ -12,6 +12,7 @@ class Family(family.Family):
         self.name = 'wikiquote'
         
         self.langs = {
+            'dk':'da.wikiquote.org',
             'minnan':'zh-min-nan.wikiquote.org',
             'nb':'no.wikiquote.org',
             'zh-cn':'zh.wikiquote.org',
@@ -30,11 +31,6 @@ class Family(family.Family):
         
         for lang in self.languages_by_size:            
             self.langs[lang] = lang+'.wikiquote.org'
-
-        self.obsolete = {'nb':'no',
-                    'minnan':'zh-min-nan',
-                    'zh-tw':'zh',
-                    'zh-cn':'zh'}
     
         # Most namespaces are inherited from family.Family()
         # Translation used on all wikis for the different namespaces.
@@ -151,41 +147,39 @@ class Family(family.Family):
         }
         
         self.namespaces[100] = {
-            '_default': u'Portal',
-            'he':       u'פורטל',
-            'fr':       u'Portail',
+            'de': u'Portal',
+            'he': u'פורטל',
+            'fr': u'Portail',
             }
         
         self.namespaces[101] = {
-            '_default': u'Portal talk',
-            'de':       u'Portal Diskussion',
-            'he':       u'שיחת פורטל',
-            'fr':       u'Discussion Portail',
+            'de': u'Portal Diskussion',
+            'he': u'שיחת פורטל',
+            'fr': u'Discussion Portail',
             }
 
         self.namespaces[102] = {
-            'fr':       u'Projet',
+            'fr': u'Projet',
             }
 
         self.namespaces[103] = {
-            'fr':       u'Discussion Projet',
+            'fr': u'Discussion Projet',
             }
 
         self.namespaces[104] = {
-            'fr':       u'Référence',
+            'fr': u'Référence',
             }
 
         self.namespaces[105] = {
-            'fr':       u'Discussion Référence',
+            'fr': u'Discussion Référence',
             }
 
         self.namespaces[108] = {
-            '_default': u'Transwiki'
+            'fr': u'Transwiki',
             }
 
         self.namespaces[109] = {
-            '_default': u'Transwiki talk',
-            'fr':       u'Discussion Transwiki'
+            'fr': u'Discussion Transwiki',
             }
          
         self.disambiguationTemplates = {
@@ -223,7 +217,7 @@ class Family(family.Family):
                     'mk','mg','ml','mi','mr','zh-cfr','mn','nah','na',
                     'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
                     'sa','st','sq','si','simple','sk','sl','sr','su',
-                    'fi','sv','ta','tt','th','ur','vi','tokipona',
+                    'fi','sv','ta','tt','th','ur','vi',
                     'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
                     'zh-tw']
             
@@ -236,6 +230,15 @@ class Family(family.Family):
             'pl': alphabetic,
             'simple': alphabetic,
             'pt': alphabetic,
+        }
+
+        self.obsolete = {
+            'dk': 'da',
+            'minnan':'zh-min-nan',
+            'nb': 'no',
+            'tokipona': None,
+            'zh-tw': 'zh',
+            'zh-cn': 'zh'
         }
 
         self.mainpages = {
