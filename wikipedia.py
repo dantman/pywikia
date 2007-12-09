@@ -4227,21 +4227,22 @@ Maybe the server is down. Retrying in %i minutes..."""
             re.UNICODE)
         pos = 0
         seen = list()
-        ext_list = list()    
-        for m in regexp.finditer(html):
-            new = m.group('new')
-            im = m.group('image')
-            ext = m.group('ext')
-            # This prevent pages with strange characters. They will be loaded without problem.
-            image =  "%s.%s" % (im, ext)
-            if new != '':
-                output(u"Skipping %s because it has been deleted." % image)
+        ext_list = list()
+        while True:
+            for m in regexp.finditer(html):
+                new = m.group('new')
+                im = m.group('image')
+                ext = m.group('ext')
+                # This prevent pages with strange characters. They will be loaded without problem.
+                image =  "%s.%s" % (im, ext)
+                if new != '':
+                    output(u"Skipping %s because it has been deleted." % image)
+                    if image not in seen:
+                        seen.append(image)
                 if image not in seen:
                     seen.append(image)
-            if image not in seen:
-                seen.append(image)
-                page = Page(self, 'Image:%s' % image)
-                yield page
+                    page = Page(self, 'Image:%s' % image)
+                    yield page
             if not repeat:            
                 output(u"\t\t>> All images checked. <<")
                 break
