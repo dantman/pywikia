@@ -2397,10 +2397,10 @@ class Family:
             raise KeyError('ERROR: Unknown namespace %d for %s:%s' % (ns_number, code, self.name))
         elif self.isNsI18N(ns_number, code):
             v = self.namespaces[ns_number][code]
-        elif fallback:
+        elif fallback and self.isNsI18N(ns_number, fallback):
             v = self.namespaces[ns_number][fallback]
         else:
-            raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))  
+            raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))
 
         if all:
             if type(v) is list:
