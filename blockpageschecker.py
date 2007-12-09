@@ -97,11 +97,14 @@ def main():
     category = wikipedia.translate(site, categoryToCheck)
     commentUsed = wikipedia.translate(site, comment)
     if not generator:
+        generator = list()
         # Define the category if no other generator has been setted
         for CAT in category:
             cat = catlib.Category(site, CAT)
             # Define the generator
-            generator = pagegenerators.CategorizedPageGenerator(cat)
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+            for pageCat in gen:
+                generator.append(pageCat)
     # Main Loop
     for page in generator:
         pagename = page.title()
