@@ -28,7 +28,6 @@ import sys, wikipedia, traceback
 
 def testSite(site):
     try:
-        
         wikipedia.getall(site, [wikipedia.Page(site, 'Any page name')])
     except KeyboardInterrupt:
         raise
@@ -39,22 +38,28 @@ def testSite(site):
 
 def main():
     all = False
+    language = None
     for arg in wikipedia.handleArgs():
         if arg == '-all':
             all = True
-    
+        elif arg[0:10] == '-language:':
+            language = arg[10:]
+
     mySite = wikipedia.getSite()
+    if language is None:
+        language = mySite.lang
     fam = mySite.family
 
     if all:
         for lang in fam.langs.iterkeys():
             testSite(wikipedia.getSite(lang))
     else:
-        testSite(mySite)
-                     
+        languages = language.split(',')
+        for lang in languages:
+            testSite(wikipedia.getSite(lang))
+
     if False:
         # skip until the family gets global fixing
-        
         wikipedia.output(u"\n\n------------------ namespace table -------------------\n");
 
         wikipedia.output(u"		   self.namespaces = {")
