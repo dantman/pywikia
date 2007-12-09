@@ -166,7 +166,7 @@ nothing_head = {
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
-				'commons':"{{subst:User:Filnik/untagged|Image:%s}}Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
+				'commons':"{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
@@ -842,11 +842,11 @@ if __name__ == "__main__":
 						if mex_used in g:
 							wikipedia.output(u'Image already fixed. Skip.')
 							continue
-						wikipedia.output(u"The image description for %s contains %s..." % (image, name_used))
+						wikipedia.output(u"The image description for %s contains %s..." % (imageName, name_used))
 						if mex_used.lower() == 'default':
 							mex_used = unvertext
 						if imagestatus_used == False:
-							reported = mainClass.report_image(rep_page, image, com, rep_text)
+							reported = mainClass.report_image(rep_page, imageName, com, rep_text)
 						else:
 							reported = True
 						if reported == True:
@@ -862,37 +862,37 @@ if __name__ == "__main__":
 						parentesi = False
 						continue
 					elif delete == True:
-						wikipedia.output(u"%s is not a file!" % image)
+						wikipedia.output(u"%s is not a file!" % imageName)
 						# Modify summary text
 						wikipedia.setAction(dels)
 						canctext = di % extension
-						notification = din % image
+						notification = din % imageName
 						head = dih
 						report(canctext, imageName, notification, head)
 						delete = False
 						continue
 					elif g in nothing:
-						wikipedia.output(u"The image description for %s does not contain a license template!" % image)
+						wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
 						if lang == 'commons':
-							head = nh % image
+							head = nh % imageName
 						else:
 							head = nh 
 						if lang == 'commons':
 							notification = nn
 						else:
-							notification = nn % image
+							notification = nn % imageName
 						report(unvertext, imageName, notification, head, smwl)
 						continue
 					else:
-						wikipedia.output(u"%s has only text and not the specific license..." % image)
+						wikipedia.output(u"%s has only text and not the specific license..." % imageName)
 						if lang == 'commons':
-							head = nh % image
+							head = nh % imageName
 						else:
 							head = nh 
 						if lang == 'commons':
 							notification = nn
 						else:
-							notification = nn % image
+							notification = nn % imageName
 						report(unvertext, imageName, notification, head, smwl)
 						continue
 		# A little block to perform the repeat or to break.
