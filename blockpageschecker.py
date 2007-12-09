@@ -12,7 +12,12 @@ Parameters:
 
 Note: This script uses also genfactory, you can use those generator as default.
 
-Example of how to use the script:
+--- Warning! ---
+You have to edit this script in order to add your preferences otherwise the script won't work!
+
+If you have problems, ask on botwiki ( http://botwiki.sno.cc ) or on IRC (#pywikipediabot)
+
+--- Example of how to use the script ---
 
 python blockpageschecker.py -always
 
@@ -29,9 +34,13 @@ __version__ = '$Id: blockpageschecker.py,v 1.1 2007/12/7 19.23.00 filnik Exp$'
 #
 
 import re
-import wikipedia, catlib, pagegenerators
+import wikipedia, catlib, pagegenerators, config
 
-# Use only regex!
+#######################################################
+#--------------------- PREFERENCES -------------------#
+################### -- Edit below! -- #################
+
+# Use only regex! - Regex to delete the template
 templateToRemove = {
             'en':[r'\{\{(?:[Tt]emplate:|)[Pp]p-protected\}\}', r'{\{([Tt]emplate:|)[Pp]p-dispute\}\}',
                   r'{\{(?:[Tt]emplate:|)[Pp]p-template\}\}', r'{\{([Tt]emplate:|)[Pp]p-usertalk\}\}'],
@@ -41,21 +50,31 @@ templateToRemove = {
                 ],
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|(.*?))\}\}', r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}'],
             }
+# Category where the bot will check
 categoryToCheck = {
             'en':[u'Category:Protected'],
             'fr':[u'Category:Page semi-protégée', u'Category:Page protégée'],
             'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
             }
-
+# Comment used when the Bot edits
 comment = {
             'en':u'Bot: Deleting out-dated template',
             'fr':u'Robot : Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
             'it':u'Bot: Tolgo template di avviso blocco scaduto',
             }
+# Check list to block the users that haven't set their preferences
+project_inserted = ['en', 'fr', 'it']
 
+#######################################################
+#------------------ END PREFERENCES ------------------#
+################## -- Edit above! -- ##################
+    
 def main():
     # Loading the comments
-    global templateToRemove; global categoryToCheck; global comment
+    global templateToRemove; global categoryToCheck; global comment; global project_inserted
+    if config.mylang not in project_inserted:
+        wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
+        wikipedia.stopme()
     # always, define a generator to understand if the user sets one, defining what's genFactory
     always = False; generator = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
