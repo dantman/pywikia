@@ -19,7 +19,6 @@ class Family(family.Family):
             'minnan':'zh-min-nan.wikipedia.org',
             'nb':'no.wikipedia.org',
             'test':'test.wikipedia.org',
-            'tokipona':'tokipona.wikipedia.org',
             'zh-cn':'zh.wikipedia.org',
             'zh-tw':'zh.wikipedia.org',
         }
