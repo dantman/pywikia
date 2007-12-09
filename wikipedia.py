@@ -689,7 +689,7 @@ not supported by PyWikipediaBot!"""
                 elif text.find(self.site().mediawiki_message('viewsource')) != -1:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 else:
-                    if data.find( "<title>Wikimedia Error</title>") > -1:
+                    if text.find( "<title>Wikimedia Error</title>") > -1:
                         output( u"Wikimedia has technical problems; will retry in %i minutes." % retry_idle_time)
                     else:
                         output( unicode(text) )
