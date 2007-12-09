@@ -1,9 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-
-ATTENTION! THIS SCRIPT *REQUIRES* PYTHON 2.5
-
 Script to welcome new users. This script works out of the box for Wikis that
 have been defined in the script. It is currently used on the Dutch, Norwegian,
 Arabian, Albanian, Italian Wikipedia, Wikimedia Commons and English Wikiquote.
