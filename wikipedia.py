@@ -4223,7 +4223,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         html = self.getUrl(url)
         image_namespace = self.image_namespace()
         regexp = re.compile(
-            r'(?P<new>class=\"new\" |)title=\"%s:(?P<image>.*?)\.(?P<ext>\w\w\w|jpeg)\">.*?</a>\".*?<span class=\"comment\">' % image_namespace,
+            r'(?P<new>class=\"new\" |)title=\"%s:(?P<image>.*?)\.(?P<ext>\w\w\w|jpeg)\">.*?</a>\".*?(?:<span class=\"comment\">.*?|)</li>' % image_namespace,
             re.UNICODE)
         pos = 0
         seen = list()
