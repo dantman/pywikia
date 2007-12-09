@@ -127,27 +127,27 @@ unver = {
 # if the file has an unknown extension it will be tagged with this template.
 # In reality, there aren't unknown extension, they are only not allewed... ^__^
 delete_immediately = {
-					'commons':"{{db-meta|The file has .%s as extension.}}",
-					'en'     :"{{db-meta|The file has .%s as extension.}}",
-					'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
-					'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
-					}
+			'commons':"{{db-meta|The file has .%s as extension.}}",
+			'en'     :"{{db-meta|The file has .%s as extension.}}",
+			'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
+			'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
+			}
 
 # The header of the Unknown extension's message.
 delete_immediately_head = {
-						'commons':"\n== Unknown extension! ==\n",
-						'en'     :"\n== Unknown extension! ==\n",
-						'it'     :'\n== File non specificato ==\n',
-						'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
-						}
+			'commons':"\n== Unknown extension! ==\n",
+			'en'     :"\n== Unknown extension! ==\n",
+			'it'     :'\n== File non specificato ==\n',
+			'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
+			}
 
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
-						'commons':'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
-						'en'     :'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
-						'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
-						'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
-						}
+                                'commons':'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
+				'en'     :'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
+				'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
+				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
+				}
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
 			'commons':'Bot: Adding %s',
@@ -242,6 +242,7 @@ class LogIsFull(wikipedia.Error):
 class NothingFound(wikipedia.Error):
 	""" An exception indicating that a regex has return [] instead of results."""
 
+# When the page is not a wiki-page (as for untagged generator) you need that function
 def pageText(url):
 	try:
                 request = urllib2.Request(url)
@@ -252,7 +253,7 @@ def pageText(url):
                 response.close()
                 # When you load to many users, urllib2 can give this error.
 	except urllib2.HTTPError:
-		wikipedia.output(u"Server error. Pausing for 10 seconds... " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()) )
+		wikipedia.output(u"Server error. Pausing for 10 seconds... %s" % time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()) )
 		time.sleep(10)
                 request = urllib2.Request(url)
                 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
@@ -264,9 +265,9 @@ def pageText(url):
 
 # Here there is the main class.
 class main:
-	def __init__(self, site):
+	def __init__(self, site, logFulNumber = 25000):
 		self.site = site
-		self.logFulNumber = 25000
+		self.logFulNumber = logFulNumber
 	def general(self, newtext, image, notification, head, botolist):
 		""" This class can be called for two reason. So I need two different __init__, one with common data
 			and another with the data that I required... maybe it can be added on the other function, but in this way
@@ -307,7 +308,7 @@ class main:
 			self.report_image(rep_page, self.image, com, repme)
 			return False
 		luser = wikipedia.url2link(nick, self.site, self.site)
-		pagina_discussione = self.site.namespace(3) + ':' + luser
+		pagina_discussione = "%s:%s" % (self.site.namespace(3), luser)
 		# Defing the talk page (pagina_discussione = talk_page ^__^ )
 		talk_page = wikipedia.Page(self.site, pagina_discussione)
 		self.talk_page = talk_page
@@ -332,7 +333,7 @@ class main:
 				history = talk_page.getVersionHistory(False, False, False)
 			latest_edit = history[0]
 			latest_user = latest_edit[2]
-			wikipedia.output(u'The latest user that has written something is: ' + latest_user)
+			wikipedia.output(u'The latest user that has written something is: %s' % latest_user)
 		else:
 			wikipedia.output(u'The user page is blank')
 
@@ -360,53 +361,28 @@ class main:
 		else:
 			commentox = commx
 		if second_text == True:
-			talk_page.put(testoattuale + "\n\n:" + notification2, comment = commentox, minorEdit = False)
+			talk_page.put("%s\n\n:%s" % (testoattuale, notification2), comment = commentox, minorEdit = False)
 		elif second_text == False:
 			talk_page.put(testoattuale + head + notification, comment = commentox, minorEdit = False)
-	def run_bot(self, textrun, rep_page, com):
-		# Search regular expression to find links like this (and the class attribute is optional too)
-		# class="new" title="Immagine:Soldatino2.jpg">Immagine:Soldatino2.jpg</a>" ‎ <span class="comment">
-		regexp = r'(class=\"new\" |)title=\"' + image_namespace + '(.*?)\.(\w\w\w|jpeg)\">.*?</a>\".*?<span class=\"comment\">'    
-		pos = 0
-		done = list()
-		ext_list = list()
-		r = re.compile(regexp, re.UNICODE)
-		while 1:
-			m = r.search(textrun, pos)
-			if m == None:
-				wikipedia.output(u"\t\t>> All images checked. <<")
-				break
-			pos = m.end()
-			new = m.group(1)
-			im = m.group(2)
-			ext = m.group(3)
-			# This prevent pages with strange characters. They will be loaded without problem.
-			image = im + "." + ext
-			if new != '':
-				wikipedia.output(u"Skipping %s because it has been deleted." % image)
-				done.append(image)
-			if image not in done:
-				done.append(image)
-				yield image
-				#continue
-
+			
 	def untaggedGenerator(self, untaggedProject, rep_page, com):
 		lang = untaggedProject.split('.', 1)[0]
-		project = '.' + untaggedProject.split('.', 1)[1]
+		project = '.%s' % untaggedProject.split('.', 1)[1]
 		if lang == 'commons':
 			link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
 		else:
-			link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)         
+			link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=%s&wikifam=%s&order=img_timestamp&max=%s&ofs=0&max=%s' % (lang, project, limit, limit)         
 		text = pageText(link)
 		#print text
-		regexp = r"""<td valign='top' title='Name'><a href='http://.*?\..*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
+		regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
 		results = re.findall(regexp, text)
 		if results == []:
                         print link
 			raise NothingFound('Nothing found! Try to use the tool by yourself to be sure that it works!')
 		else:
 			for result in results:
-				yield wikipedia.Page(self.site, result)
+                                wikiPage = wikipedia.Page(self.site, result)
+				yield wikiPage
 	
 	def regexGenerator(self, regexp, textrun):
 		pos = 0
@@ -430,9 +406,9 @@ class main:
 		# title="Immagine:Nvidia.jpg"
 		wikipedia.output(u'Checking if %s is on commons...' % image)
 		commons = wikipedia.getSite('commons', 'commons') 
-		if wikipedia.Page(commons, u'Image:' + image).exists():
+		if wikipedia.Page(commons, u'Image:%s' % image).exists():
 			wikipedia.output(u'%s is on commons!' % image)
-			imagePage = wikipedia.ImagePage(self.site, 'Image:' + image)
+			imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % image)
 			on_commons_text = imagePage.getImagePageHtml()
 			if "<div class='sharedUploadNotice'>" in on_commons_text:
 				wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
@@ -459,7 +435,7 @@ class main:
 		else:
 			text_get = str()
 		if len(text_get) >= self.logFulNumber:
-			raise LogIsFull("The log page (%s) is full! Please delete the old images reported." % another_page.title())  
+                        raise LogIsFull("The log page (%s) is full! Please delete the old images reported." % another_page.title())  
 		pos = 0
 		# The talk page includes "_" between the two names, in this way i replace them to " "
 		regex = image
@@ -622,7 +598,7 @@ if __name__ == "__main__":
 					firstPageTitle = str(wikipedia.input(u'From witch page do you want to start?'))
 				elif len(arg) > 6:
 					firstPageTitle = str(arg[7:])
-				generator = wikipedia.getSite().allpages(start='Image:'+firstPageTitle)
+				generator = wikipedia.getSite().allpages(start='Image:%s' % firstPageTitle)
 				repeat = False
 			elif arg.startswith('-page:'):
 				if len(arg) == 6:
@@ -651,7 +627,7 @@ if __name__ == "__main__":
 					catName = str(wikipedia.input(u'In which category do I work?'))
 				elif len(arg) > 4:
 					catName = str(arg[5:])
-				catSelected = catlib.Category(wikipedia.getSite(), 'Category:'+catName)
+				catSelected = catlib.Category(wikipedia.getSite(), 'Category:%s' % catName)
 				generator = pagegenerators.CategorizedPageGenerator(catSelected)
 				repeat = False
 			elif arg.startswith('-untagged'):
@@ -666,10 +642,7 @@ if __name__ == "__main__":
 			generator
 		except NameError:
 			normal = True
-
-		# URL of the log of newimages. (http:/en.wikipedia.org/ will generated according to the project... you won't see it in the url)
-		url = "/w/index.php?title=Special:Log&type=upload&user=&page=&pattern=&limit=%d&offset=0" % limit
-		
+			
 		# Define the site.
 		site = wikipedia.getSite()
 
@@ -679,7 +652,7 @@ if __name__ == "__main__":
 
 		# Block of text to translate the parameters set above.
 		image_n = site.image_namespace()
-		image_namespace = image_n + ":"
+		image_namespace = "%s:" % image_n
 		unvertext = wikipedia.translate(site, n_txt)
 		commento = wikipedia.translate(site, comm)
 		commento2 = wikipedia.translate(site, comm2)
@@ -715,7 +688,7 @@ if __name__ == "__main__":
 			wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
 			wikipedia.stopme()
 		
-		di = '\n' + di
+		di = '\n%s' % di
 		dels = dels % di
 		
 		# Reading the log of the new images
@@ -725,18 +698,13 @@ if __name__ == "__main__":
                         else:
                                 wikipedia.output(u"Retrieving the lastest %d files for checking..." % limit)
 
-		while 1:
-			# If I use the standard way, I have to download the page to parse it.
-			if normal == True:
-				textrun = site.getUrl(url)
-				
+		while 1:		
 			mainClass = main(site)
 			if untagged == True:
 				generator =  mainClass.untaggedGenerator(projectUntagged, rep_page, com)
 				normal = False
 			if normal == True:
-				generator = mainClass.run_bot(textrun, rep_page, com)
-
+				generator = pagegenerators.newImages(limit, site)
 			if urlUsed == True and regexGen == True:
 				textRegex = pagetext(regexPageUrl)
 			elif regexGen == True:
@@ -764,28 +732,27 @@ if __name__ == "__main__":
 				wikipedia.output(u"No additional settings found!")
 			if skip == True:
 				skip_list = list()
-				wikipedia.output(u'Skipping the first ' + str(skip_number) + u' images:\n')
+				wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
 			else:
 				wikipedia.output(u'\t\t>> No images to skip...<<')
 			skipok = False                                
 			for image in generator:
 				if normal == False and regexGen == False:
-					if image_namespace not in image.title():
+					if image_namespace.lower() not in image.title().lower() and \
+                                        'image:' not in image.title().lower():
 						continue
-					image = image.title().split(image_namespace)[1]
-				elif regexGen == True:
-					image = image.split(image_namespace)[1]
+                                imageName = image.title().split(image_namespace)[1]
 				if skip == True:
 					if len(skip_list) < skip_number:
-						wikipedia.output(u'Skipping %s...' % image)
-						skip_list.append(image)
+						wikipedia.output(u'Skipping %s...' % imageName)
+						skip_list.append(imageName)
 						continue
 					else:
 						if skipok == False:
 							wikipedia.output('')
 						skipok = True
 				if commonsActive == True:
-					response = mainClass.checkImage(image)
+					response = mainClass.checkImage(imageName)
 					if response == False:
 						continue
 				if tupla_written != None:
@@ -794,17 +761,17 @@ if __name__ == "__main__":
 				parentesi = False
 				delete = False
 				tagged = False
-				extension = image.split('.')[-1]
-				page = image_namespace + image
-				p = wikipedia.ImagePage(site, page)
+				extension = imageName.split('.')[-1]
+				# Page => ImagePage
+				p = wikipedia.ImagePage(site, image.title())
 				# Skip deleted images
 				try:
 					g = p.get()
 				except wikipedia.NoPage:
-					wikipedia.output(u"Skipping %s because it has been deleted." % image)
+					wikipedia.output(u"Skipping %s because it has been deleted." % imageName)
 					continue
 				except wikipedia.IsRedirectPage:
-					wikipedia.output(u"The file description for %s is a redirect?!" % image )
+					wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
 					continue            
 				for l in hiddentemplate:
 					if l.lower() in g.lower():
@@ -841,7 +808,7 @@ if __name__ == "__main__":
 						summary = tupla[5]
 						head_2 = tupla[6]
 						text = tupla[7]
-						text = text % image
+						text = text % imageName
 						mexCatched = tupla[8]
 						wikipedia.setAction(summary)
 						del tupla[0:8]
@@ -867,9 +834,9 @@ if __name__ == "__main__":
 									mex_used = mexCatched
 									continue
 				if p.exists():
-					# Here there is the checkin ^^
+					# Here begins the check block.
 					if tagged == True:
-						wikipedia.output(image + u' is already tagged... ' + time.strftime("%H:%M:%S", time.localtime()))
+						wikipedia.output(u'%s is already tagged... %s' % (imageName, time.strftime("%H:%M:%S", time.localtime())))
 						continue
 					if some_problem == True:
 						if mex_used in g:
@@ -884,13 +851,13 @@ if __name__ == "__main__":
 							reported = True
 						if reported == True:
 							#if imagestatus_used == True:
-							report(mex_used, image, text_used, "\n" + head_used + "\n", None, imagestatus_used, summary_used)
+							report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
 						else:
 							wikipedia.output(u"Skipping the image...")
 						some_problem = False
 						continue
 					elif parentesi == True:
-						wikipedia.output(image + u" seems ok, " + time.strftime("%H:%M:%S", time.localtime()))
+						wikipedia.output(u"%s seems ok, %s" % (imageName, time.strftime("%H:%M:%S", time.localtime())))
 						# It works also without this... but i want only to be sure ^^
 						parentesi = False
 						continue
@@ -901,7 +868,7 @@ if __name__ == "__main__":
 						canctext = di % extension
 						notification = din % image
 						head = dih
-						report(canctext, image, notification, head)
+						report(canctext, imageName, notification, head)
 						delete = False
 						continue
 					elif g in nothing:
@@ -914,7 +881,7 @@ if __name__ == "__main__":
 							notification = nn
 						else:
 							notification = nn % image
-						report(unvertext, image, notification, head, smwl)
+						report(unvertext, imageName, notification, head, smwl)
 						continue
 					else:
 						wikipedia.output(u"%s has only text and not the specific license..." % image)
@@ -926,11 +893,11 @@ if __name__ == "__main__":
 							notification = nn
 						else:
 							notification = nn % image
-						report(unvertext, image, notification, head, smwl)
+						report(unvertext, imageName, notification, head, smwl)
 						continue
 		# A little block to perform the repeat or to break.
 			if repeat == True:
-				wikipedia.output(u"Waiting for " + str(time_sleep) + u" seconds, " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()) )
+				wikipedia.output(u"Waiting for %s seconds, %s" % (time_sleep, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())))
 				time.sleep(time_sleep)
 			elif repeat == False:
 				wikipedia.output(u"\t\t\t>> STOP! <<")
