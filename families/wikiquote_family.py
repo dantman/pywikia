@@ -13,6 +13,7 @@ class Family(family.Family):
 
         self.langs = {
             'dk':'da.wikiquote.org',
+            'jp':'ja.wikiquote.org',
             'minnan':'zh-min-nan.wikiquote.org',
             'nb':'no.wikiquote.org',
             'zh-cn':'zh.wikiquote.org',
@@ -234,6 +235,7 @@ class Family(family.Family):
 
         self.obsolete = {
             'dk': 'da',
+            'jp': 'ja',
             'minnan':'zh-min-nan',
             'nb': 'no',
             'tokipona': None,
