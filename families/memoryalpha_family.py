@@ -54,17 +54,6 @@ class Family(family.Family):
 		
         alphabetic = ['de', 'en', 'es', 'eo', 'fr', 'nl', 'pl', 'sv']
 
-        self.mainpages = {
-            'de' :			u'Hauptseite',
-            'en' :			u'Main Page',
-            'eo' :			u'Ĉefpaĝo',
-            'es' :			u'Portada',
-            'fr' :			u'Accueil',
-            'nl' :			u'Hoofdpagina',
-            'pl' :			u'Strona główna',
-            'sv' :			u'Huvudsida',
-		}
-		
     def hostname(self,code):
         return 'www.memory-alpha.org'
 

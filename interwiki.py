@@ -1537,11 +1537,11 @@ if __name__ == "__main__":
                     hintlessPageGen = generator
                 else:
                     singlePageTitle.append(arg)
-        
+
         # ensure that we don't try to change main page
         try:
             site = wikipedia.getSite()
-            mainpagename = site.family.mainpages[site.language()]
+            mainpagename = site.mediawiki_message('mainpage')
             globalvar.skip.add(wikipedia.Page(site, mainpagename))
         except:
             wikipedia.output(u'Missing main page name')

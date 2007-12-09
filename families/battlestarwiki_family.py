@@ -50,15 +50,6 @@ class Family(family.Family):
 		
         alphabetic = ['de', 'en', 'es', 'fr', 'tr', 'zh']
 
-        self.mainpages = {
-            'de' :			u'Hauptseite',
-            'en' :			u'Main Page',
-            'es' :			u'Portada',
-            'fr' :			u'Accueil',
-            'tr' :			u'Ana Sayfa',
-            'zh' :			u'%E9%A6%96%E9%A1%B5',
-		}
-		
     def hostname(self,code):
         return '%s.battlestarwiki.org' % code
 

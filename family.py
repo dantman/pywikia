@@ -2364,9 +2364,6 @@ class Family:
             ],
         }
 
-        # Main page names for all languages
-        self.mainpages = {}
-
     def _addlang(self, code, location, namespaces = {}):
         """Add a new language to the langs and namespaces of the family.
            This is supposed to be called in the constructor of the family."""

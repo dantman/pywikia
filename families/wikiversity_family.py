@@ -97,12 +97,6 @@ class Family(family.Family):
             'zh-cn': 'zh'
         }
 
-        self.mainpages = {
-            'de': u'Hauptseite',
-            'fr': u'Accueil',
-            'it': u'Pagina principale',
-        }
-
     def version(self,code):
         return "1.12alpha"
 

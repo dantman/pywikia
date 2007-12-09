@@ -238,10 +238,6 @@ class Family(family.Family):
             'zh-cn': 'zh'
         }
 
-        self.mainpages = {
-            'ka':   u'მთავარი გვერდი'
-        }
-
     def version(self, code):
         return "1.12alpha"
 
