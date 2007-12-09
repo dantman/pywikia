@@ -2666,12 +2666,6 @@ class Family:
     def upload_address(self, code):
         return '%s?title=%s:Upload' % (self.path(code), self.special_namespace_url(code))
 
-    def maintenance_address(self, code, maintenance_page, default_limit = True):
-        if default_limit:
-            return '%s?title=%s:Maintenance&subfunction=%s' % (self.path(code), self.special_namespace_url(code), maintenance_page)
-        else:
-            return '%s?title=%s:Maintenance&subfunction=%s&limit=%d' % (self.path(code), self.special_namespace_url(code), maintenance_page, config.special_page_limit)
-
     def double_redirects_address(self, code, default_limit = True):
         if default_limit:
             return '%s?title=%s:DoubleRedirects' % (self.path(code), self.special_namespace_url(code))

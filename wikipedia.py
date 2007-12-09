@@ -3546,7 +3546,6 @@ class Site(object):
         references_address(s): Special:Whatlinksere for page 's'.
         allmessages_address: Special:Allmessages.
         upload_address: Special:Upload.
-        maintenance_address(sub): Special:Maintenance for subfunction 'sub'.
         double_redirects_address: Special:Doubleredirects.
         broken_redirects_address: Special:Brokenredirects.
         login_address: Special:Userlogin.
@@ -4728,11 +4727,6 @@ Maybe the server is down. Retrying in %i minutes..."""
     def upload_address(self):
         """Return path to Special:Upload."""
         return self.family.upload_address(self.lang)
-
-    def maintenance_address(self, sub, default_limit = True):
-        """Return path to Special:Maintenance for subfunction 'sub'."""
-        #TODO: this address seems to be non-functioning on Wikimedia projects
-        return self.family.maintenance_address(self.lang, sub, default_limit)
 
     def double_redirects_address(self, default_limit = True):
         """Return path to Special:Doubleredirects."""

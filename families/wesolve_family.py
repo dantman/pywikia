@@ -52,15 +52,6 @@ class Family(family.Family):
     def upload_address(self, code):
         raise UploadDisabled
 
-    def maintenance_address(self, code, maintenance_page, default_limit = True):
-        if default_limit:
-            return ('/wsiwiki/index.php?title=%s:Maintenance&subfunction=' %
-                    self.special_namespace_url(code)) + maintenance_page
-        else:
-            return (('/wsiwiki/index.php?title=%s:Maintenance&subfunction=' %
-                    self.special_namespace_url(code)) + maintenance_page
-                    + '&limit=' + str(config.special_page_limit))
-
     def allmessages_address(self, code):
         return ("/wsiwiki/index.php?title=%s:Allmessages&ot=html" %
                 self.special_namespace_url(code))
