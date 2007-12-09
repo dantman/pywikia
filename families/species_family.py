@@ -4,7 +4,7 @@ __version__ = '$Id$'
 
 import family
 
-# The species family
+# The wikispecies family
 
 class Family(family.Family):
     def __init__(self):
@@ -13,7 +13,7 @@ class Family(family.Family):
         self.langs = {
             'species': 'species.wikimedia.org',
            }
-        
+
         self.namespaces[4] = {
             '_default': [u'Wikispecies', self.namespaces[4]['_default']],
         }
@@ -24,6 +24,7 @@ class Family(family.Family):
         self.interwiki_forward = 'wikipedia'
 
     def version(self,code):
-        return "1.11"
+        return "1.12alpha"
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')

@@ -2,7 +2,7 @@
 
 import family
 
-# The test family
+# The test wikipedia family
 
 class Family(family.Family):
     def __init__(self):
@@ -11,7 +11,7 @@ class Family(family.Family):
         self.langs = {
             'test': 'test.wikipedia.org',
            }
-        
+
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
         }
@@ -20,4 +20,4 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.11alpha"
+        return "1.12alpha"

@@ -7,14 +7,13 @@ import family
 # The Wikimedia Commons family
 
 class Family(family.Family):
-    
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'commons'
         self.langs = {
             'commons': 'commons.wikimedia.org',
         }
-        
+
         self.namespaces[4] = {
             '_default': [u'Commons', self.namespaces[4]['_default']],
         }
@@ -31,7 +30,7 @@ class Family(family.Family):
         self.interwiki_forward = 'wikipedia'
 
     def version(self, code):
-        return "1.11alpha"
-    
+        return "1.12alpha"
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')

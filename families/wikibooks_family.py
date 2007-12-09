@@ -7,7 +7,6 @@ __version__ = '$Id$'
 # The wikimedia family that is known as Wikibooks
 
 class Family(family.Family):
-
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikibooks'

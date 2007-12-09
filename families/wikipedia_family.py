@@ -8,7 +8,6 @@ __version__ = '$Id$'
 # The Wikimedia family that is known as Wikipedia, the Free Encyclopedia
 
 class Family(family.Family):
-
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikipedia'
