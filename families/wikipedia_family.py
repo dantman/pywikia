@@ -403,7 +403,7 @@ class Family(family.Family):
 
             '_default': [u'Disambig'],
             'af':  [u'Dubbelsinnig', u'Disambig'],
-            'als': [u'Begriffsklärung', u'BKS', u'Disambig'],
+            'als': [u'Begriffsklärung', u'Disambig'],
             'an':  [u'Desambig',u'Disambig'],
             'ang': [u'Disambig'],
             'arc': [u'ܕ'],
@@ -420,7 +420,7 @@ class Family(family.Family):
                     u'Rozcestník - místopisné jméno', u'Disambig', u'Rozcestník - příjmení',],
             'cy':  [u'Anamrwysedd', u'Disambig', u'Gwahaniaethu'],
             'da':  [u'Flertydig'],
-            'de':  [u'Begriffsklärung', u'BKL', u'Disambig'],
+            'de':  [u'Begriffsklärung', u'BKS', u'Disambig'],
             'el':  [u'Disambig', u'Αποσαφ', u'Αποσαφήνιση'],
             'en':  [u'Disambig', u'Disambiguation', u'2CC', u'2LC',
                     u'2LCdisambig', u'3CC', u'3LC', u'4CC', u'4LC', u'4LA',
