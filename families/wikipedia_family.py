@@ -403,7 +403,7 @@ class Family(family.Family):
 
             '_default': [u'Disambig'],
             'af':  [u'Dubbelsinnig', u'Disambig'],
-            'als': [u'Begriffsklärung', u'BKL', u'Disambig'],
+            'als': [u'Begriffsklärung', u'BKS', u'Disambig'],
             'an':  [u'Desambig',u'Disambig'],
             'ang': [u'Disambig'],
             'arc': [u'ܕ'],
