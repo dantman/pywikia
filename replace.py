@@ -142,22 +142,20 @@ msg = {
 
 class XmlDumpReplacePageGenerator:
     """
-    Generator which will yield Pages to pages that might contain text to
-    replace. These pages will be retrieved from a local XML dump file
-    (cur table).
+    Iterator that will yield Pages that might contain text to replace.
+
+    These pages will be retrieved from a local XML dump file.
+    Arguments:
+        * xmlFilename  - The dump's path, either absolute or relative
+        * replacements - A list of 2-tuples of original text (as a
+                         compiled regular expression) and replacement
+                         text (as a string).
+        * exceptions   - A dictionary which defines when to ignore an
+                         occurence. See docu of the ReplaceRobot
+                         constructor below.
+    
     """
     def __init__(self, xmlFilename, replacements, exceptions):
-        """
-        Arguments:
-            * xmlFilename  - The dump's path, either absolute or relative
-            * replacements - A list of 2-tuples of original text (as a
-                             compiled regular expression) and replacement
-                             text (as a string).
-            * exceptions   - A dictionary which defines when to ignore an
-                             occurence. See docu of the ReplaceRobot
-                             constructor below.
-        """
-
         self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
@@ -167,26 +165,34 @@ class XmlDumpReplacePageGenerator:
             self.excsInside += self.exceptions['inside-tags']
         if self.exceptions.has_key('inside'):
             self.excsInside += self.exceptions['inside']
+        import xmlreader
+        self.site = wikipedia.getSite()
+        dump = xmlreader.XmlDump(self.xmlFilename)
+        self.parser = dump.parse()
 
     def __iter__(self):
-        import xmlreader
-        mysite = wikipedia.getSite()
-        dump = xmlreader.XmlDump(self.xmlFilename)
-        for entry in dump.parse():
-            if not self.isTitleExcepted(entry.title) and not self.isTextExcepted(entry.text):
+        return self
+    
+    def next(self):
+        while True:
+            try:
+                entry = self.parser.next()
+            except StopIteration:
+                raise
+            if not self.isTitleExcepted(entry.title) \
+                    and not self.isTextExcepted(entry.text):
                 new_text = entry.text
                 for old, new in self.replacements:
                     new_text = wikipedia.replaceExcept(new_text, old, new, self.excsInside)
                     if new_text != entry.text:
-                        yield wikipedia.Page(mysite, entry.title)
-                        break
+                        return wikipedia.Page(self.site, entry.title)
 
     def isTitleExcepted(self, title):
         if self.exceptions.has_key('title'):
             for exc in self.exceptions['title']:
                 if exc.find(title) > -1:
                     return True
-        False
+        return False
 
     def isTextExcepted(self, text):
         if self.exceptions.has_key('text-contains'):
@@ -400,7 +406,8 @@ def main():
             regex = True
         elif arg.startswith('-xml'):
             if len(arg) == 4:
-                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
+                xmlFilename = wikipedia.input(
+                    u'Please enter the XML dump\'s filename:')
             else:
                 xmlFilename = arg[5:]
         elif arg =='-sql':
@@ -547,7 +554,11 @@ LIMIT 200""" % (whereClause, exceptClause)
         sys.exit()
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 50)
+    if xmlFilename:
+        # XML parsing is slow enough that preloading would make bot even slower
+        preloadingGen = gen
+    else:
+        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 50)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive)
     bot.run()
 
