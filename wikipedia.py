@@ -3806,16 +3806,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 return self.getUrl(path, retry, sysop, data, compress)
 
             text = response.read()
-            contentType = response.getheader('Content-Type')
-            contentEncoding = response.getheader('Content-Encoding')
-            
-            # Ensure that all sent data is received
-            if int(response.getheader('Content-Length', '0')) != len(text):
-                output(u'Warning! len(text) does not match content-length: %s != %s' % \
-                    (len(text), response.getheader('Content-Length', '0')))
-                self.conn.close()
-                self.conn.connect()
-                return self.getUrl(path, retry, sysop, data, compress)
+            headers = dict(response.getheaders())
                 
         else:
             if self.hostname() in config.authenticate.keys():
@@ -3867,10 +3858,19 @@ your connection is down. Retrying in %i minutes..."""
                     else:
                         raise
             text = f.read()
-
-            # Find charset in the content-type meta tag
-            contentType = f.info()['Content-Type']
-            contentEncoding = f.headers.get('Content-Encoding')
+            
+            headers = f.info()
+            
+        contentType = headers.get('content-type', '')
+        contentEncoding = headers.get('content-encoding', '')
+            
+        # Ensure that all sent data is received
+        if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
+                output(u'Warning! len(text) does not match content-length: %s != %s' % \
+                    (len(text), headers.get('content-length')))
+                self.conn.close()
+                self.conn.connect()
+                return self.getUrl(path, retry, sysop, data, compress)
 
         if compress and contentEncoding == 'gzip':
             # Use cStringIO if available
