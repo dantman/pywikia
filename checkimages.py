@@ -722,6 +722,8 @@ if __name__ == "__main__":
 				wikipedia.output(u'Problems with loading the settigs, run without them.')
 				tupla_written = None
 				some_problem = False
+			if tupla_written == []:
+                                tupla_written = None
 			if tupla_written != None:
 				wikipedia.output(u'\t   >> Loaded the real-time page... <<')
 				filename = "settings.data"
