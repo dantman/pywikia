@@ -23,6 +23,10 @@ Furthermore, the following command line parameters are supported:
 
 -nocase           Use case insensitive regular expressions.
 
+-xmlstart         (Only works with -xml) Skip all articles in the XML dump
+                  before the one specified (may also be given as
+                  -xmlstart:Article).
+
 -excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -regex argument
                   is given, XYZ will be regarded as a regular expression.
 
@@ -147,6 +151,7 @@ class XmlDumpReplacePageGenerator:
     These pages will be retrieved from a local XML dump file.
     Arguments:
         * xmlFilename  - The dump's path, either absolute or relative
+        * xmlStart     - Skip all articles in the dump before this one
         * replacements - A list of 2-tuples of original text (as a
                          compiled regular expression) and replacement
                          text (as a string).
@@ -155,10 +160,12 @@ class XmlDumpReplacePageGenerator:
                          constructor below.
     
     """
-    def __init__(self, xmlFilename, replacements, exceptions):
+    def __init__(self, xmlFilename, xmlStart, replacements, exceptions):
         self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
+        self.xmlStart = xmlStart
+        self.skipping = bool(xmlStart)
 
         self.excsInside = []
         if self.exceptions.has_key('inside-tags'):
@@ -174,18 +181,32 @@ class XmlDumpReplacePageGenerator:
         return self
     
     def next(self):
-        while True:
+        try:
+            while True:
+                try:
+                    entry = self.parser.next()
+                except StopIteration:
+                    raise
+                if self.skipping:
+                    if entry.title != self.xmlStart:
+                        continue
+                    self.skipping = False
+                if not self.isTitleExcepted(entry.title) \
+                        and not self.isTextExcepted(entry.text):
+                    new_text = entry.text
+                    for old, new in self.replacements:
+                        new_text = wikipedia.replaceExcept(new_text, old, new, self.excsInside)
+                        if new_text != entry.text:
+                            return wikipedia.Page(self.site, entry.title)
+        except KeyboardInterrupt:
             try:
-                entry = self.parser.next()
-            except StopIteration:
-                raise
-            if not self.isTitleExcepted(entry.title) \
-                    and not self.isTextExcepted(entry.text):
-                new_text = entry.text
-                for old, new in self.replacements:
-                    new_text = wikipedia.replaceExcept(new_text, old, new, self.excsInside)
-                    if new_text != entry.text:
-                        return wikipedia.Page(self.site, entry.title)
+                if not self.skipping:
+                    wikipedia.output(
+                        'To resume, use "-xmlstart:%s" on the command line.'
+                         % entry.title)
+            except NameError:
+                pass
+            raise KeyboardInterrupt
 
     def isTitleExcepted(self, title):
         if self.exceptions.has_key('title'):
@@ -404,6 +425,12 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg == '-regex':
             regex = True
+        elif arg.startswith('-xmlstart'):
+            if len(arg) == 9:
+                xmlStart = wikipedia.input(
+                    u'Please enter the dumped article to start with:')
+            else:
+                xmlStart = arg[10:]
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlFilename = wikipedia.input(
@@ -527,7 +554,12 @@ def main():
                 exceptions[exceptionCategory] = patterns
 
     if xmlFilename:
-        gen = XmlDumpReplacePageGenerator(xmlFilename, replacements, exceptions)
+        try:
+            xmlStart
+        except NameError:
+            xmlStart = None
+        gen = XmlDumpReplacePageGenerator(xmlFilename, xmlStart,
+                                          replacements, exceptions)
     elif useSql:
         whereClause = 'WHERE (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern) for (old, new) in replacements])
         if exceptions:
@@ -553,7 +585,7 @@ LIMIT 200""" % (whereClause, exceptClause)
         wikipedia.stopme()
         sys.exit()
     if namespaces != []:
-        gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
+        gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     if xmlFilename:
         # XML parsing is slow enough that preloading would make bot even slower
         preloadingGen = gen
