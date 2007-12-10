@@ -4019,7 +4019,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         The objects yielded are tuples composed of the Page object,
         timestamp (unicode), length (int), an empty unicode string, username
         or IP address (str), comment (unicode).
-           
+
         """
         # TODO: in recent MW versions Special:Newpages takes a namespace parameter,
         #       and defaults to 0 if not specified.
@@ -4216,30 +4216,30 @@ Maybe the server is down. Retrying in %i minutes..."""
 
     def newimages(self, number = 10, repeat = False):
         """Yield ImagePages from Special:Log&type=upload"""
-        # Url of the new images
-        url = "/w/index.php?title=Special:Log&type=upload&user=&page=&pattern=&limit=%d&offset=0" % number
-        # Get the HTML text
-        html = self.getUrl(url)
-        image_namespace = self.image_namespace()
-        regexp = re.compile(
-            r'(?P<new>class=\"new\" |)title=\"%s:(?P<image>.*?)\.(?P<ext>\w\w\w|jpeg)\">.*?</a>\".*?(?:<span class=\"comment\">.*?|)</li>' % image_namespace,
-            re.UNICODE)
+
         seen = set()
+        regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title="(?P<image>.+?)"\s*>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?')
 
         while True:
+            path = self.log_address(number, mode = 'upload')
+            get_throttle()
+            html = self.getUrl(path)
+
             for m in regexp.finditer(html):
-                new = m.group('new')
-                im = m.group('image')
-                ext = m.group('ext')
-                # This prevent pages with strange characters. They will be loaded without problem.
-                image =  "%s.%s" % (im, ext)
+                image = m.group('image')
+
                 if image not in seen:
                     seen.add(image)
-                    if new != '':
+
+                    if m.group('new'):
                         output(u"Image \'%s\' has been deleted." % image)
                         continue
-                    page = ImagePage(self, image)
-                    yield page
+
+                    date = m.group('date')
+                    user = m.group('user')
+                    comment = m.group('comment') or ''
+
+                    yield ImagePage(self, image), date, user, comment
             if not repeat:
                 break
 
@@ -4656,6 +4656,10 @@ Maybe the server is down. Retrying in %i minutes..."""
     def allpages_address(self, s, ns = 0):
         """Return path to Special:Allpages."""
         return self.family.allpages_address(self.lang, start=s, namespace = ns)
+
+    def log_address(self, n=50, mode = ''):
+        """Return path to Special:Log."""
+        return self.family.log_address(self.lang, n, mode)
 
     def newpages_address(self, n=50):
         """Return path to Special:Newpages."""

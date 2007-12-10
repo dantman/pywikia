@@ -2767,6 +2767,9 @@ class Family:
             return '%s?title=%s:Allpages&from=%s&namespace=%s' % (
                 self.path(code), self.special_namespace_url(code), start, namespace)
 
+    def log_address(self, code, limit=50, mode = ''):
+        return "%s?title=Special:Log&type=%s&user=&page=&limit=%d" % (self.path(code), mode, limit)
+
     def newpages_address(self, code, limit=50):
         return "%s?title=%s:Newpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
