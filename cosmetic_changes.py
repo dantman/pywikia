@@ -144,6 +144,9 @@ class CosmeticChangesToolkit:
         exceptions = ['nowiki', 'comment', 'math', 'pre']
 
         for nsNumber in family.namespaces:
+            if not family.isDefinedNSLanguage(self.site.lang, nsNumber):
+                # Skip undefined namespaces
+                continue
             thisNs = family.namespace(self.site.lang, nsNumber)
             defaultNs = family.namespace('_default', nsNumber)
 
