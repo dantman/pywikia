@@ -195,10 +195,10 @@ def UnCategorizedImageGenerator(number = 100, repeat = False, site = None):
     for page in site.uncategorizedimages(number=number, repeat=repeat):
         yield page
 
-def newImages(limit = 50, site = None, repeat = False):
+def NewimagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()
-    for page in site.newImages(limit, repeat=repeat):
+    for page in site.newimages(number, repeat=repeat):
         yield page			
 
 def UnCategorizedPageGenerator(number = 100, repeat = False, site = None):
@@ -772,17 +772,14 @@ class GeneratorFactory:
                 if namespace:
                     prefix = prefix[colon+1:]
             gen = PrefixingPageGenerator(prefix = prefix, namespace = namespace)
-        elif arg.startswith('-newimages'):
-            if len(arg) == 10:
-                limit = wikipedia.input(u'How many images do you want to check?')
-            else:
-                limit = arg[11:]
-            gen = newImages(limit, wikipedia.getSite())
         elif arg.startswith('-new'):
             if len(arg) >=5:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
             else:
               gen = NewpagesPageGenerator(number = 60)
+        elif arg.startswith('-newimages'):
+            limit = arg[11:] or wikipedia.input(u'How many images do you want to check?')
+            gen = NewimagesPageGenerator(number = limit)
         elif arg.startswith('-search'):
             mediawikiQuery = arg[8:]
             if not mediawikiQuery:

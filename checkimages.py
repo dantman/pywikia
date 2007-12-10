@@ -704,7 +704,7 @@ if __name__ == "__main__":
 				generator =  mainClass.untaggedGenerator(projectUntagged, rep_page, com)
 				normal = False
 			if normal == True:
-				generator = pagegenerators.newImages(limit, site)
+				generator = pagegenerators.NewimagesPageGenerator(number = limit, site = site)
 			if urlUsed == True and regexGen == True:
 				textRegex = pagetext(regexPageUrl)
 			elif regexGen == True:

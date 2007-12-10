@@ -154,12 +154,6 @@ def main():
             generator = untaggedGenerator(untaggedProject)
         elif arg == '-up':
             up = True
-        elif arg.startswith('-newimages'):
-            if len(arg) == 10:
-                limit = wikipedia.input(u'How many images do you want to check?')
-            else:
-                limit = arg[11:]
-            generator = pagegenerators.newImages(limit, wikipedia.getSite())
         elif arg == '-always':
             always = True
         else:

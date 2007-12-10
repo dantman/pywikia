@@ -1123,7 +1123,7 @@ not supported by PyWikipediaBot!"""
         """
         # Fetch a page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
-        # Disabled in r4027
+        # Disabled in r4028
         #try:
         #    self.site().sandboxpage.get(force = True, get_redirect = True)
         #except NoPage:
@@ -3468,7 +3468,7 @@ class Site(object):
         search(query): query results from Special:Search
         allpages(): Special:Allpages
         newpages(): Special:Newpages
-        newImages(): Special:Log&type=upload
+        newimages(): Special:Log&type=upload
         longpages(): Special:Longpages
         shortpages(): Special:Shortpages
         categories(): Special:Categories (yields Category objects)
@@ -4214,19 +4214,18 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def newImages(self, limit = 50, repeat = False):
+    def newimages(self, number = 10, repeat = False):
         """Yield ImagePages from Special:Log&type=upload"""
         # Url of the new images
-        url = "/w/index.php?title=Special:Log&type=upload&user=&page=&pattern=&limit=%d&offset=0" % int(limit)
+        url = "/w/index.php?title=Special:Log&type=upload&user=&page=&pattern=&limit=%d&offset=0" % number
         # Get the HTML text
         html = self.getUrl(url)
         image_namespace = self.image_namespace()
         regexp = re.compile(
             r'(?P<new>class=\"new\" |)title=\"%s:(?P<image>.*?)\.(?P<ext>\w\w\w|jpeg)\">.*?</a>\".*?(?:<span class=\"comment\">.*?|)</li>' % image_namespace,
             re.UNICODE)
-        pos = 0
-        seen = list()
-        ext_list = list()
+        seen = set()
+
         while True:
             for m in regexp.finditer(html):
                 new = m.group('new')
@@ -4234,16 +4233,14 @@ Maybe the server is down. Retrying in %i minutes..."""
                 ext = m.group('ext')
                 # This prevent pages with strange characters. They will be loaded without problem.
                 image =  "%s.%s" % (im, ext)
-                if new != '':
-                    output(u"Skipping %s because it has been deleted." % image)
-                    if image not in seen:
-                        seen.append(image)
                 if image not in seen:
-                    seen.append(image)
-                    page = Page(self, 'Image:%s' % image)
+                    seen.add(image)
+                    if new != '':
+                        output(u"Image \'%s\' has been deleted." % image)
+                        continue
+                    page = ImagePage(self, image)
                     yield page
-            if not repeat:            
-                output(u"\t\t>> All images checked. <<")
+            if not repeat:
                 break
 
     def uncategorizedimages(self, number = 10, repeat = False):
