@@ -18,7 +18,6 @@ and the bot will only work on that single page.
 __version__ = '$Id$'
 import wikipedia
 import pagegenerators
-import sys
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
@@ -32,6 +31,7 @@ class BasicBot:
     msg = {
         'de': u'Bot: Ändere ...',
         'en': u'Robot: changing ...',
+        'pt': u'Bot: alterando...',
     }
 
     def __init__(self, generator, debug):
