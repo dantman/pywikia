@@ -226,7 +226,6 @@ class Family(family.Family):
         self.namespaces[111] = {
             'it': u'Discussioni indice',
             'pt': u'Anexo Discussão',
-            'sv': u'Författare',
         }
 
         self.namespaces[112] = {
