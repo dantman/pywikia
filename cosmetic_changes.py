@@ -144,21 +144,40 @@ class CosmeticChangesToolkit:
         exceptions = ['nowiki', 'comment', 'math', 'pre']
 
         for nsNumber in family.namespaces:
-            if not family.isDefinedNSLanguage(self.site.lang, nsNumber):
+            if not family.isDefinedNSLanguage(nsNumber, self.site.lang):
                 # Skip undefined namespaces
                 continue
-            thisNs = family.namespace(self.site.lang, nsNumber)
-            defaultNs = family.namespace('_default', nsNumber)
+            namespaces = list(family.namespace(self.site.lang, nsNumber, all = True))
+            thisNs = namespaces.pop(0)
+            try:
+                default = list(family.namespace('_default', nsNumber, all = True))
+            except KeyError:
+                default = []
 
-            # skip main (article) namespace, and namespaces with no default translation
-            if thisNs and defaultNs:
+            # skip main (article) namespace
+            if thisNs:
                 wrongNamespaces = []
-                if defaultNs != thisNs:
-                    wrongNamespaces.append(defaultNs)
-                    if not self.site.nocapitalize:
-                        wrongNamespaces.append(defaultNs[0].lower() + defaultNs[1:])
+
+                # Add aliases and default namespaces
+                wrongNamespaces.extend([ns for ns in namespaces if ns != thisNs])
+                wrongNamespaces.extend([ns for ns in default if ns != thisNs and ns not in wrongNamespaces])
+
+                # Lowercase versions of namespaces
                 if not self.site.nocapitalize:
-                    wrongNamespaces.append(thisNs[0].lower() + thisNs[1:])
+                    # Add lowercase version of the current wrong namespaces
+                    wrongNamespaces.extend([ns[0].lower() + ns[1:] for ns in wrongNamespaces if ns[0].lower() != ns[0].upper()])
+
+                    # Add lowercase version of the correct namespace
+                    uncapitalized = thisNs[0].lower() + thisNs[1:]
+                    if uncapitalized != thisNs:
+                        wrongNamespaces.append(uncapitalized)
+
+                # Underscore versions of namespaces
+                # Add underscore versions of all wrong namespaces
+                wrongNamespaces.extend([ns.replace(' ', '_') for ns in wrongNamespaces if ' ' in ns])
+                # Add underscore version of correct namespace
+                if ' ' in thisNs:
+                    wrongNamespaces.append(thisNs.replace(' ', '_'))
 
                 if wrongNamespaces:
                     text = wikipedia.replaceExcept(text, r'\[\[\s*(' + '|'.join(wrongNamespaces) + ') *:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]', exceptions)
