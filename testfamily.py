@@ -54,7 +54,7 @@ def main():
         elif arg[0:7] == '-langs:':
             language = arg[7:]
         elif arg[0:10] == '-families:':
-            family = arg[10:]
+            fam = arg[10:]
         elif arg[0:10] == '-wikimedia':
             wikimedia = True
 
