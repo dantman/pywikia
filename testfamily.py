@@ -39,38 +39,35 @@ def testSite(site):
 def main():
     all = False
     language = None
+    fam = None
     for arg in wikipedia.handleArgs():
         if arg == '-all':
             all = True
-        elif arg[0:10] == '-language:':
-            language = arg[10:]
+        elif arg[0:7] == '-langs:':
+            language = arg[7:]
+        elif arg[0:10] == '-families:':
+            family = arg[10:]
 
     mySite = wikipedia.getSite()
     if language is None:
         language = mySite.lang
-    fam = mySite.family
+    if fam is None:
+        fam = mySite.family.name
 
-    if all:
-        for lang in fam.langs.iterkeys():
-            testSite(wikipedia.getSite(lang))
-    else:
-        languages = language.split(',')
-        for lang in languages:
-            testSite(wikipedia.getSite(lang))
-
-    if False:
-        # skip until the family gets global fixing
-        wikipedia.output(u"\n\n------------------ namespace table -------------------\n");
-
-        wikipedia.output(u"		   self.namespaces = {")
-        for k,v in sorted(fam.namespaces.iteritems()):
-            wikipedia.output(u"			   %i: {" % k)
-            for k2,v2 in sorted(v.iteritems()):
-                if v2 is not None:
-                    v2 = u"u'%s'" % v2
-                wikipedia.output(u"				   '%s': %s," % (k2,v2))
-            wikipedia.output(u"			   },")
-        wikipedia.output(u"		   }")
+    families = fam.split(',')
+    for family in families:
+        try:
+            fam = wikipedia.Family(family)
+        except ValueError:
+            wikipedia.output(u'No such family %s' % family)
+            continue
+        if all:
+            for lang in fam.langs.iterkeys():
+                testSite(wikipedia.getSite(lang, family))
+        else:
+            languages = language.split(',')
+            for lang in languages:
+                testSite(wikipedia.getSite(lang, family))
 
 if __name__ == "__main__":
     try:
