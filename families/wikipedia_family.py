@@ -364,7 +364,6 @@ class Family(family.Family):
             'ca': u'Viquiprojecte',
             'cs': u'Rejstřík',
             'es': u'Wikiproyecto',
-            'en': u'WikiProject',
             'eu': u'Wikiproiektu',
             'fi': u'Metasivu',
             'fr': u'Projet',
