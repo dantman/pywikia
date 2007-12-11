@@ -101,7 +101,7 @@ def main():
             argsList.append(arg)
 
     if operation == None:
-        wikipedia.output(__doc__, 'utf-8')
+        wikipedia.showHelp('templatecount')
     else:
         robot = TemplateCountRobot()
         if not argsList:
