@@ -6,11 +6,19 @@ naming in the family files and the language files on the wiki servers.
 
 If the -all parameter is used, it runs through all known languages in a family.
 
+-langs and -families parameters may be used to check comma-seperated languages/families.
+
+If the -wikimedia parameter is used, all Wikimedia families are checked.
+
 Examples:
-    
+
     python testfamily.py -family:wiktionary -lang:en
-    
-    python testfamily.py -family:wikipedia -all -log:logfilename.txt 
+
+    python testfamily.py -family:wikipedia -all -log:logfilename.txt
+
+    python testfamily.py -families:wikipedia,wiktionary -langs:en,fr
+
+    python testfamily.py -wikimedia -all
 
 """
 #
@@ -34,12 +42,12 @@ def testSite(site):
     except:
         wikipedia.output( u'Error processing language %s' % site.lang )
         wikipedia.output( u''.join(traceback.format_exception(*sys.exc_info())))
-    
 
 def main():
     all = False
     language = None
     fam = None
+    wikimedia = False
     for arg in wikipedia.handleArgs():
         if arg == '-all':
             all = True
@@ -47,14 +55,19 @@ def main():
             language = arg[7:]
         elif arg[0:10] == '-families:':
             family = arg[10:]
+        elif arg[0:10] == '-wikimedia':
+            wikimedia = True
 
     mySite = wikipedia.getSite()
     if language is None:
         language = mySite.lang
-    if fam is None:
-        fam = mySite.family.name
+    if wikimedia:
+        families = ['wikipedia', 'wiktionary', 'wikiquote', 'wikisource', 'wikibooks', 'wikinews', 'wikiversity', 'meta', 'commons', 'mediawiki', 'species', 'incubator', 'test']
+    elif fam is not None:
+        families = fam.split(',')
+    else:
+        families = [mySite.family.name,]
 
-    families = fam.split(',')
     for family in families:
         try:
             fam = wikipedia.Family(family)
