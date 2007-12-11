@@ -2471,6 +2471,9 @@ class _GetAll(object):
 #                    self.site.family.namespaces[id][lang] = nshdr
             else:
                 output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
+        for id in self.site.family.namespaces:
+            if self.site.family.isDefinedNSLanguage(id, lang) and not header.namespaces.has_key(id):
+                output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id))
 
     def getData(self):
         address = self.site.export_address()
