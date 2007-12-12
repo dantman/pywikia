@@ -22,7 +22,7 @@ usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,
 """
 __version__ = '$Id$'
 
-import sys, re
+import sys, re, pickle
 import wikipedia, catlib, config
 
 def CAT(site,name):
@@ -156,7 +156,6 @@ nocache=0
 afterpage=u"!"
 
 try:
-    import pickle
     cache=pickle.load(file("featured/cache","rb"))
 except:
     cache={}
@@ -181,13 +180,12 @@ def featuredArticles(site):
 def findTranslated(page, oursite=None):
     if not oursite:
         oursite=wikipedia.getSite()
-    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% page.title())
     if page.isRedirectPage():
         page = page.getRedirectTarget()
     try:
         iw=page.interwiki()
     except:
-        wikipedia.output(u"no interwiki, giving up")
+        wikipedia.output(u"%s -> no interwiki, giving up" % page.title())
         return None
     ourpage=None
     for p in iw:
@@ -195,22 +193,22 @@ def findTranslated(page, oursite=None):
             ourpage=p
             break
     if not ourpage:
-        wikipedia.output(u"No corresponding page in "+`oursite`)
+        wikipedia.output(u"%s -> no corresponding page in %s" % (page.title(), oursite))
         return None
     if not ourpage.exists():
-        wikipedia.output(u"Our page doesn't exist: "+ourpage.title())
+        wikipedia.output(u"%s -> our page doesn't exist: %s" % (page.title(), ourpage.title()))
         return None
     if ourpage.isRedirectPage():
         ourpage = ourpage.getRedirectTarget()
-    wikipedia.output(u"Corresponding page is "+ourpage.title())
+    wikipedia.output(u"%s -> corresponding page is %s" % (page.title(), ourpage.title()))
     if ourpage.namespace() != 0:
-        wikipedia.output(u"...not in the main namespace, skipping")
+        wikipedia.output(u"%s -> not in the main namespace, skipping" % page.title())
         return None
     if ourpage.isRedirectPage():
-        wikipedia.output(u"double redirect, skipping")
+        wikipedia.output(u"%s -> double redirect, skipping" % page.title())
         return None
 	if not ourpage.exists():
-	    wikipedia.output(u"page doesn't exist, skipping")
+	    wikipedia.output(u"%s -> page doesn't exist, skipping" % ourpage.title())
         return None
     try:
         iw=ourpage.interwiki()
@@ -222,7 +220,7 @@ def findTranslated(page, oursite=None):
             backpage=p
             break
     if not backpage:
-        wikipedia.output(u"no back interwiki ref")
+        wikipedia.output(u"%s -> no back interwiki ref" % page.title())
         return None
     if backpage==page:
         # everything is ok
@@ -232,7 +230,7 @@ def findTranslated(page, oursite=None):
     if backpage==page:
         # everything is ok
         return ourpage
-    wikipedia.output(u"back interwiki ref target is "+backpage.title())
+    wikipedia.output(u"%s -> back interwiki ref target is %s" % (page.title(), backpage.title()))
     return None
 
 def featuredWithInterwiki(fromsite, tosite, template_on_top):
@@ -340,5 +338,4 @@ if __name__=="__main__":
     finally:
         wikipedia.stopme()
         if not nocache:
-            import pickle
             pickle.dump(cache,file("featured/cache","wb"))
