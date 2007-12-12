@@ -458,7 +458,8 @@ class main:
 	
 	def takesettings(self, settings):
 		pos = 0
-		if settings != None:
+		if settings == None: lista = None
+		else:
                         x = wikipedia.Page(self.site, settings)
                         lista = list()
                         try:
@@ -489,9 +490,7 @@ class main:
                                                 number += 1
                         except wikipedia.NoPage:
                                 lista = None
-                        return lista
-                else:
-                        return []
+                return lista
 	
 	def load(self, raw):
 		list_loaded = list()
@@ -600,25 +599,25 @@ if __name__ == "__main__":
 					firstPageTitle = str(arg[7:])
 				generator = wikipedia.getSite().allpages(start='Image:%s' % firstPageTitle)
 				repeat = False
-			elif arg.startswith('-page:'):
-				if len(arg) == 6:
+			elif arg.startswith('-page'):
+				if len(arg) == 5:
 					regexPageName = str(wikipedia.input(u'Which page do you want to use for the regex?'))
-				elif len(arg) > 6:
+				elif len(arg) > 5:
 					regexPageName = str(arg[6:])
 				repeat = False
 				regexGen = True
-			elif arg.startswith('-url:'):
-				if len(arg) == 5:
+			elif arg.startswith('-url'):
+				if len(arg) == 4:
 					regexPageUrl = str(wikipedia.input(u'Which url do you want to use for the regex?'))
-				elif len(arg) > 5:
+				elif len(arg) > 4:
 					regexPageUrl = str(arg[5:])
 				urlUsed = True
 				repeat = False
 				regexGen = True
-			elif arg.startswith('-regex:'):
-				if len(arg) == 7:
+			elif arg.startswith('-regex'):
+				if len(arg) == 6:
 					regexpToUse = str(wikipedia.input(u'Which regex do you want to use?'))
-				elif len(arg) > 7:
+				elif len(arg) > 6:
 					regexpToUse = str(arg[7:])
 				generator = 'regex'
 				repeat = False
@@ -694,9 +693,9 @@ if __name__ == "__main__":
 		# Reading the log of the new images
 		if normal == True:
                         if limit == 1:
-                                wikipedia.output(u"Retrieving the lastest file for checking...")
+                                wikipedia.output(u"Retrieving the latest file for checking...")
                         else:
-                                wikipedia.output(u"Retrieving the lastest %d files for checking..." % limit)
+                                wikipedia.output(u"Retrieving the latest %d files for checking..." % limit)
 
 		while 1:		
 			mainClass = main(site)
@@ -731,7 +730,7 @@ if __name__ == "__main__":
 				cPickle.dump(tupla_written, f)
 				f.close()
 			else:
-				wikipedia.output(u"No additional settings found!")
+                                wikipedia.output(u'\t   >> No additional settings found! <<')
 			if skip == True:
 				skip_list = list()
 				wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
