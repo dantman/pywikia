@@ -80,7 +80,10 @@ def main():
         else:
             languages = language.split(',')
             for lang in languages:
-                testSite(wikipedia.getSite(lang, family))
+                try:
+                    testSite(wikipedia.getSite(lang, family))
+                except KeyError:
+                    wikipedia.output(u'No such language %s in family %s' % (lang, family))
 
 if __name__ == "__main__":
     try:
