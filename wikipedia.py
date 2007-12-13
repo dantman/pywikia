@@ -4523,7 +4523,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         # A redirect starts with hash (#), followed by a keyword, then
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
-        return re.compile(r'# *' + redirKeywordsR +
+        return re.compile(r'#' + redirKeywordsR +
                                    '.*?\[\[(.*?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
 
