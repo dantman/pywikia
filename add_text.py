@@ -56,6 +56,11 @@ __version__ = '$Id: AddText.py,v 1.0 2007/11/27 17:08:30 filnik Exp$'
 import re, pagegenerators, urllib2, urllib
 import wikipedia, catlib
 
+msg = {
+    'en': u'Bot: Adding %s',
+    'pt': u'Bot: Adicionando %s',
+    }
+
 class NoEnoughData(wikipedia.Error):
     """ Error class for when the user doesn't specified all the data needed """
 
@@ -168,7 +173,7 @@ def main():
     if not addText:
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
-        summary = 'Bot: Adding %s' % addText
+        summary = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % addText)
     # Main Loop
     for page in generator:
         wikipedia.output(u'Loading %s...' % page.title())
