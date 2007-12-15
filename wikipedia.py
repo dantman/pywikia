@@ -1842,7 +1842,7 @@ not supported by PyWikipediaBot!"""
             predata['User-agent'] = useragent
             data = self.site().urlEncode(predata)
             response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-            data = ''
+            data = u''
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
         if data == u'':
@@ -1850,8 +1850,8 @@ not supported by PyWikipediaBot!"""
             return True
         else:
             if self.site().mediawiki_message('articleexists') in data:
-                output(u'Page moved failed: Target page [[%s]] already exists.'
-                       % newtitle)
+                output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+                return False
             else:
                 output(u'Page move failed for unknown reason.')
                 try:
@@ -1864,7 +1864,7 @@ not supported by PyWikipediaBot!"""
                     # otherwise, remove the irrelevant sections
                     data = data[ibegin:iend]
                 output(data)
-            return False
+                return False
 
     def delete(self, reason=None, prompt=True, throttle=True):
         """Deletes the page from the wiki.
@@ -1911,10 +1911,10 @@ not supported by PyWikipediaBot!"""
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
                 if self.site().mediawiki_message('actioncomplete') in data:
-                    output(u'Deleted page %s' % self.aslink())
+                    output(u'Deleted page %s' % self.aslink(forceInterwiki = True))
                     return True
                 else:
-                    output(u'Deletion of page %s failed:' % self.aslink())
+                    output(u'Deletion of page %s failed:' % self.aslink(forceInterwiki = True))
                     try:
                         ibegin = data.index('<!-- start content -->') + 22
                         iend = data.index('<!-- end content -->')
@@ -2084,7 +2084,7 @@ not supported by PyWikipediaBot!"""
                 predata["User-agent"] = useragent
                 data = self.site().urlEncode(predata)
                 response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-                data = ''
+                data = u''
             else:
                 data, response = self.site().postForm(address, predata, sysop = True)
 
