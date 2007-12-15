@@ -2220,8 +2220,9 @@ class ImagePage(Page):
 
     """
     def __init__(self, site, title, insite = None):
-        # TODO: raise an exception if title is not in Image: namespace
         Page.__init__(self, site, title, insite, defaultNamespace=6)
+        if self.namespace() != 6:
+            raise ValueError(u'BUG: %s is not in the image namespace!' % title)
         self._imagePageHtml = None
 
     def getImagePageHtml(self):
