@@ -52,21 +52,30 @@ templateToRemove = {
                  r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection\}\}'
                 ],
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|(.*?))\}\}', r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}'],
+            'ja':[r'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:S|)\}\}',],
+            'zh':[r'\{\{(?:[Tt]emplate:|)Protected(?:\|*)\}\}',r'\{\{(?:[Tt]emplate:|)Mini-protected(?:\|*)\}\}',
+                r'\{\{(?:[Tt]emplate:|)Protected logo(?:\|*)\}\}'],
             }
 # Category where the bot will check
 categoryToCheck = {
             'en':[u'Category:Protected'],
             'fr':[u'Category:Page semi-protégée', u'Category:Page protégée'],
             'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
+            'ja':[u'Category:編集保護中の記事',u'Category:編集半保護中の記事',
+                u'Category:移動保護中の記事',],
+            'zh':[u'Category:被保护的页面',u'Category:被保護的模板',u'Category:暂时不能移动的页面',
+                u'Category:被半保护的页面',],
             }
 # Comment used when the Bot edits
 comment = {
             'en':u'Bot: Deleting out-dated template',
             'fr':u'Robot: Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
             'it':u'Bot: Tolgo template di avviso blocco scaduto',
+            'ja':u'ロボットによる: 保護テンプレート削除',
+            'zh':u'機器人: 移除過期的保護模板',
             }
 # Check list to block the users that haven't set their preferences
-project_inserted = ['en', 'fr', 'it']
+project_inserted = ['en', 'fr', 'it', 'ja', 'zh']
 
 #######################################################
 #------------------ END PREFERENCES ------------------#

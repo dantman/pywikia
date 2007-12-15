@@ -99,6 +99,7 @@ msg_add={
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
+    'zh':u'機器人:正在新增[[Category:%s]]',
     }
 
 msg_change={
@@ -125,6 +126,7 @@ msg_change={
     'pl':u'Robot przenosi %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
+    'zh':u'機器人:正在修改[[Category:%s]]',
     }
 
 deletion_reason_move = {
@@ -148,6 +150,7 @@ deletion_reason_move = {
     'pl':u'Robot przenosi kategorię do [[Category:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[Category:%s|%s]]',
+    'zh':u'機器人:正在移動到[[Category:%s]]',
     }
 
 cfd_templates = {

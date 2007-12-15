@@ -44,6 +44,7 @@ msg = {
      'fr': u'robot: créez redirect à [[%s]]',
      'he': u'בוט: יוצר הפניה לדף [[%s]]',
      'pt': u'Bot: Criando redirecionamento para [[%s]]',
+     'zh': u'機器人: 建立重定向至[[%s]]',
     }
 
 class CapitalizeBot:

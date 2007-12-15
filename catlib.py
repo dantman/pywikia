@@ -33,6 +33,7 @@ msg_created_for_renaming = {
     'nl':u'Bot: hernoemd van %s. Auteurs: %s',
     'pl':u'Robot przenosi z %s. Autorzy: %s',
     'pt':u'Bot: Movido de %s. Autor: %s',
+    'zh':u'機器人: 已從 %s 移動。原作者是 %s',
     }
 
 # some constants that are used internally

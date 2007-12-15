@@ -28,11 +28,13 @@ msg={
     'fr':u'Bot: Change categories',
     'he':u'בוט: משנה קטגוריות',
     'ia':u'Bot: Alteration de categorias',
+    'ja':u'ロボットによる: カテゴリ変更',
     'lt':u'robotas: Keičiamos kategorijos',
     'nl':u'Bot: Verandering van categorieen',
     'pl':u'Bot: Zmiana kategorii',
     'pt':u'Bot: Categorizando',
     'sr':u'Bot: Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',
+    'zh':u'機器人: 更改分類',
     }
 
 def choosecats(pagetext):

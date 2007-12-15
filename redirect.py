@@ -68,6 +68,7 @@ msg_double={
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
     'zh': u'機器人:修正雙重重定向',
     'zh-yue': u'機械人：拉直連串跳轉 ',
+    'zh-classical': u'僕:復修渡口',
 }
 
 # Reason for deleting broken redirects

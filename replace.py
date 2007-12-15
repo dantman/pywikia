@@ -142,6 +142,7 @@ msg = {
        'pl':u'Robot automatycznie zamienia tekst %s',
        'pt':u'Bot: Mudança automática %s',
        'sr':u'Бот: Аутоматска замена текста %s',
+       'zh': u'機器人:執行文字代換作業 %s',
        }
 
 class XmlDumpReplacePageGenerator:
