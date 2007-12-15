@@ -1849,7 +1849,7 @@ not supported by PyWikipediaBot!"""
             output(u'Page %s moved to %s' % (self.title(), newtitle))
             return True
         else:
-            if self.site().mediawiki_message('articleexists') in data:
+            if self.site().mediawiki_message('articleexists') in data or self.site().mediawiki_message('delete_and_move') in data:
                 output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
                 return False
             else:
@@ -1911,10 +1911,13 @@ not supported by PyWikipediaBot!"""
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
                 if self.site().mediawiki_message('actioncomplete') in data:
-                    output(u'Deleted page %s' % self.aslink(forceInterwiki = True))
+                    output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
                     return True
+                elif self.site().mediawiki_message('cannotdelete') in data:
+                    output(u'Page %s could not be deleted - it doesn\'t exist' % self.aslink(forceInterwiki = True))
+                    return False
                 else:
-                    output(u'Deletion of page %s failed:' % self.aslink(forceInterwiki = True))
+                    output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
                     try:
                         ibegin = data.index('<!-- start content -->') + 22
                         iend = data.index('<!-- end content -->')
