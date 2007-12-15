@@ -183,6 +183,18 @@ def CategorizedPageGenerator(category, recurse=False, start=None):
         if page.title() >= start:
             yield page
 
+def SubCategoriesPageGenerator(category, recurse=False):
+    '''
+    Yields all subcategories in a specific category.
+
+    If recurse is True, pages in subcategories are included as well; if
+    recurse is an int, only subcategories to that depth will be included
+    (e.g., recurse=2 will get pages in subcats and sub-subcats, but will
+    not go any further).
+    '''
+    for page in category.subcategories(recurse = recurse):
+        yield page
+
 def UnCategorizedCategoryGenerator(number = 100, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()

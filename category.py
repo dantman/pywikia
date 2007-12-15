@@ -374,31 +374,46 @@ class CategoryMoveRobot:
 
     def run(self):
         newCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.newCatTitle)
+
+        # Copy the category contents to the new category page
+        copied = False
+        oldMovedTalk = None
+        if self.oldCat.exists() and self.moveCatPage:
+            copied = self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates))
+            copied = True # ALREADY COPIED!
+            # Also move the talk page
+            if copied:
+                reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
+                oldTalk = self.oldCat.toggleTalkPage()
+                if oldTalk.exists():
+                    newTalkTitle = newCat.toggleTalkPage().title()
+                    if oldTalk.move(newTalkTitle, reason):
+                        oldMovedTalk = oldTalk
+
+        # Move articles
         gen = pagegenerators.CategorizedPageGenerator(self.oldCat, recurse = False)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for article in preloadingGen:
             if not self.titleRegex or re.search(self.titleRegex,article.title()):
                 catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
 
-        # TODO: create subcategory generator
-        subcategories = self.oldCat.subcategoriesList(recurse = False)
-        if len(subcategories) == 0:
-            wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
-        else:
-            for subcategory in subcategories:
-                if not self.titleRegex or re.search(self.titleRegex,subcategory.title()):
-                    catlib.change_category(subcategory, self.oldCat, newCat, comment = self.editSummary, inPlace=self.inPlace)
-        if self.oldCat.exists() and self.moveCatPage:
-            # try to copy page contents to new cat page
-            if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
-                if self.oldCat.isEmpty() and self.deleteEmptySourceCat == True:
-                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
-                    if self.batchMode:
-                        self.oldCat.delete(reason, False)
-                    else:
-                        self.oldCat.delete(reason, True)
-                else:
-                    wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCat.title(), self.newCatTitle))
+        # Move subcategories
+        gen = pagegenerators.SubCategoriesPageGenerator(self.oldCat, recurse = False)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        for subcategory in preloadingGen:
+            if not self.titleRegex or re.search(self.titleRegex,subcategory.title()):
+                catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
+
+        # Delete the old category and its moved talk page
+        if copied and self.deleteEmptySourceCat == True:
+            if self.oldCat.isEmpty():
+                reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
+                confirm = not self.batchMode
+                self.oldCat.delete(reason, confirm)
+                if oldMovedTalk is not None:
+                    oldMovedTalk.delete(reason, confirm)
+            else:
+                wikipedia.output('Couldn\'t delete %s - not empty.' % (self.oldCat.title(), self.newCatTitle))
 
 class CategoryListifyRobot:
     '''
