@@ -1814,14 +1814,17 @@ not supported by PyWikipediaBot!"""
         return users
 
     def move(self, newtitle, reason=None, movetalkpage=True, sysop=False,
-             throttle=True):
-        """Move this page to new title given by newtitle."""
+             throttle=True, deleteAndMove=False, safe=True):
+        """Move this page to new title given by newtitle. If safe, don't try
+        to move and delete if not directly requested."""
         if throttle:
             put_throttle()
         if reason == None:
             reason = input(u'Please enter a reason for the move:')
         if self.isTalkPage():
             movetalkpage = False
+        if deleteAndMove:
+            sysop = True
         host = self.site().hostname()
         address = self.site().move_address()
         self.site().forceLogin(sysop = sysop)
@@ -1831,6 +1834,9 @@ not supported by PyWikipediaBot!"""
             'wpNewTitle': newtitle.encode(self.site().encoding()),
             'wpReason': reason.encode(self.site().encoding()),
         }
+        if deleteAndMove:
+            predata['wpDeleteAndMove'] = self.site().mediawiki_message('delete_and_move_confirm')
+            predata['wpConfirm'] = '1'
         if movetalkpage:
             predata['wpMovetalk'] = '1'
         else:
@@ -1846,12 +1852,23 @@ not supported by PyWikipediaBot!"""
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
         if data == u'':
-            output(u'Page %s moved to %s' % (self.title(), newtitle))
+            if deleteAndMove:
+                output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
+            else:
+                output(u'Page %s moved to %s' % (self.title(), newtitle))
             return True
         else:
             if self.site().mediawiki_message('articleexists') in data or self.site().mediawiki_message('delete_and_move') in data:
-                output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
-                return False
+                if safe:
+                    output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+                    return False
+                else:
+                    try:
+                        # Try to delete and move
+                        return self.move(newtitle = newtitle, reason = reason, movetalkpage = movetalkpage, throttle = throttle, deleteAndMove = True)
+                    except NoUserName:
+                        output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+                        return False
             else:
                 output(u'Page move failed for unknown reason.')
                 try:
