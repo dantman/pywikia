@@ -1911,10 +1911,10 @@ not supported by PyWikipediaBot!"""
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
                 if self.site().mediawiki_message('actioncomplete') in data:
-                    output(u'Deletion successful.')
+                    output(u'Deleted page %s' % self.aslink())
                     return True
                 else:
-                    output(u'Deletion failed:.')
+                    output(u'Deletion of page %s failed:' % self.aslink())
                     try:
                         ibegin = data.index('<!-- start content -->') + 22
                         iend = data.index('<!-- end content -->')
