@@ -298,7 +298,7 @@ report_text = {
 # Set where you load your list of signatures that the bot will load if you use
 # the random argument (this parameter is optional).
 random_sign = {
-    'ar': u'ويكيبيديا:سجل الترحيب/توقيعات',
+    'ar': u'Project:سجل الترحيب/توقيعات',
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
     'it': u'Project:Benvenuto log/User',
@@ -307,7 +307,7 @@ random_sign = {
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
 whitelist_pg = {
-    'ar':u'ويكيبيديا:سجل الترحيب/قائمةبيضاء',
+    'ar':u'Project:سجل الترحيب/قائمةبيضاء',
     'en':u'User:Filnik/whitelist',
     'it':u'Utente:Filbot/whitelist',
     }
