@@ -1845,14 +1845,13 @@ not supported by PyWikipediaBot!"""
             data = ''
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
-        if data != u'':
-            if self.site().mediawiki_message('pagemovedsub') in data:
-                output(u'Page %s moved to %s' % (self.title(), newtitle))
-                return True
-            elif self.site().mediawiki_message('articleexists') in data:
+        if data == u'':
+            output(u'Page %s moved to %s' % (self.title(), newtitle))
+            return True
+        else:
+            if self.site().mediawiki_message('articleexists') in data:
                 output(u'Page moved failed: Target page [[%s]] already exists.'
                        % newtitle)
-                return False
             else:
                 output(u'Page move failed for unknown reason.')
                 try:
@@ -1865,7 +1864,7 @@ not supported by PyWikipediaBot!"""
                     # otherwise, remove the irrelevant sections
                     data = data[ibegin:iend]
                 output(data)
-                return False
+            return False
 
     def delete(self, reason=None, prompt=True, throttle=True):
         """Deletes the page from the wiki.
