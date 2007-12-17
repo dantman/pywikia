@@ -89,9 +89,8 @@ class Category(wikipedia.Page):
         Cache results of _parseCategory for a second call.
 
         If recurse is a bool, and value is True, then recursively retrieves
-        contents of all subcategories without limit. (WARNING: can lead to
-        infinite loops!) If recurse is an int, recursively retrieves
-        contents of subcategories to that depth only.
+        contents of all subcategories without limit. If recurse is an int,
+        recursively retrieves contents of subcategories to that depth only.
 
         Other parameters are analogous to _parseCategory(). If purge is True,
         cached results will be discarded. If startFrom is used, nothing
