@@ -84,7 +84,7 @@ class Category(wikipedia.Page):
             return '[[%s]]' % titleWithSortKey
 
     def _getContentsAndSupercats(self, recurse=False, purge=False,
-                                 startFrom=None, cache=[]):
+                                 startFrom=None, cache=None):
         """
         Cache results of _parseCategory for a second call.
 
@@ -99,6 +99,8 @@ class Category(wikipedia.Page):
 
         This should not be used outside of this module.
         """
+        if cache is None:
+            cache = []
         if purge:
             self.completelyCached = False
         if recurse:
@@ -120,7 +122,7 @@ class Category(wikipedia.Page):
                         # this method recursively; therefore, do not cache
                         # them again
                         for item in subcat._getContentsAndSupercats(newrecurse,
-                                                                purge):
+                                                           purge, cache=cache):
                             if item[0] != SUPERCATEGORY:
                                 yield item
             for supercat in self.supercatCache:
@@ -141,8 +143,8 @@ class Category(wikipedia.Page):
                             # contents of subcategory are cached by calling
                             # this method recursively; therefore, do not cache
                             # them again
-                            for item in page._getContentsAndSupercats(newrecurse,
-                                                                  purge):
+                            for item in page._getContentsAndSupercats(
+                                             newrecurse, purge, cache=cache):
                                 if item[0] != SUPERCATEGORY:
                                     yield item
                 elif tag == SUPERCATEGORY:
