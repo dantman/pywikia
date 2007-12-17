@@ -212,14 +212,14 @@ class XmlDumpReplacePageGenerator:
     def isTitleExcepted(self, title):
         if self.exceptions.has_key('title'):
             for exc in self.exceptions['title']:
-                if exc.find(title) > -1:
+                if exc.search(title):
                     return True
         return False
 
     def isTextExcepted(self, text):
         if self.exceptions.has_key('text-contains'):
             for exc in self.exceptions['text-contains']:
-                if exc.find(text) > -1:
+                if exc.search(text):
                     return True
         return False
 
@@ -274,7 +274,7 @@ class ReplaceRobot:
         """
         if self.exceptions.has_key('title'):
             for exc in self.exceptions['title']:
-                if exc.find(title) > -1:
+                if exc.search(title):
                     return True
         return False
 
@@ -284,7 +284,7 @@ class ReplaceRobot:
         """
         if self.exceptions.has_key('text-contains'):
             for exc in self.exceptions['text-contains']:
-                if exc.find(original_text) > -1:
+                if exc.search(original_text):
                     return True
         return False
 
