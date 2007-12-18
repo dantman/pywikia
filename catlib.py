@@ -247,7 +247,10 @@ class Category(wikipedia.Page):
             if Rimage:
                 # For MediaWiki versions where images work through galleries
                 for title in Rimage.findall(txt):
-                    yield ARTICLE, wikipedia.ImagePage(self.site(), "Image:%s" % title)
+                    # In some MediaWiki versions, the titles contain the namespace,
+                    # but they don't in other (newer) versions. Use the ImagePage's
+                    # defaultNamespace feature to get everything correctly.
+                    yield ARTICLE, wikipedia.ImagePage(self.site(), title)
             # try to find a link to the next list page
             # If skippedCategoryDescription is False, then there are no pages
             # or subcategories, so there cannot be a next list page
