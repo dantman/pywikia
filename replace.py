@@ -552,7 +552,7 @@ def main():
                 patterns = [re.compile(pattern, re.UNICODE | re.IGNORECASE) for pattern in patterns]
             else:
                 patterns = [re.compile(pattern, re.UNICODE) for pattern in patterns]
-                exceptions[exceptionCategory] = patterns
+            exceptions[exceptionCategory] = patterns
 
     if xmlFilename:
         try:
