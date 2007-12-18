@@ -4444,8 +4444,14 @@ Maybe the server is down. Retrying in %i minutes..."""
                 if (not includeredirects) or includeredirects == 'only':
                     # Maybe there were only so few because the rest is or is not a redirect
                     R = re.compile('title ?=\"(.*?)\"')
-                    if len(R.findall(returned_html)) < 100:
+                    allLinks = R.findall(returned_html)
+                    if len(allLinks) < 100:
                         break
+                    elif n == 0:
+                        # In this special case, no pages of the requested type
+                        # were found, and "start" will remain and be double-encoded.
+                        # Use the last page as the start of the next page.
+                        start = Page(self, allLinks[-1]).titleWithoutNamespace() + '!'
                 else:
                     break
 
