@@ -5347,7 +5347,7 @@ def output(text, decoder = None, newline = True, toStdout = False):
             text = unicode(text, decoder)
         elif type(text) is not unicode:
             if verbose:
-                print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
+                print "DBG> BUG: Non-unicode (%s) passed to wikipedia.output without decoder!" % type(text)
                 print traceback.print_stack()
                 print "DBG> Attempting to recover, but please report this problem"
             try:
