@@ -22,10 +22,13 @@ import difflib
  
 # The summary that the Bot will use.
 comment = {
+    'de':u'Bot: Interwikilinks standardisieren',
     'en':u'Robot: interwiki standardization',
     'he':u'בוט: מסדר את האינטרוויקי',
     'no':u'bot: Språklenkestandardisering',
     'it':u'Bot: Standardizzo interwiki',
+    'ksh':u'Bot: Engerwiki Lengks opprüühme',
+    'nds':u'Bot: Links twüschen Wikis standardisseern',
     }
 site = wikipedia.getSite()
 comm = wikipedia.translate(site, comment)
