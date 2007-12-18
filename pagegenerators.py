@@ -629,7 +629,7 @@ class _Preloader(threading.Thread):
                     self.queue.put(refpage)
             self.queue.put(None)    # to signal end of list
         except Exception, e:
-            wikipedia.output(str(e))
+            wikipedia.output(unicode(e))
             self.queue.put(None)    # to signal end of list
 
 def PreloadingGenerator(generator, pageNumber=60):
