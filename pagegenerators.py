@@ -108,21 +108,23 @@ import urllib, urllib2, time
 import wikipedia, date, catlib
 import config
 
-def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True):
+def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True, site = None):
     """
     Using the Allpages special page, retrieve all articles' titles, and yield
     page objects.
     If includeredirects is False, redirects are not included. If
     includeredirects equals the string 'only', only redirects are added.
     """
-    if namespace==None:
-        namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
-    title = wikipedia.Page(wikipedia.getSite(), start).titleWithoutNamespace()
-    for page in wikipedia.getSite().allpages(start=title, namespace=namespace, includeredirects = includeredirects):
+    if site is None:
+        site = wikipedia.getSite()
+    if namespace is None:
+        namespace = wikipedia.Page(site, start).namespace()
+    title = wikipedia.Page(site, start).titleWithoutNamespace()
+    for page in site.allpages(start=title, namespace=namespace, includeredirects = includeredirects):
         yield page
 
-def PrefixingPageGenerator(prefix, namespace=None, includeredirects=True):
-    for page in AllpagesPageGenerator(prefix, namespace, includeredirects):
+def PrefixingPageGenerator(prefix, namespace=None, includeredirects=True, site = None):
+    for page in AllpagesPageGenerator(prefix, namespace, includeredirects, site):
         if page.titleWithoutNamespace().startswith(prefix):
             yield page
         else:
@@ -260,7 +262,7 @@ def LinkedPageGenerator(linkingPage):
     for page in linkingPage.linkedPages():
         yield page
 
-def TextfilePageGenerator(filename=None):
+def TextfilePageGenerator(filename=None, site=None):
     '''
     Read a file of page links between double-square-brackets, and return
     them as a list of Page objects. filename is the name of the file that
@@ -268,11 +270,11 @@ def TextfilePageGenerator(filename=None):
     '''
     if filename is None:
         filename = wikipedia.input(u'Please enter the filename:')
-    site = wikipedia.getSite()
+    if site is None:
+        site = wikipedia.getSite()
     f = codecs.open(filename, 'r', config.textfile_encoding)
     R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # title ends either before | or before ]]
     for pageTitle in R.findall(f.read()):
-        site = wikipedia.getSite()
         # If the link doesn't refer to this site, the Page constructor
         # will automatically choose the correct site.
         # This makes it possible to work on different wikis using a single
@@ -281,12 +283,14 @@ def TextfilePageGenerator(filename=None):
         yield wikipedia.Page(site, pageTitle)
     f.close()
 
-def PagesFromTitlesGenerator(iterable):
+def PagesFromTitlesGenerator(iterable, site = None):
     """Generates pages from the titles (unicode strings) yielded by iterable"""
+    if site is None:
+        site = wikipedia.getSite()
     for title in iterable:
         if not isinstance(title, basestring):
             break
-        yield wikipedia.Page(wikipedia.getSite(), title)
+        yield wikipedia.Page(site, title)
 
 def LinksearchPageGenerator(link, step=500, site = None):
     """Yields all pages that include a specified link, according to
@@ -328,9 +332,12 @@ class YahooSearchPageGenerator:
     '''
     To use this generator, install pYsearch
     '''
-    def __init__(self, query = None, count = 100): # values larger than 100 fail
+    def __init__(self, query = None, count = 100, site = None): # values larger than 100 fail
         self.query = query or wikipedia.input(u'Please enter the search query:')
-        self.count = count;
+        self.count = count
+        if site is None:
+            site = wikipedia.getSite()
+        self.site = site
 
     def queryYahoo(self, query):
        from yahoo.search.web import WebSearch
@@ -343,14 +350,13 @@ class YahooSearchPageGenerator:
            yield url
 
     def __iter__(self):
-        site = wikipedia.getSite()
         # restrict query to local site
-        localQuery = '%s site:%s' % (self.query, site.hostname())
-        base = 'http://%s%s' % (site.hostname(), site.nice_get_address(''))
+        localQuery = '%s site:%s' % (self.query, self.site.hostname())
+        base = 'http://%s%s' % (self.site.hostname(), self.site.nice_get_address(''))
         for url in self.queryYahoo(localQuery):
             if url[:len(base)] == base:
                 title = url[len(base):]
-                page = wikipedia.Page(site, title)
+                page = wikipedia.Page(self.site, title)
                 yield page
 
 class GoogleSearchPageGenerator:
@@ -360,8 +366,11 @@ class GoogleSearchPageGenerator:
     http://www.google.com/apis/index.html . The google_key must be set to your
     license key in your configuration.
     '''
-    def __init__(self, query = None):
+    def __init__(self, query = None, site = None):
         self.query = query or wikipedia.input(u'Please enter the search query:')
+        if site is None:
+            site = wikipedia.getSite()
+        self.site = site
 
     #########
     # partially commented out because it is probably not in compliance with Google's "Terms of
@@ -441,22 +450,22 @@ class GoogleSearchPageGenerator:
     #########
 
     def __iter__(self):
-        site = wikipedia.getSite()
         # restrict query to local site
-        localQuery = '%s site:%s' % (self.query, site.hostname())
-        base = 'http://%s%s' % (site.hostname(), site.nice_get_address(''))
+        localQuery = '%s site:%s' % (self.query, self.site.hostname())
+        base = 'http://%s%s' % (self.site.hostname(), self.site.nice_get_address(''))
         for url in self.queryGoogle(localQuery):
             if url[:len(base)] == base:
                 title = url[len(base):]
-                page = wikipedia.Page(site, title)
+                page = wikipedia.Page(self.site, title)
                 yield page
 
-def MySQLPageGenerator(query):
+def MySQLPageGenerator(query, site = None):
     '''
 
     '''
     import MySQLdb as mysqldb
-    site = wikipedia.getSite()
+    if site is None:
+        site = wikipedia.getSite()
     conn = mysqldb.connect(config.db_hostname, db = site.dbName(),
                            user = config.db_username,
                            passwd = config.db_password)
@@ -482,25 +491,29 @@ def MySQLPageGenerator(query):
             page = wikipedia.Page(site, pageTitle)
             yield page
 
-def YearPageGenerator(start = 1, end = 2050):
+def YearPageGenerator(start = 1, end = 2050, site = None):
+    if site is None:
+        site = wikipedia.getSite()
     wikipedia.output(u"Starting with year %i" % start)
     for i in xrange(start, end + 1):
         if i % 100 == 0:
             wikipedia.output(u'Preparing %i...' % i)
         # There is no year 0
         if i != 0:
-            current_year = date.formatYear(wikipedia.getSite().lang, i )
-            yield wikipedia.Page(wikipedia.getSite(), current_year)
+            current_year = date.formatYear(site.lang, i )
+            yield wikipedia.Page(site, current_year)
 
-def DayPageGenerator(startMonth=1, endMonth=12):
-    fd = date.FormatDate(wikipedia.getSite())
-    firstPage = wikipedia.Page(wikipedia.getSite(), fd(startMonth, 1))
+def DayPageGenerator(startMonth=1, endMonth=12, site=None):
+    if site is None:
+        site = wikipedia.getSite()
+    fd = date.FormatDate(site)
+    firstPage = wikipedia.Page(site, fd(startMonth, 1))
     wikipedia.output(u"Starting with %s" % firstPage.aslink())
     for month in xrange(startMonth, endMonth+1):
         for day in xrange(1, date.getNumberOfDaysInMonth(month)+1):
-            yield wikipedia.Page(wikipedia.getSite(), fd(month, day))
+            yield wikipedia.Page(site, fd(month, day))
 
-def NamespaceFilterPageGenerator(generator, namespaces):
+def NamespaceFilterPageGenerator(generator, namespaces, site = None):
     """
     Wraps around another generator. Yields only those pages that are in one
     of the given namespaces.
@@ -509,10 +522,12 @@ def NamespaceFilterPageGenerator(generator, namespaces):
     strings/unicode strings (namespace names).
     """
     # convert namespace names to namespace numbers
+    if site is None:
+        site = wikipedia.getSite()
     for i in xrange(len(namespaces)):
         ns = namespaces[i]
         if isinstance(ns, unicode) or isinstance(ns, str):
-            index = wikipedia.getSite().getNamespaceIndex(ns)
+            index = site.getNamespaceIndex(ns)
             if index is None:
                 raise ValueError(u'Unknown namespace: %s' % ns)
             namespaces[i] = index
