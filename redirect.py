@@ -338,7 +338,7 @@ def main():
     xmlFilename = None
     # Which namespace should be processed when using a XML dump
     # default to -1 which means all namespaces will be processed
-    namespace = None
+    namespaces = []
     # at which redirect shall we start searching double redirects again (only with dump)
     # default to -1 which means all redirects are checked
     offset = -1
@@ -368,7 +368,7 @@ def main():
     if not action:
         wikipedia.showHelp('redirect')
     else:
-        gen = RedirectGenerator(xmlFilename, namespace, offset)
+        gen = RedirectGenerator(xmlFilename, namespaces, offset)
         bot = RedirectRobot(action, gen, always)
         bot.run()
 
