@@ -95,9 +95,9 @@ reason_broken={
 }
 
 class RedirectGenerator:
-    def __init__(self, xmlFilename = None, namespace = None, offset = -1):
+    def __init__(self, xmlFilename = None, namespaces = None, offset = -1):
         self.xmlFilename = xmlFilename
-        self.namespace = namespace
+        self.namespaces = namespaces
         self.offset = offset
 
     def get_redirects_from_dump(self, alsoGetPageTitles = False):
@@ -111,7 +111,8 @@ class RedirectGenerator:
         dict = {}
         # open xml dump and read page titles out of it
         dump = xmlreader.XmlDump(xmlFilename)
-        redirR = wikipedia.getSite().redirectRegex()
+        site = wikipedia.getSite()
+        redirR = site.redirectRegex()
         readPagesCount = 0
         if alsoGetPageTitles:
             pageTitles = set()
@@ -120,8 +121,9 @@ class RedirectGenerator:
             # always print status message after 10000 pages
             if readPagesCount % 10000 == 0:
                 wikipedia.output(u'%i pages read...' % readPagesCount)
-            if self.namespace and self.namespace != entry.namespace:
-                continue
+            if self.namespaces is not None:
+                if wikipedia.Page(site, entry.title).namespace() not in self.namespaces:
+                    continue
             if alsoGetPageTitles:
                 pageTitles.add(entry.title.replace(' ', '_'))
 
@@ -129,7 +131,7 @@ class RedirectGenerator:
             if m:
                 target = m.group(1)
                 # There might be redirects to another wiki. Ignore these.
-                for code in wikipedia.getSite().family.langs.keys():
+                for code in site.family.langs.keys():
                     if target.startswith('%s:' % code) or target.startswith(':%s:' % code):
                         wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.title, code))
                         target = None
@@ -279,6 +281,11 @@ class RedirectRobot:
                     wikipedia.output(
                         u'Redirect target %s is not a redirect.'
                           % secondRedir.aslink())
+                except wikipedia.BadTitle, e:
+                    # str(e) is in the format 'BadTitle: [[Foo]]'
+                    wikipedia.output(
+                        u'Redirect target %s is not a valid page title.'
+                          % str(e)[10:])
                 except wikipedia.NoPage:
                     wikipedia.output(
                         u'Redirect target %s doesn\'t exist.'
