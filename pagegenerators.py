@@ -123,7 +123,7 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True,
     for page in site.allpages(start=title, namespace=namespace, includeredirects = includeredirects):
         yield page
 
-def PrefixingPageGenerator(prefix, namespace=None, includeredirects=True, site = None):
+def PrefixingPageGenerator(prefix, namespace = None, includeredirects = True, site = None):
     for page in AllpagesPageGenerator(prefix, namespace, includeredirects, site):
         if page.titleWithoutNamespace().startswith(prefix):
             yield page
@@ -292,7 +292,7 @@ def PagesFromTitlesGenerator(iterable, site = None):
             break
         yield wikipedia.Page(site, title)
 
-def LinksearchPageGenerator(link, step=500, site = None):
+def LinksearchPageGenerator(link, step=500, site=None):
     """Yields all pages that include a specified link, according to
     [[Special:Linksearch]].
     Retrieves in chunks of size "step" (default 500).
@@ -503,7 +503,7 @@ def YearPageGenerator(start = 1, end = 2050, site = None):
             current_year = date.formatYear(site.lang, i )
             yield wikipedia.Page(site, current_year)
 
-def DayPageGenerator(startMonth=1, endMonth=12, site=None):
+def DayPageGenerator(startMonth = 1, endMonth = 12, site = None):
     if site is None:
         site = wikipedia.getSite()
     fd = date.FormatDate(site)
@@ -647,7 +647,7 @@ class _Preloader(threading.Thread):
             wikipedia.output(unicode(e))
             self.queue.put(None)    # to signal end of list
 
-def PreloadingGenerator(generator, pageNumber=60):
+def PreloadingGenerator(generator, pageNumber = 60):
     """
     Yields the same pages as generator generator. Retrieves 60 pages (or
     another number specified by pageNumber), loads them using
