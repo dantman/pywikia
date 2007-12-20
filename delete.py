@@ -171,24 +171,24 @@ def main():
     if doSinglePage:
         if not summary:
             summary = wikipedia.input(u'Enter a reason for the deletion:')
-        page = wikipedia.Page(wikipedia.getSite(), pageName)
+        page = wikipedia.Page(mysite, pageName)
         gen = iter([page])
     elif doCategory:
         if not summary:
             summary = wikipedia.translate(mysite, msg_delete_category) % pageName
-        ns = wikipedia.getSite().category_namespace()
-        categoryPage = catlib.Category(wikipedia.getSite(), ns + ':' + pageName)
+        ns = mysite.category_namespace()
+        categoryPage = catlib.Category(mysite, ns + ':' + pageName)
         gen = pagegenerators.CategorizedPageGenerator(categoryPage, recurse=True)
     elif doLinks:
         if not summary:
             summary = wikipedia.translate(mysite, msg_delete_links) % pageName
         wikipedia.setAction(summary)
-        linksPage = wikipedia.Page(wikipedia.getSite(), pageName)
+        linksPage = wikipedia.Page(mysite, pageName)
         gen = pagegenerators.LinkedPageGenerator(linksPage)
     elif doRef:
         if not summary:
             summary = wikipedia.translate(mysite, msg_delete_ref) % pageName
-        refPage = wikipedia.Page(wikipedia.getSite(), pageName)
+        refPage = wikipedia.Page(mysite, pageName)
         gen = pagegenerators.ReferringPageGenerator(refPage)
     elif fileName:
         if not summary:
@@ -197,7 +197,7 @@ def main():
     elif doImages:
         if not summary:
             summary = wikipedia.translate(mysite, msg_delete_images)
-        gen = pagegenerators.ImagesPageGenerator(wikipedia.Page(wikipedia.getSite(), pageName))
+        gen = pagegenerators.ImagesPageGenerator(wikipedia.Page(mysite, pageName))
 
     if gen:
         wikipedia.setAction(summary)
