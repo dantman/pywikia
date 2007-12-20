@@ -2768,9 +2768,10 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         'noinclude':   re.compile(r'(?is)<noinclude>.*?</noinclude>'),
         # wiki tags are ignored inside nowiki tags.
         'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
-        # lines that start with a space are shown in a monospace font and
-        # have whitespace preserved, with wiki tags being ignored.
-        'pre':         re.compile(r'(?is)<pre>.*?</pre>'),
+        # preformatted text
+        'pre':         re.compile(r'(?ism)<pre>.*?</pre>'),
+        # inline references
+        'ref':         re.compile(r'(?ism)<ref[ >].*?</ref>'),
         # lines that start with a space are shown in a monospace font and
         # have whitespace preserved.
         'startspace':  re.compile(r'(?m)^ (.*?)$'),
