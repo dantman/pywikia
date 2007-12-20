@@ -9,6 +9,7 @@ Command line options:
 
 -page:       Delete specified page
 -cat:        Delete all pages in the given category.
+-nosubcats:  Don't delete pages in the subcategories.
 -links:      Delete all pages linked from a given page.
 -file:       Delete all pages listed in a text file.
 -ref:        Delete all pages referring from a given page.
@@ -112,6 +113,7 @@ def main():
     always = False
     doSinglePage = False
     doCategory = False
+    deleteSubcategories = True
     doRef = False
     doLinks = False
     doImages = False
@@ -139,6 +141,8 @@ def main():
                 pageName = wikipedia.input(u'Enter the category to delete from:')
             else:
                 pageName = arg[len('-cat:'):]
+        elif arg.startswith('-nosubcats'):
+            deleteSubcategories = False
         elif arg.startswith('-links'):
             doLinks = True
             if len(arg) == len('-links'):
@@ -178,7 +182,7 @@ def main():
             summary = wikipedia.translate(mysite, msg_delete_category) % pageName
         ns = mysite.category_namespace()
         categoryPage = catlib.Category(mysite, ns + ':' + pageName)
-        gen = pagegenerators.CategorizedPageGenerator(categoryPage, recurse=True)
+        gen = pagegenerators.CategorizedPageGenerator(categoryPage, recurse = deleteSubcategories)
     elif doLinks:
         if not summary:
             summary = wikipedia.translate(mysite, msg_delete_links) % pageName
