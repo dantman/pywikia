@@ -117,18 +117,22 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True,
     """
     if site is None:
         site = wikipedia.getSite()
+    page = wikipedia.Page(site, start)
     if namespace is None:
-        namespace = wikipedia.Page(site, start).namespace()
-    title = wikipedia.Page(site, start).titleWithoutNamespace()
-    for page in site.allpages(start=title, namespace=namespace, includeredirects = includeredirects):
+        namespace = page.namespace()
+    title = page.titleWithoutNamespace()
+    for page in site.allpages(start = title, namespace = namespace, includeredirects = includeredirects):
         yield page
 
 def PrefixingPageGenerator(prefix, namespace = None, includeredirects = True, site = None):
-    for page in AllpagesPageGenerator(prefix, namespace, includeredirects, site):
-        if page.titleWithoutNamespace().startswith(prefix):
-            yield page
-        else:
-            break
+    if site is None:
+        site = wikipedia.getSite()
+    page = wikipedia.Page(site, prefix)
+    if namespace is None:
+        namespace = page.namespace()
+    title = page.titleWithoutNamespace()
+    for page in site.prefixindex(prefix = title, namespace = namespace, includeredirects = includeredirects):
+        yield page
 
 def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, site = None):
     if site is None:

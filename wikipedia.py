@@ -3491,6 +3491,7 @@ class Site(object):
 
         search(query): query results from Special:Search
         allpages(): Special:Allpages
+        prefixindex(): Special:Prefixindex
         newpages(): Special:Newpages
         newimages(): Special:Log&type=upload
         longpages(): Special:Longpages
@@ -4455,6 +4456,29 @@ Maybe the server is down. Retrying in %i minutes..."""
                         start = Page(self, allLinks[-1]).titleWithoutNamespace() + '!'
                 else:
                     break
+
+    def prefixindex(self, prefix, namespace=0, includeredirects=True):
+        """Yield all pages with a given prefix.
+
+        Parameters:
+        prefix   The prefix of the pages.
+        namespace Namespace number; defaults to 0.
+                MediaWiki software will only return pages in one namespace
+                at a time.
+
+        If includeredirects is False, redirects will not be found.
+        If includeredirects equals the string 'only', only redirects
+        will be found. Note that this has not been tested on older
+        versions of the MediaWiki code.
+
+        It is advised not to use this directly, but to use the
+        PrefixingPageGenerator from pagegenerators.py instead.
+        """
+        for page in self.allpages(start = prefix, namespace = namespace, includeredirects = includeredirects):
+            if page.titleWithoutNamespace().startswith(prefix):
+                yield page
+            else:
+                break
 
     def linksearch(self, siteurl):
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
