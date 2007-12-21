@@ -279,6 +279,7 @@ class Family(family.Family):
             'new': u'दबू',
             'nl': u'Portaal',
             'no': u'Portal',
+            'oc': u'Portal',
             'pl': u'Portal',
             'pt': u'Portal',
             'ro': u'Portal',
@@ -336,6 +337,7 @@ class Family(family.Family):
             'new': u'दबू खँलाबँला',
             'nl': u'Overleg portaal',
             'no': u'Portaldiskusjon',
+            'oc': u'Discussion Portal',
             'pl': u'Dyskusja portalu',
             'pt': [u'Portal Discussão', u'Discussão Portal'],
             'ro': u'Discuţie Portal',
@@ -364,10 +366,13 @@ class Family(family.Family):
             'eu': u'Wikiproiektu',
             'fi': u'Metasivu',
             'fr': u'Projet',
+            'hr': u'Dodatak',
             'it': u'Progetto',
             'lmo': u'Purtaal',
+            'oc': u'Projècte',
             'pl': u'Wikiprojekt',
             'pt': u'Anexo',
+            'ro': u'Proiect',
         }
 
         self.namespaces[103] = {
@@ -377,10 +382,13 @@ class Family(family.Family):
             'eu': u'Wikiproiektu eztabaida',
             'fi': u'Keskustelu metasivusta',
             'fr': u'Discussion Projet',
+            'hr': u'Razgovor o dodatku',
             'it': u'Discussioni progetto',
             'lmo': u'Descüssiun Purtaal',
+            'oc': u'Discussion Projècte',
             'pl': u'Dyskusja Wikiprojektu',
             'pt': u'Anexo Discussão',
+            'ro': u'Discuţie Proiect',
         }
 
         self.namespaces[104] = {
