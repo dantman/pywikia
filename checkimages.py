@@ -166,7 +166,7 @@ nothing_head = {
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
-				'commons':"{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
+				'commons':"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
