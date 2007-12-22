@@ -334,8 +334,7 @@ class Category(wikipedia.Page):
     def isEmpty(self):
         # TODO: rename; naming conflict with Page.isEmpty
         for tag, title in self._getContents(purge = True):
-            if tag in (ARTICLE, SUBCATEGORY):
-                return False
+            return False
         return True
 
     def copyTo(self, catname):
