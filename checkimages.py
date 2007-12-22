@@ -221,11 +221,14 @@ comm10 = {
 
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
 # analise the image without taking care of it. (the template must be in a list)
+# Warning: Don't add template like "en, de, it" because they are already in (added in the code, below
+# Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
+# because they are already put in the regex).
 HiddenTemplate = {
-		'commons':['{{information'],
-		'en':['{{information'],
-		'it':['{{edp', '{{informazioni file', '{{information'],
-		'hu':[u'{{információ','{{enwiki', '{{azonnali'],
+		'commons':['information'],
+		'en':['information'],
+		'it':['edp', 'informazioni[ _]file', 'information'],
+		'hu':[u'információ','enwiki', 'azonnali'],
 		}
 
 # Add your project (in alphabetical order) if you want that the bot start
@@ -233,7 +236,7 @@ project_inserted = ['commons', 'en','hu', 'it']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
-# <------------------------------------------- Change only above! ----------------------------------------------------->#
+# <------------------------------------------- Change only above! ----------------------------------------------------> #
 #########################################################################################################################
 
 class LogIsFull(wikipedia.Error):
@@ -648,7 +651,7 @@ if __name__ == "__main__":
 		# In this way i find what language, project and what bot do you use.
 		lang = config.mylang
 		project = config.family
-
+                
 		# Block of text to translate the parameters set above.
 		image_n = site.image_namespace()
 		image_namespace = "%s:" % image_n
@@ -671,6 +674,9 @@ if __name__ == "__main__":
 		com = wikipedia.translate(site, comm10)
 		TextFind = wikipedia.translate(site, txt_find)
 		hiddentemplate = wikipedia.translate(site, HiddenTemplate)
+		# A template as {{en is not a license! Adding also them in the whitelist template...
+		for langK in wikipedia.Family('wikipedia').knownlanguages:
+                        hiddentemplate.append('%s' % langK)
 
 		if skip_number == 0:
 			skip = False        
@@ -775,12 +781,13 @@ if __name__ == "__main__":
 					wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
 					continue            
 				for l in hiddentemplate:
-					if l.lower() in g.lower():
+                                        res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: |\||\n|\W)' % l.lower(), g.lower())
+					if res != []:
+                                                #print res
 						wikipedia.output(u'A white template found, skipping the template...')
-						#whiteTemplate = True
-						#final_text = g
+						# I don't delete the template, because if there is something to change the image page
+						# will be reloaded. I delete it only for the next check part.
 						g = g.lower().replace(l, '')
-						#print g
 				for a_word in something:
 					if a_word in g:
 						parentesi = True
