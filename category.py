@@ -401,7 +401,7 @@ class CategoryMoveRobot:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for subcategory in preloadingGen:
             if not self.titleRegex or re.search(self.titleRegex,subcategory.title()):
-                catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
+                catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
 
         # Delete the old category and its moved talk page
         if copied and self.deleteEmptySourceCat == True:
