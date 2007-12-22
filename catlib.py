@@ -56,7 +56,7 @@ class Category(wikipedia.Page):
        category: pages"""
 
     def __init__(self, site, title = None, insite = None, sortKey = None):
-        wikipedia.Page.__init__(self, site = site, title = title, insite = insite)
+        wikipedia.Page.__init__(self, site = site, title = title, insite = insite, defaultNamespace = 14)
         self.sortKey = sortKey
         if self.namespace() != 14:
             raise ValueError(u'BUG: %s is not in the category namespace!' % title)
