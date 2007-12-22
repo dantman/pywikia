@@ -380,7 +380,6 @@ class CategoryMoveRobot:
         oldMovedTalk = None
         if self.oldCat.exists() and self.moveCatPage:
             copied = self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates))
-            copied = True # ALREADY COPIED!
             # Also move the talk page
             if copied:
                 reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
