@@ -4484,8 +4484,10 @@ Maybe the server is down. Retrying in %i minutes..."""
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         if siteurl.startswith('*.'):
             siteurl = siteurl[2:]
-        for url in [siteurl, "*."+siteurl]:
-            path = self.family.linksearch_address(self.lang, url)
+        output(u'Querying [[Special:Linksearch]]...')
+        cache = []
+        for url in [siteurl, '*.' + siteurl]:
+            path = self.linksearch_address(url)
             get_throttle()
             html = self.getUrl(path)
             loc = html.find('<div class="mw-spcontent">')
@@ -4498,7 +4500,11 @@ Maybe the server is down. Retrying in %i minutes..."""
             for title in R.findall(html):
                 if not siteurl in title:
                     # the links themselves have similar form
-                    yield Page(self,title)
+                    if title in cache:
+                        continue
+                    else:
+                        cache.append(title)
+                        yield Page(self, title)
 
     def __repr__(self):
         return self.family.name+":"+self.lang

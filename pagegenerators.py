@@ -299,29 +299,11 @@ def PagesFromTitlesGenerator(iterable, site = None):
 def LinksearchPageGenerator(link, step=500, site=None):
     """Yields all pages that include a specified link, according to
     [[Special:Linksearch]].
-    Retrieves in chunks of size "step" (default 500).
-    Does not guarantee that resulting pages are unique.
     """
     if site is None:
         site = wikipedia.getSite()
-    elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
-    offset = 0
-    pageyeldlist = list()
-    found = step
-    while found == step:
-        found = 0
-        url = site.linksearch_address(link,limit=step,offset=offset)
-        wikipedia.output(u'Querying [[Special:Linksearch]]...')
-        data = site.getUrl(url)
-        for elM in elRX.finditer(data):
-            found += 1
-            pagenameofthelink = elM.group(1)
-            if pagenameofthelink in pageyeldlist:
-                continue
-            else:
-                pageyeldlist.append(pagenameofthelink)
-                yield wikipedia.Page(site, pagenameofthelink)
-        offset += step
+    for page in site.linksearch(link):
+        yield page
 
 def SearchPageGenerator(query, number = 100, namespaces = None, site = None):
     """
