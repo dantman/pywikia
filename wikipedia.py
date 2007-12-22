@@ -2923,7 +2923,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     Return a dict of interlanguage links found in text.
     
     Dict uses language codes as keys and Page objects as values.
-    Do not call this routine directly, use Page.interwikiLinks() method
+    Do not call this routine directly, use Page.interwiki() method
     instead.
 
     """
@@ -2970,7 +2970,7 @@ def removeLanguageLinks(text, site = None, marker = ''):
     If a link to an unknown language is encountered, a warning is printed.
     If a marker is defined, that string is placed at the location of the
     last occurence of an interwiki link (at the end if there are no
-    interwikilinks).
+    interwiki links).
 
     """
     if site == None:
