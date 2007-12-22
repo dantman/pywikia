@@ -39,7 +39,6 @@ msg_created_for_renaming = {
 # some constants that are used internally
 ARTICLE = 0
 SUBCATEGORY = 1
-SUPERCATEGORY = 2
 
 def isCatTitle(title, site):
     return ':' in title and title[:title.index(':')] in site.category_namespaces()
@@ -64,7 +63,6 @@ class Category(wikipedia.Page):
         self.completelyCached = False
         self.articleCache = []
         self.subcatCache = []
-        self.supercatCache = []
 
     def aslink(self, forceInterwiki = False):
         """
@@ -83,8 +81,7 @@ class Category(wikipedia.Page):
         else:
             return '[[%s]]' % titleWithSortKey
 
-    def _getContentsAndSupercats(self, recurse=False, purge=False,
-                                 startFrom=None, cache=None):
+    def _getContents(self, recurse=False, purge=False, startFrom=None, cache=None):
         """
         Cache results of _parseCategory for a second call.
 
@@ -120,12 +117,8 @@ class Category(wikipedia.Page):
                         # contents of subcategory are cached by calling
                         # this method recursively; therefore, do not cache
                         # them again
-                        for item in subcat._getContentsAndSupercats(newrecurse,
-                                                           purge, cache=cache):
-                            if item[0] != SUPERCATEGORY:
-                                yield item
-            for supercat in self.supercatCache:
-                yield SUPERCATEGORY, supercat
+                        for item in subcat._getContents(newrecurse, purge, cache=cache):
+                            yield item
         else:
             for tag, page in self._parseCategory(purge, startFrom):
                 if tag == ARTICLE:
@@ -142,28 +135,22 @@ class Category(wikipedia.Page):
                             # contents of subcategory are cached by calling
                             # this method recursively; therefore, do not cache
                             # them again
-                            for item in page._getContentsAndSupercats(
-                                             newrecurse, purge, cache=cache):
-                                if item[0] != SUPERCATEGORY:
-                                    yield item
-                elif tag == SUPERCATEGORY:
-                    self.supercatCache.append(page)
-                    yield SUPERCATEGORY, page
+                            for item in page._getContents(newrecurse, purge, cache=cache):
+                                yield item
             if not startFrom:
                 self.completelyCached = True
 
     def _parseCategory(self, purge=False, startFrom=None):
         """
-        Yields all articles and subcategories that are in this category,
-        as well as its supercategories.
+        Yields all articles and subcategories that are in this category.
 
         Set purge to True to instruct MediaWiki not to serve a cached version.
 
         Set startFrom to a string which is the title of the page to start from.
 
         Yielded results are tuples in the form (tag, page) where tag is one
-        of the constants ARTICLE, SUBCATEGORY and SUPERCATEGORY, and title is
-        the Page or Category object.
+        of the constants ARTICLE and SUBCATEGORY, and title is the Page or Category
+        object.
 
         Note that results of this method need not be unique.
 
@@ -201,8 +188,6 @@ class Category(wikipedia.Page):
                 wikipedia.output('Getting [[%s]]...' % self.title())
             wikipedia.get_throttle()
             txt = self.site().getUrl(path)
-            # save a copy of this text to find out self's supercategory.
-            self_txt = txt
             # index where subcategory listing begins
             try:
                 ibegin = txt.index('<div id="mw-subcategories">')
@@ -264,25 +249,6 @@ class Category(wikipedia.Page):
                     break
             else:
                 break
-            
-        # get supercategories
-        try:
-            ibegin = self_txt.index('<div id="catlinks">')
-            iend = self_txt.index('<!-- end content -->')
-        except ValueError:
-            # no supercategories found
-            pass
-        else:
-            self_txt = self_txt[ibegin:iend]
-            if self.site().versionnumber() < 5:
-                # MediaWiki 1.4 has an unneeded space here
-                Rsupercat = re.compile('title ="([^"]*)"')
-            else:
-                Rsupercat = re.compile('title="([^"]*)"')
-            for title in Rsupercat.findall(self_txt):
-                # There might be a link to Special:Categories we don't want
-                if isCatTitle(title, self.site()):
-                    yield SUPERCATEGORY, title
 
     def subcategories(self, recurse=False):
         """
@@ -296,7 +262,7 @@ class Category(wikipedia.Page):
 
         Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
-        for tag, subcat in self._getContentsAndSupercats(recurse):
+        for tag, subcat in self._getContents(recurse):
             if tag == SUBCATEGORY:
                 yield subcat
 
@@ -325,7 +291,7 @@ class Category(wikipedia.Page):
         Results are unsorted (except as sorted by MediaWiki), and need not
         be unique.
         """
-        for tag, page in self._getContentsAndSupercats(recurse, startFrom=startFrom):
+        for tag, page in self._getContents(recurse, startFrom=startFrom):
             if tag == ARTICLE:
                 yield page
 
@@ -351,9 +317,8 @@ class Category(wikipedia.Page):
         Results are stored in the order in which they were entered, and need
         not be unique.
         """
-        for tag, supercat in self._getContentsAndSupercats():
-            if tag == SUPERCATEGORY:
-                yield supercat
+        for supercat in self.categories():
+            yield supercat
 
     def supercategoriesList(self):
         """
@@ -368,7 +333,7 @@ class Category(wikipedia.Page):
 
     def isEmpty(self):
         # TODO: rename; naming conflict with Page.isEmpty
-        for tag, title in self._getContentsAndSupercats(purge = True):
+        for tag, title in self._getContents(purge = True):
             if tag in (ARTICLE, SUBCATEGORY):
                 return False
         return True
