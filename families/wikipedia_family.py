@@ -469,7 +469,7 @@ class Family(family.Family):
             'lt':  [u'Disambig'],
             'mk':  [u'Појаснување'],
             'mo':  [u'Дезамбигуйзаре', u'Disambig'],
-            'ms':  [u'Nyahkekaburan'],
+            'ms':  [u'Nyahkekaburan', u'Disambig'],
             'mt':  [u'Diżambigwazzjoni'],
             'nds': [u'Mehrdüdig Begreep','Disambig'],
             'nds-nl': [u'Dv'],
