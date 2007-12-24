@@ -131,6 +131,7 @@ msg = {
        'id':u'Bot: Penggantian teks otomatis %s',
        'is':u'Vélmenni: breyti texta %s',
        'it':u'Bot: Sostituzione automatica %s',
+       'ja':u'ロボットによる: 文字置き換え %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
        'kk':u'Бот: Мәтінді өздікті алмастырды: %s',
        'ksh':u'Bot: hät outomatesch Täx jetuusch: %s',
