@@ -37,6 +37,7 @@ content = {
     'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
     'commons': u'{{Sandbox}}\n<!-- Please edit only below this line. -->',
+    'sv': u'{{subst:Sandlådan}}',
     'zh': u'{{subst:User:Sz-iwbot/sandbox}}\r\n',
     }
 
@@ -52,6 +53,7 @@ msg = {
     'no': u'bot: Rydder sandkassa.',
     'pl': u'Robot czyści brudnopis',
     'pt': u'Bot: Limpeza da página de testes',
+    'sv': u'Robot krattar sandlådan.',
     'zh': u'Bot: 本页被自动清理',
     }
 
@@ -68,6 +70,7 @@ sandboxTitle = {
     'pl': u'Wikipedia:Brudnopis',
     'pt': u'Wikipedia:Página de testes',
     'commons': u'Commons:Sandbox',
+    'sv': u'Wikipedia:Sandlådan',
     'zh': u'wikipedia:沙盒',
     }
 

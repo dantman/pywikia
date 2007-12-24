@@ -202,6 +202,39 @@ templates = {
             'msg': 'Assistida por bot: {{apagar vaidade}}',
             'pos':'top'},
     },
+    'sv': {
+        u'{{radera}}' :{
+            'msg' : u'Robotkoll: Artikeln bör raderas',
+            'pos': 'top'},
+        
+        u'{{städa}}' :{
+            'msg' : u'Robotkoll: Artikeln bör städas',
+            'pos': 'top'},
+
+        u'{{stub}}':{
+            'msg' : u'Robotkoll: Artikeln är en stubbe',
+            'pos': 'bottom'},
+
+        u'{{subst:relevanskontroll}}':{
+            'msg' : u'Robotkoll: Artikeln bör kollas mot [[WP:REL|Wikipedias relevanskriterier]].',
+            'pos': 'top'},
+
+        u'{{verifieras}}':{
+            'msg' : u'Robotkoll: Artikeln bör verifieras',
+            'pos': 'top'},
+
+        u'{{språkvård}}':{
+            'msg' : u'Robotkoll: Artikeln bör språkvårdas',
+            'pos' : 'top'},
+
+        u'{{Källor}}':{
+            'msg' : u'Robotkoll: Artikeln behöver källor',
+            'pos': 'bottom'},
+
+        u'{{wikify}}' :{
+            'msg' : u'Robotkoll: Artikeln behöver wikifieras',
+            'pos' : 'top'},
+    },
 }
 
 # Message used when blanking an article
@@ -211,6 +244,7 @@ blanking = {
     'he': u'רוקן, תוכן היה "%s"',
     'pl': u'wyczyszczony - zawartością było "%s"',
     'pt': u'em branco - conteúdo é "%s"',
+    'sv': u'Robot tar bort innehåll på grund av "%s"',
 }
 
 # do nothing if this is in it
@@ -234,6 +268,7 @@ done = {
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
     'pl':('{{ek}}', u'{{dopracować}}', '{{linki}}', u'{{źródła}}', u'{{stub}}'),
     'pt':('{{wikificar}}', '{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}', u'{{apagar vaidade}}'),
+    'sv':(u'{{radera', u'{{Radera', u'{{städa}}', u'{{stub}}', u'{{verifieras}}', u'{{språkvård}}', u'{{Källor', u'{{källor', u'{{wikify}}', u'{{Ickewiki}}', u'{{ickewiki}}', u'{{Wikify}}'),
     }
 
 # TODO: merge 'done' with 'templates' above
