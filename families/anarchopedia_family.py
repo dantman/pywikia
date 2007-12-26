@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import family
 
 # The Anarchopedia family
@@ -24,7 +24,7 @@ class Family(family.Family):
                       'nl', 'no', 'nn', 'pl', 'pt', 'en', 'ru', 'sr', 'sv']
             
     def version(self, code):
-        return "1.6.8"
+        return "1.12alpha"
 
     def path(self, code):
         return '/index.php'
