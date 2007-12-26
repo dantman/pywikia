@@ -11,7 +11,7 @@ This script understands various command-line arguments:
 * -fromlang:xx[,yy[,...]]] : xx,.. are the languages to be verified.
 
 * -fromall           : to verifiy all languages.
-				
+
 * -after:zzzz        : process pages after and including page zzzz
 
 * -top               : using -top if you want moving {{Link FA|lang}} to top of interwiki.
@@ -52,15 +52,19 @@ msg = {
     'he': u'בוט: קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'it': u'Bot: collegamento articolo in vetrina [[%s:%s]]',
+    'ja': u'ロボットによる: 秀逸な項目へのリンク [[%s:%s]]',
     'ka': u'ბოტი: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
-    'ko': u'??: [[%s:%s]]? ?? ? ??',
+    'ko': u'로봇：알찬 글 [[%s:%s]] 를 가리키는 링크',
     'lt': u'Bot: Pavyzdinis straipsnis [[%s:%s]]',
     'nl': u'Bot: Etalage-artikel link voor [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en utmerka artikkel',
+    'nn': u'bot: [[%s:%s]] er ein god artikkel',
     'pl': u'Bot: Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Bot: Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Bot: Међувики за изабране чланке за [[%s:%s]]',
+    'th': u'บอต: ลิงก์บทความคัดสรร [[%s:%s]]',
     'vo': u'Bot: Yüm yegeda gudik tefü [[%s:%s]]',
+    'zh': u'機器人: 連結特色條目 [[%s:%s]]',
 }
 
 # default is en:Link FA
@@ -79,21 +83,28 @@ template = {
     'hr': u'Link FA',
     'io': u'Link FA',
     'it': u'Link AdQ',
+    'ja': u'Link FA',
     'ka': u'Link FA',
     'ko': u'Link FA',
     'lt': u'Link FA',
     'lv': u'Link FA',
     'nl': u'Link FA',
     'no': u'Link UA',
+    'nn': u'Link FA',
     'pl': u'Link FA',
     'pt': u'Link FA',
     'ru': u'Link FA',
     'sl': u'Link FA',
     'sr': u'Link FA',
     'sv': u'UA',
+    'th': u'Link FA',
     'tr': u'Link FA',
     'vi': u'Liên kết chọn lọc',
-    'vo': u'Yüm YG'
+    'vo': u'Yüm YG',
+    'zh': u'Link FA',
+    'zh-classical': u'Link FA',
+    'zh-yue': u'Link FA',
+    'zh-min-nan': u'Link FA',
 }
 
 featured_name = {
@@ -124,6 +135,7 @@ featured_name = {
     'it': (CAT, u"Categoria:Voci in vetrina"),
     'ja': (BACK, u"Template:秀逸"),
     'ka': (BACK, u"თარგი:რჩეული"),
+    'ko': (CAT, u"분류:알찬 글 문서"),
     'lt': (CAT, u"Kategorija:Vikipedijos pavyzdiniai straipsniai"),
     'lv': (CAT, u"Kategorija:Nedēļas raksti"),
     'ml': (BACK, u"Template:Featured"),
@@ -141,6 +153,7 @@ featured_name = {
     'sr': (BACK, u"Шаблон:Изабрани"),
     'sv': (CAT, u"Kategori:Wikipedia:Utmärkta artiklar"),
     'ta': (BACK, u"வார்ப்புரு:சிறப்பு"),
+    'th': (CAT,u"หมวดหมู่:บทความคัดสรร"),
     'tl': (BACK, u"Template:Napiling artikulo"),
     'uk': (CAT, u"Категорія:Вибрані статті"),
     'vi': (CAT, u"Thể loại:Bài viết chọn lọc"),

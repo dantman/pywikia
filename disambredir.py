@@ -19,9 +19,11 @@ import catlib
 msg = {
     'en': u'Changing redirects on a disambiguation page',
     'he': u'משנה קישורים להפניות בדף פירושונים',
+    'ja': u'ロボットによる: 曖昧さ回避ページのリダイレクト修正',
     'nl': u'Verandering van redirects op een doorverwijspagina',
     'pl': u'Zmiana przekierowań na stronie ujednoznaczającej',
     'pt': u'Arrumando redirects na página de desambiguação',
+    'zh': u'機器人: 修改消歧義頁中的重定向連結',
 }
 
 def firstcap(string):

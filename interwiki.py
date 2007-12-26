@@ -332,6 +332,7 @@ msg = {
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
     'tr': (u'Bot değişikliği', u'Ekleniyor', u'Kaldırılıyor', u'Değiştiriliyor'),
+    'th': (u'โรบอต ', u'เพิ่ม', u'ลบ', u'แก้ไข'),
     'uk': (u'робот', u'додав', u'видалив', u'змінив'),
     'uz': (u'Bot', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),

@@ -34,10 +34,12 @@ content = {
     'ko': u'{{연습장 안내문}}',
     'nl': u'{{subst:Wikipedia:Zandbak/schoon zand}}',
     'no': u'{{Sandkasse}}\n<!-- VENNLIGST EKSPERIMENTER NEDENFOR DENNE SKJULTE TEKSTLINJEN! SANDKASSEMALEN {{Sandkasse}} SKAL IKKE FJERNES! -->}}',
+    'nn': u'{{sandkasse}}\n<!-- Ver snill og IKKJE FJERN DENNE LINA OG LINA OVER ({{sandkasse}}) Nedanføre kan du derimot ha det artig og prøve deg fram! Lykke til! :-)  -->',
     'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
     'commons': u'{{Sandbox}}\n<!-- Please edit only below this line. -->',
     'sv': u'{{subst:Sandlådan}}',
+    'th': u'{{กระบะทราย}} \n<!-- กรุณาอย่าแก้ไขบรรทัดนี้ ขอบคุณครับ/ค่ะ -- Please leave this line as they are. Thank you! -->',
     'zh': u'{{subst:User:Sz-iwbot/sandbox}}\r\n',
     }
 
@@ -54,6 +56,7 @@ msg = {
     'pl': u'Robot czyści brudnopis',
     'pt': u'Bot: Limpeza da página de testes',
     'sv': u'Robot krattar sandlådan.',
+    'th': u'โรบอต: กำลังจะเก็บกวาดหน้านี้โดยอัตโนมัติ',
     'zh': u'Bot: 本页被自动清理',
     }
 
@@ -71,6 +74,7 @@ sandboxTitle = {
     'pt': u'Wikipedia:Página de testes',
     'commons': u'Commons:Sandbox',
     'sv': u'Wikipedia:Sandlådan',
+    'th': u'วิกิพีเดีย:กระบะทราย',
     'zh': u'wikipedia:沙盒',
     }
 
