@@ -1561,8 +1561,11 @@ not supported by PyWikipediaBot!"""
                 # Make sure it is not detected again
                 count += 1
                 text = m.group()
-                markers[count] = text
                 thistxt = thistxt.replace(text, '%s%d%s' % (marker, count, marker))
+                for m2 in Rmarker.finditer(text):
+                    # Make sure markers don't contain other markers
+                    text = text.replace(m2.group(), markers[int(m2.group(1))])
+                markers[count] = text
 
                 # Name
                 name = m.group('name')
