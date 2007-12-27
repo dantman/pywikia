@@ -9,6 +9,9 @@ if you want to delete those useless warning left in these pages.
 Parameters:
 
 -always         Doesn't ask every time if the bot should make the change or not, do it always.
+-debug          When the bot can't delete the template from the page (wrong regex or something like that)
+                it will ask you if it should open the page on your browser.
+                (attention: pages included may give false positives..)
 -page           Work only on one page
 
 Note: This script uses also genfactory, you can use those generator as default.
@@ -19,6 +22,10 @@ otherwise the script won't work!
 
 If you have problems, ask on botwiki ( http://botwiki.sno.cc )
 or on IRC (#pywikipediabot)
+
+--- FixME ---
+If the page was protected to sysop and now is protected to autoconfirmed users,
+the bot won't change the template. Should this be "fixed"?
 
 --- Example of how to use the script ---
 
@@ -36,7 +43,7 @@ python blockpageschecker.py -cat:Geography -always
 __version__ = '$Id: blockpageschecker.py,v 1.1 2007/12/7 19.23.00 filnik Exp$'
 #
 
-import re
+import re, webbrowser
 import wikipedia, catlib, pagegenerators, config
 
 #######################################################
@@ -51,7 +58,9 @@ templateToRemove = {
                  r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?\}\}',
                  r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection\}\}'
                 ],
-            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|(.*?))\}\}', r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}'],
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
+                  r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
+                  r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
             'ja':[r'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:S|)\}\}',],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected(?:\|*)\}\}',r'\{\{(?:[Tt]emplate:|)Mini-protected(?:\|*)\}\}',
                 r'\{\{(?:[Tt]emplate:|)Protected logo(?:\|*)\}\}'],
@@ -88,13 +97,15 @@ def main():
         wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
         wikipedia.stopme()
     # always, define a generator to understand if the user sets one, defining what's genFactory
-    always = False; generator = False; genFactory = pagegenerators.GeneratorFactory()
+    always = False; generator = False; debug = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
     # Loading the default options.
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
+        if arg == '-debug':
+            debug = True
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
@@ -110,6 +121,7 @@ def main():
     commentUsed = wikipedia.translate(site, comment)
     if not generator:
         generator = list()
+        wikipedia.output(u'Loading categories...')
         # Define the category if no other generator has been setted
         for CAT in category:
             cat = catlib.Category(site, CAT)
@@ -117,6 +129,7 @@ def main():
             gen = pagegenerators.CategorizedPageGenerator(cat)
             for pageCat in gen:
                 generator.append(pageCat)
+        wikipedia.output(u'Categories loaded, start!')
     # Main Loop
     for page in generator:
         pagename = page.title()
@@ -127,8 +140,10 @@ def main():
             (text, useless, editRestriction) = page._getEditPage()
         except wikipedia.NoPage:
             wikipedia.output("%s doesn't exist! Skipping..." % pagename)
+            continue
         except wikipedia.IsRedirectPage:
             wikipedia.output("%s is a redirect! Skipping..." % pagename)
+            continue
         if editRestriction == 'sysop':
             wikipedia.output(u'The page is protected to the sysop, skipping...')
             continue
@@ -184,6 +199,22 @@ def main():
                             # Break only if the errors are one after the other
                             errorCount = 0
                             break
+            else:
+                wikipedia.output(u'No changes! Strange! Check the regex!')
+                if debug == True:
+                    quest = wikipedia.input(u'Do you want to open the page on your browser? [Y]es, [N]o: ')
+                    pathWiki = site.family.nicepath(site.lang)
+                    url = 'http://%s%s%s' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
+                    while 1:
+                        if quest.lower() in ['y', 'yes']:                    
+                            webbrowser.open(url)
+                            break
+                        elif quest.lower() in ['n', 'no']:
+                            break
+                        else:
+                            wikipedia.output(u'wrong entry, type "yes" or "no"')
+                            continue
+                    
 if __name__ == "__main__":
     try:
         main()
