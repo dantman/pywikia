@@ -1546,23 +1546,53 @@ not supported by PyWikipediaBot!"""
         # remove commented-out stuff etc.
         thistxt  = removeDisabledParts(thistxt)
 
+        # marker for inside template
+        marker = '@@'
+        while marker in thistxt:
+            marker += '@'
+
         result = []
-        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>.+?))?}}', re.DOTALL)
-        for m in Rtemplate.finditer(thistxt):
-            paramString = m.group('params')
-            params = []
-            if paramString:
-                params = paramString.split('|')
-            name = m.group('name')
-            if self.site().isInterwikiLink(name):
-                continue
-            try:
-                name = Page(self.site(), name).title()
-            except Error:
-                output(u"Page %s contains invalid template name %s."
-                       % (self.title(), name))
-                continue
-            result.append((name, params))
+        markers = {}
+        count = 0
+        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
+        Rmarker = re.compile('%s(\\d+)%s' % (marker, marker))
+        while Rtemplate.search(thistxt) is not None:
+            for m in Rtemplate.finditer(thistxt):
+                # Make sure it is not detected again
+                count += 1
+                text = m.group()
+                markers[count] = text
+                thistxt = thistxt.replace(text, '%s%d%s' % (marker, count, marker))
+
+                # Name
+                name = m.group('name')
+                m2 = Rmarker.search(name)
+                if m2 is not None:
+                    # Doesn't detect templates whose name is changing
+                    continue
+                if self.site().isInterwikiLink(name):
+                    continue
+                try:
+                    name = Page(self.site(), name).title()
+                except Error:
+                    output(u"Page %s contains invalid template name %s."
+                           % (self.title(), name))
+                    continue
+
+                # Parameters
+                paramString = m.group('params')
+                params = []
+                if paramString:
+                    # Parse string
+                    markedParams = paramString.split('|')
+                    # Replace markers
+                    for param in markedParams:
+                        for m2 in Rmarker.finditer(param):
+                            param = param.replace(m2.group(), markers[int(m2.group(1))])
+                        params.append(param)
+
+                # Add it to the result
+                result.append((name, params))
         return result
 
     def getRedirectTarget(self):
