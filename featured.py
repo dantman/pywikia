@@ -69,6 +69,7 @@ msg = {
 
 # default is en:Link FA
 template = {
+    'af': u'Link FA',
     'bg': u'Link FA',
     'br': u'Liamm PuB',
     'bs': u'Link FA',
@@ -108,6 +109,7 @@ template = {
 }
 
 featured_name = {
+    'af': (BACK, u"Sjabloon:Voorbladartikel"),
     'am': (CAT, u"Category:Wikipedia:Featured_article"),
     'ast': (BACK, u"Plantilla:Destacaos"),
     'ar': (BACK, u"قالب:مقالات مختارة"),
