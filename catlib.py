@@ -159,6 +159,7 @@ class Category(wikipedia.Page):
         if self.site().versionnumber() < 4:
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
         elif self.site().versionnumber() < 8:
+            # FIXME seems to parse all links
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         else:
             Rtitle = re.compile(
@@ -189,35 +190,28 @@ class Category(wikipedia.Page):
             wikipedia.get_throttle()
             txt = self.site().getUrl(path)
             # index where subcategory listing begins
-            try:
-                ibegin = txt.index('<div id="mw-subcategories">')
-                skippedCategoryDescription = True
-            except ValueError:
-                try:
+            if self.site().versionnumber() >= 9:
+                # These IDs were introduced in 1.9
+                if '<div id="mw-subcategories">' in txt:
+                    ibegin = txt.index('<div id="mw-subcategories">')
+                elif '<div id="mw-pages">' in txt:
                     ibegin = txt.index('<div id="mw-pages">')
-                    skippedCategoryDescription = True
-                except ValueError:
-                    if self.site().has_mediawiki_message('category-empty') and self.site().mediawiki_message('category-empty') in txt:
-                        # No articles or subcategories
-                        return
-                    else:
-                        try:
-                            ibegin = txt.index('<!-- start content -->') # does not work for cats without text
-                            # TODO: This parses category text and may think they are
-                            # pages in category! Check for versions without the message
-                            # "category-empty".
-                            skippedCategoryDescription = False
-                        except ValueError:
-                            wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
-                            raise
+                elif '<div id="mw-category-media">' in txt:
+                    ibegin = txt.index('<div id="mw-category-media">')
+                else:
+                    # No pages
+                    return
+            else:
+                ibegin = txt.index('<!-- start content -->') # does not work for cats without text
+                # TODO: This parses category text and may think they are
+                # pages in category! Check for versions before 1.9
             # index where article listing ends
-            try:
+            if '<div class="printfooter">' in txt:
                 iend = txt.index('<div class="printfooter">')
-            except ValueError:
-                try:
-                    iend = txt.index('<div id="catlinks">')
-                except ValueError:
-                    iend = txt.index('<!-- end content -->')
+            elif '<div class="catlinks">' in txt:
+                iend = txt.index('<div class="catlinks">')
+            else:
+                iend = txt.index('<!-- end content -->')
             txt = txt[ibegin:iend]
             for title in Rtitle.findall(txt):
                 if title == self.title():
@@ -244,16 +238,10 @@ class Category(wikipedia.Page):
                     # defaultNamespace feature to get everything correctly.
                     yield ARTICLE, wikipedia.ImagePage(self.site(), title)
             # try to find a link to the next list page
-            # If skippedCategoryDescription is False, then there are no pages
-            # or subcategories, so there cannot be a next list page
-            if skippedCategoryDescription:
-                matchObj = RLinkToNextPage.search(txt)
-                if matchObj:
-                    currentPageOffset = matchObj.group(1)
-                    wikipedia.output('There are more articles in %s.'
-                                     % self.title())
-                else:
-                    break
+            matchObj = RLinkToNextPage.search(txt)
+            if matchObj:
+                currentPageOffset = matchObj.group(1)
+                wikipedia.output('There are more articles in %s.' % self.title())
             else:
                 break
 
