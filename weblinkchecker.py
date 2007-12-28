@@ -138,7 +138,7 @@ talk_report_archive = {
     'en': u'\nThe web page has been saved by the Internet Archive. Please consider linking to an appropriate archived version: [%s]. ',
     'he': u'\nעמוד האינטרנט נשמר על־ידי ארכיון האינטרנט. אנא שקלו לקשר לגרסה המאורכבת המתאימה: [%s]',
     'kk': u'\nБұл ғаламтордың беті Интернет Мұрағатында сақталған. Мұрағатталған нұсқасына сәйкесті сілтеуді ескеріңіз: [%s]. ',
-    'ksh': u'De Websick es em ''Internet Archive'' faßjehallde. Kannß jo felleijsj_obb_en Koppi doh verlengke, süsh hee: [%s]. ',
+    'ksh': u"De Websick es em ''Internet Archive'' faßjehallde. Kannß jo felleijsj_obb_en Koppi doh verlengke, süsh hee: [%s]. ",
     'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te linken naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
