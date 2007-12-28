@@ -37,6 +37,10 @@ This is a Bot written by Filnik to add a text in a given category.
 
 python add_text.py -start:! -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{(?:[Tt]emplate:|)[Ss]omething" -up
 
+# Command used on it.wikipedia to put the template in the page without any category.
+python add_text.py -excepturl:"<p class='catlinks'>" -uncat -text:"{{Categorizzare}}"
+-except:"\{\{(?:[Tt]emplate:|)[Cc]ategorizzare" -summary:"Bot: Aggiungo template Categorizzare"
+
 --- Credits and Help ---
 This script has been written by Botwiki's stuff, if you want to help us
 or you need some help regarding this script, you can find us here:
@@ -108,62 +112,15 @@ def untaggedGenerator(untaggedProject, limit = 500):
         for result in results:
             yield wikipedia.Page(self.site, result)
 
-def main():
+def add_text(generator = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
+             always = False, exceptUrl = False, up = False):
     # When a page is tagged as "really well written" it has a star in the interwiki links.
     # This is a list of all the templates used (in regex format) to make the stars appear.
     starsList = ['link[ _]fa', 'link[ _]adq', 'enllaç[ _]ad',
                  'link[ _]ua', 'legătură[ _]af', 'destacado',
                  'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
-    # If none, the var is setted only for check purpose.
-    summary = None; addText = None; regexSkip = None
-    generator = None; always = False; exceptUrl = False
-    # Load a lot of default generators
-    genFactory = pagegenerators.GeneratorFactory()
-    errorCount = 0
-    # Put the text above or below the text?
-    up = False
 
-    # Loading the arguments
-    for arg in wikipedia.handleArgs():
-        if arg.startswith('-text'):
-            if len(arg) == 5:
-                addText = wikipedia.input(u'What text do you want to add?')
-            else:
-                addText = arg[6:]
-        elif arg.startswith('-summary'):
-            if len(arg) == 8:
-                summary = wikipedia.input(u'What summary do you want to use?')
-            else:
-                summary = arg[9:]
-        elif arg.startswith('-page'):
-            if len(arg) == 5:
-                generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
-            else:
-                generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
-        elif arg.startswith('-excepturl'):
-            exceptUrl = True
-            if len(arg) == 10:
-                regexSkip = wikipedia.input(u'What text should I skip?')
-            else:
-                regexSkip = arg[11:]
-        elif arg.startswith('-except'):
-            if len(arg) == 7:
-                regexSkip = wikipedia.input(u'What text should I skip?')
-            else:
-                regexSkip = arg[8:]
-        elif arg.startswith('-untagged'):
-            if len(arg) == 9:
-                untaggedProject = wikipedia.input(u'What project do you want to use?')
-            else:
-                untaggedProject = arg[10:]
-            generator = untaggedGenerator(untaggedProject)
-        elif arg == '-up':
-            up = True
-        elif arg == '-always':
-            always = True
-        else:
-            generator = genFactory.handleArg(arg)
-                
+    errorCount = 0
     site = wikipedia.getSite()
     # /wiki/ is not always the right path in non-wiki projects
     pathWiki = site.family.nicepath(site.lang)
@@ -174,6 +131,7 @@ def main():
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
         summary = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % addText)
+
     # Main Loop
     for page in generator:
         wikipedia.output(u'Loading %s...' % page.title())
@@ -186,16 +144,18 @@ def main():
             wikipedia.output(u"%s is a redirect, skip!" % page.title())
             continue
         # Understand if the bot has to skip the page or not
-        if regexSkip and exceptUrl:          
+        # In this way you can use both -except and -excepturl
+        if regexSkipUrl != None:          
             url = '%s%s' % (pathWiki, page.urlname())
-            result = re.findall(regexSkip, site.getUrl(url))
-        elif regexSkip:
+            result = re.findall(regexSkipUrl, site.getUrl(url))
+            if result != []:
+                wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
+                continue            
+        if regexSkip != None:
             result = re.findall(regexSkip, text)
-        else:
-            result = []
-        if result != []:
-            wikipedia.output(u'Exception! regex (or word) use with -except is in the page. Skip!')
-            continue
+            if result != []:
+                wikipedia.output(u'Exception! regex (or word) used with -except is in the page. Skip!')
+                continue
         # If not up, text put below
         if not up:
             newtext = text
@@ -286,6 +246,55 @@ def main():
                     # Break only if the errors are one after the other...
                     errorCount = 0
                     break
+def main():
+    # If none, the var is setted only for check purpose.
+    summary = None; addText = None; regexSkip = None; regexSkipUrl = None;
+    generator = None; always = False; exceptUrl = False
+    # Load a lot of default generators
+    genFactory = pagegenerators.GeneratorFactory()
+    # Put the text above or below the text?
+    up = False
+    # Loading the arguments
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-text'):
+            if len(arg) == 5:
+                addText = wikipedia.input(u'What text do you want to add?')
+            else:
+                addText = arg[6:]
+        elif arg.startswith('-summary'):
+            if len(arg) == 8:
+                summary = wikipedia.input(u'What summary do you want to use?')
+            else:
+                summary = arg[9:]
+        elif arg.startswith('-page'):
+            if len(arg) == 5:
+                generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
+            else:
+                generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
+        elif arg.startswith('-excepturl'):
+            if len(arg) == 10:
+                regexSkipUrl = wikipedia.input(u'What text should I skip?')
+            else:
+                regexSkipUrl = arg[11:]
+        elif arg.startswith('-except'):
+            if len(arg) == 7:
+                regexSkip = wikipedia.input(u'What text should I skip?')
+            else:
+                regexSkip = arg[8:]
+        elif arg.startswith('-untagged'):
+            if len(arg) == 9:
+                untaggedProject = wikipedia.input(u'What project do you want to use?')
+            else:
+                untaggedProject = arg[10:]
+            generator = untaggedGenerator(untaggedProject)
+        elif arg == '-up':
+            up = True
+        elif arg == '-always':
+            always = True
+        else:
+            generator = genFactory.handleArg(arg)
+    add_text(generator, addText, summary, regexSkip, regexSkipUrl, always, exceptUrl, up)
+    
 if __name__ == "__main__":
     try:
         main()
