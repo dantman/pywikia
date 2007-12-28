@@ -197,12 +197,19 @@ class Category(wikipedia.Page):
                     ibegin = txt.index('<div id="mw-pages">')
                     skippedCategoryDescription = True
                 except ValueError:
-                    try:
-                        ibegin = txt.index('<!-- start content -->') # does not work for cats without text
-                        skippedCategoryDescription = False
-                    except ValueError:
-                        wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
-                        raise
+                    if self.site().has_mediawiki_message('category-empty') and self.site().mediawiki_message('category-empty') in txt:
+                        # No articles or subcategories
+                        return
+                    else:
+                        try:
+                            ibegin = txt.index('<!-- start content -->') # does not work for cats without text
+                            # TODO: This parses category text and may think they are
+                            # pages in category! Check for versions without the message
+                            # "category-empty".
+                            skippedCategoryDescription = False
+                        except ValueError:
+                            wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
+                            raise
             # index where article listing ends
             try:
                 iend = txt.index('<div class="printfooter">')

@@ -412,7 +412,7 @@ class CategoryMoveRobot:
                 if oldMovedTalk is not None:
                     oldMovedTalk.delete(reason, confirm)
             else:
-                wikipedia.output('Couldn\'t delete %s - not empty.' % (self.oldCat.title(), self.newCatTitle))
+                wikipedia.output('Couldn\'t delete %s - not empty.' % self.oldCat.title())
 
 class CategoryListifyRobot:
     '''
