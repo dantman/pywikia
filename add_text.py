@@ -113,7 +113,7 @@ def untaggedGenerator(untaggedProject, limit = 500):
             yield wikipedia.Page(self.site, result)
 
 def add_text(generator = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
-             always = False, exceptUrl = False, up = False):
+             always = False, up = False):
     # When a page is tagged as "really well written" it has a star in the interwiki links.
     # This is a list of all the templates used (in regex format) to make the stars appear.
     starsList = ['link[ _]fa', 'link[ _]adq', 'enllaç[ _]ad',
@@ -249,7 +249,7 @@ def add_text(generator = None, addText = None, summary = None, regexSkip = None,
 def main():
     # If none, the var is setted only for check purpose.
     summary = None; addText = None; regexSkip = None; regexSkipUrl = None;
-    generator = None; always = False; exceptUrl = False
+    generator = None; always = False
     # Load a lot of default generators
     genFactory = pagegenerators.GeneratorFactory()
     # Put the text above or below the text?
@@ -293,7 +293,7 @@ def main():
             always = True
         else:
             generator = genFactory.handleArg(arg)
-    add_text(generator, addText, summary, regexSkip, regexSkipUrl, always, exceptUrl, up)
+    add_text(generator, addText, summary, regexSkip, regexSkipUrl, always, up)
     
 if __name__ == "__main__":
     try:
