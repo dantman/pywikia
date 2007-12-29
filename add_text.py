@@ -201,10 +201,10 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         for paginetta in interwikiList:
             try:
                 newtext += '\n[[%s]]' % paginetta.decode('utf-8')
-            except UnicodeEncodeError:
+            except UnicodeDecodeError:
                 try:
                     newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
-                except UnicodeEncodeError:
+                except UnicodeDecodeError:
                     newtext += '\n[[%s]]' % paginetta
     # If instead the text must be added above...
     else:
