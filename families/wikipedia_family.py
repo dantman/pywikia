@@ -454,6 +454,7 @@ class Family(family.Family):
             'hr':  [u'Disambig', u'Razdvojba'],
             'ht':  [u'Menm non', u'Disambig'],
             'hu':  [u'Egyert', u'Disambig',u'Egyért'],
+            'hy':  [u'Երկիմաստ', u'Disambig'],
             'ia':  [u'Disambiguation', u'Disambig'],
             'id':  [u'Disambig'],
             'io':  [u'Homonimo', u'Disambig'],
