@@ -62,6 +62,7 @@ import wikipedia, catlib
 
 msg = {
     'en': u'Bot: Adding %s',
+    'it': u'Bot: Aggiungo %s',
     'pt': u'Bot: Adicionando %s',
     }
 
@@ -112,8 +113,13 @@ def untaggedGenerator(untaggedProject, limit = 500):
         for result in results:
             yield wikipedia.Page(self.site, result)
 
-def add_text(generator = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
-             always = False, up = False):
+def add_text(page = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
+             always = False, up = False, putText = True, oldTextGiven = None):
+    if not addText:
+        raise NoEnoughData('You have to specify what text you want to add!')
+    if not summary:
+        summary = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % addText)
+
     # When a page is tagged as "really well written" it has a star in the interwiki links.
     # This is a list of all the templates used (in regex format) to make the stars appear.
     starsList = ['link[ _]fa', 'link[ _]adq', 'enllaç[ _]ad',
@@ -124,107 +130,107 @@ def add_text(generator = None, addText = None, summary = None, regexSkip = None,
     site = wikipedia.getSite()
     # /wiki/ is not always the right path in non-wiki projects
     pathWiki = site.family.nicepath(site.lang)
-    # Check if there are the minimal settings
-    if not generator:
-        raise NoEnoughData('You have to specify the generator you want to use for the script!')
-    if not addText:
-        raise NoEnoughData('You have to specify what text you want to add!')
-    if not summary:
-        summary = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % addText)
 
-    # Main Loop
-    for page in generator:
+    if putText:
         wikipedia.output(u'Loading %s...' % page.title())
+    if oldTextGiven == None:
         try:
             text = page.get()
         except wikipedia.NoPage:
             wikipedia.output(u"%s doesn't exist, skip!" % page.title())
-            continue
+            return False # continue
         except wikipedia.IsRedirectPage:
             wikipedia.output(u"%s is a redirect, skip!" % page.title())
-            continue
-        # Understand if the bot has to skip the page or not
-        # In this way you can use both -except and -excepturl
-        if regexSkipUrl != None:          
-            url = '%s%s' % (pathWiki, page.urlname())
-            result = re.findall(regexSkipUrl, site.getUrl(url))
-            if result != []:
-                wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
-                continue            
-        if regexSkip != None:
-            result = re.findall(regexSkip, text)
-            if result != []:
-                wikipedia.output(u'Exception! regex (or word) used with -except is in the page. Skip!')
-                continue
-        # If not up, text put below
-        if not up:
-            newtext = text
-            categoryNamespace = site.namespace(14)
-            # Getting the categories
-            regexpCat = re.compile(r'\[\[((?:category|%s):.*?)\]\]' % categoryNamespace.lower(), re.I)
-            categorieInside = regexpCat.findall(text)
-            # Deleting the categories
-            newtext = wikipedia.removeCategoryLinks(newtext, site)
-            # Getting the interwiki
-            interwikiInside = page.interwiki()
-            interwikiList = list()
-            for paginetta in interwikiInside:
-                nome = str(paginetta).split('[[')[1].split(']]')[0]
-                interwikiList.append(nome)
-                lang = nome.split(':')[0]
-            # Removing the interwiki
-            newtext = wikipedia.removeLanguageLinks(newtext, site)
-            # Sorting the interwiki
-            interwikiList.sort()
-            newtext += "\n%s" % addText
-            # Reputting the categories
-            for paginetta in categorieInside:
+            return False # continue
+    else:
+        text = oldTextGiven
+    # Understand if the bot has to skip the page or not
+    # In this way you can use both -except and -excepturl
+    if regexSkipUrl != None:          
+        url = '%s%s' % (pathWiki, page.urlname())
+        result = re.findall(regexSkipUrl, site.getUrl(url))
+        if result != []:
+            wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
+            return False # continue         
+    if regexSkip != None:
+        result = re.findall(regexSkip, text)
+        if result != []:
+            wikipedia.output(u'Exception! regex (or word) used with -except is in the page. Skip!')
+            return False # continue
+    # If not up, text put below
+    if not up:
+        newtext = text
+        categoryNamespace = site.namespace(14)
+        # Getting the categories
+        regexpCat = re.compile(r'\[\[((?:category|%s):.*?)\]\]' % categoryNamespace.lower(), re.I)
+        categorieInside = regexpCat.findall(text)
+        # Deleting the categories
+        newtext = wikipedia.removeCategoryLinks(newtext, site)
+        # Getting the interwiki
+        interwikiInside = page.interwiki()
+        interwikiList = list()
+        for paginetta in interwikiInside:
+            nome = str(paginetta).split('[[')[1].split(']]')[0]
+            interwikiList.append(nome)
+            lang = nome.split(':')[0]
+        # Removing the interwiki
+        newtext = wikipedia.removeLanguageLinks(newtext, site)
+        # Sorting the interwiki
+        interwikiList.sort()
+        newtext += "\n%s" % addText
+        # Reputting the categories
+        for paginetta in categorieInside:
+            try:
+                newtext += '\n[[%s]]' % paginetta.decode('utf-8')
+            except UnicodeDecodeError:
                 try:
-                    newtext += '\n[[%s]]' % paginetta.decode('utf-8')
-                except UnicodeEncodeError:
-                    try:
-                        newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
-                    except UnicodeEncodeError:
-                        newtext += '\n[[%s]]' % paginetta
-            newtext += '\n'
-            # Dealing the stars' issue
-            starsListInPage = list()
-            for star in starsList:
-                regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}\n)' % star, re.I)
-                risultato = regex.findall(newtext)
-                if risultato != []:
-                    newtext = regex.sub('', newtext)
-                    for element in risultato:
-                        newtext += '\n%s' % element
-            # Adding the interwiki
-            for paginetta in interwikiList:
+                    newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
+                except UnicodeDecodeError:
+                    newtext += '\n[[%s]]' % paginetta
+        newtext += '\n'
+        # Dealing the stars' issue
+        starsListInPage = list()
+        for star in starsList:
+            regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}\n)' % star, re.I)
+            risultato = regex.findall(newtext)
+            if risultato != []:
+                newtext = regex.sub('', newtext)
+                for element in risultato:
+                    newtext += '\n%s' % element
+        # Adding the interwiki
+        for paginetta in interwikiList:
+            try:
+                newtext += '\n[[%s]]' % paginetta.decode('utf-8')
+            except UnicodeEncodeError:
                 try:
-                    newtext += '\n[[%s]]' % paginetta.decode('utf-8')
+                    newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
                 except UnicodeEncodeError:
-                    try:
-                        newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
-                    except UnicodeEncodeError:
-                        newtext += '\n[[%s]]' % paginetta
-        # If instead the text must be added above...
-        else:
-            newtext = addText + '\n' + text
+                    newtext += '\n[[%s]]' % paginetta
+    # If instead the text must be added above...
+    else:
+        newtext = addText + '\n' + text
+    if putText:
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         wikipedia.showDiff(text, newtext)
-        choice = ''
-        # Let's put the changes.
-        while 1:
+    choice = ''
+    # Let's put the changes.
+    while 1:
+        # If someone load it as module, maybe it's not so useful to put the text in the page
+        if putText:
             if not always:
                 choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
             if choice.lower() in ['a', 'all']:
                 always = True
             if choice.lower() in ['n', 'no']:
-                break
+                return False
+                
             if choice.lower() in ['y', 'yes'] or always:
                 try:
                     page.put(newtext, summary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Edit conflict! skip!')
-                    break
+                    return False
+                    
                 except wikipedia.ServerError:
                     errorCount += 1
                     if errorCount < 5:
@@ -235,17 +241,24 @@ def add_text(generator = None, addText = None, summary = None, regexSkip = None,
                         raise wikipedia.ServerError(u'Fifth Server Error!')
                 except wikipedia.SpamfilterError, e:
                     wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                    break
+                    return False
+                    
                 except wikipedia.PageNotSaved, error:
-                    wikipedia.output(u'Error putting page: %s' % (error.args,))
-                    break
+                    wikipedia.output(u'Error putting page: %s' % error.args)
+                    return False
+                    
                 except wikipedia.LockedPage:
-                    wikipedia.output(u'Skipping %s (locked page)' % (page.title(),))
-                    break
+                    wikipedia.output(u'Skipping %s (locked page)' % page.title())
+                    return False
+                    
                 else:
                     # Break only if the errors are one after the other...
                     errorCount = 0
-                    break
+                    return True
+                    
+        else:
+            return (text, newtext)
+            
 def main():
     # If none, the var is setted only for check purpose.
     summary = None; addText = None; regexSkip = None; regexSkipUrl = None;
@@ -293,7 +306,12 @@ def main():
             always = True
         else:
             generator = genFactory.handleArg(arg)
-    add_text(generator, addText, summary, regexSkip, regexSkipUrl, always, up)
+    # Check if there are the minimal settings
+    if not generator:
+        raise NoEnoughData('You have to specify the generator you want to use for the script!')
+    # Main Loop
+    for page in generator:            
+        add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
     
 if __name__ == "__main__":
     try:
