@@ -222,15 +222,13 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             if choice.lower() in ['a', 'all']:
                 always = True
             if choice.lower() in ['n', 'no']:
-                return False
-                
+                return False              
             if choice.lower() in ['y', 'yes'] or always:
                 try:
                     page.put(newtext, summary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Edit conflict! skip!')
-                    return False
-                    
+                    return False                  
                 except wikipedia.ServerError:
                     errorCount += 1
                     if errorCount < 5:
@@ -241,21 +239,17 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                         raise wikipedia.ServerError(u'Fifth Server Error!')
                 except wikipedia.SpamfilterError, e:
                     wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                    return False
-                    
+                    return False                   
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Error putting page: %s' % error.args)
-                    return False
-                    
+                    return False                   
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Skipping %s (locked page)' % page.title())
-                    return False
-                    
+                    return False                   
                 else:
                     # Break only if the errors are one after the other...
                     errorCount = 0
-                    return True
-                    
+                    return True                   
         else:
             return (text, newtext)
             
