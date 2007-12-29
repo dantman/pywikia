@@ -3978,33 +3978,19 @@ your connection is down. Retrying in %i minutes..."""
         global mwpage, tree
         if key not in self._mediawiki_messages.keys() \
                 and not hasattr(self, "_phploaded"):
-            retry_idle_time = 1
-            while True:
-                get_throttle()
-                mwpage = self.getUrl("%s?title=%s:%s&action=edit"
-                         % (self.path(), urllib.quote(
-                                self.namespace(8).replace(' ', '_').encode(
-                                    self.encoding())),
-                            key))
-                tree = BeautifulSoup(mwpage,
-                                     convertEntities=BeautifulSoup.HTML_ENTITIES,
-                                     parseOnlyThese=SoupStrainer("textarea"))
-                if tree.textarea is None:
-                    # We assume that the server is down.
-                    # Wait some time, then try again.
-                    output(
-u"""WARNING: No text area found on %s%s?title=MediaWiki:%s&action=edit.
-Maybe the server is down. Retrying in %i minutes..."""
-                        % (self.hostname(), self.path(), key, retry_idle_time)
-                    )
-                    time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
-                    retry_idle_time *= 2
-                    if retry_idle_time > 30:
-                        retry_idle_time = 30
-                    continue
-                break
-            value = tree.textarea.string.strip()
+            get_throttle()
+            mwpage = self.getUrl("%s?title=%s:%s&action=edit"
+                     % (self.path(), urllib.quote(
+                            self.namespace(8).replace(' ', '_').encode(
+                                self.encoding())),
+                        key))
+            tree = BeautifulSoup(mwpage,
+                                 convertEntities=BeautifulSoup.HTML_ENTITIES,
+                                 parseOnlyThese=SoupStrainer("textarea"))
+            if tree.textarea is not None:
+                value = tree.textarea.string.strip()
+            else:
+                value = None
             if value:
                 self._mediawiki_messages[key] = value
             else:
@@ -4013,12 +3999,28 @@ Maybe the server is down. Retrying in %i minutes..."""
                 if verbose:
                     output(
                       u"Retrieving mediawiki messages from Special:Allmessages")
-                get_throttle()
-                phppage = self.getUrl(self.get_address("Special:Allmessages")
+                retry_idle_time = 1
+                while True:
+                    get_throttle()
+                    phppage = self.getUrl(self.get_address("Special:Allmessages")
                                       + "&ot=php")
-                Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
-                for (phpkey, phpval) in Rphpvals.findall(phppage):
-                    self._mediawiki_messages[str(phpkey)] = phpval
+                    Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
+                    count = 0
+                    for (phpkey, phpval) in Rphpvals.findall(phppage):
+                        count += 1
+                        self._mediawiki_messages[str(phpkey)] = phpval
+                    if count == 0:
+                        # No messages could be added.
+                        # We assume that the server is down.
+                        # Wait some time, then try again.
+                        output('WARNING: No messages found it Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
+                        time.sleep(retry_idle_time * 60)
+                        # Next time wait longer, but not longer than half an hour
+                        retry_idle_time *= 2
+                        if retry_idle_time > 30:
+                            retry_idle_time = 30
+                        continue
+                    break
                 self._phploaded = True
 
         if self._mediawiki_messages[key] is None:
