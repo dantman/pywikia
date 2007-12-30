@@ -139,7 +139,7 @@ msg = {
        'nds':u'Bot: Text automaatsch utwesselt: %s',
        'nds-nl':u'Bot: autematisch tekse vervungen %s',
        'nl':u'Bot: automatisch tekst vervangen %s',
-       'no':u'bot: Autometisk teksterstatning: %s',
+       'no':u'bot: Automatisk teksterstatning: %s',
        'pl':u'Robot automatycznie zamienia tekst %s',
        'pt':u'Bot: Mudança automática %s',
        'sr':u'Бот: Аутоматска замена текста %s',
