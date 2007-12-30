@@ -138,10 +138,10 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             text = page.get()
         except wikipedia.NoPage:
             wikipedia.output(u"%s doesn't exist, skip!" % page.title())
-            return False # continue
+            return (False, always) # continue
         except wikipedia.IsRedirectPage:
             wikipedia.output(u"%s is a redirect, skip!" % page.title())
-            return False # continue
+            return (False, always) # continue
     else:
         text = oldTextGiven
     # Understand if the bot has to skip the page or not
@@ -151,12 +151,12 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         result = re.findall(regexSkipUrl, site.getUrl(url))
         if result != []:
             wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
-            return False # continue         
+            return (False, always) # continue         
     if regexSkip != None:
         result = re.findall(regexSkip, text)
         if result != []:
             wikipedia.output(u'Exception! regex (or word) used with -except is in the page. Skip!')
-            return False # continue
+            return (False, always) # continue
     # If not up, text put below
     if not up:
         newtext = text
@@ -186,7 +186,12 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                 try:
                     newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
                 except UnicodeDecodeError:
-                    newtext += '\n[[%s]]' % paginetta
+                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())
+            except UnicodeEncodeError:
+                try:
+                    newtext += '\n[[%s]]' % paginetta.encode('utf-8')
+                except UnicodeEncodeError:
+                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())   
         newtext += '\n'
         # Dealing the stars' issue
         starsListInPage = list()
@@ -205,7 +210,12 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                 try:
                     newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
                 except UnicodeDecodeError:
-                    newtext += '\n[[%s]]' % paginetta
+                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())
+            except UnicodeEncodeError:
+                try:
+                    newtext += '\n[[%s]]' % paginetta.encode('utf-8')
+                except UnicodeEncodeError:
+                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())               
     # If instead the text must be added above...
     else:
         newtext = addText + '\n' + text
@@ -222,13 +232,13 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             if choice.lower() in ['a', 'all']:
                 always = True
             if choice.lower() in ['n', 'no']:
-                return False              
+                return (False, always)              
             if choice.lower() in ['y', 'yes'] or always:
                 try:
                     page.put(newtext, summary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Edit conflict! skip!')
-                    return False                  
+                    return (False, always)                  
                 except wikipedia.ServerError:
                     errorCount += 1
                     if errorCount < 5:
@@ -239,19 +249,19 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                         raise wikipedia.ServerError(u'Fifth Server Error!')
                 except wikipedia.SpamfilterError, e:
                     wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                    return False                   
+                    return (False, always)                   
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Error putting page: %s' % error.args)
-                    return False                   
+                    return (False, always)                   
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Skipping %s (locked page)' % page.title())
-                    return False                   
+                    return (False, always)                   
                 else:
                     # Break only if the errors are one after the other...
                     errorCount = 0
-                    return True                   
+                    return (True, always)                   
         else:
-            return (text, newtext)
+            return (text, newtext, always)
             
 def main():
     # If none, the var is setted only for check purpose.
@@ -305,7 +315,7 @@ def main():
         raise NoEnoughData('You have to specify the generator you want to use for the script!')
     # Main Loop
     for page in generator:            
-        add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
+        (status, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
     
 if __name__ == "__main__":
     try:
