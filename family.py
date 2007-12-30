@@ -25,7 +25,7 @@ class Family:
            'ce','pih','no','nn','nrm','nov','oc','or','om','ng','hz','ug','uz','pa','pi',
            'pag','pap','ps','km','pms','nds','pl','pt','ty','ksh','ro','rmy','rm',
            'qu','ru','se','sm','sa','sg','sc','sco','st','tn','sq','scn',
-           'si','simple','sd','ss','sk','sl','cu','so','sr','sh','su','fi','sv','tl',
+           'si','simple','sd','ss','sk','cu','sl','so','sr','sh','su','fi','sv','tl',
            'ta','kab','roa-tara','tt','te','tet','th','vi','ti','tg','tpi','to','chr','chy','ve',
            'tr','tk','tw','udm','bug','uk','ur','vec','vo','fiu-vro','wa',
            'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg','zh']
