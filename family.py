@@ -2437,21 +2437,39 @@ class Family:
             raise KeyError('ERROR: Unknown namespace %d for %s:%s' % (ns_number, code, self.name))
         elif self.isNsI18N(ns_number, code):
             v = self.namespaces[ns_number][code]
+            if type(v) is not list:
+                v = [v,]
+            if all and self.isNsI18N(ns_number, fallback):
+                v2 = self.namespaces[ns_number][fallback]
+                if type(v2) is list:
+                    v.extend(v2)
+                else:
+                    v.append(v2)
         elif fallback and self.isNsI18N(ns_number, fallback):
             v = self.namespaces[ns_number][fallback]
+            if type(v) is not list:
+                v = [v,]
         else:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))
 
         if all:
-            if type(v) is list:
-                return tuple(v)
-            else:
-                return (v, )
+            namespaces = []
+
+            # Unique list
+            for ns in v:
+                if ns not in namespaces:
+                    namespaces.append(ns)
+
+            # Lowercase versions of namespaces
+            if code not in self.nocapitalize:
+                namespaces.extend([ns[0].lower() + ns[1:] for ns in namespaces if ns and ns[0].lower() != ns[0].upper()])
+
+            # Underscore versions of namespaces
+            namespaces.extend([ns.replace(' ', '_') for ns in namespaces if ns and ' ' in ns])
+
+            return tuple(namespaces)
         else:
-            if type(v) is list:
-                return v[0]
-            else:
-                return v
+            return v[0]
 
     def isDefinedNS(self, ns_number):
         """Return True if the namespace has been defined in this family.
@@ -2561,17 +2579,7 @@ class Family:
         return self.namespace(code, 14, fallback)
 
     def category_namespaces(self, code):
-        namespaces = []
-        namespace_title = self.namespace(code, 14)
-        namespaces.append(namespace_title)
-        if namespace_title != namespace_title.lower():
-            namespaces.append(namespace_title.lower())
-        default_namespace_title = self.namespace('_default', 14)
-        if namespace_title != default_namespace_title:
-            namespaces.append(default_namespace_title)
-            if default_namespace_title != default_namespace_title.lower():
-                namespaces.append(default_namespace_title.lower())
-        return namespaces
+        return self.namespace(code, 14, all = True)
 
     # Redirect code can be translated.
     # Note that redirect codes are case-insensitive, so it is enough

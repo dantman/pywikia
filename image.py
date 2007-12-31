@@ -109,15 +109,14 @@ class ImageRobot:
             old = self.oldImage
 
         old = re.sub('[_ ]', '[_ ]', old)
-        #TODO: Add internationalization of Image namespace name.
         if not self.loose or not self.newImage:
-            ImageRegex = re.compile(r'\[\[ *[Ii]mage:' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
+            ImageRegex = re.compile(r'\[\[ *(?:' + '|'.join(wikipedia.getSite().namespace(6, all = True)) + ')\s*:\s*' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
         else:
             ImageRegex = re.compile(r'' + old)
 
         if self.newImage:
             if not self.loose:
-                replacements.append((ImageRegex, '[[Image:' + self.newImage + '\g<parameters>]]'))
+                replacements.append((ImageRegex, '[[(?:' + '|'.join(wikipedia.getSite().namespace(6, all = True)) + ')\s*:\s*' + self.newImage + '\g<parameters>]]'))
             else:
                 replacements.append((ImageRegex, self.newImage))
         else:

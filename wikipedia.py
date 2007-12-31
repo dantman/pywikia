@@ -2182,14 +2182,6 @@ not supported by PyWikipediaBot!"""
         text = self.get()
         new_text = text
 
-        def caseInsensitivePattern(s):
-            """
-            Creates a pattern that matches the string case-insensitively.
-            """
-            return ur'(?:%s)' % u''.join([u'[%s%s]'
-                                            % (re.escape(c.upper()), re.escape(c.lower()))
-                                          for c in s])
-
         def capitalizationPattern(s):
             """
             Given a string, creates a pattern that matches the string, with
@@ -2201,9 +2193,9 @@ not supported by PyWikipediaBot!"""
             else:
                 return ur'(?:[%s%s]%s)' % (re.escape(s[0].upper()), re.escape(s[0].lower()), re.escape(s[1:]))
 
-        namespaces = set(('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True))
+        namespaces = set(site.namespace(6, all = True) + site.namespace(-2, all = True))
         # note that the colon is already included here
-        namespacePattern = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(caseInsensitivePattern, namespaces))
+        namespacePattern = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(namespaces)
 
         imagePattern = u'(%s)' % capitalizationPattern(image).replace(r'\_', '[ _]')
 
