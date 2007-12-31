@@ -102,21 +102,22 @@ class ImageRobot:
         # empty string if there are none.
 
         replacements = []
+        site = wikipedia.getSite()
 
-        if not wikipedia.getSite().nocapitalize:
+        if not site.nocapitalize:
             old = '[' + self.oldImage[0].upper() + self.oldImage[0].lower() + ']' + self.oldImage[1:]
         else:
             old = self.oldImage
 
         old = re.sub('[_ ]', '[_ ]', old)
         if not self.loose or not self.newImage:
-            ImageRegex = re.compile(r'\[\[ *(?:' + '|'.join(wikipedia.getSite().namespace(6, all = True)) + ')\s*:\s*' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
+            ImageRegex = re.compile(r'\[\[ *(?:' + '|'.join(site.namespace(6, all = True)) + ')\s*:\s*' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
         else:
             ImageRegex = re.compile(r'' + old)
 
         if self.newImage:
             if not self.loose:
-                replacements.append((ImageRegex, '[[(?:' + '|'.join(wikipedia.getSite().namespace(6, all = True)) + ')\s*:\s*' + self.newImage + '\g<parameters>]]'))
+                replacements.append((ImageRegex, '[[' + site.image_namespace() + ':' + self.newImage + '\g<parameters>]]'))
             else:
                 replacements.append((ImageRegex, self.newImage))
         else:
