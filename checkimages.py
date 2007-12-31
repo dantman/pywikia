@@ -80,16 +80,18 @@ import cPickle, pagegenerators, catlib
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
         'commons':'\n{{subst:nld}}',
-	'en'     :'\n{{subst:nld}}',
-	'it'     :'\n{{subst:unverdata}}',
-	'hu'     :u'\n{{nincslicenc|~~~~~}}',
-	}
+    'en'     :'\n{{subst:nld}}',
+    'it'     :'\n{{subst:unverdata}}',
+    'hu'     :u'\n{{nincslicenc|~~~~~}}',
+    'zh'    :'{{subst:no source/auto}}',
+}
 
 txt_find =  {
-	'commons':['{{no license', '{{nld'],
+    'commons':['{{no license', '{{nld'],
         'en':['{{nld', '{{no license'],
-	'it':['{{unverdata', '{{unverified'],
-	'hu':[u'{{nincsforrás',u'{{nincslicenc'],
+    'it':['{{unverdata', '{{unverified'],
+    'hu':[u'{{nincsforrás',u'{{nincslicenc'],
+    'zh':['{{no source','{{unknown'],
                 }
 
 # Summary for when the will add the no source
@@ -98,6 +100,7 @@ comm = {
 		'en'     :'Bot: Marking newly uploaded untagged file',
 		'it'     :"Bot: Aggiungo unverified",
 		 'hu'    :'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
+		 'zh':u'機器人:標示新上傳且未有任何資訊的檔案',
 		}
 
 # Summary that the bot use when it notify the problem with the image's license
@@ -106,6 +109,7 @@ comm2 = {
 		'en'     :"Bot: Requesting source information." ,
 		'it'     :"Bot: Notifico l'unverified",
 		'hu'     :'Robot: Forrásinformáció kérése',
+		'zh'     :u"機器人: 正在請求來源資訊"
 		}
 
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
@@ -114,6 +118,7 @@ empty = {
 		'en'     :'{{welcome}}\n~~~~\n',
 		'it'     :'{{benvenuto}}\n~~~~\n',
 		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
+		'zh':'{{subst:welcome|sign=~~~~}}',
 		}
 
 # General summary
@@ -122,6 +127,7 @@ unver = {
 		'en'     :'Bot: no source',
 		'it'     :'Bot: Unverified!',
 		'hu'     :'Robot: nincs forrás',
+		'zh':u'機器人:沒有來源資訊',
 		}
 
 # if the file has an unknown extension it will be tagged with this template.
@@ -131,6 +137,7 @@ delete_immediately = {
 			'en'     :"{{db-meta|The file has .%s as extension.}}",
 			'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
 			'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
+			'zh'    :u'{{delete|未知檔案格式',
 			}
 
 # The header of the Unknown extension's message.
@@ -139,6 +146,7 @@ delete_immediately_head = {
 			'en'     :"\n== Unknown extension! ==\n",
 			'it'     :'\n== File non specificato ==\n',
 			'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
+			'zh':u'\n==您上載的檔案格式可能有誤==\n',
 			}
 
 # Text that will be add if the bot find a unknown extension.
@@ -147,6 +155,7 @@ delete_immediately_notification = {
 				'en'     :'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
 				'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
 				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
+				'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
 				}
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
@@ -154,6 +163,7 @@ del_comm = {
 			'en'     :'Bot: Adding %s',
 			'it'     :'Bot: Aggiungo %s',
 			'hu'     :u'Robot:"%s" hozzáadása',
+			'zh'     :u'機器人: 正在新增 %s',
 			}
 
 # This is the most important header, because it will be used a lot. That's the header that the bot
@@ -163,6 +173,7 @@ nothing_head = {
 				'en'     :"\n== Image without license ==\n",
 				'it'     :"\n== Immagine senza licenza ==\n",
 				'hu'     :u"\n== Licenc nélküli kép ==\n",
+				'zh'    :None,
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
@@ -170,6 +181,7 @@ nothing_notification = {
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
+				'zh'   :u'{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
 				}
 # This is a list of what bots used this script in your project.
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
@@ -177,6 +189,7 @@ bot_list = {
 			'commons':['Siebot', 'CommonsDelinker'],
 			'en'     :['OrphanBot'],
 			'it'     :['Filbot', 'Nikbot', '.snoopyBot.'],
+			'zh':['alexbot'],
 			}
 
 # The message that the bot will add the second time that find another license problem.
@@ -185,6 +198,7 @@ second_message_without_license = {
                                 'en': None,
 				'it':'{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
 				'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
+				'zh':None,
 				}
 # You can add some settings to wikipedia. In this way, you can change them without touch the code.
 # That's useful if you are running the bot on Toolserver.
@@ -193,6 +207,7 @@ page_with_settings = {
                                         'en':None,
                                         'hu':None,
 					'it':'Utente:Nikbot/Settings#Settings',
+					'zh':None,
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)
 # This is the page where the bot will store them.
@@ -201,6 +216,7 @@ report_page = {
                                 'en'     :'User:Filnik/Report',
 				'it'     :'Utente:Nikbot/Report',
 				'hu'     :'User:Bdamokos/Report',
+				'zh'    :u'User:Alexsh/checkimagereport',
 				}
 # Adding the date after the signature. 
 timeselected = u' ~~~~~'
@@ -210,6 +226,7 @@ report_text = {
 			'en':"\n*[[:Image:%s]] " + timeselected,
 			'it':"\n*[[:Immagine:%s]] " + timeselected,
 			'hu':u"\n*[[:Kép:%s]] " + timeselected,
+			'zh':"\n*[[:Image:%s]] " + timeselected,
 			}
 # The summary of the report
 comm10 = {
@@ -217,6 +234,7 @@ comm10 = {
 		'en':'Bot: Updating the log',
 		'it':'Bot: Aggiorno il log',
 		'hu': 'Robot: A napló frissítése',
+		'zh': u'機器人:更新記錄',
 		}
 
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
@@ -229,10 +247,11 @@ HiddenTemplate = {
 		'en':['information'],
 		'it':['edp', 'informazioni[ _]file', 'information'],
 		'hu':[u'információ','enwiki', 'azonnali'],
+		'zh':[u'information'],
 		}
 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['commons', 'en','hu', 'it']
+project_inserted = ['commons', 'en','hu', 'it','zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################

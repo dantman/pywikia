@@ -65,6 +65,7 @@ msg_double={
     'pt': u'Bot: Corrigido duplo redirecionamento',
     'ru': u'Робот: исправление двойного перенаправления',
     'sr': u'Бот: Поправка дуплих преусмерења',
+    'sv': u'Robot: Rättar dubbel omdirigering',
     'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน',
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
     'zh': u'機器人:修正雙重重定向',

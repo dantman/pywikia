@@ -89,6 +89,7 @@ msg_add={
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     'it':u'Bot: Aggiungo [[Categoria:%s]]',
     'lt':u'robotas: Pridedama [[Kategorija:%s]]',
+    'ja':u'ロボットによる: カテゴリ追加 [[Category:%s]]',
     'kk':u'Бот: [[Санат:%s]] үстеді',
     'ko': u'로봇: [[분류:%s]] 추가',
     'nds':u'Kat-Bot: [[Kategorie:%s]] rin',
@@ -99,7 +100,7 @@ msg_add={
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
-    'zh':u'機器人:正在新增[[Category:%s]]',
+    'zh':u'機器人:正在新增目錄 [[Category:%s]]',
     }
 
 msg_change={
@@ -116,6 +117,7 @@ msg_change={
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'it':u'Bot: Modifico %s',
     'lt':u'robotas: Keičiama %s',
+    'ja':u'ロボットによる: カテゴリ変更 [[Category:%s]]',
     'kk':u'Бот: %s дегенді түзетті',
     'ko': u'로봇: %s 수정',
     'nds':u'Kat-Bot: %s utwesselt',
@@ -126,7 +128,7 @@ msg_change={
     'pl':u'Robot przenosi %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
-    'zh':u'機器人:正在修改[[Category:%s]]',
+    'zh':u'機器人:正在變更目錄 [[Category:%s]]',
     }
 
 deletion_reason_move = {
@@ -139,6 +141,7 @@ deletion_reason_move = {
     'ia':u'Robot: Categoria transferite a [[Category:%s|%s]]',
     'id':u'Bot: Kategori dipindahkan ke [[Category:%s|%s]]',
     'it':u'Bot: La categoria è stata sostituita da [[Categoria:%s|%s]]',
+    'ja':u'ロボットによる: カテゴリ [[Category:%s]]へ移動',
     'lt':u'robotas: Kategorija pervadinta į [[Category:%s|%s]]',
     'kk':u'Бот: Санат [[Санат:%s|%s]] дегенге жылжытылды',
     'ko': u'로봇: 분류가 [[분류:%s|%s]]로 옮겨짐',
@@ -150,7 +153,7 @@ deletion_reason_move = {
     'pl':u'Robot przenosi kategorię do [[Category:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[Category:%s|%s]]',
-    'zh':u'機器人:正在移動到[[Category:%s]]',
+    'zh':u'機器人:正在移動目錄至 [[Category:%s]]',
     }
 
 cfd_templates = {
