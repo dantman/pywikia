@@ -22,6 +22,8 @@ This script understands the following command-line arguments:
 
 	-time[:#]	- Time in seconds between repeat runs (default: 30)
 
+	-wait[:#]       - Wait x second before check the images (default: 0)
+
 	-skip[:#]	- The bot skip the first [:#] images (default: 0)
 
 	-start[:#]	- Use allpages() as generator (it starts already form Image:[:#])
@@ -585,6 +587,7 @@ if __name__ == "__main__":
 		limit = 80
 		time_sleep = 30
 		skip_number = 0
+		wait_number = 0
 		commonsActive = False
 		normal = False
 		urlUsed = False
@@ -614,6 +617,13 @@ if __name__ == "__main__":
 				elif len(arg) > 5:
 					skip = True
 					skip_number = int(arg[6:])
+			elif arg.startswith('-wait'):
+				if len(arg) == 5:
+					wait = True
+					wait_number = int(wikipedia.input(u'How many time do you want to wait before checking the images?'))
+				elif len(arg) > 5:
+					wait = True
+					wait_number = int(arg[6:])
 			elif arg.startswith('-start'):
 				if len(arg) == 6:
 					firstPageTitle = str(wikipedia.input(u'From witch page do you want to start?'))
@@ -698,7 +708,9 @@ if __name__ == "__main__":
                         hiddentemplate.append('%s' % langK)
 
 		if skip_number == 0:
-			skip = False        
+			skip = False
+		if wait_number == 0:
+                        wait = False
 		# nothing = Defining an empty image description
 		nothing = ['', ' ', '  ', '   ', '\n', '\n ', '\n  ', '\n\n', '\n \n', ' \n', ' \n ', ' \n \n']
 		# something = Minimal requirements for an image description.
@@ -761,7 +773,12 @@ if __name__ == "__main__":
 				wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
 			else:
 				wikipedia.output(u'\t\t>> No images to skip...<<')
-			skipok = False                                
+			skipok = False
+			if wait:
+                                
+
+                                wikipedia.output(u'\tWaiting %s seconds before checking the images, %s' % (wait_number, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())))
+                                time.sleep(wait_number)
 			for image in generator:
 				if normal == False and regexGen == False:
 					if image_namespace.lower() not in image.title().lower() and \
@@ -798,24 +815,26 @@ if __name__ == "__main__":
 					continue
 				except wikipedia.IsRedirectPage:
 					wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
-					continue            
+					continue
+				for i in TextFind:
+					if i.lower() in g:
+						tagged = True				
 				for l in hiddentemplate:
-                                        res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: |\||\n|\W)' % l.lower(), g.lower())
-					if res != []:
-                                                #print res
-						wikipedia.output(u'A white template found, skipping the template...')
-						# I don't delete the template, because if there is something to change the image page
-						# will be reloaded. I delete it only for the next check part.
-						g = g.lower().replace(l, '')
+                                        if tagged == False:
+                                                res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n)' % l.lower(), g.lower())
+                                                if res != []:
+                                                        #print res
+                                                        wikipedia.output(u'A white template found, skipping the template...')
+                                                        # I don't delete the template, because if there is something to change the image page
+                                                        # will be reloaded. I delete it only for the next check part.
+                                                        if l != '' and l != ' ':
+                                                                g = g.lower().replace('{{%s' % l, '')
 				for a_word in something:
 					if a_word in g:
 						parentesi = True
 				for parl in notallowed:
 					if parl.lower() in extension.lower():
 						delete = True
-				for i in TextFind:
-					if i.lower() in g:
-						tagged = True
 				some_problem = False
 				if tupla_written != None:                 
 					for tupla in tuplaList:
