@@ -145,12 +145,22 @@ talk_report_archive = {
 }
 
 ignorelist = [
-    re.compile('.*[\./@]example.com(/.*)?'), # reserved for documentation
-    re.compile('.*[\./@]example.net(/.*)?'), # reserved for documentation
-    re.compile('.*[\./@]example.org(/.*)?'), # reserved for documentation
-    re.compile('.*[\./@]gso.gbv.de(/.*)?'),  # bot somehow can't handle their redirects 
-    re.compile('.*[\./@]berlinonline.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
-    re.compile('.*[\./@]bodo.kommune.no(/.*)?'), # bot can't handle their redirects
+    # Officialy reserved for testing, documentation, etc. in
+    # http://tools.ietf.org/html/rfc2606#page-2
+    # top-level domains:
+    re.compile('.*[\./@]test(/.*)?'),
+    re.compile('.*[\./@]example(/.*)?'),
+    re.compile('.*[\./@]invalid(/.*)?'),
+    re.compile('.*[\./@]localhost(/.*)?'),
+    # second-level domains:
+    re.compile('.*[\./@]example\.com(/.*)?'),
+    re.compile('.*[\./@]example\.net(/.*)?'),
+    re.compile('.*[\./@]example\.org(/.*)?'),
+
+    # Other special cases
+    re.compile('.*[\./@]gso\.gbv\.de(/.*)?'),  # bot somehow can't handle their redirects 
+    re.compile('.*[\./@]berlinonline\.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
+    re.compile('.*[\./@]bodo\.kommune\.no(/.*)?'), # bot can't handle their redirects
 ]
 
 def compileLinkR(withoutBracketed = False, onlyBracketed = False):
