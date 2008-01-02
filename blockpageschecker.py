@@ -13,6 +13,7 @@ Parameters:
                 it will ask you if it should open the page on your browser.
                 (attention: pages included may give false positives..)
 -page           Work only on one page
+-move           The bot will check if the page is blocked also for the move option, not only for edit
 
 Note: This script uses also genfactory, you can use those generator as default.
 
@@ -89,6 +90,17 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'zh']
 #######################################################
 #------------------ END PREFERENCES ------------------#
 ################## -- Edit above! -- ##################
+
+def moveBlockChecker(page, site):
+    """ Function to check if a page is protected or not to move """
+    urlText = site.getUrl('/w/api.php?action=query&prop=info&inprop=protection&titles=%s' % page.urlname())
+    res = re.findall(r'&lt;pr type=&quot;move&quot; level=&quot;(.*?)&', urlText)
+    if res == []:
+        return 'editable'
+    elif res != [] and res[0] == 'autoconfirmed':
+        return 'autoconfirmed'
+    else:
+        return 'sysop'
     
 def main():
     # Loading the comments
@@ -97,14 +109,17 @@ def main():
         wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
         wikipedia.stopme()
     # always, define a generator to understand if the user sets one, defining what's genFactory
-    always = False; generator = False; debug = False; genFactory = pagegenerators.GeneratorFactory()
+    always = False; generator = False; debug = False
+    moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
     # Loading the default options.
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
-        if arg == '-debug':
+        elif arg == '-move':
+            moveBlockCheck = True
+        elif arg == '-debug':
             debug = True
         elif arg.startswith('-page'):
             if len(arg) == 5:
@@ -144,6 +159,11 @@ def main():
         except wikipedia.IsRedirectPage:
             wikipedia.output("%s is a redirect! Skipping..." % pagename)
             continue
+        if moveBlockCheck == True and editRestriction != 'sysop'and editRestriction != 'autoconfirmed':
+            editRestriction = moveBlockChecker(page, site)
+            if editRestriction != 'editable':
+                wikipedia.output(u'The page is protected to move (to %s), skipping...' % editRestriction)
+                continue
         if editRestriction == 'sysop':
             wikipedia.output(u'The page is protected to the sysop, skipping...')
             continue
