@@ -664,7 +664,7 @@ if __name__ == "__main__":
 			elif arg.startswith('-untagged'):
 				untagged = True    
 				if len(arg) == 9:
-					projectUntagged = str(wikipedia.input(u'In which project do I work?'))
+					projectUntagged = str(wikipedia.input(u'In which project should I work?'))
 				elif len(arg) > 9:
 					projectUntagged = str(arg[10:])          
 
@@ -733,7 +733,6 @@ if __name__ == "__main__":
                                 wikipedia.output(u"Retrieving the latest file for checking...")
                         else:
                                 wikipedia.output(u"Retrieving the latest %d files for checking..." % limit)
-
 		while 1:		
 			mainClass = main(site)
 			if untagged == True:
@@ -774,12 +773,12 @@ if __name__ == "__main__":
 			else:
 				wikipedia.output(u'\t\t>> No images to skip...<<')
 			skipok = False
-			if wait:
-                                
-
-                                wikipedia.output(u'\tWaiting %s seconds before checking the images, %s' % (wait_number, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())))
-                                time.sleep(wait_number)
 			for image in generator:
+                                # If I don't inizialize the generator, wait part has no sense.
+                                if wait:
+                                        wikipedia.output(u'Waiting %s seconds before checking the images, %s' % (wait_number, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())))
+                                        time.sleep(wait_number)
+                                        wait = False
 				if normal == False and regexGen == False:
 					if image_namespace.lower() not in image.title().lower() and \
                                         'image:' not in image.title().lower():
