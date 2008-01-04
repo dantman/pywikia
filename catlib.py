@@ -31,6 +31,8 @@ msg_created_for_renaming = {
     'id':u'Bot: Memindahkan dari %s. Kontributor: %s',
     'it':u'Bot: Voce spostata da %s. Autori: %s',
     'ja': u'ロボットによる: %s から移動しました。原作者は %s',
+    'ksh':u'Bot: hääjeholldt von %s. Schriiver: %s',
+    'nds':u'Kat-Bot: herschaven von %s. Schriever: %s',
     'nl':u'Bot: hernoemd van %s. Auteurs: %s',
     'pl':u'Robot przenosi z %s. Autorzy: %s',
     'pt':u'Bot: Movido de %s. Autor: %s',
