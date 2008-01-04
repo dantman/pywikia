@@ -4448,9 +4448,9 @@ your connection is down. Retrying in %i minutes..."""
                 # Apparently the special code for redirects was added in 1.5
                 R = re.compile('title ?=\"(.*?)\"')
             elif not includeredirects:
-                R = re.compile('\<td\>\<a href=\"\S*\" +title ?="(.*?)"')
+                R = re.compile('\<td(?: width="33%")?\>\<a href=\"\S*\" +title ?="(.*?)"')
             elif includeredirects == 'only':
-                R = re.compile('\<td>\<[^\<\>]*allpagesredirect\"\>\<a href=\"\S*\" +title ?="(.*?)"')
+                R = re.compile('\<td(?: width="33%")?>\<[^\<\>]*allpagesredirect\"\>\<a href=\"\S*\" +title ?="(.*?)"')
             else:
                 R = re.compile('title ?=\"(.*?)\"')
             # Count the number of useful links on this page
