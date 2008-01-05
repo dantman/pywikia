@@ -39,6 +39,8 @@ def testSite(site):
         wikipedia.getall(site, [wikipedia.Page(site, 'Any page name')])
     except KeyboardInterrupt:
         raise
+    except wikipedia.NoSuchSite:
+        pass
     except:
         wikipedia.output( u'Error processing language %s' % site.lang )
         wikipedia.output( u''.join(traceback.format_exception(*sys.exc_info())))

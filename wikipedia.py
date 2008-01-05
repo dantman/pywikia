@@ -17,6 +17,7 @@ Exceptions:
     Error:              Base class for all exceptions in this module
     NoUsername:         Username is not in user-config.py
     NoPage:             Page does not exist on the wiki
+    NoSuchSite:         Site does not exist
     IsRedirectPage:     Page is a redirect page
     IsNotRedirectPage:  Page is not a redirect page
     LockedPage:         Page is locked
@@ -154,6 +155,9 @@ class NoUsername(Error):
 
 class NoPage(Error):
     """Page does not exist"""
+
+class NoSuchSite(Error):
+    """Site does not exist"""
 
 class IsRedirectPage(Error):
     """Page is a redirect page"""
@@ -649,7 +653,7 @@ not supported by PyWikipediaBot!"""
             # may encounter pages from non-existing wikis such as
             # http://eo.wikisource.org/
             if text.find("<title>Wiki does not exist</title>") != -1:
-                raise NoPage(u'Wiki %s does not exist yet' % self.site())
+                raise NoSuchSite(u'Wiki %s does not exist yet' % self.site())
 
             #Check for new messages
             if '<div class="usermessage">' in text:
@@ -2412,7 +2416,7 @@ class _GetAll(object):
                     # may encounter pages from non-existing wikis such as
                     # http://eo.wikisource.org/
                     if data.find("<title>Wiki does not exist</title>") != -1:
-                        return
+                        raise NoSuchSite(u'Wiki %s does not exist yet' % self)
                     elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
                         output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
                         time.sleep(dt)
