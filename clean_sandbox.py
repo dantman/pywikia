@@ -55,6 +55,7 @@ msg = {
     'no': u'bot: Rydder sandkassa.',
     'pl': u'Robot czyści brudnopis',
     'pt': u'Bot: Limpeza da página de testes',
+    'commons': u'Bot: This page will automatically be cleaned.',
     'sv': u'Robot krattar sandlådan.',
     'th': u'โรบอต: กำลังจะเก็บกวาดหน้านี้โดยอัตโนมัติ',
     'zh': u'Bot: 本页被自动清理',
