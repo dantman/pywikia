@@ -407,6 +407,7 @@ not supported by PyWikipediaBot!"""
 
             self._title = t
             self.editRestriction = None
+            self.moveRestriction = None
             self._permalink = None
             self._userName = None
             self._ipedit = None
@@ -592,7 +593,7 @@ not supported by PyWikipediaBot!"""
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched, self.editRestriction = self._getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop, nofollow_redirects=nofollow_redirects)
+                self._contents = self._getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop, nofollow_redirects=nofollow_redirects)
                 hn = self.section()
                 if hn:
                     m = re.search("=+ *%s *=+" % hn, self._contents)
@@ -625,12 +626,8 @@ not supported by PyWikipediaBot!"""
             oldid - Retrieve an old revision (by id), not the current one
             get_redirect  - Get the contents, even if it is a redirect page
 
-        This method returns a 3-tuple containing the raw wiki text as a
-        unicode string, the watchlist status, and any edit restrictions.
-        
+        This method returns the raw wiki text as a unicode string.
         """
-        isWatched = False
-        editRestriction = None
         if verbose:
             output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
@@ -704,12 +701,19 @@ not supported by PyWikipediaBot!"""
         # If read-only, check blocks.
         if readonly and checkBlocks and self.site().isBlocked():
             raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
-        # Check locks
+        # Check for restrictions
         m = re.search('var wgRestrictionEdit = \\["(\w+)"\\]', text)
         if m:
             if verbose:
                 output(u"DBG> page is locked for group %s" % m.group(1))
-            editRestriction = m.group(1);
+            self.editRestriction = m.group(1);
+        else:
+            self.editRestriction = ''
+        m = re.search('var wgRestrictionMove = \\["(\w+)"\\]', text)
+        if m:
+            self.moveRestriction = m.group(1);
+        else:
+            self.moveRestriction = ''
         # Look for the edit token
         tokenloc = Rwatch.search(text)
         if tokenloc:
@@ -742,7 +746,9 @@ not supported by PyWikipediaBot!"""
         # Look if the page is on our watchlist
         matchWatching = Rwatchlist.search(text)
         if matchWatching:
-            isWatched = True
+            self._isWatched = True
+        else:
+            self._isWatched = False
         # Now process the contents of the textarea
         m = self.site().redirectRegex().match(text[i1:i2])
         if m:
@@ -768,7 +774,7 @@ not supported by PyWikipediaBot!"""
         while x and x[-1] in '\n ':
             x = x[:-1]
 
-        return x, isWatched, editRestriction
+        return x
 
     def getOldVersion(self, oldid, force=False, get_redirect=False,
                       throttle=True, sysop=False, nofollow_redirects=False,
@@ -784,7 +790,7 @@ not supported by PyWikipediaBot!"""
                         sysop=sysop, oldid=oldid,
                         nofollow_redirects=nofollow_redirects,
                         change_edit_time=change_edit_time
-                    )[0]
+                    )
 
     def permalink(self):
         """Return the permalink URL for current revision of this page."""
