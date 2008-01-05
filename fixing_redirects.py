@@ -166,7 +166,7 @@ try:
                 namespace2 = int(wikipedia.input(u'Which namespace should be processed?'))
             else:
                 namespace2 =int( arg[11:])
-            for page in pagegenerators.AllpagesPageGenerator(start =start, namespace = namespace2, includeredirects = False):
+            for page in pagegenerators.AllpagesPageGenerator(start=start, namespace=namespace2, includeredirects=False):
                 workon(page)
           
 
