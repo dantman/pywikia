@@ -2101,7 +2101,7 @@ not supported by PyWikipediaBot!"""
         #TODO: Check for errors below (have we succeeded? etc):
         return self.site().postForm(address,formdata,sysop=True)
 
-    def protect(self, edit='sysop', move='sysop', unprotect=False,
+    def protect(self, edit='sysop', move='sysop', create='sysop', unprotect=False,
                 reason=None, prompt=True, throttle=True):
         """(Un)protect a wiki page. Requires administrator status.
 
@@ -2134,10 +2134,12 @@ not supported by PyWikipediaBot!"""
             #Translate 'none' to ''
             if edit == 'none': edit = ''
             if move == 'none': move = ''
+            if create == 'none': create = ''
 
             predata = {
                 'mwProtect-level-edit': edit,
                 'mwProtect-level-move': move,
+                'mwProtect-level-create': create,
                 'mwProtect-reason': reason
             }
             if token:
@@ -2152,11 +2154,11 @@ not supported by PyWikipediaBot!"""
                 data, response = self.site().postForm(address, predata, sysop = True)
 
             if not response:
-                output(u'(Un)protection successful.')
+                output(u'Changed protection level of page %s.' % self)
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
-                output(u'Protection failed:')
+                output(u'Failed to change protection level of page %s:' % self)
                 output(data)
                 return False
 
