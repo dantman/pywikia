@@ -64,6 +64,14 @@ templateToRemove = {
                   r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
             'ja':[r'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:S|)\}\}',],
+            'pt':[r'\{\{(?:[Tt]emplate:|)[Pp]rotegido(?:\|*)\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Pp]rotegidaPP\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Pp]rotegida\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Pp]rotegido-ip\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Pp]rotegida ip\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Pp]rotegidoIP\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Pp]rotegidaIP\}\}',
+                  r'\{\{(?:[Tt]emplate:|)[Ss]emi-protegida\}\}'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected(?:\|*)\}\}',r'\{\{(?:[Tt]emplate:|)Mini-protected(?:\|*)\}\}',
                 r'\{\{(?:[Tt]emplate:|)Protected logo(?:\|*)\}\}'],
             }
@@ -75,6 +83,7 @@ categoryToCheck = {
             'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
             'ja':[u'Category:編集保護中の記事',u'Category:編集半保護中の記事',
                 u'Category:移動保護中の記事',],
+            'pt':[u'Category:!Páginas protegidas', u'Category:!Páginas semiprotegidas'],
             'zh':[u'Category:被保护的页面',u'Category:被保護的模板',u'Category:暂时不能移动的页面',
                 u'Category:被半保护的页面',],
             }
@@ -85,10 +94,11 @@ comment = {
             'he':u'בוט: מסיר תבנית שעבר זמנה',
             'it':u'Bot: Tolgo template di avviso blocco scaduto',
             'ja':u'ロボットによる: 保護テンプレート削除',
+            'pt':u'Bot: Retirando predefinição de proteção',
             'zh':u'機器人: 移除過期的保護模板',
             }
 # Check list to block the users that haven't set their preferences
-project_inserted = ['en', 'fr', 'it', 'ja', 'zh']
+project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 
 #######################################################
 #------------------ END PREFERENCES ------------------#
