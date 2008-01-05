@@ -50,6 +50,10 @@ nowCommons = {
         u'NCT',
         u'Nowcommons',
     ],
+    'en': [
+        u'NowCommons',
+        u'Ncd',
+    ],
     'fr': [
         u'Désormais sur Commons'
     ],
