@@ -50,6 +50,7 @@ msg = {
     'de': 'Bot: Formatiere ISBN',
     'en': 'Robot: Formatting ISBN',
     'he': u'בוט: מעצב ISBN',
+    'ja':u'ロボットによる ISBN の書式化',
     'pt': u'Bot: Formatando ISBN',
 }
 
