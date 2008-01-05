@@ -225,18 +225,23 @@ def main():
             else:
                 wikipedia.output(u'No changes! Strange! Check the regex!')
                 if debug == True:
-                    quest = wikipedia.input(u'Do you want to open the page on your browser? [Y]es, [N]o: ')
+                    quest = wikipedia.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
                     pathWiki = site.family.nicepath(site.lang)
                     url = 'http://%s%s%s' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
                     while 1:
-                        if quest.lower() in ['y', 'yes']:                    
+                        if quest.lower() in ['b', 'B']:                    
                             webbrowser.open(url)
                             break
-                        elif quest.lower() in ['n', 'no']:
+                        elif quest.lower() in ['g', 'G']:
+                            import editarticle
+                            editor = editarticle.TextEditor()
+                            text = editor.edit(page.get())
+                            break
+                        elif quest.lower() in ['n', 'N']:
                             break
                         else:
-                            wikipedia.output(u'wrong entry, type "yes" or "no"')
-                            continue
+                            wikipedia.output(u'wrong entry, type "b", "g" or "n"')
+                            break
                     
 if __name__ == "__main__":
     try:
