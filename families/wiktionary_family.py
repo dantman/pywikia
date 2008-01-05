@@ -333,7 +333,7 @@ class Family(family.Family):
             'hu': ['en'],
             'pl': self.alphabetic,
             'simple': self.alphabetic
-            }
+        }
 
         self.languages_by_size = [
             'en', 'fr', 'vi', 'zh', 'io', 'el', 'pl', 'it', 'de', 'hu',

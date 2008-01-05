@@ -10,10 +10,19 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikisource'
 
+        self.languages_by_size = [
+            'en', 'fr', 'es', 'zh', 'de', 'it', 'pt', 'ru', 'th', 'pl',
+            'ro', 'te', 'hr', 'tr', 'he', 'cs', 'fi', 'nl', 'sr', 'sv',
+            'ar', 'la', 'is', 'ja', 'bs', 'uk', 'el', 'ca', 'ko', 'hu',
+            'bn', 'hy', 'no', 'da', 'sl', 'ml', 'id', 'mk', 'az', 'ta',
+            'kn', 'bg', 'fa', 'vi', 'sk', 'cy', 'et', 'lt', 'gl',
+            'zh-min-nan','yi', 'ht', 'fo', 'ang',
+        ]
+
         self.langs = {
             '-': 'wikisource.org',
         }
-        for lang in self.knownlanguages:
+        for lang in self.languages_by_size:
             self.langs[lang] = '%s.wikisource.org' % lang
 
         # Override defaults

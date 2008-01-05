@@ -13,9 +13,12 @@ class Family(family.Family):
 
         self.langs = {
             'beta': 'beta.wikiversity.org',
+            'de': 'de.wikiversity.org',
+            'en': 'en.wikiversity.org',
+            'es': 'es.wikiversity.org',
+            'fr': 'fr.wikiversity.org',
+            'it': 'it.wikiversity.org',
         }
-        for lang in self.knownlanguages:
-            self.langs[lang] = '%s.wikiversity.org' % lang
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
@@ -84,15 +87,6 @@ class Family(family.Family):
         }
         self.namespaces[111] = {
             'fr': u'Discussion Transwiki',
-        }
-
-        self.obsolete = {
-            'dk': 'da',
-            'jp': 'ja',
-            'minnan':'zh-min-nan',
-            'nb': 'no',
-            'zh-tw': 'zh',
-            'zh-cn': 'zh'
         }
 
     def version(self,code):

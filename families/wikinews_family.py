@@ -12,7 +12,13 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikinews'
 
-        for lang in self.knownlanguages:
+        self.languages_by_size = [
+            'en', 'de', 'pl', 'it', 'fr', 'es', 'pt', 'sv', 'ja', 'zh',
+            'ru', 'nl', 'sr', 'he', 'ca', 'uk', 'ro', 'fi', 'th', 'no',
+            'ar', 'bs', 'bg',
+        ]
+
+        for lang in self.languages_by_size:
             self.langs[lang] = '%s.wikinews.org' % lang
 
         # Override defaults
@@ -133,16 +139,8 @@ class Family(family.Family):
         }
 
 
-        # On most Wikipedias page names must start with a capital letter, but some
-        # languages don't use this.
-        self.nocapitalize = ['cs', 'de', 'es', 'fa', 'fr', 'gu', 'hi', 'hr',
-                        'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
-                        'scn', 'sq', 'sv', 'sw', 'tr', 'vi']
-
         self.obsolete = {
-            'dk': 'da',
             'jp': 'ja',
-            'minnan':'zh-min-nan',
             'nb': 'no',
             'zh-tw': 'zh',
             'zh-cn': 'zh'
@@ -159,16 +157,8 @@ class Family(family.Family):
             'fi': self.alphabetic,
             'fr': self.alphabetic,
             'he': ['en'],
-            'hu': ['en'],
             'pl': self.alphabetic,
-            'simple': self.alphabetic
-            }
-
-        self.languages_by_size = [
-            'de', 'en', 'fr', 'gl', 'hu', 'it', 'ja', 'nl', 'pl', 'sv',
-            'es', 'fi', 'hi', 'ko', 'la', 'pt', 'ru', 'tr', 'zh',
-            'ca', 'eo', 'et', 'gu', 'he', 'hr', 'ro'
-        ]
+        }
 
     def code2encoding(self, code):
         return 'utf-8'

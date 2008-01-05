@@ -12,15 +12,16 @@ class Family(family.Family):
         self.name = 'wikiquote'
 
         self.languages_by_size = [
-                     'en','de','pl','it','sk','ru','pt','bs','bg','sl',
-                     'es','tr','he','zh','id','sv','lt','ja','no','hu',
-                     'el','fa','nl','cs','ku','fi','fr','ar','eo','ca',
-                     'gl','ro','ka','hr','la','uk','da','et','sr','vi',
-                     'sq','ko','eu','th','simple','nn','ast','ang','hi','lb',
-                     'is','ta','az','mr','kn','am','co','ml','cy','wo',
-                     'za','te','kr','qu','uz','tt','ur','af','vo','bm',
-                     'cr','na','nds','ky','su','als','be','ug','gu','zh-min-nan',
-                     'hy','ga','kk','ks','kw','tk',]
+            'en', 'de', 'it', 'pl', 'sk', 'pt', 'ru', 'bs', 'bg', 'sl',
+            'es', 'tr', 'he', 'zh', 'lt', 'id', 'fr', 'cs', 'el', 'sv',
+            'hu', 'ja', 'uk', 'no', 'nl', 'fa', 'fi', 'ku', 'ca', 'ar',
+            'eo', 'ro', 'hr', 'gl', 'ko', 'af', 'et', 'li', 'ka', 'is',
+            'sr', 'da', 'nn', 'th', 'ml', 'vi', 'simple', 'sq', 'te',
+            'la', 'br', 'eu', 'hi', 'ast', 'az', 'ang', 'be', 'zh-min-nan',
+            'lb', 'su', 'ur', 'mr', 'kn', 'ta', 'ky', 'wo', 'gu', 'uz',
+            'cy', 'am', 'tt', 'co', 'qu', 'bm', 'ug', 'na', 'kw', 'hy',
+            'tk', 'vo', 'nds', 'kr', 'cr', 'kk', 'ga', 'ks', 'za', 'als',
+        ]
 
         for lang in self.languages_by_size:
             self.langs[lang] = '%s.wikiquote.org' % lang
