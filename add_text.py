@@ -102,7 +102,7 @@ def untaggedGenerator(untaggedProject, limit = 500):
     if lang == 'commons':
         link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
     else:
-        link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)         
+        link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)
     text = pageText(link)
     #print text
     regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
@@ -147,12 +147,12 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         text = oldTextGiven
     # Understand if the bot has to skip the page or not
     # In this way you can use both -except and -excepturl
-    if regexSkipUrl != None:          
+    if regexSkipUrl != None:
         url = '%s%s' % (pathWiki, page.urlname())
         result = re.findall(regexSkipUrl, site.getUrl(url))
         if result != []:
             wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
-            return (False, always) # continue         
+            return (False, always) # continue
     if regexSkip != None:
         result = re.findall(regexSkip, text)
         if result != []:
@@ -161,39 +161,18 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
     # If not up, text put below
     if not up:
         newtext = text
-        categoryNamespace = site.namespace(14)
         # Getting the categories
-        regexpCat = re.compile(r'\[\[((?:category|%s):.*?)\]\]' % categoryNamespace.lower(), re.I)
-        categorieInside = regexpCat.findall(text)
+        categoriesInside = wikipedia.getCategoryLinks(newtext, site)
         # Deleting the categories
         newtext = wikipedia.removeCategoryLinks(newtext, site)
         # Getting the interwiki
-        interwikiInside = page.interwiki()
-        interwikiList = list()
-        for paginetta in interwikiInside:
-            nome = str(paginetta).split('[[')[1].split(']]')[0]
-            interwikiList.append(nome)
-            lang = nome.split(':')[0]
+        interwikiInside = wikipedia.getLanguageLinks(newtext, site)
         # Removing the interwiki
         newtext = wikipedia.removeLanguageLinks(newtext, site)
-        # Sorting the interwiki
-        interwikiList.sort()
-        newtext += "\n%s" % addText
+        # Adding the text
+        newtext += u"\n%s" % addText
         # Reputting the categories
-        for paginetta in categorieInside:
-            try:
-                newtext += '\n[[%s]]' % paginetta.decode('utf-8')
-            except UnicodeDecodeError:
-                try:
-                    newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
-                except UnicodeDecodeError:
-                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())
-            except UnicodeEncodeError:
-                try:
-                    newtext += '\n[[%s]]' % paginetta.encode('utf-8')
-                except UnicodeEncodeError:
-                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())   
-        newtext += '\n'
+        newtext = wikipedia.replaceCategoryLinks(newtext, categoriesInside, site)
         # Dealing the stars' issue
         starsListInPage = list()
         for star in starsList:
@@ -204,19 +183,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                 for element in risultato:
                     newtext += '\n%s' % element
         # Adding the interwiki
-        for paginetta in interwikiList:
-            try:
-                newtext += '\n[[%s]]' % paginetta.decode('utf-8')
-            except UnicodeDecodeError:
-                try:
-                    newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
-                except UnicodeDecodeError:
-                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())
-            except UnicodeEncodeError:
-                try:
-                    newtext += '\n[[%s]]' % paginetta.encode('utf-8')
-                except UnicodeEncodeError:
-                    newtext += '\n[[%s]]' % paginetta.encode(site.encoding())               
+        newtext = wikipedia.replaceLanguageLinks(newtext, interwikiInside, site)
     # If instead the text must be added above...
     else:
         newtext = addText + '\n' + text
@@ -233,13 +200,13 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             if choice.lower() in ['a', 'all']:
                 always = True
             if choice.lower() in ['n', 'no']:
-                return (False, always)              
+                return (False, always)
             if choice.lower() in ['y', 'yes'] or always:
                 try:
                     page.put(newtext, summary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Edit conflict! skip!')
-                    return (False, always)                  
+                    return (False, always)
                 except wikipedia.ServerError:
                     errorCount += 1
                     if errorCount < 5:
@@ -250,20 +217,20 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                         raise wikipedia.ServerError(u'Fifth Server Error!')
                 except wikipedia.SpamfilterError, e:
                     wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                    return (False, always)                   
+                    return (False, always)
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Error putting page: %s' % error.args)
-                    return (False, always)                   
+                    return (False, always)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Skipping %s (locked page)' % page.title())
-                    return (False, always)                   
+                    return (False, always)
                 else:
                     # Break only if the errors are one after the other...
                     errorCount = 0
-                    return (True, always)                   
+                    return (True, always)
         else:
             return (text, newtext, always)
-            
+
 def main():
     # If none, the var is setted only for check purpose.
     summary = None; addText = None; regexSkip = None; regexSkipUrl = None;
@@ -315,7 +282,7 @@ def main():
     if not generator:
         raise NoEnoughData('You have to specify the generator you want to use for the script!')
     # Main Loop
-    for page in generator:            
+    for page in generator:
         (status, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
     
 if __name__ == "__main__":
