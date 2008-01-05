@@ -328,8 +328,9 @@ if __name__=="__main__":
         elif arg.startswith('-fromlang:'):
             fromlang=arg[10:].split(",")
             try:
+                # BUG: range with zh-min-nan (3 "-")
                 if len(fromlang)==1 and fromlang[0].index("-")>=0:
-                    ll1,ll2=fromlang[0]
+                    ll1,ll2=fromlang[0].split("--",1)
                     if not ll1: ll1=""
                     if not ll2: ll2="zzzzzzz"
                     fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
