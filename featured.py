@@ -22,6 +22,13 @@ usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,
 """
 __version__ = '$Id$'
 
+#
+# (C) Maxim Razin, 2005
+# (C) Leonardo Gregianin, 2006-2007
+#
+# Distributed under the terms of the MIT license.
+#
+
 import sys, re, pickle
 import wikipedia, catlib, config
 
@@ -68,7 +75,6 @@ msg = {
     'zh': u'機器人: 連結特色條目 [[%s:%s]]',
 }
 
-# default is en:Link FA
 template = {
     'af': u'Link FA',
     'bg': u'Link FA',
