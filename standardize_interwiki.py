@@ -46,9 +46,9 @@ nothing = False
 for arg in wikipedia.handleArgs():
     if arg.startswith('-start'):
         if len(arg) == 6:
-            start = str(wikipedia.input(u'From what page do you want to start?'))
+            start = unicode(wikipedia.input(u'From what page do you want to start?'))
         else:
-            start = str(arg[7:])
+            start = unicode(arg[7:])
 
 # What follows is the main part of the code.
 try:

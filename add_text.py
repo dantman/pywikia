@@ -62,6 +62,7 @@ import wikipedia, catlib
 
 msg = {
     'en': u'Bot: Adding %s',
+    'he': u'בוט: מוסיף %s',
     'it': u'Bot: Aggiungo %s',
     'pt': u'Bot: Adicionando %s',
     }
