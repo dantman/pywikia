@@ -136,7 +136,7 @@ class Family(family.Family):
             'ko': u'위키낱말사전토론',
             'ku': u'Wiktionary nîqaş',
             'la': u'Disputatio Victionarii',
-            'lb': u'Wiktionary Diskussion',
+            'lb': u'Wiktionary Diskussioun',
             'li': u'Euverlèk Wiktionary',
             'ln': u'Discussion Wiktionary',
             'lt': u'Wiktionary aptarimas',

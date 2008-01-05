@@ -109,7 +109,7 @@ class Family(family.Family):
             'ko': u'Wikiquote토론',
             'ku': u'Wikiquote nîqaş',
             'la': u'Disputatio Vicicitationis',
-            'lb': u'Wikiquote Diskussion',
+            'lb': u'Wikiquote Diskussioun',
             'li': u'Euverlèk Wikiquote',
             'lt': u'Wikiquote aptarimas',
             'ml': u'വിക്കി ചൊല്ലുകള്‍ സംവാദം',

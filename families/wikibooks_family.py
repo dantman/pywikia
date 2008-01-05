@@ -113,7 +113,7 @@ class Family(family.Family):
             'ko': u'위키책토론',
             'ku': u'Wikibooks nîqaş',
             'la': u'Disputatio Vicilibrorum',
-            'lb': u'Wikibooks Diskussion',
+            'lb': u'Wikibooks Diskussioun',
             'ln': u'Discussion Wikibooks',
             'lt': u'Wikibooks aptarimas',
             'lv': u'Wikibooks diskusija',

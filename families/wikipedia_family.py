@@ -180,7 +180,7 @@ class Family(family.Family):
             'ku': u'Wîkîpediya nîqaş',
             'kv': u'Обсуждение Wikipedia',
             'la': [u'Disputatio Vicipaediae', u'Disputatio Wikipedia'],
-            'lb': u'Wikipedia Diskussion',
+            'lb': u'Wikipedia Diskussioun',
             'lbe': u'Википедиялиясса ихтилат',
             'li': u'Euverlèk Wikipedia',
             'lmo': u'Discussioni Wikipedia',
