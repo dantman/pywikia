@@ -3387,6 +3387,40 @@ def html2unicode(text, ignore = []):
     # This regular expression will match any decimal and hexadecimal entity and
     # also entities that might be named entities.
     entityR = re.compile(r'&(#(?P<decimal>\d+)|#x(?P<hex>[0-9a-fA-F]+)|(?P<name>[A-Za-z]+));')
+    #These characters are Html-illegal, but sadly you *can* find some of these and
+    #converting them to unichr(decimal) is unsuitable
+    convertIllegalHtmlEntities = {
+        128 : 8364, # €
+        130 : 8218, # ‚
+        131 : 402,  # ƒ
+        132 : 8222, # „
+        133 : 8230, # …
+        134 : 8224, # †
+        135 : 8225, # ‡
+        136 : 710,  # ˆ
+        137 : 8240, # ‰
+        138 : 352,  # Š
+        139 : 8249, # ‹
+        140 : 338,  # Œ
+        142 : 381,  # Ž
+        145 : 8216, # ‘
+        146 : 8217, # ’
+        147 : 8220, # “
+        148 : 8221, # ”
+        149 : 8226, # •
+        150 : 8211, # –
+        151 : 8212, # —
+        152 : 732,  # ˜
+        153 : 8482, # ™
+        154 : 353,  # š
+        155 : 8250, # ›
+        156 : 339,  # œ
+        158 : 382,  # ž
+        159 : 376   # Ÿ
+    }
+    #ensuring that illegal &#129; &#141; and &#157, which have no known values,
+    #don't get converted to unichr(129), unichr(141) or unichr(157)
+    ignore = set(ignore) | set([129, 141, 157])
     result = u''
     i = 0
     found = True
@@ -3405,6 +3439,10 @@ def html2unicode(text, ignore = []):
                     # We found a known HTML entity.
                     unicodeCodepoint = htmlentitydefs.name2codepoint[name]
             result += text[:match.start()]
+            try:
+                unicodeCodepoint=convertIllegalHtmlEntities[unicodeCodepoint]
+            except KeyError:
+                pass
             if unicodeCodepoint and unicodeCodepoint not in ignore and (WIDEBUILD or unicodeCodepoint < 65534):
                 result += unichr(unicodeCodepoint)
             else:
