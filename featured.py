@@ -260,7 +260,7 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
         cc={}
 
     findtemplate = wikipedia.translate(wikipedia.getSite(), template)
-    re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate, fromsite.lang), re.IGNORECASE)
+    re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate.replace(u' ', u'[ _]'), fromsite.lang), re.IGNORECASE)
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
     arts=featuredArticles(fromsite)
