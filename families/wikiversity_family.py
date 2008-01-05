@@ -14,10 +14,8 @@ class Family(family.Family):
         self.langs = {
             'beta': 'beta.wikiversity.org',
         }
-
         for lang in self.knownlanguages:
-            if lang not in self.langs:
-                self.langs[lang] = lang+'.wikiversity.org'
+            self.langs[lang] = '%s.wikiversity.org' % lang
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.

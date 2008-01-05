@@ -2409,7 +2409,7 @@ class Family:
                 'mn', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'
             ],
             'scand': [
-                'da', 'fo', 'is', 'nb', 'no', 'sv'
+                'da', 'fo', 'is', 'no', 'sv'
             ],
         }
 

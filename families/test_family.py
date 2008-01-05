@@ -10,7 +10,7 @@ class Family(family.Family):
         self.name = 'test'
         self.langs = {
             'test': 'test.wikipedia.org',
-           }
+        }
 
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
@@ -21,3 +21,6 @@ class Family(family.Family):
 
     def version(self, code):
         return "1.12alpha"
+
+    def shared_image_repository(self, code):
+        return ('commons', 'commons')

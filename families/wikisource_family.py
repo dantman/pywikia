@@ -11,18 +11,10 @@ class Family(family.Family):
         self.name = 'wikisource'
 
         self.langs = {
-            '-':'wikisource.org',
-            'dk':'da.wikisource.org',
-            'jp':'ja.wikisource.org',
-            'minnan':'zh-min-nan.wikisource.org',
-            'nb':'no.wikisource.org',
-            'zh-cn':'zh.wikisource.org',
-            'zh-tw':'zh.wikisource.org'
-            }
-
+            '-': 'wikisource.org',
+        }
         for lang in self.knownlanguages:
-            if lang not in self.langs:
-                self.langs[lang] = lang+'.wikisource.org'
+            self.langs[lang] = '%s.wikisource.org' % lang
 
         # Override defaults
         self.namespaces[2]['pl'] = 'Wikiskryba'

@@ -11,18 +11,10 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wiktionary'
-        self.langs = {
-            'dk':'da.wiktionary.org',
-            'jp':'ja.wiktionary.org',
-            'minnan':'zh-min-nan.wiktionary.org',
-            'nb':'no.wiktionary.org',
-            'zh-cn':'zh.wiktionary.org',
-            'zh-tw':'zh.wiktionary.org'
-            }
 
         for lang in self.knownlanguages:
-            if not lang in ['ee','ht','ny', 'se', 'tum']:
-                self.langs[lang] = lang+'.wiktionary.org'
+            if lang not in ['ee','ht','ny', 'se', 'tum']:
+                self.langs[lang] = '%s.wiktionary.org' % lang
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikipedysta'

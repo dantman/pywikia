@@ -13,7 +13,7 @@ class Family(family.Family):
         self.name = 'wikinews'
 
         for lang in self.knownlanguages:
-            self.langs[lang] = lang+'.wikinews.org'
+            self.langs[lang] = '%s.wikinews.org' % lang
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikireporter'

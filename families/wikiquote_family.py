@@ -11,14 +11,6 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikiquote'
 
-        self.langs = {
-            'dk':'da.wikiquote.org',
-            'jp':'ja.wikiquote.org',
-            'minnan':'zh-min-nan.wikiquote.org',
-            'nb':'no.wikiquote.org',
-            'zh-cn':'zh.wikiquote.org',
-            'zh-tw':'zh.wikiquote.org'
-            }
         self.languages_by_size = [
                      'en','de','pl','it','sk','ru','pt','bs','bg','sl',
                      'es','tr','he','zh','id','sv','lt','ja','no','hu',
@@ -31,7 +23,7 @@ class Family(family.Family):
                      'hy','ga','kk','ks','kw','tk',]
 
         for lang in self.languages_by_size:
-            self.langs[lang] = lang+'.wikiquote.org'
+            self.langs[lang] = '%s.wikiquote.org' % lang
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.

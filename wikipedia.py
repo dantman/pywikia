@@ -3660,17 +3660,21 @@ class Site(object):
             self.family = Family(fam, fatal = False)
         else:
             self.family = fam
-            
+
+        # if we got an outdated language code, use the new one instead.
+        if self.family.obsolete.has_key(self.lang):
+            if self.family.obsolete[self.lang] is not None:
+                self.lang = self.family.obsolete[self.lang]
+            else:
+                # no such language anymore
+                raise KeyError("Language %s in family %s is obsolete" % (self.lang, self.family.name))
+
         if self.lang not in self.languages():
             if self.lang == 'zh-classic' and 'zh-classical' in self.languages():
                 self.lang = 'zh-classical'
                 # ev0l database hack (database is varchar[10] -> zh-classical is cut to zh-classic.
-            else:                
+            else:
                 raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
-
-        # if we got an outdated language code, use the new one instead.
-        if self.lang in self.family.obsolete and self.family.obsolete[self.lang]:
-            self.lang = self.family.obsolete[self.lang]
 
         self.messages=False
         self._mediawiki_messages = {}

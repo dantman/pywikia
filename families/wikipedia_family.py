@@ -12,18 +12,8 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikipedia'
 
-        self.langs = {
-            'dk':'da.wikipedia.org',
-            'jp':'ja.wikipedia.org',
-            'minnan':'zh-min-nan.wikipedia.org',
-            'nb':'no.wikipedia.org',
-            'test':'test.wikipedia.org',
-            'zh-cn':'zh.wikipedia.org',
-            'zh-tw':'zh.wikipedia.org',
-        }
         for lang in self.knownlanguages:
-            if lang not in self.langs:
-                self.langs[lang] = lang+'.wikipedia.org'
+            self.langs[lang] = '%s.wikipedia.org' % lang
 
         # Override defaults
         self.namespaces[2]['cs'] = u'Wikipedista'
@@ -723,7 +713,7 @@ class Family(family.Family):
             'ru','fi','no','zh','tr','eo','sk','cs','ca','ro',
             'hu','da','id','vo','lt','sl','lmo','uk','he','et',
             'hr','sr','ceb','bg','ko','gl','nn','ar','te','vi',
-            'ms','bs','eu','simple','new','el','th','is','lb','sq',            
+            'ms','bs','eu','simple','new','el','th','is','lb','sq',
             'fa','az','br','io','la','bpy','su','nap','sh','cy',
             'ka','bn','scn','nds','lv','jv','oc','ku','pms','wa',
             'ast','hi','af','roa-tara','mr','mk','ta','ht','ksh','an',

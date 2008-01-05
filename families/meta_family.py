@@ -12,7 +12,7 @@ class Family(family.Family):
         self.name = 'meta'
         self.langs = {
             'meta': 'meta.wikimedia.org',
-           }
+        }
 
         self.namespaces[4] = {
             '_default': [u'Meta', self.namespaces[4]['_default']],

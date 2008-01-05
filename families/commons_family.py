@@ -31,6 +31,3 @@ class Family(family.Family):
 
     def version(self, code):
         return "1.12alpha"
-
-    def shared_image_repository(self, code):
-        return ('commons', 'commons')

@@ -11,15 +11,6 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikibooks'
 
-        self.langs = {
-            'dk':'da.wikibooks.org',
-            'jp':'ja.wikibooks.org',
-            'minnan':'zh-min-nan.wikibooks.org',
-            'nb':'no.wikibooks.org',
-            'zh-cn':'zh.wikibooks.org',
-            'zh-tw':'zh.wikibooks.org'
-            }
-
         for lang in self.knownlanguages:
             self.langs[lang] = '%s.wikibooks.org' % lang
 
