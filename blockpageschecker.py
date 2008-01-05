@@ -55,10 +55,11 @@ import wikipedia, catlib, pagegenerators, config
 templateToRemove = {
             'en':[r'\{\{(?:[Tt]emplate:|)[Pp]p-protected\}\}', r'{\{([Tt]emplate:|)[Pp]p-dispute\}\}',
                   r'{\{(?:[Tt]emplate:|)[Pp]p-template\}\}', r'{\{([Tt]emplate:|)[Pp]p-usertalk\}\}'],
-           'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}', 
+            'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}', 
                  r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?\}\}',
                  r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection\}\}'
                 ],
+            'he':[ur'\{\{(?:[Tt]emplate:|תבנית:|)מוגן(?: חלקית)?(?:\|?.*)\}\}'],
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
@@ -70,6 +71,7 @@ templateToRemove = {
 categoryToCheck = {
             'en':[u'Category:Protected'],
             'fr':[u'Category:Page semi-protégée', u'Category:Page protégée'],
+            'he':[u'קטגוריה:ויקיפדיה: דפים מוגנים', u'קטגוריה:ויקיפדיה: דפים מוגנים חלקית'],
             'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
             'ja':[u'Category:編集保護中の記事',u'Category:編集半保護中の記事',
                 u'Category:移動保護中の記事',],
@@ -80,6 +82,7 @@ categoryToCheck = {
 comment = {
             'en':u'Bot: Deleting out-dated template',
             'fr':u'Robot: Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
+            'he':u'בוט: מסיר תבנית שעבר זמנה',
             'it':u'Bot: Tolgo template di avviso blocco scaduto',
             'ja':u'ロボットによる: 保護テンプレート削除',
             'zh':u'機器人: 移除過期的保護模板',
@@ -91,17 +94,6 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'zh']
 #------------------ END PREFERENCES ------------------#
 ################## -- Edit above! -- ##################
 
-def moveBlockChecker(page, site):
-    """ Function to check if a page is protected or not to move """
-    urlText = site.getUrl('/w/api.php?action=query&prop=info&inprop=protection&titles=%s' % page.urlname())
-    res = re.findall(r'&lt;pr type=&quot;move&quot; level=&quot;(.*?)&', urlText)
-    if res == []:
-        return 'editable'
-    elif res != [] and res[0] == 'autoconfirmed':
-        return 'autoconfirmed'
-    else:
-        return 'sysop'
-    
 def main():
     # Loading the comments
     global templateToRemove; global categoryToCheck; global comment; global project_inserted
@@ -150,25 +142,26 @@ def main():
         pagename = page.title()
         wikipedia.output('Loading %s...' % pagename)
         try:
-            # The same as .get() but it loads also the editRestriction var, that's what we
-            # need to understand if the page is protected or not.
-            (text, useless, editRestriction) = page._getEditPage()
+            text = page.get()
+            editRestriction = page.editRestriction
+            moveRestriction = page.moveRestriction
         except wikipedia.NoPage:
             wikipedia.output("%s doesn't exist! Skipping..." % pagename)
             continue
         except wikipedia.IsRedirectPage:
             wikipedia.output("%s is a redirect! Skipping..." % pagename)
             continue
-        if moveBlockCheck == True and editRestriction != 'sysop'and editRestriction != 'autoconfirmed':
-            editRestriction = moveBlockChecker(page, site)
-            if editRestriction != 'editable':
-                wikipedia.output(u'The page is protected to move (to %s), skipping...' % editRestriction)
-                continue
         if editRestriction == 'sysop':
             wikipedia.output(u'The page is protected to the sysop, skipping...')
             continue
+        elif moveBlockCheck and moveRestriction == 'sysop':
+            wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
+            continue
         elif editRestriction == 'autoconfirmed':
             wikipedia.output(u'The page is editable only for the autoconfirmed users, skipping...')
+            continue
+        elif moveBlockCheck and moveRestriction == 'autoconfirmed':
+            wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
             continue
         else:
             wikipedia.output(u'The page is editable for all, deleting the template...')
