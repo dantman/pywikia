@@ -3667,7 +3667,9 @@ class Site(object):
                 self.lang = self.family.obsolete[self.lang]
             else:
                 # no such language anymore
-                raise KeyError("Language %s in family %s is obsolete" % (self.lang, self.family.name))
+                # disable exception for the moment - interwiki links problems
+                # raise KeyError("Language %s in family %s is obsolete" % (self.lang, self.family.name))
+                pass
 
         if self.lang not in self.languages():
             if self.lang == 'zh-classic' and 'zh-classical' in self.languages():
