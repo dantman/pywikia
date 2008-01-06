@@ -3026,10 +3026,9 @@ def removeLanguageLinks(text, site = None, marker = ''):
 def replaceLanguageLinks(oldtext, new, site = None):
     """Replace interlanguage links in the text with a new set of links.
 
-    'new' should be a dict with the language names as keys, and Page objects
+    'new' should be a dict with the Site objects as keys, and Page objects
     as values (i.e., just like the dict returned by getLanguageLinks
     function).
-    
     """
     # Find a marker that is not already in the text.
     marker = '@@'
@@ -3062,26 +3061,16 @@ def replaceLanguageLinks(oldtext, new, site = None):
 def interwikiFormat(links, insite = None):
     """Convert interwiki link dict into a wikitext string.
 
-    'links' should be a dict with the language codes as keys, and Page
+    'links' should be a dict with the Site objects as keys, and Page
     objects as values.
 
     Return a unicode string that is formatted for inclusion in insite
     (defaulting to the current site).
-    
     """
     if insite is None:
         insite = getSite()
     if not links:
         return ''
-    # Security check: site may not refer to itself.
-    #
-    # Disabled because MediaWiki was changed so that such links appear like
-    # normal links, and some people accidentally use them for normal links.
-    # While such links are bad style, they are not worth crashing the bot.
-    #
-    #for pl in links.values():
-    #    if pl.site() == insite:
-    #        raise ValueError("Trying to add interwiki link to self")
     s = []
     ar = links.keys()
     ar.sort()
@@ -3091,7 +3080,9 @@ def interwikiFormat(links, insite = None):
         ar2 = []
         for code in putfirst:
             # The code may not exist in this family?
-            if code in getSite().validLanguageLinks():
+            if code in insite.family.obsolete:
+                code = insite.family.obsolete[code]
+            if code in insite.validLanguageLinks():
                 site = insite.getSite(code = code)
                 if site in ar:
                     del ar[ar.index(site)]
@@ -3667,9 +3658,7 @@ class Site(object):
                 self.lang = self.family.obsolete[self.lang]
             else:
                 # no such language anymore
-                # disable exception for the moment - interwiki links problems
-                # raise KeyError("Language %s in family %s is obsolete" % (self.lang, self.family.name))
-                pass
+                raise KeyError("Language %s in family %s is obsolete" % (self.lang, self.family.name))
 
         if self.lang not in self.languages():
             if self.lang == 'zh-classic' and 'zh-classical' in self.languages():
