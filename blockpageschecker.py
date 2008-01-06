@@ -235,7 +235,7 @@ def main():
                             break
                         else:
                             wikipedia.output(u'wrong entry, type "b", "g" or "n"')
-                            break
+                            continue
                     
 if __name__ == "__main__":
     try:
