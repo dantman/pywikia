@@ -216,13 +216,13 @@ class LoginManager:
         self.password = self.password.encode(self.site.encoding())
 
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
-        # Ensure bot policy on the English Wikipedia
-        if not self.botAllowed():
-            wikipedia.output(u'*** Your username is not listed on [[%s]].\n*** Please make sure you are allowed to use the robot before actually using it!' % botList[self.site.family.name][self.site.lang])
         cookiedata = self.getCookie()
         if cookiedata:
             self.storecookiedata(cookiedata)
             wikipedia.output(u"Should be logged in now")
+            # Show a warning according to the local bot policy
+            if not self.botAllowed():
+                wikipedia.output(u'*** Your username is not listed on [[%s]].\n*** Please make sure you are allowed to use the robot before actually using it!' % botList[self.site.family.name][self.site.lang])
             return True
         else:
             wikipedia.output(u"Login failed. Wrong password or CAPTCHA answer?")
