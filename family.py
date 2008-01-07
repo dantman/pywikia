@@ -1710,7 +1710,7 @@ class Family:
                 'kk': u'Санат',
                 'kn': u'ವರ್ಗ',
                 'ko': u'분류',
-                'ksh':[u'Saachjrupp', u'Saachjropp'],
+                'ksh':[u'Saachjrupp', u'Saachjropp', u'Kategorie', u'Katejori'],
                 'ku': u'Kategorî',
                 'kv': u'Категория',
                 'la': u'Categoria',
