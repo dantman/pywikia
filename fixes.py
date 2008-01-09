@@ -221,6 +221,14 @@ fixes = {
 			# this will cause mistakes.
 			(r'\[(?P<url>https?://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx|\.jsp)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
 		],
+        'exceptions': {
+            'inside-tags': [
+                'nowiki',
+                'comment',
+                'math',
+                'pre',
+            ],
+        }
 	},
 
 	'case-de': { # German upper / lower case issues
