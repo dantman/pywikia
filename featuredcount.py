@@ -28,9 +28,9 @@ def featuredArticles(site):
         elif p.namespace()==1:
             arts.append(wikipedia.Page(p.site(), p.titleWithoutNamespace()))
     wikipedia.output('\03{lightred}** wikipedia:%s has %i featured articles\03{default}' % (site.lang, len(arts)))
-    return arts
-
+    
 if __name__=="__main__":
+    mysite=wikipedia.getSite()
     fromlang=featured_name.keys()
     fromlang.sort()
     try:
@@ -38,5 +38,6 @@ if __name__=="__main__":
             fromsite=wikipedia.Site(ll)
             if not fromsite==wikipedia.getSite():
                 arts=featuredArticles(fromsite)
+        arts_mysite=featuredArticles(mysite)
     finally:
         wikipedia.stopme()
