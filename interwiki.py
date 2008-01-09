@@ -131,6 +131,9 @@ These arguments specify in which way the bot should follow interwiki links:
 
     -noredirect    do not follow redirects (note: without ending columns).
 
+    -initialredirect  work on target if a redirect is entered on the command
+                   line (note: without ending columns).
+
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
                    specify a list of languages to disregard, separated by
@@ -358,6 +361,7 @@ class Global(object):
     select = False
     debug = True
     followredirect = True
+    initialredirect = False
     force = False
     maxquerysize = 60
     same = False
@@ -669,13 +673,19 @@ class Subject(object):
                     redirectTargetPage = wikipedia.Page(page.site(), arg.args[0])
                     wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
                     if page == self.originPage:
-                        # This is a redirect page to the origin. We don't need to
-                        # follow the redirection.
-                        # In this case we can also stop all hints!
-                        for page2 in self.todo:
-                            counter.minus(page2.site())
-                        self.todo = []
-                        pass
+		    	if globalvar.initialredirect :
+			    self.originPage = redirectTargetPage
+                	    self.pending.append(redirectTargetPage)
+			    counter.plus(redirectTargetPage.site)
+			    pass
+			else:
+                            # This is a redirect page to the origin. We don't need to
+                            # follow the redirection.
+                            # In this case we can also stop all hints!
+                            for page2 in self.todo:
+                                counter.minus(page2.site())
+                            self.todo = []
+                            pass
                     elif not globalvar.followredirect:
                         wikipedia.output(u"NOTE: not following redirects.")
                     else:
@@ -1471,6 +1481,8 @@ if __name__ == "__main__":
                 globalvar.autonomous = True
             elif arg == '-noredirect':
                 globalvar.followredirect = False
+            elif arg == '-initialredirect':
+                globalvar.initialredirect = True
             elif arg == '-localonly':
                 globalvar.localonly = True
             elif arg == '-limittwo':
