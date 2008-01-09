@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -44,6 +45,10 @@ and option can be one of these:
  * -match      - Only work on pages whose titles match the given regex (for
                  move and remove actions).
 
+If action is "add", the following options are supported:
+
+&params;
+
 For the actions tidy and tree, the bot will store the category structure
 locally in category.dump. This saves time and server load, but if it uses
 these data later, they may be outdated; use the -rebuild parameter in this
@@ -66,6 +71,7 @@ This will move all pages in the category US to the category United States.
 #
 # (C) Rob W.W. Hooft, 2004
 # (C) Daniel Herding, 2004
+# (C) Anreas J Schwab, 2007
 #
 __version__ = '$Id$'
 #
@@ -74,6 +80,11 @@ __version__ = '$Id$'
 import os, re, sys, string, pickle, bz2
 import wikipedia, catlib, config, pagegenerators
 
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;': pagegenerators.parameterHelp
+}
 # Summary messages
 msg_add={
     'ar':u'إضافة [[تصنيف:%s]]',
@@ -289,28 +300,8 @@ def add_category(sort_by_last_name = False):
     '''
     A robot to mass-add a category to a list of pages.
     '''
-    print "This bot has two modes: you can add a category link to all"
-    print "pages mentioned in a List that is now in another wikipedia page"
-    print "or you can add a category link to all pages that link to a"
-    print "specific page. If you want the second, please give an empty"
-    print "answer to the first question."
-    listpageTitle = wikipedia.input(u'Wiki page with list of pages to change:')
     site = wikipedia.getSite()
-    pages = []
-    if listpageTitle:
-        try:
-            listpage = wikipedia.Page(site, listpageTitle)
-            pages = listpage.linkedPages()
-        except wikipedia.NoPage:
-            wikipedia.output(u'%s could not be loaded from the server.' % listpage.aslink())
-        except wikipedia.IsRedirectPage:
-            wikipedia.output(u'%s is a redirect to %s.' % (listpage.aslink(), listpage.getRedirectTarget().aslink()))
-    else:
-        referredPage = wikipedia.input(u'Wikipedia page that is now linked to:')
-        page = wikipedia.Page(wikipedia.getSite(), referredPage)
-        pages = [p for p in page.getReferences()]
-    wikipedia.output(u'  ==> %i pages to process\n' % len(pages))
-    if len(pages) > 0:
+    if gen:
         newcatTitle = wikipedia.input(u'Category to add (do not give namespace):')
         if not wikipedia.getSite().nocapitalize:
             newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
@@ -321,7 +312,7 @@ def add_category(sort_by_last_name = False):
         cat_namespace = wikipedia.getSite().category_namespaces()[0]
 
         answer = ''
-        for page in pages:
+        for page in gen:
             if answer != 'a':
                 answer = ''
 
@@ -810,6 +801,13 @@ if __name__ == "__main__":
     recurse = False
     titleRegex = None
 
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+    # The generator gives the pages that should be worked upon.
+    gen = None
+
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
     useSummaryForDeletion = False
@@ -862,8 +860,15 @@ if __name__ == "__main__":
                 talkPages = True
             elif arg == '-recurse':
                 recurse = True
+            else:
+                gen = genFactory.handleArg(arg)
 
         if action == 'add':
+            if not gen:
+			    gen = genFactory.handleArg('-links') #default for backwords compatibility
+			# The preloading generator is responsible for downloading multiple
+			# pages from the wiki simultaneously.
+            gen = pagegenerators.PreloadingGenerator(gen)
             add_category(sort_by_last_name)
         elif action == 'remove':
             if (fromGiven == False):
