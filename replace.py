@@ -589,10 +589,10 @@ LIMIT 200""" % (whereClause, exceptClause)
     if namespaces != []:
         gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     if xmlFilename:
-        # XML parsing is slow enough that preloading would make bot even slower
-        preloadingGen = gen
+        # XML parsing can be quite slow, so we preload less pages each time.
+        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
     else:
-        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 50)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 60)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive)
     bot.run()
 
