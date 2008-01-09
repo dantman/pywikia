@@ -122,7 +122,7 @@ featured_name = {
     'ast': (BACK, u"Plantilla:Destacaos"),
     'ar': (BACK, u"قالب:مقالات مختارة"),
     # az: Vikipediya:Fəal məzmun
-    'be': (BACK, u"Шаблён:Выбраны артыкул"),
+    #'be': (BACK, u"Шаблён:Выбраны артыкул"),
     'bg': (BACK, u"Шаблон:Избрана статия"),
     'bn': (BACK, u"Template:নির্বাচিত নিবন্ধ"),	
     'bs': (BACK, u"Šablon:Wiki članak"),
