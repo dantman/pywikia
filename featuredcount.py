@@ -16,24 +16,6 @@ import sys
 import wikipedia, catlib
 from featured import featured_name
 
-def CAT(site,name):
-    cat=catlib.Category(site, name)
-    return cat.articles()
-
-def BACK(site,name):
-    p=wikipedia.Page(site, name)
-    return [page for page in p.getReferences(follow_redirects = False)]
-
-def LINKS(site,name, ignore=[]):
-    p=wikipedia.Page(site, name)
-    links=p.linkedPages()
-    for n in links[:]:
-        t=n.titleWithoutNamespace()
-        if t[0] in u"/#" or t in ignore:
-            links.remove(n)
-    links.sort()
-    return links
-
 def featuredArticles(site):
     method=featured_name[site.lang][0]
     name=featured_name[site.lang][1]
