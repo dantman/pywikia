@@ -115,6 +115,7 @@ fixes = {
 				r'AH-1W',    # Hubschrauberbezeichnung
 				r'\d+h \d+m', # Schreibweise für Zeiten, vor allem in Film-Infoboxen. Nicht korrekt, aber dafür schön kurz.
 				r'(?i)\[\[(Bild|Image|Media):.+?\|', # Dateinamen auslassen
+                r'<sup>\d+m</sup>', # bei chemischen Formeln
 			],
 			'title': [
 				r'Arsen',  # chemische Formel
