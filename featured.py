@@ -8,9 +8,10 @@ This script understands various command-line arguments:
 * -nocache           : doesn't include /featured/cache file to remembers if the
                        article already was verified.
 
-* -fromlang:xx[,yy[,...]]] : xx,.. are the languages to be verified.
+* -fromlang:xx[,yy[,...]]] : xx,.. are the languages to be verified. Another
+                             possible with range the languages -fromlang:ar--fi
 
-* -fromall           : to verifiy all languages.
+* -fromall           : to verify all languages.
 
 * -after:zzzz        : process pages after and including page zzzz
 
@@ -29,7 +30,7 @@ __version__ = '$Id$'
 # Distributed under the terms of the MIT license.
 #
 
-import sys, re, pickle
+import sys, re, pickle, os.path
 import wikipedia, catlib, config
 
 def CAT(site,name):
@@ -198,6 +199,7 @@ def featuredArticles(site):
             arts.append(p)
         elif p.namespace()==1: # Article talk (like in English)
             arts.append(wikipedia.Page(p.site(), p.titleWithoutNamespace()))
+    wikipedia.output('\03{lightred}** wikipedia:%s has %i featured articles\03{default}' % (site.lang, len(arts)))
     return arts
 
 def findTranslated(page, oursite=None):
@@ -363,3 +365,4 @@ if __name__=="__main__":
         wikipedia.stopme()
         if not nocache:
             pickle.dump(cache,file("featured/cache","wb"))
+                
