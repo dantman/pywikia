@@ -15,18 +15,22 @@ all the lines where that url occurs. You can choose to:
 * not change the page in question
 
 Command line options:
-* -automatic: Do not ask, but remove the lines automatically. Be very careful
+-automatic: Do not ask, but remove the lines automatically. Be very careful
               in using this option!
+
+-namespace: Filters the search to a given namespace.  If this is specified
+              multiple times it will search all given namespaces
 
 """
 
 import sys
-import wikipedia, editarticle
+import wikipedia, editarticle, pagegenerators
 
 __version__ = '$Id$'
 
 def main():
     automatic = False
+    namespaces = []
     msg = {
         'de': u'Entferne in Spam-Blacklist eingetragenen Weblink auf %s',
         'en': u'Removing links to spammed site %s',
@@ -41,6 +45,11 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg.startswith("-automatic"):
             automatic = True
+        elif arg.startswith('-namespace:'):
+            try:
+                namespaces.append(int(arg[len('-namespace:'):]))
+            except ValueError:
+                namespaces.append(arg[len('-namespace:'):])
         else:
             spamSite = arg
     if not automatic:
@@ -51,6 +60,8 @@ def main():
         sys.exit()
     mysite = wikipedia.getSite()
     pages = list(set(mysite.linksearch(spamSite)))
+    if namespaces:
+        pages = list(set(pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)))
     wikipedia.getall(mysite, pages)
     for p in pages:
         text = p.get()
@@ -83,6 +94,7 @@ def main():
         elif answer == "e":
             editor = editarticle.TextEditor()
             newtext = editor.edit(text, highlight = spamSite, jumpIndex = text.find(spamSite))
+            continue
         else:
             newtext = "\n".join(newpage)
         if newtext != text:
