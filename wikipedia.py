@@ -2810,6 +2810,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         'source':      re.compile(r'(?is)<source .*?</source>'),
         # inline references
         'ref':         re.compile(r'(?ism)<ref[ >].*?</ref>'),
+        'timeline':    re.compile(r'(?is)<timeline>.*?</timeline>'),
         # lines that start with a space are shown in a monospace font and
         # have whitespace preserved.
         'startspace':  re.compile(r'(?m)^ (.*?)$'),
