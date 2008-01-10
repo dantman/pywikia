@@ -115,6 +115,11 @@ class SpeedyRobot:
         'it': {
             u'_default':      u'Bot: Cancello pagine taggate come [[Aiuto:Cancella subito|cancella subito]].',
             },        
+        'zh':{
+            u'_default':u'[[WP:CSD]]',
+            u'no source':u'[[WP:CSD#I3]] 沒有來源',
+            u'unknown':u'[[WP:CSD#I3]] 沒有版權資訊',
+            },
     }
 
     # Default reason for deleting a talk page.
@@ -125,6 +130,7 @@ class SpeedyRobot:
         'it':u'Bot: Cancello pagina discussione di una pagina già cancellata',
         'pl':u'Osierocona strona dyskusji',
         'pt':u'Página de discussão órfã',
+        'zh':u'沒有在使用的討論頁',
     }
 
     # A list of often-used reasons for deletion. Shortcuts are keys, and
@@ -151,6 +157,11 @@ class SpeedyRobot:
             'redirect': 'Bot: Cancello redirect rotto o inutile',
             'spam': 'Bot: Cancello pagina piena di spam',
             'promo': 'Bot: Cancello pagina promozionale',
+            },
+        'zh':{
+            'lssd':u'[[WP:CSD#I3|CSD I3]]:沒有版權或來源資訊',
+            'nls':u'[[WP:CSD#I3|CSD I3]]:沒有版權資訊',
+            'g11':u'[[WP:CSD#G11|CSD G11]]:廣告、宣傳頁面',
             },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should

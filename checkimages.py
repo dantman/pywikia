@@ -84,6 +84,7 @@ n_txt = {
         'commons':'\n{{subst:nld}}',
     'en'     :'\n{{subst:nld}}',
     'it'     :'\n{{subst:unverdata}}',
+    'ja':'{{subst:Nsd}}',
     'hu'     :u'\n{{nincslicenc|~~~~~}}',
     'zh'    :'{{subst:no source/auto}}',
 }
@@ -91,8 +92,9 @@ n_txt = {
 txt_find =  {
     'commons':['{{no license', '{{nld'],
         'en':['{{nld', '{{no license'],
-    'it':['{{unverdata', '{{unverified'],
     'hu':[u'{{nincsforrás',u'{{nincslicenc'],
+    'it':['{{unverdata', '{{unverified'],
+    'ja':[u'{{no source',u'{{unknown',],
     'zh':['{{no source','{{unknown'],
                 }
 
@@ -100,9 +102,10 @@ txt_find =  {
 comm = {
 		'commons':'Bot: Marking newly uploaded untagged file',
 		'en'     :'Bot: Marking newly uploaded untagged file',
+		'hu'    :'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
 		'it'     :"Bot: Aggiungo unverified",
-		 'hu'    :'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
-		 'zh':u'機器人:標示新上傳且未有任何資訊的檔案',
+		'ja':u'ロボットによる:出典やライセンスなしの画像をタグ',
+		'zh':u'機器人:標示新上傳且未包含必要資訊的檔案',
 		}
 
 # Summary that the bot use when it notify the problem with the image's license
@@ -110,8 +113,9 @@ comm2 = {
 		'commons':"Bot: Requesting source information." ,
 		'en'     :"Bot: Requesting source information." ,
 		'it'     :"Bot: Notifico l'unverified",
-		'hu'     :'Robot: Forrásinformáció kérése',
-		'zh'     :u"機器人: 正在請求來源資訊"
+		'ja'     :u"ロボットによる:出典とライセンス明記のお願い",
+		'hu' :'Robot: Forrásinformáció kérése',
+		'zh'     :u"機器人: 請求來源資訊"
 		}
 
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
@@ -119,6 +123,7 @@ empty = {
 		'commons':'{{subst:welcome}}\n~~~~\n',
 		'en'     :'{{welcome}}\n~~~~\n',
 		'it'     :'{{benvenuto}}\n~~~~\n',
+		'ja':'{{welcome}}\n--~~~~\n',
 		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
 		'zh':'{{subst:welcome|sign=~~~~}}',
 		}
@@ -127,8 +132,9 @@ empty = {
 unver = {
 		'commons':'Bot: no source',
 		'en'     :'Bot: no source',
-		'it'     :'Bot: Unverified!',
 		'hu'     :'Robot: nincs forrás',
+		'it'     :'Bot: Unverified!',
+		'ja':u'ロボットによる: 出典なし',
 		'zh':u'機器人:沒有來源資訊',
 		}
 
@@ -138,8 +144,9 @@ delete_immediately = {
 			'commons':"{{db-meta|The file has .%s as extension.}}",
 			'en'     :"{{db-meta|The file has .%s as extension.}}",
 			'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
+			'ja':u'{{db|知らないファイルフォーマット%s}}',
 			'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
-			'zh'    :u'{{delete|未知檔案格式',
+			'zh'    :u'{{delete|未知檔案格式%s}}',
 			}
 
 # The header of the Unknown extension's message.
@@ -164,6 +171,7 @@ del_comm = {
 			'commons':'Bot: Adding %s',
 			'en'     :'Bot: Adding %s',
 			'it'     :'Bot: Aggiungo %s',
+			'ja'     :u'ロボットによる: 追加 %s',
 			'hu'     :u'Robot:"%s" hozzáadása',
 			'zh'     :u'機器人: 正在新增 %s',
 			}
@@ -173,15 +181,17 @@ del_comm = {
 nothing_head = {
 				'commons':"",# Nothing, the template has already the header inside.
 				'en'     :"\n== Image without license ==\n",
+				'ja':u'\n',
 				'it'     :"\n== Immagine senza licenza ==\n",
 				'hu'     :u"\n== Licenc nélküli kép ==\n",
-				'zh'    :None,
+				'zh'    :u'\n',
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
 				'commons':"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
+				'ja'	:"{{subst:image source|Image:%s}}--~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
 				'zh'   :u'{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
 				}
@@ -191,6 +201,7 @@ bot_list = {
 			'commons':['Siebot', 'CommonsDelinker'],
 			'en'     :['OrphanBot'],
 			'it'     :['Filbot', 'Nikbot', '.snoopyBot.'],
+			'ja':['alexbot'],
 			'zh':['alexbot'],
 			}
 
@@ -200,6 +211,7 @@ second_message_without_license = {
                                 'en': None,
 				'it':'{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
 				'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
+				'ja':None,
 				'zh':None,
 				}
 # You can add some settings to wikipedia. In this way, you can change them without touch the code.
@@ -209,6 +221,7 @@ page_with_settings = {
                                         'en':None,
                                         'hu':None,
 					'it':'Utente:Nikbot/Settings#Settings',
+					'ja':None,
 					'zh':None,
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)
@@ -217,8 +230,9 @@ report_page = {
 				'commons':'User:Filbot/Report',
                                 'en'     :'User:Filnik/Report',
 				'it'     :'Utente:Nikbot/Report',
+				'ja':'User:Alexbot/report',
 				'hu'     :'User:Bdamokos/Report',
-				'zh'    :u'User:Alexsh/checkimagereport',
+				'zh'    :'User:Alexsh/checkimagereport',
 				}
 # Adding the date after the signature. 
 timeselected = u' ~~~~~'
@@ -227,6 +241,7 @@ report_text = {
 			'commons':"\n*[[:Image:%s]] " + timeselected,
 			'en':"\n*[[:Image:%s]] " + timeselected,
 			'it':"\n*[[:Immagine:%s]] " + timeselected,
+			'ja':"\n*[[:Immagine:%s]] " + timeselected,
 			'hu':u"\n*[[:Kép:%s]] " + timeselected,
 			'zh':"\n*[[:Image:%s]] " + timeselected,
 			}
@@ -235,6 +250,7 @@ comm10 = {
 		'commons':'Bot: Updating the log',
 		'en':'Bot: Updating the log',
 		'it':'Bot: Aggiorno il log',
+		'ja': u'ロボットによる:更新',
 		'hu': 'Robot: A napló frissítése',
 		'zh': u'機器人:更新記錄',
 		}
@@ -248,12 +264,13 @@ HiddenTemplate = {
 		'commons':['information'],
 		'en':['information'],
 		'it':['edp', 'informazioni[ _]file', 'information'],
+		'ja':[u'Information'],
 		'hu':[u'információ','enwiki', 'azonnali'],
 		'zh':[u'information'],
 		}
 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['commons', 'en','hu', 'it','zh']
+project_inserted = ['commons', 'en','ja','hu', 'it','zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################

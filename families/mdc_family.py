@@ -21,6 +21,7 @@ class Family(family.Family):
             'nl': None,
             'pl': None,
             'pt': None,
+            'zh_tw':None,
         }
 
         self.namespaces[4] = {
