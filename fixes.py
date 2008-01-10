@@ -119,8 +119,8 @@ fixes = {
             'inside': [
                 r'<code>.*</code>', # because of code examples
                 r'{{[Zz]itat\|.*?}}',
-                r'{{§|.*?}}',
-                r'§ \d+[a-z]',     # Gesetzesparagraph, klappt nicht?
+                r'{{§\|.*?}}',  # Gesetzesparagraph
+                r'§ \d+[a-z]',  # Gesetzesparagraph
                 r'Ju 52/1m', # Flugzeugbezeichnung
                 r'Ju 52/3m', # Flugzeugbezeichnung
                 r'AH-1W',    # Hubschrauberbezeichnung
