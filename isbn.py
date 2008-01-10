@@ -1181,8 +1181,6 @@ class IsbnBot:
 
 class InvalidIsbnException(wikipedia.Error):
     """Invalid ISBN"""
-    def __init__(self, message):
-        self.message = message
 
 class ISBN:
     """
