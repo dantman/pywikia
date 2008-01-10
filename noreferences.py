@@ -138,7 +138,8 @@ class XmlDumpNoReferencesPageGenerator:
         mysite = wikipedia.getSite()
         dump = xmlreader.XmlDump(self.xmlFilename)
         for entry in dump.parse():
-            if self.refR.search(entry.text) and not self.referencesR.search(entry.text):
+            text = wikipedia.removeDisabledParts(entry.text)
+            if self.refR.search(text) and not self.referencesR.search(text):
                 yield wikipedia.Page(mysite, entry.title)
 
 class NoReferencesBot:
