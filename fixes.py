@@ -109,13 +109,20 @@ fixes = {
 			],
 			'text-contains': [
 				r'sic!',
+                r'20min.ch',     # Schweizer News-Seite
 			],
 			'inside': [
-				r'Ju 52/3m', # Flugzeugbezeichnung
+                r'<code>.*</code>' # because of code examples
+                r'Ju 52/1m', # Flugzeugbezeichnung
+                r'Ju 52/3m', # Flugzeugbezeichnung
 				r'AH-1W',    # Hubschrauberbezeichnung
-				r'\d+h \d+m', # Schreibweise für Zeiten, vor allem in Film-Infoboxen. Nicht korrekt, aber dafür schön kurz.
+                r'8mm',      # Filmtitel
+                r'802.11g',  # WLAN-Standard
+                r'ntfs-3g',  # Dateisystem-Treiber
+				r'\d+h( |&nbsp;)\d+m', # Schreibweise für Zeiten, vor allem in Film-Infoboxen. Nicht korrekt, aber dafür schön kurz.
 				r'(?i)\[\[(Bild|Image|Media):.+?\|', # Dateinamen auslassen
-                r'<sup>\d+m</sup>', # bei chemischen Formeln
+                r'<sup>\d+m</sup>',                   # bei chemischen Formeln
+                r'\([A-Z][A-Za-z]*(,[A-Z][A-Za-z]*(<sup>.*?</sup>|<sub>.*?</sub>|))+\)' # chemische Formel, z. B. AuPb(Pb,Sb,Bi)Te. Hier sollen keine Leerzeichen hinter die Kommata.
 			],
 			'title': [
 				r'Arsen',  # chemische Formel
@@ -176,6 +183,7 @@ fixes = {
 				'comment',
 				'math',
 				'pre',
+                'startspace',    # because of code examples
 			],
 			'text-contains': [
 				r'http://.*?object=tx\|',               # regular dash in URL
@@ -228,6 +236,7 @@ fixes = {
                 'comment',
                 'math',
                 'pre',
+                'startspace',    # because of code examples
             ],
         }
 	},
