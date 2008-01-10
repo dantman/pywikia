@@ -92,11 +92,12 @@ fixes = {
 			# Keine führende Null beim Datum
 			#(u'0(\d+)\. (Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
 			# Kein Leerzeichen nach Komma
-			(u'([a-z](\]\])?,)((\[\[)?[a-zA-Z])',                                                                          r'\1 \3'),
+			(u'([a-zäöüß](\]\])?,)((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1 \3'),
             # Leerzeichen und Komma vertauscht
-            (u'([a-z](\]\])?) ,((\[\[)?[a-zA-Z])',                                                                          r'\1, \3'),
-            # Leerzeichen auch vor dem Komma
-            (u'([a-z](\]\])?) , ((\[\[)?[a-zA-Z])',                                                                          r'\1, \3'),
+            (u'([a-zäöüß](\]\])?) ,((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1, \3'),
+            # Plenks (d. h. Leerzeichen auch vor dem Komma/Punkt/Semikolon/Doppelpunkt/Ausrufezeichen/Fragezeichen)
+            # Achtung bei Französisch: http://de.wikipedia.org/wiki/Plenk#Sonderfall_Franz.C3.B6sisch
+            (u'([a-zäöüß](\]\])?) ([,\.;:!\?]) ((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1\3 \4'),
 			#(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
 		],
 		'exceptions': {
@@ -104,7 +105,8 @@ fixes = {
 				'nowiki',
 				'comment',
 				'math',
-				'pre',           # because of code examples
+                'pre',           # because of code examples
+                'source',        # because of code examples
 				'startspace',    # because of code examples
 				'hyperlink',     # e.g. commas in URLs
 				'gallery',       # because of filenames
@@ -115,14 +117,18 @@ fixes = {
 			],
 			'inside': [
                 r'<code>.*</code>', # because of code examples
-                r' \d+[a-z]',     # Gesetzesparagraph
+                r'{{[Zz]itat\|.*?}}',
+                r'{{§|.*?}}',
+                r'§ \d+[a-z]',     # Gesetzesparagraph, klappt nicht?
                 r'Ju 52/1m', # Flugzeugbezeichnung
                 r'Ju 52/3m', # Flugzeugbezeichnung
 				r'AH-1W',    # Hubschrauberbezeichnung
                 r'ZPG-3W',   # Luftschiffbezeichnung
                 r'8mm',      # Filmtitel
                 r'802.11g',  # WLAN-Standard
+                r'DOS/4GW',  # Software
                 r'ntfs-3g',  # Dateisystem-Treiber
+                r'(?m)^;(.*?)$', # Definitionslisten, dort gibt es oft absichtlich Leerzeichen vor Doppelpunkten
 				r'\d+h( |&nbsp;)\d+m', # Schreibweise für Zeiten, vor allem in Film-Infoboxen. Nicht korrekt, aber dafür schön kurz.
 				r'(?i)\[\[(Bild|Image|Media):.+?\|', # Dateinamen auslassen
                 r'<sup>\d+m</sup>',                   # bei chemischen Formeln
@@ -187,6 +193,7 @@ fixes = {
 				'comment',
 				'math',
 				'pre',
+                'source',        # because of code examples
                 'startspace',    # because of code examples
 			],
 			'text-contains': [
@@ -240,6 +247,7 @@ fixes = {
                 'comment',
                 'math',
                 'pre',
+                'source',        # because of code examples
                 'startspace',    # because of code examples
             ],
         }
