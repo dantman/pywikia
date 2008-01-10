@@ -2844,6 +2844,8 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         if isinstance(exc, str) or isinstance(exc, unicode):
             # assume it's a reference to the exceptionRegexes dictionary
             # defined above.
+            if not exceptionRegexes.has_key(exc):
+                raise ValueError("Unknown tag type: " + exc)
             dontTouchRegexes.append(exceptionRegexes[exc])
         else:
             # assume it's a regular expression
