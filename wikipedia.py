@@ -2807,6 +2807,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
         # preformatted text
         'pre':         re.compile(r'(?ism)<pre>.*?</pre>'),
+        'source':      re.compile(r'(?is)<source .*?</source>'),
         # inline references
         'ref':         re.compile(r'(?ism)<ref[ >].*?</ref>'),
         # lines that start with a space are shown in a monospace font and
@@ -2925,7 +2926,8 @@ def removeDisabledParts(text, tags = ['*']):
             'includeonly': r'<includeonly>.*?</includeonly>',
             'nowiki':      r'<nowiki>.*?</nowiki>',
             'pre':         r'<pre>.*?</pre>',
-            }
+            'source':      r'<source .*?</source>',
+    }
     if '*' in tags:
         tags = regexes.keys()
     toRemoveR = re.compile('|'.join([regexes[tag] for tag in tags]),
@@ -3020,7 +3022,7 @@ def removeLanguageLinks(text, site = None, marker = ''):
     interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*'
                             % languageR, re.IGNORECASE)
     text = replaceExcept(text, interwikiR, '',
-                         ['nowiki', 'comment', 'math', 'pre'], marker=marker)
+                         ['nowiki', 'comment', 'math', 'pre', 'source'], marker=marker)
     return text.strip()
 
 def replaceLanguageLinks(oldtext, new, site = None):
@@ -3137,7 +3139,7 @@ def removeCategoryLinks(text, site, marker = ''):
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
-    text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'], marker = marker)
+    text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre', 'source'], marker = marker)
     return text.strip()
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
@@ -3163,12 +3165,12 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
                             % (catNamespace, title))
     if newcat is None:
         text = replaceExcept(oldtext, categoryR, '',
-                             ['nowiki', 'comment', 'math', 'pre'])
+                             ['nowiki', 'comment', 'math', 'pre', 'source'])
     else:
         text = replaceExcept(oldtext, categoryR,
                              '[[Category:%s\\2'
                                  % newcat.titleWithoutNamespace(),
-                             ['nowiki', 'comment', 'math', 'pre'])
+                             ['nowiki', 'comment', 'math', 'pre', 'source'])
     return text
 
 def replaceCategoryLinks(oldtext, new, site=None):
