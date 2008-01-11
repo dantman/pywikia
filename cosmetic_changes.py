@@ -98,6 +98,7 @@ class CosmeticChangesToolkit:
         text = self.resolveHtmlEntities(text)
         text = self.validXhtml(text)
         text = self.removeUselessSpaces(text)
+        text = self.removeNonBreakingSpaceBeforePercent(text)
         try:
             text = isbn.hyphenateIsbnNumbers(text)
         except isbn.InvalidIsbnException, error:
@@ -285,6 +286,15 @@ class CosmeticChangesToolkit:
 
         return text
 
+    def removeNonBreakingSpaceBeforePercent(self, text):
+        '''
+        Newer MediaWiki versions automatically place a non-breaking space in
+        front of a percent sign, so it is no longer required to place it
+        manually.
+        '''
+        percentR = re.compile(r'(\d)&nbsp;%')
+        text = percentR.sub(r'\1 %', text)
+        return text
 
     def cleanUpSectionHeaders(self, text):
         """
