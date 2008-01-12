@@ -256,6 +256,10 @@ class Reporter(threadpool.Thread):
 		except wikipedia.PageNotSaved, e:
 			output(u'Warning! Unable to report replacement to %s.' % old_image, False)
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
+		except wikipedia.ServerError, e:
+			output(u'Warning! Server error while reporting replacement to %s.' % old_image, False)
+			output('%s: %s' % (e.__class__.__name__, str(e)), False)
+			return self.report((old_image, new_image, user, comment, not_ok))
 		else:
 			output(u'Reporting replacement of %s by %s.' % \
 				(old_image, new_image))
