@@ -209,7 +209,7 @@ bot_list = {
 second_message_without_license = {
 				'commons':None,
                                 'en': None,
-				'it':'{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
+				'it':':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
 				'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
 				'ja':None,
 				'zh':None,
@@ -217,7 +217,7 @@ second_message_without_license = {
 # You can add some settings to wikipedia. In this way, you can change them without touch the code.
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
-					'commons':None,
+					'commons':'User:Filbot/Settings',
                                         'en':None,
                                         'hu':None,
 					'it':'Utente:Nikbot/Settings#Settings',
@@ -402,7 +402,7 @@ class main:
 		else:
 			commentox = commx
 		if second_text == True:
-			talk_page.put("%s\n\n:%s" % (testoattuale, notification2), comment = commentox, minorEdit = False)
+			talk_page.put("%s\n\n%s" % (testoattuale, notification2), comment = commentox, minorEdit = False)
 		elif second_text == False:
 			talk_page.put(testoattuale + head + notification, comment = commentox, minorEdit = False)
 			
@@ -959,7 +959,16 @@ if __name__ == "__main__":
 						continue
 		# A little block to perform the repeat or to break.
 			if repeat == True:
-				wikipedia.output(u"Waiting for %s seconds, %s" % (time_sleep, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())))
+                                time_zone = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())
+                                try:
+                                        wikipedia.output(u"Waiting for %s seconds, %s" % (time_sleep, time_zone))
+                                except UnicodeDecodeError:
+                                        try:
+                                                wikipedia.output(u"Waiting for %s seconds, %s" % (time_sleep, time_zone.decode('utf-8')))
+                                        except Exception, e:
+                                                # There's some strange error! Skip time_zone printing the error.
+                                                print e
+                                                wikipedia.output(u"Waiting for %s seconds")
 				time.sleep(time_sleep)
 			elif repeat == False:
 				wikipedia.output(u"\t\t\t>> STOP! <<")
