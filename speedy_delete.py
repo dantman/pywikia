@@ -114,7 +114,7 @@ class SpeedyRobot:
             },
         'it': {
             u'_default':      u'Bot: Cancello pagine taggate come [[Aiuto:Cancella subito|cancella subito]].',
-            },        
+            },
         'zh':{
             u'_default':u'[[WP:CSD]]',
             u'no source':u'[[WP:CSD#I3]] 沒有來源',
@@ -162,6 +162,10 @@ class SpeedyRobot:
             'lssd':u'[[WP:CSD#I3|CSD I3]]:沒有版權或來源資訊',
             'nls':u'[[WP:CSD#I3|CSD I3]]:沒有版權資訊',
             'g11':u'[[WP:CSD#G11|CSD G11]]:廣告、宣傳頁面',
+            },
+        'zh':{
+            'lssd':u'[[WP:CSD#I3|CSD I3]]:沒有版權或來源資訊',
+            'nls':u'[[WP:CSD#I3|CSD I3]]:沒有版權資訊',
             },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should
