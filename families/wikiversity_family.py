@@ -11,14 +11,15 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikiversity'
 
+        self.languages_by_size = [
+            'en', 'fr', 'es', 'de', 'it', 'el',
+        ]
+
         self.langs = {
             'beta': 'beta.wikiversity.org',
-            'de': 'de.wikiversity.org',
-            'en': 'en.wikiversity.org',
-            'es': 'es.wikiversity.org',
-            'fr': 'fr.wikiversity.org',
-            'it': 'it.wikiversity.org',
         }
+        for lang in self.languages_by_size:
+            self.langs[lang] = '%s.wikiversity.org' % lang
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
@@ -26,6 +27,7 @@ class Family(family.Family):
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wikiversity', self.namespaces[4]['_default']],
+            'el': u'Βικιεπιστήμιο',
             'es': u'Wikiversidad',
             'fr': u'Wikiversité',
             'it': u'Wikiversità',
@@ -33,6 +35,7 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikiversity talk', self.namespaces[5]['_default']],
             'de': u'Wikiversity Diskussion',
+            'el': u'Συζήτηση Βικιεπιστημίου',
             'es': u'Wikiversidad Discusión',
             'fr': u'Discussion Wikiversité',
             'it': u'Discussioni Wikiversità',
