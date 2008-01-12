@@ -265,6 +265,7 @@ def main():
 	global R
 	
 	import sys, traceback
+	wikipedia.handleArgs()
 	output(u'Running ' + __version__)
 
 	try:
