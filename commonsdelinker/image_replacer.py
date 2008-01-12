@@ -252,7 +252,7 @@ class Reporter(threadpool.Thread):
 		try:
 			page.put(u'%s\n%s' % (template, text), 
 				comment = u'This image has been replaced by ' + new_image)
-		except PageNotSaved, e:
+		except wikipedia.PageNotSaved, e:
 			output(u'Warning! Unable to report replacement to %s.' % old_image, False)
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
 		else:
