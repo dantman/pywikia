@@ -212,9 +212,10 @@ class Reporter(threadpool.Thread):
 		try:
 			self.report(args)
 		except Exception, e:
-			output(u'A critical error during reporting has occured!')
+			output(u'A critical error during reporting has occured!', False)
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
 			traceback.print_exc(file = sys.stderr)
+			sys.stderr.flush()
 			self.exit()
 			os.kill(0, signal.SIGTERM)
 			
@@ -272,10 +273,11 @@ def main():
 			R = Replacer()
 			output(u'This bot runs from: ' + str(R.site))
 			R.start()
+		except (SystemExit, KeyboardInterrupt):
+			raise
 		except Exception, e:
-			if type(e) not in (SystemExit, KeyboardInterrupt):
-				output('A critical error has occured! Aborting!')
-				traceback.print_exc(file = sys.stderr)
+			output('A critical error has occured! Aborting!')
+			traceback.print_exc(file = sys.stderr)
 	finally:
 		R.reporters.exit()
 		wikipedia.stopme()
