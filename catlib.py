@@ -14,7 +14,7 @@ Library to work with category pages on Wikipedia
 #
 __version__ = '$Id$'
 #
-import re, time
+import re, time, urllib
 import wikipedia
 try:
     set # introduced in Python 2.4: faster and future
@@ -179,7 +179,10 @@ class Category(wikipedia.Page):
         # regular expression matching the "(next 200)" link
         RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
 
-        currentPageOffset = startFrom
+        if startFrom:
+            currentPageOffset = urllib.quote(startFrom.encode(self.site().encoding()))
+        else:
+            currentPageOffset = None
         while True:
             path = self.site().get_address(self.urlname())
             if purge:
@@ -244,7 +247,6 @@ class Category(wikipedia.Page):
             matchObj = RLinkToNextPage.search(txt)
             if matchObj:
                 currentPageOffset = matchObj.group(1)
-                wikipedia.output('There are more articles in %s.' % self.title())
             else:
                 break
 

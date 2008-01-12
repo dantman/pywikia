@@ -264,7 +264,7 @@ class SpeedyRobot:
                     reason = self.getReasonForDeletion(page)
                     wikipedia.output(u'The chosen reason is: \03{lightred}%s\03{default}' % reason)
                     page.delete(reason, prompt = False)
-                elif choice == 's' or True:
+                else:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
             if count == 0:
@@ -274,13 +274,13 @@ class SpeedyRobot:
                 else:
                     startFromBeginning = True
         wikipedia.output(u'Quitting program.')
-        
+
     def refreshGenerator(self):
         generator = pagegenerators.CategorizedPageGenerator(self.csdCat, start = self.savedProgress)
         # wrap another generator around it so that we won't produce orphaned talk pages.
         generator2 = pagegenerators.PageWithTalkPageGenerator(generator)
         self.preloadingGen = pagegenerators.PreloadingGenerator(generator2, pageNumber = 20)
-    
+
 def main():
     # read command line parameters
     for arg in wikipedia.handleArgs():
