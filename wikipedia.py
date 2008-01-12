@@ -1940,8 +1940,11 @@ not supported by PyWikipediaBot!"""
             reason = input(u'Please enter a reason for the deletion:')
         reason = reason.encode(self.site().encoding())
         answer = 'y'
-        if prompt:
-            answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No'], ['y', 'N'], 'N')
+        if prompt and not hasattr(self.site(), '_noDeletePrompt'):
+            answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
+            if answer in ['a', 'A']:
+                answer = 'y'
+                self.site()._noDeletePrompt = True
         if answer in ['y', 'Y']:
             host = self.site().hostname()
             address = self.site().delete_address(self.urlname())
@@ -2079,7 +2082,6 @@ not supported by PyWikipediaBot!"""
         """
         if throttle:
             put_throttle()
-        output(u'Undeleting...')
 
         address = self.site().undelete_address()
         self.site().forceLogin(sysop = True)
@@ -2099,7 +2101,9 @@ not supported by PyWikipediaBot!"""
 
         self._deletedRevs = None
         #TODO: Check for errors below (have we succeeded? etc):
-        return self.site().postForm(address,formdata,sysop=True)
+        result = self.site().postForm(address,formdata,sysop=True)
+        output(u'Page %s undeleted' % self.aslink())
+        return result
 
     def protect(self, edit='sysop', move='sysop', create='sysop', unprotect=False,
                 reason=None, prompt=True, throttle=True):
@@ -2119,11 +2123,14 @@ not supported by PyWikipediaBot!"""
         if throttle:
             put_throttle()
         if reason == None:
-            reason = input(u'Please enter a reason for the (un)protection:')
+            reason = input(u'Please enter a reason for the change of the protection level:')
         reason = reason.encode(self.site().encoding())
         answer = 'y'
-        if prompt:
-            answer = inputChoice(u'Do you want to (un)protect %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No'], ['y', 'N'], 'N')
+        if prompt and not hasattr(self.site(), '_noProtectPrompt'):
+            answer = inputChoice(u'Do you want to change the protection level of %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
+            if answer in ['a', 'A']:
+                answer = 'y'
+                self.site()._noProtectPrompt = True
         if answer in ['y', 'Y']:
             host = self.site().hostname()
 
@@ -2154,11 +2161,11 @@ not supported by PyWikipediaBot!"""
                 data, response = self.site().postForm(address, predata, sysop = True)
 
             if not response:
-                output(u'Changed protection level of page %s.' % self)
+                output(u'Changed protection level of page %s.' % self.aslink())
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
-                output(u'Failed to change protection level of page %s:' % self)
+                output(u'Failed to change protection level of page %s:' % self.aslink())
                 output(data)
                 return False
 
