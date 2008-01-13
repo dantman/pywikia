@@ -1270,6 +1270,14 @@ not supported by PyWikipediaBot!"""
                     response, data = self.site().postForm(address, predata, sysop)
                 except httplib.BadStatusLine, line:
                     raise PageNotSaved('Bad status line: %s' % line.line)
+                except ServerError:
+                    output(u''.join(traceback.format_exception(*sys.exc_info())))
+                    output(u'Got a server error when putting; will retry in %i minutes.' % retry_delay)
+                    time.sleep(60 * retry_delay)
+                    retry_delay *= 2
+                    if retry_delay > 30:
+                        retry_delay = 30
+                    continue
             if data != u'':
                 # Saving unsuccessful. Possible reasons:
                 # server lag, edit conflict or invalid edit token.
