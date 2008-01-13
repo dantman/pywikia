@@ -131,10 +131,10 @@ class CosmeticChangesToolkit:
 
     def standardizeCategories(self, text):
         """
-        Makes sure that interwiki links are put to the correct position, but
+        Makes sure that categories are put to the correct position, but
         does not sort them.
         """
-        # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position
+        # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
         if self.site != wikipedia.Site('de', 'wikipedia'):
             categories = wikipedia.getCategoryLinks(text, site = self.site)
             text = wikipedia.replaceCategoryLinks(text, categories, site = self.site)

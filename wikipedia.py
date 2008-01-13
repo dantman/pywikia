@@ -490,7 +490,7 @@ not supported by PyWikipediaBot!"""
         """Return a more complete string representation."""
         return "%s{%s}" % (self.__class__.__name__, str(self))
 
-    def aslink(self, forceInterwiki=False, textlink=False):
+    def aslink(self, forceInterwiki=False, textlink=False, noInterwiki=False):
         """Return a string representation in the form of a wikilink.
 
         If forceInterwiki is True, return an interwiki link even if it
@@ -502,7 +502,7 @@ not supported by PyWikipediaBot!"""
         a : character). (Not needed if forceInterwiki is True.)
         
         """
-        if forceInterwiki or self.site() != getSite():
+        if not noInterwiki and (forceInterwiki or self.site() != getSite()):
             if self.site().family != getSite().family:
                 return u'[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title(savetitle=True))
             else:
@@ -3240,13 +3240,12 @@ def categoryFormat(categories, insite = None):
     'categories' should be a list of Category objects.
 
     The string is formatted for inclusion in insite.
-    
     """
     if not categories:
         return ''
     if insite is None:
         insite = getSite()
-    catLinks = [category.aslink() for category in categories]
+    catLinks = [category.aslink(noInterwiki = True) for category in categories]
     if insite.category_on_one_line():
         sep = ' '
     else:
