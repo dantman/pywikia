@@ -689,6 +689,10 @@ not supported by PyWikipediaBot!"""
                 # locked
                 elif text.find(self.site().mediawiki_message('viewsource')) != -1:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
+                # Some of the newest versions don't have a "view source" tag for
+                # non-existant pages
+                elif text.find(self.site().mediawiki_message('badaccess')) != -1:
+                    raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 else:
                     if text.find( "<title>Wikimedia Error</title>") > -1:
                         output( u"Wikimedia has technical problems; will retry in %i minutes." % retry_idle_time)
