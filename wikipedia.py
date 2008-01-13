@@ -3816,6 +3816,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         else:
             iterator = iter(query)
         l = []
+        wpEditToken = None
         for key, value in iterator:
             if isinstance(key, unicode):
                 key = key.encode('utf-8')
@@ -3823,7 +3824,16 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 value = value.encode('utf-8')
             key = urllib.quote(key)
             value = urllib.quote(value)
+            if key == 'wpEditToken':
+                wpEditToken = value
+                continue
             l.append(key + '=' + value)
+            
+        # wpEditToken is explicitly added as last value.
+        # If a premature connection abort occurs while putting, the server will
+        # not have received an edit token and thus refuse saving the page
+        if wpEditToken != None:
+            l.append('wpEditToken=' + wpEditToken)
         return '&'.join(l)
 
     def postForm(self, address, predata, sysop=False, useCookie=True):
