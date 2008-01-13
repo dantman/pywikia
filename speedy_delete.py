@@ -117,8 +117,8 @@ class SpeedyRobot:
             },
         'zh':{
             u'_default':u'[[WP:CSD]]',
-            u'no source':u'[[WP:CSD#I3]] 沒有來源',
-            u'unknown':u'[[WP:CSD#I3]] 沒有版權資訊',
+            u'No source':u'[[WP:CSD#I3]] 沒有來源',
+            u'Unknown':u'[[WP:CSD#I3]] 沒有版權資訊',
             },
     }
 
