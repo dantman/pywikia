@@ -364,8 +364,8 @@ fixes = {
         'msg': {
             'de': u'Bot: Korrigiere ISBN-Format',
             'en': u'Robot: Fixing ISBN format',
-                        'he': u'בוט: מתקן פורמט ISBN',
             'es': u'Arreglando formato ISBN',
+            'he': u'בוט: מתקן פורמט ISBN',
             'ja': u'ロボットによる: ISBNフォーマット修正',
             'zh': u'機器人: 修正ISBN格式',
         },
