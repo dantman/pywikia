@@ -133,12 +133,10 @@ def workon(page):
         page.put(text, comment)
 
 try:
-    gen = None
-    action = None
     start = '!'
-    namspace2 = 0
-    mysite = wikipedia.getSite()
-    linktrail = mysite.linktrail()
+    featured = False
+    title = None
+    namespace = None
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-start'):
@@ -147,34 +145,36 @@ try:
             else:
                 start = arg[7:]
         elif arg == '-featured':
-            action = True
-            featured = wikipedia.translate(mysite, featured_articles)
-            ref = wikipedia.Page(wikipedia.getSite(), featured)
-            gen = pagegenerators.ReferringPageGenerator(ref)
-            generator = pagegenerators.NamespaceFilterPageGenerator(gen, [0])
-            for page in generator:
-                workon(page)
+            featured = True
         elif arg.startswith('-page'):
-            action = True
             if len(arg) == 5:
                 title = wikipedia.input(u'Which page should be processed?')
             else:
                 title = arg[6:]
-            page = wikipedia.Page(wikipedia.getSite(), title)
-            workon(page)
         elif arg.startswith('-namespace'):
-            action = True
             if len(arg) == 10:
-                namespace2 = int(wikipedia.input(u'Which namespace should be processed?'))
+                namespace = int(wikipedia.input(u'Which namespace should be processed?'))
             else:
-                namespace2 =int( arg[11:])
-            for page in pagegenerators.AllpagesPageGenerator(start=start, namespace=namespace2, includeredirects=False):
-                workon(page)
-          
+                namespace = int(arg[11:])
 
-    if not action:
+    mysite = wikipedia.getSite()
+    linktrail = mysite.linktrail()
+    if featured:
+        featuredList = wikipedia.translate(mysite, featured_articles)
+        ref = wikipedia.Page(wikipedia.getSite(), featuredList)
+        gen = pagegenerators.ReferringPageGenerator(ref)
+        generator = pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+        for page in generator:
+            workon(page)
+    elif title is not None:
+        page = wikipedia.Page(wikipedia.getSite(), title)
+        workon(page)
+    elif namespace is not None:
+        for page in pagegenerators.AllpagesPageGenerator(start=start, namespace=namespace, includeredirects=False):
+            workon(page)
+    else:
         wikipedia.showHelp('fixing_redirects')
         sys.exit()
-           
+
 finally:
     wikipedia.stopme()
