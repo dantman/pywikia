@@ -60,6 +60,9 @@ nowCommons = {
     'he': [
         u'גם בוויקישיתוף'
     ],
+    'ja':[
+        u'NowCommons', 
+    ],
     'ia': [
         u'OraInCommons'
     ],
@@ -74,13 +77,20 @@ nowCommons = {
     'ro': [
         u'NowCommons'
     ],
+    'zh':[
+        u'NowCommons', 
+        u'Nowcommons',
+        u'NCT',
+    ],
 }
 
 namespaceInTemplate = [
     'en',
     'ia',
+    'ja',
     'lt',
     'ro',
+    'zh',
 ]
 
 

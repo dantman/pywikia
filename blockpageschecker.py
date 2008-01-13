@@ -87,7 +87,7 @@ comment = {
             'fr':u'Robot: Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
             'he':u'בוט: מסיר תבנית שעבר זמנה',
             'it':u'Bot: Tolgo template di avviso blocco scaduto',
-            'ja':u'ロボットによる: 保護テンプレート削除',
+            'ja':u'ロボットによる: 保護テンプレート除去',
             'pt':u'Bot: Retirando predefinição de proteção',
             'zh':u'機器人: 移除過期的保護模板',
             }

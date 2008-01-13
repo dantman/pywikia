@@ -23,8 +23,9 @@ import re, sys
 msg = {
     'en': u'Bot: Fixing redirects',
     'he': u'בוט: מתקן הפניות',
+    'ja': u'ロボットによる:リダイレクト回避',
     'pt': u'Bot: Arrumando redirects',
-    'zh': u'Bot: 修复重定向',
+    'zh': u'機器人: 修復重定向',
     }
 
 featured_articles = {
@@ -34,6 +35,7 @@ featured_articles = {
     'es': u'Wikipedia:Artículos_destacados',
     'fr': u'Wikipédia:Articles_de_qualité',
     'it': u'Wikipedia:Articoli_in_vetrina',
+    'ja': u'Wikipedia:秀逸な記事',
     'nl': u'Wikipedia:Etalage',
     'sv': u'Wikipedia:Utvalda_artiklar',
     'pt': u'Wikipedia:Os_melhores_artigos',

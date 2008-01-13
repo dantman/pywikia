@@ -81,7 +81,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
-        'commons':'\n{{subst:nld}}',
+    'commons':'\n{{subst:nld}}',
     'en'     :'\n{{subst:nld}}',
     'it'     :'\n{{subst:unverdata}}',
     'ja':'{{subst:Nsd}}',
@@ -91,7 +91,7 @@ n_txt = {
 
 txt_find =  {
     'commons':['{{no license', '{{nld'],
-        'en':['{{nld', '{{no license'],
+    'en':['{{nld', '{{no license'],
     'hu':[u'{{nincsforrás',u'{{nincslicenc'],
     'it':[u'{{unverdata', u'{{unverified'],
     'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
@@ -160,7 +160,7 @@ delete_immediately_head = {
 
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
-                                'commons':'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
+				'commons':'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
 				'en'     :'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
 				'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
 				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
@@ -208,7 +208,7 @@ bot_list = {
 # The message that the bot will add the second time that find another license problem.
 second_message_without_license = {
 				'commons':None,
-                                'en': None,
+				'en': None,
 				'it':':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
 				'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
 				'ja':None,
@@ -218,8 +218,8 @@ second_message_without_license = {
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
 					'commons':u'User:Filbot/Settings',
-                                        'en':None,
-                                        'hu':None,
+					'en':None,
+					'hu':None,
 					'it':u'Utente:Nikbot/Settings#Settings',
 					'ja':None,
 					'zh':u"User:Alexbot/cisettings#Settings",
@@ -228,7 +228,7 @@ page_with_settings = {
 # This is the page where the bot will store them.
 report_page = {
 				'commons':'User:Filbot/Report',
-                                'en'     :'User:Filnik/Report',
+				'en'     :'User:Filnik/Report',
 				'it'     :'Utente:Nikbot/Report',
 				'ja':'User:Alexbot/report',
 				'hu'     :'User:Bdamokos/Report',
@@ -980,7 +980,7 @@ if __name__ == "__main__":
 						if lang == 'commons':
 							head = nh % imageName
 							notification = nn
-                                                else:
+						else:
 							notification = nn % imageName
 							head = nh 
 						report(unvertext, imageName, notification, head, smwl)

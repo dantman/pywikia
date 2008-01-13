@@ -64,7 +64,9 @@ msg = {
     'en': u'Bot: Adding %s',
     'he': u'בוט: מוסיף %s',
     'it': u'Bot: Aggiungo %s',
+    'ja': u'ロボットによる: 追加 %s',
     'pt': u'Bot: Adicionando %s',
+    'zh': u'機器人: 正在新增 %s',
     }
 
 class NoEnoughData(wikipedia.Error):

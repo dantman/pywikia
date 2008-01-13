@@ -48,8 +48,10 @@ msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
+    'ja':u'ロボットによる:失くした <references /> をタグ',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'pt':u'Bot: Adicionando a tag <references />',
+    'zh':u'機器人: 增加遺失的 <references /> 標籤',
 }
 
 # References sections are usually placed before further reading / external
@@ -71,6 +73,9 @@ placeBeforeSections = {
         u'See also',
         u'Notes'
     ],
+    'ja':[
+        u'外部リンク',
+    ],
     'lt': [              # no explicit policy on where to put the references
         u'Nuorodos'
     ],
@@ -78,6 +83,10 @@ placeBeforeSections = {
         u'Ligações externas',
         u'Veja também',
         u'Notas',
+    ],
+    'zh':[
+        u'外部連结',
+        u'外部链接',
     ],
 }
 
@@ -99,6 +108,13 @@ referencesSections = {
     'he': [
         u'הערות שוליים',
     ],
+    'ja':[
+        u'脚注',
+        u'脚注欄',
+        u'脚注・出典',
+        u'出典',
+        u'注釈',
+    ],
     'lt': [             # not sure about which ones are preferred.
         u'Šaltiniai',
         u'Literatūra',
@@ -107,6 +123,18 @@ referencesSections = {
         u'Ligações externas',
         u'Veja também',
     ],
+    'zh':[
+        u'參考文獻',
+        u'参考文献',
+        u'參考資料',
+        u'参考资料',
+        u'資料來源',
+        u'资料来源',
+        u'參見',
+        u'参见',
+        u'參閱',
+        u'参阅',
+    ],
 }
 
 # Templates which include a <references /> tag. If there is no such template
@@ -114,7 +142,9 @@ referencesSections = {
 referencesTemplates = {
     'wikipedia': {
         'en': [u'Reflist'],
+        'ja': [u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
+        'zh': [u'Reflist'],
     },
 }
 

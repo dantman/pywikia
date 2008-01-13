@@ -192,9 +192,10 @@ logbook = {
     'ar': u'Project:سجل الترحيب',
     'de': None, # no welcome log on de.wiki
     'en': u'Project:Welcome log',
-    'he': None, # no welcome log on he.wiki
     'fa': u'Project:سیاهه خوشامد',
+    'he': None, # no welcome log on he.wiki
     'it': u'Project:Benvenuto log',
+    'ja': u'利用者:Alexbot/Welcomebotログ',
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
     'pt': None, # no welcome log on pt.wiki
@@ -207,9 +208,10 @@ summary = {
     'ar':u'مرحبا!',
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
-    'he':u'ברוך הבא!',
     'fa':u'خوش آمدید!',
+    'he':u'ברוך הבא!',
     'it':u'Benvenuto!',
+    'ja':u'ウィキペディア日本語版へようこそ！',
     'nl':u'Welkom!',
     'no':u'Velkommen!',
     'pt':u'Bem vindo!',
@@ -224,9 +226,10 @@ netext = {
     'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}} %s',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}} %s',
-    'he':u'{{ס:ברוך הבא}} %s',
     'fa':u'{{جا:خوشامد}} %s',
+    'he':u'{{ס:ברוך הבא}} %s',
     'it':u'{{Benvebot}} %s',
+    'ja':u'{{subst:Welcome/intro}}\n{{welcome}} %s',
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'pt':u'{{subst:bem vindo}} %s',
@@ -241,6 +244,7 @@ summary2 = {
     'en':u'Updating log',
     'fa':u'به روز رسانی سیاهه',
     'it':u'Aggiorno il log',
+    'ja':u'更新記録',
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
     'sq':u'Rifreskoj log',
@@ -254,6 +258,7 @@ report_page = {
     'en': u'Project:Administrator intervention against vandalism',
     'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
     'it': u'Utente:Filbot/Report',
+    'ja': u'利用者:Alexbot/report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
     'sq': u'User:EagleBot/Report',
@@ -266,9 +271,11 @@ comment = {
     'en':u'Adding a username that needs to be checked',
     'fa':u'افزودن حساب کاربری نیازمند بررسی',
     'it':u'Aggiunto utente da controllare',
+    'ja':u'不適切な利用者名の報告',
     'nl':u'Te controleren gebruikersnaam toegevoegd',
     'no':u'Legger til et brukernavn som m? sjekkes',
     'sq':u'Added username to be checked',
+    'zh':u'回報不適當的用戶名稱',
     }
 # The page where the bot reads the real-time bad words page
 # (this parameter is optional).
@@ -278,6 +285,7 @@ bad_pag = {
     'en': u'Project:Welcome log/Bad_names',
     'fa': u'Project:سیاهه خوشامد/نام بد',
     'it': u'Utente:Filbot/Bad_words',
+    'ja':u'Project:不適切な名前の利用者',
     'nl': u'Project:Logboek_welkom/Bad_names',
     'no': u'Bruker:JhsBot/Daarlige ord',
     'sq': u'User:Eagleal/Bad_names',
@@ -291,9 +299,11 @@ report_text = {
     'en':u'\n*{{Userlinks|%s}} ' + timeselected,
     'fa':u'\n*{{کاربر|%s}}' + timeselected,
     'it':u"\n{{Reported|%s|",
+    'ja':u"\n*{{User2|%s}}" + timeselected,
     'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
     'no':u'\n*{{bruker|%s}} ' + timeselected,
     'sq':u'\n*[[User:%s]] ' + timeselected,
+    'zh':u"\n*{{User|%s}}" + timeselected
     }
 # Set where you load your list of signatures that the bot will load if you use
 # the random argument (this parameter is optional).
@@ -302,6 +312,7 @@ random_sign = {
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
     'it': u'Project:Benvenuto log/User',
+    'ja':u'利用者:Alexbot/Welcomebotログ/List',
     'zh': u'user:Welcomebot/欢迎日志/用户',
     }
 # The page where the bot reads the real-time whitelist page.
@@ -577,8 +588,8 @@ def mainSettings():
 
 def main(settingsBot):
     # Taking the messages inside the function namespace.
-    global netext; global summary; global logbook; global summary2; global report_page; global project_inserted
-    global comment; global bad_pag; global report_text; global random_sign; global whitelist_pg
+    global netext, summary, logbook, summary2, report_page, project_inserted
+    global comment, bad_pag, report_text, random_sign, whitelist_pg
 
     """
                       0     1      2           3           4           5         6         7          8         9           10            11
@@ -587,9 +598,21 @@ def main(settingsBot):
                    recursive, savedata, sign, time_variable)
     """
     # Loading the option of the mainSettings()
-    ask = settingsBot[1]; filename = settingsBot[2]; fileOption = settingsBot[3]; fileSignName = settingsBot[4]; filter_wp = settingsBot[5]
-    limit = settingsBot[6]; log_variable = settingsBot[7]; number = settingsBot[8]; numberlog = settingsBot[9]; offset_variable = settingsBot[10]
-    random = settingsBot[11]; recursive = settingsBot[12]; savedata = settingsBot[13]; sign = settingsBot[14]; time_variable = settingsBot[15]
+    ask = settingsBot[1]
+    filename = settingsBot[2]
+    fileOption = settingsBot[3]
+    fileSignName = settingsBot[4]
+    filter_wp = settingsBot[5]
+    limit = settingsBot[6]
+    log_variable = settingsBot[7]
+    number = settingsBot[8]
+    numberlog = settingsBot[9]
+    offset_variable = settingsBot[10]
+    random = settingsBot[11]
+    recursive = settingsBot[12]
+    savedata = settingsBot[13]
+    sign = settingsBot[14]
+    time_variable = settingsBot[15]
 
     # The site
     wsite = wikipedia.getSite()

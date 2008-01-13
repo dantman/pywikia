@@ -25,12 +25,14 @@ fixes = {
             'de':u'Bot: konvertiere/korrigiere HTML',
             'fr':u'Robot: convertit/fixe HTML',
             'he':u'בוט: ממיר/מתקן HTML',
+            'ja':u'ロボットによる: HTML転換',
             'ia':u'Robot: conversion/reparation de HTML',
             'lt':u'robotas: konvertuojamas/taisomas HTML',
             'nl':u'Bot: conversie/reparatie HTML',
             'pl':u'Robot konwertuje/naprawia HTML',
             'pt':u'Bot: Corrigindo HTML',
-            'sr':u'Бот: Поправка HTML-а'
+            'sr':u'Бот: Поправка HTML-а',
+            'zh':u'機器人: 轉換HTML',
         },
         'replacements': [
             # Everything case-insensitive (?i)
@@ -155,11 +157,13 @@ fixes = {
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
+            'ja':u'ロボットによる: wiki構文修正',
             'lt':u'robotas: Taisoma wiki sintaksė',
             'nl':u'Bot: reparatie wikisyntaxis',
             'pl':u'Robot poprawia wiki-składnię',
             'pt':u'Bot: Corrigindo sintaxe wiki',
             'sr':u'Бот: Поправка вики синтаксе',
+            'zh':u'機器人: 修正wiki語法',
         },
         'replacements': [
             # external link in double brackets
@@ -222,11 +226,13 @@ fixes = {
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
+            'ja':u'ロボットによる: wiki構文修正',
             'lt':u'robotas: Taisoma wiki sintaksė',
             'nl':u'Bot: reparatie wikisyntaxis',
             'pl':u'Robot poprawia wiki-składnię',
             'pt':u'Bot: Corrigindo sintaxe wiki',
             'sr':u'Бот: Поправка вики синтаксе',
+            'zh':u'機器人: 修正wiki語法',
         },
         'replacements': [
             # external link in double brackets
@@ -360,6 +366,8 @@ fixes = {
             'en': u'Robot: Fixing ISBN format',
                         'he': u'בוט: מתקן פורמט ISBN',
             'es': u'Arreglando formato ISBN',
+            'ja': u'ロボットによる: ISBNフォーマット修正',
+            'zh': u'機器人: 修正ISBN格式',
         },
         'replacements': [
             # colon

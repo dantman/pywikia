@@ -46,11 +46,13 @@ msg_standalone = {
     'es': u'Robot: Cambios triviales',
     'fr': u'Robot : Changement de type cosmétique',
     'he': u'בוט: שינויים קוסמטיים',
+    'ja':u'ロボットによる: 細部の編集',
     'ko': u'로봇: 예쁘게 바꿈',
     'lt': u'robotas: smulkūs taisymai',
     'nl': u'Bot: Cosmetische veranderingen',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
+    'zh': u'機器人: 細部更改',
 }
 
 # Summary message  that will be appended to the normal message when
@@ -61,11 +63,13 @@ msg_append = {
     'es': u'; cambios triviales',
     'fr': u'; changement de type cosmétique',
     'he': u'; שינויים קוסמטיים',
+    'ja':u'細部の編集',
     'ko': u'; 예쁘게 바꿈',
     'lt': u'; smulkūs taisymai',
     'nl': u'; cosmetische veranderingen',
     'pl': u'; zmiany kosmetyczne',
     'pt': u'; mudanças triviais',
+    'zh': u'; 細部更改',
 }
 
 deprecatedTemplates = {

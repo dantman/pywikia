@@ -229,6 +229,8 @@ editsection_names = {
     'de': u'\[Bearbeiten\]',
     'es,pt': u'\[editar\]',
     'it': u'\[modifica\]',
+    'ja': u'\[編集\]',
+    'zh': u'\[编辑\]',
 }
 
 sections_to_skip = {

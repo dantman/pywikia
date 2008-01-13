@@ -235,6 +235,43 @@ templates = {
             'msg' : u'Robotkoll: Artikeln behöver wikifieras',
             'pos' : 'top'},
     },
+    'zh': {
+        '{{db-reason}}' :{
+            'msg' : '機器人掛上模板: 本文應被刪除。',
+            'pos': 'top'},
+        
+        '{{cleanup}}' :{
+            'msg' : 'Robot-assisted tagging: this article need cleanup',
+            'pos': 'top'},
+
+        '{{stub}}':{
+            'msg' : 'Robot-assisted tagging: this article is a stub',
+            'pos': 'bottom'},
+
+        '{{uncategorized}}' :{
+            'msg' : 'Robot-assisted tagging: This article needs to be [[Wikipedia:Categorization|categorized]]',
+            'pos' : 'top'},
+
+        '{{notability}}':{
+            'msg' : 'Robot-assisted tagging: the [[Wikipedia:Notability|notability]] of this article is unclear.',
+            'pos': 'top'},
+
+        '{{not verified}}':{
+            'msg' : 'Robot-assisted tagging: this article needs to be checked for factuality.',
+            'pos': 'top'},
+
+        '{{copyedit}}':{
+            'msg' : 'Robot-assisted tagging: the writing of this article needs to be [[Wikipedia:How to copy-edit|copyedited]] and improved.',
+            'pos' : 'top'},
+
+        '{{unreferenced}}':{
+            'msg' : 'Robot-assisted tagging: this article needs [[Wikipedia:Citing sources|references]] so it can be verified.',
+            'pos': 'bottom'},
+
+        '{{wikify}}' :{
+            'msg' : 'Robot-assisted tagging: this article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]',
+            'pos' : 'top'},
+    },
 }
 
 # Message used when blanking an article
@@ -245,6 +282,7 @@ blanking = {
     'pl': u'wyczyszczony - zawartością było "%s"',
     'pt': u'em branco - conteúdo é "%s"',
     'sv': u'Robot tar bort innehåll på grund av "%s"',
+    'zh': u'清空，之前的內容是 "%s"',
 }
 
 # do nothing if this is in it
