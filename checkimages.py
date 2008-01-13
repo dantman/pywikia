@@ -53,12 +53,11 @@ while Findonly= search only if the exactly text that you give is in the image's 
 * Text= This is the template that the bot will use when it will report the image's problem.
 
 ---- Known issues/FIXMEs: ----
-* In repeat mode, skip images already checked. (critical for use on Commons - too many uploads there)
 * Fix the "real-time" regex and function
 * Add the "catch the language" function for commons.
-* see /home/daniel/public_html/WikiSense/UntaggedImages.php
 * Add new documentation
 * Add a report for the image tagged.
+* Fix the settings part when the bot save the data (make it better)
 """
 
 #
@@ -283,6 +282,24 @@ class LogIsFull(wikipedia.Error):
 class NothingFound(wikipedia.Error):
 	""" An exception indicating that a regex has return [] instead of results."""
 
+def printWithTimeZone(message):
+        """ Function to print the messages followed by the TimeZone encoded correctly. """
+        if message[-1] != ' ':
+                message = '%s ' % message
+        time_zone = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())
+        try:
+                wikipedia.output(u"%s%s" % (message, time_zone))
+        except UnicodeDecodeError:
+                try:
+                        wikipedia.output(u"%s%s" % (message, time_zone.decode('utf-8')))
+                except UnicodeDecodeError:
+                        try:
+                                wikipedia.output(u"%s%s" % (message, time_zone.encode(wikipedia.getSite().encoding())))
+                        except Exception, e:
+                                # There's some strange error! Skip time_zone printing the error.
+                                print e # Print the Error (not encode/decode, that won't give problem)
+                                wikipedia.output(message)
+                        
 # When the page is not a wiki-page (as for untagged generator) you need that function
 def pageText(url):
 	try:
@@ -294,7 +311,7 @@ def pageText(url):
                 response.close()
                 # When you load to many users, urllib2 can give this error.
 	except urllib2.HTTPError:
-		wikipedia.output(u"Server error. Pausing for 10 seconds... %s" % time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()) )
+                printWithTimeZone(u"Server error. Pausing for 10 seconds... ")
 		time.sleep(10)
                 request = urllib2.Request(url)
                 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
@@ -505,7 +522,7 @@ class main:
                         lista = list()
                         try:
                                 testo = x.get()
-                                rxp = "<------- ------->\n\*[Nn]ame=['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
+                                rxp = "<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
                                 r = re.compile(rxp, re.UNICODE|re.M)
                                 number = 1
                                 while 1:
@@ -530,6 +547,7 @@ class main:
                                                 lista += [tupla]
                                                 number += 1
                         except wikipedia.NoPage:
+                                wikipedia.output(u"The settings' page doesn't exist!")
                                 lista = None
                 return lista
 	
@@ -595,22 +613,25 @@ def report(newtext, image, notification, head, notification2 = None, unver = Tru
 				wikipedia.output(u"Another error... skipping the user..")
 				break
 		break
-
+                        
 # Here there is the main loop. I'll take all the (name of the) images and then i'll check them.
 if __name__ == "__main__":
 	try:
+
+
 		# Command line configurable parameters
-		repeat = True
-		limit = 80
-		time_sleep = 30
-		skip_number = 0
-		wait_number = 0
-		commonsActive = False
-		normal = False
-		urlUsed = False
-		regexGen = False
-		untagged = False
-		
+		repeat = True # Restart after having check all the images?
+		limit = 80 # How many images check?
+		time_sleep = 30 # How many time sleep after the check?
+		skip_number = 0 # How many images to skip before checking?
+		wait_number = 0 # How many time sleep before the check?
+		commonsActive = False # Check if on commons there's an image with the same name?
+		normal = False # Check the new images or use another generator?
+		urlUsed = False # Use the url-related function instead of the new-pages generator
+		regexGen = False # Use the regex generator
+		untagged = False # Use the untagged generator
+                skip_list = list() # Inizialize the skip list used below
+                
 		# Here below there are the parameters.
 		for arg in wikipedia.handleArgs():
 			if arg.startswith('-limit'):
@@ -700,7 +721,7 @@ if __name__ == "__main__":
                 
 		# Block of text to translate the parameters set above.
 		image_n = site.image_namespace()
-		image_namespace = "%s:" % image_n
+		image_namespace = "%s:" % image_n # Example: "User_talk:"
 		unvertext = wikipedia.translate(site, n_txt)
 		commento = wikipedia.translate(site, comm)
 		commento2 = wikipedia.translate(site, comm2)
@@ -723,7 +744,8 @@ if __name__ == "__main__":
 		# A template as {{en is not a license! Adding also them in the whitelist template...
 		for langK in wikipedia.Family('wikipedia').knownlanguages:
                         hiddentemplate.append('%s' % langK)
-
+                        
+                # If the images to skip are 0, set the skip variable to False (the same for the wait time)
 		if skip_number == 0:
 			skip = False
 		if wait_number == 0:
@@ -731,8 +753,9 @@ if __name__ == "__main__":
 		# nothing = Defining an empty image description
 		nothing = ['', ' ', '  ', '   ', '\n', '\n ', '\n  ', '\n\n', '\n \n', ' \n', ' \n ', ' \n \n']
 		# something = Minimal requirements for an image description.
-		#If this fits, no tagging will take place
-		something = ['{{', 'MIT']#, '}}']
+		# If this fits, no tagging will take place (if there aren't other issues)
+		# MIT license is ok on italian wikipedia, let also this here
+		something = ['{{', "'''MIT&nbsp;license'''"] # Don't put "}}" here, please. Useless and can give problems.
 		# Unused file extensions. Does not contain PDF.
 		notallowed = ("xcf", "xls", "sxw", "sxi", "sxc", "sxd", "djvu")
 
@@ -740,76 +763,101 @@ if __name__ == "__main__":
 		if lang not in project_inserted:
 			wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
 			wikipedia.stopme()
-		
+		# Some formatting for delete immediately template
 		di = '\n%s' % di
 		dels = dels % di
 		
-		# Reading the log of the new images
+		# Reading the log of the new images if another generator is not given.
 		if normal == True:
                         if limit == 1:
                                 wikipedia.output(u"Retrieving the latest file for checking...")
                         else:
                                 wikipedia.output(u"Retrieving the latest %d files for checking..." % limit)
-		while 1:		
+                # Main Loop
+		while 1:
+                        # Defing the Main Class.
 			mainClass = main(site)
+			# Untagged is True? Let's take that generator
 			if untagged == True:
 				generator =  mainClass.untaggedGenerator(projectUntagged, rep_page, com)
-				normal = False
+				normal = False # Ensure that normal is False
+                        # Normal True? Take the default generator
 			if normal == True:
 				generator = pagegenerators.NewimagesPageGenerator(number = limit, site = site)
+			# if urlUsed and regexGen, get the source for the generator
 			if urlUsed == True and regexGen == True:
 				textRegex = pagetext(regexPageUrl)
+			# Not an url but a wiki page as "source" for the regex
 			elif regexGen == True:
 				pageRegex = wikipedia.Page(site, regexPageName)
 				try:
 					textRegex = pageRegex.get()
 				except wikipedia.NoPage:
 					wikipedia.output(u"%s doesn't exist!" % page.title())
-					textRegex = ''
+					textRegex = '' # No source, so the bot will quit later.
+			# If generator is the regex' one, use your own Generator using an url or page and a regex.
 			if generator == 'regex' and regexGen == True:
 				generator = mainClass.regexGenerator(regexpToUse, textRegex)
+			# Ok, We (should) have a generator, so let's go on.
 			try:
+                                # Take the additional settings for the Project
 				tupla_written = mainClass.takesettings(settings)
 			except wikipedia.Error:
+                                # Error? Settings = None
 				wikipedia.output(u'Problems with loading the settigs, run without them.')
 				tupla_written = None
 				some_problem = False
+                        # Ensure that if the list given is empty it will be converted to "None"
+                        # (but it should be already done in the takesettings() function)
 			if tupla_written == []:
                                 tupla_written = None
 			if tupla_written != None:
 				wikipedia.output(u'\t   >> Loaded the real-time page... <<')
+				# Save the settings not to lose them (FixMe: Make that part better)
 				filename = "settings.data"
 				f = file(filename, 'w')
 				cPickle.dump(tupla_written, f)
 				f.close()
 			else:
+                                # No settings found, No problem, continue.
                                 wikipedia.output(u'\t   >> No additional settings found! <<')
-			if skip == True:
-				skip_list = list()
-				wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
-			else:
-				wikipedia.output(u'\t\t>> No images to skip...<<')
-			skipok = False
 			for image in generator:
-                                # If I don't inizialize the generator, wait part has no sense.
+                                # If I don't inizialize the generator, wait part and skip part are useless
                                 if wait:
-                                        wikipedia.output(u'Waiting %s seconds before checking the images, %s' % (wait_number, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())))
+                                        printWithTimeZone(u'Waiting %s seconds before checking the images,' % wait_number)
+                                        # Let's sleep...
                                         time.sleep(wait_number)
+                                        # Never sleep again (we are in a loop)
                                         wait = False
+                                # If the generator returns something that is not an image, simply skip it.
 				if normal == False and regexGen == False:
 					if image_namespace.lower() not in image.title().lower() and \
                                         'image:' not in image.title().lower():
+                                                wikipedia.output(u'%s seems not an image, skip it...' % image.title())
 						continue
-                                imageName = image.title().split(image_namespace)[1]
+                                imageName = image.title().split(image_namespace)[1] # Deleting the namespace (useless here)
+                                # Skip block
 				if skip == True:
+                                        # If the images to skip are more the images to check, make them the same number
+                                        if skip_number > limit: skip_number = limit
+                                        if skip_list == []:
+                                                if skip_number == 1:
+                                                        wikipedia.output(u'Skipping the first image:\n')
+                                                else:
+                                                        wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
 					if len(skip_list) < skip_number:
 						wikipedia.output(u'Skipping %s...' % imageName)
 						skip_list.append(imageName)
+						if skip_number == 1:
+                                                        wikipedia.output('')
+                                                        skip = False 
 						continue
 					else:
-						if skipok == False:
-							wikipedia.output('')
-						skipok = True
+						wikipedia.output('1\n')
+						skip = False					                                               
+				elif skip_list == []:
+                                        wikipedia.output(u'\t\t>> No images to skip...<<')
+                                        skip_list.append('skip = Off') # Only to print it once
 				if commonsActive == True:
 					response = mainClass.checkImage(imageName)
 					if response == False:
@@ -898,7 +946,7 @@ if __name__ == "__main__":
 				if p.exists():
 					# Here begins the check block.
 					if tagged == True:
-						wikipedia.output(u'%s is already tagged... %s' % (imageName, time.strftime("%H:%M:%S", time.localtime())))
+                                                printWithTimeZone(u'%s is already tagged...' % imageName)
 						continue
 					if some_problem == True:
 						if mex_used in g:
@@ -919,7 +967,7 @@ if __name__ == "__main__":
 						some_problem = False
 						continue
 					elif parentesi == True:
-						wikipedia.output(u"%s seems ok, %s" % (imageName, time.strftime("%H:%M:%S", time.localtime())))
+                                                printWithTimeZone(u"%s seems ok," % imageName)
 						# It works also without this... but i want only to be sure ^^
 						parentesi = False
 						continue
@@ -959,16 +1007,7 @@ if __name__ == "__main__":
 						continue
 		# A little block to perform the repeat or to break.
 			if repeat == True:
-                                time_zone = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())
-                                try:
-                                        wikipedia.output(u"Waiting for %s seconds, %s" % (time_sleep, time_zone))
-                                except UnicodeDecodeError:
-                                        try:
-                                                wikipedia.output(u"Waiting for %s seconds, %s" % (time_sleep, time_zone.decode('utf-8')))
-                                        except Exception, e:
-                                                # There's some strange error! Skip time_zone printing the error.
-                                                print e
-                                                wikipedia.output(u"Waiting for %s seconds")
+                                printWithTimeZone(u"Waiting for %s seconds," % time_sleep)
 				time.sleep(time_sleep)
 			elif repeat == False:
 				wikipedia.output(u"\t\t\t>> STOP! <<")
