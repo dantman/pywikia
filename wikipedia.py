@@ -1172,7 +1172,7 @@ not supported by PyWikipediaBot!"""
                 import cosmetic_changes
                 ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site())
                 newtext = ccToolkit.change(newtext)
-                if comment and old.strip() != newtext.strip():
+                if comment and old.strip().replace('\r\n', '\n') != newtext.strip().replace('\r\n', '\n'):
                     comment += translate(self.site(), cosmetic_changes.msg_append)
 
         if watchArticle == None:
