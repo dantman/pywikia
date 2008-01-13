@@ -1926,19 +1926,20 @@ not supported by PyWikipediaBot!"""
                 output(data)
                 return False
 
-    def delete(self, reason=None, prompt=True, throttle=True):
+    def delete(self, reason=None, prompt=True, throttle=True, mark=False):
         """Deletes the page from the wiki.
 
         Requires administrator status. If reason is None, asks for a
         reason. If prompt is True, asks the user if he wants to delete the
         page.
-        
+
+        If the user does not have admin rights and mark is True,
+        the page is marked for deletion instead.
         """
         if throttle:
             put_throttle()
         if reason == None:
             reason = input(u'Please enter a reason for the deletion:')
-        reason = reason.encode(self.site().encoding())
         answer = 'y'
         if prompt and not hasattr(self.site(), '_noDeletePrompt'):
             answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
@@ -1954,7 +1955,12 @@ not supported by PyWikipediaBot!"""
             except NoUsername, error:
                 # user hasn't entered an admin username.
                 output(str(error))
+                if markfordeletion and self.exists():
+                    text = self.get(get_redirect = True)
+                    output(u'Marking the page for deletion instead:')
+                    self.put(u'{{delete}}\n%s\n----\n\n%s' % (reason, text), comment = reason)
                 return
+            reason = reason.encode(self.site().encoding())
             token = self.site().getToken(self, sysop = True)
             predata = {
                 'wpReason': reason,

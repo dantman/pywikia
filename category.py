@@ -145,29 +145,29 @@ msg_change={
     }
 
 deletion_reason_move = {
-    'ar':u'روبوت: التصنيف نقل إلى [[تصنيف:%s|%s]]',
-    'da':u'Robot: Kategori flyttet til [[Category:%s|%s]]',
-    'de':u'Bot: Kategorie wurde nach [[Category:%s|%s]] verschoben',
-    'en':u'Robot: Category was moved to [[Category:%s|%s]]',
-    'fr':u'Robot : catégorie déplacée sur [[Category:%s|%s]]',
-    'he':u'בוט: הקטגוריה הועברה לשם [[קטגוריה:%s|%s]]',
-    'ia':u'Robot: Categoria transferite a [[Category:%s|%s]]',
-    'id':u'Bot: Kategori dipindahkan ke [[Category:%s|%s]]',
-    'it':u'Bot: La categoria è stata sostituita da [[Categoria:%s|%s]]',
-    'ja':u'ロボットによる: カテゴリ [[Category:%s]]へ移動',
-    'lt':u'robotas: Kategorija pervadinta į [[Category:%s|%s]]',
-    'kk':u'Бот: Санат [[Санат:%s|%s]] дегенге жылжытылды',
-    'ko': u'로봇: 분류가 [[분류:%s|%s]]로 옮겨짐',
-    'ksh':u'Bot: Saachjropp noh [[Category:%s|%s]] jeschovve',
-    'nds':u'Kat-Bot: Kategorie na [[Category:%s|%s]] schaven',
-    'nds-nl':u'Bot: kattegerie is herneumd naor [[Kattegerie:%s|%s]]',
-    'nl':u'Bot: Categorie is hernoemd naar [[Category:%s|%s]]',
-    'no':u'Robot: Kategorien ble flyttet til [[Category:%s|%s]]',
-    'pt':u'Bot: Categoria [[Category:%s|%s]] foi movida',
-    'pl':u'Robot przenosi kategorię do [[Category:%s|%s]]',
-    'sr':u'Бот: Категорија премештена у [[Category:%s|%s]]',
-    'sv':u'Robot: Kategori flyttades till [[Category:%s|%s]]',
-    'zh':u'機器人:正在移動目錄至 [[Category:%s]]',
+    'ar':u'روبوت: التصنيف نقل إلى [[:تصنيف:%s|%s]]',
+    'da':u'Robot: Kategori flyttet til [[:Category:%s|%s]]',
+    'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
+    'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
+    'fr':u'Robot : catégorie déplacée sur [[:Category:%s|%s]]',
+    'he':u'בוט: הקטגוריה הועברה לשם [[:קטגוריה:%s|%s]]',
+    'ia':u'Robot: Categoria transferite a [[:Category:%s|%s]]',
+    'id':u'Bot: Kategori dipindahkan ke [[:Category:%s|%s]]',
+    'it':u'Bot: La categoria è stata sostituita da [[:Categoria:%s|%s]]',
+    'ja':u'ロボットによる: カテゴリ [[:Category:%s]]へ移動',
+    'lt':u'robotas: Kategorija pervadinta į [[:Category:%s|%s]]',
+    'kk':u'Бот: Санат [[:Санат:%s|%s]] дегенге жылжытылды',
+    'ko': u'로봇: 분류가 [[:분류:%s|%s]]로 옮겨짐',
+    'ksh':u'Bot: Saachjropp noh [[:Category:%s|%s]] jeschovve',
+    'nds':u'Kat-Bot: Kategorie na [[:Category:%s|%s]] schaven',
+    'nds-nl':u'Bot: kattegerie is herneumd naor [[:Kattegerie:%s|%s]]',
+    'nl':u'Bot: Categorie is hernoemd naar [[:Category:%s|%s]]',
+    'no':u'Robot: Kategorien ble flyttet til [[:Category:%s|%s]]',
+    'pt':u'Bot: Categoria [[:Category:%s|%s]] foi movida',
+    'pl':u'Robot przenosi kategorię do [[:Category:%s|%s]]',
+    'sr':u'Бот: Категорија премештена у [[:Category:%s|%s]]',
+    'sv':u'Robot: Kategori flyttades till [[:Category:%s|%s]]',
+    'zh':u'機器人:正在移動目錄至 [[:Category:%s]]',
     }
 
 cfd_templates = {
@@ -405,9 +405,9 @@ class CategoryMoveRobot:
             if self.oldCat.isEmpty():
                 reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
                 confirm = not self.batchMode
-                self.oldCat.delete(reason, confirm)
+                self.oldCat.delete(reason, confirm, mark = True)
                 if oldMovedTalk is not None:
-                    oldMovedTalk.delete(reason, confirm)
+                    oldMovedTalk.delete(reason, confirm, mark = True)
             else:
                 wikipedia.output('Couldn\'t delete %s - not empty.' % self.oldCat.title())
 
