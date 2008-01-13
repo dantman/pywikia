@@ -71,9 +71,10 @@ __version__ = '$Id: checkimages.py,v 1.0 2007/11/27 16:00:25 filnik Exp$'
 #
 
 import re, time, urllib2
-import wikipedia, config, os
+import wikipedia, config, os, locale
 import cPickle, pagegenerators, catlib
 
+locale.setlocale(locale.LC_ALL, '')
 #########################################################################################################################
 # <------------------------------------------- Change only below! ----------------------------------------------------->#
 #########################################################################################################################
@@ -85,16 +86,16 @@ n_txt = {
     'it'     :'\n{{subst:unverdata}}',
     'ja':'{{subst:Nsd}}',
     'hu'     :u'\n{{nincslicenc|~~~~~}}',
-    'zh'    :'{{subst:no source/auto}}',
+    'zh'    :'{{subst:No license/auto}}',
 }
 
 txt_find =  {
     'commons':['{{no license', '{{nld'],
         'en':['{{nld', '{{no license'],
     'hu':[u'{{nincsforrás',u'{{nincslicenc'],
-    'it':['{{unverdata', '{{unverified'],
-    'ja':[u'{{no source',u'{{unknown',],
-    'zh':['{{no source','{{unknown'],
+    'it':[u'{{unverdata', u'{{unverified'],
+    'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
+    'zh':[u'{{no source', u'{{unknown','{{No license',],
                 }
 
 # Summary for when the will add the no source
@@ -180,19 +181,19 @@ del_comm = {
 nothing_head = {
 				'commons':"",# Nothing, the template has already the header inside.
 				'en'     :"\n== Image without license ==\n",
-				'ja':u'\n',
+				'ja':u'',
 				'it'     :"\n== Immagine senza licenza ==\n",
 				'hu'     :u"\n== Licenc nélküli kép ==\n",
-				'zh'    :u'\n',
+				'zh'    :u'',
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
 				'commons':"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
-				'ja'	:"{{subst:image source|Image:%s}}--~~~~",
+				'ja'	:"\n{{subst:image source|Image:%s}}--~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
-				'zh'   :u'{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
+				'zh'   :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
 				}
 # This is a list of what bots used this script in your project.
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
@@ -216,12 +217,12 @@ second_message_without_license = {
 # You can add some settings to wikipedia. In this way, you can change them without touch the code.
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
-					'commons':'User:Filbot/Settings',
+					'commons':u'User:Filbot/Settings',
                                         'en':None,
                                         'hu':None,
-					'it':'Utente:Nikbot/Settings#Settings',
+					'it':u'Utente:Nikbot/Settings#Settings',
 					'ja':None,
-					'zh':None,
+					'zh':u"User:Alexbot/cisettings#Settings",
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)
 # This is the page where the bot will store them.
@@ -285,20 +286,13 @@ class NothingFound(wikipedia.Error):
 def printWithTimeZone(message):
         """ Function to print the messages followed by the TimeZone encoded correctly. """
         if message[-1] != ' ':
-                message = '%s ' % message
+                message = '%s ' % unicode(message)
         time_zone = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())
-        try:
-                wikipedia.output(u"%s%s" % (message, time_zone))
-        except UnicodeDecodeError:
-                try:
-                        wikipedia.output(u"%s%s" % (message, time_zone.decode('utf-8')))
-                except UnicodeDecodeError:
-                        try:
-                                wikipedia.output(u"%s%s" % (message, time_zone.encode(wikipedia.getSite().encoding())))
-                        except Exception, e:
-                                # There's some strange error! Skip time_zone printing the error.
-                                print e # Print the Error (not encode/decode, that won't give problem)
-                                wikipedia.output(message)
+        if locale.getlocale()[1]:
+                time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()), locale.getlocale()[1])
+        else:
+                time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
+        wikipedia.output(u"%s%s" % (message, time_zone))
                         
 # When the page is not a wiki-page (as for untagged generator) you need that function
 def pageText(url):
@@ -985,24 +979,20 @@ if __name__ == "__main__":
 						wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
 						if lang == 'commons':
 							head = nh % imageName
-						else:
-							head = nh 
-						if lang == 'commons':
 							notification = nn
-						else:
+                                                else:
 							notification = nn % imageName
+							head = nh 
 						report(unvertext, imageName, notification, head, smwl)
 						continue
 					else:
 						wikipedia.output(u"%s has only text and not the specific license..." % imageName)
 						if lang == 'commons':
 							head = nh % imageName
-						else:
-							head = nh 
-						if lang == 'commons':
 							notification = nn
 						else:
 							notification = nn % imageName
+							head = nh 
 						report(unvertext, imageName, notification, head, smwl)
 						continue
 		# A little block to perform the repeat or to break.
