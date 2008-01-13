@@ -164,13 +164,20 @@ class PageFromFileRobot:
                 wikipedia.setAction('')
 
         if self.debug:
-                wikipedia.output("*** Debug mode ***\n" + \
-                    "\03{lightpurple}title\03{default}: " + title + "\n" + \
-                    "\03{lightpurple}contents\03{default}:\n" + contents + "\n" \
-                    "\03{lightpurple}comment\03{default}: " + comment + "\n")
-                return
+            wikipedia.output("*** Debug mode ***\n" + \
+                "\03{lightpurple}title\03{default}: " + title + "\n" + \
+                "\03{lightpurple}contents\03{default}:\n" + contents + "\n" \
+                "\03{lightpurple}comment\03{default}: " + comment + "\n")
+            return
 
-        page.put(contents, comment = comment, minorEdit = self.minor)
+        try:
+            page.put(contents, comment = comment, minorEdit = self.minor)
+        except wikipedia.LockedPage:
+            wikipedia.output(u"Page %s is locked; skipping." % title)
+        except wikipedia.EditConflict:
+            wikipedia.output(u'Skipping %s because of edit conflict' % title)
+        except wikipedia.SpamfilterError, error:
+            wikipedia.output(u'Cannot change %s because of spam blacklist entry %s' % (title, error.url))
 
 class PageFromFileReader:
     """
