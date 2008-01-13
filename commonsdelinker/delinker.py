@@ -129,6 +129,8 @@ class Delinker(threadpool.Thread):
 						try:
 							try:
 								result = self.replace_image(image, site, title, summary, replacement)
+							except wikipedia.UserBlocked, e:
+								output(u'Warning! Blocked on %s by %s.' % (e[0], e[1]))
 							except wikipedia.CaptchaError, e:
 								output(u'%s Warning! Captcha encountered at %s.' % (self, site))
 								if (lang, family) not in skipped_images:
@@ -153,6 +155,7 @@ class Delinker(threadpool.Thread):
 
 		if skipped_images:
 			time.sleep(self.CommonsDelinker.config['timeout'])
+			output(u'Delinking from previously skipped page for %s.' % image)
 			return self.delink_image(image, skipped_images, timestamp, admin, reason, replacement)
 		elif replacement:
 			# Let them know that we are done replacing.
