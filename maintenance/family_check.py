@@ -42,14 +42,15 @@ def check_family(family):
 	output(u'Checking namespaces for %s' % family.name)
 	result = {}
 	for lang in family.langs:
-		site = wikipedia.getSite(lang, family)
-		output(u'Checking %s' % site)
-		namespaces = check_namespaces(site)
-		if namespaces: 
-			for id, name, defined_namespace in namespaces:
-				output(u'Namespace %s for %s is %s, %s is defined in family file.' % \
-					(id, site, name, defined_namespace))
-			result[lang] = namespaces
+                if not family.obsolete.has_key(lang):
+        		site = wikipedia.getSite(lang, family)
+			output(u'Checking %s' % site)
+			namespaces = check_namespaces(site)
+			if namespaces: 
+				for id, name, defined_namespace in namespaces:
+					output(u'Namespace %s for %s is %s, %s is defined in family file.' % \
+						(id, site, name, defined_namespace))
+				result[lang] = namespaces
 	return result
 	
 if __name__ == '__main__':
