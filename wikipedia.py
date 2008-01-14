@@ -1967,10 +1967,10 @@ not supported by PyWikipediaBot!"""
             except NoUsername, error:
                 # user hasn't entered an admin username.
                 output(str(error))
-                if markfordeletion and self.exists():
+                if mark and self.exists():
                     text = self.get(get_redirect = True)
                     output(u'Marking the page for deletion instead:')
-                    self.put(u'{{delete}}\n%s\n----\n\n%s' % (reason, text), comment = reason)
+                    self.put(u'{{delete}}\n%s ~~~~\n----\n\n%s' % (reason, text), comment = reason)
                 return
             reason = reason.encode(self.site().encoding())
             token = self.site().getToken(self, sysop = True)
