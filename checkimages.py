@@ -128,16 +128,6 @@ empty = {
 		'zh':'{{subst:welcome|sign=~~~~}}',
 		}
 
-# General summary
-unver = {
-		'commons':'Bot: no source',
-		'en'     :'Bot: no source',
-		'hu'     :'Robot: nincs forrás',
-		'it'     :'Bot: Unverified!',
-		'ja':u'ロボットによる: 出典なし',
-		'zh':u'機器人:沒有來源資訊',
-		}
-
 # if the file has an unknown extension it will be tagged with this template.
 # In reality, there aren't unknown extension, they are only not allewed... ^__^
 delete_immediately = {
@@ -331,14 +321,20 @@ class main:
 		self.notification = notification
 		self.botolist = botolist
 	def put_mex(self, put = True):
+                commento = wikipedia.translate(self.site, comm)
 		# Adding no source. - I'm sure that the image exists, double check... but another can't be useless.
+		p = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
 		try:
                         testoa = p.get()
 		except wikipedia.NoPage:
 			wikipedia.output(u'%s has been deleted...' % p.title())
+			# We have a problem! Report and exit!     
+			return False
 		if put:
 			p.put(testoa + self.newtext, comment = commento, minorEdit = True)
-		# paginetta it's the image page object.
+		image_n = self.site.image_namespace()
+                image_namespace = "%s:" % image_n # Example: "User_talk:"
+                # paginetta it's the image page object.
 		paginetta = wikipedia.ImagePage(self.site, image_namespace + self.image)
 		# I take the data of the latest uploader and I take only the name
 		imagedata = paginetta.getFileVersionHistory()
@@ -367,6 +363,7 @@ class main:
 		return True
 	# There is the function to put the advise in talk page.
 	def put_talk(self, notification, head, notification2 = None, commx = None):
+                commento2 = wikipedia.translate(self.site, comm2)
 		talk_page = self.talk_page
 		notification = self.notification
 		if notification2 == None:
@@ -407,6 +404,7 @@ class main:
 						second_text = False
 		else:
 			second_text = False
+			ti_es_ti = wikipedia.translate(self.site, empty)
 			testoattuale = ti_es_ti
 		if commx == None:
 			commentox = commento2
@@ -568,8 +566,8 @@ class main:
 
 # I've seen that the report class before (the main) was to long to be called so,
 # here there is a function that has all the settings, so i can call it once ^__^
-def report(newtext, image, notification, head, notification2 = None, unver = True, commx = None):
-	global botolist
+def report(newtext, image, notification, head, notification2 = None, unver = True, commx = None, bot_list = bot_list):
+        botolist = wikipedia.translate(wikipedia.getSite(), bot_list)
 	while 1:
 		run = main(site = wikipedia.getSite())
 		secondrun = run.general(newtext, image, notification, head, botolist)
@@ -606,7 +604,8 @@ def report(newtext, image, notification, head, notification2 = None, unver = Tru
 			except:
 				wikipedia.output(u"Another error... skipping the user..")
 				break
-		break
+		else:
+                        break
                         
 def checkbot():
         # Command line configurable parameters
@@ -713,18 +712,13 @@ def checkbot():
         image_n = site.image_namespace()
         image_namespace = "%s:" % image_n # Example: "User_talk:"
         unvertext = wikipedia.translate(site, n_txt)
-        commento = wikipedia.translate(site, comm)
-        commento2 = wikipedia.translate(site, comm2)
-        ti_es_ti = wikipedia.translate(site, empty)
-        unverf = wikipedia.translate(site, unver)
         di = wikipedia.translate(site, delete_immediately)
         dih = wikipedia.translate(site, delete_immediately_head)
         din = wikipedia.translate(site, delete_immediately_notification)
         nh = wikipedia.translate(site, nothing_head)
         nn = wikipedia.translate(site, nothing_notification)
         dels = wikipedia.translate(site, del_comm)
-        botolist = wikipedia.translate(site, bot_list)
-        smwl = wikipedia.translate(site, second_message_without_license)
+        smwl = g second_message_without_license)
         settings = wikipedia.translate(site, page_with_settings)
         rep_page = wikipedia.translate(site, report_page)
         rep_text = wikipedia.translate(site, report_text)
@@ -988,7 +982,7 @@ def checkbot():
                                                 notification = nn
                                         else:
                                                 notification = nn % imageName
-                                                head = nh 
+                                                head = nh
                                         report(unvertext, imageName, notification, head, smwl)
                                         continue
         # A little block to perform the repeat or to break.
@@ -1009,4 +1003,4 @@ if __name__ == "__main__":
                         wikipedia.stopme()
 	finally:
 		wikipedia.stopme()
-		sys.exit() # Be sure that the Bot will stop
+		#sys.exit() # Be sure that the Bot will stop
