@@ -743,13 +743,13 @@ def main(settingsBot):
                 continue
             # Compiling the signature to be used.
             if random == True:
-                if number_user + 1> len(signList):
+                if number_user + 1 > len(signList):
                     number_user = 0
                     yield number_user
                 if wsite.family.name == "wikipedia" and wsite.lang == "zh":
-		    welcom = welcomer % signList[number_user] + timeselected + '<small>(via ~~~)</small>'
+                    welcom = welcomer % signList[number_user] + timeselected + '<small>(via ~~~)</small>'
                 else:
-                    welcom = welcomer % signList[number_user] + timeselected                
+                    welcom = welcomer % signList[number_user] + timeselected
             else:
                 welcom = welcomer % sign
             username = str(found_result[0])
