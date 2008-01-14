@@ -718,7 +718,7 @@ def checkbot():
         nh = wikipedia.translate(site, nothing_head)
         nn = wikipedia.translate(site, nothing_notification)
         dels = wikipedia.translate(site, del_comm)
-        smwl = g second_message_without_license)
+        smwl = wikipedia.translate(site, second_message_without_license)
         settings = wikipedia.translate(site, page_with_settings)
         rep_page = wikipedia.translate(site, report_page)
         rep_text = wikipedia.translate(site, report_text)
