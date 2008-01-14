@@ -991,7 +991,7 @@ def checkbot():
                         time.sleep(time_sleep)
                 elif repeat == False:
                         wikipedia.output(u"\t\t\t>> STOP! <<")
-                        break
+                        return True # Exit
                 
 # Here there is the main loop. I'll take all the (name of the) images and then i'll check them.
 if __name__ == "__main__":
