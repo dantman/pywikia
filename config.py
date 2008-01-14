@@ -357,13 +357,13 @@ copyright_show_length = True
 # comma separated list or only numbers. But sometimes that might be the
 # only part unmodified of a slightly edited and not otherwise reported
 # copyright violation. You can disable this feature to try to increase
-# accuracy.
+# number of results.
 
 copyright_economize_query = True
 
 ############## HTTP SETTINGS ##############
-# Use a persistent http connection. An http connection has to be established 
-# only once per site object, making stuff a whole lot faster. Do NOT EVER 
+# Use a persistent http connection. An http connection has to be established
+# only once per site object, making stuff a whole lot faster. Do NOT EVER
 # use this if you share Site objects across threads without proper locking.
 persistent_http = False
 
@@ -459,7 +459,7 @@ def makepath(path):
       a '/' to the path if you want it to be a directory path.
 
     from holger@trillke.net 2002/03/18
-    
+
     """
     from os import makedirs
     from os.path import normpath, dirname, exists, abspath
@@ -474,7 +474,7 @@ def datafilepath(*filename):
     Argument(s) are zero or more directory names, optionally followed by a
     data file name. The return path is offset to config.base_dir. Any
     directories in the path that do not already exist are created.
-    
+
     """
     import os
     return makepath(os.path.join(base_dir, *filename))
@@ -490,6 +490,7 @@ def shortpath(path):
 # When called as main program, list all configuration variables
 #
 if __name__=="__main__":
+    import types
     _all=1
     for _arg in __sys.argv[1:]:
         if _arg=="modified":
@@ -500,8 +501,9 @@ if __name__=="__main__":
     _k.sort()
     for _name in _k:
         if _name[0]!='_':
-            if _all or _glv[_name]!=globals()[_name]:
-                print _name,"=",repr(globals()[_name])
+            if not type(globals()[_name]) in [types.FunctionType, types.ModuleType]:
+                if _all or _glv[_name]!=globals()[_name]:
+                    print _name,"=",repr(globals()[_name])
 
 # cleanup all locally-defined variables
 

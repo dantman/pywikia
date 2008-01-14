@@ -1318,6 +1318,7 @@ not supported by PyWikipediaBot!"""
                         relevant = data[data.find('<!-- start content -->')+22:data.find('<!-- end content -->')].strip()
                         # Throw away all the other links etc.
                         relevant = re.sub('<.*?>', '', relevant)
+                        relevant = relevant.replace('&#58;', ':')
                         # MediaWiki only spam-checks HTTP links, and only the
                         # domain name part of the URL.
                         m = re.search('http://[\w\-\.]+', relevant)
@@ -2600,7 +2601,7 @@ def getall(site, pages, throttle=True, force=False):
 
     """
     # TODO: why isn't this a Site method?
-    pages = list(pages)  # if pages is an iterator, we need to 
+    pages = list(pages)  # if pages is an iterator, we need to
     output(u'Getting %d pages from %s...' % (len(pages), site))
     _GetAll(site, pages, throttle, force).run()
 
@@ -3838,15 +3839,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def postForm(self, address, predata, sysop=False, useCookie=True):
         """Post http form data to the given address at this site.
-        
+
         address is the absolute path without hostname.
         predata is a dict or any iterable that can be converted to a dict,
         containing keys and values for the http form.
-        
+
         Return a (response, data) tuple, where response is the HTTP
         response object and data is a Unicode string containing the
         body of the response.
-        
+
         """
         data = self.urlEncode(predata)
         try:
@@ -3857,12 +3858,12 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def postData(self, address, data,
                  contentType='application/x-www-form-urlencoded',
-                 sysop=False, useCookie=True):
+                 sysop=False, useCookie=True, compress=True):
         """Post encoded data to the given http address at this site.
-        
+
         address is the absolute path without hostname.
         data is an ASCII string that has been URL-encoded.
-        
+
         Returns a (response, data) tuple where response is the HTTP
         response object and data is a Unicode string containing the
         body of the response.
@@ -3888,6 +3889,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             conn.putheader('Cookie', self.cookies(sysop = sysop))
         if False: #self.persistent_http:
             conn.putheader('Connection', 'Keep-Alive')
+        if compress:
+            conn.putheader('Accept-encoding', 'gzip')
         conn.endheaders()
         conn.send(data)
 
@@ -3901,8 +3904,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             conn.close()
             conn.connect()
             return self.postData(address, data, contentType, sysop, useCookie)
-        data = response.read().decode(self.encoding())
+
+        data = response.read()
+
+        if compress and response.getheader('Content-Encoding') == 'gzip':
+            data = decompress_gzip(data)
+
+        data = data.decode(self.encoding())
         response.close()
+
         if True: #not self.persistent_http:
             conn.close()
         return response, data
@@ -3943,7 +3953,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
             text = response.read()
             headers = dict(response.getheaders())
-                
+
         else:
             if self.hostname() in config.authenticate.keys():
                 uo = authenticateURLopener
@@ -3965,7 +3975,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             while not retrieved:
                 try:
                     if self.hostname() in config.authenticate.keys():
-                        if compress:
+                        if False: # compress:
                             request = urllib2.Request(url, data)
                             request.add_header('Accept-encoding', 'gzip')
                             opener = urllib2.build_opener()
@@ -3994,12 +4004,12 @@ your connection is down. Retrying in %i minutes..."""
                     else:
                         raise
             text = f.read()
-            
+
             headers = f.info()
-            
+
         contentType = headers.get('content-type', '')
         contentEncoding = headers.get('content-encoding', '')
-            
+
         # Ensure that all sent data is received
         if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
                 output(u'Warning! len(text) does not match content-length: %s != %s' % \
@@ -4009,16 +4019,7 @@ your connection is down. Retrying in %i minutes..."""
                 return self.getUrl(path, retry, sysop, data, compress)
 
         if compress and contentEncoding == 'gzip':
-            # Use cStringIO if available
-            # TODO: rewrite gzip.py such that it supports unseekable fileobjects.
-            try:
-                from cStringIO import StringIO
-            except ImportError:
-                from StringIO import StringIO
-            import gzip
-            compressedstream = StringIO(text)
-            gzipper = gzip.GzipFile(fileobj=compressedstream)
-            text = gzipper.read()
+            text = decompress_gzip(text)
 
         R = re.compile('charset=([^\'\";]+)')
         m = R.search(contentType)
@@ -5489,7 +5490,7 @@ def output(text, decoder = None, newline = True, toStdout = False):
     text can contain special sequences to create colored output. These
     consist of the escape character \03 and the color name in curly braces,
     e. g. \03{lightpurple}. \03{default} resets the color.
-    
+
     """
     output_lock.acquire()
     try:
@@ -5583,7 +5584,7 @@ Global arguments available for all bots:
 
 -dir:PATH         Read the bot's configuration data from directory given by
                   PATH, instead of from the default directory.
-                  
+
 -lang:xx          Set the language of the wiki you want to work on, overriding
                   the configuration in user-config.py. xx should be the
                   language code.
@@ -5593,7 +5594,7 @@ Global arguments available for all bots:
                   This will override the configuration in user-config.py.
 
 -daemonize:xyz    Immediately returns control to the terminal and redirects
-                  stdout and stderr to xyz (only use for bots that require 
+                  stdout and stderr to xyz (only use for bots that require
                   no input from stdin).
 
 -help             Shows this help text.
@@ -5677,7 +5678,7 @@ def _flush():
     """Wait for the page-putter to flush its queue.
 
     Called automatically upon exiting from Python.
-    
+
     """
     if page_put_queue.qsize() > 0:
         import datetime
@@ -5725,6 +5726,20 @@ def debugDump(name, site, error, data):
 get_throttle = Throttle(config.minthrottle,config.maxthrottle)
 put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
+def decompress_gzip(data):
+    # Use cStringIO if available
+    # TODO: rewrite gzip.py such that it supports unseekable fileobjects.
+    if data:
+        try:
+            from cStringIO import StringIO
+        except ImportError:
+            from StringIO import StringIO
+        import gzip
+        try:
+            data = gzip.GzipFile(fileobj = StringIO(data)).read()
+        except IOError:
+            raise
+    return data
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"

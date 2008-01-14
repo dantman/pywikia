@@ -390,9 +390,12 @@ fixes = {
         }
     },
 
-    #Corrections for Arabic Wikipedia
-    #And any Arabic wiki.
-    #python replace.py -always -start:! -fix:correct-ar
+    #Corrections for Arabic Wikipedia and any Arabic wiki.
+
+    # It isn't fully clear what it's supposed to do, if is safe or correct (included for more
+    # ancient arabic text). As now it's possible use user-fixes.py and if no objections or
+    # explanations is given, this part of code might be removed.
+
     'correct-ar': {
         'regex': False,
         'msg': {
@@ -491,3 +494,13 @@ fixes = {
         ]
     },
 }
+
+#
+# Load the user fixes file.
+
+import config
+
+try:
+    execfile(config.datafilepath(config.base_dir, "user-fixes.py"))
+except IOError:
+    pass
