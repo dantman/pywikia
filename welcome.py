@@ -699,7 +699,7 @@ def main(settingsBot):
                 list_loaded = list()
             # Joining the "other things" with the loaded...
             elencovarie = elenco_others + list_loaded
-        elif filter_wp == False:
+        else:
             elencoaf = list()
             elencogz = list()
             elencovarie = list()
@@ -803,7 +803,7 @@ def main(settingsBot):
                                     report(wsite, rep_page, username, com, final_rep)
                                     break
                                 else:
-                                    wikipedia.output(u'The discussion page of the bad-user already exist...')
+                                    wikipedia.output(u'The discussion page of the bad-user already exists...')
                                     running = False
                         for w in say_hi:
                             if w in answer:
@@ -815,10 +815,10 @@ def main(settingsBot):
                             report(wsite, rep_page, username, com, final_rep)
                             break
                         else:
-                            wikipedia.output(u'The discussion page of the bad-user already exist...')
+                            wikipedia.output(u'The discussion page of the bad-user already exists...')
                             break
             # He has a good username, welcome!
-            elif baduser == False:
+            else:
                 if not usertalkpage.exists():
                     # Tring to put the welcome...
                     try:
