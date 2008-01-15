@@ -123,7 +123,7 @@ empty = {
 		'commons':'{{subst:welcome}}\n~~~~\n',
 		'en'     :'{{welcome}}\n~~~~\n',
 		'it'     :'{{benvenuto}}\n~~~~\n',
-		'ja':'{{welcome}}\n--~~~~\n',
+		'ja':'{{subst:welcome|--~~~~}}\n',
 		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
 		'zh':'{{subst:welcome|sign=~~~~}}',
 		}
@@ -211,7 +211,7 @@ page_with_settings = {
                                         'en':None,
                                         'hu':None,
 					'it':u'Utente:Nikbot/Settings#Settings',
-					'ja':None,
+					'ja':u"利用者:Alexbot/cisettings#Settings",
 					'zh':u"User:Alexbot/cisettings#Settings",
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)

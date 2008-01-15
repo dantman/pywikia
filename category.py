@@ -129,7 +129,7 @@ msg_change={
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'it':u'Bot: Modifico %s',
     'lt':u'robotas: Keičiama %s',
-    'ja':u'ロボットによる: カテゴリ変更 [[Category:%s]]',
+    'ja':u'ロボットによる: カテゴリ変更 [[%s]]',
     'kk':u'Бот: %s дегенді түзетті',
     'ko': u'로봇: %s 수정',
     'ksh':u'Bot: %s ußjewääßelt',
@@ -141,7 +141,7 @@ msg_change={
     'pl':u'Robot przenosi %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
-    'zh':u'機器人:正在變更目錄 [[Category:%s]]',
+    'zh':u'機器人:正在變更目錄 [[%s]]',
     }
 
 deletion_reason_move = {

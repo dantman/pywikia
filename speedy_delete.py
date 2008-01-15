@@ -106,6 +106,10 @@ class SpeedyRobot:
             u'_default':      u'מחיקת מועמד למחיקה מהירה לפי [[ויקיפדיה:מדיניות המחיקה|מדיניות המחיקה]]',
             u'גם בוויקישיתוף': u'הקובץ זמין כעת בוויקישיתוף.',
             },
+        'ja':{
+            u'_default':u'[[WP:CSD|即時削除の方針]]に基づい削除',
+            u'Dbnd':u'[[WP:CSD#G1|CSD G1]]: 定義なし',
+            },
         'pt': {
             u'_default':      u'Apagando página por [[Wikipedia:Páginas para eliminar|eliminação rápida]]',
             },
@@ -117,8 +121,11 @@ class SpeedyRobot:
             },
         'zh':{
             u'_default':u'[[WP:CSD]]',
-            u'No source':u'[[WP:CSD#I3]] 沒有來源',
-            u'Unknown':u'[[WP:CSD#I3]] 沒有版權資訊',
+            u'Notchinese':u'[[WP:CSD#G7|CSD G7]]: 非中文條目且長時間未翻譯',
+            u'No source':u'[[WP:CSD#I3|CSD I3]]: 沒有來源',
+            u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權資訊',
+            u'Unknown':u'[[WP:CSD#I3|CSD I3]]: 沒有版權資訊',
+            u'NowCommons':u'[[WP:CSD#I7|CSD I7]]: 被[[:commons:|維基共享資源]]取代的圖片',
             },
     }
 
@@ -130,7 +137,7 @@ class SpeedyRobot:
         'it':u'Bot: Cancello pagina discussione di una pagina già cancellata',
         'pl':u'Osierocona strona dyskusji',
         'pt':u'Página de discussão órfã',
-        'zh':u'沒有在使用的討論頁',
+        'zh':u'[[WP:CSD#O1|CSD O1 O2 O6]] 沒有在使用的討論頁',
     }
 
     # A list of often-used reasons for deletion. Shortcuts are keys, and
@@ -158,14 +165,28 @@ class SpeedyRobot:
             'spam': 'Bot: Cancello pagina piena di spam',
             'promo': 'Bot: Cancello pagina promozionale',
             },
-        'zh':{
-            'lssd':u'[[WP:CSD#I3|CSD I3]]:沒有版權或來源資訊',
-            'nls':u'[[WP:CSD#I3|CSD I3]]:沒有版權資訊',
-            'g11':u'[[WP:CSD#G11|CSD G11]]:廣告、宣傳頁面',
+        'ja':{
+            'nd':u'[[WP:CSD#G1|CSD G1]]: 定義なし',
+            'test':u'[[WP:CSD#G2|CSD G2]]: テストと思われるもの',
+            'vand':u'[[WP:CSD#G3|CSD G3]]: 荒らしに分類される投稿	',
             },
         'zh':{
-            'lssd':u'[[WP:CSD#I3|CSD I3]]:沒有版權或來源資訊',
-            'nls':u'[[WP:CSD#I3|CSD I3]]:沒有版權資訊',
+            'empty':u'[[WP:CSD#G1|CSD G1]]: 沒有實際内容或歷史記錄的文章。',
+            'test':u'[[WP:CSD#G2|CSD G2]]: 測試頁',
+            'vand':u'[[WP:CSD#G3|CSD G3]]: 純粹破壞',
+            'cont':u'[[WP:CSD#G4|CSD G4]]: 非常短，而且沒有定義或內容。',
+            'rep':u'[[WP:CSD#G5|CSD G5]]: 重新建立的內容',
+            'text':u'[[WP:CSD#G9|CSD G9]]: 只有相關連結、項目的頁面',
+            'auth':u'[[WP:CSD#G10|CSD G10]]: 原作者請求',
+            'ad':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
+            'bio':u'[[WP:CSD#G12|CSD G12]]: 生者傳記',
+            'br':u'[[WP:CSD#R1|CSD R1]]: 損壞的重定向',
+            'wr':u'[[WP:CSD#R3|CSD R3]]: 錯誤重定向',
+            'repi':u'[[WP:CSD#I1|CSD I1]]: 重複的圖片',
+            'lssd':u'[[WP:CSD#I3|CSD I3]]: 沒有版權或來源資訊',
+            'nls':u'[[WP:CSD#I3|CSD I3]]: 沒有版權資訊',
+            'ui':u'[[WP:CSD#I6|CSD I6]]: 圖片未使用且不自由',
+            'uc':u'[[WP:CSD#O4|CSD O4 O5]]: 空類別',
             },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should

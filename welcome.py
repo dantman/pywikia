@@ -229,7 +229,7 @@ netext = {
     'fa':u'{{جا:خوشامد}} %s',
     'he':u'{{ס:ברוך הבא}} %s',
     'it':u'{{Benvebot}} %s',
-    'ja':u'{{subst:Welcome/intro}}\n{{welcome}} %s',
+    'ja':u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'pt':u'{{subst:bem vindo}} %s',

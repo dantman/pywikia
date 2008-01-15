@@ -162,6 +162,7 @@ class TemplateRobot:
         'pl':u'Robot zmienia szablon: %s',
         'pt':u'Bot: Alterando predefinição: %s',
         'sr':u'Бот: Измена шаблона: %s',
+        'zh':u'機器人: 更改模板 %s',
     }
 
     #Needs more translations!
@@ -178,6 +179,7 @@ class TemplateRobot:
         'no':u'bot: Endrer maler: %s',
         'pl':u'Robot zmienia szablony: %s',
         'pt':u'Bot: Alterando predefinição: %s',
+        'zh':u'機器人: 更改模板 %s',
     }
     
     # Summary messages for removing templates
@@ -197,6 +199,7 @@ class TemplateRobot:
         'pl':u'Robot usuwa szablon: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         'sr':u'Бот: Уклањање шаблона: %s',
+        'zh':u'機器人: 移除模板 %s',
     }
 
     #Needs more translations!
@@ -213,6 +216,7 @@ class TemplateRobot:
         'no':u'bot: Fjerner maler: %s',
         'pl':u'Robot usuwa szablony: %s',
         'pt':u'Bot: Removendo predefinição: %s',
+        'zh':u'機器人: 移除模板 %s',
     }
 
     # Summary messages for substituting templates
@@ -229,6 +233,7 @@ class TemplateRobot:
         'no':u'bot: Erstatter mal: %s',
         'pl':u'Robot podmienia szablon: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
+        'zh':u'機器人: 更換模板 %s',
     }
 
     #Needs more translations!
@@ -244,6 +249,7 @@ class TemplateRobot:
         'no':u'bot: Erstatter maler: %s',
         'pl':u'Robot podmienia szablony: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
+        'zh':u'機器人: 更換模板 %s',
     }
 
     def __init__(self, generator, templates, subst = False, remove = False, editSummary = '',
