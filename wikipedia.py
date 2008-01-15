@@ -2833,7 +2833,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
         # preformatted text
         'pre':         re.compile(r'(?ism)<pre>.*?</pre>'),
-        'source':      re.compile(r'(?is)<source .*?</source>'),
+        'source':      re.compile(r'(?is)<source>.*?</source>'),
         # inline references
         'ref':         re.compile(r'(?ism)<ref[ >].*?</ref>'),
         'timeline':    re.compile(r'(?is)<timeline>.*?</timeline>'),
