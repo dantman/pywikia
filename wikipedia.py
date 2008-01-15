@@ -420,7 +420,7 @@ not supported by PyWikipediaBot!"""
         except:
             print >>sys.stderr, "Exception in Page constructor"
             print >>sys.stderr, (
-                "site=%s, title=%s, insite=%s, defaultNamespace=%i"
+                u"site=%s, title=%s, insite=%s, defaultNamespace=%i"
                 % (site, title, insite, defaultNamespace)
             )
             raise

@@ -998,17 +998,20 @@ class Subject(object):
         if not page.exists():
             wikipedia.output(u"Not editing %s: page does not exist" % page.aslink(True))
             raise SaveError
-        
+
         # Show a message in purple.
         wikipedia.output("\03{lightpurple}Updating links on page %s.\03{default}" % page.aslink(True))
 
         # clone original newPages dictionary, so that we can modify it to the local page's needs
         new = dict(newPages)
-        
+
         # remove interwiki links to ignore
         for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', page.get()):
-            ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
-            
+            try:
+                ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
+            except KeyError:
+                continue
+
             try:
                 if (new[ignorepage.site()] == ignorepage) and (ignorepage.site() != page.site()):
                     if (ignorepage not in page.interwiki()):
