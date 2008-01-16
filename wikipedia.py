@@ -3047,11 +3047,9 @@ def removeLanguageLinks(text, site = None, marker = ''):
         return text
     # This regular expression will find every interwiki link, plus trailing
     # whitespace.
-    validLinks = site.validLanguageLinks()
-    validLinks.extend(site.family.obsolete.keys())
-    languageR = '|'.join(validLinks)
+    languages = '|'.join(site.validLanguageLinks() + site.family.obsolete.keys())
     interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*'
-                            % languageR, re.IGNORECASE)
+                            % languages, re.IGNORECASE)
     text = replaceExcept(text, interwikiR, '',
                          ['nowiki', 'comment', 'math', 'pre', 'source'], marker=marker)
     return text.strip()
