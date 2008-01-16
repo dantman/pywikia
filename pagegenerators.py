@@ -17,7 +17,13 @@ __version__='$Id$'
 
 parameterHelp = """\
 -cat              Work on all pages which are in a specific category.
-                  Argument can also be given as "-cat:categoryname".
+                  Argument can also be given as "-cat:categoryname" or
+                  as "-cat:categoryname|fromtitle".
+
+-subcat           Like -cat, but also includes pages in subcategories of the
+                  given category.
+                  Argument can also be given as "-subcat:categoryname" or
+                  as "-subcat:categoryname|fromtitle".
 
 -uncat            Work on all pages which are not categorised.
 
@@ -71,10 +77,6 @@ parameterHelp = """\
 
 -prefixindex      Work on pages commencing with a common prefix.  Argument
                   may also be given as "-prefixindex:namespace:pagename".
-
--subcat           Like -cat, but also includes pages in subcategories of the
-                  given category.
-                  Argument can also be given as "-subcat:categoryname".
 
 -transcludes      Work on all pages that use a certain template.
                   Argument can also be given as "-transcludes:Template:Title".
