@@ -655,7 +655,7 @@ class Subject(object):
             if globalvar.skipauto:
                 dictName, year = page.autoFormat()
                 if dictName != None:
-                    wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))                
+                    wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))
 
             # Register this fact at the todo-counter.
             counter.minus(page.site())
@@ -673,12 +673,12 @@ class Subject(object):
                     redirectTargetPage = wikipedia.Page(page.site(), arg.args[0])
                     wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
                     if page == self.originPage:
-		    	if globalvar.initialredirect :
-			    self.originPage = redirectTargetPage
-                	    self.pending.append(redirectTargetPage)
-			    counter.plus(redirectTargetPage.site)
-			    pass
-			else:
+                        if globalvar.initialredirect:
+                            self.originPage = redirectTargetPage
+                            self.pending.append(redirectTargetPage)
+                            counter.plus(redirectTargetPage.site)
+                            pass
+                        else:
                             # This is a redirect page to the origin. We don't need to
                             # follow the redirection.
                             # In this case we can also stop all hints!
@@ -882,7 +882,7 @@ class Subject(object):
             for site, pages in new.items():
                 result[site] = pages[0]
         return result
-    
+
     def finish(self, bot = None):
         """Round up the subject, making any necessary changes. This method
            should be called exactly once after the todo list has gone empty.
@@ -909,7 +909,7 @@ class Subject(object):
         if new == None: # User said give up or autonomous with problem
             wikipedia.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
-        
+
         # Make sure new contains every page link, including the page we are processing
         # replaceLinks will skip the site it's working on.
         if not new.has_key(self.originPage.site()):
@@ -971,12 +971,12 @@ class Subject(object):
                         notUpdatedSites.append(site)
                     except GiveUpOnPage:
                         break
-        
+
         # disabled graph drawing for minor problems: it just takes too long 
         #if notUpdatedSites != [] and config.interwiki_graph:
         #    # at least one site was not updated, save a conflict graph
         #    self.createGraph()
-            
+
         # don't report backlinks for pages we already changed
         if config.interwiki_backlink:
             self.reportBacklinks(new, updatedSites)
@@ -1009,7 +1009,7 @@ class Subject(object):
         for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', page.get()):
             try:
                 ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
-            except KeyError:
+            except wikipedia.NoSuchSite:
                 continue
 
             try:
@@ -1029,7 +1029,7 @@ class Subject(object):
             if pltmp != None: s = pltmp.aslink(True)
             wikipedia.output(u"BUG>>> %s is not in the list of new links! Found %s." % (page.aslink(True), s))
             raise SaveError
-        
+
         # Avoid adding an iw link back to itself
         del new[page.site()]
 
@@ -1178,11 +1178,11 @@ class Subject(object):
                                 wikipedia.output(u"WARNING: %s: %s links to incorrect %s" % (page.site().family.name, page.aslink(True), linkedPage.aslink(True)))
         except (socket.error, IOError):
             wikipedia.output(u'ERROR: could not report backlinks')
-    
+
 class InterwikiBot(object):
     """A class keeping track of a list of subjects, controlling which pages
        are queried from which languages when."""
-    
+
     def __init__(self):
         """Constructor. We always start with empty lists."""
         self.subjects = []
@@ -1219,7 +1219,7 @@ class InterwikiBot(object):
             f.write(subj.originPage.aslink(None)+'\n')
         f.close()
         wikipedia.output(u'Dump %s (%s) saved' % (site.lang, site.family.name))
-        
+
     def generateMore(self, number):
         """Generate more subjects. This is called internally when the
            list of subjects becomes too small, but only if there is a
@@ -1259,7 +1259,7 @@ class InterwikiBot(object):
         """Return the first subject that is still being worked on"""
         if self.subjects:
             return self.subjects[0]
-        
+
     def maxOpenSite(self):
         """Return the site that has the most
            open queries plus the number. If there is nothing left, return
@@ -1314,7 +1314,7 @@ class InterwikiBot(object):
         # If getting the home language doesn't make sense, see how many 
         # foreign page queries we can find.
         return self.maxOpenSite()
-    
+
     def oneQuery(self):
         """
         Perform one step in the solution process.
@@ -1353,7 +1353,7 @@ class InterwikiBot(object):
         for subject in subjectGroup:
             subject.workDone(self)
         return True
-        
+
     def queryStep(self):
         self.oneQuery()
         # Delete the ones that are done now.
@@ -1362,7 +1362,7 @@ class InterwikiBot(object):
             if subj.isDone():
                 subj.finish(self)
                 del self.subjects[i]
-    
+
     def isDone(self):
         """Check whether there is still more work to do"""
         return len(self) == 0 and self.pageGenerator is None
@@ -1377,7 +1377,7 @@ class InterwikiBot(object):
     def minus(self, site):
         """This is a routine that the Subject class expects in a counter"""
         self.counts[site] -= 1
-        
+
     def run(self):
         """Start the process until finished"""
         while not self.isDone():
@@ -1385,7 +1385,7 @@ class InterwikiBot(object):
 
     def __len__(self):
         return len(self.subjects)
-    
+
 def compareLanguages(old, new, insite):
     removing = []
     adding = []
@@ -1404,14 +1404,14 @@ def compareLanguages(old, new, insite):
     adding.sort()
     modifying.sort()
     removing.sort()
-    
+
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
         fmt = lambda page: page.aslink(forceInterwiki=True)
     else:
         # Use short format, just the language code
         fmt = lambda page: page.site().lang
-    
+
     if adding:
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(x) for x in adding]))
     if removing: 
@@ -1433,9 +1433,9 @@ def readWarnfile(filename, bot):
         bot.add(page, hints = hintStrings)
 
 #===========
-        
+
 globalvar=Global()
-    
+
 if __name__ == "__main__":
     try:
         singlePageTitle = []
@@ -1471,7 +1471,7 @@ if __name__ == "__main__":
             elif arg == '-askhints':
                 globalvar.untranslated = True
                 globalvar.untranslatedonly = False
-                globalvar.askhints = True    
+                globalvar.askhints = True
             elif arg == '-noauto':
                 pass
             elif arg.startswith('-warnfile:'):
@@ -1604,7 +1604,7 @@ if __name__ == "__main__":
                 singlePageTitle = wikipedia.input(u'Which page to check:')
             singlePage = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
             bot.add(singlePage, hints = hints)
-        
+
         try:
             bot.run()
         except KeyboardInterrupt:

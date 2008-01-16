@@ -417,6 +417,8 @@ not supported by PyWikipediaBot!"""
             self._ipedit = None
             self._editTime = None
             self._deletedRevs = None
+        except NoSuchSite:
+            raise
         except:
             print >>sys.stderr, "Exception in Page constructor"
             print >>sys.stderr, (
@@ -3688,14 +3690,14 @@ class Site(object):
                 self.lang = self.family.obsolete[self.lang]
             else:
                 # no such language anymore
-                raise KeyError("Language %s in family %s is obsolete" % (self.lang, self.family.name))
+                raise NoSuchSite("Language %s in family %s is obsolete" % (self.lang, self.family.name))
 
         if self.lang not in self.languages():
             if self.lang == 'zh-classic' and 'zh-classical' in self.languages():
                 self.lang = 'zh-classical'
                 # ev0l database hack (database is varchar[10] -> zh-classical is cut to zh-classic.
             else:
-                raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
+                raise NoSuchSite("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
         self.messages=False
         self._mediawiki_messages = {}
