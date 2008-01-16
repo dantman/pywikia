@@ -3,6 +3,9 @@
 """
 Nifty script to convert HTML-tables to MediaWiki's own syntax.
 
+These command line parameters can be used to specify which pages to work on:
+
+&params;
 
 -xml           - Retrieve information from a local XML dump (pages_current, see
                  http://download.wikimedia.org).
@@ -14,14 +17,8 @@ Nifty script to convert HTML-tables to MediaWiki's own syntax.
                  Searches for pages with HTML tables, and tries to convert them
                  on the live wiki.
 
--start:        - used as -start:pagename, specifies that the robot should
-                 go alphabetically through all pages on the home wiki,
-                 starting at the named page.
+This SQL query can be used to find pages to work on:
 
--file:filename - Will read any [[wikipedia link]] and use these articles
-                 This SQL query might be helpful to generate this file, but
-                 it doesn't work for MediaWiki version 1.5 and above.
-                 
                  SELECT CONCAT('[[', cur_title, ']]')
                      FROM cur
                      WHERE (cur_text LIKE '%<table%'
@@ -30,7 +27,7 @@ Nifty script to convert HTML-tables to MediaWiki's own syntax.
                          AND cur_namespace=0
                      ORDER BY cur_title
                      LIMIT 500
-               
+
 Example:
 
       python table2wiki.py -xml:20050713_pages_current.xml -lang:de
@@ -51,6 +48,12 @@ __version__='$Id$'
 
 import re, sys, time
 import wikipedia, config, pagegenerators
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 msg_no_warnings = {'de':u'Bot: Tabellensyntax konvertiert',
                    'en':u'User-controlled Bot: table syntax updated',
@@ -86,7 +89,7 @@ msg_multiple_warnings = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!'
                          'fr':u'Bot: wikification syntaxe tableaux - %d avertissements !',
                          'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - %d אזהרות!',
                          'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
-                         'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',                         
+                         'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
                          'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimai!',
                          'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
                          'no':u'bot: Konverterer tabellsyntaks – %d advarsler!',
@@ -501,22 +504,14 @@ def main():
     debug = False
     xmlfilename = None
     gen = None
-    textfilename = None
-    startpage = None
+
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-file:'):
-            if len(arg) == 5:
-                textfilename = wikipedia.input(u'Please enter the textfile\'s name:')
-            else:
-                textfilename = arg[6:]
-            gen = pagegenerators.TextfilePageGenerator(textfilename)
-        elif arg.startswith('-start:'):
-            if len(arg) == 6:
-                startpage = wikipedia.input(u'Please enter the article to start then:')
-            else:
-                startpage = arg[7:]
-            gen = pagegenerators.AllpagesPageGenerator(startpage)
-        elif arg.startswith('-xml'):
+        if arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
             else:
@@ -540,7 +535,11 @@ LIMIT 200"""
         elif arg.startswith('-debug'):
             debug = True
         else:
-            page_title.append(arg)
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+            else:
+                page_title.append(arg)
 
     # if the page is given as a command line argument,
     # connect the title's parts with spaces
