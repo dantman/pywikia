@@ -5693,10 +5693,12 @@ def _flush():
         try:
             _putthread.join(1)
         except KeyboardInterrupt:
+            remainingPages = page_put_queue.qsize() - 1 # -1 because we added a None element to stop the queue
+            remainingSeconds = datetime.timedelta(seconds=(page_put_queue.qsize()) * config.put_throttle)
             answer = inputChoice(u'There are %i pages remaining in the queue. Estimated time remaining: %s\nReally exit?'
-                             % (page_put_queue.qsize(), datetime.timedelta(seconds=(page_put_queue.qsize()) * config.put_throttle)),
+                             % (remainingPages, remainingSeconds),
                              ['yes', 'no'], ['y', 'N'], 'N')
-            if answer in ['y', 'Y']:
+            if answer == 'y':
                 return
     try:
         get_throttle.drop()
