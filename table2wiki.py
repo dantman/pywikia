@@ -146,20 +146,21 @@ class Table2WikiRobot:
     
     
         ##################
+        # Note that we added the ## characters in markActiveTables().
         # <table> tag with attributes, with more text on the same line
-        newTable = re.sub("(?i)[\r\n]*?<table (?P<attr>[\w\W]*?)>(?P<more>[\w\W]*?)[\r\n ]*",
+        newTable = re.sub("(?i)[\r\n]*?<##table## (?P<attr>[\w\W]*?)>(?P<more>[\w\W]*?)[\r\n ]*",
                          r"\r\n{| \g<attr>\r\n\g<more>", newTable)
         # <table> tag without attributes, with more text on the same line
-        newTable = re.sub("(?i)[\r\n]*?<table>(?P<more>[\w\W]*?)[\r\n ]*",
+        newTable = re.sub("(?i)[\r\n]*?<##table##>(?P<more>[\w\W]*?)[\r\n ]*",
                          r"\r\n{|\n\g<more>\r\n", newTable)
         # <table> tag with attributes, without more text on the same line
-        newTable = re.sub("(?i)[\r\n]*?<table (?P<attr>[\w\W]*?)>[\r\n ]*",
+        newTable = re.sub("(?i)[\r\n]*?<##table## (?P<attr>[\w\W]*?)>[\r\n ]*",
                          r"\r\n{| \g<attr>\r\n", newTable)
         # <table> tag without attributes, without more text on the same line
-        newTable = re.sub("(?i)[\r\n]*?<table>[\r\n ]*",
+        newTable = re.sub("(?i)[\r\n]*?<##table##>[\r\n ]*",
                          "\r\n{|\r\n", newTable)
         # end </table>
-        newTable = re.sub("(?i)[\s]*<\/table>",
+        newTable = re.sub("(?i)[\s]*<\/##table##>",
                           "\r\n|}", newTable)
         
         ##################
@@ -375,13 +376,21 @@ class Table2WikiRobot:
                 # why are only äöüß used, but not other special characters?
                 newTable, num = re.subn("(\r\n[A-Z]{1}[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{200,})",
                                        r"\1\r\n\2", newTable)
-        # show the changes for this table
-        if self.debug:
-            print table
-            print newTable
-        elif not self.quietMode:
-            wikipedia.showDiff(table, newTable)
         return newTable, warnings, warning_messages
+
+    def markActiveTables(self, text):
+        """
+        Marks all table start and end tags that are not disabled by nowiki
+        tags, comments etc.
+
+        We will then later only work on these marked tags.
+        """
+        tableStartTagR = re.compile("<table", re.IGNORECASE)
+        tableEndTagR = re.compile("</table>", re.IGNORECASE)
+
+        text = wikipedia.replaceExcept(text, tableStartTagR, "<##table##", exceptions = ['comment', 'math', 'nowiki', 'pre', 'source'])
+        text = wikipedia.replaceExcept(text, tableEndTagR, "</##table##>", exceptions = ['comment', 'math', 'nowiki', 'pre', 'source'])
+        return text
 
     def findTable(self, text):
         """
@@ -389,10 +398,10 @@ class Table2WikiRobot:
         text.
         Returns the table and the start and end position inside the text.
         """
-        # TODO: skip tables in HTML comments and nowiki tags
-        tableStartTagR = re.compile("<table", re.IGNORECASE)
-        tableEndTagR = re.compile("</table>", re.IGNORECASE)
-        m = tableStartTagR.search(text)
+        # Note that we added the ## characters in markActiveTables().
+        markedTableStartTagR = re.compile("<##table##", re.IGNORECASE)
+        markedTableEndTagR = re.compile("</##table##>", re.IGNORECASE)
+        m = markedTableStartTagR.search(text)
         if not m:
             return None, 0, 0
         else:
@@ -404,8 +413,8 @@ class Table2WikiRobot:
             depth = 1
             #i = start + 1
             while depth > 0:
-                nextStarting = tableStartTagR.search(text)
-                nextEnding = tableEndTagR.search(text)
+                nextStarting = markedTableStartTagR.search(text)
+                nextEnding = markedTableEndTagR.search(text)
                 if not nextEnding:
                     print "More opening than closing table tags. Skipping."
                     return None, 0, 0
@@ -420,13 +429,15 @@ class Table2WikiRobot:
                     depth -= 1
             end = offset
             return originalText[start:end], start, end
-                        
+
     def convertAllHTMLTables(self, text):
         '''
         Converts all HTML tables in text to wiki syntax.
         Returns the converted text, the number of converted tables and the
         number of warnings that occured.
         '''
+        text = self.markActiveTables(text)
+
         convertedTables = 0
         warningSum = 0
         warningMessages = u''
@@ -439,6 +450,12 @@ class Table2WikiRobot:
             print ">> Table %i <<" % (convertedTables + 1)
             # convert the current table
             newTable, warningsThisTable, warnMsgsThisTable = self.convertTable(table)
+            # show the changes for this table
+            if self.debug:
+                print table
+                print newTable
+            elif not self.quietMode:
+                wikipedia.showDiff(table.replace('##table##', 'table'), newTable)
             print ""
             warningSum += warningsThisTable
             for msg in warnMsgsThisTable:
@@ -447,7 +464,7 @@ class Table2WikiRobot:
             convertedTables += 1
 
         wikipedia.output(warningMessages)
-            
+
         return text, convertedTables, warningSum
 
     def treat(self, page):
@@ -468,6 +485,13 @@ class Table2WikiRobot:
             wikipedia.output(u'Skipping redirect %s' % page.title())
             return False
         newText, convertedTables, warningSum = self.convertAllHTMLTables(text)
+
+        # Check if there are any marked tags left
+        markedTableTagR = re.compile("<##table##|</##table##>", re.IGNORECASE)
+        if markedTableTagR.search(newText):
+            wikipedia.output(u'ERROR: not all marked table start or end tags processed!')
+            return
+
         if convertedTables == 0:
             wikipedia.output(u"No changes were necessary.")
         else:
