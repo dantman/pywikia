@@ -67,7 +67,7 @@ while Findonly= search only if the exactly text that you give is in the image's 
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: checkimages.py,v 2.0 2008/01/16 14:30:25 filnik Exp$'
+__version__ = '$Id$'
 #
 
 import re, time, urllib2
