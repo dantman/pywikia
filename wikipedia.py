@@ -347,46 +347,46 @@ class Page(object):
                     t = m.group(2)
                     self._namespace = ns
                     break
-                else:
-                    if lowerNs in self.site().family.langs.keys():
-                        # Interwiki link
+
+                if lowerNs in self.site().family.langs.keys():
+                    # Interwiki link
+                    t = m.group(2)
+
+                    # Redundant interwiki prefix to the local wiki
+                    if lowerNs == self.site().lang:
+                        if t == '':
+                            raise Error("Can't have an empty self-link")
+                    else:
+                        self._site = getSite(lowerNs, self.site().family.name)
+
+                    # If there's an initial colon after the interwiki, that also
+                    # resets the default namespace
+                    if t != '' and t[0] == ':':
+                        self._namespace = 0
+                        t = t[1:]
+                elif lowerNs in self.site().family.get_known_families(site = self.site()):
+                    if self.site().family.get_known_families(site = self.site())[lowerNs] == self.site().family.name:
                         t = m.group(2)
-
-                        # Redundant interwiki prefix to the local wiki
-                        if lowerNs == self.site().lang:
-                            if t == '':
-                                raise Error("Can't have an empty self-link")
-                        else:
-                            self._site = getSite(lowerNs, self.site().family.name)
-
-                        # If there's an initial colon after the interwiki, that also
-                        # resets the default namespace
-                        if t != '' and t[0] == ':':
-                            self._namespace = 0
-                            t = t[1:]
-                    elif lowerNs in self.site().family.get_known_families(site = self.site()):
-                        if self.site().family.get_known_families(site = self.site())[lowerNs] == self.site().family.name:
-                            t = m.group(2)
-                        else:
-                            # This page is from a different family
+                    else:
+                        # This page is from a different family
+                        if verbose:
                             output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
-                            otherlang = self.site().lang
-                            familyName = self.site().family.get_known_families(site = self.site())[lowerNs]
-                            if familyName in ['commons', 'meta']:
-                                otherlang = familyName
-                            try:
-                                self._site = getSite(otherlang, familyName)
-                            except ValueError:
-                                raise NoPage("""\
+                        otherlang = self.site().lang
+                        familyName = self.site().family.get_known_families(site = self.site())[lowerNs]
+                        if familyName in ['commons', 'meta']:
+                            otherlang = familyName
+                        try:
+                            self._site = getSite(otherlang, familyName)
+                        except ValueError:
+                            raise NoPage("""\
 %s is not a local page on %s, and the %s family is
 not supported by PyWikipediaBot!"""
-                                  % (title, self.site(), familyName))
-                            t = m.group(2)
-                    else:
-                        # If there's no recognized interwiki or namespace,
-                        # then let the colon expression be part of the title.
-                        break
-                continue
+                              % (title, self.site(), familyName))
+                        t = m.group(2)
+                else:
+                    # If there's no recognized interwiki or namespace,
+                    # then let the colon expression be part of the title.
+                    break
 
             sectionStart = t.find(u'#')
             if sectionStart >= 0:
@@ -420,11 +420,12 @@ not supported by PyWikipediaBot!"""
         except NoSuchSite:
             raise
         except:
-            output(u"Exception in Page constructor")
-            output(
-                u"site=%s, title=%s, insite=%s, defaultNamespace=%i"
-                % (site, title, insite, defaultNamespace)
-            )
+            if verbose:
+                output(u"Exception in Page constructor")
+                output(
+                    u"site=%s, title=%s, insite=%s, defaultNamespace=%i"
+                    % (site, title, insite, defaultNamespace)
+                )
             raise
 
     def site(self):
@@ -5680,24 +5681,29 @@ def _flush():
     Called automatically upon exiting from Python.
 
     """
-    if page_put_queue.qsize() > 0:
+    def remaining():
         import datetime
-        remaining = datetime.timedelta(
-                      seconds = page_put_queue.qsize() * config.put_throttle)
-        output(u'Waiting for %i pages to be put. Estimated time remaining: %s'
-               % (page_put_queue.qsize(), remaining))
+        remainingPages = page_put_queue.qsize() - 1
+            # -1 because we added a None element to stop the queue
+        remainingSeconds = datetime.timedelta(
+                            seconds=(remainingPages * put_throttle.getDelay()))
+        return (remainingPages, remainingSeconds)
 
     page_put_queue.put((None, None, None, None, None, None, None))
+
+    if page_put_queue.qsize() > 1:
+        output(u'Waiting for %i pages to be put. Estimated time remaining: %s'
+               % remaining())
 
     while(_putthread.isAlive()):
         try:
             _putthread.join(1)
         except KeyboardInterrupt:
-            remainingPages = page_put_queue.qsize() - 1 # -1 because we added a None element to stop the queue
-            remainingSeconds = datetime.timedelta(seconds=(page_put_queue.qsize()) * config.put_throttle)
-            answer = inputChoice(u'There are %i pages remaining in the queue. Estimated time remaining: %s\nReally exit?'
-                             % (remainingPages, remainingSeconds),
-                             ['yes', 'no'], ['y', 'N'], 'N')
+            answer = inputChoice(u"""\
+There are %i pages remaining in the queue. Estimated time remaining: %s
+Really exit?"""
+                                     % remaining(),
+                                 ['yes', 'no'], ['y', 'N'], 'N')
             if answer == 'y':
                 return
     try:
