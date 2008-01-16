@@ -110,8 +110,7 @@ class TableXmlDumpPageGenerator:
         tableTagR = re.compile('<table', re.IGNORECASE)
         for entry in self.xmldump.parse():
             if tableTagR.search(entry.text):
-                pl = wikipedia.Page(wikipedia.getSite(), entry.title)
-                yield pl
+                yield wikipedia.Page(wikipedia.getSite(), entry.title)
               
 class Table2WikiRobot:
     def __init__(self, generator, debug = False, quietMode = False):
@@ -451,22 +450,22 @@ class Table2WikiRobot:
             
         return text, convertedTables, warningSum
 
-    def treat(self, pl):
+    def treat(self, page):
         '''
         Loads a page, converts all HTML tables in its text to wiki syntax,
         and saves the converted text.
         Returns True if the converted table was successfully saved, otherwise
         returns False.
         '''
-        wikipedia.output(u'\n>>> %s <<<' % pl.title())
-        site = pl.site()
+        wikipedia.output(u'\n>>> %s <<<' % page.title())
+        site = page.site()
         try:
-            text = pl.get()
+            text = page.get()
         except wikipedia.NoPage:
-            wikipedia.output(u"ERROR: couldn't find %s" % pl.title())
+            wikipedia.output(u"ERROR: couldn't find %s" % page.title())
             return False
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'Skipping redirect %s' % pl.title())
+            wikipedia.output(u'Skipping redirect %s' % page.title())
             return False
         newText, convertedTables, warningSum = self.convertAllHTMLTables(text)
         if convertedTables == 0:
@@ -488,11 +487,11 @@ class Table2WikiRobot:
                     wikipedia.setAction(wikipedia.translate(site.lang, msg_one_warning) % warningSum)
                 else:
                     wikipedia.setAction(wikipedia.translate(site.lang, msg_multiple_warnings) % warningSum)
-                pl.put(newText)
+                page.put_async(newText)
 
     def run(self):
-        for pl in self.generator:
-            self.treat(pl)
+        for page in self.generator:
+            self.treat(page)
             
 def main():
     quietMode = False # use -quiet to get less output
