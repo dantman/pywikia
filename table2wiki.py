@@ -17,6 +17,12 @@ These command line parameters can be used to specify which pages to work on:
                  Searches for pages with HTML tables, and tries to convert them
                  on the live wiki.
 
+-namespace:n      Number or name of namespace to process. The parameter can be
+                  used multiple times. It works in combination with all other
+                  parameters, except for the -start parameter. If you e.g.
+                  want to iterate over all categories starting at M, use
+                  -start:Category:M.
+
 This SQL query can be used to find pages to work on:
 
                  SELECT CONCAT('[[', cur_title, ']]')
@@ -525,7 +531,13 @@ def main():
     # if -file is not used, this temporary array is used to read the page title.
     page_title = []
     debug = False
+
+    # Which namespaces should be processed?
+    # default to [] which means all namespaces will be processed
+    namespaces = []
+
     xmlfilename = None
+
     gen = None
 
     # This factory is responsible for processing command line arguments
@@ -547,6 +559,11 @@ FROM page JOIN text ON (page_id = old_id)
 WHERE old_text LIKE '%<table%'
 LIMIT 200"""
             gen = pagegenerators.MySQLPageGenerator(query)
+        elif arg.startswith('-namespace:'):
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         elif arg.startswith('-skip:'):
             articles = articles[articles.index(arg[6:]):]
         elif arg.startswith('-auto'):
@@ -574,6 +591,8 @@ LIMIT 200"""
         # show help
         wikipedia.showHelp('table2wiki')
         sys.exit(0)
+    if namespaces != []:
+        gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
     bot = Table2WikiRobot(preloadingGen, debug, quietMode)
     bot.run()
