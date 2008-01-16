@@ -686,6 +686,7 @@ class Family(family.Family):
             'he': ['en'],
             'hu': ['en'],
             'lb': self.alphabetic_lb,
+            'nds': ['nds-nl','pdt'] + self.alphabetic, # Note: as of 2008-01-16, pdt: (Plattdeutsch) is still in the Incubator.
             'nn': ['no','nb','sv','da'] + self.alphabetic,
             'no': self.alphabetic,
             'pl': self.alphabetic,
