@@ -67,7 +67,7 @@ while Findonly= search only if the exactly text that you give is in the image's 
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: checkimages.py,v 1.0 2007/11/27 16:00:25 filnik Exp$'
+__version__ = '$Id: checkimages.py,v 2.0 2008/01/16 14:30:25 filnik Exp$'
 #
 
 import re, time, urllib2
@@ -123,7 +123,7 @@ empty = {
 		'commons':'{{subst:welcome}}\n~~~~\n',
 		'en'     :'{{welcome}}\n~~~~\n',
 		'it'     :'{{benvenuto}}\n~~~~\n',
-		'ja':'{{subst:welcome|--~~~~}}\n',
+		'ja':'{{welcome}}\n--~~~~\n',
 		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
 		'zh':'{{subst:welcome|sign=~~~~}}',
 		}
@@ -211,7 +211,7 @@ page_with_settings = {
                                         'en':None,
                                         'hu':None,
 					'it':u'Utente:Nikbot/Settings#Settings',
-					'ja':u"利用者:Alexbot/cisettings#Settings",
+					'ja':None,
 					'zh':u"User:Alexbot/cisettings#Settings",
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)
@@ -798,7 +798,8 @@ def checkbot():
                 if tupla_written != None:
                         wikipedia.output(u'\t   >> Loaded the real-time page... <<')
                         # Save the settings not to lose them (FixMe: Make that part better)
-                        filename = "settings.data"
+                        # The name is to avoid mistakes when the same bot is run in multiple projects.
+                        filename = "settings-%s.data" % str(site).replace(':', '-')
                         f = file(filename, 'w')
                         cPickle.dump(tupla_written, f)
                         f.close()
@@ -1003,4 +1004,4 @@ if __name__ == "__main__":
                         wikipedia.stopme()
 	finally:
 		wikipedia.stopme()
-		#sys.exit() # Be sure that the Bot will stop
+		sys.exit() # Be sure that the Bot will stop
