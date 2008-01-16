@@ -63,7 +63,11 @@ parameterHelp = """\
 
 -start            Specifies that the robot should go alphabetically through
                   all pages on the home wiki, starting at the named page.
-                  Argument can also be given as "-start:pagetitle"
+                  Argument can also be given as "-start:pagetitle".
+
+                  You can also include a namespace. For example,
+                  "-start:Template:!" will make the bot work on all pages
+                  in the template namespace.
 
 -prefixindex      Work on pages commencing with a common prefix.  Argument
                   may also be given as "-prefixindex:namespace:pagename".
