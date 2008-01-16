@@ -73,6 +73,7 @@ fixes = {
     },
 
     # Grammar fixes for German language
+    # Do NOT run this automatically!
     'grammar-de': {
         'regex': True,
         'msg': {
@@ -85,10 +86,12 @@ fixes = {
             # Vorsicht bei Substantiven, z. B. 3-Jähriger!
             (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich|fach|mal|malig|köpfig|teilig|gliedrig|geteilt|elementig|dimensional|bändig|eckig|farbig|stimmig)', r'\1-\2'),
             # zusammengesetztes Wort, Bindestrich wird durchgeschleift
-            (u'(?<!\w)(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|GB|TB|W|kW|MW|GW|PS|Nm|eV|J|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)([²³]?-[\w\[])',           r'\1-\2\3'),
+            (u'(?<!\w)(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|ha|°C|kB|MB|GB|TB|W|kW|MW|GW|PS|Nm|eV|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)([²³]?-[\w\[])',           r'\1-\2\3'),
             # Größenangabe ohne Leerzeichen vor Einheit
-            # weggelassen wegen vieler falsch Positiver: s, A, V, C, S, %
-            (u'(?<!\w)(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|GB|TB|W|kW|MW|GW|PS|Nm|eV|J|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)(?=\W|²|³|$)',          r'\1 \2'),
+            # weggelassen wegen vieler falsch Positiver: s, A, V, C, S, J, %
+            (u'(?<!\w)(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|ha|°C|kB|MB|GB|TB|W|kW|MW|GW|PS|Nm|eV|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)(?=\W|²|³|$)',          r'\1 \2'),
+            # Temperaturangabe mit falsch gesetztem Leerzeichen
+            (u'(?<!\w)(\d+|\d+[\.,]\d+)° C(?=\W|²|³|$)',          ur'\1 °C'),
             # Kein Leerzeichen zwischen Tag und Monat
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
             # Keine führende Null beim Datum
@@ -122,7 +125,7 @@ fixes = {
                 r'<code>.*</code>', # because of code examples
                 r'{{[Zz]itat\|.*?}}',
                 ur'{{§\|.*?}}',  # Gesetzesparagraph
-                ur'§ \d+[a-z]',  # Gesetzesparagraph
+                ur'§ ?\d+[a-z]',  # Gesetzesparagraph
                 r'Ju 52/1m', # Flugzeugbezeichnung
                 r'Ju 52/3m', # Flugzeugbezeichnung
                 r'AH-1W',    # Hubschrauberbezeichnung
@@ -131,7 +134,8 @@ fixes = {
                 r'802.11g',  # WLAN-Standard
                 r'DOS/4GW',  # Software
                 r'ntfs-3g',  # Dateisystem-Treiber
-                r'/\w(,\w)*/',   # Laut-Aufzählung in der Linguistik
+                r'/\w(,\w)*/',     # Laut-Aufzählung in der Linguistik
+                r'[xyz](,[xyz])+', # Variablen in der Mathematik (unklar, ob Leerzeichen hier Pflicht sind)
                 r'(?m)^;(.*?)$', # Definitionslisten, dort gibt es oft absichtlich Leerzeichen vor Doppelpunkten
                 r'\d+h( |&nbsp;)\d+m', # Schreibweise für Zeiten, vor allem in Film-Infoboxen. Nicht korrekt, aber dafür schön kurz.
                 r'(?i)\[\[(Bild|Image|Media):.+?\|', # Dateinamen auslassen
