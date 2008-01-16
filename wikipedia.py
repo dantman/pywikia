@@ -53,7 +53,7 @@ Other functions:
 
     showDiff(oldtext, newtext): Prints the differences between oldtext and
         newtext on the screen
-    
+
 Wikitext manipulation functions: each of these takes a unicode string
 containing wiki text as its first argument, and returns a modified version
 of the text unless otherwise noted --
@@ -420,8 +420,8 @@ not supported by PyWikipediaBot!"""
         except NoSuchSite:
             raise
         except:
-            print >>sys.stderr, "Exception in Page constructor"
-            print >>sys.stderr, (
+            output(u"Exception in Page constructor")
+            output(
                 u"site=%s, title=%s, insite=%s, defaultNamespace=%i"
                 % (site, title, insite, defaultNamespace)
             )
