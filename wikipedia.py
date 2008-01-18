@@ -506,10 +506,14 @@ not supported by PyWikipediaBot!"""
         
         """
         if not noInterwiki and (forceInterwiki or self.site() != getSite()):
-            if self.site().family != getSite().family:
-                return u'[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title(savetitle=True))
+            if self.site().family != getSite().family \
+                    and self.site().family.name != self.site().lang:
+                return u'[[%s:%s:%s]]' % (self.site().family.name,
+                                          self.site().lang,
+                                          self.title(savetitle=True))
             else:
-                return u'[[%s:%s]]' % (self.site().lang, self.title(savetitle=True))
+                return u'[[%s:%s]]' % (self.site().lang,
+                                       self.title(savetitle=True))
         elif textlink and (self.isImage() or self.isCategory()):
                 return u'[[:%s]]' % self.title()
         else:
