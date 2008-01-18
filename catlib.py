@@ -67,20 +67,27 @@ class Category(wikipedia.Page):
         self.articleCache = []
         self.subcatCache = []
 
-    def aslink(self, forceInterwiki = False, noInterwiki = False):
-        """
-        A string representation in the form of a link. This method is different
-        from Page.aslink() as the sortkey may have to be included.
+    def aslink(self, forceInterwiki=False, textlink=False, noInterwiki=False):
+        """A string representation in the form of a link.
+
+        This method is different from Page.aslink() as the sortkey may have
+        to be included.
+        
         """
         if self.sortKey:
             titleWithSortKey = '%s|%s' % (self.title(), self.sortKey)
         else:
             titleWithSortKey = self.title()
-        if not noInterwiki and (forceInterwiki or self.site() != wikipedia.getSite()):
-            if self.site().family != wikipedia.getSite().family:
-                return '[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, titleWithSortKey)
+        if not noInterwiki and (forceInterwiki
+                                or self.site() != wikipedia.getSite()):
+            if self.site().family != wikipedia.getSite().family \
+                    and self.site().family.name != self.site().lang:
+                return '[[%s:%s:%s]]' % (self.site().family.name,
+                                         self.site().lang, self.title())
             else:
-                return '[[%s:%s]]' % (self.site().lang, titleWithSortKey)
+                return '[[%s:%s]]' % (self.site().lang, self.title())
+        elif textlink:
+            return '[[:%s]]' % self.title()
         else:
             return '[[%s]]' % titleWithSortKey
 
