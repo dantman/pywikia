@@ -200,6 +200,7 @@ ignore_title = {
             u'Benutzer:Katharina/Begriffsklärungen',
             u'Benutzer:Noisper/Dingliste/[A-Z]',
             u'Benutzer:SirJective/.+',
+            u'Benutzer:SrbBot/Index/.+',
             u'Benutzer Diskussion:.+',
             u'GISLexikon \([A-Z]\)',
             u'Lehnwort',
@@ -217,6 +218,7 @@ ignore_title = {
             u'Wikipedia:Löschkandidaten/.+',
             u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
             u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
+            u'Wikipedia:WikiProjekt Verwaiste Seiten/Begriffsklärungen',
         ],
          'en': [
             u'Wikipedia:Links to disambiguating pages',
