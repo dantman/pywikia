@@ -353,12 +353,18 @@ fixes = {
             #(u'†\[\[(\d)', u'† [[\\1'),
             #(u'&dagger;\[\[(\d)', u'† [[\\1'),
             (u'\[\[(\d+\. (?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)) (\d{1,4})\]\]', u'[[\\1]] [[\\2]]'),
+            # Keine führende Null beim Datum
+            (u'0(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
+            # Kein Punkt vorm Jahr
+            (u'(\d+)\. (Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\.(\d{1,4})', r'\1. \2 \3'),
         ],
         'exceptions': {
             'inside': [
-                r'[[20. Juli 1944]]',
-                r'[[17. Juni 1953]]',
-                r'[[11. September 2001]]',
+                r'\[\[20. Juli 1944\]\]', # Hitler-Attentat
+                r'\[\[17. Juni 1953\]\]', # Ost-Berliner Volksaufstand
+                r'\[\[1. April 2000\]\]', # Film
+                r'\[\[11. September 2001\]\]', # Anschläge in den USA
+                r'\[\[7. Juli 2005\]\]',  # Terroranschläge in Spanien
             ],
         }
     },
