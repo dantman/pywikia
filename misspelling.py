@@ -79,7 +79,9 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
                 return True
 
     # Overrides the DisambiguationRobot method.
-    def setSummaryMessage(self, disambPage):
+    def setSummaryMessage(self, disambPage, new_targets, unlink):
+        # TODO: setSummaryMessage() in solve_disambiguation now has parameters
+        # new_targets and unlink. Make use of these here.
         comment = wikipedia.translate(self.mysite, self.msg) % disambPage.title()
         wikipedia.setAction(comment)
 
