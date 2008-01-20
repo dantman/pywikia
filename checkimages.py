@@ -131,7 +131,7 @@ empty = {
 # if the file has an unknown extension it will be tagged with this template.
 # In reality, there aren't unknown extension, they are only not allewed... ^__^
 delete_immediately = {
-			'commons':"{{db-meta|The file has .%s as extension.}}",
+			'commons':"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
 			'en'     :"{{db-meta|The file has .%s as extension.}}",
 			'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
 			'ja':u'{{db|知らないファイルフォーマット%s}}',
@@ -150,8 +150,8 @@ delete_immediately_head = {
 
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
-                                'commons':'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
-				'en'     :'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
+                                'commons':'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
+				'en'     :'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
 				'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
 				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
 				'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
@@ -741,7 +741,7 @@ def checkbot():
         # MIT license is ok on italian wikipedia, let also this here
         something = ['{{', "'''MIT&nbsp;license'''"] # Don't put "}}" here, please. Useless and can give problems.
         # Unused file extensions. Does not contain PDF.
-        notallowed = ("xcf", "xls", "sxw", "sxi", "sxc", "sxd", "djvu")
+        notallowed = ("xcf", "xls", "sxw", "sxi", "sxc", "sxd")
 
         # A little block-statement to ensure that the bot will not start with en-parameters
         if lang not in project_inserted:
