@@ -121,20 +121,26 @@ class Family(family.Family):
             'yi': [u'װיקיביבליאָטעק רעדן', u'וויקיביבליאטעק רעדן'],
         }
         self.namespaces[100] = {
+            'bg': u'Автор',
+            'bn': u'লেখক',
             'en': u'Portal',
             'fa': [u'درگاه', u'Portal'],
             'fr': u'Transwiki',
             'he': u'קטע',
             'hu': u'Szerző',
+            'hy': u'Հեղինակ',
             'nl': u'Hoofdportaal',
             'pt': u'Portal',
         }
         self.namespaces[101] = {
+            'bg': u'Автор беседа',
+            'bn': u'লেখক আলাপ',
             'en': u'Portal talk',
             'fa': [u'بحث درگاه', u'Portal talk'],
             'fr': u'Discussion Transwiki',
             'he': u'שיחת קטע',
             'hu': u'Szerző vita',
+            'hy': u'Հեղինակի քննարկում',
             'nl': u'Overleg hoofdportaal',
             'pt': u'Portal Discussão',
         }
@@ -144,6 +150,7 @@ class Family(family.Family):
             'de': u'Seite',
             'en': u'Author',
             'fa': [u'مؤلف', u'Author'],
+            'hy': u'Պորտալ',
             'it': u'Autore',
             'la': u'Scriptor',
             'nb': u'Forfatter',
@@ -156,6 +163,7 @@ class Family(family.Family):
             'de': u'Seite Diskussion',
             'en': u'Author talk',
             'fa': [u'بحث مؤلف', u'Author talk'],
+            'hy': u'Պորտալի քննարկում',
             'it': u'Discussioni autore',
             'la': u'Disputatio Scriptoris',
             'nb': u'Forfatterdiskusjon',
@@ -170,6 +178,7 @@ class Family(family.Family):
             'fa': [u'برگه', u'Page'],
             'fr': u'Page',
             'he': u'עמוד',
+            'hy': u'Էջ',
             'it': u'Progetto',
             'la': u'Pagina',
             'pt': u'Galeria',
@@ -185,6 +194,7 @@ class Family(family.Family):
             'fa': [u'بحث برگه', u'Page talk'],
             'fr': u'Discussion Page',
             'he': u'שיחת עמוד',
+            'hy': u'Էջի քննարկում',
             'it': u'Discussioni progetto',
             'la': u'Disputatio Paginae',
             'pt': u'Galeria Discussão',
@@ -195,6 +205,7 @@ class Family(family.Family):
 
         self.namespaces[106] = {
             'he': u'ביאור',
+            'hy': u'Ինդեքս',
             'it': u'Portale',
             'pt': u'Página',
             'sv': u'Författare',
@@ -202,6 +213,7 @@ class Family(family.Family):
 
         self.namespaces[107] = {
             'he': u'שיחת ביאור',
+            'hy': u'Ինդեքսի քննարկում',
             'it': u'Discussioni portale',
             'pt': u'Página Discussão',
             'sv': u'Författardiskussion',

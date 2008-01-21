@@ -34,6 +34,7 @@ class Family(family.Family):
             '_default': [u'Wikiquote', self.namespaces[4]['_default']],
             'ar': u'ويكي الاقتباس',
             'bg': u'Уикицитат',
+            'br': u'Wikiarroud',
             'bs': u'Wikicitati',
             'ca': u'Viquidites',
             'cs': u'Wikicitáty',
@@ -65,12 +66,12 @@ class Family(family.Family):
             'af': u'Wikiquotebespreking',
             'als': u'Wikiquote Diskussion',
             'ar': u'نقاش ويكي الاقتباس',
-            'ast': u'Wikiquote discusión',
+            'ast': u'Wikiquote alderique',
             'az': u'Wikiquote müzakirəsi',
             'be': u'Wikiquote размовы',
             'bg': u'Уикицитат беседа',
             'bm': u'Discussion Wikiquote',
-            'br': u'Kaozeadenn Wikiquote',
+            'br': u'Kaozeadenn Wikiarroud',
             'bs': u'Razgovor s Wikicitatima',
             'ca': u'Viquidites Discussió',
             'cs': u'Wikicitáty diskuse',
@@ -137,15 +138,17 @@ class Family(family.Family):
 
         self.namespaces[100] = {
             'de': u'Portal',
-            'he': u'פורטל',
             'fr': u'Portail',
-            }
+            'he': u'פורטל',
+            'li': u'Portaol',
+        }
 
         self.namespaces[101] = {
             'de': u'Portal Diskussion',
-            'he': u'שיחת פורטל',
             'fr': u'Discussion Portail',
-            }
+            'he': u'שיחת פורטל',
+            'li': u'Euverlèk portaol',
+        }
 
         self.namespaces[102] = {
             'fr': u'Projet',

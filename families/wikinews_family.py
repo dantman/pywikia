@@ -43,7 +43,7 @@ class Family(family.Family):
             'no': u'Wikinytt',
             'pt': u'Wikinotícias',
             'ro': u'Wikiştiri',
-            'ru': u'ВикиНовости',
+            'ru': u'Викиновости',
             'sr': u'Викивести',
             'th': u'วิกิข่าว',
             'uk': u'ВікіНовини',
@@ -66,7 +66,7 @@ class Family(family.Family):
             'pl': u'Dyskusja Wikinews',
             'pt': u'Wikinotícias Discussão',
             'ro': u'Discuţie Wikiştiri',
-            'ru': u'Обсуждение ВикиНовостей',
+            'ru': u'Обсуждение Викиновостей',
             'sr': u'Разговор о Викивестима',
             'sv': u'Wikinewsdiskussion',
             'ta': u'Wikinews பேச்சு',
@@ -84,6 +84,7 @@ class Family(family.Family):
             'ja': u'ポータル',
             'pl': u'Portal',
             'pt': u'Portal',
+            'ru': u'Портал',
             'zh': u'频道',
         }
 
@@ -97,6 +98,7 @@ class Family(family.Family):
             'ja': u'ポータル‐ノート',
             'pl': u'Dyskusja portalu',
             'pt': u'Portal Discussão',
+            'ru': u'Обсуждение портала',
             'zh': u'频道 talk',
         }
 
@@ -105,6 +107,7 @@ class Family(family.Family):
             'en': u'Comments',
             'fr': u'Transwiki',
             'pt': u'Efeméride',
+            'ru': u'Комментарии',
         }
 
         self.namespaces[103] = {
@@ -112,6 +115,7 @@ class Family(family.Family):
             'en': u'Comments talk',
             'fr': u'Discussion Transwiki',
             'pt': u'Efeméride Discussão',
+            'ru': u'Обсуждение комментариев',
         }
 
         self.namespaces[104] = {

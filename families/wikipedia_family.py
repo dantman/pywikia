@@ -130,7 +130,7 @@ class Family(family.Family):
             'da': u'Wikipedia-diskussion',
             'de': u'Wikipedia Diskussion',
             'diq': u'Wikipedia talk',
-            'dsb': u'Wikipedija Diskussion',
+            'dsb': u'Wikipedija diskusija',
             'el': u'Βικιπαίδεια συζήτηση',
             'eml': u'Discussioni Wikipedia',
             'eo': u'Vikipedia diskuto',

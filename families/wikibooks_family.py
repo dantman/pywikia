@@ -48,12 +48,14 @@ class Family(family.Family):
             'ml': u'വിക്കി പുസ്തകശാല',
             'no': u'Wikibøker',
             'oc': u'Wikilibres',
+            'ro': u'Wikimanuale',
             'ru': u'Викиучебник',
             'sl': u'Wikiknjige',
             'sr': u'Викикњиге',
             'tr': u'Vikikitap',
             'ur': u'وکی کتب',
             'uz': u'Vikikitob',
+            'vo': u'Vükibuks',
         }
 
         self.namespaces[5] = {
@@ -61,7 +63,7 @@ class Family(family.Family):
             'af': u'Wikibooksbespreking',
             'als': u'Wikibooks Diskussion',
             'ar': u'نقاش ويكي الكتب',
-            'ast': u'Wikibooks discusión',
+            'ast': u'Wikibooks alderique',
             'ay': u'Wikibooks Discusión',
             'az': u'Wikibooks müzakirəsi',
             'ba': u'Wikibooks б-са фекер алышыу',
@@ -108,6 +110,7 @@ class Family(family.Family):
             'ln': u'Discussion Wikibooks',
             'lt': u'Wikibooks aptarimas',
             'lv': u'Wikibooks diskusija',
+            'mg': u'Discussion Wikibooks',
             'mk': u'Разговор за Wikibooks',
             'ml': u'വിക്കി പുസ്തകശാല സംവാദം',
             'mr': u'Wikibooks चर्चा',
@@ -121,7 +124,7 @@ class Family(family.Family):
             'pl': u'Dyskusja Wikibooks',
             'pt': u'Wikibooks Discussão',
             'qu': u'Wikibooks rimanakuy',
-            'ro': u'Discuţie Wikibooks',
+            'ro': u'Discuţie Wikimanuale',
             'ru': u'Обсуждение Викиучебника',
             'sa': u'Wikibooksसंभाषणं',
             'sk': u'Diskusia k Wikibooks',
@@ -140,7 +143,7 @@ class Family(family.Family):
             'ur': u'تبادلۂ خیال وکی کتب',
             'uz': u'Vikikitob munozarasi',
             'vi': u'Thảo luận Wikibooks',
-            'vo': u'Bespik dö Wikibooks',
+            'vo': u'Bespik dö Vükibuks',
             'wa': u'Wikibooks copene',
         }
 
@@ -150,6 +153,7 @@ class Family(family.Family):
             'he': u'שער',
             'it': u'Progetto',
             'ms': u'Resipi',
+            'ro': u'Raft',
         }
 
         self.namespaces[101] = {
@@ -158,6 +162,7 @@ class Family(family.Family):
             'he': u'שיחת שער',
             'it': u'Discussioni progetto',
             'ms': u'Perbualan Resipi',
+            'ro': u'Discuţie Raft',
         }
 
         self.namespaces[102] = {

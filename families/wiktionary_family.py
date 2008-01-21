@@ -27,6 +27,7 @@ class Family(family.Family):
         self.namespaces[4] = {
             '_default': [u'Wiktionary', self.namespaces[4]['_default']],
             'ar': u'ويكاموس',
+            'ast': u'Uiccionariu',
             'bg': u'Уикиречник',
             'bs': u'Vikirječnik',
             'ca': u'Viccionari',
@@ -52,6 +53,7 @@ class Family(family.Family):
             'kk': u'Уикисөздік',
             'ko': u'위키낱말사전',
             'la': u'Victionarium',
+            'lt': u'Vikižodynas',
             'ml': u'വിക്കിനിഘണ്ടു',
             'ms': u'Wiktionary',
             'nl': u'WikiWoordenboek',
@@ -78,7 +80,7 @@ class Family(family.Family):
             'als': u'Wiktionary Diskussion',
             'an': u'Descusión Wiktionary',
             'ar': u'نقاش ويكاموس',
-            'ast': u'Wiktionary discusión',
+            'ast': u'Uiccionariu alderique',
             'av': u'Обсуждение Wiktionary',
             'ay': u'Wiktionary Discusión',
             'az': u'Wiktionary müzakirəsi',
@@ -131,8 +133,9 @@ class Family(family.Family):
             'lb': u'Wiktionary Diskussioun',
             'li': u'Euverlèk Wiktionary',
             'ln': u'Discussion Wiktionary',
-            'lt': u'Wiktionary aptarimas',
+            'lt': u'Vikižodyno aptarimas',
             'lv': u'Wiktionary diskusija',
+            'mg': u'Discussion Wiktionary',
             'mk': u'Разговор за Wiktionary',
             'ml': u'വിക്കിനിഘണ്ടു സംവാദം',
             'mr': u'Wiktionary चर्चा',
@@ -184,6 +187,7 @@ class Family(family.Family):
             'he': u'נספח',
             'it': u'Appendice',
             'ko': u'부록',
+            'lt': u'Sąrašas',
             'oc': u'Annèxa',
             'pl': u'Aneks',
             'pt': u'Apêndice',
@@ -202,6 +206,7 @@ class Family(family.Family):
             'he': u'שיחת נספח',
             'it': u'Discussioni appendice',
             'ko': u'부록 토론',
+            'lt': u'Sąrašo aptarimas',
             'oc': u'Discussion Annèxa',
             'pl': u'Dyskusja aneksu',
             'pt': u'Apêndice Discussão',
@@ -245,6 +250,7 @@ class Family(family.Family):
             'pl': u'Portal',
             'pt': u'Rimas',
             'ru': [u'Индекс', u'Index'],
+            'sv': u'Rimord',
         }
 
         self.namespaces[105] = {
@@ -255,6 +261,7 @@ class Family(family.Family):
             'pl': u'Dyskusja portalu',
             'pt': u'Rimas Discussão',
             'ru': [u'Обсуждение индекса', u'Index talk'],
+            'sv': u'Rimordsdiskussion',
         }
 
         self.namespaces[106] = {
@@ -262,6 +269,7 @@ class Family(family.Family):
             'is': u'Viðauki',
             'pt': u'Portal',
             'ru': [u'Рифмы', u'Rhymes'],
+            'sv': u'Transwiki',
         }
 
         self.namespaces[107] = {
@@ -269,6 +277,7 @@ class Family(family.Family):
             'is': u'Viðaukaspjall',
             'pt': u'Portal Discussão',
             'ru': [u'Обсуждение рифм', u'Rhymes talk'],
+            'sv': u'Transwikidiskussion',
         }
 
         self.namespaces[108] = {
