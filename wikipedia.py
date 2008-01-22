@@ -3209,11 +3209,15 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
                              ['nowiki', 'comment', 'math', 'pre', 'source'])
     return text
 
-def replaceCategoryLinks(oldtext, new, site=None):
+def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
     """Replace the category links given in the wikitext given
        in oldtext by the new links given in new.
 
        'new' should be a list of Category objects.
+
+       If addOnly is True, the old category won't be deleted and
+       the category(s) given will be added
+       (and so they won't replace anything).
     """
 
     # Find a marker that is not already in the text.
@@ -3227,8 +3231,11 @@ def replaceCategoryLinks(oldtext, new, site=None):
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22')
 
     s = categoryFormat(new, insite = site)
-    s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
-
+    if addOnly:
+        s2 = oldtext
+    else:
+        s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
+    
     if s:
         if site.language() in site.family.category_attop:
             newtext = s + site.family.category_text_separator + s2
