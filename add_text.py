@@ -174,7 +174,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         # Adding the text
         newtext += u"\n%s" % addText
         # Reputting the categories
-        newtext = wikipedia.replaceCategoryLinks(newtext, categoriesInside, site)
+        newtext = wikipedia.replaceCategoryLinks(newtext, categoriesInside, site, True)
         # Dealing the stars' issue
         starsListInPage = list()
         for star in starsList:
@@ -189,7 +189,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
     # If instead the text must be added above...
     else:
         newtext = addText + '\n' + text
-    if putText:
+    if putText and text != newtext:
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         wikipedia.showDiff(text, newtext)
     choice = ''
