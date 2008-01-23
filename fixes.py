@@ -92,10 +92,6 @@ fixes = {
             (u'(?<!\w)(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|ha|°C|kB|MB|GB|TB|W|kW|MW|GW|PS|Nm|eV|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)(?=\W|²|³|$)',          r'\1 \2'),
             # Temperaturangabe mit falsch gesetztem Leerzeichen
             (u'(?<!\w)(\d+|\d+[\.,]\d+)° C(?=\W|²|³|$)',          ur'\1 °C'),
-            # Kein Leerzeichen zwischen Tag und Monat
-            (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
-            # Keine führende Null beim Datum
-            #(u'0(\d+)\. (Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
             # Kein Leerzeichen nach Komma
             (u'([a-zäöüß](\]\])?,)((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1 \3'),
             # Leerzeichen und Komma vertauscht
@@ -353,8 +349,10 @@ fixes = {
             #(u'†\[\[(\d)', u'† [[\\1'),
             #(u'&dagger;\[\[(\d)', u'† [[\\1'),
             (u'\[\[(\d+\. (?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)) (\d{1,4})\]\]', u'[[\\1]] [[\\2]]'),
-            # Keine führende Null beim Datum
+            # Keine führende Null beim Datum (ersteinmal nur bei denen, bei denen auch ein Leerzeichen fehlt)
             (u'0(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
+            # Kein Leerzeichen zwischen Tag und Monat
+            (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
             # Kein Punkt vorm Jahr
             (u'(\d+)\. (Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\.(\d{1,4})', r'\1. \2 \3'),
         ],
