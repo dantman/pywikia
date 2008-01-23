@@ -4104,7 +4104,7 @@ your connection is down. Retrying in %i minutes..."""
                         # No messages could be added.
                         # We assume that the server is down.
                         # Wait some time, then try again.
-                        output('WARNING: No messages found it Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
+                        output('WARNING: No messages found in Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
                         retry_idle_time *= 2
