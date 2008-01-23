@@ -81,7 +81,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
-        'commons':'\n{{subst:nld}}',
+    'commons':'\n{{subst:nld}}',
     'en'     :'\n{{subst:nld}}',
     'it'     :'\n{{subst:unverdata}}',
     'ja':'{{subst:Nsd}}',
@@ -89,8 +89,13 @@ n_txt = {
     'zh'    :'{{subst:No license/auto}}',
 }
 
+# Text that the bot will try to see if there's already or not. If there's a
+# {{ I'll use a regex to make a better check.
+# This will work so:
+# '{{nld' --> '\{\{(?:template:|)no[ _]license ?(?:\||\n|\}) ?' (case insensitive).
+# If there's not a {{ it will work as usual (if x in Text)
 txt_find =  {
-    'commons':['{{no license', '{{nld'],
+    'commons':['{{no license', '{{nld', '{{no permission since'],
         'en':['{{nld', '{{no license'],
     'hu':[u'{{nincsforrás',u'{{nincslicenc'],
     'it':[u'{{unverdata', u'{{unverified'],
@@ -866,11 +871,16 @@ def checkbot():
                                 wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
                                 continue
                         for i in TextFind:
-                                if i.lower() in g:
+                                if '{{' in i:
+                                        regexP = re.compile('\{\{(?:template|)%s ?(?:\||\n|\}) ?' % i.split('{{')[1].replace(' ', '[ _]'), re.I)
+                                        result = regexP.findall(g)
+                                        if result != []:
+                                                tagged = True
+                                elif i.lower() in g:
                                         tagged = True				
                         for l in hiddentemplate:
                                 if tagged == False:
-                                        res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n)' % l.lower(), g.lower())
+                                        res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n|\})' % l.lower(), g.lower())
                                         if res != []:
                                                 #print res
                                                 wikipedia.output(u'A white template found, skipping the template...')
