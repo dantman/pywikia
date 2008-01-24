@@ -327,7 +327,7 @@ def add_category(sort_by_last_name = False):
 
             if answer == 'y' or answer == 'a':
                 try:
-                    cats = page.categories()
+                    text = page.get()
                 except wikipedia.NoPage:
                     wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.title()))
                     pass
@@ -335,6 +335,10 @@ def add_category(sort_by_last_name = False):
                     redirTarget = wikipedia.Page(site,arg.args[0])
                     wikipedia.output(u"WARNING: %s is redirect to %s. Ignoring." % (page.title(), redirTarget.title()))
                 else:
+                    cats = page.categories()
+                    # Show the title of the page we're working on.
+                    # Highlight the title in purple.
+                    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                     wikipedia.output(u"Current categories:")
                     for cat in cats:
                         wikipedia.output(u"* %s" % cat.title())
