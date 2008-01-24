@@ -11,13 +11,15 @@ Furthermore, the following command line parameters are supported:
 
 -from and -to     The page to move from and the page to move to.
 
--del              After moving the page, delete the redirect.
+-del              After moving the page, delete the redirect or mark it for deletion.
 
 -prefix           Move pages by adding a namespace prefix to the names of the pages.
                   (Will remove the old namespace prefix if any)
                   Argument can also be given as "-prefix:namespace:".
 
 -always           Don't prompt to make changes, just do them.
+
+-skipredirects    Skip redirect pages (Warning: increases server load)
 
 """
 #
@@ -64,20 +66,21 @@ deletesummary={
 }
 
 class MovePagesBot:
-    def __init__(self, generator, addprefix, delete, always):
+    def __init__(self, generator, addprefix, delete, always, skipredirects):
         self.generator = generator
         self.addprefix = addprefix
         self.delete = delete
         self.always = always
+        self.skipredirects = skipredirects
 
-    def moveOne(self, page, newPageTitle,delete):
+    def moveOne(self, page, newPageTitle, delete):
         try:
             msg = wikipedia.translate(wikipedia.getSite(), summary)
             wikipedia.output(u'Moving page %s to [[%s]]' % (page.aslink(), newPageTitle))
             if page.move(newPageTitle, msg, throttle=True):
                 if delete:
                     deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
-                    page.delete(deletemsg)
+                    page.delete(deletemsg, mark=True)
         except wikipedia.NoPage:
             wikipedia.output(u'Page %s does not exist!' % page.title())
         except wikipedia.IsRedirectPage:
@@ -89,6 +92,9 @@ class MovePagesBot:
         # Show the title of the page we're working on.
         # Highlight the title in purple.
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% page.title())
+        if self.skipredirects and page.isRedirectPage():
+            wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
+            return
         pagetitle = page.titleWithoutNamespace()
         namesp = page.site().namespace(page.namespace())
         if self.appendAll:
@@ -190,6 +196,7 @@ def main():
     newName = None
     delete = False
     always = False
+    skipredirects = False
 
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
@@ -201,6 +208,8 @@ def main():
             delete = True
         elif arg == '-always':
             always = True
+        if arg == '-skipredirects':
+            skipredirects = True
         elif arg.startswith('-from:'):
             oldName = arg[len('-from:'):]
         elif arg.startswith('-to:'):
@@ -217,11 +226,11 @@ def main():
 
     if oldName and newName:
         page = wikipedia.Page(wikipedia.getSite(), oldName)
-        bot = MovePagesBot(None, prefix, delete, always)
+        bot = MovePagesBot(None, prefix, delete, always, skipredirects)
         bot.moveOne(page, newName, delete)
     elif gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = MovePagesBot(preloadingGen, prefix, delete, always)
+        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects)
         bot.run()
     else:
         wikipedia.showHelp('movepages')
