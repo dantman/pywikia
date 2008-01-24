@@ -108,6 +108,7 @@ class MovePagesBot:
                     self.moveOne(page,newPageTitle,self.delete)
                 elif choice2 in ['a', 'all', 'A']:
                     self.always = True
+                    self.moveOne(page,newPageTitle,self.delete)
                 elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
                 elif choice2 in ['n', 'N', 'no']:
