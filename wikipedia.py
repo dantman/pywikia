@@ -1840,10 +1840,9 @@ not supported by PyWikipediaBot!"""
         """
         Return all previous versions including wikitext.
 
-        Gives a list of tuples consisting of edit date/time, user name and
+        Gives a list of tuples consisting of revision ID, edit date/time, user name and
         content
         """
-        # TODO: probably should return revision id, as well.
         address = self.site().export_address()
         predata = {
             'action': 'submit',
@@ -1863,11 +1862,12 @@ not supported by PyWikipediaBot!"""
         get_throttle.setDelay(time.time() - now)
         output = []
         # TODO: parse XML using an actual XML parser instead of regex!
-        r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\</(?:ip|username)\>.*?\<text.*?\>(.*?)\<\/text\>",re.DOTALL)
+        r = re.compile("\<revision\>.*?\<id\>(?P<id>.*?)\<\/id\>.*?\<timestamp\>(?P<timestamp>.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(?P<user>.*?)\</(?:ip|username)\>.*?\<text.*?\>(?P<content>.*?)\<\/text\>",re.DOTALL)
         #r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\<",re.DOTALL)
-        return [  (match.group(1),
-                   unescape(match.group(2)),
-                   unescape(match.group(3)))
+        return [  (match.group('id'),
+                   match.group('timestamp'),
+                   unescape(match.group('user')),
+                   unescape(match.group('content')))
                 for match in r.finditer(data)  ]
 
     def contributingUsers(self):
