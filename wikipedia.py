@@ -113,6 +113,7 @@ __version__ = '$Id$'
 
 import os, sys
 import httplib, socket, urllib
+socket.setdefaulttimeout(120)  # set a pretty long timeout just in case...
 import traceback
 import time, threading, Queue
 import math
