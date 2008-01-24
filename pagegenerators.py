@@ -64,6 +64,9 @@ parameterHelp = """\
 -new              Work on the 60 newest pages. If given as -new:x, will work
                   on the x newest pages.
 
+-newimages        Work on the 100 newest images. If given as -newimages:x,
+                  will work on the x newest images.
+
 -ref              Work on all pages that link to a certain page.
                   Argument can also be given as "-ref:referredpagetitle".
 
@@ -77,6 +80,9 @@ parameterHelp = """\
 
 -prefixindex      Work on pages commencing with a common prefix.  Argument
                   may also be given as "-prefixindex:namespace:pagename".
+
+-regex            Work on pages found by a regular expression.  Argument
+                  may also be given as "-prefixindex:regularexpression".
 
 -transcludes      Work on all pages that use a certain template.
                   Argument can also be given as "-transcludes:Template:Title".
