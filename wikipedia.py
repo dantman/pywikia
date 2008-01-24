@@ -864,7 +864,7 @@ not supported by PyWikipediaBot!"""
         
         """
         txt = self.get()
-        txt = removeLanguageLinks(txt)
+        txt = removeLanguageLinks(txt, site = self.site())
         txt = removeCategoryLinks(txt, site = self.site())
         if len(txt) < 4:
             return True
@@ -2451,7 +2451,7 @@ class _GetAll(object):
                     # may encounter pages from non-existing wikis such as
                     # http://eo.wikisource.org/
                     if data.find("<title>Wiki does not exist</title>") != -1:
-                        raise NoSuchSite(u'Wiki %s does not exist yet' % self)
+                        raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
                     elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
                         output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
                         time.sleep(dt)
