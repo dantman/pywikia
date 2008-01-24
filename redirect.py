@@ -262,74 +262,85 @@ class RedirectRobot:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir.title())
-            try:
-                secondRedir = redir.getRedirectTarget()
-            except wikipedia.IsNotRedirectPage:
-                wikipedia.output(u'%s is not a redirect.' % redir.aslink())
-            except wikipedia.NoPage:
-                wikipedia.output(u'%s doesn\'t exist.' % redir.aslink())
-            else:
-                if secondRedir.site() != redir.site():
-                    wikipedia.output(
-                        u'Skipping %s; redirect target (%s) is on a different site.'
-                          % (redir.aslink(), secondRedir.aslink()))
-                    continue
+            newRedir   = redir
+            redirList = []  # bookkeeping to detect loops
+            while True:
+                redirList.append(u'%s:%s' % (newRedir  .site().lang, newRedir  .sectionFreeTitle()))
                 try:
-                    secondTargetPage = secondRedir.getRedirectTarget()
+                    targetPage = newRedir.getRedirectTarget()
+                except wikipedia.IsNotRedirectPage:
+                    if len(redirList) == 1:
+                        wikipedia.output(u'Skipping: Page %s is not a redirect.' % redir.aslink())
+                        break  #do nothing
+                    elif len(redirList) == 2:
+                        wikipedia.output(
+                            u'Skipping: Redirect target %s is not a redirect.' % redir.aslink())
+                        break  # do nothing
+                except wikipedia.NoPage:
+                    wikipedia.output(u'Warning: %s doesn\'t exist.' % newRedir  .aslink())
                 except wikipedia.SectionError:
                     wikipedia.output(
                         u'Warning: Redirect target section %s doesn\'t exist.'
-                          % secondRedir.aslink())
-                except wikipedia.IsNotRedirectPage:
-                    wikipedia.output(
-                        u'Redirect target %s is not a redirect.'
-                          % secondRedir.aslink())
+                          % newRedir  .aslink())
                 except wikipedia.BadTitle, e:
                     # str(e) is in the format 'BadTitle: [[Foo]]'
                     wikipedia.output(
-                        u'Redirect target %s is not a valid page title.'
+                        u'Warning: Redirect target %s is not a valid page title.'
                           % str(e)[10:])
                 except wikipedia.NoPage:
                     wikipedia.output(
-                        u'Redirect target %s doesn\'t exist.'
-                          % secondRedir.aslink())
+                        u'Warning: Redirect target %s doesn\'t exist.'
+                          % newRedir  .aslink())
                 else:
-                    if secondTargetPage.site() != secondRedir.site():
+                    wikipedia.output(
+                        u'   Links to: %s.'
+                          % targetPage.aslink())
+                    if targetPage.site() != mysite:
                         wikipedia.output(
-                            u"Page %s is a redirect to a different site (%s)"
-                              % (secondRedir.aslink(), secondTargetPage.aslink()))
-                        continue
+                            u'Warning: redirect target (%s) is on a different site.'
+                          % (targetPage.aslink()))
+                        if self.always:
+                            break  # skip if automatic 
                     # watch out for redirect loops
-                    if secondTargetPage.sectionFreeTitle() == secondRedir.sectionFreeTitle() \
-                            or secondTargetPage.sectionFreeTitle() == redir.sectionFreeTitle():
-                        continue
-                    oldText = redir.get(get_redirect=True)
-                    text = mysite.redirectRegex().sub(
-                            '#%s [[%s]]' %
-                                (mysite.redirect( True ),
-                                 secondTargetPage.title()),
-                            oldText)
-                    wikipedia.showDiff(oldText, text)
-                    if self.prompt(u'Do you want to accept the changes?'):
-                        try:
-                            redir.put(text)
-                        except wikipedia.LockedPage:
-                            wikipedia.output(u'%s is locked.' % redir.title())
-                        except wikipedia.SpamfilterError, error:
-                            wikipedia.output(
+                    if redirList.count((u'%s:%s' 
+                           % (targetPage.site().lang, targetPage.sectionFreeTitle()))) > 0:
+                        wikipedia.output(
+                            u'Warning: Redirect target %s forms a redirect loop.'
+                              % targetPage.aslink())
+                        break  #TODO: deal with loop
+                    else:
+                        newRedir = targetPage
+                        continue #
+                oldText = redir.get(get_redirect=True)
+                text = mysite.redirectRegex().sub(
+                        '#%s %s' %
+                            (mysite.redirect( True ),
+                              targetPage.aslink()),
+                              oldText)
+                if text == oldText:
+                    break
+                wikipedia.showDiff(oldText, text)
+                if self.prompt(u'Do you want to accept the changes?'):
+                    try:
+                        redir.put(text)
+                    except wikipedia.LockedPage:
+                        wikipedia.output(u'%s is locked.' % redir.title())
+                    except wikipedia.SpamfilterError, error:
+                        wikipedia.output(
 u"Saving page [[%s]] prevented by spam filter: %s"
-                                   % (redir.title(), error.url))
-                        except wikipedia.PageNotSaved, error:
-                            wikipedia.output(u"Saving page [[%s]] failed: %s"
-                                   % (redir.title(), error))
-                        except wikipedia.NoUsername:
-                            wikipedia.output(
+                                % (redir.title(), error.url))
+                    except wikipedia.PageNotSaved, error:
+                        wikipedia.output(u"Saving page [[%s]] failed: %s"
+                            % (redir.title(), error))
+                    except wikipedia.NoUsername:
+                        wikipedia.output(
 u"Page [[%s]] not saved; sysop privileges required."
-                                   % redir.title())
-                        except wikipedia.Error, error:
-                            wikipedia.output(
+                                % redir.title())
+                    except wikipedia.Error, error:
+                        wikipedia.output(
 u"Unexpected error occurred trying to save [[%s]]: %s"
-                                   % (redir.title(), error))
+                                % (redir.title(), error))
+                break
 
     def run(self):
         if self.action == 'double':
