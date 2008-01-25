@@ -2767,9 +2767,16 @@ class Throttle(object):
         else:
             now = time.time()
             for line in f.readlines():
-                line = line.split(' ')
-                pid = int(line[0])
-                ptime = int(line[1].split('.')[0])
+                try:
+                    line = line.split(' ')
+                    pid = int(line[0])
+                    ptime = int(line[1].split('.')[0])
+                except ValueError:
+                    # I go a lot of crontab errors because line is not a number.
+                    # Better to prevent that. If you find out the error, feel free
+                    # to fix it better.
+                    pid = 1
+                    ptime = time.time()
                 if now - ptime <= self.releasepid and pid != self.pid:
                     processes[pid] = ptime
         f = open(self.logfn(), 'w')
