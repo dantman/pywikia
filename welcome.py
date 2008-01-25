@@ -167,7 +167,7 @@ __version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 
 import wikipedia, config, string, locale
 import time, re, cPickle, os, urllib
-import codecs
+import codecs, sys
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -321,6 +321,15 @@ whitelist_pg = {
     'ar':u'Project:سجل الترحيب/قائمةبيضاء',
     'en':u'User:Filnik/whitelist',
     'it':u'Utente:Filbot/whitelist',
+    }
+
+# Text after the {{welcome}} template, if you want to add something
+# Default (en): nothing.
+final_new_text_additions = {
+    'ar':u'',
+    'en':u'',
+    'it':u'',
+    'zh':'<small>(via ~~~)</small>',
     }
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed
@@ -589,7 +598,7 @@ def mainSettings():
 def main(settingsBot):
     # Taking the messages inside the function namespace.
     global netext, summary, logbook, summary2, report_page, project_inserted
-    global comment, bad_pag, report_text, random_sign, whitelist_pg
+    global comment, bad_pag, report_text, random_sign, whitelist_pg, final_new_text_additions
 
     """
                       0     1      2           3           4           5         6         7          8         9           10            11
@@ -628,6 +637,7 @@ def main(settingsBot):
     rep_text = wikipedia.translate(wsite, report_text)
     signPageTitle = wikipedia.translate(wsite, random_sign)
     wtlpg = wikipedia.translate(wsite, whitelist_pg)
+    final_additions = wikipedia.translate(wsite, final_new_text_additions)
 
     usernam = wsite.namespace(2)
     contrib = string.capitalize(wsite.mediawiki_message('contribslink'))
@@ -746,10 +756,10 @@ def main(settingsBot):
                 if number_user + 1 > len(signList):
                     number_user = 0
                     yield number_user
-                if wsite.family.name == "wikipedia" and wsite.lang == "zh":
-                    welcom = welcomer % signList[number_user] + timeselected + '<small>(via ~~~)</small>'
-                else:
-                    welcom = welcomer % signList[number_user] + timeselected
+                welcom = welcomer % signList[number_user] + timeselected
+                # If there's something extra to add at the end of the template, add it!
+                if final_additions != '':
+                    welcom += final_additions
             else:
                 welcom = welcomer % sign
             username = str(found_result[0])
@@ -903,3 +913,4 @@ if __name__ == "__main__":
             cPickle.dump(number_user, f)
             f.close()
         wikipedia.stopme()
+        sys.exit()
