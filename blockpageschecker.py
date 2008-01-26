@@ -24,10 +24,6 @@ otherwise the script won't work!
 If you have problems, ask on botwiki ( http://botwiki.sno.cc )
 or on IRC (#pywikipediabot)
 
---- FixME ---
-If the page was protected to sysop and now is protected to autoconfirmed users,
-the bot won't change the template. Should this be "fixed"?
-
 --- Example of how to use the script ---
 
 python blockpageschecker.py -always
@@ -69,6 +65,35 @@ templateToRemove = {
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected(?:\|*)\}\}',r'\{\{(?:[Tt]emplate:|)Mini-protected(?:\|*)\}\}',
                 r'\{\{(?:[Tt]emplate:|)Protected logo(?:\|*)\}\}'],
             }
+
+# Added a new feature! Please update and add the settings in order
+# to improve the intelligence of this script ;-)
+# Regex to get the semi-protection template
+templateSemiProtection = {
+            'en': None,
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
+                  r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
+            }
+# Regex to get the total-protection template
+templateTotalProtection = {
+            'en': None, 
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}'],
+            }
+# Regex to get the semi-protection move template
+templateSemiMoveProtection = {
+            'en': None, 
+            'it': None,
+            }
+# Regex to get the total-protection move template 
+templateTotalMoveProtection = {
+            'en': None, 
+            'it': None,
+            }
+# Array: 0 => Semi-block, 1 => Total Block, 2 => Semi-Move, 3 => Total-Move
+templateNoRegex = {
+            'it':['{{Avvisobloccoparziale}}', '{{Avvisoblocco}}', None, None],
+            }
+
 # Category where the bot will check
 categoryToCheck = {
             'en':[u'Category:Protected'],
@@ -86,7 +111,7 @@ comment = {
             'en':u'Bot: Deleting out-dated template',
             'fr':u'Robot: Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
             'he':u'בוט: מסיר תבנית שעבר זמנה',
-            'it':u'Bot: Tolgo template di avviso blocco scaduto',
+            'it':u'Bot: Tolgo o sistemo template di avviso blocco',
             'ja':u'ロボットによる: 保護テンプレート除去',
             'pt':u'Bot: Retirando predefinição de proteção',
             'zh':u'機器人: 移除過期的保護模板',
@@ -97,6 +122,26 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 #######################################################
 #------------------ END PREFERENCES ------------------#
 ################## -- Edit above! -- ##################
+
+def understandBlock(text, TTP, TSP, TSMP, TTMP):
+    for catchRegex in TTP: # TTP = templateTotalProtection
+        resultCatch = re.findall(catchRegex, text)
+        if resultCatch != []:
+            return ('sysop-total', catchRegex)
+    for catchRegex in TSP:
+        resultCatch = re.findall(catchRegex, text)
+        if resultCatch != []:
+            return ('autoconfirmed-total', catchRegex)
+    if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
+        for catchRegex in TSMP:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch != []:
+                return ('sysop-move', catchRegex)
+        for catchRegex in TTMP:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch != []:
+                return ('autoconfirmed-move', catchRegex)
+    return ('editable', r'\A\n')
 
 def main():
     # Loading the comments
@@ -128,6 +173,12 @@ def main():
     site = wikipedia.getSite()
     # Take the right templates to use, the category and the comment
     TTR = wikipedia.translate(site, templateToRemove)
+    TSP = wikipedia.translate(site, templateSemiProtection)
+    TTP = wikipedia.translate(site, templateTotalProtection)
+    TSMP = wikipedia.translate(site, templateSemiMoveProtection)
+    TTMP = wikipedia.translate(site, templateTotalMoveProtection)
+    TNR = wikipedia.translate(site, templateNoRegex)
+    
     category = wikipedia.translate(site, categoryToCheck)
     commentUsed = wikipedia.translate(site, comment)
     if not generator:
@@ -155,87 +206,107 @@ def main():
         except wikipedia.IsRedirectPage:
             wikipedia.output("%s is a redirect! Skipping..." % pagename)
             continue
-        if editRestriction == 'sysop':
-            wikipedia.output(u'The page is protected to the sysop, skipping...')
-            continue
+        # Understand, according to the template in the page, what should be the protection
+        # and compare it with what there really is.
+        TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
+        # Only to see if the text is the same or not...
+        oldtext = text
+
+        if editRestriction == 'sysop':         
+            if TemplateInThePage[0] == 'sysop-total' or TTP == None:
+                wikipedia.output(u'The page is protected to the sysop, skipping...')
+                continue
+            else:
+                wikipedia.output(u'The page is protected to the sysop, but the template seems not correct. Fixing...')
+                text = re.sub(TemplateInThePage[1], TNR[1], text)
         elif moveBlockCheck and moveRestriction == 'sysop':
-            wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
-            continue
-        elif editRestriction == 'autoconfirmed':
-            wikipedia.output(u'The page is editable only for the autoconfirmed users, skipping...')
-            continue
-        elif moveBlockCheck and moveRestriction == 'autoconfirmed':
-            wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
-            continue
+            if TemplateInThePage[0] == 'sysop-move' or TTMP == None:
+                wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
+                continue
+            else:
+                wikipedia.output(u'The page is protected from moving to the sysop, but the template seems not correct. Fixing...')
+                text = re.sub(TemplateInThePage[1], TNR[3], text)
+        elif editRestriction == 'autoconfirmed' or TSP == None:
+            if TemplateInThePage[0] == 'autoconfirmed-total':                    
+                wikipedia.output(u'The page is editable only for the autoconfirmed users, skipping...')
+                continue
+            else:
+                wikipedia.output(u'The page is editable only for the autoconfirmed users, but the template seems not correct. Fixing...')
+                text = re.sub(TemplateInThePage[1], TNR[0], text)
+        elif moveBlockCheck and moveRestriction == 'autoconfirmed' or TSMP == None:
+            if TemplateInThePage[0] == 'autoconfirmed-move':
+                wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
+                continue
+            else:
+                wikipedia.output(u'The page is movable only for the autoconfirmed users, but the template seems not correct. Fixing...')
+                text = re.sub(TemplateInThePage[1], TNR[2], text)
         else:
             wikipedia.output(u'The page is editable for all, deleting the template...')
-            # Only to see if the text is the same or not...
-            oldtext = text
             # Deleting the template because the page doesn't need it.
             for replaceToPerform in TTR:
                 text = re.sub('(?:<noinclude>|)%s(?:</noinclude>|)' % replaceToPerform, '', text)
-            if oldtext != text:
-                # Ok, asking if the change has to be performed and do it.
-                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-                wikipedia.showDiff(oldtext, text)
-                choice = ''
-                while 1:
-                    if not always:
-                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                    if choice.lower() in ['a', 'all']:
-                        always = True
-                    if choice.lower() in ['n', 'no']:
+        if oldtext != text:
+            # Ok, asking if the change has to be performed and do it.
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            wikipedia.showDiff(oldtext, text)
+            choice = ''
+            while 1:
+                if not always:
+                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                if choice.lower() in ['a', 'all']:
+                    always = True
+                if choice.lower() in ['n', 'no']:
+                    break
+                if choice.lower() in ['y', 'yes'] or always:
+                    try:
+                        page.put(text, commentUsed, force=True)
+                    except wikipedia.EditConflict:
+                        wikipedia.output(u'Edit conflict! skip!')
                         break
-                    if choice.lower() in ['y', 'yes'] or always:
-                        try:
-                            page.put(text, commentUsed)
-                        except wikipedia.EditConflict:
-                            wikipedia.output(u'Edit conflict! skip!')
-                            break
-                        except wikipedia.ServerError:
-                            # Sometimes there is this error that's quite annoying because
-                            # can block the whole process for nothing. 
-                            errorCount += 1
-                            if errorCount < 5:
-                                wikipedia.output(u'Server Error! Wait..')
-                                time.sleep(3)
-                                continue
-                            else:
-                                # Prevent Infinite Loops
-                                raise wikipedia.ServerError(u'Fifth Server Error!')
-                        except wikipedia.SpamfilterError, e:
-                            wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                            break
-                        except wikipedia.PageNotSaved, error:
-                            wikipedia.output(u'Error putting page: %s' % (error.args,))
-                            break
-                        except wikipedia.LockedPage:
-                            wikipedia.output(u'The page is still protected. Skipping...')
-                            break
-                        else:
-                            # Break only if the errors are one after the other
-                            errorCount = 0
-                            break
-            else:
-                wikipedia.output(u'No changes! Strange! Check the regex!')
-                if debug == True:
-                    quest = wikipedia.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
-                    pathWiki = site.family.nicepath(site.lang)
-                    url = 'http://%s%s%s' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
-                    while 1:
-                        if quest.lower() in ['b', 'B']:                    
-                            webbrowser.open(url)
-                            break
-                        elif quest.lower() in ['g', 'G']:
-                            import editarticle
-                            editor = editarticle.TextEditor()
-                            text = editor.edit(page.get())
-                            break
-                        elif quest.lower() in ['n', 'N']:
-                            break
-                        else:
-                            wikipedia.output(u'wrong entry, type "b", "g" or "n"')
+                    except wikipedia.ServerError:
+                        # Sometimes there is this error that's quite annoying because
+                        # can block the whole process for nothing. 
+                        errorCount += 1
+                        if errorCount < 5:
+                            wikipedia.output(u'Server Error! Wait..')
+                            time.sleep(3)
                             continue
+                        else:
+                            # Prevent Infinite Loops
+                            raise wikipedia.ServerError(u'Fifth Server Error!')
+                    except wikipedia.SpamfilterError, e:
+                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                        break
+                    except wikipedia.PageNotSaved, error:
+                        wikipedia.output(u'Error putting page: %s' % (error.args,))
+                        break
+                    except wikipedia.LockedPage:
+                        wikipedia.output(u'The page is still protected. Skipping...')
+                        break
+                    else:
+                        # Break only if the errors are one after the other
+                        errorCount = 0
+                        break
+        else:
+            wikipedia.output(u'No changes! Strange! Check the regex!')
+            if debug == True:
+                quest = wikipedia.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
+                pathWiki = site.family.nicepath(site.lang)
+                url = 'http://%s%s%s' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
+                while 1:
+                    if quest.lower() in ['b', 'B']:                    
+                        webbrowser.open(url)
+                        break
+                    elif quest.lower() in ['g', 'G']:
+                        import editarticle
+                        editor = editarticle.TextEditor()
+                        text = editor.edit(page.get())
+                        break
+                    elif quest.lower() in ['n', 'N']:
+                        break
+                    else:
+                        wikipedia.output(u'wrong entry, type "b", "g" or "n"')
+                        continue
                     
 if __name__ == "__main__":
     try:
