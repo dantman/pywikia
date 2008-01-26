@@ -2771,7 +2771,7 @@ class Throttle(object):
                     line = line.split(' ')
                     pid = int(line[0])
                     ptime = int(line[1].split('.')[0])
-                except ValueError:
+                except IndexError:
                     # I go a lot of crontab errors because line is not a number.
                     # Better to prevent that. If you find out the error, feel free
                     # to fix it better.
