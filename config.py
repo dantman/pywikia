@@ -365,7 +365,12 @@ copyright_economize_query = True
 # Use a persistent http connection. An http connection has to be established
 # only once per site object, making stuff a whole lot faster. Do NOT EVER
 # use this if you share Site objects across threads without proper locking.
+## DISABLED FUNCTION. Setting this variable will not have any effect.
 persistent_http = False
+
+# Default socket timeout. Set to None to disable timeouts.
+socket_timeout = 120  # set a pretty long timeout just in case...
+
 
 ############## FURTHER SETTINGS ##############
 

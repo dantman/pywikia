@@ -113,7 +113,6 @@ __version__ = '$Id$'
 
 import os, sys
 import httplib, socket, urllib
-socket.setdefaulttimeout(120)  # set a pretty long timeout just in case...
 import traceback
 import time, threading, Queue
 import math
@@ -5270,6 +5269,8 @@ For other possible configuration variables check config.py.
 """)
     sys.exit(1)
 
+# Set socket timeout
+socket.setdefaulttimeout(config.socket_timeout) 
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of
