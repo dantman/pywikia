@@ -32,6 +32,7 @@ fixes = {
             'pl':u'Robot konwertuje/naprawia HTML',
             'pt':u'Bot: Corrigindo HTML',
             'sr':u'Бот: Поправка HTML-а',
+            'sv': u'Bot: Konverterar/korrigerar HTML',
             'zh':u'機器人: 轉換HTML',
         },
         'replacements': [

@@ -39,6 +39,7 @@ msg_simple_delete = {
     'nl': u'Bot: verwijdert een lijst met pagina\'s.',
     'pl': u'Robot usuwa pliki z listy.',
     'pt': u'Bot: Apagando um lista de arquivos.',
+    'sv': u'Bot: Tar bort fillista.',
 }
 msg_delete_category = {
     'de': u'Bot: Lösche alle Seiten in Kategorie %s',
@@ -49,6 +50,7 @@ msg_delete_category = {
     'nl': u'Bot: verwijdert alle pagina\'s uit categorie %s',
     'pl': u'Robot usuwa wszystkie artykuły z kategorii %s',
     'pt': u'Bot: Apagando todas as páginas da categoria %s',
+    'sv': u'Bot: Tar bort alla sidor i kategori %s',
 }
 msg_delete_links = {
     'de': u'Bot: Lösche alle Seiten in %s verlinkten Seiten',
@@ -59,6 +61,7 @@ msg_delete_links = {
     'nl': u'Bot: verwijdert alle pagina\'s met een link op %s',
     'pl': u'Robot usuwa wszystkie artykuły zlinkowane z %s',
     'pt': u'Bot: Apagando todas as páginas ligadas a %s',
+    'sv': u'Bot: Tar bort alla sidor länkade från %s',
 }
 msg_delete_ref = {
     'de': u'Bot: Lösche alle auf %s linkenden Seiten',
@@ -76,6 +79,7 @@ msg_delete_images = {
     'nl': u'Bot: verwijdert alle media op pagina %s',
     'pl': u'Robot usuwa wszystkie obrazy w artykule %s',
     'pt': u'Bot: Apagando todas as imagens da página %s',
+    'sv': u'Bot: Tar bort alla bilder på sida %s',
 }
 
 class DeletionRobot:

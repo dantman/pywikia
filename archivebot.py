@@ -63,7 +63,14 @@ messages = {
             'ArchiveSummary': u'Archiwizacja %(count)d wątków z [[%(from)s]].',
             'OlderThanSummary': u'starsze niż',
             },
-        }
+        'sv': {
+            'ArchiveFull': u'(ARKIV FULLT)',
+            'InitialArchiveHeader': u'{{arkiv}}',
+            'PageSummary': u'Arkiverar %(count)d trådar (%(why)s) till %(archives)s.',
+            'ArchiveSummary': u'Arkiverar %(count)d trådar från [[%(from)s]].',
+            'OlderThanSummary': u'äldre än',
+        },
+}
 
 def message(key, lang=Site.language()):
     if not messages.has_key(lang):

@@ -35,6 +35,7 @@ msg={
     'pl':u'Bot: Zmiana kategorii',
     'pt':u'Bot: Categorizando',
     'sr':u'Bot: Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',
+    'sv':u'Bot: Ändrar kategori',
     'zh':u'機器人: 更改分類',
     }
 

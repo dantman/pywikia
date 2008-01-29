@@ -26,7 +26,8 @@ msg = {
     'ja': u'ロボットによる:リダイレクト回避',
     'pt': u'Bot: Arrumando redirects',
     'zh': u'機器人: 修復重定向',
-    }
+    'sv': u'Bot: Rättar omdirigeringar',
+}
 
 featured_articles = {
     'de': u'Wikipedia:Exzellente_Artikel',
@@ -40,7 +41,7 @@ featured_articles = {
     'sv': u'Wikipedia:Utvalda_artiklar',
     'pt': u'Wikipedia:Os_melhores_artigos',
     'zh': u'Wikipedia:特色条目',
-    }
+}
 
 def firstcap(string):
     return string[0].upper()+string[1:]

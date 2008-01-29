@@ -32,6 +32,7 @@ class BasicBot:
         'de': u'Bot: Ändere ...',
         'en': u'Robot: changing ...',
         'pt': u'Bot: alterando...',
+        'sv': u'Bot: Ändrar ...',
     }
 
     def __init__(self, generator, debug):

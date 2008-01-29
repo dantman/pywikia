@@ -52,6 +52,7 @@ msg_standalone = {
     'nl': u'Bot: Cosmetische veranderingen',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
+    'sv': u'Bot: Kosmetiska ändringar',
     'zh': u'機器人: 細部更改',
 }
 
@@ -69,6 +70,7 @@ msg_append = {
     'nl': u'; cosmetische veranderingen',
     'pl': u'; zmiany kosmetyczne',
     'pt': u'; mudanças triviais',
+    'sv': u'kosmetiska ändringar',
     'zh': u'; 細部更改',
 }
 
