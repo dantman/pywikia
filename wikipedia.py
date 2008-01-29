@@ -4074,7 +4074,7 @@ your connection is down. Retrying in %i minutes..."""
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
         global mwpage, tree
-        if key not in self._mediawiki_messages.keys() \
+        if key.lower() not in self._mediawiki_messages.keys() \
                 and not hasattr(self, "_phploaded"):
             get_throttle()
             mwpage = self.getUrl("%s?title=%s:%s&action=edit"
@@ -4090,9 +4090,9 @@ your connection is down. Retrying in %i minutes..."""
             else:
                 value = None
             if value:
-                self._mediawiki_messages[key] = value
+                self._mediawiki_messages[key.lower()] = value
             else:
-                self._mediawiki_messages[key] = None
+                self._mediawiki_messages[key.lower()] = None
                 # Fallback in case MediaWiki: page method doesn't work
                 if verbose:
                     output(
@@ -4106,7 +4106,7 @@ your connection is down. Retrying in %i minutes..."""
                     count = 0
                     for (phpkey, phpval) in Rphpvals.findall(phppage):
                         count += 1
-                        self._mediawiki_messages[str(phpkey)] = phpval
+                        self._mediawiki_messages[str(phpkey).lower()] = phpval
                     if count == 0:
                         # No messages could be added.
                         # We assume that the server is down.
@@ -4121,6 +4121,7 @@ your connection is down. Retrying in %i minutes..."""
                     break
                 self._phploaded = True
 
+        key = key.lower()
         if self._mediawiki_messages[key] is None:
             raise KeyError("MediaWiki key '%s' does not exist on %s"
                            % (key, self))
