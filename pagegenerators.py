@@ -129,11 +129,11 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True,
     """
     if site is None:
         site = wikipedia.getSite()
-    page = wikipedia.Page(site, start)
     if namespace is None:
+        page = wikipedia.Page(site, start)
         namespace = page.namespace()
-    title = page.titleWithoutNamespace()
-    for page in site.allpages(start = title, namespace = namespace, includeredirects = includeredirects):
+        start = page.titleWithoutNamespace()
+    for page in site.allpages(start = start, namespace = namespace, includeredirects = includeredirects):
         yield page
 
 def PrefixingPageGenerator(prefix, namespace = None, includeredirects = True, site = None):
