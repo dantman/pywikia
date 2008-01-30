@@ -5182,6 +5182,17 @@ def calledModuleName():
     except ValueError:
         return args[0]
 
+def decodeArg(arg):
+    if sys.platform=='win32' and config.console_encoding == 'cp850':
+        # Western Windows versions give parameters encoded as windows-1252
+        # even though the console encoding is cp850.
+        return unicode(arg, 'windows-1252')
+    else:
+        # Linux uses the same encoding for both.
+        # I don't know how non-Western Windows versions behave.
+        return unicode(arg, config.console_encoding)
+
+
 def handleArgs():
     """Handle standard command line arguments, return the rest as a list.
 
@@ -5189,7 +5200,6 @@ def handleArgs():
     global parameters such as -lang or -log. Returns a list of all arguments
     that are not global. This makes sure that global arguments are applied
     first, regardless of the order in which the arguments were given.
-    
     """
     global default_code, default_family, verbose
     # get commandline arguments
@@ -5201,14 +5211,7 @@ def handleArgs():
     moduleName = calledModuleName()
     nonGlobalArgs = []
     for arg in args[1:]:
-        if sys.platform=='win32' and config.console_encoding == 'cp850':
-            # Western Windows versions give parameters encoded as windows-1252
-            # even though the console encoding is cp850.
-            arg = unicode(arg, 'windows-1252')
-        else:
-            # Linux uses the same encoding for both.
-            # I don't know how non-Western Windows versions behave.
-            arg = unicode(arg, config.console_encoding)
+        arg = decodeArg(arg)
         if arg == '-help':
             showHelp(moduleName)
             sys.exit(0)
@@ -5464,6 +5467,26 @@ def showDiff(oldtext, newtext):
         result += diff[i]
     output(result)
 
+def writeToCommandLogFile():
+    """
+    Save the name of the called module along with all parameters to
+    logs/commands.log so that the user can look it up later to track errors
+    or report bugs.
+    """
+    # put quotation marks around all parameters
+    args = [decodeArg(sys.argv[0])] + map(lambda s: decodeArg('"%s"' % s), sys.argv[1:])
+    commandLogFilename = config.datafilepath('logs', 'commands.log')
+    try:
+        commandLogFile = codecs.open(commandLogFilename, 'a', 'utf-8')
+    except IOError:
+        commandLogFile = codecs.open(commandLogFilename, 'w', 'utf-8')
+    # add a timestamp in ISO 8601 formulation
+    isoDate = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    commandLogFile.write(isoDate + ' ')
+    s = u' '.join(args)
+    commandLogFile.write(s + '\n')
+    commandLogFile.close()
+
 def setLogfileStatus(enabled, logname = None):
     global logfile
     if enabled:
@@ -5480,6 +5503,8 @@ def setLogfileStatus(enabled, logname = None):
 
 if '*' in config.log or calledModuleName() in config.log:
     setLogfileStatus(True)
+
+writeToCommandLogFile()
 
 colorTagR = re.compile('\03{.*?}', re.UNICODE)
 
