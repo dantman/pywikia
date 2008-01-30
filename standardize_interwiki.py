@@ -25,10 +25,12 @@ comment = {
     'de':u'Bot: Interwikilinks standardisieren',
     'en':u'Robot: interwiki standardization',
     'he':u'בוט: מסדר את האינטרוויקי',
-    'no':u'bot: Språklenkestandardisering',
     'it':u'Bot: Standardizzo interwiki',
+    'ja':u'ロボットによる: 言語間リンクを標準化',
+    'no':u'bot: Språklenkestandardisering',
     'ksh':u'Bot: Engerwiki Lengks opprüühme',
     'nds':u'Bot: Links twüschen Wikis standardisseern',
+    'zh':u'機器人: 跨語連結標準化',
     }
 site = wikipedia.getSite()
 comm = wikipedia.translate(site, comment)

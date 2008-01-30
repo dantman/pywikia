@@ -65,12 +65,14 @@ docuReplacements = {
 Template = {
             'en':u'{{Orphan|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}',
             'it':u'{{O||mese={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}',
+            'zh':u'{{subst:Orphan/auto}}',
             }
 
 # Comment that the Bot will use to put the template
 commento = {
-           'en':u'Bot: Orphan page, add template',
-           'it':u'Bot: Voce orfana, aggiungo template {{O}}',
+            'en':u'Bot: Orphan page, add template',
+            'it':u'Bot: Voce orfana, aggiungo template {{O}}',
+            'zh':u'???: ?????????',
            }
 
 # When you add a disambig to the list of disambig pages
@@ -78,6 +80,7 @@ commento = {
 commenttodisambig = {
            'en':u'Bot: Adding a disambig page',
            'it':u'Bot: Aggiungo una disambigua',
+           'zh':u'???: ???????',
            }
 
 # Use regex to prevent to put the same template twice!
@@ -86,6 +89,7 @@ commenttodisambig = {
 exception = {
             'en': [r'\{\{(?:template:|)(orphan)[\|\}]', r'\{\{(?:template:|)(wi)[\|\}]'],
             'it': [r'\{\{(?:template:|)(o)[\|\}]'],
+            'zh': [r'\{\{(?:template:|)(orphan)[\|\}]'],
             }
 
 # ************* Modify only above! ************* #

@@ -236,41 +236,49 @@ templates = {
             'pos' : 'top'},
     },
     'zh': {
-        '{{db-reason}}' :{
-            'msg' : '機器人掛上模板: 本文應被刪除。',
+        u'{{db-reason}}' :{
+            'msg' : u'機器人掛上模板: 本文應被刪除。',
             'pos': 'top'},
         
-        '{{cleanup}}' :{
-            'msg' : 'Robot-assisted tagging: this article need cleanup',
+        u'{{subst:Cleanup/auto}}' :{
+            'msg' : u'機器人掛上模板: 本文需清理',
             'pos': 'top'},
 
-        '{{stub}}':{
-            'msg' : 'Robot-assisted tagging: this article is a stub',
+        u'{{uncategorized}}' :{
+            'msg' : u'機器人掛上模板:  本頁需要適當的頁面分類',
+            'pos' : u'top'},
+
+        u'{{notability}}':{
+            'msg' : u'機器人掛上模板:  本條目主題未突顯其知名度或顯著性',
+            'pos': 'top'},
+
+        u'{{Refimprove}}':{
+            'msg' : u'機器人掛上模板:  本條目需要補充參考或來源',
+            'pos': 'top'},
+
+        u'{{copyedit}}':{
+            'msg' : u'機器人掛上模板:  本條目或段落需要校對',
+            'pos' : 'top'},
+
+        u'{{subst:Unreferenced/auto}}':{
+            'msg' : u'機器人掛上模板:  本條目沒有列出任何參考或來源',
+            'pos': 'top'},
+
+        u'{{wikify}}' :{
+            'msg' : u'機器人掛上模板:  本條目需要維基化',
+            'pos' : 'top'},
+
+        u'{{subst:Notchinese/auto}}':{
+		    'msg' : u'機器人掛上模板: 翻譯中條目',
+            'pos' : 'top'},
+
+        u'{{subst:Substub/auto}}' :{
+            'msg' : u'機器人掛上模板:  小小作品',
+            'pos' : 'top'},
+
+        u'{{stub}}':{
+            'msg' : u'機器人掛上模板: 本文是小作品',
             'pos': 'bottom'},
-
-        '{{uncategorized}}' :{
-            'msg' : 'Robot-assisted tagging: This article needs to be [[Wikipedia:Categorization|categorized]]',
-            'pos' : 'top'},
-
-        '{{notability}}':{
-            'msg' : 'Robot-assisted tagging: the [[Wikipedia:Notability|notability]] of this article is unclear.',
-            'pos': 'top'},
-
-        '{{not verified}}':{
-            'msg' : 'Robot-assisted tagging: this article needs to be checked for factuality.',
-            'pos': 'top'},
-
-        '{{copyedit}}':{
-            'msg' : 'Robot-assisted tagging: the writing of this article needs to be [[Wikipedia:How to copy-edit|copyedited]] and improved.',
-            'pos' : 'top'},
-
-        '{{unreferenced}}':{
-            'msg' : 'Robot-assisted tagging: this article needs [[Wikipedia:Citing sources|references]] so it can be verified.',
-            'pos': 'bottom'},
-
-        '{{wikify}}' :{
-            'msg' : 'Robot-assisted tagging: this article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]',
-            'pos' : 'top'},
     },
 }
 
@@ -307,6 +315,7 @@ done = {
     'pl':('{{ek}}', u'{{dopracować}}', '{{linki}}', u'{{źródła}}', u'{{stub}}'),
     'pt':('{{wikificar}}', '{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}', u'{{apagar vaidade}}'),
     'sv':(u'{{radera', u'{{Radera', u'{{städa}}', u'{{stub}}', u'{{verifieras}}', u'{{språkvård}}', u'{{Källor', u'{{källor', u'{{wikify}}', u'{{Ickewiki}}', u'{{ickewiki}}', u'{{Wikify}}'),
+    'zh':(u'{{VfD}}',u'{{AfD}}',u'{{unreferenced}}',u'{{db-reason}}',u'{{cleanup}}',u'{{stub}}',u'{{uncategorized}}',u'{{notability}}',u'{{Refimprove}}',u'{{copyedit}}',u'{{unreferenced}}',u'{{wikify}}',u'{{Substub}}',),
     }
 
 # TODO: merge 'done' with 'templates' above
@@ -441,7 +450,7 @@ class CleaningBot:
 # Generate the question text
 i = 0
 questions = '\n'
-questionlist = {}
+questionlist = {} 
 for t in wikipedia.translate(wikipedia.getSite(), templates):
     i+=1
     questions += ( u'%s) %s\n' % (i,t) )

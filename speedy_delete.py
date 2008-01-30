@@ -125,6 +125,7 @@ class SpeedyRobot:
             u'No source':u'[[WP:CSD#I3|CSD I3]]: 沒有來源',
             u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權資訊',
             u'Unknown':u'[[WP:CSD#I3|CSD I3]]: 沒有版權資訊',
+            u'TempPage':u'[[WP:CSD]]: 臨時頁面',
             u'NowCommons':u'[[WP:CSD#I7|CSD I7]]: 被[[:commons:|維基共享資源]]取代的圖片',
             },
     }
@@ -187,6 +188,7 @@ class SpeedyRobot:
             'nls':u'[[WP:CSD#I3|CSD I3]]: 沒有版權資訊',
             'ui':u'[[WP:CSD#I6|CSD I6]]: 圖片未使用且不自由',
             'uc':u'[[WP:CSD#O4|CSD O4 O5]]: 空類別',
+            'tmp':u'[[WP:CSD]]: 臨時頁面',
             },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should
