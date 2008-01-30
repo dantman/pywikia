@@ -4,14 +4,27 @@
 This is a script written to add the template "orphan" to the pages that aren't linked by other pages.
 It can give some strange Errors sometime, I hope that all of them are fixed in this version.
  
--enable:            - Enable or disable the bot via a Wiki Page.
--disambig:          - Set a page where the bot save the name of the disambig pages found (default: skip the pages)
--limit:             - Set how many pages check.
--page:              - Work only on the page given.
--always             - Always say yes, won't ask
--newpages:          - Check the newpages (default: the first 50 pages)
+These command line parameters can be used to specify which pages to work on:
 
--standard arguments (like -start, -cat, -ref and so on)
+&params;
+
+-xml              Retrieve information from a local XML dump (pages-articles
+                  or pages-meta-current, see http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
+
+-page             Only edit a specific page.
+                  Argument can also be given as "-page:pagetitle". You can
+                  give this parameter multiple times to edit multiple pages.
+
+Furthermore, the following command line parameters are supported:
+
+-enable:            - Enable or disable the bot via a Wiki Page.
+
+-disambig:          - Set a page where the bot save the name of the disambig pages found (default: skip the pages)
+
+-limit:             - Set how many pages check.
+
+-always             - Always say yes, won't ask
 
 --- FixMes ---
 * Check that all the code hasn't bugs
@@ -35,6 +48,12 @@ __version__ = '$Id: lonelypages.py,v 1.0 2007/12/28 19.16.00 filnik Exp$'
  
 import wikipedia, pagegenerators
 import re
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 #####################################################
 # Here you have to put the config for your Project. #

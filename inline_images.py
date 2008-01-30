@@ -10,27 +10,13 @@ function.
 It is especially useful when you intend to disable the inline linking
 feature.
 
-This script understands various command-line arguments:
+These command line parameters can be used to specify which pages to work on:
 
-    -start:        used as -start:page_name, specifies that the robot should
-                   go alphabetically through all pages on the home wiki,
-                   starting at the named page.
+&params;
 
-    -file:         used as -file:file_name, read a list of pages to treat
-                   from the named textfile. Page titles should be enclosed
-                   in [[double-squared brackets]].
-
-    -ref:          used as -start:page_name, specifies that the robot should
-                   touch all pages referring to the named page.
-
-    -links:        used as -links:page_name, specifies that the robot should
-                   touch all pages referred to from the named page.
-
-    -cat:          used as -cat:category_name, specifies that the robot should
-                   touch all pages in the named category.
-
-    -redir         specifies that the robot should touch redirect pages;
-                   otherwise, they will be skipped.
+-xml              Retrieve information from a local XML dump (pages-articles
+                  or pages-meta-current, see http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
 
 All other parameters will be regarded as a page title; in this case, the bot
 will only touch a single page.
@@ -40,6 +26,12 @@ __version__='$Id$'
 
 import wikipedia, pagegenerators, catlib, weblinkchecker, upload
 import sys, re
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 msg = {
     'en': u'This image was inline linked from %s. No information on author, copyright status, or license is available.',

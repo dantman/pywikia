@@ -8,14 +8,28 @@ if you want to delete those useless warning left in these pages.
 
 Parameters:
 
+These command line parameters can be used to specify which pages to work on:
+
+&params;
+
+-xml              Retrieve information from a local XML dump (pages-articles
+                  or pages-meta-current, see http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
+
+-page             Only edit a specific page.
+                  Argument can also be given as "-page:pagetitle". You can
+                  give this parameter multiple times to edit multiple pages.
+
+
+Furthermore, the following command line parameters are supported:
+
 -always         Doesn't ask every time if the bot should make the change or not, do it always.
+
 -debug          When the bot can't delete the template from the page (wrong regex or something like that)
                 it will ask you if it should open the page on your browser.
                 (attention: pages included may give false positives..)
--page           Work only on one page
--move           The bot will check if the page is blocked also for the move option, not only for edit
 
-Note: This script uses also genfactory, you can use those generator as default.
+-move           The bot will check if the page is blocked also for the move option, not only for edit
 
 --- Warning! ---
 You have to edit this script in order to add your preferences
@@ -42,6 +56,12 @@ __version__ = '$Id: blockpageschecker.py,v 1.1 2007/12/7 19.23.00 filnik Exp$'
 
 import re, webbrowser
 import wikipedia, catlib, pagegenerators, config
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 #######################################################
 #--------------------- PREFERENCES -------------------#

@@ -3,26 +3,12 @@
 """
 This is a Bot written by Filnik to add a text in a given category.
 
---- GenFactory Generator is used ---
--start              Define from which page should the Bot start
--ref                Use the ref as generator
--cat                Use a category as generator
--filelinks          Use all the links to an image as generator
--unusedfiles
--unwatched
--withoutinterwiki
--interwiki
--file
--uncatfiles
--uncatcat
--uncat
--subcat
--transcludes        Use all the page that transclude a certain page as generator
--weblink            Use the pages with a certain web link as generator
--links              Use the links from a certain page as generator
--regex              Only work on pages whose titles match the given regex
+These command line parameters can be used to specify which pages to work on:
 
---- Other parameters ---
+&params;
+
+Furthermore, the following command line parameters are supported:
+
 -page               Use a page as generator
 -text               Define which text add
 -summary            Define the summary to use
@@ -59,6 +45,12 @@ __version__ = '$Id: AddText.py,v 1.0 2007/11/27 17:08:30 filnik Exp$'
 
 import re, pagegenerators, urllib2, urllib
 import wikipedia, catlib
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 msg = {
     'en': u'Bot: Adding %s',
