@@ -315,6 +315,10 @@ class main:
 	def __init__(self, site, logFulNumber = 25000):
 		self.site = site
 		self.logFulNumber = logFulNumber
+                self.settings = wikipedia.translate(site, page_with_settings)
+                self.rep_page = wikipedia.translate(site, report_page)
+                self.rep_text = wikipedia.translate(site, report_text)
+                self.com = wikipedia.translate(site, comm10)
 	def general(self, newtext, image, notification, head, botolist):
 		""" This class can be called for two reason. So I need two different __init__, one with common data
 			and another with the data that I required... maybe it can be added on the other function, but in this way
@@ -349,7 +353,7 @@ class main:
 		if imagedata == list():
 			wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
 			repme = "\n*[[:Image:%s]] seems to have problems ('''no data found in the image''')"
-			self.report_image(rep_page, self.image, com, repme)
+			self.report_image(self.image, self.rep_page, self.com, repme)
 			# We have a problem! Report and exit!         
 			return False
 		try:
@@ -358,7 +362,7 @@ class main:
 			wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
 			repme = "\n*[[:Image:%s]] seems to have problems ('''no data found in the image''')"
 			# We have a problem! Report and exit!
-			self.report_image(rep_page, self.image, com, repme)
+			self.report_image(self.image, self.rep_page, self.com, repme)
 			return False
 		luser = wikipedia.url2link(nick, self.site, self.site)
 		pagina_discussione = "%s:%s" % (self.site.namespace(3), luser)
@@ -420,7 +424,7 @@ class main:
 		elif second_text == False:
 			talk_page.put(testoattuale + head + notification, comment = commentox, minorEdit = False)
 			
-	def untaggedGenerator(self, untaggedProject, rep_page, com):
+	def untaggedGenerator(self, untaggedProject):
 		lang = untaggedProject.split('.', 1)[0]
 		project = '.%s' % untaggedProject.split('.', 1)[1]
 		if lang == 'commons':
@@ -457,6 +461,7 @@ class main:
 				#continue
 
 	def checkImage(self, image):
+                self.image = image
 		# Search regular expression to find links like this (and the class attribute is optional too)
 		# title="Immagine:Nvidia.jpg"
 		wikipedia.output(u'Checking if %s is on commons...' % image)
@@ -472,17 +477,22 @@ class main:
 				return False
 			elif 'stemma' in image.lower() and self.site.lang == 'it':
 				wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % image)
-				return False
+				return True # Problems? No, it's only not on commons but the image needs a check
 			else:            
 				repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]"
-				self.report_image(rep_page, image, com, repme)
+				self.report_image(self.image, self.rep_page, self.com, repme)
 				# Problems? No, return True
 				return True
 		else:
 			# Problems? No, return True
 			return True
-
-	def report_image(self, rep_page, image, com, rep):
+	def report_image(self, image, rep_page = None, com = None, rep_text = None):
+                if rep_page == None:
+                        rep_page = self.rep_page
+                if com == None:
+                        com = self.com
+                if rep_text == None:
+                        rep_text = self.rep_text
 		another_page = wikipedia.Page(self.site, rep_page)
 		
 		if another_page.exists():      
@@ -498,10 +508,10 @@ class main:
 		y = n.search(text_get, pos)
 		if y == None:
 			# Adding the log :)
-			if "\'\'\'Commons\'\'\'" in rep:
-				rep_text = rep % (image, image)
+			if "\'\'\'Commons\'\'\'" in rep_text:
+				rep_text = rep_text % (image, image)
 			else:
-				rep_text = rep % image
+				rep_text = rep_text % image
 			another_page.put(text_get + rep_text, comment = com, minorEdit = False)
 			wikipedia.output(u"...Reported...")
 			reported = True
@@ -511,11 +521,11 @@ class main:
 			reported = False
 		return reported
 	
-	def takesettings(self, settings):
+	def takesettings(self):
 		pos = 0
-		if settings == None: lista = None
+		if self.settings == None: lista = None
 		else:
-                        x = wikipedia.Page(self.site, settings)
+                        x = wikipedia.Page(self.site, self.settings)
                         lista = list()
                         try:
                                 testo = x.get()
@@ -724,10 +734,6 @@ def checkbot():
         nn = wikipedia.translate(site, nothing_notification)
         dels = wikipedia.translate(site, del_comm)
         smwl = wikipedia.translate(site, second_message_without_license)
-        settings = wikipedia.translate(site, page_with_settings)
-        rep_page = wikipedia.translate(site, report_page)
-        rep_text = wikipedia.translate(site, report_text)
-        com = wikipedia.translate(site, comm10)
         TextFind = wikipedia.translate(site, txt_find)
         hiddentemplate = wikipedia.translate(site, HiddenTemplate)
         # A template as {{en is not a license! Adding also them in the whitelist template...
@@ -768,7 +774,7 @@ def checkbot():
                 mainClass = main(site)
                 # Untagged is True? Let's take that generator
                 if untagged == True:
-                        generator =  mainClass.untaggedGenerator(projectUntagged, rep_page, com)
+                        generator =  mainClass.untaggedGenerator(projectUntagged)
                         normal = False # Ensure that normal is False
                 # Normal True? Take the default generator
                 if normal == True:
@@ -790,7 +796,7 @@ def checkbot():
                 # Ok, We (should) have a generator, so let's go on.
                 try:
                         # Take the additional settings for the Project
-                        tupla_written = mainClass.takesettings(settings)
+                        tupla_written = mainClass.takesettings()
                 except wikipedia.Error:
                         # Error? Settings = None
                         wikipedia.output(u'Problems with loading the settigs, run without them.')
@@ -798,19 +804,12 @@ def checkbot():
                         some_problem = False
                 # Ensure that if the list given is empty it will be converted to "None"
                 # (but it should be already done in the takesettings() function)
-                if tupla_written == []:
-                        tupla_written = None
-                if tupla_written != None:
-                        wikipedia.output(u'\t   >> Loaded the real-time page... <<')
-                        # Save the settings not to lose them (FixMe: Make that part better)
-                        # The name is to avoid mistakes when the same bot is run in multiple projects.
-                        filename = "settings-%s.data" % str(site).replace(':', '-')
-                        f = file(filename, 'w')
-                        cPickle.dump(tupla_written, f)
-                        f.close()
-                else:
-                        # No settings found, No problem, continue.
-                        wikipedia.output(u'\t   >> No additional settings found! <<')
+                if tupla_written == []: tupla_written = None
+                # Real-Time page loaded
+                if tupla_written != None: wikipedia.output(u'\t   >> Loaded the real-time page... <<')
+                # No settings found, No problem, continue.
+                else: wikipedia.output(u'\t   >> No additional settings found! <<')
+                # Not the main, but the most important loop.
                 for image in generator:
                         # If I don't inizialize the generator, wait part and skip part are useless
                         if wait:
@@ -830,11 +829,13 @@ def checkbot():
                         if skip == True:
                                 # If the images to skip are more the images to check, make them the same number
                                 if skip_number > limit: skip_number = limit
+                                # Print a starting message only if no images has been skipped
                                 if skip_list == []:
                                         if skip_number == 1:
                                                 wikipedia.output(u'Skipping the first image:\n')
                                         else:
                                                 wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
+                                # If we still have pages to skip:
                                 if len(skip_list) < skip_number:
                                         wikipedia.output(u'Skipping %s...' % imageName)
                                         skip_list.append(imageName)
@@ -843,25 +844,24 @@ def checkbot():
                                                 skip = False 
                                         continue
                                 else:
-                                        wikipedia.output('1\n')
+                                        wikipedia.output('') # Print a blank line.
                                         skip = False					                                               
-                        elif skip_list == []:
+                        elif skip_list == []: # Skip must be false if we are here but
+                                              # the user has set 0 as images to skip
                                 wikipedia.output(u'\t\t>> No images to skip...<<')
                                 skip_list.append('skip = Off') # Only to print it once
+                        # Check on commons if there's already an image with the same name
                         if commonsActive == True:
                                 response = mainClass.checkImage(imageName)
                                 if response == False:
                                         continue
-                        if tupla_written != None:
-                                f = file(filename)
-                                tuplaList = cPickle.load(f)
-                        parentesi = False
+                        parentesi = False # parentesi are these in italian: { ( ) } []
                         delete = False
                         tagged = False
-                        extension = imageName.split('.')[-1]
+                        extension = imageName.split('.')[-1] # get the extension from the image's name
                         # Page => ImagePage
                         p = wikipedia.ImagePage(site, image.title())
-                        # Skip deleted images
+                        # Get the text in the image (called g)
                         try:
                                 g = p.get()
                         except wikipedia.NoPage:
@@ -870,33 +870,40 @@ def checkbot():
                         except wikipedia.IsRedirectPage:
                                 wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
                                 continue
+                        # Is the image already tagged? If yes, no need to double-check, skip
                         for i in TextFind:
+                                # If there are {{ use regex, otherwise no (if there's not the {{ may not be a template
+                                # and the regex will be wrong)
                                 if '{{' in i:
                                         regexP = re.compile('\{\{(?:template|)%s ?(?:\||\n|\}) ?' % i.split('{{')[1].replace(' ', '[ _]'), re.I)
                                         result = regexP.findall(g)
                                         if result != []:
                                                 tagged = True
                                 elif i.lower() in g:
-                                        tagged = True				
+                                        tagged = True
+                        # Deleting the useless template from the description (before adding something
+                        # in the image the original text will be reloaded, don't worry).
                         for l in hiddentemplate:
                                 if tagged == False:
                                         res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n|\})' % l.lower(), g.lower())
                                         if res != []:
-                                                #print res
                                                 wikipedia.output(u'A white template found, skipping the template...')
-                                                # I don't delete the template, because if there is something to change the image page
-                                                # will be reloaded. I delete it only for the next check part.
-                                                if l != '' and l != ' ':
+                                                if l != '' and l != ' ': # Check that l is not nothing or a space
+                                                        # Deleting! (replace the template with nothing)
                                                         g = g.lower().replace('{{%s' % l, '')
-                        for a_word in something:
+                        for a_word in something: # something is the array with {{, MIT License and so on.
                                 if a_word in g:
+                                        # There's a template, probably a license (or I hope so)
                                         parentesi = True
+                        # Is the extension allowed? (is it an image or f.e. a .xls file?)
                         for parl in notallowed:
                                 if parl.lower() in extension.lower():
                                         delete = True
-                        some_problem = False
+                        some_problem = False # If it has "some_problem" it must check
+                                             # the additional settings.
+                        # if tupla_writte, use addictional settings
                         if tupla_written != None:                 
-                                for tupla in tuplaList:
+                                for tupla in tupla_written:
                                         name = tupla[1]
                                         find_tipe = tupla[2]
                                         find = tupla[3]
@@ -916,7 +923,6 @@ def checkbot():
                                         text = text % imageName
                                         mexCatched = tupla[8]
                                         wikipedia.setAction(summary)
-                                        del tupla[0:8]
                                         for k in find_list:
                                                 if find_tipe.lower() == 'findonly':
                                                         if k.lower() == g.lower():
@@ -938,9 +944,12 @@ def checkbot():
                                                                 summary_used = summary
                                                                 mex_used = mexCatched
                                                                 continue
+                        # If the image exists (maybe it has been deleting during the oder
+                        # checking parts or something, who knows? ;-))
                         if p.exists():
                                 # Here begins the check block.
                                 if tagged == True:
+                                        # Tagged? Yes, skip.
                                         printWithTimeZone(u'%s is already tagged...' % imageName)
                                         continue
                                 if some_problem == True:
@@ -951,7 +960,7 @@ def checkbot():
                                         if mex_used.lower() == 'default':
                                                 mex_used = unvertext
                                         if imagestatus_used == False:
-                                                reported = mainClass.report_image(rep_page, imageName, com, rep_text)
+                                                reported = mainClass.report_image(imageName)
                                         else:
                                                 reported = True
                                         if reported == True:
@@ -1014,4 +1023,3 @@ if __name__ == "__main__":
                         wikipedia.stopme()
 	finally:
 		wikipedia.stopme()
-		sys.exit() # Be sure that the Bot will stop
