@@ -698,7 +698,10 @@ not supported by PyWikipediaBot!"""
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 # Some of the newest versions don't have a "view source" tag for
                 # non-existant pages
-                elif text.find(self.site().mediawiki_message('badaccess')) != -1:
+                # Check also the div class because if the language is not english
+                # the bot can not seeing that the page is blocked.
+                elif text.find(self.site().mediawiki_message('badaccess')) != -1 or \ # continue below
+                text.find("<div class=\"permissions-errors\">") != -1:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 else:
                     if text.find( "<title>Wikimedia Error</title>") > -1:
