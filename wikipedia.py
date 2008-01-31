@@ -700,7 +700,7 @@ not supported by PyWikipediaBot!"""
                 # non-existant pages
                 # Check also the div class because if the language is not english
                 # the bot can not seeing that the page is blocked.
-                elif text.find(self.site().mediawiki_message('badaccess')) != -1 or \ # continue below
+                elif text.find(self.site().mediawiki_message('badaccess')) != -1 or \
                 text.find("<div class=\"permissions-errors\">") != -1:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 else:
