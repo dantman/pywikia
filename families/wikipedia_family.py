@@ -296,6 +296,7 @@ class Family(family.Family):
             'th': u'สถานีย่อย',
             'tr': u'Portal',
             'uk': u'Портал',
+            'vec': u'Portałe',
             'vi': u'Chủ đề',
             'yi': u'פארטאל',
             'zh': u'Portal',
@@ -356,6 +357,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องสถานีย่อย',
             'tr': u'Portal tartışma',
             'uk': u'Обговорення порталу',
+            'vec': u'Discussion portałe',
             'vi': u'Thảo luận Chủ đề',
             'yi': u'פארטאל רעדן',
             'zh': u'Portal talk',
@@ -377,6 +379,7 @@ class Family(family.Family):
             'pl': u'Wikiprojekt',
             'pt': u'Anexo',
             'ro': u'Proiect',
+            'vec': u'Projeto',
         }
 
         self.namespaces[103] = {
@@ -393,6 +396,7 @@ class Family(family.Family):
             'pl': u'Dyskusja Wikiprojektu',
             'pt': u'Anexo Discussão',
             'ro': u'Discuţie Proiect',
+            'vec': u'Discussion projeto',
         }
 
         self.namespaces[104] = {
