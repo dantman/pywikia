@@ -913,4 +913,3 @@ if __name__ == "__main__":
             cPickle.dump(number_user, f)
             f.close()
         wikipedia.stopme()
-        sys.exit()
