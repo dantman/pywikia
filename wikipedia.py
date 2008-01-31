@@ -2773,14 +2773,10 @@ class Throttle(object):
                     line = line.split(' ')
                     pid = int(line[0])
                     ptime = int(line[1].split('.')[0])
-                except (IndexError, ValueError):
-                    # I go a lot of crontab errors because line is not a number.
-                    # Better to prevent that. If you find out the error, feel free
-                    # to fix it better.
-                    pid = 1
-                    ptime = time.time()
-                if now - ptime <= self.releasepid and pid != self.pid:
-                    processes[pid] = ptime
+                    if now - ptime <= self.releasepid and pid != self.pid:
+                        processes[pid] = ptime                    
+                except (IndexError,ValueError):
+                    pass    # Sometimes the file gets corrupted - ignore that line
         f = open(self.logfn(), 'w')
         for p in processes.keys():
             f.write(str(p)+' '+str(processes[p])+'\n')
