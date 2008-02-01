@@ -718,18 +718,22 @@ def main(settingsBot):
         if filter_wp == True:
             # That is the default whitelist (it contains few name because it has been improved in the latest days..).
             whitelist_default = ['emiliano']
-            whitelist_page = wikipedia.Page(wsite, wtlpg)
-            if whitelist_page.exists():
-                wikipedia.output(u'\nLoading the whitelist from %s...' % wsite.hostname() )
-                text_white = whitelist_page.get()
-                list_white = load_word_function(wsite,text_white)
+            if wtlpg != None:
+                whitelist_page = wikipedia.Page(wsite, wtlpg)
+                if whitelist_page.exists():
+                    wikipedia.output(u'\nLoading the whitelist from %s...' % wsite.hostname() )
+                    text_white = whitelist_page.get()
+                    list_white = load_word_function(wsite, text_white)
+                else:
+                    wikipedia.output(u"\t\t>>>WARNING: The whitelist's page doesn't exist!<<<")
+                    list_white = list()
             else:
-                wikipedia.output(u"\t\t>>>WARNING: The whitelist's page doesn't exist!<<<")
+                wikipedia.output(u"\t\t>>>WARNING: The whitelist hasn't been setted!<<<")
                 list_white = list()
         else:
             list_white = list()
             whitelist_default = list()
-        # Joined the whitelist words.
+        # Join the whitelist words.
         whitelist = list_white + whitelist_default
         # List of words that the bot understands when it asks the operator for input.
         block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
@@ -787,6 +791,7 @@ def main(settingsBot):
                         break
                     else:
                         final_rep = rep_text
+                        break
             # Checking in the whitelist...
             for xy in whitelist:
                 if xy.lower() in username.lower():
@@ -794,10 +799,12 @@ def main(settingsBot):
                     for word in elenco:
                         if word.lower() in username.lower():
                             baduser = True
+                            break
                         else:
                             baduser = False
+                            break
             # He has a badusername, trying to report him...
-            if baduser == True:
+            if baduser:
                 while 1:
                     if ask == True:
                         wikipedia.output(u'%s may have an unwanted username, what shall i do?' % username )
