@@ -15,8 +15,11 @@ class Family(family.Family):
             'i18n': 'translatewiki.net',
         }
         
-        self.namespaces[102] = {
-            '_default': [u'Uga'],
+        self.namespaces[4] = {
+            '_default': [u'Betawiki'],
+        }
+        self.namespaces[5] = {
+            '_default': [u'Betawiki talk'],
         }
         self.namespaces[1102] = {
             '_default': [u'Translating'],
