@@ -4714,11 +4714,18 @@ your connection is down. Retrying in %i minutes..."""
         if self.lang == 'ar':
             red = u"تحويل"
         try:
-            redirKeywords = [red] + self.family.redirect[self.lang]
-            redirKeywordsR = r'(?:' + redDefault + '|'.join(redirKeywords) + ')'
+            if redDefault == red:
+                redirKeywords = [red] + self.family.redirect[self.lang]
+                redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
+            else:
+                redirKeywords = [red] + self.family.redirect[self.lang]
+                redirKeywordsR = r'(?:' + redDefault + '|'.join(redirKeywords) + ')'                
         except KeyError:
             # no localized keyword for redirects
-            redirKeywordsR = r'(?:%s|%s)' % (red, redDefault)
+            if redDefault == red:
+                redirKeywordsR = r'%s' % red
+            else:
+                redirKeywordsR = r'(?:%s|%s)' % (red, redDefault)
         # A redirect starts with hash (#), followed by a keyword, then
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
