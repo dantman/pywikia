@@ -4695,6 +4695,8 @@ your connection is down. Retrying in %i minutes..."""
         """
         if default:
             if self.lang == 'ar':
+                # It won't work with REDIRECT[[]] but it work with the local,
+                # if problems, try to find a work around. FixMe!
                 return self.family.redirect.get(self.lang, [u"تحويل"])[0]
             else:
                 return self.family.redirect.get(self.lang, [u"REDIRECT"])[0]
