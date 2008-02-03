@@ -4694,7 +4694,10 @@ your connection is down. Retrying in %i minutes..."""
         
         """
         if default:
-            return self.family.redirect.get(self.lang, [u"REDIRECT"])[0]
+            if self.lang == 'ar':
+                return self.family.redirect.get(self.lang, [u"تحويل"])[0]
+            else:
+                return self.family.redirect.get(self.lang, [u"REDIRECT"])[0]
         else:
             return self.family.redirect.get(self.lang, None)
 
@@ -4704,16 +4707,16 @@ your connection is down. Retrying in %i minutes..."""
         Group 1 in the regex match object will be the target title.
         
         """
+        redDefault = 'redirect'
+        red = 'redirect'
+        if self.lang == 'ar':
+            red = u"تحويل"
         try:
-            if self.site.lang == 'ar':
-                red = u'تحويل'
-            else:
-                red = u'redirect'
             redirKeywords = [red] + self.family.redirect[self.lang]
-            redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
+            redirKeywordsR = r'(?:' + redDefault + '|'.join(redirKeywords) + ')'
         except KeyError:
             # no localized keyword for redirects
-            redirKeywordsR = r'%s' % red
+            redirKeywordsR = r'(?:%s|%s)' % (red, redDefault)
         # A redirect starts with hash (#), followed by a keyword, then
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
