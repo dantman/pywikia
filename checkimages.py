@@ -404,11 +404,9 @@ class main:
 
 		if talk_page.exists():
 			testoattuale = talk_page.get() # Actual text
-			# Standard language
-			self.lang = self.site.lang
 			project = self.site.family.name
 			bot = config.usernames[project]
-			botnick = bot[lang]
+			botnick = bot[self.site.lang]
 			botolist = self.botolist + [botnick]
 			for i in botolist:
 				if latest_user == i:
