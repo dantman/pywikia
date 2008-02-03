@@ -289,8 +289,9 @@ def printWithTimeZone(message):
                 time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
         wikipedia.output(u"%s%s" % (message, time_zone))
                         
-# When the page is not a wiki-page (as for untagged generator) you need that function
 def pageText(url):
+        """ Function used to get HTML text from every reachable URL """
+        # When the page is not a wiki-page (as for untagged generator) you need that function
 	try:
                 request = urllib2.Request(url)
                 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
@@ -313,34 +314,40 @@ def pageText(url):
 # Here there is the main class.
 class main:
 	def __init__(self, site, logFulNumber = 25000):
+                """ Constructor, define some global variable """
 		self.site = site
 		self.logFulNumber = logFulNumber
                 self.settings = wikipedia.translate(site, page_with_settings)
                 self.rep_page = wikipedia.translate(site, report_page)
                 self.rep_text = wikipedia.translate(site, report_text)
                 self.com = wikipedia.translate(site, comm10)
+                # Commento = Summary in italian
+                self.commento = wikipedia.translate(self.site, comm)
 	def general(self, newtext, image, notification, head, botolist):
-		""" This class can be called for two reason. So I need two different __init__, one with common data
-			and another with the data that I required... maybe it can be added on the other function, but in this way
-			seems more clear what parameters I need
-		"""
+		""" This class can be called for two reason. So I need two different constructors, one with common data
+		and another with the data that I required... maybe it can be added on the other function, but in this way
+		seems more clear what parameters I need """
 		self.newtext = newtext
 		self.image = image
 		self.head = head
 		self.notification = notification
 		self.botolist = botolist
 	def put_mex(self, put = True):
-                commento = wikipedia.translate(self.site, comm)
-		# Adding no source. - I'm sure that the image exists, double check... but another can't be useless.
+                """ Function to add the template in the image and to find out
+                who's the user that has uploaded the image. """
+                # Defing the image's Page Object
 		p = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+		# Get the image's description
 		try:
                         testoa = p.get()
 		except wikipedia.NoPage:
 			wikipedia.output(u'%s has been deleted...' % p.title())
 			# We have a problem! Report and exit!     
 			return False
+		# You can use this function also to find only the user that
+		# has upload the image (FixME: Rewrite a bit this part)
 		if put:
-			p.put(testoa + self.newtext, comment = commento, minorEdit = True)
+			p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
 		image_n = self.site.image_namespace()
                 image_namespace = "%s:" % image_n # Example: "User_talk:"
                 # paginetta it's the image page object.
@@ -398,10 +405,10 @@ class main:
 		if talk_page.exists():
 			testoattuale = talk_page.get()
 			# Find out the list of Bots that add no source tags.
-			lang = config.mylang
+			lang = site.lang
 			# Standard language
 			self.lang = lang
-			project = config.family
+			project = site.family.name
 			bot = config.usernames[project]
 			botnick = bot[lang]
 			botolist = self.botolist + [botnick]
@@ -718,10 +725,6 @@ def checkbot():
                 
         # Define the site.
         site = wikipedia.getSite()
-
-        # In this way i find what language, project and what bot do you use.
-        lang = config.mylang
-        project = config.family
         
         # Block of text to translate the parameters set above.
         image_n = site.image_namespace()
@@ -755,7 +758,7 @@ def checkbot():
         notallowed = ("xcf", "xls", "sxw", "sxi", "sxc", "sxd")
 
         # A little block-statement to ensure that the bot will not start with en-parameters
-        if lang not in project_inserted:
+        if site.lang not in project_inserted:
                 wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
                 wikipedia.stopme()
         # Some formatting for delete immediately template
@@ -902,7 +905,8 @@ def checkbot():
                         some_problem = False # If it has "some_problem" it must check
                                              # the additional settings.
                         # if tupla_writte, use addictional settings
-                        if tupla_written != None:                 
+                        if tupla_written != None:
+                                # In every tupla there's a setting configuration
                                 for tupla in tupla_written:
                                         name = tupla[1]
                                         find_tipe = tupla[2]
@@ -987,23 +991,15 @@ def checkbot():
                                         continue
                                 elif g in nothing:
                                         wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
-                                        if lang == 'commons':
-                                                head = nh % imageName
-                                                notification = nn
-                                        else:
-                                                notification = nn % imageName
-                                                head = nh 
-                                        report(unvertext, imageName, notification, head, smwl)
+                                        notification = nn % imageName
+                                        head = nh 
+                                        #report(unvertext, imageName, notification, head, smwl)
                                         continue
                                 else:
                                         wikipedia.output(u"%s has only text and not the specific license..." % imageName)
-                                        if lang == 'commons':
-                                                head = nh % imageName
-                                                notification = nn
-                                        else:
-                                                notification = nn % imageName
-                                                head = nh
-                                        report(unvertext, imageName, notification, head, smwl)
+                                        notification = nn % imageName
+                                        head = nh
+                                        #report(unvertext, imageName, notification, head, smwl)
                                         continue
         # A little block to perform the repeat or to break.
                 if repeat == True:
