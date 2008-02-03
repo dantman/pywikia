@@ -403,12 +403,10 @@ class main:
 			wikipedia.output(u'The user page is blank')
 
 		if talk_page.exists():
-			testoattuale = talk_page.get()
-			# Find out the list of Bots that add no source tags.
-			lang = site.lang
+			testoattuale = talk_page.get() # Actual text
 			# Standard language
-			self.lang = lang
-			project = site.family.name
+			self.lang = self.site.lang
+			project = self.site.family.name
 			bot = config.usernames[project]
 			botnick = bot[lang]
 			botolist = self.botolist + [botnick]
