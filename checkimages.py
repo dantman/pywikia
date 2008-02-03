@@ -993,13 +993,13 @@ def checkbot():
                                         wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
                                         notification = nn % imageName
                                         head = nh 
-                                        #report(unvertext, imageName, notification, head, smwl)
+                                        report(unvertext, imageName, notification, head, smwl)
                                         continue
                                 else:
                                         wikipedia.output(u"%s has only text and not the specific license..." % imageName)
                                         notification = nn % imageName
                                         head = nh
-                                        #report(unvertext, imageName, notification, head, smwl)
+                                        report(unvertext, imageName, notification, head, smwl)
                                         continue
         # A little block to perform the repeat or to break.
                 if repeat == True:
