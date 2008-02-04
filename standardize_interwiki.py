@@ -32,9 +32,7 @@ comment = {
     'nds':u'Bot: Links twüschen Wikis standardisseern',
     'zh':u'機器人: 跨語連結標準化',
     }
-site = wikipedia.getSite()
-comm = wikipedia.translate(site, comment)
- 
+
 # Some parameters
 options = list()
 start = list()
@@ -51,6 +49,9 @@ for arg in wikipedia.handleArgs():
             start = unicode(wikipedia.input(u'From what page do you want to start?'))
         else:
             start = unicode(arg[7:])
+
+site = wikipedia.getSite()
+comm = wikipedia.translate(site, comment)
 
 # What follows is the main part of the code.
 try:
