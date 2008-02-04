@@ -2626,7 +2626,6 @@ class Family:
     # to enter the code in lowercase here.
     redirect = {
         'ar': [u'تحويل'],
-        'be': [u'перанакіраваньне'],
         'be-x-old': [u'перанакіраваньне'],
         'bg': [u'виж'],
         'bs': [u'preusmjeri'],
