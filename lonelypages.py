@@ -72,7 +72,6 @@ Template = {
 commento = {
             'en':u'Bot: Orphan page, add template',
             'it':u'Bot: Voce orfana, aggiungo template {{O}}',
-            'zh':u'???: ?????????',
            }
 
 # When you add a disambig to the list of disambig pages
@@ -80,7 +79,6 @@ commento = {
 commenttodisambig = {
            'en':u'Bot: Adding a disambig page',
            'it':u'Bot: Aggiungo una disambigua',
-           'zh':u'???: ???????',
            }
 
 # Use regex to prevent to put the same template twice!
