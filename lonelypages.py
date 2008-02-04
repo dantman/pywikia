@@ -72,6 +72,7 @@ Template = {
 commento = {
             'en':u'Bot: Orphan page, add template',
             'it':u'Bot: Voce orfana, aggiungo template {{O}}',
+            'zh':u'機器人: 本頁的鏈入頁面太少',
            }
 
 # When you add a disambig to the list of disambig pages
@@ -79,6 +80,7 @@ commento = {
 commenttodisambig = {
            'en':u'Bot: Adding a disambig page',
            'it':u'Bot: Aggiungo una disambigua',
+           'zh':u'機器人: 增加消歧義頁面',
            }
 
 # Use regex to prevent to put the same template twice!
