@@ -233,27 +233,27 @@ def main():
         oldtext = text
 
         if editRestriction == 'sysop':         
-            if TemplateInThePage[0] == 'sysop-total' or TTP == None:
+            if TemplateInThePage[0] == 'sysop-total' and TTP != None:
                 wikipedia.output(u'The page is protected to the sysop, skipping...')
                 continue
             else:
                 wikipedia.output(u'The page is protected to the sysop, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[1], text)
         elif moveBlockCheck and moveRestriction == 'sysop':
-            if TemplateInThePage[0] == 'sysop-move' or TTMP == None:
+            if TemplateInThePage[0] == 'sysop-move' and TTMP != None:
                 wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
                 continue
             else:
                 wikipedia.output(u'The page is protected from moving to the sysop, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[3], text)
-        elif editRestriction == 'autoconfirmed' or TSP == None:
+        elif editRestriction == 'autoconfirmed' and TSP != None:
             if TemplateInThePage[0] == 'autoconfirmed-total':                    
                 wikipedia.output(u'The page is editable only for the autoconfirmed users, skipping...')
                 continue
             else:
                 wikipedia.output(u'The page is editable only for the autoconfirmed users, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[0], text)
-        elif moveBlockCheck and moveRestriction == 'autoconfirmed' or TSMP == None:
+        elif moveBlockCheck == True and moveRestriction == 'autoconfirmed' and TSMP != None:
             if TemplateInThePage[0] == 'autoconfirmed-move':
                 wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
                 continue
