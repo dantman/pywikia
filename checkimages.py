@@ -176,20 +176,21 @@ del_comm = {
 nothing_head = {
 				'commons':"",# Nothing, the template has already the header inside.
 				'en'     :"\n== Image without license ==\n",
-				'ja':u'',
+				'ja'     :u'',
 				'it'     :"\n== Immagine senza licenza ==\n",
 				'hu'     :u"\n== Licenc nélküli kép ==\n",
-				'zh'    :u'',
+				'zh'     :u'',
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
 				'commons':"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
-				'ja'	:"\n{{subst:image source|Image:%s}}--~~~~",
+				'ja'	 :"\n{{subst:image source|Image:%s}}--~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
-				'zh'   :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
+				'zh'     :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
 				}
+
 # This is a list of what bots used this script in your project.
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
 bot_list = {
@@ -256,13 +257,20 @@ comm10 = {
 # Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
 # because they are already put in the regex).
 HiddenTemplate = {
-		'commons':['information'],
+		'commons':['information', 'trademarked', 'trademark'],
 		'en':['information'],
-		'it':['edp', 'informazioni[ _]file', 'information'],
+		'it':['edp', 'informazioni[ _]file', 'information', 'trademark'],
 		'ja':[u'Information'],
 		'hu':[u'információ','enwiki', 'azonnali'],
 		'zh':[u'information'],
 		}
+
+# Template added when the bot finds only an hidden template and nothing else.
+HiddenTemplateNotification = {
+                'commons': """\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~""",
+                'en': None,
+                'it': "{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
+                }
 
 # Add your project (in alphabetical order) if you want that the bot start
 project_inserted = ['commons', 'en','ja','hu', 'it','zh']
@@ -735,6 +743,8 @@ def checkbot():
         smwl = wikipedia.translate(site, second_message_without_license)
         TextFind = wikipedia.translate(site, txt_find)
         hiddentemplate = wikipedia.translate(site, HiddenTemplate)
+        # If there's an hidden template, change the used
+        HiddenTN = wikipedia.translate(site, HiddenTemplateNotification)
         # A template as {{en is not a license! Adding also them in the whitelist template...
         for langK in wikipedia.Family('wikipedia').knownlanguages:
                 hiddentemplate.append('%s' % langK)
@@ -882,6 +892,7 @@ def checkbot():
                                         tagged = True
                         # Deleting the useless template from the description (before adding something
                         # in the image the original text will be reloaded, don't worry).
+                        hiddenTemplateFound = False
                         for l in hiddentemplate:
                                 if tagged == False:
                                         res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n|\})' % l.lower(), g.lower())
@@ -890,6 +901,7 @@ def checkbot():
                                                 if l != '' and l != ' ': # Check that l is not nothing or a space
                                                         # Deleting! (replace the template with nothing)
                                                         g = g.lower().replace('{{%s' % l, '')
+                                                        hiddenTemplateFound = True
                         for a_word in something: # something is the array with {{, MIT License and so on.
                                 if a_word in g:
                                         # There's a template, probably a license (or I hope so)
@@ -987,13 +999,19 @@ def checkbot():
                                         continue
                                 elif g in nothing:
                                         wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
-                                        notification = nn % imageName
+                                        if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
+                                                notification = HiddenTN % imageName
+                                        else:
+                                                notification = nn % imageName
                                         head = nh 
                                         report(unvertext, imageName, notification, head, smwl)
                                         continue
                                 else:
                                         wikipedia.output(u"%s has only text and not the specific license..." % imageName)
-                                        notification = nn % imageName
+                                        if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
+                                                notification = HiddenTN % imageName
+                                        else:
+                                                notification = nn % imageName
                                         head = nh
                                         report(unvertext, imageName, notification, head, smwl)
                                         continue
