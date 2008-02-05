@@ -4030,11 +4030,12 @@ your connection is down. Retrying in %i minutes..."""
 
         # Ensure that all sent data is received
         if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
-                output(u'Warning! len(text) does not match content-length: %s != %s' % \
-                    (len(text), headers.get('content-length')))
+            output(u'Warning! len(text) does not match content-length: %s != %s' % \
+                (len(text), headers.get('content-length')))
+            if False: #self.persistent_http
                 self.conn.close()
                 self.conn.connect()
-                return self.getUrl(path, retry, sysop, data, compress)
+            return self.getUrl(path, retry, sysop, data, compress)
 
         if compress and contentEncoding == 'gzip':
             text = decompress_gzip(text)
