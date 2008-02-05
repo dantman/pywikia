@@ -5198,10 +5198,15 @@ def calledModuleName():
         return args[0]
 
 def decodeArg(arg):
-    if sys.platform=='win32' and config.console_encoding == 'cp850':
-        # Western Windows versions give parameters encoded as windows-1252
-        # even though the console encoding is cp850.
-        return unicode(arg, 'windows-1252')
+    if sys.platform=='win32':
+        if config.console_encoding == 'cp850':
+            # Western Windows versions give parameters encoded as windows-1252
+            # even though the console encoding is cp850.
+            return unicode(arg, 'windows-1252')
+        elif config.console_encoding == 'cp852':
+            # Central/Eastern European Windows versions give parameters encoded
+            # as windows-1250 even though the console encoding is cp852.
+            return unicode(arg, 'windows-1250')
     else:
         # Linux uses the same encoding for both.
         # I don't know how non-Western Windows versions behave.
