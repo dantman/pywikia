@@ -444,6 +444,7 @@ not supported by PyWikipediaBot!"""
         """
         title = self._title
         if savetitle: # Ensure there's no wiki syntax in the title
+            # FIXME: this makes no sense
             if title.find("''") > -1:
                 try:
                     title = urllib.quote(title).replace('%20',' ')
@@ -5208,6 +5209,8 @@ def decodeArg(arg):
             # Central/Eastern European Windows versions give parameters encoded
             # as windows-1250 even though the console encoding is cp852.
             return unicode(arg, 'windows-1250')
+        else:
+            return unicode(arg, config.console_encoding)
     else:
         # Linux uses the same encoding for both.
         # I don't know how non-Western Windows versions behave.
