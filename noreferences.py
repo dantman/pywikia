@@ -36,6 +36,8 @@ __version__='$Id: selflink.py 4187 2007-09-03 11:37:19Z wikipedian $'
 import wikipedia, pagegenerators, catlib
 import editarticle
 import re, sys
+global mysite
+mysite =wikipedia.getSite()
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
@@ -141,7 +143,9 @@ referencesSections = {
 # on your wiki, you don't have to enter anything here.
 referencesTemplates = {
     'wikipedia': {
-        'en': [u'Reflist'],
+        'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
+               u'Ref-list',u'Reference list',u'References-small',u'Reflink',
+               u'Footnotes',u'FootnotesSmall'],
         'ja': [u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
         'zh': [u'Reflist'],
@@ -177,7 +181,7 @@ class NoReferencesBot:
     def __init__(self, generator, always = False):
         self.generator = generator
         self.always = always
-
+        mysite = wikipedia.getSite()
         self.refR = re.compile('</ref>', re.IGNORECASE)
         self.referencesR = re.compile('<references */>', re.IGNORECASE)
         try:
@@ -202,10 +206,15 @@ class NoReferencesBot:
                 wikipedia.output(u'No changes necessary: references tag found.')
                 return False
             else:
-                for template in page.templates():
-                    if template in self.referencesTemplates:
-                        wikipedia.output(u'No changes necessary: references template found.')
-                        return False
+                templateR =''
+                part = '\{\{('
+                for template in self.referencesTemplates:
+                    templateR += part + template
+                    part = '|'
+                templateR+=')'
+                if re.search(templateR,oldTextCleaned,re.I):
+                    wikipedia.output(u'No changes necessary: references template found.')
+                    return False
                 wikipedia.output(u'Found ref without references.')
                 return True
         except wikipedia.NoPage:
@@ -236,7 +245,7 @@ class NoReferencesBot:
                         index = match.end()
                     else:
                         wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
-                        newText = oldText[:match.end()] + u'\n<references />\n' + oldText[match.end():]
+                        newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
                         self.save(page, newText)
                         return
                 else:
@@ -289,7 +298,7 @@ class NoReferencesBot:
 
     def createReferenceSection(self, page, index):
         oldText = page.get()
-        newSection = u'\n== %s ==\n\n<references />\n' % wikipedia.translate(page.site(), referencesSections)[0]
+        newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(page.site(), referencesSections)[0]
         newText = oldText[:index] + newSection + oldText[index:]
         self.save(page, newText)
 
@@ -299,7 +308,7 @@ class NoReferencesBot:
         """
         wikipedia.showDiff(page.get(), newText)
         if not self.always:
-            choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'Always yes'], ['y', 'N', 'a'], 'N')
+            choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'Always yes'], ['y', 'N', 'a'], 'Y')
             if choice == 'n':
                 return
             elif choice == 'a':
@@ -307,7 +316,9 @@ class NoReferencesBot:
 
         if self.always:
             try:
-                page.put(newText)
+                page.put_async(newText)
+                if mysite.messages:
+                    wikipedia.crash()
             except wikipedia.EditConflict:
                 wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
             except wikipedia.SpamfilterError, e:
@@ -317,15 +328,26 @@ class NoReferencesBot:
         else:
             # Save the page in the background. No need to catch exceptions.
             page.put_async(newText)
+        path = mysite.put_address('Non-existing_page')
+        text = mysite.getUrl(path)
+        if '<div class="usermessage">' in text:
+          output(u'NOTE: You have unread messages on %s' % self)
+          wikipedia.crash()
         return
 
     def run(self):
+        mysite =wikipedia.getSite()
         comment = wikipedia.translate(wikipedia.getSite(), msg)
         wikipedia.setAction(comment)
 
         for page in self.generator:
             if self.lacksReferences(page):
                 self.addReferences(page)
+                path = mysite.put_address('Non-existing_page')
+                text = mysite.getUrl(path)
+                if '<div class="usermessage">' in text:
+                  output(u'NOTE: You have unread messages on %s' % self)
+                  wikipedia.crash()
 
 def main():
     #page generator
@@ -372,7 +394,7 @@ def main():
     else:
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen,pageNumber=500)
         bot = NoReferencesBot(preloadingGen, always = always)
         bot.run()
 
