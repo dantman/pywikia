@@ -529,9 +529,11 @@ def NamespaceFilterPageGenerator(generator, namespaces, site = None):
             if index is None:
                 raise ValueError(u'Unknown namespace: %s' % ns)
             namespaces[i] = index
+    rTMP = re.compile(r'\d')
     for page in generator:
-        if page.namespace() in namespaces:
-            yield page
+        if rTMP.search(page.title()) == None:
+            if page.namespace() in namespaces:
+                yield page
 
 def RedirectFilterPageGenerator(generator):
     """

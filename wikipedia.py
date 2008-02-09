@@ -325,6 +325,8 @@ class Page(object):
             # Replace underscores by spaces, also multiple spaces and underscores with a single space
             # Strip spaces at both ends
             t = re.sub('[ _]+', ' ', t).strip()
+            # Remove left-to-right and right-to-left markers.
+            t = re.sub(u'\u200e|\u200f', '', t)
             # leading colon implies main namespace instead of the default
             if t.startswith(':'):
                 t = t[1:]
