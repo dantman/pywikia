@@ -46,6 +46,12 @@ These command-line arguments can be used to specify which pages to work on:
 
 Additionaly, these arguments can be used to restrict the bot to certain pages:
 
+    -namespace:n   Number or name of namespace to process. The parameter can be
+                   used multiple times. It works in combination with all other
+                   parameters, except for the -start parameter. If you e.g.
+                   want to iterate over all categories starting at M, use
+                   -start:Category:M.
+
     -number:       used as -number:#, specifies that the robot should process
                    that amount of pages and then stop. This is only useful in
                    combination with -start. The default is not to stop.
@@ -1443,6 +1449,9 @@ if __name__ == "__main__":
         singlePageTitle = []
         hints = []
         start = None
+        # Which namespaces should be processed?
+        # default to [] which means all namespaces will be processed
+        namespaces = []
         number = None
         warnfile = None
         # a normal PageGenerator (which doesn't give hints, only Pages)
@@ -1532,6 +1541,11 @@ if __name__ == "__main__":
             elif arg == '-continue':
                 optContinue = True
             # deprecated for consistency with other scripts
+            elif arg.startswith('-namespace:'):
+                try:
+                    namespaces.append(int(arg[11:]))
+                except ValueError:
+                    namespaces.append(arg[11:])
             elif arg.startswith('-number:'):
                 number = int(arg[8:])
             elif arg.startswith('-neverlink:'):
@@ -1596,9 +1610,11 @@ if __name__ == "__main__":
         bot = InterwikiBot()
 
         if hintlessPageGen:
+            hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
             # we'll use iter() to create make a next() function available.
-            bot.setPageGenerator(iter(hintlessPageGen),number = number)
+            bot.setPageGenerator(iter(hintlessPageGen), number = number)
         elif warnfile:
+            # TODO: filter namespaces if -namespace parameter was used
             readWarnfile(warnfile, bot)
         else:
             singlePageTitle = ' '.join(singlePageTitle)
