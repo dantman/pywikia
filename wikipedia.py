@@ -1486,11 +1486,10 @@ not supported by PyWikipediaBot!"""
         # representation of an instance can not change after the construction.
         return hash(str(self))
 
-    def linkedPages(self):
+    def linkedPages(self, withImageLinks = False):
         """Return a list of Pages that this Page links to.
 
-        Excludes interwiki and category links.
-        
+        Excludes interwiki and category links, and also image links by default.
         """
         result = []
         try:
@@ -1498,7 +1497,6 @@ not supported by PyWikipediaBot!"""
                                           self.site())
         except NoPage:
             raise
-            #return []
         except IsRedirectPage:
             raise
         except SectionError:
@@ -1521,6 +1519,8 @@ not supported by PyWikipediaBot!"""
                     output(u"Page %s contains invalid link to [[%s]]."
                            % (self.title(), title))
                     continue
+                if not withImageLinks and page.isImage():
+                    continue
                 if page.sectionFreeTitle():
                     result.append(page)
         return result
@@ -1536,7 +1536,7 @@ not supported by PyWikipediaBot!"""
         """
         results = []
         # Find normal images
-        for page in self.linkedPages():
+        for page in self.linkedPages(withImageLinks = True):
             if page.isImage():
                 # convert Page object to ImagePage object
                 imagePage = ImagePage(page.site(), page.title())
