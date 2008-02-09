@@ -1558,19 +1558,17 @@ not supported by PyWikipediaBot!"""
 
     def templates(self):
         """Return a list of Page objects for templates used on this Page.
-        
+
         Template parameters are ignored.
-        
         """
         return [template for (template, param) in self.templatesWithParams()]
 
     def templatesWithParams(self):
         """Return a list of templates used on this Page.
-        
+
         Return value is a list of tuples. There is one tuple for each use of
         a template in the page, with the template Page as the first entry
         and a list of parameters as the second entry.
-        
         """
         try:
             thistxt = self.get()
@@ -1580,16 +1578,23 @@ not supported by PyWikipediaBot!"""
         # remove commented-out stuff etc.
         thistxt  = removeDisabledParts(thistxt)
 
-        # marker for inside template
+        # marker for inside templates or parameters
         marker = '@@'
         while marker in thistxt:
             marker += '@'
 
+        # marker for links
+        marker2 = '##'
+        while marker2 in thistxt:
+            marker2 += '#'
+
         result = []
-        markers = {}
+        inside = {}
         count = 0
         Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
+        Rlink = re.compile(r'\[\[[^\]]+\]\]')
         Rmarker = re.compile('%s(\\d+)%s' % (marker, marker))
+        Rmarker2 = re.compile('%s(\\d+)%s' % (marker2, marker2))
         while Rtemplate.search(thistxt) is not None:
             for m in Rtemplate.finditer(thistxt):
                 # Make sure it is not detected again
@@ -1597,9 +1602,9 @@ not supported by PyWikipediaBot!"""
                 text = m.group()
                 thistxt = thistxt.replace(text, '%s%d%s' % (marker, count, marker))
                 for m2 in Rmarker.finditer(text):
-                    # Make sure markers don't contain other markers
-                    text = text.replace(m2.group(), markers[int(m2.group(1))])
-                markers[count] = text
+                    # Make sure stored templates don't contain markers
+                    text = text.replace(m2.group(), inside[int(m2.group(1))])
+                inside[count] = text
 
                 # Name
                 name = m.group('name')
@@ -1620,12 +1625,22 @@ not supported by PyWikipediaBot!"""
                 paramString = m.group('params')
                 params = []
                 if paramString:
+                    # Replace links to markers
+                    links = {}
+                    count2 = 0
+                    for m2 in Rlink.finditer(paramString):
+                        count2 += 1
+                        text = m2.group()
+                        paramString = paramString.replace(text, '%s%d%s' % (marker2, count, marker2))
+                        links[count2] = text
                     # Parse string
                     markedParams = paramString.split('|')
                     # Replace markers
                     for param in markedParams:
                         for m2 in Rmarker.finditer(param):
-                            param = param.replace(m2.group(), markers[int(m2.group(1))])
+                            param = param.replace(m2.group(), inside[int(m2.group(1))])
+                        for m2 in Rmarker2.finditer(param):
+                            param = param.replace(m2.group(), links[int(m2.group(1))])
                         params.append(param)
 
                 # Add it to the result
