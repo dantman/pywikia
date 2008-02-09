@@ -21,6 +21,12 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Betawiki talk'],
         }
+        self.namespaces[100] = {
+            '_default': [u'Portal'],
+        }
+        self.namespaces[101] = {
+            '_default': [u'Portal talk'],
+        }
         self.namespaces[1102] = {
             '_default': [u'Translating'],
         }
