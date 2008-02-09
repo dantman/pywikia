@@ -84,7 +84,7 @@ def main():
             for lang in languages:
                 try:
                     testSite(wikipedia.getSite(lang, family))
-                except KeyError:
+                except wikipedia.NoSuchSite:
                     wikipedia.output(u'No such language %s in family %s' % (lang, family))
 
 if __name__ == "__main__":
