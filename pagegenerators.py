@@ -455,7 +455,9 @@ class GoogleSearchPageGenerator:
             if url[:len(base)] == base:
                 title = url[len(base):]
                 page = wikipedia.Page(self.site, title)
-                yield page
+                # Google contains links in the format http://de.wikipedia.org/wiki/en:Foobar
+                if page.site() == self.site:
+                    yield page
 
 def MySQLPageGenerator(query, site = None):
     '''
