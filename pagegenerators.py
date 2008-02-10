@@ -398,6 +398,8 @@ class GoogleSearchPageGenerator:
                     wikipedia.output(u'Querying Google, offset %i' % offset)
                     data = google.doGoogleSearch(query, start = offset, filter = False)
                     break
+                except KeyboardInterrupt:
+                    raise
                 except:
                     # SOAPpy.Errors.HTTPError or SOAP.HTTPError (502 Bad Gateway)
                     # can happen here, depending on the module used. It's not easy
