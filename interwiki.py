@@ -1548,12 +1548,12 @@ if __name__ == "__main__":
                 optRestore = True
             elif arg == '-continue':
                 optContinue = True
-            # deprecated for consistency with other scripts
             elif arg.startswith('-namespace:'):
                 try:
                     namespaces.append(int(arg[11:]))
                 except ValueError:
                     namespaces.append(arg[11:])
+            # deprecated for consistency with other scripts
             elif arg.startswith('-number:'):
                 number = int(arg[8:])
             elif arg.startswith('-neverlink:'):
@@ -1618,7 +1618,8 @@ if __name__ == "__main__":
         bot = InterwikiBot()
 
         if hintlessPageGen:
-            hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
+            if len(namespaces) > 0:
+                hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
             # we'll use iter() to create make a next() function available.
             bot.setPageGenerator(iter(hintlessPageGen), number = number)
         elif warnfile:
