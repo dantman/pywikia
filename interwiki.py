@@ -336,7 +336,7 @@ msg = {
     'pms': (u'ël trigomiro ', u'a gionta', u'a gava', u'a modìfica'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
     'qu': (u'Rurana antacha ', u'Yapasqa', u'Qullusqa', u'Hukchasqa'),
-    'ro': (u'Robot interwiki: ', u'Adãugat', u'Înlãturat',u'Modificat'),
+    'ro': (u'Robot interwiki: ', u'Adăugat', u'Înlăturat',u'Modificat'),
     'ru': (u'робот ', u'добавил', u'удалил', u'изменил'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
