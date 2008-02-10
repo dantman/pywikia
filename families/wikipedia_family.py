@@ -282,6 +282,7 @@ class Family(family.Family):
             'nl': u'Portaal',
             'no': u'Portal',
             'oc': u'Portal',
+            'pam': u'Portal',
             'pl': u'Portal',
             'pt': u'Portal',
             'ro': u'Portal',
