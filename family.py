@@ -2634,7 +2634,7 @@ class Family:
         'et': [u'suuna'],
         'eu': [u'bidali'],
         'fa': [u'تغییرمسیر'],
-        'fi': [u'uudelleenohjaus', u'ohjaus', u'OHJAUS'],
+        'fi': [u'ohjaus', u'uudelleenohjaus'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
         'id': [u'alih'],
