@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # (C) Pywikipedia bot team, 2003-2007
 #
@@ -176,11 +177,8 @@ class UI:
             # can't be represented in the console encoding.
             codecedText = text.encode(config.console_encoding, 'replace').decode(config.console_encoding)
             transliteratedText = ''
-            # A transliteration replacement might be longer than the original
-            # character, e.g. ? is transliterated to ch.
-            # We need to reflect this growth in size by shifting the color list
-            # entries. This variable counts how much the size has grown.
-            sizeIncrease = 0
+            # Note: A transliteration replacement might be longer than the original
+            # character, e.g. ч is transliterated to ch.
             prev = "-"
             for i in xrange(len(codecedText)):
                 # work on characters that couldn't be encoded, but not on
@@ -196,7 +194,6 @@ class UI:
                     transliteratedText += '\03{lightyellow}%s\03{default}' % transliterated
                     transLength = len(transliterated)
                     # memorize if we replaced a single letter by multiple letters.
-                    sizeIncrease += transLength - 1 + len('\03{lightyellow}\03{default}')
                     if len(transliterated) > 0:
                         prev = transliterated[-1]
                 else:
