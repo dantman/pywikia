@@ -1055,10 +1055,18 @@ class Subject(object):
 
         # When running in autonomous mode without -force switch, make sure we don't remove any items, but allow addition of the new ones
         if globalvar.autonomous and not globalvar.force and len(removing) > 0:
-            for rmpl in removing:
-                if rmpl.site() != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
-                    new[rmpl.site()] = old[rmpl.site()]
-                    wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmpl.aslink(True))
+            for rmPage in removing:
+                if rmPage.site() != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
+                    ##########
+                    # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
+                    # where useless bot-created articles were mass-deleted. See for example:
+                    # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
+                    if rmPage.site() == wikipedia.Site('lmo', 'wikipedia'):
+                        wikipedia.output('Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % rmPage.aslink())
+                    else:
+                    ##########
+                        new[rmPage.site()] = old[rmPage.site()]
+                        wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
             # Re-Check what needs to get done
             mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
