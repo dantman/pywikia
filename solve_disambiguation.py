@@ -203,6 +203,7 @@ ignore_title = {
         ],
         'de': [
             u'Benutzer:Katharina/Begriffsklärungen',
+            u'Benutzer:Kirschblut/.+buchstabenkürzel',
             u'Benutzer:Noisper/Dingliste/[A-Z]',
             u'Benutzer:SirJective/.+',
             u'Benutzer:SrbBot/Index/.+',
@@ -211,6 +212,7 @@ ignore_title = {
             u'Lehnwort',
             u'Liste griechischer Wortstämme in deutschen Fremdwörtern',
             u'Liste von Gräzismen',
+            u'Portal:Abkürzungen/.+',
             u'Wikipedia:Archiv:.+',
             u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
             u'Wikipedia:Begriffsklärung.*',
