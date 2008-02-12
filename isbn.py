@@ -1333,7 +1333,7 @@ def getIsbn(code):
         try:
             i = ISBN10(code)
         except InvalidIsbnException, e10:
-            raise InvalidIsbnException(u'ISBN-13: %s / ISBN-10: %s' % (e13.message, e10.message))
+            raise InvalidIsbnException(u'ISBN-13: %s / ISBN-10: %s' % (e13, e10))
     return i
 
 def _hyphenateIsbnNumber(match):
@@ -1389,7 +1389,7 @@ class IsbnBot:
                 try:
                     getIsbn(code)
                 except InvalidIsbnException, e:
-                    wikipedia.output(e.message)
+                    wikipedia.output(e)
 
             newText = oldText
             if self.to13:
