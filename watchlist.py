@@ -84,7 +84,9 @@ def refresh_all():
     for filename in filenames:
         match = watchlist_filenameR.match(filename)
         if match:
-            family, lang = match.group(1).split('-')
+            arr = match.group(1).split('-')
+            family = arr[0]
+            lang = '-'.join(arr[1:])
             site = wikipedia.getSite(code = lang, fam = family)
             refresh(site)
 
