@@ -1590,22 +1590,22 @@ not supported by PyWikipediaBot!"""
         thistxt  = removeDisabledParts(thistxt)
 
         # marker for inside templates or parameters
-        marker = '@@'
+        marker = u'@@'
         while marker in thistxt:
-            marker += '@'
+            marker += u'@'
 
         # marker for links
-        marker2 = '##'
+        marker2 = u'##'
         while marker2 in thistxt:
-            marker2 += '#'
+            marker2 += u'#'
 
         result = []
         inside = {}
         count = 0
-        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
-        Rlink = re.compile(r'\[\[[^\]]+\]\]')
-        Rmarker = re.compile('%s(\\d+)%s' % (marker, marker))
-        Rmarker2 = re.compile('%s(\\d+)%s' % (marker2, marker2))
+        Rtemplate = re.compile(ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
+        Rlink = re.compile(ur'\[\[[^\]]+\]\]')
+        Rmarker = re.compile(u'%s(\\d+)%s' % (marker, marker))
+        Rmarker2 = re.compile(u'%s(\\d+)%s' % (marker2, marker2))
         while Rtemplate.search(thistxt) is not None:
             for m in Rtemplate.finditer(thistxt):
                 # Make sure it is not detected again
