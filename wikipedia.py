@@ -216,7 +216,9 @@ class Page(object):
     """Page: A MediaWiki page
 
     Constructor has two required parameters:
-      1) The wikimedia Site on which the page resides
+      1) The wikimedia Site on which the page resides [note that, if the
+         title is in the form of an interwiki link, the Page object may
+         have a different Site than this]
       2) The title of the page as a unicode string
 
     Optional parameters:
@@ -313,20 +315,26 @@ class Page(object):
             t = html2unicode(title)
 
             # Convert URL-encoded characters to unicode
-            # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
+            # Sometimes users copy the link to a site from one to another.
+            # Try both the source site and the destination site to decode.
             t = url2unicode(t, site = insite, site2 = site)
 
-            # Normalize unicode string to a NFC (composed) format to allow proper string comparisons
-            # According to http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
-            # the mediawiki code normalizes everything to NFC, not NFKC (which might result in information loss).
+            # Normalize unicode string to a NFC (composed) format to allow
+            # proper string comparisons. According to
+            # http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
+            # the mediawiki code normalizes everything to NFC, not NFKC
+            # (which might result in information loss).
             t = unicodedata.normalize('NFC', t)
 
             # Clean up the name, it can come from anywhere.
             # Replace underscores by spaces, also multiple spaces and underscores with a single space
+            t = t.replace(u"_", u" ")
+            while u"  " in t:
+                t = t.replace(u"  ", u" ")
             # Strip spaces at both ends
-            t = re.sub('[ _]+', ' ', t).strip()
+            t = t.strip()
             # Remove left-to-right and right-to-left markers.
-            t = re.sub(u'\u200e|\u200f', '', t)
+            t = t.replace(u'\u200e', '').replace(u'\u200f', '')
             # leading colon implies main namespace instead of the default
             if t.startswith(':'):
                 t = t[1:]
@@ -334,6 +342,10 @@ class Page(object):
             else:
                 self._namespace = defaultNamespace
 
+            if not t:
+                raise Error(u"Invalid title '%s'" % title )
+                
+            self._namespace = defaultNamespace
             #
             # This code was adapted from Title.php : secureAndSplit()
             #
@@ -392,22 +404,23 @@ not supported by PyWikipediaBot!"""
 
             sectionStart = t.find(u'#')
             if sectionStart >= 0:
-                self._section = t[sectionStart+1:].strip()
-                self._section = sectionencode(self._section, self.site().encoding())
-                if self._section == u'': self._section = None
-                t = t[:sectionStart].strip()
+                self._section = t[sectionStart+1 : ].strip()
+                self._section = sectionencode(self._section,
+                                              self.site().encoding())
+                if not self._section:
+                    self._section = None
+                t = t[ : sectionStart].strip()
             else:
                 self._section = None
 
-            if len(t) > 0:
+            if t:
                 if not self.site().nocapitalize:
                     t = t[0].upper() + t[1:]
-    #        else:
-    #            output(u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
+
+            # reassemble the title from its parts
 
             if self._namespace != 0:
                 t = self.site().namespace(self._namespace) + u':' + t
-
             if self._section:
                 t += u'#' + self._section
 
@@ -1354,7 +1367,7 @@ not supported by PyWikipediaBot!"""
                         token = None, gettoken = True, sysop = sysop)
             if data.find("<title>Wikimedia Error</title>") > -1:
                 output(
-    u"Wikimedia has technical problems; will retry in %i minute%s."
+                u"Wikimedia has technical problems; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
                 retry_delay *= 2
@@ -1365,6 +1378,7 @@ not supported by PyWikipediaBot!"""
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
                 output(u"ERROR: Unexpected response from wiki server.")
+                output(u"       %s (%s) " % (response.status, response.reason))
                 output(data)
                 return response.status, response.reason, data
             return response.status, response.reason, data
@@ -3397,7 +3411,7 @@ def UnicodeToAsciiHtml(s):
     html = []
     for c in s:
         cord = ord(c)
-        if cord < 128:
+        if 31 < cord < 128:
             html.append(c)
         else:
             html.append('&#%d;'%cord)
@@ -3413,7 +3427,7 @@ def url2unicode(title, site, site2 = None):
     # create a list of all possible encodings for both hint sites
     encList = [site.encoding()] + list(site.encodings())
     if site2 and site2 <> site:
-        encList.append(site.encoding())
+        encList.append(site2.encoding())
         encList += list(site2.encodings())
     firstException = None
     # try to handle all encodings (will probably retry utf-8)
@@ -5177,14 +5191,15 @@ your connection is down. Retrying in %i minutes..."""
 _sites = {}
 _namespaceCache = {}
 
-def getSite(code = None, fam = None, user=None, persistent_http=None):
+def getSite(code=None, fam=None, user=None, persistent_http=None):
     if code == None:
         code = default_code
     if fam == None:
         fam = default_family
-    key = '%s:%s:%s:%s'%(fam,code,user,persistent_http)
+    key = '%s:%s:%s:%s' % (fam, code, user, persistent_http)
     if not _sites.has_key(key):
-        _sites[key] = Site(code=code, fam=fam, user=user, persistent_http=persistent_http)
+        _sites[key] = Site(code=code, fam=fam, user=user,
+                           persistent_http=persistent_http)
     return _sites[key]
 
 def setSite(site):
@@ -5223,7 +5238,6 @@ def decodeArg(arg):
         # Linux uses the same encoding for both.
         # I don't know how non-Western Windows versions behave.
         return unicode(arg, config.console_encoding)
-
 
 def handleArgs():
     """Handle standard command line arguments, return the rest as a list.
