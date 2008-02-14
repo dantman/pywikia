@@ -442,18 +442,12 @@ not supported by PyWikipediaBot!"""
         """Return the title of this Page, as a Unicode string.
 
         If underscore is True, replace all ' ' characters with '_'.
-        If savetitle is True, try to quote all non-ASCII characters.
+        If savetitle is True, encode any wiki syntax in the title.
         """
         title = self._title
-        if savetitle: # Ensure there's no wiki syntax in the title
-            # FIXME: this makes no sense
-            if title.find("''") > -1:
-                try:
-                    title = urllib.quote(title).replace('%20',' ')
-                except KeyError:
-                    # We can't encode everything; to be on the safe side,
-                    # we encode nothing
-                    pass
+        if savetitle:
+            # Ensure there's no wiki syntax in the title
+            title = title.replace(u"''", u'%27%27')
         if underscore:
             title = title.replace(' ', '_')
         return title
@@ -506,7 +500,7 @@ not supported by PyWikipediaBot!"""
         If textlink is True, always return a link in text form (that
         is, links to the Category: and Image: namespaces will be preceded by
         a : character). (Not needed if forceInterwiki is True.)
-        
+
         """
         if not noInterwiki and (forceInterwiki or self.site() != getSite()):
             if self.site().family != getSite().family \
