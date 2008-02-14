@@ -709,7 +709,7 @@ class Subject(object):
                         self.todo = []
                         self.done = [] # In some rare cases it might be we already did check some 'automatic' links
                         pass
-                except Wikipedia.NoSuchSite:
+                except wikipedia.NoSuchSite:
                     wikipedia.output(u"NOTE: site %s does not exist" % page.site())
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % page.aslink())
