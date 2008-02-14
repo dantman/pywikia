@@ -72,22 +72,22 @@ class Category(wikipedia.Page):
 
         This method is different from Page.aslink() as the sortkey may have
         to be included.
-        
+
         """
         if self.sortKey:
-            titleWithSortKey = '%s|%s' % (self.title(), self.sortKey)
+            titleWithSortKey = '%s|%s' % (self.title(savetitle=True), self.sortKey)
         else:
-            titleWithSortKey = self.title()
+            titleWithSortKey = self.title(savetitle=True)
         if not noInterwiki and (forceInterwiki
                                 or self.site() != wikipedia.getSite()):
             if self.site().family != wikipedia.getSite().family \
                     and self.site().family.name != self.site().lang:
                 return '[[%s:%s:%s]]' % (self.site().family.name,
-                                         self.site().lang, self.title())
+                                         self.site().lang, self.title(savetitle=True))
             else:
-                return '[[%s:%s]]' % (self.site().lang, self.title())
+                return '[[%s:%s]]' % (self.site().lang, self.title(savetitle=True))
         elif textlink:
-            return '[[:%s]]' % self.title()
+            return '[[:%s]]' % self.title(savetitle=True)
         else:
             return '[[%s]]' % titleWithSortKey
 

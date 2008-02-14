@@ -512,9 +512,9 @@ not supported by PyWikipediaBot!"""
                 return u'[[%s:%s]]' % (self.site().lang,
                                        self.title(savetitle=True))
         elif textlink and (self.isImage() or self.isCategory()):
-                return u'[[:%s]]' % self.title()
+                return u'[[:%s]]' % self.title(savetitle=True)
         else:
-            return u'[[%s]]' % self.title()
+            return u'[[%s]]' % self.title(savetitle=True)
 
     def autoFormat(self):
         """Return (dictName, value) if title is in date.autoFormat dictionary.
