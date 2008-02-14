@@ -1352,21 +1352,9 @@ not supported by PyWikipediaBot!"""
                 return self._putPage(text = text, comment = comment,
                         watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage,
                         token = None, gettoken = True, sysop = sysop)
-            if response.status != 302:
-                # normal response to a page save is 302
-                # anything else is abnormal (and is flagged with DEBUG)
-                output(
-            u"Abnormal response %i from server; will try again in %i minute%s."
-                       % (response.status, retry_delay,
-                          retry_delay != 1 and "s" or ""))
-                time.sleep(60 * retry_delay)
-                retry_delay *= 2
-                if retry_delay > 30:
-                    retry_delay = 30
-                continue
             if data.find("<title>Wikimedia Error</title>") > -1:
                 output(
-    u"DEBUG:Wikimedia has technical problems; will retry in %i minute%s."
+    u"Wikimedia has technical problems; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
                 retry_delay *= 2
@@ -1376,7 +1364,7 @@ not supported by PyWikipediaBot!"""
             if data != u"":
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
-                output(u"DEBUG:Unexpected response from wiki server.")
+                output(u"ERROR: Unexpected response from wiki server.")
                 output(data)
                 return response.status, response.reason, data
             return response.status, response.reason, data
