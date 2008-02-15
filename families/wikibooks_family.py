@@ -169,6 +169,7 @@ class Family(family.Family):
             'it': u'Progetto',
             'ms': u'Resipi',
             'ro': u'Raft',
+            'tr': u'Yemek',
         }
 
         self.namespaces[101] = {
@@ -178,6 +179,7 @@ class Family(family.Family):
             'it': u'Discussioni progetto',
             'ms': u'Perbualan Resipi',
             'ro': u'Discuţie Raft',
+            'tr': u'Yemek tartışma',
         }
 
         self.namespaces[102] = {
