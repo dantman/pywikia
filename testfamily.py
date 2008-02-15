@@ -40,7 +40,7 @@ def testSite(site):
     except KeyboardInterrupt:
         raise
     except wikipedia.NoSuchSite:
-        pass
+        wikipedia.output( u'No such language %s' % site.lang )
     except:
         wikipedia.output( u'Error processing language %s' % site.lang )
         wikipedia.output( u''.join(traceback.format_exception(*sys.exc_info())))
