@@ -10,25 +10,33 @@ class Family:
         self.name = None
             # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
-           'aa','af','ak','als','am','ang','ab','ar','an','arc','roa-rup','frp','as',
-           'ast','gn','av','ay','az','bm','bn','zh-min-nan','map-bms','ba','be','be-x-old',
-           'bh','bcl','bi','bar','bo','bs','br','bg','bxr','ca','cv','ceb','cs','ch',
-           'ny','sn',
-           'tum','cho','co','za','crh','cy','da','pdc','de','dsb','dv','nv','dz','mh',
-           'et','el','eml','en','es','eo','eu','ee','fa','fo','fr','fy','ff','fur','ga',
-           'gv','gd','gl','ki','glk','gu','got','zh-classical','hak','xal','ko','ha','haw','hy','hi','ho','hsb','hr',
-           'io','ig','ilo','bpy','id','ia','ie','iu','ik','os','xh','zu','is','it','he',
-           'jv','kl','pam','kn','kr','ka','ks','csb','kk','kw','rw','ky','rn',
-           'sw','kv','kg','ht','kj','ku','lad','lbe','lo','la','lv','lb','lij','lt',
-           'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','mzn','ms','cdo',
-           'mo','mn','mus','my','nah','na','fj','nl','nds-nl','cr','ne','new','ja','nap',
-           'ce','pih','no','nn','nrm','nov','oc','or','om','ng','hz','ug','uz','pa','pi',
-           'pag','pap','ps','km','pms','nds','pl','pt','ty','ksh','ro','rmy','rm',
-           'qu','ru','se','sm','sa','sg','sc','sco','st','tn','sq','scn',
-           'si','simple','sd','ss','sk','cu','sl','so','sr','sh','stq','su','fi','sv','tl',
-           'ta','kab','roa-tara','tt','te','tet','th','vi','ti','tg','tpi','to','chr','chy','ve',
-           'tr','tk','tw','udm','bug','uk','ur','vec','vo','fiu-vro','wa',
-           'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg','zh']
+            'aa', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc',
+            'roa-rup', 'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'bm', 'bn',
+            'zh-min-nan', 'map-bms', 'ba', 'be', 'be-x-old', 'bh', 'bcl', 'bi', 'bar', 'bo',
+            'bs', 'br', 'bg', 'bxr', 'ca', 'cv', 'ceb', 'cs', 'ch', 'ny',
+            'sn', 'tum', 'cho', 'co', 'za', 'cy', 'da', 'pdc', 'de', 'dv',
+            'nv', 'dsb', 'dz', 'mh', 'et', 'el', 'eml', 'en', 'es', 'eo',
+            'eu', 'ee', 'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv',
+            'gd', 'gl', 'ki', 'glk', 'gu', 'got', 'zh-classical', 'hak', 'xal', 'ko',
+            'ha', 'haw', 'hy', 'hi', 'ho', 'hsb', 'hr', 'io', 'ig', 'ilo',
+            'bpy', 'id', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is',
+            'it', 'he', 'jv', 'kl', 'pam', 'kn', 'kr', 'ka', 'ks', 'csb',
+            'kk', 'kw', 'rw', 'ky', 'rn', 'sw', 'kv', 'kg', 'ht', 'kj',
+            'ku', 'lad', 'lbe', 'lo', 'la', 'lv', 'lb', 'lt', 'lij', 'li',
+            'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mt', 'mi',
+            'mr', 'mzn', 'ms', 'cdo', 'mo', 'mn', 'mus', 'my', 'nah', 'na',
+            'fj', 'nl', 'nds-nl', 'cr', 'ne', 'new', 'ja', 'nap', 'ce', 'pih',
+            'no', 'nn', 'nrm', 'nov', 'oc', 'or', 'om', 'ng', 'hz', 'ug',
+            'uz', 'pa', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'nds', 'pl',
+            'pt', 'crh', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'se',
+            'sm', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
+            'simple', 'sd', 'ss', 'sk', 'cu', 'sl', 'so', 'sr', 'sh', 'stq',
+            'su', 'fi', 'sv', 'tl', 'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet',
+            'th', 'vi', 'ti', 'tg', 'tpi', 'to', 'chr', 'chy', 've', 'tr',
+            'tk', 'tw', 'udm', 'bug', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa',
+            'vls', 'war', 'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'cbk-zam',
+            'diq', 'zea', 'bat-smg', 'zh',
+        ]
 
         self.langs = {}
 
@@ -2809,10 +2817,10 @@ class Family:
 
     def watchlist_address(self, code):
         return '%s?title=%s:Watchlist/edit' % (self.path(code), self.special_namespace_url(code))
-    
+
     def contribs_address(self, code, target, limit=500, offset=''):
         return '%s?title=%s:Contributions&target=%s&limit=%s&offset=%s' % (self.path(code), self.special_namespace_url(code), target, limit, offset)
-    
+
     def move_address(self, code):
         return '%s?title=%s:Movepage&action=submit' % (self.path(code), self.special_namespace_url(code))
 
