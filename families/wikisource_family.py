@@ -131,6 +131,7 @@ class Family(family.Family):
             'hy': u'Հեղինակ',
             'nl': u'Hoofdportaal',
             'pt': u'Portal',
+            'sl': u'Stran',
         }
         self.namespaces[101] = {
             'bg': u'Автор беседа',
@@ -143,6 +144,7 @@ class Family(family.Family):
             'hy': u'Հեղինակի քննարկում',
             'nl': u'Overleg hoofdportaal',
             'pt': u'Portal Discussão',
+            'sl': u'Pogovor o strani',
         }
         self.namespaces[102] = {
             'ar': u'مؤلف',
