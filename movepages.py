@@ -73,14 +73,14 @@ class MovePagesBot:
         self.always = always
         self.skipredirects = skipredirects
 
-    def moveOne(self, page, newPageTitle, delete):
+    def moveOne(self, page, newPageTitle):
         try:
             msg = wikipedia.translate(wikipedia.getSite(), summary)
             wikipedia.output(u'Moving page %s to [[%s]]' % (page.aslink(), newPageTitle))
             if page.move(newPageTitle, msg, throttle=True):
-                if delete:
+                if self.delete:
                     deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
-                    page.delete(deletemsg, mark=True)
+                    page.delete(deletemsg, prompt=not self.always, mark=True)
         except wikipedia.NoPage:
             wikipedia.output(u'Page %s does not exist!' % page.title())
         except wikipedia.IsRedirectPage:
@@ -111,10 +111,10 @@ class MovePagesBot:
             if not self.always:
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
                 if choice2 in ['y', 'Yes', 'Y']:
-                    self.moveOne(page,newPageTitle,self.delete)
+                    self.moveOne(page, newPageTitle)
                 elif choice2 in ['a', 'all', 'A']:
                     self.always = True
-                    self.moveOne(page,newPageTitle,self.delete)
+                    self.moveOne(page, newPageTitle)
                 elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
                 elif choice2 in ['n', 'N', 'no']:
@@ -122,12 +122,12 @@ class MovePagesBot:
                 else:
                     self.treat(page)
             else:
-                self.moveOne(page,newPageTitle,self.delete)
+                self.moveOne(page, newPageTitle)
         else:
             choice = wikipedia.inputChoice(u'What do you want to do?', ['change page name', 'append to page name', 'use a regular expression', 'next page', 'quit'], ['c', 'a', 'r', 'n', 'q'])
             if choice == 'c':
                 newPageTitle = wikipedia.input(u'New page name:')
-                self.moveOne(page,newPageTitle,self.delete)
+                self.moveOne(page, newPageTitle)
             elif choice == 'a':
                 self.pagestart = wikipedia.input(u'Append this to the start:')
                 self.pageend = wikipedia.input(u'Append this to the end:')
@@ -140,10 +140,10 @@ class MovePagesBot:
                         newPageTitle = (u'%s:%s' % (namesp, newPageTitle))
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
                 if choice2 in ['y', 'Y', 'yes']:
-                    self.moveOne(page,newPageTitle,self.delete)
+                    self.moveOne(page, newPageTitle)
                 elif choice2 in ['a', 'A', 'all']:
                     self.appendAll = True
-                    self.moveOne(page,newPageTitle,self.delete)
+                    self.moveOne(page, newPageTitle)
                 elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
                 elif choice2 in ['n', 'no', 'N']:
@@ -165,10 +165,10 @@ class MovePagesBot:
                         newPageTitle = self.regex.sub(self.replacePattern, page.title())
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
                 if choice2 in ['y', 'Y', 'yes']:
-                    self.moveOne(page,newPageTitle,self.delete)
+                    self.moveOne(page, newPageTitle)
                 elif choice2 in ['a', 'A', 'all']:
                     self.regexAll = True
-                    self.moveOne(page,newPageTitle,self.delete)
+                    self.moveOne(page, newPageTitle)
                 elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
                 elif choice2 in ['n', 'no', 'N']:
@@ -227,7 +227,7 @@ def main():
     if oldName and newName:
         page = wikipedia.Page(wikipedia.getSite(), oldName)
         bot = MovePagesBot(None, prefix, delete, always, skipredirects)
-        bot.moveOne(page, newName, delete)
+        bot.moveOne(page, newName)
     elif gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects)
