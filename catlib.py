@@ -415,9 +415,10 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         if newtext == oldtext:
             wikipedia.output(
                 u'No changes in made in page %s.' % article.aslink())
-            return
+            return False
         try:
             article.put(newtext, comment)
+            return True
         except wikipedia.EditConflict:
             wikipedia.output(
                 u'Skipping %s because of edit conflict' % article.aslink())
@@ -434,7 +435,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         except wikipedia.PageNotSaved, error:
             wikipedia.output(u"Saving page %s failed: %s"
                              % (article.aslink(), error.message))
-        return
+        return False
 
     # This loop will replace all occurrences of the category to be changed,
     # and remove duplicates.
