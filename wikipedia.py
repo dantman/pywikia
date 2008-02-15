@@ -227,7 +227,7 @@ class Page(object):
       defaultNamespace - A namespace to use if the link does not contain one
 
     Methods available:
-    
+
     title                 : The name of the page, including namespace and
                             section if any
     urlname               : Title, in a form suitable for a URL
@@ -344,7 +344,7 @@ class Page(object):
 
             if not t:
                 raise Error(u"Invalid title '%s'" % title )
-                
+
             self._namespace = defaultNamespace
             #
             # This code was adapted from Title.php : secureAndSplit()
@@ -577,7 +577,7 @@ not supported by PyWikipediaBot!"""
         # TODO: is the description of nofollow_redirects accurate? I can't
         # tell where nofollow_redirects is doing anything different than
         # get_redirect!
-        
+
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
         # because all scripts are prepared for NoPage exceptions raised by
@@ -810,7 +810,7 @@ not supported by PyWikipediaBot!"""
         """Return text of an old revision of this page; same options as get()."""
         # TODO: should probably check for bad pagename, NoPage, and other
         # exceptions that would prevent retrieving text, as get() does
-        
+
         # TODO: should this default to change_edit_time = False? If we're not
         # getting the current version, why change the timestamps?
         return self._getEditPage(
@@ -874,7 +874,7 @@ not supported by PyWikipediaBot!"""
 
         Character count ignores language links and category links.
         Can raise the same exceptions as get().
-        
+
         """
         txt = self.get()
         txt = removeLanguageLinks(txt, site = self.site())
@@ -891,7 +891,7 @@ not supported by PyWikipediaBot!"""
 
     def botMayEdit(self):
         """Return True if this page allows bots to edit it.
-        
+
         This will be True if the page doesn't contain {{bots}} or
         {{nobots}}, or it contains them and the active bot is allowed to
         edit this page. (This method is only useful on those sites that
@@ -901,7 +901,7 @@ not supported by PyWikipediaBot!"""
         The framework enforces this restriction by default. It is possible
         to override this by setting ignore_bot_templates=True in
         user_config.py, or using page.put(force=True).
-        
+
         """
         if config.ignore_bot_templates: #Check the "master ignore switch"
             return True
@@ -954,7 +954,7 @@ not supported by PyWikipediaBot!"""
         """Return True if last editor was unregistered.
 
         Returns None unless page was retrieved with getAll().
-        
+
         """
         return self._ipedit
 
@@ -1023,7 +1023,7 @@ not supported by PyWikipediaBot!"""
         * onlyTemplateInclusion - if True, only returns pages where self is
                                   used as a template.
         * redirectsOnly         - if True, only returns redirects to self.
-        
+
         """
         # Temporary bug-fix while researching more robust solution:
         if config.special_page_limit > 999:
@@ -1126,10 +1126,10 @@ not supported by PyWikipediaBot!"""
                   operation; this object must take two arguments:
                   (1) a Page object, and (2) an exception instance, which
                   will be None if the page was saved successfully.
-   
+
         The callback is intended to be used by bots that need to keep track
         of which saves were successful.
-        
+
         """
         try:
             page_put_queue.mutex.acquire()
@@ -1155,14 +1155,6 @@ not supported by PyWikipediaBot!"""
           force: ignore botMayEdit() setting
 
         """
-        # Fetch a page to get an edit token. If we already have
-        # fetched a page, this will do nothing, because get() is cached.
-        # Disabled in r4028
-        #try:
-        #    self.site().sandboxpage.get(force = True, get_redirect = True)
-        #except NoPage:
-        #    pass
-
         # Determine if we are allowed to edit
         if not force:
             if not self.botMayEdit():
@@ -1222,7 +1214,7 @@ not supported by PyWikipediaBot!"""
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
-        
+
         """
         newTokenRetrieved = False
         if self.site().versionnumber() >= 4:
@@ -1407,11 +1399,11 @@ not supported by PyWikipediaBot!"""
 
     def toggleTalkPage(self):
         """Return the other member of the article-talk page pair for this Page.
-        
+
         If self is a talk page, returns the associated content page; otherwise,
         returns the associated talk page.
         Returns None if self is a special page.
-        
+
         """
         ns = self.namespace()
         if ns < 0: # Special page
@@ -1436,7 +1428,7 @@ not supported by PyWikipediaBot!"""
 
         The return value is a list of Page objects for each of the
         interwiki links in the page text.
-        
+
         """
         result = []
         ll = getLanguageLinks(self.get(), insite=self.site(),
@@ -1471,7 +1463,7 @@ not supported by PyWikipediaBot!"""
 
         The return value is a list of Category objects, one for each of the
         category links in the page text.
-        
+
         """
         try:
             category_links_to_return = getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
@@ -1662,7 +1654,7 @@ not supported by PyWikipediaBot!"""
 
         If this page is not a redirect page, will raise an IsNotRedirectPage
         exception. This method also can raise a NoPage exception.
-        
+
         """
         try:
             self.get()
@@ -1685,7 +1677,7 @@ not supported by PyWikipediaBot!"""
         edit summary. Starts with the most current revision, unless
         reverseOrder is True. Defaults to getting the first revCount edits,
         unless getAll is True.
-        
+
         """
         site = self.site()
 
@@ -2054,7 +2046,7 @@ not supported by PyWikipediaBot!"""
         Stores all revisions' timestamps, dates, editors and comments.
         Returns list of timestamps (which can be used to retrieve revisions
         later on).
-        
+
         """
         #TODO: Handle image file revisions too.
         output(u'Loading list of deleted revisions for [[%s]]...' % self.title())
@@ -2084,7 +2076,7 @@ not supported by PyWikipediaBot!"""
         Return value is a list of [date, editor, comment, text, restoration
         marker]. text will be None, unless retrieveText is True (or has been
         retrieved earlier).
-        
+
         """
         if self._deletedRevs == None:
             self.loadDeletedRevisions()
@@ -2400,7 +2392,7 @@ class ImagePage(Page):
 
         Return value is a list of tuples containing (timestamp, username,
         resolution, filesize, comment).
-        
+
         """
         result = []
         history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
@@ -2800,7 +2792,7 @@ class Throttle(object):
                     pid = int(line[0])
                     ptime = int(line[1].split('.')[0])
                     if now - ptime <= self.releasepid and pid != self.pid:
-                        processes[pid] = ptime                    
+                        processes[pid] = ptime
                 except (IndexError,ValueError):
                     pass    # Sometimes the file gets corrupted - ignore that line
         f = open(self.logfn(), 'w')
@@ -3213,7 +3205,7 @@ def removeCategoryLinks(text, site, marker = ''):
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
     """Replace the category oldcat with the category newcat and return
        the modified text.
-       
+
     """
     if site is None:
         site = getSite()
@@ -3267,7 +3259,7 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
         s2 = oldtext
     else:
         s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
-    
+
     if s:
         if site.language() in site.family.category_attop:
             newtext = s + site.family.category_text_separator + s2
@@ -3327,11 +3319,11 @@ def url2link(percentname, insite, site):
 def decodeEsperantoX(text):
     """
     Decode Esperanto text encoded using the x convention.
-    
+
     E.g., Cxefpagxo and CXefpagXo will both be converted to Ĉefpaĝo.
     Note that to encode non-Esperanto words like Bordeaux, one uses a
     double x, i.e. Bordeauxx or BordeauxX.
-    
+
     """
     chars = {
         u'c': u'ĉ',
@@ -3378,7 +3370,7 @@ def decodeEsperantoX(text):
 def encodeEsperantoX(text):
     """
     Convert standard wikitext to the Esperanto x-encoding.
-    
+
     Double X-es where necessary so that we can submit a page to an Esperanto
     wiki. Again, we have to keep stupid stuff like cXxXxxX in mind. Maybe
     someone wants to write about the Sony Cyber-shot DSC-Uxx camera series on
@@ -3425,7 +3417,7 @@ def url2unicode(title, site, site2 = None):
 
     If site2 is provided, try its encodings as well.  Uses the first encoding
     that doesn't cause an error.
-    
+
     """
     # create a list of all possible encodings for both hint sites
     encList = [site.encoding()] + list(site.encodings())
@@ -3449,7 +3441,7 @@ def url2unicode(title, site, site2 = None):
 def unicode2html(x, encoding):
     """
     Ensure unicode string is encodable, or else convert to ASCII for HTML.
-    
+
     Arguments are a unicode string and an encoding. Attempt to encode the
     string into the desired format; if that doesn't work, encode the unicode
     into html &#; entities. If it does work, return it unchanged.
@@ -3576,7 +3568,7 @@ class Site(object):
                     objects across threads without proper locking.
 
     Methods:
-    
+
     language: This Site's language code.
     family: This Site's Family object.
     sitename: A string representing this Site.
@@ -3588,7 +3580,7 @@ class Site(object):
     forceLogin: require the user to log in to the site
     messages: return True if there are new messages on the site
     cookies: return user's cookies as a string
-    
+
     getUrl: retrieve an URL from the site
     urlEncode: Encode a query to be sent using an http POST request.
     postForm: Post form data to an address at this site.
@@ -3600,7 +3592,7 @@ class Site(object):
     namespaces: Return list of canonical namespace names for this Site.
     getNamespaceIndex(name): Return the int index of namespace 'name', or None
         if invalid.
-    
+
     redirect: Return the localized redirect tag for the site.
     redirectRegex: Return compiled regular expression matching on redirect
                    pages.
@@ -3674,7 +3666,7 @@ class Site(object):
     Methods that return addresses to pages on this site (usually in
     Special: namespace); these methods only return URL paths, they do not
     interact with the wiki --
-    
+
         export_address: Special:Export.
         query_address: URL path + '?' for query.php
         api_address: URL path + '?' for api.php
@@ -3873,7 +3865,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 wpEditToken = value
                 continue
             l.append(key + '=' + value)
-            
+
         # wpEditToken is explicitly added as last value.
         # If a premature connection abort occurs while putting, the server will
         # not have received an edit token and thus refuse saving the page
@@ -4549,7 +4541,7 @@ your connection is down. Retrying in %i minutes..."""
 
         It is advised not to use this directly, but to use the
         AllpagesPageGenerator from pagegenerators.py instead.
-           
+
         """
         while True:
             # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
@@ -4686,7 +4678,7 @@ your connection is down. Retrying in %i minutes..."""
         Interwiki links have the form "foo:bar" or ":foo:bar" where foo is a
         known language code or family. Called recursively if the first part
         of the link refers to this site's own family and/or language.
-        
+
         """
         s = s.strip().lstrip(":")
         if not ':' in s:
@@ -4718,7 +4710,7 @@ your connection is down. Retrying in %i minutes..."""
 
         If default is True, falls back to 'REDIRECT' if the site has no
         special redirect tag.
-        
+
         """
         if default:
             if self.lang == 'ar':
@@ -4734,7 +4726,7 @@ your connection is down. Retrying in %i minutes..."""
         """Return a compiled regular expression matching on redirect pages.
 
         Group 1 in the regex match object will be the target title.
-        
+
         """
         redDefault = 'redirect'
         red = 'redirect'
@@ -4746,7 +4738,7 @@ your connection is down. Retrying in %i minutes..."""
                 redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
             else:
                 redirKeywords = [red] + self.family.redirect[self.lang]
-                redirKeywordsR = r'(?:' + redDefault + '|'.join(redirKeywords) + ')'                
+                redirKeywordsR = r'(?:' + redDefault + '|'.join(redirKeywords) + ')'
         except KeyError:
             # no localized keyword for redirects
             if redDefault == red:
@@ -5010,7 +5002,7 @@ your connection is down. Retrying in %i minutes..."""
 
         Return value is a tuple (int, int, str) of the major and minor
         version numbers and any other text contained in the version.
-        
+
         """
         global htmldata
         if not hasattr(self, "_mw_version"):
@@ -5096,7 +5088,7 @@ your connection is down. Retrying in %i minutes..."""
 
         'Value' should be a string or unicode.
         If no match, return 'value' unmodified.
-        
+
         """
         if not self.nocapitalize and value[0].islower():
             value = value[0].upper() + value[1:]
@@ -5215,7 +5207,7 @@ def calledModuleName():
 
     This is required because the -help option loads the module's docstring
     and because the module name will be used for the filename of the log.
-    
+
     """
     # get commandline arguments
     args = sys.argv
@@ -5436,12 +5428,12 @@ def translate(code, xdict):
     key 'code' if this key exists; otherwise tries to return a value for an
     alternative language that is most applicable to use on the Wikipedia in
     language 'code'.
-    
+
     The language itself is always checked first, then languages that
     have been defined to be alternatives, and finally English. If none of
     the options gives result, we just take the first language in the
     list.
-    
+
     """
     # If a site is given instead of a code, use its language
     if hasattr(code,'lang'):
@@ -5629,7 +5621,7 @@ def input(question, password = False):
     * password - if True, hides the user's input (for password entry).
 
     Returns a unicode string.
-    
+
     """
     input_lock.acquire()
     try:
@@ -5656,7 +5648,7 @@ def inputChoice(question, answers, hotkeys, default = None):
                  be returned when the user just presses Enter.
 
     Returns a one-letter string in lowercase.
-    
+
     """
     input_lock.acquire()
     try:

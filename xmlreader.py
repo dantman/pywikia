@@ -31,11 +31,11 @@ except ImportError:
         pass
 
 def parseRestrictions(restrictions):
-    '''
+    """
     Parses the characters within a restrictions tag and returns
     strings representing user groups allowed to edit and to move
     a page, where None means there are no restrictions.
-    '''
+    """
     if not restrictions:
         return None, None
     editRestriction = None
@@ -89,13 +89,13 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         # asked for
         self.id = u''
         self.revisionid = u''
-        
+
     def setCallback(self, callback):
         self.callback = callback
-        
+
     def setHeaderCallback(self, headercallback):
         self.headercallback = headercallback
-        
+
     def startElement(self, name, attrs):
         self.destination = None
         if name == 'page':
@@ -151,10 +151,6 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.inContributorTag = False
         elif name == 'restrictions':
             self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
-            #if self.editRestriction:
-                #wikipedia.output(u'DBG: Edit restriction: %s' % self.editRestriction)
-            #if self.moveRestriction:
-                #wikipedia.output(u'DBG: Move restriction: %s' % self.moveRestriction)
         elif name == 'revision':
             # All done for this.
             text = self.text
@@ -181,7 +177,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             elif name == 'siteinfo':
                 self.headercallback(self.header)
                 self.header = None
-            
+
     def characters(self, data):
         if self.destination == 'text':
             self.text += data
@@ -208,7 +204,6 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                 self.header.case += data
             elif self.destination == 'namespace':
                 self.namespace += data
-        
 
 
 class XmlParserThread(threading.Thread):
@@ -216,14 +211,14 @@ class XmlParserThread(threading.Thread):
     This XML parser will run as a single thread. This allows the XmlDump
     generator to yield pages before the parser has finished reading the
     entire dump.
-    
+
     There surely are more elegant ways to do this.
     """
     def __init__(self, filename, handler):
         threading.Thread.__init__(self)
         self.filename = filename
         self.handler = handler
-    
+
     def run(self):
         xml.sax.parse(self.filename, self.handler)
 
@@ -232,7 +227,7 @@ class XmlDump(object):
     """
     Represents an XML dump file. Reads the local file at initialization,
     parses it, and offers access to the resulting XmlEntries via a generator.
-    
+
     NOTE: This used to be done by a SAX parser, but the solution with regular
     expressions is about 10 to 20 times faster. The cElementTree version is
     again much, much faster than the regex solution.
@@ -241,7 +236,7 @@ class XmlDump(object):
         self.filename = filename
 
     def parse(self):
-        '''Return a generator that will yield XmlEntry objects'''
+        """Return a generator that will yield XmlEntry objects"""
         print 'Reading XML dump...'
         if not 'iterparse' in globals():
             wikipedia.output(u'NOTE: cElementTree not found. Using slower fallback solution. Consider installing the python-celementtree package.')
@@ -250,8 +245,8 @@ class XmlDump(object):
             return self.new_parse()
 
     def new_parse(self):
-        '''Generator using cElementTree iterparse function'''
-        
+        """Generator using cElementTree iterparse function"""
+
         context = iterparse(self.filename, events=("start", "end", "start-ns"))
         root = None
 
@@ -276,7 +271,7 @@ class XmlDump(object):
                 text = revision.findtext("{%s}text" % uri)
                 editRestriction, moveRestriction \
                         = parseRestrictions(restrictions)
-                
+
                 yield XmlEntry(title=title,
                                id=pageid,
                                text=text or u'',
@@ -289,16 +284,15 @@ class XmlDump(object):
                               )
                 root.clear()
 
-        
-    def regex_parse(self): 
-        '''
+    def regex_parse(self):
+        """
         Generator which reads some lines from the XML dump file, and
         parses them to create XmlEntry objects. Stops when the end of file is
         reached.
 
         NOTE: This is very slow. It's only a fallback solution for users who
         haven't installed cElementTree.
-        '''
+        """
         Rpage = re.compile(
             '<page>\s*'+
             '<title>(?P<title>.+?)</title>\s*'+

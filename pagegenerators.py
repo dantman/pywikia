@@ -462,9 +462,6 @@ class GoogleSearchPageGenerator:
                     yield page
 
 def MySQLPageGenerator(query, site = None):
-    '''
-
-    '''
     import MySQLdb as mysqldb
     if site is None:
         site = wikipedia.getSite()
