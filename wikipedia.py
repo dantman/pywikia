@@ -665,10 +665,6 @@ not supported by PyWikipediaBot!"""
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
 
-            # Because language lists are filled in a lazy way in the family
-            # files of Wikimedia projects (using Family.knownlanguages), you
-            # may encounter pages from non-existing wikis such as
-            # http://eo.wikisource.org/
             if text.find("<title>Wiki does not exist</title>") != -1:
                 raise NoSuchSite(u'Wiki %s does not exist yet' % self.site())
 
@@ -2467,10 +2463,6 @@ class _GetAll(object):
                     elif dt < 360:
                         dt += 60
                 else:
-                    # Because language lists are filled in a lazy way in the family
-                    # files of Wikimedia projects (using Family.knownlanguages), you
-                    # may encounter pages from non-existing wikis such as
-                    # http://eo.wikisource.org/
                     if data.find("<title>Wiki does not exist</title>") != -1:
                         raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
                     elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'

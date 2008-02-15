@@ -30,10 +30,6 @@ class Family:
            'tr','tk','tw','udm','bug','uk','ur','vec','vo','fiu-vro','wa',
            'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg','zh']
 
-        # knownlanguages is the same list but sorted by code
-        self.knownlanguages = list(self.alphabetic)
-        self.knownlanguages.sort()
-
         self.langs = {}
 
         # Translation used on all wikis for the different namespaces.

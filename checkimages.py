@@ -746,7 +746,7 @@ def checkbot():
         # If there's an hidden template, change the used
         HiddenTN = wikipedia.translate(site, HiddenTemplateNotification)
         # A template as {{en is not a license! Adding also them in the whitelist template...
-        for langK in wikipedia.Family('wikipedia').knownlanguages:
+        for langK in wikipedia.Family('wikipedia').langs.keys():
                 hiddentemplate.append('%s' % langK)
                 
         # If the images to skip are 0, set the skip variable to False (the same for the wait time)
