@@ -11,7 +11,22 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikibooks'
 
-        for lang in self.knownlanguages:
+        self.languages_by_size = [
+            'en', 'de', 'pt', 'fr', 'hu', 'es', 'it', 'ja', 'pl', 'nl',
+            'he', 'sq', 'fi', 'sv', 'hr', 'da', 'vi', 'mk', 'cs', 'ru',
+            'zh', 'fa', 'is', 'id', 'ta', 'tr', 'no', 'ar', 'eo', 'ko',
+            'ka', 'bg', 'lt', 'ca', 'th', 'gl', 'simple', 'sk', 'ia', 'ro',
+            'sr', 'ang', 'mr', 'uk', 'sl', 'als', 'et', 'oc', 'el', 'ur',
+            'la', 'ml', 'cv', 'ie', 'hi', 'fy', 'lv', 'hy', 'eu', 'ky',
+            'pa', 'bn', 'bs', 'tl', 'be', 'ms', 'tg', 'te', 'af', 'cy',
+            'ast', 'tt', 'az', 'ku', 'mg', 'si', 'co', 'sa', 'sw', 'tk',
+            'ne', 'qu', 'bm', 'ak', 'vo', 'uz', 'ks', 'bo', 'gu', 'su',
+            'na', 'se', 'ps', 'kn', 'kk', 'zh-min-nan', 'ay', 'lb', 'got', 'nah',
+            'as', 'aa', 'mn', 'ch', 'gn', 'ln', 'ug', 'km', 'yo', 'nds',
+            'xh', 'rm', 'ba', 'za', 'bi', 'my', 'ga', 'wa', 'zu', 'mi',
+        ]
+
+        for lang in self.languages_by_size:
             self.langs[lang] = '%s.wikibooks.org' % lang
 
         # Override defaults
