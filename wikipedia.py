@@ -1351,7 +1351,10 @@ not supported by PyWikipediaBot!"""
                 # locked via a cascade lock.
                 try:
                     # Page is restricted - try using the sysop account, unless we're using one already
-                    if not sysop:
+                    if sysop:
+                        # Unknown permissions error
+                        raise LockedPage()
+                    else:
                         self.site().forceLogin(sysop = True)
                         output(u'Page is locked, retrying using sysop account.')
                         return self._putPage(text, comment, watchArticle,
