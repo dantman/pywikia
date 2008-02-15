@@ -303,7 +303,7 @@ class Page(object):
 
             if site == None:
                 site = getSite()
-            elif type(site) in [type(''), type(u'')]:
+            elif type(site) is string or type(site) is unicode:
                 site = getSite(site)
 
             self._site = site
@@ -2593,7 +2593,7 @@ class _GetAll(object):
         if self.site.lang == 'eo':
             pagenames = [encodeEsperantoX(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
-        if type(pagenames) != type(u''):
+        if type(pagenames) is not unicode:
             output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
             print pagenames
         # convert Unicode string to the encoding used on that wiki
@@ -2891,7 +2891,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
     }
 
     # if we got a string, compile it as a regular expression
-    if type(old) == type('') or type(old) == type(u''):
+    if type(old) is string or type(old) is unicode:
         if caseInsensitive:
             old = re.compile(old, re.IGNORECASE | re.UNICODE)
         else:
