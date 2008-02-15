@@ -303,7 +303,7 @@ class Page(object):
 
             if site == None:
                 site = getSite()
-            elif type(site) is string or type(site) is unicode:
+            elif type(site) is str or type(site) is unicode:
                 site = getSite(site)
 
             self._site = site
@@ -2883,7 +2883,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
     }
 
     # if we got a string, compile it as a regular expression
-    if type(old) is string or type(old) is unicode:
+    if type(old) is str or type(old) is unicode:
         if caseInsensitive:
             old = re.compile(old, re.IGNORECASE | re.UNICODE)
         else:
