@@ -12,9 +12,28 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wiktionary'
 
-        for lang in self.knownlanguages:
-            if lang not in ['ee','ht','ny', 'se', 'tum']:
-                self.langs[lang] = '%s.wiktionary.org' % lang
+        self.languages_by_size = [
+            'fr', 'en', 'vi', 'tr', 'ru', 'io', 'zh', 'el', 'ar', 'pl',
+            'fi', 'it', 'de',  'sv', 'hu', 'pt', 'ku', 'ko', 'id', 'te',
+            'es', 'nl', 'ja', 'bg', 'lt', 'vo', 'gl', 'li', 'et', 'sr',
+            'fa', 'is', 'ro', 'af', 'scn', 'br', 'sl', 'ta', 'hy', 'zh-min-nan',
+            'no', 'he', 'la', 'sq', 'ur', 'da', 'simple', 'ca', 'ast', 'tlh',
+            'fy', 'cs', 'uk', 'hr', 'sw', 'oc', 'ang', 'kk', 'ml', 'hi',
+            'ia', 'csb', 'co', 'st', 'sk', 'eo', 'kl', 'nds', 'ky', 'ms',
+            'sd', 'ug', 'az', 'th', 'ga', 'tt', 'ti', 'gu', 'mk', 'tl',
+            'ts', 'fo', 'qu', 'rw', 'cy', 'bs', 'mr', 'su', 'ie', 'chr',
+            'an', 'am', 'yi', 'wo', 'kn', 'mn', 'nah', 'gd', 'be', 'pa',
+            'lv', 'zu', 'nn', 'km', 'ps', 'mi', 'so', 'dv', 'bn', 'tg',
+            'mg', 'ha', 'ka', 'na', 'sa', 'gv', 'tpi', 'ay', 'ss', 'eu',
+            'ne', 'jbo', 'uz', 'tn', 'gn', 'as', 'mt', 'ch', 'jv', 'pi',
+            'sh', 'lb', 'ks', 'tk', 'iu', 'sg', 'fj', 'als', 'xh', 'ik',
+            'kw', 'ln', 'sm', 'si', 'za', 'roa-rup', 'mh', 'ba', 'or', 'sn',
+            'ak', 'bh', 'lo', 'bm', 'yo', 'bi', 'to', 'aa', 'av', 'rn',
+            'dz', 'tw', 'om', 'ab', 'my', 'wa', 'sc', 'cr', 'bo', 'rm',
+        ]
+
+        for lang in self.languages_by_size:
+            self.langs[lang] = '%s.wiktionary.org' % lang
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikipedysta'
@@ -319,6 +338,7 @@ class Family(family.Family):
         self.obsolete = {
             'dk': 'da',
             'jp': 'ja',
+            'mo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Moldovan_Wiktionary
             'minnan':'zh-min-nan',
             'nb': 'no',
             'tokipona': None,
@@ -344,18 +364,6 @@ class Family(family.Family):
             'simple': self.alphabetic
         }
 
-        self.languages_by_size = [
-            'en', 'fr', 'vi', 'zh', 'io', 'el', 'pl', 'it', 'de', 'hu',
-            'fi', 'nl', 'bg', 'pt', 'ku', 'es', 'gl', 'sr', 'id', 'sv',
-            'et', 'ru', 'ko', 'tr', 'ja', 'sl', 'scn', 'fa', 'ar', 'no',
-            'la', 'ta', 'zh-min-nan', 'he', 'hy', 'af', 'ro', 'da', 'ang', 'hi',
-            'cs', 'sk', 'is', 'uk', 'co', 'ca', 'simple', 'st', 'fy', 'hr',
-            'nds', 'csb', 'ky', 'kk', 'ia', 'gu', 'sq', 'sd', 'eo', 'lt',
-            'cy', 'vo', 'ml', 'ie', 'th', 'yi', 'mk', 'bs', 'qu', 'am',
-            'mr', 'be', 'rw', 'tl', 'eu', 'ms', 'ast', 'an', 'ga', 'pa',
-            'nah', 'ha', 'oc'
-            ]
-
         self.interwiki_on_one_line = ['pl']
 
         self.interwiki_attop = ['pl']
@@ -365,4 +373,3 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
-

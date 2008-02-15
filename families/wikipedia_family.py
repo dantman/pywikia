@@ -12,7 +12,35 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikipedia'
 
-        for lang in self.knownlanguages:
+        self.languages_by_size = [
+            'en', 'de', 'fr', 'pl', 'ja', 'it', 'nl', 'pt', 'es', 'sv',
+            'ru', 'zh', 'no', 'fi', 'vo', 'ca', 'ro', 'tr', 'eo', 'uk',
+            'cs', 'sk', 'hu', 'da', 'id', 'he', 'lt', 'sr', 'sl', 'ar',
+            'ko', 'bg', 'et', 'new', 'hr', 'te', 'ceb', 'gl', 'th', 'el',
+            'fa', 'vi', 'nn', 'ms', 'simple', 'eu', 'bpy', 'bs', 'lb', 'ka',
+            'is', 'sq', 'br', 'la', 'az', 'bn', 'hi', 'mr', 'tl', 'io',
+            'sh', 'mk', 'cy', 'pms', 'su', 'lv', 'ta', 'nap', 'jv', 'nds',
+            'scn', 'oc', 'ast', 'ku', 'wa', 'ht', 'be', 'af', 'tg', 'be-x-old',
+            'an', 'roa-tara', 'ksh', 'vec', 'zh-yue', 'cv', 'fy', 'ur', 'sw', 'uz',
+            'yo', 'mi', 'qu', 'ga', 'bat-smg', 'ml', 'co', 'kn', 'gd', 'hsb',
+            'yi', 'pam', 'nah', 'lmo', 'tt', 'ia', 'sa', 'li', 'hy', 'als',
+            'roa-rup', 'map-bms', 'am', 'pag', 'nrm', 'zh-min-nan', 'fo', 'vls', 'se', 'nds-nl',
+            'war', 'ne', 'fur', 'bh', 'lij', 'nov', 'pi', 'dv', 'ilo', 'sco',
+            'rm', 'diq', 'frp', 'zh-classical', 'kk', 'mt', 'os', 'pdc', 'lad', 'csb',
+            'kw', 'wuu', 'fiu-vro', 'to', 'bar', 'ps', 'mn', 'haw', 'ang', 'ln',
+            'tk', 'ie', 'km', 'jbo', 'crh', 'tpi', 'wo', 'eml', 'ig', 'or',
+            'zea', 'mg', 'ty', 'kg', 'glk', 'cbk-zam', 'si', 'ky', 'ay', 'arc',
+            'sc', 'gu', 'kab', 'ks', 'so', 'gn', 'cu', 'udm', 'tet', 'mzn',
+            'gv', 'sd', 'pa', 'ba', 'rmy', 'na', 'iu', 'lo', 'bo', 'got',
+            'chr', 'ce', 'stq', 'om', 'ug', 'sm', 'bcl', 'ee', 'ti', 'as',
+            'hak', 'cdo', 'av', 'bm', 'zu', 'nv', 'dsb', 'pih', 'my', 'pap',
+            'cr', 've', 'rw', 'ss', 'xh', 'kl', 'tlh', 'ik', 'dz', 'ts',
+            'bi', 'kv', 'bug', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'tw',
+            'ab', 'fj', 'ny', 'lbe', 'za', 'ff', 'tum', 'sn', 'ha', 'sg',
+            'lg', 'ki', 'rn', 'chy', 'aa', 'mh', 'ng',
+        ]
+
+        for lang in self.languages_by_size:
             self.langs[lang] = '%s.wikipedia.org' % lang
 
         # Override defaults
@@ -708,6 +736,7 @@ class Family(family.Family):
             'hz': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Herero_Wikipedia
             'ii': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Yi_Wikipedia
             'kj': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Kwanyama_Wikipedia
+            'kr': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Kanuri_Wikipedia
             'minnan': 'zh-min-nan',
             'mo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Moldovan_Wikipedia
             'mus': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Muscogee_Wikipedia
@@ -718,34 +747,6 @@ class Family(family.Family):
             'zh-tw': 'zh',
             'zh-cn': 'zh'
         }
-
-        # Language codes of the largest wikis. They should be roughly sorted
-        # by size.
-        # Note: currently they have been sorted by number of pages, but with languages
-        # not in the Latin alphabet counted 1/3 lower
-
-        self.languages_by_size = [
-            'en','de','fr','pl','nl','it','pt','es','ja','sv',
-            'ru','fi','no','zh','tr','eo','sk','cs','ca','ro',
-            'hu','da','id','vo','lt','sl','lmo','uk','he','et',
-            'hr','sr','ceb','bg','ko','gl','nn','ar','te','vi',
-            'ms','bs','eu','simple','new','el','th','is','lb','sq',
-            'fa','az','br','io','la','bpy','su','nap','sh','cy',
-            'ka','bn','scn','nds','lv','jv','oc','ku','pms','wa',
-            'ast','hi','af','roa-tara','mr','mk','ta','ht','ksh','an',
-            'tl','sw','uz','vec','tg','co','ga','fy','be-x-old','be',
-            'gd','ur','cv','tt','yo','pam','ia','qu','nah','li',
-            'bat-smg','kn','als','map-bms','zh-yue','yi','hsb','mi','zh-min-nan','nrm',
-            'sa','fo','ml','se','nds-nl','pag','fur','hy','ilo','war',
-            'nov','vls','sco','am','frp','lij','bh','pi','diq','csb',
-            'mt','pdc','kw','fiu-vro','to','os','lad','dv','zh-classical','bar',
-            'ne','ang','ln','ps','tk','kk','jbo','ty','mn','rm',
-            'wo','or','roa-rup','kab','ig','tpi','zea','eml','ie','gv',
-            'arc','tet','mg','sc','kg','ky','so','na','cbk-zam','ks',
-            'gu','km','wuu','glk','cu','om','pa','udm','ee','rmy',
-            'sm','iu','hak','bo','lo','cdo','bm','chr','si','got',
-            'sd','cr','ba','ti','pap','as','nv','zu','av','ce'
-           ]
 
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
