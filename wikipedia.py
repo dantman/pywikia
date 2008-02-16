@@ -3828,7 +3828,7 @@ class Site(object):
         * Actions: edit, move, delete, protect, upload
         * User levels: autoconfirmed, sysop, bot, empty string (always true)
         """
-        if right == '':
+        if right == '' or right == None:
             return True
         else:
             self._load(sysop = sysop)
