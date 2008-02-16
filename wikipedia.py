@@ -2552,11 +2552,9 @@ class _GetAll(object):
                             redirectto = redirectto+"#"+section
                         page2._getexception = IsRedirectPage
                         page2._redirarg = redirectto
-                    # There's no possibility to read the wpStarttime argument from the XML.
-                    # It is this time that the MediaWiki software uses to check for edit
-                    # conflicts. We take the earliest time later than the last edit, which
-                    # seems to be the safest possible time.
-                    page2._startTime = str(int(timestamp)+1)
+                    # This is used for checking deletion conflict.
+                    # Use the data loading time.
+                    page2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                     if section:
                         m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
                         if not m:
@@ -4157,9 +4155,9 @@ your connection is down. Retrying in %i minutes..."""
                     output(u'NOTE: You have new messages in your sysop account on %s' % self)
                 else:
                     output(u'NOTE: You have new messages on %s' % self)
-                self._messages[index] = True
-            else:
-                self._messages[index] = False
+            self._messages[index] = True
+        else:
+            self._messages[index] = False
 
         # Don't perform other checks if the data was already loaded
         if self._userData[index]:
