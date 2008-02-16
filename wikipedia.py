@@ -3751,7 +3751,6 @@ class Site(object):
             else:
                 raise NoSuchSite("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
-        self.messages=False
         self._mediawiki_messages = {}
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
@@ -4300,8 +4299,8 @@ your connection is down. Retrying in %i minutes..."""
         Loads user data.
         This is only done if we didn't do get any page yet and the information
         is requested, otherwise we should already have this data.
-        Parameters:
 
+        Parameters:
         * sysop - Get sysop user data?
         """
         index = self._userIndex(sysop)
