@@ -2963,12 +2963,6 @@ class Family:
         found is an existing page, in case the normal regexp does not work."""
         return None
 
-    def sandboxpage(self, code):
-        """Give the title of a sandbox page for a given language. It should be
-        a page with no edit restrictions, that is, if we can edit any page, we
-        should be able to edit this page."""
-        return "%s:Sandbox"%self.namespace(code,4)
-
     def has_query_api(self,code):
         """Is query.php installed in the wiki?"""
         return False
