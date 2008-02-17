@@ -20,10 +20,20 @@ parameterHelp = """\
                   Argument can also be given as "-cat:categoryname" or
                   as "-cat:categoryname|fromtitle".
 
--subcat           Like -cat, but also includes pages in subcategories of the
+-catr             Like -cat, but also recursively includes pages in
+                  subcategories, sub-subcategories etc. of the
                   given category.
-                  Argument can also be given as "-subcat:categoryname" or
-                  as "-subcat:categoryname|fromtitle".
+                  Argument can also be given as "-catr:categoryname" or
+                  as "-catr:categoryname|fromtitle".
+
+-subcats          Work on all subcategories of a specific category.
+                  Argument can also be given as "-subcats:categoryname" or
+                  as "-subcats:categoryname|fromtitle".
+
+-subcatsr         Like -subcats, but also includes sub-subcategories etc. of
+                  the given category.
+                  Argument can also be given as "-subcatsr:categoryname" or
+                  as "-subcatsr:categoryname|fromtitle".
 
 -uncat            Work on all pages which are not categorised.
 
@@ -201,7 +211,7 @@ def CategorizedPageGenerator(category, recurse=False, start=None):
         if page.title() >= start:
             yield page
 
-def SubCategoriesPageGenerator(category, recurse=False):
+def SubCategoriesPageGenerator(category, recurse=False, start=None):
     '''
     Yields all subcategories in a specific category.
 
@@ -210,7 +220,7 @@ def SubCategoriesPageGenerator(category, recurse=False):
     (e.g., recurse=2 will get pages in subcats and sub-subcats, but will
     not go any further).
     '''
-    for page in category.subcategories(recurse = recurse):
+    for page in category.subcategories(recurse = recurse, startFrom = start):
         yield page
 
 def UnCategorizedCategoryGenerator(number = 100, repeat = False, site = None):
@@ -706,6 +716,22 @@ class GeneratorFactory:
         cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
         return CategorizedPageGenerator(cat, start = startfrom, recurse = recurse)
 
+    def setSubCategoriesGen(self, arg, length, recurse = False):
+        if len(arg) == length:
+            categoryname = wikipedia.input(u'Please enter the category name:')
+        else:
+            categoryname = arg[length + 1:]
+
+        ind = categoryname.find('|')
+        if ind > 0:
+            startfrom = categoryname[ind + 1:]
+            categoryname = categoryname[:ind]
+        else:
+            startfrom = None
+
+        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
+        return SubCategoriesPageGenerator(cat, start = startfrom, recurse = recurse)
+
     def handleArg(self, arg):
         gen = None
         if arg.startswith('-filelinks'):
@@ -745,16 +771,23 @@ class GeneratorFactory:
             if not textfilename:
                 textfilename = wikipedia.input(u'Please enter the local file name:')
             gen = TextfilePageGenerator(textfilename)
+        elif arg.startswith('-catr'):
+            gen = self.setCategoryGen(arg, 5, recurse = True)
         elif arg.startswith('-cat'):
             gen = self.setCategoryGen(arg, 4)
+        elif arg.startswith('-subcatsr'):
+            gen = self.setSubCategoriesGen(arg, 9, recurse = True)
+        elif arg.startswith('-subcats'):
+            gen = self.setSubCategoriesGen(arg, 8)
+        # This parameter is deprecated, catr should be used instead.
+        elif arg.startswith('-subcat'):
+            gen = self.setCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-uncatfiles'):
             gen = UnCategorizedImageGenerator()
         elif arg.startswith('-uncatcat'):
             gen = UnCategorizedCategoryGenerator()
         elif arg.startswith('-uncat'):
             gen = UnCategorizedPageGenerator()
-        elif arg.startswith('-subcat'):
-            gen = self.setCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-ref'):
             referredPageTitle = arg[5:]
             if not referredPageTitle:

@@ -257,7 +257,7 @@ class Category(wikipedia.Page):
             else:
                 break
 
-    def subcategories(self, recurse=False):
+    def subcategories(self, recurse=False, startFrom=None):
         """
         Yields all subcategories of the current category.
 
@@ -269,7 +269,7 @@ class Category(wikipedia.Page):
 
         Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
-        for tag, subcat in self._getContents(recurse):
+        for tag, subcat in self._getContents(recurse, startFrom=startFrom):
             if tag == SUBCATEGORY:
                 yield subcat
 
@@ -417,7 +417,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
                 u'No changes in made in page %s.' % article.aslink())
             return False
         try:
-            article.put(newtext, comment)
+            article.put_async(newtext, comment)
             return True
         except wikipedia.EditConflict:
             wikipedia.output(
