@@ -46,7 +46,7 @@ parameterHelp = """\
                   Argument can also be given as "-file:filename".
 
 -filelinks        Work on all pages that use a certain image/media file.
-                  Argument can also be given as "-file:filename".
+                  Argument can also be given as "-filelinks:filename".
 
 -yahoo            Work on all pages that are found in a Yahoo search.
                   Depends on python module pYsearch.  See yahoo_appid in
