@@ -4127,26 +4127,18 @@ your connection is down. Retrying in %i minutes..."""
 
         index = self._userIndex(sysop)
 
-        # Check for blocks
-        blocked = False
-        if self.versionnumber() >= 11:
-            if self._userData[index]:
-                # Don't check every time a page is loaded
-                blocked = self._isBlocked[index]
-            else:
-                blocked = self.isBlocked(sysop = sysop)
-        else:
-            #blocked = self.mediawiki_message('blockedtitle') in text
-            # TEMP
-            pass
-        if blocked and not self._isBlocked[index]:
-            # Write a warning if not shown earlier
-            if sysop:
-                account = 'Your sysop account'
-            else:
-                account = 'Your account'
-            output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
-        self._isBlocked[index] = blocked
+        # Check for blocks - but only if version is 1.11 (userinfo is available)
+        # and the user data was not yet loaded
+        if self.versionnumber() >= 11 and not self._userData[index]:
+            blocked = self.isBlocked(sysop = sysop)
+            if blocked and not self._isBlocked[index]:
+                # Write a warning if not shown earlier
+                if sysop:
+                    account = 'Your sysop account'
+                else:
+                    account = 'Your account'
+                output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
+            self._isBlocked[index] = blocked
 
         # Check for new messages
         if '<div class="usermessage">' in text:
