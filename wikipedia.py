@@ -4136,7 +4136,9 @@ your connection is down. Retrying in %i minutes..."""
             else:
                 blocked = self.isBlocked(sysop = sysop)
         else:
-            blocked = self.mediawiki_message('blockedtitle') in text
+            #blocked = self.mediawiki_message('blockedtitle') in text
+            # TEMP
+            pass
         if blocked and not self._isBlocked[index]:
             # Write a warning if not shown earlier
             if sysop:
