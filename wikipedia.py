@@ -4226,7 +4226,9 @@ your connection is down. Retrying in %i minutes..."""
             # Token not found
             # Possible reason for this is the user is blocked, don't show a
             # warning in this case, otherwise do show a warning
-            if not self._isBlocked[index]:
+            # Another possible reason is that the page cannot be edited - ensure
+            # there is a textarea
+            if u'<textarea' in text and not self._isBlocked[index]:
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
 
