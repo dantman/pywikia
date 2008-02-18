@@ -2645,7 +2645,7 @@ def getall(site, pages, throttle=True, force=False):
 
     """
     # TODO: why isn't this a Site method?
-    pages = list(pages)  # if pages is an iterator, we need to
+    pages = list(pages)  # if pages is an iterator, we need to make it a list
     output(u'Getting %d pages from %s...' % (len(pages), site))
     _GetAll(site, pages, throttle, force).run()
 
