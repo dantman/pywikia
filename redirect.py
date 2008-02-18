@@ -98,7 +98,7 @@ reason_broken={
 }
 
 class RedirectGenerator:
-    def __init__(self, xmlFilename = None, namespaces = None, offset = -1):
+    def __init__(self, xmlFilename = None, namespaces = [], offset = -1):
         self.xmlFilename = xmlFilename
         self.namespaces = namespaces
         self.offset = offset
@@ -124,7 +124,7 @@ class RedirectGenerator:
             # always print status message after 10000 pages
             if readPagesCount % 10000 == 0:
                 wikipedia.output(u'%i pages read...' % readPagesCount)
-            if self.namespaces is not None:
+            if len(self.namespaces) > 0:
                 if wikipedia.Page(site, entry.title).namespace() not in self.namespaces:
                     continue
             if alsoGetPageTitles:
