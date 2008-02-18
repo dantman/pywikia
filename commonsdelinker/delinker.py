@@ -184,8 +184,8 @@ class Delinker(threadpool.Thread):
 			replacement = m_replacement.get()
 			
 			def create_regex(s):
-				s = re.escape(s)
-				return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
+				first, other = re.escape(s[0]), re.escape(s[1:])
+				return ur'(?:[%s%s]%s)' % (first.upper(), first.lower(), other)
 			def create_regex_i(s):
 				return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
 			
