@@ -1958,7 +1958,7 @@ not supported by PyWikipediaBot!"""
                     try:
                         # Try to delete and move
                         return self.move(newtitle = newtitle, reason = reason, movetalkpage = movetalkpage, throttle = throttle, deleteAndMove = True)
-                    except NoUserName:
+                    except NoUsername:
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
                         return False
             else:
@@ -1988,7 +1988,7 @@ not supported by PyWikipediaBot!"""
         # Login
         try:
             self._getActionUser(action = 'delete', sysop = True)
-        except NoUserName:
+        except NoUsername:
              if mark and self.exists():
                  text = self.get(get_redirect = True)
                  output(u'Cannot delete page %s - marking the page for deletion instead:' % self.aslink())
