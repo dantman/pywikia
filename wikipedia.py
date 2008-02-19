@@ -4222,8 +4222,8 @@ your connection is down. Retrying in %i minutes..."""
             # Possible reason for this is the user is blocked, don't show a
             # warning in this case, otherwise do show a warning
             # Another possible reason is that the page cannot be edited - ensure
-            # there is a textarea
-            if u'<textarea' in text and not self._isBlocked[index]:
+            # there is a textarea and the tab "view source" is not shown
+            if u'<textarea' in text and u'<li id="ca-viewsource"' not in text and not self._isBlocked[index]:
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
 
