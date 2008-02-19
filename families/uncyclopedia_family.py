@@ -250,6 +250,8 @@ class Family(family.Family):
     def path(self, code):
         if code=='ar':
            return '/index.php'
+        if code=='en':
+           return '/index.php'
         if code=='fi':
            return '/hikipedia/index.php'
         if code=='hu':
