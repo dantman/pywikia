@@ -78,179 +78,187 @@ locale.setlocale(locale.LC_ALL, '')
 #########################################################################################################################
 # <------------------------------------------- Change only below! ----------------------------------------------------->#
 #########################################################################################################################
-
+ 
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
     'commons':'\n{{subst:nld}}',
     'en'     :'\n{{subst:nld}}',
     'it'     :'\n{{subst:unverdata}}',
-    'ja':'{{subst:Nsd}}',
+    'ja'     :'{{subst:Nsd}}',
     'hu'     :u'\n{{nincslicenc|~~~~~}}',
-    'zh'    :'{{subst:No license/auto}}',
+    'ta'     :'\n{{subst:nld}}',
+    'zh'     :'{{subst:No license/auto}}',
 }
-
+ 
 # Text that the bot will try to see if there's already or not. If there's a
 # {{ I'll use a regex to make a better check.
 # This will work so:
 # '{{nld' --> '\{\{(?:template:|)no[ _]license ?(?:\||\n|\}) ?' (case insensitive).
 # If there's not a {{ it will work as usual (if x in Text)
 txt_find =  {
-    'commons':['{{no license', '{{nld', '{{no permission since'],
-        'en':['{{nld', '{{no license'],
+    'commons':[u'{{no license', u'{{nld', u'{{no permission since'],
+    'en':[u'{{nld', u'{{no license'],
     'hu':[u'{{nincsforrás',u'{{nincslicenc'],
     'it':[u'{{unverdata', u'{{unverified'],
     'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
-    'zh':[u'{{no source', u'{{unknown','{{No license',],
+    'ta':[u'{{no source', u'{{nld', u'{{no license'],
+    'zh':[u'{{no source', u'{{unknown', u'{{No license',],
                 }
-
+ 
 # Summary for when the will add the no source
 comm = {
-		'commons':'Bot: Marking newly uploaded untagged file',
-		'en'     :'Bot: Marking newly uploaded untagged file',
-		'hu'    :'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
-		'it'     :"Bot: Aggiungo unverified",
-		'ja':u'ロボットによる:出典やライセンスなしの画像をタグ',
-		'zh':u'機器人:標示新上傳且未包含必要資訊的檔案',
+		'commons':u'Bot: Marking newly uploaded untagged file',
+		'en'     :u'Bot: Marking newly uploaded untagged file',
+		'hu'     :u'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
+		'it'     :u"Bot: Aggiungo unverified",
+		'ja'     :u'ロボットによる:出典やライセンスなしの画像をタグ',
+		'ta'     :u'தானியங்கி:காப்புரிமை வழங்கப்படா படிமத்தை சுட்டுதல்',
+		'zh'     :u'機器人:標示新上傳且未包含必要資訊的檔案',
 		}
-
+ 
 # Summary that the bot use when it notify the problem with the image's license
 comm2 = {
 		'commons':"Bot: Requesting source information." ,
 		'en'     :"Bot: Requesting source information." ,
 		'it'     :"Bot: Notifico l'unverified",
 		'ja'     :u"ロボットによる:出典とライセンス明記のお願い",
-		'hu' :'Robot: Forrásinformáció kérése',
-		'zh'     :u"機器人: 請求來源資訊"
-		}
-
-# When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
-empty = {
-		'commons':'{{subst:welcome}}\n~~~~\n',
-		'en'     :'{{welcome}}\n~~~~\n',
-		'it'     :'{{benvenuto}}\n~~~~\n',
-		'ja':'{{welcome}}\n--~~~~\n',
+		'hu'     :u'Robot: Forrásinformáció kérése',
+		'ja'     :u'{{welcome}}\n--~~~~\n',
 		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
-		'zh':'{{subst:welcome|sign=~~~~}}',
+		'ta'     :u'தானியங்கி:மூலம் வழங்கப்படா படிமத்தை சுட்டுதல்',
+		'zh'     :u'{{subst:welcome|sign=~~~~}}',
 		}
-
+ 
 # if the file has an unknown extension it will be tagged with this template.
 # In reality, there aren't unknown extension, they are only not allewed... ^__^
 delete_immediately = {
-			'commons':"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
-			'en'     :"{{db-meta|The file has .%s as extension.}}",
-			'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
+			'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
+			'en'     :u"{{db-meta|The file has .%s as extension.}}",
+			'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
 			'ja':u'{{db|知らないファイルフォーマット%s}}',
 			'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
-			'zh'    :u'{{delete|未知檔案格式%s}}',
+			'ta'     :u'{{delete|இந்தக் கோப்பு .%s என்றக் கோப்பு நீட்சியைக் கொண்டுள்ளது.}}',
+			'zh'     :u'{{delete|未知檔案格式%s}}',
 			}
-
+ 
 # The header of the Unknown extension's message.
 delete_immediately_head = {
-			'commons':"\n== Unknown extension! ==\n",
-			'en'     :"\n== Unknown extension! ==\n",
-			'it'     :'\n== File non specificato ==\n',
+			'commons':u"\n== Unknown extension! ==\n",
+			'en'     :u"\n== Unknown extension! ==\n",
+			'it'     :u'\n== File non specificato ==\n',
 			'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
-			'zh':u'\n==您上載的檔案格式可能有誤==\n',
+			'ta'     :u'\n== இனங்காணப்படாத கோப்பு நீட்சி! ==\n',
+			'zh'     :u'\n==您上載的檔案格式可能有誤==\n',
 			}
-
+ 
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
-                                'commons':'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
-				'en'     :'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
-				'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
+				'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
+				'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
+				'it'     :u'{{subst:Utente:Filbot/Ext|%s}}',
 				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
+				'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
 				'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
 				}
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
-			'commons':'Bot: Adding %s',
-			'en'     :'Bot: Adding %s',
-			'it'     :'Bot: Aggiungo %s',
+			'commons':u'Bot: Adding %s',
+			'en'     :u'Bot: Adding %s',
+			'it'     :u'Bot: Aggiungo %s',
 			'ja'     :u'ロボットによる: 追加 %s',
 			'hu'     :u'Robot:"%s" hozzáadása',
+			'ta'     :u'Bot: Adding %s',
 			'zh'     :u'機器人: 正在新增 %s',
 			}
-
+ 
 # This is the most important header, because it will be used a lot. That's the header that the bot
 # will add if the image hasn't the license.
 nothing_head = {
-				'commons':"",# Nothing, the template has already the header inside.
-				'en'     :"\n== Image without license ==\n",
+				'commons':u"",# Nothing, the template has already the header inside.
+				'en'     :u"\n== Image without license ==\n",
 				'ja'     :u'',
-				'it'     :"\n== Immagine senza licenza ==\n",
+				'it'     :u"\n== Immagine senza licenza ==\n",
 				'hu'     :u"\n== Licenc nélküli kép ==\n",
+				'ta'     :u'',
 				'zh'     :u'',
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
-				'commons':"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
-				'en'     :"{{subst:image source|Image:%s}} --~~~~",
-				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
-				'ja'	 :"\n{{subst:image source|Image:%s}}--~~~~",
+				'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
+				'en'     :u"{{subst:image source|Image:%s}} --~~~~",
+				'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
+				'ja'	 :u"\n{{subst:image source|Image:%s}}--~~~~",
 				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
+				'ta'     :u'\n{{subst:Di-no license-notice|படிமம்:%s}} ~~~~ ',
 				'zh'     :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
 				}
-
+ 
 # This is a list of what bots used this script in your project.
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
 bot_list = {
 			'commons':['Siebot', 'CommonsDelinker'],
 			'en'     :['OrphanBot'],
 			'it'     :['Filbot', 'Nikbot', '.snoopyBot.'],
-			'ja':['alexbot'],
-			'zh':['alexbot'],
+			'ja'     :['alexbot'],
+			'ta'     :['TrengarasuBOT'],
+			'zh'     :['alexbot'],
 			}
-
+ 
 # The message that the bot will add the second time that find another license problem.
 second_message_without_license = {
 				'commons':None,
-                                'en': None,
-				'it':':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
+				'en': None,
+				'it':u':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
 				'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
 				'ja':None,
+				'ta':None,
 				'zh':None,
 				}
 # You can add some settings to wikipedia. In this way, you can change them without touch the code.
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
 					'commons':u'User:Filbot/Settings',
-                                        'en':None,
-                                        'hu':None,
+					'en':None,
+					'hu':None,
 					'it':u'Utente:Nikbot/Settings#Settings',
 					'ja':None,
+					'ta':None,
 					'zh':u"User:Alexbot/cisettings#Settings",
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)
 # This is the page where the bot will store them.
 report_page = {
-				'commons':'User:Filbot/Report',
-                                'en'     :'User:Filnik/Report',
-				'it'     :'Utente:Nikbot/Report',
-				'ja':'User:Alexbot/report',
-				'hu'     :'User:Bdamokos/Report',
-				'zh'    :'User:Alexsh/checkimagereport',
+				'commons':u'User:Filbot/Report',
+				'en'     :u'User:Filnik/Report',
+				'it'     :u'Utente:Nikbot/Report',
+				'ja'     :u'User:Alexbot/report',
+				'hu'     :u'User:Bdamokos/Report',
+				'ta'     :u'Trengarasu/commonsimages',
+				'zh'     :u'User:Alexsh/checkimagereport',
 				}
 # Adding the date after the signature. 
 timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
-			'commons':"\n*[[:Image:%s]] " + timeselected,
-			'en':"\n*[[:Image:%s]] " + timeselected,
-			'it':"\n*[[:Immagine:%s]] " + timeselected,
-			'ja':"\n*[[:Immagine:%s]] " + timeselected,
+			'commons':u"\n*[[:Image:%s]] " + timeselected,
+			'en':u"\n*[[:Image:%s]] " + timeselected,
+			'it':u"\n*[[:Immagine:%s]] " + timeselected,
+			'ja':u"\n*[[:Immagine:%s]] " + timeselected,
 			'hu':u"\n*[[:Kép:%s]] " + timeselected,
-			'zh':"\n*[[:Image:%s]] " + timeselected,
+			'ta':u"\n*[[:படிமம்:%s]] " + timeselected,
+			'zh':u"\n*[[:Image:%s]] " + timeselected,
 			}
 # The summary of the report
 comm10 = {
-		'commons':'Bot: Updating the log',
-		'en':'Bot: Updating the log',
-		'it':'Bot: Aggiorno il log',
+		'commons':u'Bot: Updating the log',
+		'en':u'Bot: Updating the log',
+		'it':u'Bot: Aggiorno il log',
 		'ja': u'ロボットによる:更新',
-		'hu': 'Robot: A napló frissítése',
+		'hu': u'Robot: A napló frissítése',
+		'ta': u'தானியங்கி:பட்டியலை இற்றைப்படுத்தல்',
 		'zh': u'機器人:更新記錄',
 		}
-
+ 
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
 # analise the image without taking care of it. (the template must be in a list)
 # Warning: Don't add template like "en, de, it" because they are already in (added in the code, below
@@ -262,18 +270,20 @@ HiddenTemplate = {
 		'it':['edp', 'informazioni[ _]file', 'information', 'trademark'],
 		'ja':[u'Information'],
 		'hu':[u'információ','enwiki', 'azonnali'],
+		'ta':[u'information'],
 		'zh':[u'information'],
 		}
-
+ 
 # Template added when the bot finds only an hidden template and nothing else.
 HiddenTemplateNotification = {
                 'commons': """\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~""",
                 'en': None,
-                'it': "{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
+                'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
+                'ta': None,
                 }
-
+ 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['commons', 'en','ja','hu', 'it','zh']
+project_inserted = ['commons', 'en', 'ja', 'hu', 'it', 'ta', 'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
