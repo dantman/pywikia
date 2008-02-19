@@ -406,16 +406,16 @@ def parselog(wsite, raw, talk, number):
         contribs = wsite.getUrl(con)
         contribnum = contribs.count('<li>') # Maxes at 50, but not important.
         if contribnum >= number:
-            wikipedia.output(u'%s has enough edits to be welcomed' % username )
+            wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
             # The user must be welcomed, return his data.
             yield ([username, contribnum])
         elif contribnum < number:
             if contribnum == 0:
-                wikipedia.output(u'%s has no contributions.' % username )
+                wikipedia.output(u'%s has no contributions.' % userpage.titleWithoutNamespace() )
                 # That user mustn't be welcomed, return None.
                 yield None
             else:
-                wikipedia.output(u'%s has only %s contributions.' % (username, str(contribnum)) )
+                wikipedia.output(u'%s has only %s contributions.' % (userpage.titleWithoutNamespace(), str(contribnum)) )
                 # That user mustn't be welcomed, return None.
                 yield None
 
