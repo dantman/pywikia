@@ -142,7 +142,7 @@ msg = {
        'no':u'bot: Automatisk teksterstatning: %s',
        'pl':u'Robot automatycznie zamienia tekst %s',
        'pt':u'Bot: Mudança automática %s',
-	   'ru':u'Робот: Автоматизированная замена текста',
+       'ru':u'Робот: Автоматизированная замена текста',
        'sr':u'Бот: Аутоматска замена текста %s',
        'zh': u'機器人:執行文字代換作業 %s',
        }
