@@ -668,11 +668,6 @@ not supported by PyWikipediaBot!"""
             if text.find("<title>Wiki does not exist</title>") != -1:
                 raise NoSuchSite(u'Wiki %s does not exist yet' % self.site())
 
-            #Check for new messages
-            if '<div class="usermessage">' in text:
-                self.site().messages=True
-            else:
-                self.site().messages=False
             # Extract the actual text from the textarea
             m1 = re.search('<textarea([^>]*)>', text)
             m2 = re.search('</textarea>', text)
@@ -3833,6 +3828,12 @@ class Site(object):
             self._load(sysop = sysop)
             index = self._userIndex(sysop)
             return right in self._rights[index]
+
+    def messages(self, sysop = False):
+        """Returns true if the user has new messages, and false otherwise."""
+        self._load(sysop = sysop)
+        index = self._userIndex(sysop)
+        return self._messages[index]
 
     def cookies(self, sysop = False):
         """Return a string containing the user's current cookies."""
