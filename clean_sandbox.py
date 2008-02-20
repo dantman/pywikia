@@ -78,7 +78,7 @@ sandboxTitle = {
     'pt': u'Wikipedia:Página de testes',
     'commons': u'Commons:Sandbox',
     'sv': u'Wikipedia:Sandlådan',
-    'th': u'วิกิพีเดีย:กระบะทราย',
+    'th': u'วิกิพีเดีย:ทดลองเขียน',
     'zh': u'wikipedia:沙盒',
     }
 

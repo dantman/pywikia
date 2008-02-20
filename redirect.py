@@ -68,6 +68,7 @@ msg_double={
     'sv': u'Robot: Rättar dubbel omdirigering',
     'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน',
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
+    'yi': u'באט: פארראכטן פארטאפלטע ווייטערפירונג',
     'zh': u'機器人:修正雙重重定向',
     'zh-yue': u'機械人：拉直連串跳轉 ',
     'zh-classical': u'僕:復修渡口',

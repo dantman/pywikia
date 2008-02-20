@@ -15,6 +15,7 @@ import wikipedia
 myComment = {'en':u'Bot: URL fixed',
              'he':u'בוט: תוקנה כתובת URL',
              'pt':u'Bot: URL corrigido',
+             'zh':u'機器人: 網址已修復',
              }
 
 if __name__ == "__main__":
