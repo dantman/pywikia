@@ -115,6 +115,16 @@ comm = {
 		'ta'     :u'தானியங்கி:காப்புரிமை வழங்கப்படா படிமத்தை சுட்டுதல்',
 		'zh'     :u'機器人:標示新上傳且未包含必要資訊的檔案',
 		}
+
+# When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
+empty = {
+		'commons':'{{subst:welcome}}\n~~~~\n',
+		'en'     :'{{welcome}}\n~~~~\n',
+		'it'     :'{{benvenuto}}\n~~~~\n',
+		'ja':'{{welcome}}\n--~~~~\n',
+		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
+		'zh':'{{subst:welcome|sign=~~~~}}',
+		}
  
 # Summary that the bot use when it notify the problem with the image's license
 comm2 = {
