@@ -273,7 +273,6 @@ class Page(object):
     templates (*)         : All templates referenced on the page (list of
                             Pages)
     templatesWithParams(*): All templates on the page, with list of parameters
-    isDisambig (*)        : True if the page is a disambiguation page
     getReferences         : List of pages linking to the page
     canBeEdited (*)       : True if page is unprotected or user has edit
                             privileges
@@ -970,12 +969,10 @@ not supported by PyWikipediaBot!"""
             locdis = self.site().family.disambig( self._site.lang )
 
             for tn in self.templates():
-                try:
-                    tn = tn[0].upper() + tn[1:]
-                except IndexError:
-                    # len(tn) < 2
-                    tn = tn.upper()
-                tn = tn.replace('_', ' ')
+                tn = tn[:1].upper() + tn[1:]
+                tn = tn.replace(u'_', u' ')
+                while u"  " in tn:
+                    tn = tn.replace(u"  ", u" ")
                 if tn in locdis:
                     _isDisambig = True
                     break
@@ -1561,7 +1558,7 @@ not supported by PyWikipediaBot!"""
         return list(set(results))
 
     def templates(self):
-        """Return a list of Page objects for templates used on this Page.
+        """Return a list of titles (unicode) of templates used on this Page.
 
         Template parameters are ignored.
         """
@@ -1571,7 +1568,7 @@ not supported by PyWikipediaBot!"""
         """Return a list of templates used on this Page.
 
         Return value is a list of tuples. There is one tuple for each use of
-        a template in the page, with the template Page as the first entry
+        a template in the page, with the template title as the first entry
         and a list of parameters as the second entry.
         """
         try:
@@ -1662,11 +1659,12 @@ not supported by PyWikipediaBot!"""
             self.get()
         except NoPage:
             raise
-        except IsRedirectPage, arg:
-            if '|' in arg:
-                warnings.warn("%s has a | character, this makes no sense",
-                              Warning)
-            return Page(self.site(), arg[0])
+        except IsRedirectPage, ex:
+            target = ex.message
+            if '|' in target:
+                warnings.warn("'%s' has a | character, this makes no sense"
+                              % target, Warning)
+            return Page(self.site(), target)
         else:
             raise IsNotRedirectPage(self)
 
