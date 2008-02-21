@@ -2184,14 +2184,22 @@ not supported by PyWikipediaBot!"""
         address = self.site().protect_address(self.urlname())
         if unprotect:
             address = self.site().unprotect_address(self.urlname())
+            # unprotect_address is actually an alias for protect_address...
+            edit = move = create = ''
+        else:
+            edit, move, create = edit.lower(), move.lower(), create.lower()
         if throttle:
             put_throttle()
         if reason == None:
-            reason = input(u'Please enter a reason for the change of the protection level:')
+            reason = input(
+              u'Please enter a reason for the change of the protection level:')
         reason = reason.encode(self.site().encoding())
         answer = 'y'
         if prompt and not hasattr(self.site(), '_noProtectPrompt'):
-            answer = inputChoice(u'Do you want to change the protection level of %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
+            answer = inputChoice(
+                u'Do you want to change the protection level of %s?'
+                    % self.aslink(forceInterwiki = True),
+                ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
             if answer in ['a', 'A']:
                 answer = 'y'
                 self.site()._noProtectPrompt = True
@@ -2217,17 +2225,24 @@ not supported by PyWikipediaBot!"""
                 predata["Content-type"] = "application/x-www-form-urlencoded"
                 predata["User-agent"] = useragent
                 data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
+                response = urllib2.urlopen(
+                            urllib2.Request(
+                                self.site().protocol() + '://'
+                                    + self.site().hostname() + address,
+                                data))
                 data = u''
             else:
-                data, response = self.site().postForm(address, predata, sysop = True)
+                response, data = self.site().postForm(address, predata,
+                                                      sysop=True)
 
-            if not response:
+            if response.status == 302 and not data:
                 output(u'Changed protection level of page %s.' % self.aslink())
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
-                output(u'Failed to change protection level of page %s:' % self.aslink())
+                output(u'Failed to change protection level of page %s:'
+                       % self.aslink())
+                output(u"HTTP response code %s" % response.status)
                 output(data)
                 return False
 
