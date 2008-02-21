@@ -1989,8 +1989,6 @@ class Family:
         # letters that can follow a wikilink and are regarded as part of this link
         # This depends on the linktrail setting in LanguageXx.php and on
         # [[MediaWiki:Linktrail]].
-        # See http://meta.wikipedia.org/wiki/Locales_for_the_Wikipedia_Software
-        # to find out the setting for your wiki.
         # Note: this is a regular expression.
         self.linktrails = {
            '_default': u'[a-z]*',
@@ -2618,7 +2616,9 @@ class Family:
         elif fallback:
             return self.disambiguationTemplates[fallback]
         else:
-            raise KeyError('ERROR: title for disambig template in language %s unknown' % code)
+            raise KeyError(
+                'ERROR: title for disambig template in language %s unknown'
+                % code)
 
     # Returns the title of the special namespace in language 'code', taken from
     # dictionary above.
@@ -2739,14 +2739,28 @@ class Family:
     def hostname(self, code):
         return self.langs[code]
 
+    def scriptpath(self, code):
+        """The prefix used to locate scripts on this wiki.
+
+        This is the value displayed when you enter {{SCRIPTPATH}} on a
+        wiki page (often displayed at [[Help:Variables]] if the wiki has
+        copied the master help page correctly).
+
+        The default value is the one used on Wikimedia Foundation wikis,
+        but needs to be overridden in the family file for any wiki that
+        uses a different value.
+
+        """
+        return '/w'
+
     def path(self, code):
-        return '/w/index.php'
+        return '%s/index.php' % self.scriptpath(code)
 
     def querypath(self, code):
-        return '/w/query.php'
+        return '%s/query.php' % self.scriptpath(code)
 
     def apipath(self, code):
-        return '/w/api.php'
+        return '%s/api.php' % self.scriptpath(code)
 
     def nicepath(self, code):
         return '/wiki/'
