@@ -344,6 +344,7 @@ msg = {
     'su': (u'bot ', u'Nambih', u'Miceun', u'Ngarobih'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     'sw': (u'roboti ', u'Nyongeza', u'Ondoa', u'Badiliko'),
+    'ta': (u'தானியங்கி',u'இணைப்பு',u'அழிப்பு',u'மாற்றல்'),
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
