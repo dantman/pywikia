@@ -3826,8 +3826,12 @@ class Site(object):
 
     def isBlocked(self, sysop = False):
         """Check if the user is blocked."""
-        text = self.getUrl(u'%saction=query&meta=userinfo&uiprop=blockinfo' % self.api_address(), sysop = sysop)
-        return text.find('blockedby=') > -1
+        try:
+            text = self.getUrl(u'%saction=query&meta=userinfo&uiprop=blockinfo'
+                               % self.api_address(), sysop=sysop)
+            return text.find('blockedby=') > -1
+        except NotImplementedError:
+            return False
 
     def isAllowed(self, right, sysop = False):
         """Check if the user has a specific right.
