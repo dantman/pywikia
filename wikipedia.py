@@ -4258,7 +4258,7 @@ your connection is down. Retrying in %i minutes..."""
             tree = BeautifulSoup(mwpage,
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
                                  parseOnlyThese=SoupStrainer("textarea"))
-            if tree.textarea is not None:
+            if tree.textarea is not None and tree.textarea.string is not None:
                 value = tree.textarea.string.strip()
             else:
                 value = None
