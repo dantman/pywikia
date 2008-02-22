@@ -1659,8 +1659,8 @@ not supported by PyWikipediaBot!"""
             self.get()
         except NoPage:
             raise
-        except IsRedirectPage, ex:
-            target = ex.message
+        except IsRedirectPage, err:
+            target = err[0]
             if '|' in target:
                 warnings.warn("'%s' has a | character, this makes no sense"
                               % target, Warning)
