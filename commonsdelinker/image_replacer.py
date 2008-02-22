@@ -102,6 +102,7 @@ class Replacer(object):
 		replacements = self.template.finditer(text)
 		
 		remove_from_list = []
+		count = 0
 		for replacement in replacements:
 			res = self.examine_revision_history(
 				revisions, replacement, username)
@@ -110,6 +111,8 @@ class Replacer(object):
 				self.cursor.execute(insert, res)
 				remove_from_list.append(replacement.group(0))
 				output('Replacing %s by %s: %s' % replacement.groups())
+			count += 1
+			if count == self.config.get('replacement_rate_limit', -1): break
 		self.database.commit()
 		
 		if remove_from_list and self.config.get('clean_list', False):

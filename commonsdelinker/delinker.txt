@@ -167,7 +167,8 @@ CREATE TABLE replacer (
 	comment VARBINARY(255),
 	
 	PRIMARY KEY(id),
-	INDEX(status)
+	INDEX (timestamp, old_image, new_image)
+	INDEX (status)
 );
 </code>
 
