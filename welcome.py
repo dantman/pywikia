@@ -383,7 +383,7 @@ def parselog(wsite, raw, talk, number):
     # and i put them in a list (i find it more easy and secure).
     while 1:
         # FIXME: That's the regex, if there are problems, take a look here.
-        reg = r'\(<a href=\"/w/index.php\?title=%s(.*?)&(amp;|)action=edit\"' % talk
+        reg = r'\(<a href=\"/w/index.php\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink)\"' % talk
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
@@ -394,17 +394,16 @@ def parselog(wsite, raw, talk, number):
                 wikipedia.output(u'There is nobody to be welcomed...')
                 break
         pos = x.end()
-        username = x.group(1)
+        username = x.group('user')
         if username not in done:
             done.append(username)
         userpage = wikipedia.Page(wsite, username)
-        usertalkpage = wikipedia.Page(wsite, str(talk) + str(username))
         # Defing the contrib's page of the user.
         pathWiki = wsite.family.nicepath(wsite.lang)
         con = '%sSpecial:Contributions/%s' % (pathWiki, userpage.urlname())
         # Getting the contribs...
         contribs = wsite.getUrl(con)
-        contribnum = contribs.count('<li>') # Maxes at 50, but not important.
+        contribnum = contribs.count('<li>') # It counts the first 50 edits but it shouldn't be a problem.
         if contribnum >= number:
             wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
             # The user must be welcomed, return his data.
