@@ -69,7 +69,7 @@ sandboxTitle = {
     'en': u'Wikipedia:Sandbox',
     'he': u'ויקיפדיה:ארגז חול',
     'id': u'Wikipedia:Bak pasir',
-    'it': u'Project:Sandbox',
+    'it': u'Project:Pagina delle prove',
     'ja': u'Wikipedia:サンドボックス',
     'ko': u'위키백과:연습장',
     'nl': u'Wikipedia:Zandbak',
