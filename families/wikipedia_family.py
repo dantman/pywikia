@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -34,10 +34,10 @@ class Family(family.Family):
             'gv', 'sd', 'pa', 'ba', 'rmy', 'na', 'iu', 'lo', 'bo', 'got',
             'chr', 'ce', 'stq', 'om', 'ug', 'sm', 'bcl', 'ee', 'ti', 'as',
             'hak', 'cdo', 'av', 'bm', 'zu', 'nv', 'dsb', 'pih', 'my', 'pap',
-            'cr', 've', 'rw', 'ss', 'xh', 'kl', 'tlh', 'ik', 'dz', 'ts',
-            'bi', 'kv', 'bug', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'tw',
-            'ab', 'fj', 'ny', 'lbe', 'za', 'ff', 'tum', 'sn', 'ha', 'sg',
-            'lg', 'ki', 'rn', 'chy', 'aa', 'mh', 'ng',
+            'cr', 've', 'rw', 'ss', 'xh', 'kl', 'ik', 'dz', 'ts', 'bi',
+            'kv', 'bug', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'tw', 'ab',
+            'fj', 'ny', 'lbe', 'za', 'ff', 'tum', 'sn', 'ha', 'sg', 'lg',
+            'ki', 'rn', 'chy', 'aa', 'mh', 'ng',
         ]
 
         for lang in self.languages_by_size:
