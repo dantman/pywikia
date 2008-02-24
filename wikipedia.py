@@ -2583,7 +2583,24 @@ class _GetAll(object):
             raise PageNotFound
 
     def headerDone(self, header):
-        # Verify our family data
+        # Verify version
+        version = header.generator
+        p = re.compile('^MediaWiki (.+)$')
+        m = p.match(version)
+        if m:
+            version = m.group(1)
+            if version != self.site.version():
+                output(u'WARNING: Family file %s contains version number %s, but it should be %s' % (self.site.family.name, self.site.version(), version))
+
+        # Verify case
+        if self.site.nocapitalize:
+            case = 'case-sensitive'
+        else:
+            case = 'first-letter'
+        if case != header.case.strip():
+            output(u'WARNING: Family file %s contains case %s, but it should be %s' % (self.site.family.name, case, header.case.strip()))
+
+        # Verify namespaces
         lang = self.site.lang
         ids = header.namespaces.keys()
         ids.sort()
@@ -2601,7 +2618,6 @@ class _GetAll(object):
                         flag = u"is '%s', but should be removed (default value '%s')" % (ns, nshdr)
                     else:
                         flag = u"is '%s', but should be '%s'" % (ns, nshdr)
-
                     output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
 #                    self.site.family.namespaces[id][lang] = nshdr
             else:
