@@ -4,7 +4,7 @@ import family, config
 
 __version__ = '$Id$'
 
-# The wikimedia family that is known as Wikiversity
+# The Wikimedia family that is known as Wikiversity
 
 class Family(family.Family):
     def __init__(self):

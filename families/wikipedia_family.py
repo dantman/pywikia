@@ -1,5 +1,4 @@
 # -*- coding: utf-8  -*-
-
 import urllib
 import family, config
 
@@ -14,29 +13,29 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'de', 'fr', 'pl', 'ja', 'it', 'nl', 'pt', 'es', 'sv',
-            'ru', 'zh', 'no', 'fi', 'vo', 'ca', 'ro', 'tr', 'eo', 'uk',
-            'cs', 'sk', 'hu', 'da', 'id', 'he', 'lt', 'sr', 'sl', 'ar',
+            'ru', 'zh', 'no', 'fi', 'vo', 'ca', 'ro', 'tr', 'uk', 'eo',
+            'cs', 'hu', 'sk', 'da', 'id', 'he', 'lt', 'sr', 'sl', 'ar',
             'ko', 'bg', 'et', 'new', 'hr', 'te', 'ceb', 'gl', 'th', 'el',
             'fa', 'vi', 'nn', 'ms', 'simple', 'eu', 'bpy', 'bs', 'lb', 'ka',
-            'is', 'sq', 'br', 'la', 'az', 'bn', 'hi', 'mr', 'tl', 'io',
-            'sh', 'mk', 'cy', 'pms', 'su', 'lv', 'ta', 'nap', 'jv', 'nds',
-            'scn', 'oc', 'ast', 'ku', 'wa', 'ht', 'be', 'af', 'tg', 'be-x-old',
-            'an', 'roa-tara', 'ksh', 'vec', 'zh-yue', 'cv', 'fy', 'ur', 'sw', 'uz',
-            'yo', 'mi', 'qu', 'ga', 'bat-smg', 'ml', 'co', 'kn', 'gd', 'hsb',
-            'yi', 'pam', 'nah', 'lmo', 'tt', 'ia', 'sa', 'li', 'hy', 'als',
-            'roa-rup', 'map-bms', 'am', 'pag', 'nrm', 'zh-min-nan', 'fo', 'vls', 'se', 'nds-nl',
-            'war', 'ne', 'fur', 'bh', 'lij', 'nov', 'pi', 'dv', 'ilo', 'sco',
-            'rm', 'diq', 'frp', 'zh-classical', 'kk', 'mt', 'os', 'pdc', 'lad', 'csb',
-            'kw', 'wuu', 'fiu-vro', 'to', 'bar', 'ps', 'mn', 'haw', 'ang', 'ln',
-            'tk', 'ie', 'km', 'jbo', 'crh', 'tpi', 'wo', 'eml', 'ig', 'or',
-            'zea', 'mg', 'ty', 'kg', 'glk', 'cbk-zam', 'si', 'ky', 'ay', 'arc',
-            'sc', 'gu', 'kab', 'ks', 'so', 'gn', 'cu', 'udm', 'tet', 'mzn',
-            'gv', 'sd', 'pa', 'ba', 'rmy', 'na', 'iu', 'lo', 'bo', 'got',
-            'chr', 'ce', 'stq', 'om', 'ug', 'sm', 'bcl', 'ee', 'ti', 'as',
-            'hak', 'cdo', 'av', 'bm', 'zu', 'nv', 'dsb', 'pih', 'my', 'pap',
-            'cr', 've', 'rw', 'ss', 'xh', 'kl', 'ik', 'dz', 'ts', 'bi',
-            'kv', 'bug', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'tw', 'ab',
-            'fj', 'ny', 'lbe', 'za', 'ff', 'tum', 'sn', 'ha', 'sg', 'lg',
+            'is', 'sq', 'br', 'la', 'az', 'bn', 'hi', 'mr', 'tl', 'mk',
+            'sh', 'io', 'cy', 'pms', 'su', 'lv', 'ta', 'nap', 'jv', 'ht',
+            'nds', 'scn', 'oc', 'ast', 'ku', 'wa', 'be', 'af', 'tg', 'be-x-old',
+            'an', 'roa-tara', 'vec', 'ksh', 'zh-yue', 'cv', 'fy', 'ur', 'sw', 'yo',
+            'uz', 'mi', 'qu', 'ga', 'bat-smg', 'ml', 'co', 'kn', 'gd', 'hsb',
+            'yi', 'pam', 'nah', 'tt', 'ia', 'sa', 'li', 'hy', 'als', 'roa-rup',
+            'lmo', 'map-bms', 'am', 'pag', 'zh-min-nan', 'nrm', 'fo', 'vls', 'se', 'nds-nl',
+            'war', 'ne', 'wuu', 'fur', 'bh', 'lij', 'rm', 'nov', 'dv', 'pi',
+            'ilo', 'sco', 'diq', 'frp', 'zh-classical', 'kk', 'mt', 'os', 'lad', 'pdc',
+            'csb', 'kw', 'fiu-vro', 'bar', 'to', 'ps', 'haw', 'mn', 'ang', 'ln',
+            'tk', 'km', 'ie', 'crh', 'jbo', 'tpi', 'wo', 'eml', 'or', 'zea',
+            'ig', 'mg', 'ty', 'ay', 'kg', 'glk', 'cbk-zam', 'si', 'ky', 'arc',
+            'sc', 'gu', 'kab', 'ks', 'so', 'gn', 'mzn', 'gv', 'cu', 'udm',
+            'tet', 'sd', 'pa', 'ba', 'rmy', 'na', 'iu', 'lo', 'ce', 'bo',
+            'got', 'stq', 'chr', 'om', 'ug', 'sm', 'bcl', 'hak', 'ee', 'ti',
+            'as', 'cdo', 'av', 'bm', 'zu', 'dsb', 'nv', 'my', 'pih', 'pap',
+            'cr', 've', 'rw', 'xh', 'ss', 'kl', 'ik', 'dz', 'ts', 'bug',
+            'bi', 'kv', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'ny', 'tw',
+            'ab', 'fj', 'lbe', 'za', 'ff', 'tum', 'sn', 'ha', 'sg', 'lg',
             'ki', 'rn', 'chy', 'aa', 'mh', 'ng',
         ]
 

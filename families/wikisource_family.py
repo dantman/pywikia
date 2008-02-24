@@ -1,9 +1,10 @@
 # -*- coding: utf-8  -*-
+import urllib
 import family, config
 
 __version__ = '$Id$'
 
-# The wikimedia family that is known as Wikisource
+# The Wikimedia family that is known as Wikisource
 
 class Family(family.Family):
     def __init__(self):
@@ -12,8 +13,8 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'fr', 'es', 'zh', 'de', 'it', 'pt', 'ru', 'th', 'pl',
-            'ro', 'te', 'hr', 'tr', 'he', 'cs', 'fi', 'nl', 'sr', 'sv',
-            'hu', 'ar', 'la', 'ml', 'is', 'ja', 'bs', 'uk', 'el', 'ca',
+            'ro', 'te', 'hr', 'he', 'cs', 'tr', 'fi', 'nl', 'sr', 'hu',
+            'sv', 'ar', 'la', 'ml', 'is', 'ja', 'bs', 'uk', 'el', 'ca',
             'ko', 'sl', 'bn', 'hy', 'no', 'da', 'id', 'ta', 'az', 'mk',
             'kn', 'bg', 'fa', 'vi', 'sk', 'cy', 'et', 'lt', 'gl',
             'zh-min-nan','yi', 'ht', 'fo', 'ang',

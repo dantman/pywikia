@@ -1,11 +1,10 @@
 # -*- coding: utf-8  -*-
-
 import urllib
 import family, config
 
 __version__ = '$Id$'
 
-# The Wikimedia family that is known as WikiNews
+# The Wikimedia family that is known as Wikinews
 
 class Family(family.Family):
     def __init__(self):
@@ -14,7 +13,7 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'pl', 'de', 'it', 'fr', 'es', 'pt', 'sv', 'ja', 'zh',
-            'sr', 'ru', 'nl', 'he', 'uk', 'ca', 'fi', 'ro', 'no', 'th',
+            'sr', 'ru', 'nl', 'he', 'uk', 'fi', 'ca', 'ro', 'no', 'th',
             'ar', 'bs', 'bg', 'ta', 'sd',
         ]
 
