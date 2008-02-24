@@ -517,6 +517,7 @@ class Family(family.Family):
             'ko':  [u'Disambig', u'동음이의', u'동음이의어'],
             'ku':  [u'Cudakirin'],
             'kw':  [u'Klerheans'],
+            'ksh': [u'Disambig',  u'disambig'],
             'la':  [u'Discretiva'],
             'lb':  [u'Homonymie', u'Disambig'],
             'li':  [u'Verdudeliking', u'Verdudelikingpazjena', u'Vp'],
@@ -615,6 +616,7 @@ class Family(family.Family):
             'kw':  u'Folennow klerheans',
             'ko':  u'동음이의어 문서',
             'ku':  u'Rûpelên cudakirinê',
+            'ksh': u'Woot met mieh wi ëijnem Senn',
             'la':  u'Discretiva',
             'lb':  u'Homonymie',
             'li':  u'Verdudelikingspazjena',
@@ -728,7 +730,7 @@ class Family(family.Family):
             'he': ['en'],
             'hu': ['en'],
             'lb': self.alphabetic_lb,
-            'nds': ['nds-nl','pdt'] + self.alphabetic, # Note: as of 2008-01-16, pdt: (Plattdeutsch) is still in the Incubator.
+            'nds': ['nds-nl','pdt'] + self.alphabetic, # Note: as of 2008-02-24, pdt: (Plautdietsch) is still in the Incubator.
             'nn': ['no','nb','sv','da'] + self.alphabetic,
             'no': self.alphabetic,
             'pl': self.alphabetic,
@@ -752,6 +754,7 @@ class Family(family.Family):
             'nb': 'no',
             'jp': 'ja',
             'ru-sib': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Siberian_Wikipedia
+            'tlh': None,
             'tokipona': None,
             'zh-tw': 'zh',
             'zh-cn': 'zh'
