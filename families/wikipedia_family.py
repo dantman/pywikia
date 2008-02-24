@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -82,6 +82,7 @@ class Family(family.Family):
             'fur': u'Vichipedie',
             'fy': u'Wikipedy',
             'ga': u'Vicipéid',
+            'gn': u'Vikipetã',
             'gu': u'વિકિપીડિયા',
             'he': u'ויקיפדיה',
             'hi': u'विकिपीडिया',
@@ -180,7 +181,7 @@ class Family(family.Family):
             'ga': u'Plé Vicipéide',
             'gl': u'Conversa Wikipedia',
             'glk': u'بحث Wikipedia',
-            'gn': u'Wikipedia Discusión',
+            'gn': u'Vikipetã myangekõi',
             'gu': u'વિકિપીડિયા talk',
             'he': u'שיחת ויקיפדיה',
             'hi': u'विकिपीडिया वार्ता',
