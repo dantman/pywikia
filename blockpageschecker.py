@@ -277,8 +277,9 @@ def main():
                 text = re.sub('(?:<noinclude>|)%s(?:</noinclude>|)' % replaceToPerform, '', text)
         if oldtext != text:
             # Ok, asking if the change has to be performed and do it.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-            wikipedia.showDiff(oldtext, text)
+            if always == True:
+                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+                wikipedia.showDiff(oldtext, text)
             choice = ''
             while 1:
                 if not always:
