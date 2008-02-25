@@ -89,6 +89,7 @@ class Family(family.Family):
             'hsb': u'Wikipedija',
             'ht': u'Wikipedya',
             'hu': u'Wikipédia',
+            'hy': u'Վիքիփեդիա',
             'io': u'Wikipedio',
             'ka': u'ვიკიპედია',
             'kk': u'Уикипедия',
@@ -188,7 +189,7 @@ class Family(family.Family):
             'hsb': u'Wikipedija diskusija',
             'ht': u'Diskisyon Wikipedya',
             'hu': u'Wikipédia vita',
-            'hy': u'Wikipedia քննարկում',
+            'hy': u'Վիքիփեդիայի քննարկում',
             'ia': u'Discussion Wikipedia',
             'id': u'Pembicaraan Wikipedia',
             'io': u'Wikipedio Debato',
@@ -279,6 +280,7 @@ class Family(family.Family):
         self.namespaces[100] = {
             'als': u'Portal',
             'ar': u'بوابة',
+            'bg': u'Портал',
             'bpy': u'হমিলদুৱার',
             'ca': u'Portal',
             'cs': u'Portál',
@@ -342,6 +344,7 @@ class Family(family.Family):
         self.namespaces[101] = {
             'als': u'Portal Diskussion',
             'ar': u'نقاش البوابة',
+            'bg': u'Портал беседа',
             'bpy': u'হমিলদুৱার য়্যারী',
             'ca': u'Portal Discussió',
             'cs': u'Portál diskuse',
