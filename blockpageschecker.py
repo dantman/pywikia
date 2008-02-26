@@ -241,7 +241,6 @@ def main():
         TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
         # Only to see if the text is the same or not...
         oldtext = text
-
         if editRestriction == 'sysop':         
             if TemplateInThePage[0] == 'sysop-total' and TTP != None:
                 wikipedia.output(u'The page is protected to the sysop, skipping...')
@@ -276,10 +275,9 @@ def main():
             for replaceToPerform in TTR:
                 text = re.sub('(?:<noinclude>|)%s(?:</noinclude>|)' % replaceToPerform, '', text)
         if oldtext != text:
-            # Ok, asking if the change has to be performed and do it.
-            if always == True:
-                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-                wikipedia.showDiff(oldtext, text)
+            # Ok, asking if the change has to be performed and do it if yes.
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            wikipedia.showDiff(oldtext, text)
             choice = ''
             while 1:
                 if not always:
