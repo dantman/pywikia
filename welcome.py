@@ -383,7 +383,7 @@ def parselog(wsite, raw, talk, number):
     # and i put them in a list (i find it more easy and secure).
     while 1:
         # FIXME: That's the regex, if there are problems, take a look here.
-        reg = r'\(<a href=\"/w/index.php\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink)\"' % talk
+        reg = r'\(<a href=\"/w/index.php\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
