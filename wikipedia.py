@@ -2166,8 +2166,8 @@ not supported by PyWikipediaBot!"""
         output(u'Page %s undeleted' % self.aslink())
         return result
 
-    def protect(self, edit='sysop', move='sysop', create='sysop', unprotect=False,
-                reason=None, prompt=True, throttle=True):
+    def protect(self, edit='sysop', move='sysop', unprotect=False,
+                reason=None, duration = None, cascading = False, prompt=True, throttle=True):
         """(Un)protect a wiki page. Requires administrator status.
 
         If reason is None,  asks for a reason. If prompt is True, asks the
@@ -2185,9 +2185,9 @@ not supported by PyWikipediaBot!"""
         if unprotect:
             address = self.site().unprotect_address(self.urlname())
             # unprotect_address is actually an alias for protect_address...
-            edit = move = create = ''
+            edit = move = ''
         else:
-            edit, move, create = edit.lower(), move.lower(), create.lower()
+            edit, move = edit.lower(), move.lower()
         if throttle:
             put_throttle()
         if reason == None:
@@ -2211,13 +2211,21 @@ not supported by PyWikipediaBot!"""
             #Translate 'none' to ''
             if edit == 'none': edit = ''
             if move == 'none': move = ''
-            if create == 'none': create = ''
-
+            if duration == 'none' or duration == None: duration = 'infinite'
+            if cascading == False: cascading = '0'
+            else: cascading = '1'
+            
+            if edit != 'sysop' or move != 'sysop':
+                # You can't block a page as autoconfirmed and cascading, prevent the error
+                cascading = '0'
+                output(u"NOTE: The page can't be blocked with cascading and not also with only-sysop. Set cascading \"off\"")
+                
             predata = {
+                'mwProtect-cascade': cascading,
                 'mwProtect-level-edit': edit,
                 'mwProtect-level-move': move,
-                'mwProtect-level-create': create,
-                'mwProtect-reason': reason
+                'mwProtect-reason': reason,
+                'mwProtect-expiry': duration,
             }
             if token:
                 predata['wpEditToken'] = token
