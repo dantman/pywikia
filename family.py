@@ -2788,7 +2788,7 @@ class Family:
     def version(self, code):
         # Don't use this, use versionnumber() instead. This only exists
         # to not break family files.
-        return "1.12alpha"
+        return '1.13alpha'
 
     def versionnumber(self, code):
         R = re.compile(r"(\d+).(\d+)")
