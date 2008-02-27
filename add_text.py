@@ -107,7 +107,7 @@ def untaggedGenerator(untaggedProject, limit = 500):
         raise NothingFound('Nothing found! Try to use the tool by yourself to be sure that it works!')
     else:
         for result in results:
-            yield wikipedia.Page(self.site, result)
+            yield wikipedia.Page(wikipedia.getSite(), result)
 
 def add_text(page = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
              always = False, up = False, putText = True, oldTextGiven = None):
