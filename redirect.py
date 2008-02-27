@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Script to resolve double redirects, and to delete broken redirects.
-Requires access to MediaWiki's maintenance pages or to a XML dump file. Delete function requires
-adminship.
+Script to resolve double redirects, and to delete broken redirects. Requires
+access to MediaWiki's maintenance pages or to a XML dump file. Delete
+function requires adminship.
 
 Syntax:
 
@@ -106,9 +106,9 @@ class RedirectGenerator:
 
     def get_redirects_from_dump(self, alsoGetPageTitles = False):
         '''
-        Loads a local XML dump file, looks at all pages which have the redirect flag
-        set, and finds out where they're pointing at.
-        Returns a dictionary where the redirect names are the keys and the redirect
+        Load a local XML dump file, look at all pages which have the
+        redirect flag set, and find out where they're pointing at. Return
+        a dictionary where the redirect names are the keys and the redirect
         targets are the values.
         '''
         xmlFilename = self.xmlFilename
@@ -126,7 +126,8 @@ class RedirectGenerator:
             if readPagesCount % 10000 == 0:
                 wikipedia.output(u'%i pages read...' % readPagesCount)
             if len(self.namespaces) > 0:
-                if wikipedia.Page(site, entry.title).namespace() not in self.namespaces:
+                if wikipedia.Page(site, entry.title).namespace() \
+                        not in self.namespaces:
                     continue
             if alsoGetPageTitles:
                 pageTitles.add(entry.title.replace(' ', '_'))
@@ -136,8 +137,11 @@ class RedirectGenerator:
                 target = m.group(1)
                 # There might be redirects to another wiki. Ignore these.
                 for code in site.family.langs.keys():
-                    if target.startswith('%s:' % code) or target.startswith(':%s:' % code):
-                        wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.title, code))
+                    if target.startswith('%s:' % code) \
+                            or target.startswith(':%s:' % code):
+                        wikipedia.output(
+                            u'NOTE: Ignoring %s which is a redirect to %s:'
+                            % (entry.title, code))
                         target = None
                         break
                 # if the redirect does not link to another wiki
@@ -153,7 +157,9 @@ class RedirectGenerator:
                     if '#' in target:
                         target = target[:target.index('#')]
                     if '|' in target:
-                        wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)
+                        wikipedia.output(
+                            u'HINT: %s is a redirect with a pipelink.'
+                            % entry.title)
                         target = target[:target.index('|')]
                     dict[source] = target
         if alsoGetPageTitles:
@@ -170,17 +176,21 @@ class RedirectGenerator:
             wikipedia.output(u'Retrieving special page...')
             maintenance_txt = mysite.getUrl(path)
 
-            # regular expression which finds redirects which point to a non-existing page inside the HTML
+            # regular expression which finds redirects which point to a
+            # non-existing page inside the HTML
             Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)"')
 
             redir_names = Rredir.findall(maintenance_txt)
-            wikipedia.output(u'Retrieved %d redirects from special page.\n' % len(redir_names))
+            wikipedia.output(u'Retrieved %d redirects from special page.\n'
+                             % len(redir_names))
             for redir_name in redir_names:
                 yield redir_name
         else:
             # retrieve information from XML dump
-            wikipedia.output(u'Getting a list of all redirects and of all page titles...')
-            redirs, pageTitles = self.get_redirects_from_dump(alsoGetPageTitles = True)
+            wikipedia.output(
+                u'Getting a list of all redirects and of all page titles...')
+            redirs, pageTitles = self.get_redirects_from_dump(
+                                            alsoGetPageTitles=True)
             for (key, value) in redirs.iteritems():
                 if value not in pageTitles:
                     yield key
@@ -195,10 +205,12 @@ class RedirectGenerator:
             wikipedia.output(u'Retrieving special page...')
             maintenance_txt = mysite.getUrl(path)
 
-            # regular expression which finds redirects which point to another redirect inside the HTML
+            # regular expression which finds redirects which point to
+            # another redirect inside the HTML
             Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)">')
             redir_names = Rredir.findall(maintenance_txt)
-            wikipedia.output(u'Retrieved %i redirects from special page.\n' % len(redir_names))
+            wikipedia.output(u'Retrieved %i redirects from special page.\n'
+                             % len(redir_names))
             for redir_name in redir_names:
                 yield redir_name
         else:
@@ -210,7 +222,8 @@ class RedirectGenerator:
                 # redirect as well
                 if num > self.offset and dict.has_key(value):
                     yield key
-                    wikipedia.output(u'\nChecking redirect %i of %i...' % (num + 1, len(dict)))
+                    wikipedia.output(u'\nChecking redirect %i of %i...'
+                                     % (num + 1, len(dict)))
 
 class RedirectRobot:
     def __init__(self, action, generator, always = False):
@@ -220,7 +233,8 @@ class RedirectRobot:
 
     def prompt(self, question):
         if not self.always:
-            choice = wikipedia.inputChoice(question, ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+            choice = wikipedia.inputChoice(question, ['Yes', 'No', 'All'],
+                                           ['y', 'N', 'a'], 'N')
             if choice == 'n':
                 return False
             elif choice == 'a':
@@ -235,7 +249,8 @@ class RedirectRobot:
             redir_page = wikipedia.Page(wikipedia.getSite(), redir_name)
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir_page.title())
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                             % redir_page.title())
             try:
                 targetPage = redir_page.getRedirectTarget()
             except wikipedia.IsNotRedirectPage:
@@ -246,12 +261,15 @@ class RedirectRobot:
                 try:
                     targetPage.get()
                 except wikipedia.NoPage:
-                    if self.prompt(u'Do you want to delete %s?' % redir_page.aslink()):
+                    if self.prompt(u'Do you want to delete %s?'
+                                   % redir_page.aslink()):
                         redir_page.delete(reason, prompt = False)
                 except wikipedia.IsRedirectPage:
-                    wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
+                    wikipedia.output(
+            u'Redirect target is also a redirect! Won\'t delete anything.')
                 else:
-                    wikipedia.output(u'Redirect target does exist! Won\'t delete anything.')
+                    wikipedia.output(
+            u'Redirect target does not exist! Won\'t delete anything.')
                 # idle for 1 minute
             wikipedia.output(u'')
             wikipedia.put_throttle()
@@ -262,27 +280,29 @@ class RedirectRobot:
             redir = wikipedia.Page(mysite, redir_name)
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir.title())
-            newRedir   = redir
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                             % redir.title())
+            newRedir = redir
             redirList = []  # bookkeeping to detect loops
             while True:
-                redirList.append(u'%s:%s' % (newRedir  .site().lang, newRedir  .sectionFreeTitle()))
+                redirList.append(u'%s:%s' % (newRedir.site().lang,
+                                             newRedir.sectionFreeTitle()))
                 try:
                     targetPage = newRedir.getRedirectTarget()
                 except wikipedia.IsNotRedirectPage:
                     if len(redirList) == 1:
-                        wikipedia.output(u'Skipping: Page %s is not a redirect.' % redir.aslink())
+                        wikipedia.output(u'Skipping: Page %s is not a redirect.'
+                                         % redir.aslink())
                         break  #do nothing
                     elif len(redirList) == 2:
                         wikipedia.output(
-                            u'Skipping: Redirect target %s is not a redirect.' % redir.aslink())
+                            u'Skipping: Redirect target %s is not a redirect.'
+                            % redir.aslink())
                         break  # do nothing
-                except wikipedia.NoPage:
-                    wikipedia.output(u'Warning: %s doesn\'t exist.' % newRedir  .aslink())
                 except wikipedia.SectionError:
                     wikipedia.output(
                         u'Warning: Redirect target section %s doesn\'t exist.'
-                          % newRedir  .aslink())
+                          % newRedir.aslink())
                 except wikipedia.BadTitle, e:
                     # str(e) is in the format 'BadTitle: [[Foo]]'
                     wikipedia.output(
@@ -291,22 +311,24 @@ class RedirectRobot:
                 except wikipedia.NoPage:
                     wikipedia.output(
                         u'Warning: Redirect target %s doesn\'t exist.'
-                          % newRedir  .aslink())
+                          % newRedir.aslink())
                 else:
                     wikipedia.output(
                         u'   Links to: %s.'
                           % targetPage.aslink())
                     if targetPage.site() != mysite:
                         wikipedia.output(
-                            u'Warning: redirect target (%s) is on a different site.'
-                          % (targetPage.aslink()))
+                        u'Warning: redirect target (%s) is on a different site.'
+                             % (targetPage.aslink()))
                         if self.always:
                             break  # skip if automatic 
                     # watch out for redirect loops
-                    if redirList.count((u'%s:%s' 
-                           % (targetPage.site().lang, targetPage.sectionFreeTitle()))) > 0:
+                    if redirList.count(u'%s:%s' 
+                                       % (targetPage.site().lang,
+                                          targetPage.sectionFreeTitle())
+                                      ) > 0:
                         wikipedia.output(
-                            u'Warning: Redirect target %s forms a redirect loop.'
+                           u'Warning: Redirect target %s forms a redirect loop.'
                               % targetPage.aslink())
                         break  #TODO: deal with loop
                     else:
@@ -346,23 +368,26 @@ u"Unexpected error occurred trying to save [[%s]]: %s"
     def run(self):
         if self.action == 'double':
             # get summary text
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_double))
+            wikipedia.setAction(
+                wikipedia.translate(wikipedia.getSite(), msg_double))
             self.fix_double_redirects()
         elif self.action == 'broken':
             self.delete_broken_redirects()
 
 def main():
     # read command line parameters
-    # what the bot should do (either resolve double redirs, or delete broken redirs)
+    # what the bot should do (either resolve double redirs, or delete broken
+    # redirs)
     action = None
-    # where the bot should get his infos from (either None to load the maintenance
-    # special page from the live wiki, or the filename of a local XML dump file)
+    # where the bot should get his infos from (either None to load the
+    # maintenance special page from the live wiki, or the filename of a
+    # local XML dump file)
     xmlFilename = None
     # Which namespace should be processed when using a XML dump
     # default to -1 which means all namespaces will be processed
     namespaces = []
-    # at which redirect shall we start searching double redirects again (only with dump)
-    # default to -1 which means all redirects are checked
+    # at which redirect shall we start searching double redirects again
+    # (only with dump); default to -1 which means all redirects are checked
     offset = -1
     always = False
     for arg in wikipedia.handleArgs():
@@ -372,7 +397,8 @@ def main():
             action = 'broken'
         elif arg.startswith('-xml'):
             if len(arg) == 4:
-                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
+                xmlFilename = wikipedia.input(
+                                u'Please enter the XML dump\'s filename: ')
             else:
                 xmlFilename = arg[5:]
         elif arg.startswith('-namespace:'):
