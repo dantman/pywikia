@@ -1364,13 +1364,22 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
+                
+                
+            # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
             if data != u"":
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
                 output(u"ERROR: Unexpected response from wiki server.")
                 output(u"       %s (%s) " % (response.status, response.reason))
                 output(data)
-                return response.status, response.reason, data
+                # Unexpected responses should raise an error and not pass,
+                # be it silently or loudly. This should raise an error
+                
+            if 'name="wpTextbox1"' in data and 'var wgAction = "submit"' in data:
+                # We are on the preview page, so the page was not saved
+                raise PageNotSaved
+                
             return response.status, response.reason, data
 
     def canBeEdited(self):
