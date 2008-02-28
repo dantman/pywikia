@@ -1364,10 +1364,9 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
-                
-                
+
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
-            if data != u"":
+            if data.strip() != u"":
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
                 output(u"ERROR: Unexpected response from wiki server.")
@@ -1375,11 +1374,11 @@ not supported by PyWikipediaBot!"""
                 output(data)
                 # Unexpected responses should raise an error and not pass,
                 # be it silently or loudly. This should raise an error
-                
+
             if 'name="wpTextbox1"' in data and 'var wgAction = "submit"' in data:
                 # We are on the preview page, so the page was not saved
                 raise PageNotSaved
-                
+
             return response.status, response.reason, data
 
     def canBeEdited(self):
@@ -2223,12 +2222,12 @@ not supported by PyWikipediaBot!"""
             if duration == 'none' or duration == None: duration = 'infinite'
             if cascading == False: cascading = '0'
             else: cascading = '1'
-            
+
             if edit != 'sysop' or move != 'sysop':
                 # You can't block a page as autoconfirmed and cascading, prevent the error
                 cascading = '0'
                 output(u"NOTE: The page can't be blocked with cascading and not also with only-sysop. Set cascading \"off\"")
-                
+
             predata = {
                 'mwProtect-cascade': cascading,
                 'mwProtect-level-edit': edit,
@@ -2860,7 +2859,7 @@ class Throttle(object):
     def __call__(self, requestsize=1):
         """
         Block the calling program if the throttle time has not expired.
-        
+
         Parameter requestsize is the number of Pages to be read/written;
         multiply delay time by an appropriate factor.
         """
@@ -3077,7 +3076,7 @@ def isDisabled(text, index, tags = ['*']):
 def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     """
     Return a dict of interlanguage links found in text.
-    
+
     Dict uses language codes as keys and Page objects as values.
     Do not call this routine directly, use Page.interwiki() method
     instead.
