@@ -78,7 +78,8 @@ templateToRemove = {
             'he':[ur'\{\{(?:[Tt]emplate:|תבנית:|)מוגן(?: חלקית)?(?:\|?.*)\}\}'],
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
-                  r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
+                  r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}',
+                  r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',],
             'ja':[ur'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'pt':[r'\{\{(?:[Tt]emplate:|)[Pp]rotegido(?:\|*)\}\}',
                   r'\{\{(?:[Tt]emplate:|)(?:[Ss]emi-|)[Pp]rotegid[ao](?:IP|[- _]ip|PP|)\}\}'],
@@ -99,21 +100,21 @@ templateSemiProtection = {
 # Regex to get the total-protection template
 templateTotalProtection = {
             'en': None, 
-            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}'],
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)'],
             }
 # Regex to get the semi-protection move template
 templateSemiMoveProtection = {
             'en': None, 
-            'it': None,
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccospostamento(?:|[ _]scad\|.*?|\|.*?)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)移動半保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)'],
             }
 # Regex to get the total-protection move template 
 templateTotalMoveProtection = {
             'en': None, 
-            'it': None,
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccospostamento(?:|[ _]scad\|.*?|\|.*?)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)移動保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)'],
             }
