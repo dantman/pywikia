@@ -114,7 +114,7 @@ class RedirectGenerator:
         targets are the values.
         '''
         xmlFilename = self.xmlFilename
-        dict = {}
+        redict = {}
         # open xml dump and read page titles out of it
         dump = xmlreader.XmlDump(xmlFilename)
         site = wikipedia.getSite()
@@ -151,23 +151,24 @@ class RedirectGenerator:
                     source = entry.title.replace(' ', '_')
                     target = target.replace(' ', '_')
                     # remove leading and trailing whitespace
-                    target = target.strip()
+                    target = target.strip('_')
                     # capitalize the first letter
                     if not wikipedia.getSite().nocapitalize:
-                        source = source[0].upper() + source[1:]
-                        target = target[0].upper() + target[1:]
+                        source = source[:1].upper() + source[1:]
+                        target = target[:1].upper() + target[1:]
                     if '#' in target:
-                        target = target[:target.index('#')]
+                        target = target[:target.index('#')].rstrip("_")
                     if '|' in target:
                         wikipedia.output(
                             u'HINT: %s is a redirect with a pipelink.'
                             % entry.title)
-                        target = target[:target.index('|')]
-                    dict[source] = target
+                        target = target[:target.index('|')].rstrip("_")
+                    if target: # in case preceding steps left nothing
+                        redict[source] = target
         if alsoGetPageTitles:
-            return dict, pageTitles
+            return redict, pageTitles
         else:
-            return dict
+            return redict
 
     def retrieve_broken_redirects(self):
         if self.xmlFilename == None:
@@ -216,16 +217,16 @@ class RedirectGenerator:
             for redir_name in redir_names:
                 yield redir_name
         else:
-            dict = self.get_redirects_from_dump()
+            redict = self.get_redirects_from_dump()
             num = 0
-            for (key, value) in dict.iteritems():
+            for (key, value) in redict.iteritems():
                 num += 1
                 # check if the value - that is, the redirect target - is a
                 # redirect as well
-                if num > self.offset and dict.has_key(value):
+                if num > self.offset and redict.has_key(value):
                     yield key
                     wikipedia.output(u'\nChecking redirect %i of %i...'
-                                     % (num + 1, len(dict)))
+                                     % (num + 1, len(redict)))
 
 class RedirectRobot:
     def __init__(self, action, generator, always = False):
