@@ -44,6 +44,12 @@ Furthermore, the following command line parameters are supported:
                   the predefined message texts with original and replacements
                   inserted.
 
+-sleep:123        If you use -fix you can check multiple regex at the same time
+                  in every page. This can lead to a great waste of CPU because
+                  the bot will check every regex without waiting using all the
+                  resources. This will slow it down between a regex and another
+                  in order not to waste too much CPU.
+
 -fix:XYZ          Perform one of the predefined replacements tasks, which are
                   given in the dictionary 'fixes' defined inside the file
                   fixes.py.
@@ -100,7 +106,7 @@ talk about HTTP, where the typo has become part of the standard:
 #
 
 from __future__ import generators
-import sys, re
+import sys, re, time
 import wikipedia, pagegenerators, catlib, config
 
 # Imports predefined replacements tasks from fixes.py
@@ -230,7 +236,7 @@ class ReplaceRobot:
     A bot that can do text replacements.
     """
     def __init__(self, generator, replacements, exceptions = {}, acceptall = False, allowoverlap = False,
-                 recursive = False, addedCat = None):
+                 recursive = False, addedCat = None, sleep = None):
         """
         Arguments:
             * generator    - A generator that yields Page objects.
@@ -269,6 +275,7 @@ class ReplaceRobot:
         self.allowoverlap = allowoverlap
         self.recursive = recursive
         self.addedCat = addedCat
+        self.sleep = sleep
 
     def isTitleExcepted(self, title):
         """
@@ -302,6 +309,8 @@ class ReplaceRobot:
         if self.exceptions.has_key('inside'):
             exceptions += self.exceptions['inside']
         for old, new in self.replacements:
+            if self.sleep != None:
+                time.sleep(self.sleep)
             new_text = wikipedia.replaceExcept(new_text, old, new, exceptions, allowoverlap = self.allowoverlap)
         return new_text
 
@@ -423,6 +432,8 @@ def main():
     # Load default summary message.
     # BUG WARNING: This is probably incompatible with the -lang parameter.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
+    # Between a regex and another (using -fix) sleep some time (not to waste too much CPU
+    sleep = None
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
@@ -457,6 +468,8 @@ def main():
             exceptions['inside-tags'].append(arg[17:])
         elif arg.startswith('-fix:'):
             fix = arg[5:]
+        elif arg.startswith('-sleep:'):
+            sleep = float(arg[7:])           
         elif arg == '-always':
             acceptall = True
         elif arg == '-recursive':
@@ -594,7 +607,7 @@ LIMIT 200""" % (whereClause, exceptClause)
         preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 60)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, None, sleep)
     bot.run()
 
 if __name__ == "__main__":
