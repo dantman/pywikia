@@ -4945,10 +4945,10 @@ your connection is down. Retrying in %i minutes..."""
         try:
             if redDefault == red:
                 redirKeywords = [red] + self.family.redirect[self.lang]
-                redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
+                redirKeywordsR = r'(?:redirect|' + '|'.join(redirKeywords) + ')' # always redirect as default
             else:
                 redirKeywords = [red] + self.family.redirect[self.lang]
-                redirKeywordsR = r'(?:' + redDefault + '|'.join(redirKeywords) + ')'
+                redirKeywordsR = r'(?:redirect|' + redDefault + '|'.join(redirKeywords) + ')'
         except KeyError:
             # no localized keyword for redirects
             if redDefault == red:
