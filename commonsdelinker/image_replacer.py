@@ -104,6 +104,7 @@ class Replacer(object):
 		remove_from_list = []
 		count = 0
 		for replacement in replacements:
+			if count == self.config.get('replacer_rate_limit', -1): break
 			res = self.examine_revision_history(
 				revisions, replacement, username)
 			if res and self.allowed_replacement(replacement) and \
@@ -112,7 +113,6 @@ class Replacer(object):
 				remove_from_list.append(replacement.group(0))
 				output('Replacing %s by %s: %s' % replacement.groups())
 			count += 1
-			if count == self.config.get('replacement_rate_limit', -1): break
 		self.database.commit()
 		
 		if remove_from_list and self.config.get('clean_list', False):

@@ -284,6 +284,7 @@ class Delinker(threadpool.Thread):
 						(page, text, new_text, m_summary)):
 					return 'skipped'
 				
+				is_retry = False
 				while True:
 					try:
 						if self.CommonsDelinker.config.get('edit', True) and not \
@@ -299,7 +300,10 @@ class Delinker(threadpool.Thread):
 						output(u'Got EditConflict trying to remove %s from %s:%s.' % \
 							(image, site, page_title))
 						return self.replace_image(image, site, page_title, summary, replacement = None)
-					except (wikipedia.LockedPage, wikipedia.PageNotSaved):
+					except wikipedia.PageNotSaved:
+						if is_retry: return 'failed'
+						is_retry = True
+					except wikipedia.LockedPage:
 						return 'failed'
 					output(u'Retrying...')
 			else:
