@@ -231,7 +231,7 @@ netext = {
     'fa':u'{{جا:خوشامد}} %s',
     'he':u'{{ס:ברוך הבא}} %s',
     'id':u'{{sdbot|%s}}',
-    'it':u'{{Benvebot}} %s',
+    'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
     'ja':u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
@@ -293,8 +293,10 @@ bad_pag = {
     'no': u'Bruker:JhsBot/Daarlige ord',
     'sq': u'User:Eagleal/Bad_names',
     }
+
+timeselected = u' ~~~~~' # Defining the time used after the signature
+
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
-timeselected = u'--~~~~~'
 report_text = {
     'commons':u"\n*{{user3|%s}}" + timeselected,
     'ar':u"\n*{{user13|%s}}" + timeselected,
@@ -331,7 +333,7 @@ whitelist_pg = {
 final_new_text_additions = {
     'ar':u'',
     'en':u'',
-    'it':u'',
+    'it':u'\n<!-- fine template di benvenuto -->',
     'zh':'<small>(via ~~~)</small>',
     }
 
@@ -530,6 +532,9 @@ def logmaker(wsite, welcomed_users, logg, summ2, usernam, contrib):
             return False
 
 def mainSettings():
+    global filename
+    global random
+    global savedata
     """ Function to get the settings via arg and return them """
     number = 1                  # number of edits that an user required to be welcomed
     numberlog = 15              # number of users that are required to add the log :)
@@ -543,7 +548,6 @@ def mainSettings():
     sign = ' --~~~~'            # default signature
     random = False              # should signature be random or not
     savedata = False            # should save the signature index or not
-    filename = 'welcome.data'   # file where is stored the random signature index
     fileOption = False          # check if the user wants to use a file or the wikipage
     fileSignName = None         # File name, default: None
 
@@ -594,6 +598,8 @@ def mainSettings():
             else:
                 numberlog = int(arg[11:])
     # TODO: Maybe it's better change the tuple with a dictionary..
+    wsite = wikipedia.getSite()
+    filename = 'welcome-%s-%s.data' % (wsite.family.name, wsite.lang)  # file where is stored the random signature index
     return (None, ask, filename, fileOption, fileSignName, filter_wp, limit, log_variable, number, numberlog, offset_variable, random, recursive,
             savedata, sign, time_variable)
 
