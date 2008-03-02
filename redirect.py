@@ -333,7 +333,15 @@ class RedirectRobot:
                         wikipedia.output(
                            u'Warning: Redirect target %s forms a redirect loop.'
                               % targetPage.aslink())
-                        break  #TODO: deal with loop
+
+                        content=targetPage.get(get_redirect=True)
+			if wikipedia.Page(wikipedia.getSite(), u"Template:Db-r1").exists():
+                            wikipedia.output(u"Tagging redirect for deletion")
+                            # Delete the two redirects
+                            targetPage.put("{{db-r1}}\n"+content, "Tagging for speedy deletion")
+                            redir.put("{{db-r1}}\n"+content, "Tagging for speedy deletion")
+                        else:
+                            break # TODO Better implement loop redirect
                     else:
                         newRedir = targetPage
                         continue #
