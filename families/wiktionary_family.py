@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import urllib
 import family, config
 
@@ -64,6 +64,7 @@ class Family(family.Family):
             'hi': u'विक्षनरी',
             'hr': u'Wječnik',
             'hu': u'Wikiszótár',
+            'hy': u'Վիքիբառարան',
             'io': u'Wikivortaro',
             'is': u'Wikiorðabók',
             'it': u'Wikizionario',
@@ -134,7 +135,7 @@ class Family(family.Family):
             'hr': u'Razgovor Wječnik',
             'hsb': u'Wiktionary diskusija',
             'hu': u'Wikiszótár vita',
-            'hy': u'Wiktionary քննարկում',
+            'hy': u'Վիքիբառարանի քննարկում',
             'ia': u'Discussion Wiktionary',
             'id': u'Pembicaraan Wiktionary',
             'io': u'Wikivortaro Debato',
