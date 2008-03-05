@@ -5007,6 +5007,10 @@ your connection is down. Retrying in %i minutes..."""
         """Return URL path for api.php (if enabled on this Site)."""
         return self.family.apipath(self.lang)
 
+    def scriptpath(self):
+        """Return URL prefix for scripts on this site ({{SCRIPTPATH}} value)"""
+        return self.family.scriptpath(self.lang)
+
     def protocol(self):
         """Return protocol ('http' or 'https') for access to this site."""
         return self.family.protocol(self.lang)
