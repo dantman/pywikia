@@ -112,7 +112,7 @@ msg_add={
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
-    'zh':u'機器人:正在新增目錄 [[Category:%s]]',
+    'zh':u'機器人:新增目錄 [[Category:%s]]',
     }
 
 msg_change={
@@ -141,7 +141,7 @@ msg_change={
     'pl':u'Robot przenosi %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
-    'zh':u'機器人:正在變更目錄 [[%s]]',
+    'zh':u'機器人:變更目錄 [[%s]]',
     }
 
 deletion_reason_move = {
@@ -167,7 +167,7 @@ deletion_reason_move = {
     'pl':u'Robot przenosi kategorię do [[:Category:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[:Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[:Category:%s|%s]]',
-    'zh':u'機器人:正在移動目錄至 [[:Category:%s]]',
+    'zh':u'機器人:移動目錄至 [[:Category:%s|%s]]',
     }
 
 cfd_templates = {
@@ -426,7 +426,8 @@ class CategoryListifyRobot:
         'nds-nl':u'Bot: lieste van %s (%d pagina\'s)',
         'nl':u'Bot: Lijst van %s (%d pagina\'s)',
         'sv':u'Robot: Skapar en lista från %s (%d)',
-        'pt':u'Bot: Listando de %s (%d entradas)'
+        'pt':u'Bot: Listando de %s (%d entradas)',
+        'zh':u'機器人: 從%s提取列表(%d個項目)',
     }
 
     def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False, subCats = False, talkPages = False, recurse = False):
@@ -484,6 +485,7 @@ class CategoryRemoveRobot:
         'nl':u'Bot: Categorie is opgeheven',
         'pt':u'Bot: Categoria foi unida',
         'sv':u'Robot: Kategorin upplöstes',
+        'zh':u'機器人:本目錄已解散',
     }
 
     msg_remove={
@@ -502,6 +504,7 @@ class CategoryRemoveRobot:
         'pt':u'Bot: Removendo [[Categoria:%s]]',
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
         'sv':u'Robot: Tar bort från %s',
+        'zh':u'機器人:移除目錄%s',
     }
 
     def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False, titleRegex = None, inPlace = False):
@@ -595,7 +598,7 @@ class CategoryTidyRobot:
             contextLength = 500
         if full_text.startswith(u'[['): # probably an image
             # Add extra paragraph.
-            contextLength = full_text.index('\n\n', contextLength+2)
+            contextLength = full_text.find('\n\n', contextLength+2)
         if contextLength > 1000 or contextLength < 0:
             contextLength = 500
         print
@@ -743,6 +746,7 @@ class CategoryTreeRobot:
             'pt': u'(também em %s)',
             'sv': u'(också i %s)',
             'ср': u'(такође у %s)',
+            'zh': u'(也在 %s)',
             }
 
         result = u'#' * currentDepth

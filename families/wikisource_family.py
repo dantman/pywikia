@@ -53,6 +53,7 @@ class Family(family.Family):
             'hr': u'Wikizvor',
             'ht': u'Wikisòrs',
             'hu': u'Wikiforrás',
+            'hy': u'Վիքիդարան',
             'is': u'Wikiheimild',
             'la': u'Vicifons',
             'lt': u'Vikišaltiniai',
@@ -92,7 +93,7 @@ class Family(family.Family):
             'hr': u'Razgovor o Wikizvoru',
             'ht': u'Diskisyon Wikisòrs',
             'hu': u'Wikiforrás vita',
-            'hy': u'Wikisource քննարկում',
+            'hy': u'Վիքիդարանի քննարկում',
             'id': u'Pembicaraan Wikisource',
             'is': u'Wikiheimildspjall',
             'it': u'Discussioni Wikisource',
@@ -224,33 +225,39 @@ class Family(family.Family):
         }
 
         self.namespaces[108] = {
+            'he': u'מחבר',
             'it': u'Pagina',
             'pt': u'Em Tradução',
             'sv': u'Index',
         }
 
         self.namespaces[109] = {
+            'he': u'שיחת מחבר',
             'it': u'Discussioni pagina',
             'pt': u'Discussão Em Tradução',
             'sv': u'Indexdiskussion',
         }
 
         self.namespaces[110] = {
+            'he': u'תרגום',
             'it': u'Indice',
             'pt': u'Anexo',
         }
 
         self.namespaces[111] = {
+            'he': u'שיחת תרגום',
             'it': u'Discussioni indice',
             'pt': u'Anexo Discussão',
         }
 
         self.namespaces[112] = {
             'fr': u'Livre',
+            'he': u'מפתח',
         }
 
         self.namespaces[113] = {
             'fr': u'Discussion Livre',
+            'he': u'שיחת מפתח',
         }
 
         self.alphabetic = ['ang','ar','az','bg','bs','ca','cs','cy',
