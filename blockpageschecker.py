@@ -80,7 +80,7 @@ templateToRemove = {
                   r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',],
-            'ja':[ur'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
+            'ja':[ur'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:性急|)(?:[Ss]|)(?:\|.+|)?\}\}(\n+?|)'],
             'pt':[r'\{\{(?:[Tt]emplate:|)[Pp]rotegido(?:\|*)\}\}',
                   r'\{\{(?:[Tt]emplate:|)(?:[Ss]emi-|)[Pp]rotegid[ao](?:IP|[- _]ip|PP|)\}\}'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected(?:\|*)\}\}',r'\{\{(?:[Tt]emplate:|)Mini-protected(?:\|*)\}\}',
