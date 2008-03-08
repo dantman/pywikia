@@ -193,7 +193,7 @@ class Category(wikipedia.Page):
         while True:
             path = self.site().get_address(self.urlname())
             if purge:
-                path += '&action=purge''
+                path += '&action=purge'
             if currentPageOffset:
                 path += '&from=' + currentPageOffset
                 wikipedia.output('Getting [[%s]] starting at %s...'
