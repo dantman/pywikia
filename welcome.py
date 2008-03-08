@@ -787,7 +787,7 @@ def main(settingsBot):
             # Check if the user has been already blocked.
             ki = blocked(wsite,username)
             if ki == True:
-                wikipedia.output(u'%s has been blocked! Skipping...' % username.titleWithoutNamespace())
+                wikipedia.output(u'%s has been blocked! Skipping...' % usertalkpage.titleWithoutNamespace())
                 continue
             # Understand if the user has a bad-username.
             for word in elenco:
@@ -815,7 +815,7 @@ def main(settingsBot):
             if baduser:
                 while 1:
                     if ask == True:
-                        wikipedia.output(u'%s may have an unwanted username, what shall i do?' % username.titleWithoutNamespace())
+                        wikipedia.output(u'%s may have an unwanted username, what shall I do?' % usertalkpage.titleWithoutNamespace())
                         answer = wikipedia.input(u'[B]lock or [W]elcome?')
                         for w in block:
                             if w in answer:
@@ -823,7 +823,7 @@ def main(settingsBot):
                                     # Check if the user has been already blocked (second check).
                                     ki = blocked(wsite, username)
                                     if ki == True:
-                                        wikipedia.output(u'%s has been blocked! Skipping him...' % username.titleWithoutNamespace())
+                                        wikipedia.output(u'%s has been blocked! Skipping him...' % usertalkpage.titleWithoutNamespace())
                                         continue
                                     report(wsite, rep_page, username, com, final_rep)
                                     break
@@ -835,7 +835,7 @@ def main(settingsBot):
                                 baduser = False
                                 break
                     elif ask == False:
-                        wikipedia.output(u'%s is possibly an unwanted username. He will be reported.' % username.titleWithoutNamespace())
+                        wikipedia.output(u'%s is possibly an unwanted username. He will be reported.' % usertalkpage.titleWithoutNamespace())
                         if not usertalkpage.exists():
                             report(wsite, rep_page, username, com, final_rep)
                             break
@@ -857,7 +857,7 @@ def main(settingsBot):
                         wikipedia.output(u'An edit conflict has occured, skipping this user.')
                         continue
                 else:
-                    wikipedia.output(u'%s has been already welcomed when i was loading all the users... skipping' % username.titleWithoutNamespace())
+                    wikipedia.output(u'%s has been already welcomed when i was loading all the users... skipping' % usertalkpage.titleWithoutNamespace())
                     continue
             # That's the log
             if log_variable == True and logg:
