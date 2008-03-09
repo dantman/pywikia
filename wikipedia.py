@@ -1151,7 +1151,7 @@ not supported by PyWikipediaBot!"""
             page_put_queue.mutex.acquire()
             try:
                 _putthread.start()
-            except AssertionError:
+            except (AssertionError, RuntimeError):
                 pass
         finally:
             page_put_queue.mutex.release()
