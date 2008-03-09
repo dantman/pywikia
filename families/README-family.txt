@@ -138,21 +138,6 @@ class Family(family.Family):          # REQUIRED
         # When both at the bottom should categories come after interwikilinks?
         self.categories_last = []
 
-    # If your wiki uses a translated version of the "#REDIRECT" keyword,
-    # enter it in this dict; the key is the language code
-    # Note that redirect codes are case-insensitive, so it is enough
-    # to enter the code in lowercase here.
-    redirect = {
-        'sk': [u'presmeruj'],
-    }
-
-    # Same for magic words "PAGENAME" and "PAGENAMEE":
-    pagename = {
-    }
-
-    pagenamee = {
-    }
-
     def protocol(self, code):
         """
         Can be overridden to return 'https'. Other protocols are not supported.
