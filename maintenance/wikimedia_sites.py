@@ -20,7 +20,7 @@ exceptions = ['www']
 for family in families:
     print 'Checking family %s:' % family
 
-    languages_by_size = wikipedia.Family(family).languages_by_size
+    original = wikipedia.Family(family).languages_by_size
     obsolete = wikipedia.Family(family).obsolete
 
     url = 'http://s23.org/wikistats/%s' % familiesDict[family]
@@ -33,29 +33,29 @@ for family in families:
     else:
         p = re.compile(r'\[http://([a-z\-]{2,}).%s.org/wiki/ \1]' % family)
 
-    index = 0
+    new = []
     for lang in p.findall(text):
         if lang in obsolete or lang in exceptions:
             # Ignore this language
             continue
-        if index >= len(languages_by_size):
-            print 'Unmatched languages: site - %s, family file ended' % lang
-            break
-        if lang == languages_by_size[index]:
-            # Matched languages
+        new.append(lang)
+
+    if original == new:
+        print 'The lists match!'
+    else:
+        print "The lists don't match, the new list is:"
+        print '        self.languages_by_size = ['
+        line = '            '
+        index = 0
+        for lang in new:
             index += 1
-        else:
-            # Unmatched languages
-            print 'Unmatched languages: site - %s, family file - %s' % (lang, languages_by_size[index])
-            if lang in languages_by_size and index < languages_by_size.index(lang):
-                # Try to increment the index until it reaches the current language
-                index += 1
-                while index < len(languages_by_size) and languages_by_size[index] != lang and lang in languages_by_size and index < languages_by_size.index(lang):
-                    print 'Unmatched languages: site - %s, family file - %s' % (lang, languages_by_size[index])
-                    index += 1
-                # Now increment the index again for the next iteration
-                index += 1
-    if index < len(languages_by_size):
-        # Special-case exception
-        if family != 'wikinews' or languages_by_size[index] != 'ta':
-            print 'Unmatched languages: site ended, family file - %s' % languages_by_size[index]
+            if index > 1:
+                line += u' '
+            line += u"'%s'," % lang
+            if index == 10:
+                print line
+                line = '            '
+                index = 0
+        if index > 0:
+            print line
+        print '        ]'
