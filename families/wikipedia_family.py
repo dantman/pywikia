@@ -546,7 +546,7 @@ class Family(family.Family):
             'pms': [u'Gestion dij sinònim'],
             'pt':  [u'Desambiguação', u'Disambig', u'Desambig'],
             'rmy': [u'Dudalipen'],
-            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis'],
+            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis', u'Dez'],
             'ru':  [u'Disambig', u'Неоднозначность', u'неоднозначность'],
             'scn': [u'Disambigua', u'Disambig', u'Sigla2', u'Sigla3'],
             'simple': [u'Disambig', u'Disambiguation', u'3CC',u'2CC'],
