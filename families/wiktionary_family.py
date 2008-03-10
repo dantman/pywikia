@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import urllib
 import family, config
 
@@ -29,6 +29,7 @@ class Family(family.Family):
             'kw', 'ln', 'sm', 'si', 'za', 'roa-rup', 'mh', 'ba', 'or', 'sn',
             'ak', 'bh', 'lo', 'bm', 'yo', 'bi', 'to', 'aa', 'av', 'rn',
             'dz', 'tw', 'om', 'ab', 'my', 'wa', 'sc', 'cr', 'bo', 'rm',
+            'hsb',
         ]
 
         for lang in self.languages_by_size:
