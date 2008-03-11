@@ -633,7 +633,7 @@ not supported by PyWikipediaBot!"""
             except SectionError:
                 self._getexception = SectionError
                 raise
-        return self._contents
+        return self._contents.replace('<div id="wikia-credits"><br /><br /><small>From [http://nonciclopedia.wikia.com Nonciclopedia], a [http://www.wikia.com Wikia] wiki.</small></div>', '')
 
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
                      oldid=None, nofollow_redirects=False,
@@ -2442,9 +2442,8 @@ class ImagePage(Page):
         """
         result = []
         history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
-
         if history:
-            lineR = re.compile('<tr><td>.*?</td><td><a href=".+?">(?P<datetime>.+?)</a></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?P<resolution>.*?)</td><td class=".+?">(?P<filesize>.+?)</td><td>(?P<comment>.*?)</td></tr>')
+            lineR = re.compile(r'<tr>(?:<td>.*?</td>){1,2}<td><a href=".+?">(?P<datetime>.+?)</a></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?P<resolution>.*?)</td><td class=".+?">(?P<filesize>.+?)</td><td>(?P<comment>.*?)</td></tr>')
         else:
             # backward compatible code
             history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageHtml())
@@ -4605,7 +4604,7 @@ your connection is down. Retrying in %i minutes..."""
         """Yield ImagePages from Special:Log&type=upload"""
 
         seen = set()
-        regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title="(?P<image>.+?)"\s*>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
+        regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title=".*?"\s*>(?P<image>.+?)</a>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
 
         while True:
             path = self.log_address(number, mode = 'upload')
