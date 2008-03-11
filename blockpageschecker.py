@@ -46,8 +46,8 @@ python blockpageschecker.py -cat:Geography -always
 
 """
 #
-# (C) Wikihermit, 2007
-# (C) Filnik, 2007
+# (C) Wikihermit a.k.a. Monobi, 2007
+# (C) Filnik, 2007-2008
 #
 # Distributed under the terms of the MIT license.
 #
