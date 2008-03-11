@@ -633,8 +633,8 @@ not supported by PyWikipediaBot!"""
             except SectionError:
                 self._getexception = SectionError
                 raise
-        return self._contents.replace('<div id="wikia-credits"><br /><br /><small>From [http://nonciclopedia.wikia.com Nonciclopedia], a [http://www.wikia.com Wikia] wiki.</small></div>', '')
-
+        return self._contents
+    
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
                      oldid=None, nofollow_redirects=False,
                      change_edit_time=True):
