@@ -77,7 +77,7 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
-import os, re, sys, string, pickle, bz2
+import os, re, sys, pickle, bz2
 import wikipedia, catlib, config, pagegenerators
 
 # This is required for the text that is shown when you run this script
@@ -270,13 +270,16 @@ class CategoryDatabase:
         f.close()
 
 def sorted_by_last_name(catlink, pagelink):
-        '''
-        given a Category, returns a Category which has an explicit sort key which
-        sorts persons by their last names.
-        Trailing words in brackets will be removed.
-        Example: If category_name is 'Author' and pl is a Page to
-        [[Alexandre Dumas (senior)]], this function will return this Category:
+        '''Return a Category with key that sorts persons by their last names.
+
+        Parameters: catlink - The Category to be linked
+                    pagelink - the Page to be placed in the category
+        
+        Trailing words in brackets will be removed. Example: If
+        category_name is 'Author' and pl is a Page to [[Alexandre Dumas
+        (senior)]], this function will return this Category:
         [[Category:Author|Dumas, Alexandre]]
+
         '''
         page_name = pagelink.title()
         site = pagelink.site()
@@ -288,28 +291,28 @@ def sorted_by_last_name(catlink, pagelink):
             page_name = match_object.group(1)
         split_string = page_name.split(' ')
         if len(split_string) > 1:
-            # pull last part of the name to the beginning, and append the rest after a comma
-            # e.g. "John von Neumann" becomes "Neumann, John von"
-            sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
+            # pull last part of the name to the beginning, and append the
+            # rest after a comma; e.g., "John von Neumann" becomes
+            # "Neumann, John von"
+            sorted_key = split_string[-1] + ', ' + ' '.join(split_string[:-1])
             # give explicit sort key
             return wikipedia.Page(site, catlink.title() + '|' + sorted_key)
         else:
             return wikipedia.Page(site, catlink.title())
 
 def add_category(sort_by_last_name = False):
-    '''
-    A robot to mass-add a category to a list of pages.
-    '''
+    '''A robot to mass-add a category to a list of pages.'''
     site = wikipedia.getSite()
     if gen:
-        newcatTitle = wikipedia.input(u'Category to add (do not give namespace):')
-        if not wikipedia.getSite().nocapitalize:
+        newcatTitle = wikipedia.input(
+            u'Category to add (do not give namespace):')
+        if not site.nocapitalize:
             newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
 
         # set edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_add) % newcatTitle)
+        wikipedia.setAction(wikipedia.translate(site, msg_add) % newcatTitle)
 
-        cat_namespace = wikipedia.getSite().category_namespaces()[0]
+        cat_namespace = site.category_namespaces()[0]
 
         answer = ''
         for page in gen:
@@ -321,7 +324,9 @@ def add_category(sort_by_last_name = False):
                 if answer == 'a':
                     confirm = ''
                     while confirm not in ('y','n'):
-                        confirm = wikipedia.input(u'This should be used if and only if you are sure that your links are correct! Are you sure? [y/n]:')
+                        confirm = wikipedia.input(u"""\
+This should be used if and only if you are sure that your links are correct!
+Are you sure? [y/n]:""")
                     if confirm == 'n':
                         answer = ''
 
@@ -329,24 +334,31 @@ def add_category(sort_by_last_name = False):
                 try:
                     text = page.get()
                 except wikipedia.NoPage:
-                    wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.title()))
+                    wikipedia.output(u"%s doesn't exist yet. Ignoring."
+                                     % (page.title()))
                     pass
-                except wikipedia.IsRedirectPage,arg:
-                    redirTarget = wikipedia.Page(site,arg.args[0])
-                    wikipedia.output(u"WARNING: %s is redirect to %s. Ignoring." % (page.title(), redirTarget.title()))
+                except wikipedia.IsRedirectPage, arg:
+                    redirTarget = wikipedia.Page(site, arg.args[0])
+                    wikipedia.output(
+                        u"WARNING: %s is redirect to %s. Ignoring."
+                        % (page.title(), redirTarget.title()))
                 else:
                     cats = page.categories()
                     # Show the title of the page we're working on.
                     # Highlight the title in purple.
-                    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+                    wikipedia.output(
+                        u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                        % page.title())
                     wikipedia.output(u"Current categories:")
                     for cat in cats:
                         wikipedia.output(u"* %s" % cat.title())
-                    catpl = wikipedia.Page(site, cat_namespace + ':' + newcatTitle)
+                    catpl = wikipedia.Page(site,
+                                           cat_namespace + ':' + newcatTitle)
                     if sort_by_last_name:
                         catpl = sorted_by_last_name(catpl, page)
                     if catpl in cats:
-                        wikipedia.output(u"%s is already in %s." % (page.title(), catpl.title()))
+                        wikipedia.output(u"%s is already in %s."
+                                         % (page.title(), catpl.title()))
                     else:
                         wikipedia.output(u'Adding %s' % catpl.aslink())
                         cats.append(catpl)
@@ -355,12 +367,18 @@ def add_category(sort_by_last_name = False):
                         try:
                             page.put(text)
                         except wikipedia.EditConflict:
-                            wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+                            wikipedia.output(
+                                u'Skipping %s because of edit conflict'
+                                % (page.title()))
 
 class CategoryMoveRobot:
-    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True, deleteEmptySourceCat = True, titleRegex = None):
+    """Robot to move pages from one category to another."""
+    def __init__(self, oldCatTitle, newCatTitle, batchMode=False,
+                 editSummary='', inPlace=False, moveCatPage=True,
+                 deleteEmptySourceCat=True, titleRegex=None):
+        site = wikipedia.getSite()
         self.editSummary = editSummary
-        self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
+        self.oldCat = catlib.Category(site, 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         self.inPlace = inPlace
         self.moveCatPage = moveCatPage
@@ -371,19 +389,24 @@ class CategoryMoveRobot:
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % self.oldCat.title())
+            wikipedia.setAction(wikipedia.translate(site, msg_change)
+                                % self.oldCat.title())
 
     def run(self):
-        newCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.newCatTitle)
+        site = wikipedia.getSite()
+        newCat = catlib.Category(site, 'Category:' + self.newCatTitle)
 
         # Copy the category contents to the new category page
         copied = False
         oldMovedTalk = None
         if self.oldCat.exists() and self.moveCatPage:
-            copied = self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates))
+            copied = self.oldCat.copyAndKeep(
+                            self.newCatTitle,
+                            wikipedia.translate(site, cfd_templates))
             # Also move the talk page
             if copied:
-                reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
+                reason = wikipedia.translate(site, deletion_reason_move) \
+                         % (self.newCatTitle, self.newCatTitle)
                 oldTalk = self.oldCat.toggleTalkPage()
                 if oldTalk.exists():
                     newTalkTitle = newCat.toggleTalkPage().title()
@@ -391,29 +414,38 @@ class CategoryMoveRobot:
                         oldMovedTalk = oldTalk
 
         # Move articles
-        gen = pagegenerators.CategorizedPageGenerator(self.oldCat, recurse = False)
+        gen = pagegenerators.CategorizedPageGenerator(self.oldCat,
+                                                      recurse=False)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for article in preloadingGen:
-            if not self.titleRegex or re.search(self.titleRegex,article.title()):
-                catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
+            if not self.titleRegex or re.search(self.titleRegex,
+                                                article.title()):
+                catlib.change_category(article, self.oldCat, newCat,
+                                       inPlace=self.inPlace)
 
         # Move subcategories
-        gen = pagegenerators.SubCategoriesPageGenerator(self.oldCat, recurse = False)
+        gen = pagegenerators.SubCategoriesPageGenerator(self.oldCat,
+                                                        recurse=False)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for subcategory in preloadingGen:
-            if not self.titleRegex or re.search(self.titleRegex,subcategory.title()):
-                catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
+            if not self.titleRegex or re.search(self.titleRegex,
+                                                subcategory.title()):
+                catlib.change_category(subcategory, self.oldCat, newCat,
+                                       inPlace=self.inPlace)
 
         # Delete the old category and its moved talk page
         if copied and self.deleteEmptySourceCat == True:
             if self.oldCat.isEmpty():
-                reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
+                reason = wikipedia.translate(site, deletion_reason_move) \
+                         % (self.newCatTitle, self.newCatTitle)
                 confirm = not self.batchMode
                 self.oldCat.delete(reason, confirm, mark = True)
                 if oldMovedTalk is not None:
                     oldMovedTalk.delete(reason, confirm, mark = True)
             else:
-                wikipedia.output('Couldn\'t delete %s - not empty.' % self.oldCat.title())
+                wikipedia.output('Couldn\'t delete %s - not empty.'
+                                 % self.oldCat.title())
+
 
 class CategoryListifyRobot:
     '''
