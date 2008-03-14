@@ -20,6 +20,8 @@ These command line parameters can be used to specify which pages to work on:
                   Argument can also be given as "-page:pagetitle". You can
                   give this parameter multiple times to edit multiple pages.
 
+-protectedpages   Check all the blocked pages (useful when you have not categories
+                  or when you have problems with them.
 
 Furthermore, the following command line parameters are supported:
 
@@ -46,7 +48,7 @@ python blockpageschecker.py -cat:Geography -always
 
 """
 #
-# (C) Wikihermit a.k.a. Monobi, 2007
+# (C) Monobi a.k.a. Wikihermit, 2007
 # (C) Filnik, 2007-2008
 #
 # Distributed under the terms of the MIT license.
@@ -155,6 +157,7 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 ################## -- Edit above! -- ##################
 
 def understandBlock(text, TTP, TSP, TSMP, TTMP):
+    """ Understand if the page is blocked and if it has the right template """
     for catchRegex in TTP: # TTP = templateTotalProtection
         resultCatch = re.findall(catchRegex, text)
         if resultCatch != []:
@@ -174,7 +177,26 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
                 return ('autoconfirmed-move', catchRegex)
     return ('editable', r'\A\n')
 
+def ProtectedPagesData():
+    """ Yield all the pages blocked, using Special:ProtectedPages """
+    url = '/w/index.php?title=Speciale%3AProtectedPages&namespace=0&type=edit&level=0&size='
+    site = wikipedia.getSite()
+    parser_text = site.getUrl(url)
+    #<li><a href="/wiki/Pagina_principale" title="Pagina principale">Pagina principale</a>‎ <small>(6.522 byte)</small> ‎(protetta)</li>
+    m = re.findall(r'<li><a href=".*?" title=".*?">(.*?)</a>.*?<small>\((.*?)\)</small>.*?\((.*?)\)</li>', parser_text)
+    for data in m:
+        title = data[0]
+        size = data[1]
+        status = data[2]
+        yield (title, size, status)
+
+def ProtectedPages():
+    """ Return only the wiki page object and not the tuple with all the data as above """
+    for data in ProtectedPagesData():
+        yield wikipedia.Page(wikipedia.getSite(), data[0])
+
 def main():
+    """ Main Function """
     # Loading the comments
     global templateToRemove; global categoryToCheck; global comment; global project_inserted
     if config.mylang not in project_inserted:
@@ -193,6 +215,8 @@ def main():
             moveBlockCheck = True
         elif arg == '-debug':
             debug = True
+        elif arg == '-protectedpages':
+            generator = ProtectedPages()
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
