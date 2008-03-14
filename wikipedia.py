@@ -5528,10 +5528,14 @@ def altlang(code):
         return ['ar','tr']
     if code=='sk':
         return ['cs']
-    if code in ['bar','hsb','ksh']:
+    if code in ['bar','ksh','stq']:
         return ['de']
     if code in ['als','lb']:
         return ['de','fr']
+    if code=='dsb':
+        return ['hsb','de']
+    if code=='hsb':
+        return ['dsb','de']
     if code=='io':
         return ['eo']
     if code in ['an','ast','ay','ca','gn','nah','qu']:
