@@ -31,6 +31,7 @@ msg = {
     'he': u'עריכה ידנית: %s',
     'pt': u'Editando manualmente com bot: %s',
     'sv': u'Manuell redigering: %s',
+    'is': u'Handvirk breyting: %s',
 }
 
 class TextEditor:
