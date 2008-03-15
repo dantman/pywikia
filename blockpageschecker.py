@@ -182,18 +182,72 @@ def ProtectedPagesData():
     url = '/w/index.php?title=Speciale%3AProtectedPages&namespace=0&type=edit&level=0&size='
     site = wikipedia.getSite()
     parser_text = site.getUrl(url)
-    #<li><a href="/wiki/Pagina_principale" title="Pagina principale">Pagina principale</a>‎ <small>(6.522 byte)</small> ‎(protetta)</li>
-    m = re.findall(r'<li><a href=".*?" title=".*?">(.*?)</a>.*?<small>\((.*?)\)</small>.*?\((.*?)\)</li>', parser_text)
-    for data in m:
-        title = data[0]
-        size = data[1]
-        status = data[2]
-        yield (title, size, status)
+    while 1:
+        #<li><a href="/wiki/Pagina_principale" title="Pagina principale">Pagina principale</a>‎ <small>(6.522 byte)</small> ‎(protetta)</li>
+        m = re.findall(r'<li><a href=".*?" title=".*?">(.*?)</a>.*?<small>\((.*?)\)</small>.*?\((.*?)\)</li>', parser_text)
+        for data in m:
+            title = data[0]
+            size = data[1]
+            status = data[2]
+            yield (title, size, status)
+        nextpage = re.findall(r'<.ul>\(.*?\).*?\(.*?\).*?\(<a href="(.*?)".*?</a>\) +?\(<a href=', parser_text)
+        if nextpage != []:
+            parser_text = site.getUrl(nextpage[0].replace('&amp;', '&'))
+            continue
+        else:
+            break
 
+def getRestrictions(page):
+    api_url = '/w/api.php?action=query&prop=info&inprop=protection&format=xml&titles=%s' % page.urlname()
+    text = wikipedia.getSite().getUrl(api_url)
+    if not 'pageid="' in text: # Avoid errors when you can't reach the APIs
+        raise wikipedia.Error("API problem, can't reach the APIs!")
+    match = re.findall(r'<protection>(.*?)</protection>', text)
+    status = 'editable'
+    if match != []:
+        text = match[0] # If there's the block "protection" take the settings inside it.
+        api_found = re.compile(r'<pr type="(.*?)" level="(.*?)" expiry="(.*?)" />')
+        results = api_found.findall(text)
+        if results != []:
+            if len(results) < 2:
+                result = results[0]
+                type_of_protection = result[0]; level = result[1]; expiry = result[2]
+                if type_of_protection == 'move':
+                    status = '%s-%s' % (level, type_of_protection)
+                else:
+                    status = '%s' % level
+            else:
+                for result in results:
+                    # If blocked both move and edit, select edit.
+                    if result[0] == 'move':
+                        continue
+                    type_of_protection = result[0]; level = result[1]; expiry = result[2]
+                    status = '%s' % level    
+    return status
+        
 def ProtectedPages():
     """ Return only the wiki page object and not the tuple with all the data as above """
     for data in ProtectedPagesData():
         yield wikipedia.Page(wikipedia.getSite(), data[0])
+
+def debugQuest(site, page):
+    quest = wikipedia.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
+    pathWiki = site.family.nicepath(site.lang)
+    url = 'http://%s%s%s?&redirect=no' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
+    while 1:
+        if quest.lower() in ['b', 'B']:                    
+            webbrowser.open(url)
+            break
+        elif quest.lower() in ['g', 'G']:
+            import editarticle
+            editor = editarticle.TextEditor()
+            text = editor.edit(page.get())
+            break
+        elif quest.lower() in ['n', 'N']:
+            break
+        else:
+            wikipedia.output(u'wrong entry, type "b", "g" or "n"')
+            continue
 
 def main():
     """ Main Function """
@@ -248,18 +302,20 @@ def main():
                 generator.append(pageCat)
         wikipedia.output(u'Categories loaded, start!')
     # Main Loop
-    for page in generator:
+    preloadingGen = pagegenerators.PreloadingGenerator(generator, pageNumber = 60)
+    for page in preloadingGen:
         pagename = page.title()
         wikipedia.output('Loading %s...' % pagename)
         try:
             text = page.get()
-            editRestriction = page.editRestriction
-            moveRestriction = page.moveRestriction
+            editRestriction = getRestrictions(page)
         except wikipedia.NoPage:
             wikipedia.output("%s doesn't exist! Skipping..." % pagename)
             continue
         except wikipedia.IsRedirectPage:
             wikipedia.output("%s is a redirect! Skipping..." % pagename)
+            if debug:
+                debugQuest(site, page)
             continue
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
@@ -273,7 +329,7 @@ def main():
             else:
                 wikipedia.output(u'The page is protected to the sysop, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[1], text)
-        elif moveBlockCheck and moveRestriction == 'sysop':
+        elif moveBlockCheck and editRestriction == 'sysop-move':
             if TemplateInThePage[0] == 'sysop-move' and TTMP != None:
                 wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
                 continue
@@ -287,7 +343,7 @@ def main():
             else:
                 wikipedia.output(u'The page is editable only for the autoconfirmed users, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[0], text)
-        elif moveBlockCheck == True and moveRestriction == 'autoconfirmed' and TSMP != None:
+        elif moveBlockCheck == True and editRestriction == 'autoconfirmed-move' and TSMP != None:
             if TemplateInThePage[0] == 'autoconfirmed-move':
                 wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
                 continue
@@ -344,23 +400,8 @@ def main():
         else:
             wikipedia.output(u'No changes! Strange! Check the regex!')
             if debug == True:
-                quest = wikipedia.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
-                pathWiki = site.family.nicepath(site.lang)
-                url = 'http://%s%s%s' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
-                while 1:
-                    if quest.lower() in ['b', 'B']:                    
-                        webbrowser.open(url)
-                        break
-                    elif quest.lower() in ['g', 'G']:
-                        import editarticle
-                        editor = editarticle.TextEditor()
-                        text = editor.edit(page.get())
-                        break
-                    elif quest.lower() in ['n', 'N']:
-                        break
-                    else:
-                        wikipedia.output(u'wrong entry, type "b", "g" or "n"')
-                        continue
+                debugQuest(site, page)
+
                     
 if __name__ == "__main__":
     try:
