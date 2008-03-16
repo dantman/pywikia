@@ -1626,8 +1626,8 @@ not supported by PyWikipediaBot!"""
                 try:
                     name = Page(self.site(), name).title()
                 except Error:
-                    output(u"Page %s contains invalid template name %s."
-                           % (self.title(), name))
+                    output(u"Page %s contains invalid template name {{%s}}."
+                           % (self.title(), name.strip()))
                     continue
 
                 # Parameters
