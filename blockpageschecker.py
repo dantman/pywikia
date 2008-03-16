@@ -161,14 +161,16 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 
 def understandBlock(text, TTP, TSP, TSMP, TTMP):
     """ Understand if the page is blocked and if it has the right template """
-    for catchRegex in TTP: # TTP = templateTotalProtection
-        resultCatch = re.findall(catchRegex, text)
-        if resultCatch != []:
-            return ('sysop-total', catchRegex)
-    for catchRegex in TSP:
-        resultCatch = re.findall(catchRegex, text)
-        if resultCatch != []:
-            return ('autoconfirmed-total', catchRegex)
+    if TTP:
+        for catchRegex in TTP: # TTP = templateTotalProtection
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch != []:
+                return ('sysop-total', catchRegex)
+    if TSP:
+        for catchRegex in TSP:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch != []:
+                return ('autoconfirmed-total', catchRegex)
     if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
         for catchRegex in TSMP:
             resultCatch = re.findall(catchRegex, text)
