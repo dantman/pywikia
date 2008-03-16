@@ -20,8 +20,9 @@ These command line parameters can be used to specify which pages to work on:
                   Argument can also be given as "-page:pagetitle". You can
                   give this parameter multiple times to edit multiple pages.
 
--protectedpages   Check all the blocked pages (useful when you have not categories
-                  or when you have problems with them.
+-protectedpages:  Check all the blocked pages (useful when you have not categories
+                  or when you have problems with them. (add the namespace after ":" where
+                  you want to check - default: 0)
 
 Furthermore, the following command line parameters are supported:
 
@@ -45,6 +46,8 @@ or on IRC (#pywikipediabot)
 python blockpageschecker.py -always
 
 python blockpageschecker.py -cat:Geography -always
+
+python blockpageschecker.py -debug -protectedpages:4
 
 """
 #
@@ -177,9 +180,10 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
                 return ('autoconfirmed-move', catchRegex)
     return ('editable', r'\A\n')
 
-def ProtectedPagesData():
+def ProtectedPagesData(namespace = 0):
     """ Yield all the pages blocked, using Special:ProtectedPages """
-    url = '/w/index.php?title=Speciale%3AProtectedPages&namespace=0&type=edit&level=0&size='
+    # Avoid problems of encoding and stuff like that, let it divided please
+    url = '/w/index.php?title=Speciale%3AProtectedPages' + '&namespace=%s&type=edit&level=0&size=' % namespace
     site = wikipedia.getSite()
     parser_text = site.getUrl(url)
     while 1:
@@ -225,9 +229,9 @@ def getRestrictions(page):
                     status = '%s' % level    
     return status
         
-def ProtectedPages():
+def ProtectedPages(namespace = 0):
     """ Return only the wiki page object and not the tuple with all the data as above """
-    for data in ProtectedPagesData():
+    for data in ProtectedPagesData(namespace):
         yield wikipedia.Page(wikipedia.getSite(), data[0])
 
 def debugQuest(site, page):
@@ -269,8 +273,11 @@ def main():
             moveBlockCheck = True
         elif arg == '-debug':
             debug = True
-        elif arg == '-protectedpages':
-            generator = ProtectedPages()
+        elif arg.startswith('-protectedpages'):
+            if len(arg) == 15:
+                generator = ProtectedPages(0)
+            else:
+                generator = ProtectedPages(int(arg[16:]))
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
