@@ -414,7 +414,9 @@ class ReferringPageGeneratorWithIgnore:
             for ig in ignore_title[self.disambPage.site().family.name][self.disambPage.site().lang]:
                 for i in range(len(refs)-1, -1, -1):
                     if re.match(ig, refs[i].title()):
-                        wikipedia.output('Ignoring page %s' % refs[i].title())
+                        if wikipedia.verbose:
+                            wikipedia.output('Ignoring page %s'
+                                             % refs[i].title())
                         del refs[i]
                     elif self.primaryIgnoreManager.isIgnored(refs[i]):
                         #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].title())

@@ -27,18 +27,20 @@ Furthermore, the following command line parameters are supported:
                   before the one specified (may also be given as
                   -xmlstart:Article).
 
--excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -regex argument
-                  is given, XYZ will be regarded as a regular expression.
-
--excepttext:XYZ   Skip pages which contain the text XYZ. If the -regex argument is
-                  given, XYZ will be regarded as a regular expression.
-
--exceptinside:XYZ Skip occurences of the to-be-replaced text which lie within XYZ.
-                  If the -regex argument is given, XYZ will be regarded as a regular
+-excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -regex
+                  argument is given, XYZ will be regarded as a regular
                   expression.
 
--exceptinsidetag:XYZ Skip occurences of the to-be-replaced text which lie within an
-                  XYZ tag.
+-excepttext:XYZ   Skip pages which contain the text XYZ. If the -regex
+                  argument is given, XYZ will be regarded as a regular
+                  expression.
+
+-exceptinside:XYZ Skip occurences of the to-be-replaced text which lie
+                  within XYZ. If the -regex argument is given, XYZ will be
+                  regarded as a regular expression.
+
+-exceptinsidetag:XYZ Skip occurences of the to-be-replaced text which lie
+                  within an XYZ tag.
 
 -summary:XYZ      Set the summary message text for the edit to XYZ, bypassing
                   the predefined message texts with original and replacements
