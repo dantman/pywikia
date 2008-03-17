@@ -2985,10 +2985,10 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
             index = nextExceptionMatch.end()
         else:
             # We found a valid match. Replace it.
-            try:
+            if callable(new):
                 # the parameter new can be a function which takes the match as a parameter.
                 replacement = new(match)
-            except TypeError:
+            else:
                 # it is not a function, but a string.
 
                 # it is a little hack to make \n work. It would be better to fix it
