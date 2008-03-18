@@ -22,7 +22,7 @@ These command line parameters can be used to specify which pages to work on:
 
 -protectedpages:  Check all the blocked pages (useful when you have not categories
                   or when you have problems with them. (add the namespace after ":" where
-                  you want to check - default: 0)
+                  you want to check - default checks all protected pages)
 
 Furthermore, the following command line parameters are supported:
 
@@ -84,7 +84,9 @@ templateToRemove = {
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}',
-                  r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',],
+                  r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
+                  r'{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee].*?)\}\}',
+                  r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:性急|)(?:[Ss]|)(?:\|.+|)?\}\}(\n+?|)'],
             'pt':[r'\{\{(?:[Tt]emplate:|)[Pp]rotegido(?:\|*)\}\}',
                   r'\{\{(?:[Tt]emplate:|)(?:[Ss]emi-|)[Pp]rotegid[ao](?:IP|[- _]ip|PP|)\}\}'],
@@ -99,13 +101,17 @@ templateSemiProtection = {
             'en': None,
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
+            'fr': [r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection(|[^\}]*)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)半保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)'],
             }
 # Regex to get the total-protection template
 templateTotalProtection = {
             'en': None, 
-            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}'],
+            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
+                  r'{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee].*?)\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
+            'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}', 
+                 r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?(|[^\}]*)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)'],
             }
@@ -126,6 +132,7 @@ templateTotalMoveProtection = {
 # Array: 0 => Semi-block, 1 => Total Block, 2 => Semi-Move, 3 => Total-Move
 templateNoRegex = {
             'it':['{{Avvisobloccoparziale}}', '{{Avvisoblocco}}', None, None],
+            'fr':['{{Semi-protection}}', '{{Protection}}', None, None],
             'ja':[u'{{半保護}}', u'{{保護}}', u'{{移動半保護}}',u'{{移動保護}}'],
             'zh':[u'{{Protected/semi}}',u'{{Protected}}',u'{{Protected/ms}}',u'{{Protected/move}}'],
             }
@@ -145,7 +152,7 @@ categoryToCheck = {
 # Comment used when the Bot edits
 comment = {
             'en':u'Bot: Deleting out-dated template',
-            'fr':u'Robot: Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
+            'fr':u'Robot: Mise à jour des bandeaux de protection',
             'he':u'בוט: מסיר תבנית שעבר זמנה',
             'it':u'Bot: Tolgo o sistemo template di avviso blocco',
             'ja':u'ロボットによる: 保護テンプレート除去',
@@ -161,16 +168,14 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 
 def understandBlock(text, TTP, TSP, TSMP, TTMP):
     """ Understand if the page is blocked and if it has the right template """
-    if TTP:
-        for catchRegex in TTP: # TTP = templateTotalProtection
-            resultCatch = re.findall(catchRegex, text)
-            if resultCatch != []:
-                return ('sysop-total', catchRegex)
-    if TSP:
-        for catchRegex in TSP:
-            resultCatch = re.findall(catchRegex, text)
-            if resultCatch != []:
-                return ('autoconfirmed-total', catchRegex)
+    for catchRegex in TTP: # TTP = templateTotalProtection
+        resultCatch = re.findall(catchRegex, text)
+        if resultCatch != []:
+            return ('sysop-total', catchRegex)
+    for catchRegex in TSP:
+        resultCatch = re.findall(catchRegex, text)
+        if resultCatch != []:
+            return ('autoconfirmed-total', catchRegex)
     if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
         for catchRegex in TSMP:
             resultCatch = re.findall(catchRegex, text)
@@ -180,12 +185,14 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
             resultCatch = re.findall(catchRegex, text)
             if resultCatch != []:
                 return ('autoconfirmed-move', catchRegex)
-    return ('editable', r'\A\n')
+    return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
-def ProtectedPagesData(namespace = 0):
+def ProtectedPagesData(namespace = None):
     """ Yield all the pages blocked, using Special:ProtectedPages """
     # Avoid problems of encoding and stuff like that, let it divided please
-    url = '/w/index.php?title=Speciale%3AProtectedPages' + '&namespace=%s&type=edit&level=0&size=' % namespace
+    url = '/w/index.php?title=Special:ProtectedPages&type=edit&level=0'
+    if namespace != None: # /!\ if namespace seems simpler, but returns false when ns=0
+        url += '&namespace=%s' % namespace    
     site = wikipedia.getSite()
     parser_text = site.getUrl(url)
     while 1:
@@ -277,7 +284,7 @@ def main():
             debug = True
         elif arg.startswith('-protectedpages'):
             if len(arg) == 15:
-                generator = ProtectedPages(0)
+                generator = ProtectedPages()
             else:
                 generator = ProtectedPages(int(arg[16:]))
         elif arg.startswith('-page'):
@@ -313,7 +320,7 @@ def main():
     # Main Loop
     preloadingGen = pagegenerators.PreloadingGenerator(generator, pageNumber = 60)
     for page in preloadingGen:
-        pagename = page.title()
+        pagename = page.aslink()
         wikipedia.output('Loading %s...' % pagename)
         try:
             text = page.get()
@@ -326,6 +333,9 @@ def main():
             if debug:
                 debugQuest(site, page)
             continue
+        if not page.canBeEdited():
+            wikipedia.output("%s is protected : this account can't edit it! Skipping..." % pagename)
+            continue        
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
         TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
@@ -407,10 +417,9 @@ def main():
                         errorCount = 0
                         break
         else:
-            wikipedia.output(u'No changes! Strange! Check the regex!')
+            wikipedia.output(u'No changes! Strange, try to check the regex used!')
             if debug == True:
                 debugQuest(site, page)
-
                     
 if __name__ == "__main__":
     try:
