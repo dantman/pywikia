@@ -233,9 +233,10 @@ def main():
             # Is the page a disambig?
             if page.isDisambig() and disambigPage != None:
                 wikipedia.output(u'%s is a disambig page, report..' % page.title())
-                disambigtext = u"%s\n*[[%s]]" % (disambigtext, page.title())
-                disambigpage.put(disambigtext, commentdisambig)
-                continue
+                if not page.title().lower() in disambigtext.lower():
+                    disambigtext = u"%s\n*[[%s]]" % (disambigtext, page.title())
+                    disambigpage.put(disambigtext, commentdisambig)
+                    continue
             # Is the page a disambig but there's not disambigPage? Skip!
             elif page.isDisambig():
                  wikipedia.output(u'%s is a disambig page, skip...' % page.title())
