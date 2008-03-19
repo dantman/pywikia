@@ -513,7 +513,7 @@ class Family(family.Family):
             'ia':  [u'Disambiguation', u'Disambig'],
             'io':  [u'Homonimo', u'Disambig'],
             'is':  [u'Aðgreining', u'Disambig'],
-            'it':  [u'Disambigua', u'Sigla2', u'Sigla3', u'Sigla3', u'Cogni'],
+            'it':  [u'Disambigua', u'Sigla2', u'Sigla3', u'Sigla4', u'Cogni'],
             'ja':  [u'Aimai', u'Disambig'],
             'ka':  [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
             'kg':  [u'Bisongidila'],
