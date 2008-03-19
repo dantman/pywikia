@@ -152,6 +152,7 @@ msg = {
        'pt':u'Bot: Mudança automática %s',
        'ru':u'Робот: Автоматизированная замена текста',
        'sr':u'Бот: Аутоматска замена текста %s',
+       'sv':u'Bot: Automatisk textersättning: %s'
        'zh': u'機器人:執行文字代換作業 %s',
        }
 
@@ -169,7 +170,7 @@ class XmlDumpReplacePageGenerator:
         * exceptions   - A dictionary which defines when to ignore an
                          occurence. See docu of the ReplaceRobot
                          constructor below.
-    
+
     """
     def __init__(self, xmlFilename, xmlStart, replacements, exceptions):
         self.xmlFilename = xmlFilename
@@ -190,7 +191,7 @@ class XmlDumpReplacePageGenerator:
 
     def __iter__(self):
         return self
-    
+
     def next(self):
         try:
             for entry in self.parser:
