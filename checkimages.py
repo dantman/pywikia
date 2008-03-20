@@ -839,8 +839,7 @@ def checkbot():
                 # No settings found, No problem, continue.
                 else: wikipedia.output(u'\t   >> No additional settings found! <<')
                 # Not the main, but the most important loop.
-                preloadingGen = pagegenerators.PreloadingGenerator(generator, pageNumber = 60)
-                for image in preloadingGen:
+                for image in generator:
                         # If I don't inizialize the generator, wait part and skip part are useless
                         if wait:
                                 printWithTimeZone(u'Waiting %s seconds before checking the images,' % wait_number)
