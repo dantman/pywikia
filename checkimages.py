@@ -155,7 +155,7 @@ delete_immediately = {
 delete_immediately_head = {
 			'commons':u"\n== Unknown extension! ==\n",
 			'en'     :u"\n== Unknown extension! ==\n",
-			'it'     :u'\n== File non specificato ==\n',
+			'it'     :u'\n\n== File non specificato ==\n',
 			'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
 			'ta'     :u'\n== இனங்காணப்படாத கோப்பு நீட்சி! ==\n',
 			'zh'     :u'\n==您上載的檔案格式可能有誤==\n',
@@ -187,7 +187,7 @@ nothing_head = {
 				'commons':u"",# Nothing, the template has already the header inside.
 				'en'     :u"\n== Image without license ==\n",
 				'ja'     :u'',
-				'it'     :u"\n== Immagine senza licenza ==\n",
+				'it'     :u"\n\n== Immagine senza licenza ==\n",
 				'hu'     :u"\n== Licenc nélküli kép ==\n",
 				'ta'     :u'',
 				'zh'     :u'',
