@@ -1572,17 +1572,20 @@ not supported by PyWikipediaBot!"""
         """
         return [template for (template, param) in self.templatesWithParams()]
 
-    def templatesWithParams(self):
+    def templatesWithParams(self, thistxt=None):
         """Return a list of templates used on this Page.
 
         Return value is a list of tuples. There is one tuple for each use of
         a template in the page, with the template title as the first entry
         and a list of parameters as the second entry.
+
+        If thistxt is set, it is used instead of current page content.
         """
-        try:
-            thistxt = self.get()
-        except (IsRedirectPage, NoPage):
-            return []
+        if not thistxt:
+            try:
+                thistxt = self.get()
+            except (IsRedirectPage, NoPage):
+                return []
 
         # remove commented-out stuff etc.
         thistxt  = removeDisabledParts(thistxt)
