@@ -4342,7 +4342,7 @@ your connection is down. Retrying in %i minutes..."""
         except KeyError:
             return False
 
-    def _load(self, sysop = False):
+    def _load(self, sysop = False, force = False):
         """
         Loads user data.
         This is only done if we didn't do get any page yet and the information
@@ -4352,7 +4352,7 @@ your connection is down. Retrying in %i minutes..."""
         * sysop - Get sysop user data?
         """
         index = self._userIndex(sysop)
-        if self._userData[index]:
+        if self._userData[index] and not force:
             return
 
         if verbose:
@@ -5374,7 +5374,7 @@ your connection is down. Retrying in %i minutes..."""
         index = self._userIndex(sysop)
         if getagain or (getalways and self._token[index] is None):
             output(u'Getting a token.')
-            self._load(sysop = sysop)
+            self._load(sysop = sysop, force = True)
         if self._token[index] is not None:
             return self._token[index]
         else:
