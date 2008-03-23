@@ -331,7 +331,7 @@ class Page(object):
             while u"  " in t:
                 t = t.replace(u"  ", u" ")
             # Strip spaces at both ends
-            t = t.strip()
+            t = t.strip(u" ")
             # Remove left-to-right and right-to-left markers.
             t = t.replace(u'\u200e', '').replace(u'\u200f', '')
             # leading colon implies main namespace instead of the default
@@ -403,21 +403,20 @@ not supported by PyWikipediaBot!"""
 
             sectionStart = t.find(u'#')
             if sectionStart >= 0:
-                self._section = t[sectionStart+1 : ].strip()
+                self._section = t[sectionStart+1 : ].lstrip(" ")
                 self._section = sectionencode(self._section,
                                               self.site().encoding())
                 if not self._section:
                     self._section = None
-                t = t[ : sectionStart].strip()
+                t = t[ : sectionStart].rstrip(" ")
             else:
                 self._section = None
 
             if t:
                 if not self.site().nocapitalize:
-                    t = t[0].upper() + t[1:]
+                    t = t[:1].upper() + t[1:]
 
             # reassemble the title from its parts
-
             if self._namespace != 0:
                 t = self.site().namespace(self._namespace) + u':' + t
             if self._section:
@@ -1518,7 +1517,8 @@ not supported by PyWikipediaBot!"""
 
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
-            if title.strip().startswith("#"):
+            title = title.replace("_", " ").strip(" ")
+            if title.startswith("#"):
                 # this is an internal section link
                 continue
             if not self.site().isInterwikiLink(title):
@@ -4892,12 +4892,12 @@ your connection is down. Retrying in %i minutes..."""
         of the link refers to this site's own family and/or language.
 
         """
-        s = s.strip().lstrip(":")
+        s = s.replace("_", " ").strip(" ").lstrip(":")
         if not ':' in s:
             return False
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
-        first = first.lower().strip()
+        first = first.lower().strip(" ")
         # commons: forwards interlanguage links to wikipedia:, etc.
         if self.family.interwiki_forward:
             interlangTargetFamily = Family(self.family.interwiki_forward)
