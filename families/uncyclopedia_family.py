@@ -2,7 +2,7 @@
 import config, family, urllib
 
 #
-# uncyclopedia_family.py March 8, 2008 for pywikipediabot
+# uncyclopedia_family.py March 21, 2008 for pywikipediabot
 #
 # The Uncyclomedia family, assorted encyclopedi.as from the Uncyclopedia series.
 # This file contains a full set of (currently) fifty languages, excluding forks,
@@ -35,11 +35,11 @@ class Family(family.Family):
 	'en': 'uncyclopedia.org',
 	'eo': 'neciklopedio.wikia.com',
 	'es': 'inciclopedia.wikia.com',
-	'et': 'uncyclopeedia.org',
+	'et': 'ebatsuklopeedia.org',
 	'fa': 'fa.uncyc.org',
 	'fi': 'hikipedia.info',
 	'fr': 'desencyclopedie.wikia.com',
-	'got':'unsaiklo.pedia.ws',
+	'got':'unsaiklopedia.org',
 	'he': 'eincyclopedia.wikia.com',
 	'hr': 'hr.neciklopedija.org',
 	'hu': 'unciklopedia.org',
@@ -48,13 +48,13 @@ class Family(family.Family):
 	'it': 'nonciclopedia.wikia.com',
 	'ja': 'ansaikuropedia.org',
 	'jv': 'ndhablek.wikia.com',
-	'ko': 'ko.uncyclopedia.info',
+	'ko': 'uncyclopedia.kr',
 	'la': 'uncapaedia.wikia.com',
-	'lb': 'kengencyclo.pedia.ws',
+	'lb': 'kengencyclopedia.org',
 	'lt': 'juokopedija.org',
 	'lv': 'lv.neciklopedija.org',
 	'meta': 'meta.uncyclomedia.org',
-	'mg': 'hatsiklo.pedia.ws',
+	'mg': 'hatsiklopedia.org',
 	'mk': 'mk.neciklopedija.org',
 	'nl': 'oncyclopedia.net',
 	'nn': 'ikkepedia.org',
@@ -64,13 +64,13 @@ class Family(family.Family):
 	'ro': 'uncyclopedia.ro',
 	'ru': 'absurdopedia.wikia.com',
 	'sk': 'necyklopedia.wikia.com',
-	'sl': 'butalo.pedija.org',
+	'sl': 'butalopedija.org',
 	'sr': 'sr.neciklopedija.org',
 	'su': 'su.goblogpedia.wikia.com',
 	'sv': 'psyklopedin.org',
 	'th': 'th.uncyclopedia.info',
 	'tr': 'yansiklopedi.org',
-	'uk': 'uk.inciklopedii.org',
+	'uk': 'inciklopedia.org',
 	'yi': 'keinziklopedie.wikia.com',
 	'zh-hk': 'uncyclopedia.hk',
 	'zh-tw':'uncyclopedia.tw',
@@ -379,7 +379,7 @@ class Family(family.Family):
 	  'fi': u'Foorumi',
 	  'got': u'Forum',
 	  'info': u'Game',
-	  'ko': u'漢字',
+#	  'ko': u'漢字',
 	  'meta': u'UnSource',
 	  'nl': u'Portaal',
 	  'pt': u'Esplanada',
@@ -392,7 +392,7 @@ class Family(family.Family):
 	  'fi': u'Keskustelu foorumista',
 	  'got': u'Forum gawaurdja',
 	  'info': u'Game talk',
-	  'ko': u'討論',
+#	  'ko': u'討論',
 	  'meta': u'UnSource talk',
 	  'nl': u'Overleg portaal',
 	  'pt': u'Esplanada Discussão',
@@ -405,7 +405,7 @@ class Family(family.Family):
 	  '_default': '',
 	  'fi': u'Hikinews',
 	  'got': u'𐌰𐍂𐌼𐌰𐌹𐍉',
-	  'ko': u'백괴나라',
+#	  'ko': u'백괴나라',
 	  'meta': u'UnSpecies',
 	  'nl': u'OnNieuws',
 	  'pt': u'Fatos',
@@ -417,8 +417,8 @@ class Family(family.Family):
 	self.namespaces[19] = {
 	  '_default': '',
 	  'fi': u'Keskustelu Hikinewseistä',
-	  'got': u'𐌰𐍂𐌼𐌰𐌹𐍉_𐌲𐌰𐍅𐌰𐌿𐍂𐌳𐌾𐌰',
-	  'ko': u'백괴나라토론',
+	  'got': u'𐌰𐍂𐌼𐌰𐌹𐍉 𐌲𐌰𐍅𐌰𐌿𐍂𐌳𐌾𐌰',
+#	  'ko': u'백괴나라토론',
 	  'meta': u'UnSpecies talk',
 	  'nl': u'Overleg OnNieuws',
 	  'pt': u'Fatos Discussão',
@@ -442,7 +442,7 @@ class Family(family.Family):
 	self.namespaces[21] = {
 	  '_default': '',
 	  'fi': u'Keskustelu Hiktionarysta',
-	  'got': u'𐍆𐌰𐌹𐌰𐌽𐍅𐌰𐌿𐍂𐌳𐌰𐌱𐍉𐌺𐌰_𐌲𐌰𐍅𐌰𐌿𐍂𐌳𐌾𐌰',
+	  'got': u'𐍆𐌰𐌹𐌰𐌽𐍅𐌰𐌿𐍂𐌳𐌰𐌱𐍉𐌺𐌰 𐌲𐌰𐍅𐌰𐌿𐍂𐌳𐌾𐌰',
 	  'meta': u'Namespace talk',
 	  'nl': u'Overleg Onwoordenboek',
 	  'pt': u'Forum Discussão',
@@ -767,19 +767,23 @@ class Family(family.Family):
 	self.languages_by_size  = ['en', 'ja', 'pt', 'it', 'pl', 'fr', 'fi', 'es', 'zh-tw', 'de', 'no']     
 
     def hostname(self,code):
-	return self.langs[code]
+        return self.langs[code]
 
     def path(self, code):
-	return '/index.php'
+        if code == 'ko':
+           return '/w/index.php'
+        return '/index.php'
 
     def version(self, code):
-	return '1.12'
+        return '1.12'
 
     def apipath(self, code):
-	return '/api.php'
+        if code == 'ko':
+           return '/w/api.php'
+        return '/api.php'
 
     def code2encoding(self,code):
-	return 'utf-8'
+        return 'utf-8'
 
     def shared_image_repository(self, code):
-	return ('common', 'common')
+        return ('common', 'common')
