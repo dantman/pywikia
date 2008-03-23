@@ -1671,7 +1671,8 @@ not supported by PyWikipediaBot!"""
         except NoPage:
             raise
         except IsRedirectPage, err:
-            target = err[0]
+            target = err[0].replace('&amp;quot;', '"') # otherwise it will return error with
+                                                       # pages with " inside.
             if '|' in target:
                 warnings.warn("'%s' has a | character, this makes no sense"
                               % target, Warning)
