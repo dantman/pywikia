@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects. Requires
 access to MediaWiki's maintenance pages or to a XML dump file. Delete
@@ -48,6 +48,7 @@ msg_double={
     'br': u'Kempennet adkas doubl gant robot',
     'de': u'Bot: Korrigiere doppelten Redirect',
     'es': u'Robot: Arreglando doble redirección',
+    'fa': u'ربات: بهبود صفحه‌های بازگردانی',
     'fr': u'Robot : répare double redirection',
     'he': u'בוט: מתקן הפניה כפולה',
     'hr': u'Bot: Popravak dvostrukih preusmjeravanja',
@@ -69,6 +70,7 @@ msg_double={
     'sv': u'Robot: Rättar dubbel omdirigering',
     'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน',
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
+    'uk': u'Робот: виправлення подвійного перенаправлення',
     'yi': u'באט: פארראכטן פארטאפלטע ווייטערפירונג',
     'zh': u'機器人:修正雙重重定向',
     'zh-yue': u'機械人：拉直連串跳轉 ',
