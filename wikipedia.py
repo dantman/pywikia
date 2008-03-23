@@ -4165,7 +4165,7 @@ your connection is down. Retrying in %i minutes..."""
 
         return text
 
-    def _getUserData(self, text, sysop = False):
+    def _getUserData(self, text, sysop = False, force = True):
         """
         Get the user data from a wiki page data.
 
@@ -4181,7 +4181,7 @@ your connection is down. Retrying in %i minutes..."""
 
         # Check for blocks - but only if version is 1.11 (userinfo is available)
         # and the user data was not yet loaded
-        if self.versionnumber() >= 11 and not self._userData[index]:
+        if self.versionnumber() >= 11 and (not self._userData[index] or force):
             blocked = self.isBlocked(sysop = sysop)
             if blocked and not self._isBlocked[index]:
                 # Write a warning if not shown earlier
@@ -4205,7 +4205,7 @@ your connection is down. Retrying in %i minutes..."""
             self._messages[index] = False
 
         # Don't perform other checks if the data was already loaded
-        if self._userData[index]:
+        if self._userData[index] and not force:
             return
 
         # Search for the the user page link at the top.
@@ -4363,7 +4363,7 @@ your connection is down. Retrying in %i minutes..."""
         text = self.getUrl(url, sysop = sysop)
 
         # Parse data
-        self._getUserData(text, sysop = sysop)
+        self._getUserData(text, sysop = sysop, force = force)
 
     def search(self, query, number = 10, namespaces = None):
         """Yield search results (using Special:Search page) for query."""
