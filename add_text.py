@@ -21,14 +21,14 @@ Furthermore, the following command line parameters are supported:
 
 --- Example ---
 
-python add_text.py -start:! -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{(?:[Tt]emplate:|)[Ss]omething" -up
+python add_text.py -cat:catname -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{([Tt]emplate:|)[Ss]omething" -up
 
 # Command used on it.wikipedia to put the template in the page without any category.
 python add_text.py -excepturl:"<p class='catlinks'>" -uncat -text:"{{Categorizzare}}"
--except:"\{\{(?:[Tt]emplate:|)[Cc]ategorizzare" -summary:"Bot: Aggiungo template Categorizzare"
+-except:"\{\{([Tt]emplate:|)[Cc]ategorizzare" -summary:"Bot: Aggiungo template Categorizzare"
 
 --- Credits and Help ---
-This script has been written by Botwiki's stuff, if you want to help us
+This script has been written by Botwiki's staff, if you want to help us
 or you need some help regarding this script, you can find us here:
 
 * http://botwiki.sno.cc
@@ -73,21 +73,16 @@ def pageText(url):
     """ Function to load HTML text of a URL """
     try:
         request = urllib2.Request(url)
-        user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-        request.add_header("User-Agent", user_agent)
+        request.add_header("User-Agent", wikipedia.useragent)
         response = urllib2.urlopen(request)
         text = response.read()
         response.close()
         # When you load to many users, urllib2 can give this error.
     except urllib2.HTTPError:
         wikipedia.output(u"Server error. Pausing for 10 seconds... " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()) )
-        time.sleep(10)
-        request = urllib2.Request(url)
-        user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-        request.add_header("User-Agent", user_agent)
-        response = urllib2.urlopen(request)
-        text = response.read()
         response.close()
+        time.sleep(10)
+        return pageText(url)
     return text
 
 def untaggedGenerator(untaggedProject, limit = 500):
