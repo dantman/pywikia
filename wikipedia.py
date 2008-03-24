@@ -1514,7 +1514,8 @@ not supported by PyWikipediaBot!"""
                 try:
                     page = Page(self.site(), title)
                 except Error:
-                    output(u"Page %s contains invalid link to [[%s]]."
+                    if title.strip(" "):
+                        output(u"Page %s contains invalid link to [[%s]]."
                            % (self.title(), title))
                     continue
                 if not withImageLinks and page.isImage():
