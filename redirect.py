@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects. Requires
 access to MediaWiki's maintenance pages or to a XML dump file. Delete
@@ -143,11 +143,17 @@ class RedirectGenerator:
                 for code in site.family.langs.keys():
                     if target.startswith('%s:' % code) \
                             or target.startswith(':%s:' % code):
-                        wikipedia.output(
-                            u'NOTE: Ignoring %s which is a redirect to %s:'
-                            % (entry.title, code))
-                        target = None
-                        break
+                        if code == site.language:
+                        # link to our wiki, but with the lang prefix
+                            target = target[(len(code)+1):]
+                            if target.startswith(':'):
+                                target = target[1:]
+                        else:
+                            wikipedia.output(
+                                u'NOTE: Ignoring %s which is a redirect to %s:'
+                                % (entry.title, code))
+                            target = None
+                            break
                 # if the redirect does not link to another wiki
                 if target:
                     source = entry.title.replace(' ', '_')
@@ -314,9 +320,14 @@ class RedirectRobot:
                         u'Warning: Redirect target %s is not a valid page title.'
                           % str(e)[10:])
                 except wikipedia.NoPage:
-                    wikipedia.output(
-                        u'Warning: Redirect target %s doesn\'t exist.'
-                          % newRedir.aslink())
+                    if len(redirList) == 1:
+                        wikipedia.output(u'Skipping: Page %s does not exist.'
+                                            % redir.aslink())
+                        break
+                    else:
+                        wikipedia.output(
+                            u"Warning: Redirect target %s doesn't exist."
+                            % newRedir.aslink())
                 else:
                     wikipedia.output(
                         u'   Links to: %s.'
