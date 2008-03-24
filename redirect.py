@@ -143,7 +143,7 @@ class RedirectGenerator:
                 for code in site.family.langs.keys():
                     if target.startswith('%s:' % code) \
                             or target.startswith(':%s:' % code):
-                        if code == site.language:
+                        if code == site.language():
                         # link to our wiki, but with the lang prefix
                             target = target[(len(code)+1):]
                             if target.startswith(':'):
@@ -348,7 +348,7 @@ class RedirectRobot:
                               % targetPage.aslink())
 
                         content=targetPage.get(get_redirect=True)
-			if wikipedia.Page(wikipedia.getSite(), u"Template:Db-r1").exists():
+                        if wikipedia.Page(wikipedia.getSite(), u"Template:Db-r1").exists():
                             wikipedia.output(u"Tagging redirect for deletion")
                             # Delete the two redirects
                             targetPage.put("{{db-r1}}\n"+content, "Tagging for speedy deletion")
