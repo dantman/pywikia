@@ -2674,9 +2674,9 @@ class _GetAll(object):
             data = response.read()
         else:
             response, data = self.site.postForm(address, predata)
-        # The XML parser doesn't expect a Unicode string, but an encoded one,
-        # so we'll encode it back.
-        data = data.encode(self.site.encoding())
+            # The XML parser doesn't expect a Unicode string, but an encoded one,
+            # so we'll encode it back.
+            data = data.encode(self.site.encoding())
         get_throttle.setDelay(time.time() - now)
         return data
 
@@ -4941,26 +4941,18 @@ your connection is down. Retrying in %i minutes..."""
         Group 1 in the regex match object will be the target title.
 
         """
-        redDefault = 'redirect'
-        red = 'redirect'
-        if self.lang == 'ar':
-            red = u"تحويل"
+
         try:
-            if redDefault == red:
-                redirKeywords = [red] + self.family.redirect[self.lang]
-                redirKeywordsR = r'(?:redirect|' + '|'.join(redirKeywords) + ')' # always redirect as default
-            else:
-                redirKeywords = [red] + self.family.redirect[self.lang]
-                redirKeywordsR = r'(?:redirect|' + redDefault + '|'.join(redirKeywords) + ')'
+            redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
+            redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
         except KeyError:
             # no localized keyword for redirects
-            if redDefault == red:
-                redirKeywordsR = r'%s' % red
-            else:
-                redirKeywordsR = r'(?:%s|%s)' % (red, redDefault)
+            redirKeywordsR = r'redirect'
+
         # A redirect starts with hash (#), followed by a keyword, then
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
+
         return re.compile(r'#' + redirKeywordsR +
                                    '.*?\[\[(.*?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
