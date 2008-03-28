@@ -334,32 +334,22 @@ class CheckUsage(object):
 		if type(site) is str:
 			hostname = site
 			apipath = '/w/api.php'
-			live_version = (1, 11)
 		else:
 			hostname = site.hostname()
 			apipath = site.apipath()
-			live_version = site.live_version()[:2]
 		
 		# FIXME: Use continue
 		kwargs = {'action': 'query', 'titles': u'Image:' + image,
 			'prop': 'info'}
-		if live_version > (1, 10):
-			kwargs['list'] = 'imageusage'
-			kwargs['iulimit'] = '500'
-		else:
-			kwargs['list'] = 'imagelinks'
-			kwargs['illimit'] = '500'
+		kwargs['list'] = 'imageusage'
+		kwargs['iulimit'] = '500'
 		
 		res = self.http.query_api(hostname, apipath,
 			**kwargs)
 		if '-1' not in res['query']['pages'] and shared:
 			return
 			
-		if live_version > (1, 10):
-			usages = res['query'].get('imageusage', ())
-		else:
-			usages = res['query'].get('imagelinks', {}).itervalues()
-
+		usages = res['query'].get('imageusage', ())
 			
 		for usage in usages:
 			title = usage['title'].replace(' ', '_')
