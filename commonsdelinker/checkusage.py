@@ -349,7 +349,8 @@ class CheckUsage(object):
 		if '-1' not in res['query']['pages'] and shared:
 			return
 			
-		usages = res['query'].get('imageusage', {})
+		usages = res['query'].get('imageusage')
+		if not usages: return
 			
 		for usage in usages.itervalues():
 			title = usage['title'].replace(' ', '_')
