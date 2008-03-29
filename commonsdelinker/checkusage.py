@@ -349,9 +349,9 @@ class CheckUsage(object):
 		if '-1' not in res['query']['pages'] and shared:
 			return
 			
-		usages = res['query'].get('imageusage', ())
+		usages = res['query'].get('imageusage', {})
 			
-		for usage in usages:
+		for usage in usages.itervalues():
 			title = usage['title'].replace(' ', '_')
 			namespace = usage['ns']
 			if namespace != 0:
