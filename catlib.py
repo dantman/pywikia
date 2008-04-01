@@ -417,7 +417,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
                 u'No changes in made in page %s.' % article.aslink())
             return False
         try:
-            article.put_async(newtext, comment)
+            article.put(newtext, comment)
             return True
         except wikipedia.EditConflict:
             wikipedia.output(
