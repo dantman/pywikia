@@ -48,7 +48,7 @@ msg_double={
     'br': u'Kempennet adkas doubl gant robot',
     'de': u'Bot: Korrigiere doppelten Redirect',
     'es': u'Robot: Arreglando doble redirección',
-    'fa': u'ربات: بهبود صفحه‌های بازگردانی',
+    'fa': u'ربات: بهبود صفحه‌های تغییرمسیر',
     'fr': u'Robot : répare double redirection',
     'he': u'בוט: מתקן הפניה כפולה',
     'hr': u'Bot: Popravak dvostrukih preusmjeravanja',
