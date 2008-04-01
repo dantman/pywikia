@@ -25,6 +25,10 @@ and argument can be:
 -offset:n      Number of redirect to restart with (see progress). Works only
                with an XML dump.
 
+-moves         Instead of using Special:Doubleredirects, use the page move
+               log to find double-redirect candidates (only works with
+               action "double", does not work with -xml)
+
 -always        Don't prompt you for each replacement.
 
 """
@@ -103,10 +107,12 @@ reason_broken={
 }
 
 class RedirectGenerator:
-    def __init__(self, xmlFilename = None, namespaces = [], offset = -1):
+    def __init__(self, xmlFilename=None, namespaces=[], offset=-1,
+                 use_move_log=False):
         self.xmlFilename = xmlFilename
         self.namespaces = namespaces
         self.offset = offset
+        self.use_move_log = use_move_log
 
     def get_redirects_from_dump(self, alsoGetPageTitles = False):
         '''
@@ -208,6 +214,10 @@ class RedirectGenerator:
 
     def retrieve_double_redirects(self):
         if self.xmlFilename == None:
+            if self.use_move_log:
+                for redir_page in self.get_moved_pages_redirects():
+                    yield redir_page.title()
+                return
             mysite = wikipedia.getSite()
             # retrieve information from the live wiki's maintenance page
             # double redirect maintenance page's URL
@@ -236,8 +246,44 @@ class RedirectGenerator:
                     wikipedia.output(u'\nChecking redirect %i of %i...'
                                      % (num + 1, len(redict)))
 
+    move_regex = re.compile(
+        r'<li>.*?<a href="/wiki/User:.*?>.*?</a> '
+        r'\(<a href="/wiki/User_talk:.*?>Talk</a> \| '
+        r'<a href="/wiki/Special:Contributions/.*?>contribs</a>\) '
+        r'moved <a href="/w/index\.php\?title=.*?>(.*?)</a> to '
+        r'<a href="/wiki/.*?>.*?</a>.*?</li>' )
+
+    def get_moved_pages_redirects(self):
+        '''generate redirects to recently-moved pages'''
+        offset=0
+        site = wikipedia.getSite()
+        while offset <= 10000: # Can't access more than 10000 log entries
+            move_url = \
+                "/w/index.php?title=Special:Log&limit=500&offset=%i&type=move"\
+                       % offset
+            try:
+                move_list = site.getUrl(move_url)
+#                wikipedia.output(u"[%i]" % offset)
+            except:
+                import traceback
+                traceback.print_exc()
+                return
+            for moved_page in self.move_regex.findall(move_list):
+                # moved_page is now a redirect, so any redirects pointing
+                # to it need to be changed
+                try:
+                    for page in wikipedia.Page(site, moved_page
+                                          ).getReferences(follow_redirects=True,
+                                                          redirectsOnly=True):
+                        yield page
+                except wikipedia.NoPage:
+                    # original title must have been deleted after move
+                    continue
+            offset += 500
+
+
 class RedirectRobot:
-    def __init__(self, action, generator, always = False):
+    def __init__(self, action, generator, always=False):
         self.action = action
         self.generator = generator
         self.always = always
@@ -308,7 +354,7 @@ class RedirectRobot:
                     elif len(redirList) == 2:
                         wikipedia.output(
                             u'Skipping: Redirect target %s is not a redirect.'
-                            % redir.aslink())
+                            % newRedir.aslink())
                         break  # do nothing
                 except wikipedia.SectionError:
                     wikipedia.output(
@@ -413,6 +459,7 @@ def main():
     # at which redirect shall we start searching double redirects again
     # (only with dump); default to -1 which means all redirects are checked
     offset = -1
+    moved_pages = False
     always = False
     for arg in wikipedia.handleArgs():
         if arg == 'double':
@@ -425,6 +472,8 @@ def main():
                                 u'Please enter the XML dump\'s filename: ')
             else:
                 xmlFilename = arg[5:]
+        elif arg.startswith('-moves'):
+            moved_pages = True
         elif arg.startswith('-namespace:'):
             try:
                 namespaces.append(int(arg[11:]))
@@ -440,7 +489,7 @@ def main():
     if not action:
         wikipedia.showHelp('redirect')
     else:
-        gen = RedirectGenerator(xmlFilename, namespaces, offset)
+        gen = RedirectGenerator(xmlFilename, namespaces, offset, moved_pages)
         bot = RedirectRobot(action, gen, always)
         bot.run()
 
