@@ -45,8 +45,8 @@ sysopnames = {}
 disambiguation_comment = {}
 gdab_namespaces = {}
 
-# Solve captchas in the webbrowser. Setting this to False will result in the 
-# exception CaptchaError be thrown if a captcha is encountered. 
+# Solve captchas in the webbrowser. Setting this to False will result in the
+# exception CaptchaError be thrown if a captcha is encountered.
 solve_captcha = True
 
 # Some sites will require password identication to access the HTML pages at
@@ -81,6 +81,9 @@ for _filename in os.listdir(os.path.join(_base_dir, 'families')):
         usernames[familyName] = {}
         sysopnames[familyName] = {}
         disambiguation_comment[familyName] = {}
+
+# Display a warning message if your edits appear in recent changes page
+notify_unflagged_bot = True
 
 # Set to True to override the {{bots}} exclusion protocol (at your own risk!)
 ignore_bot_templates = False

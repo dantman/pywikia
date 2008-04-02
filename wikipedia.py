@@ -25,6 +25,7 @@ Exceptions:
     PageNotSaved:       Saving the page has failed
       EditConflict:     PageNotSaved due to edit conflict while uploading
       SpamfilterError:  PageNotSaved due to MediaWiki spam filter
+      LongPageError:    PageNotSaved due to length limit
     ServerError:        Got unexpected response from wiki server
     BadTitle:           Server responded with BadTitle
     UserBlocked:        Client's username or IP has been blocked
@@ -182,6 +183,12 @@ class SpamfilterError(PageNotSaved):
     def __init__(self, arg):
         self.url = arg
         self.args = arg,
+
+class LongPageError(PageNotSaved):
+    """Saving the page has failed because it is too long."""
+    def __init__(self, arg, arg2):
+        self.length = arg
+        self.limit = arg2,
 
 class ServerError(Error):
     """Got unexpected server response"""
@@ -1352,6 +1359,15 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
+            if self.site().has_mediawiki_message('longpageerror'):
+                long_page_errorR = re.compile(
+                    html2unicode(
+                        self.site().mediawiki_message('longpageerror')
+                        ).replace("$1", "(?P<length>[\d,. ]+)").replace("$2", "(?P<limit>[\d,. ]+)")
+                )
+                match = long_page_errorR.search(data)
+                if match:
+                    raise LongPageError(match.group('length'), match.group('limit'))
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
             if data.strip() != u"":
@@ -4235,7 +4251,7 @@ your connection is down. Retrying in %i minutes..."""
             # Don't show warnings for not logged in users, they will just fail to
             # do any action
             if self._isLoggedIn[index]:
-                if 'bot' not in self._rights[index]:
+                if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
                     if sysop:
                         output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
                     else:
