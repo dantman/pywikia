@@ -23,7 +23,7 @@ and argument can be:
 -namespace:n   Namespace to process. Works only with an XML dump.
 
 -offset:n      Number of redirect to restart with (see progress). Works only
-               with an XML dump.
+               with an XML dump or with -moves.
 
 -moves         Instead of using Special:Doubleredirects, use the page move
                log to find double-redirect candidates (only works with
@@ -255,9 +255,9 @@ class RedirectGenerator:
 
     def get_moved_pages_redirects(self):
         '''generate redirects to recently-moved pages'''
-        offset=0
+        offset = max(0, self.offset)
         site = wikipedia.getSite()
-        while offset <= 10000: # Can't access more than 10000 log entries
+        while offset <= 10000: # MW won't accept offset value > 10000
             move_url = \
                 "/w/index.php?title=Special:Log&limit=500&offset=%i&type=move"\
                        % offset
