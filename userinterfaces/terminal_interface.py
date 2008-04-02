@@ -158,7 +158,7 @@ class UI:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it. Instead we add *** after the text as a whole
             # if anything needed to be colorized.
-            lines = '\n'.split(text)
+            lines = text.split('\n')
             for line in lines:
                 line, count = colorTagR.subn('', line)
                 if count > 0:
