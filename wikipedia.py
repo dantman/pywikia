@@ -1363,7 +1363,7 @@ not supported by PyWikipediaBot!"""
                 long_page_errorR = re.compile(
                     html2unicode(
                         self.site().mediawiki_message('longpageerror')
-                        ).replace("$1", "(?P<length>[\d,. ]+)").replace("$2", "(?P<limit>[\d,. ]+)")
+                        ).replace(" $1", "(?P<length>[\d,. ]+)").replace(" $2", "(?P<limit>[\d,. ]+)")
                 )
                 match = long_page_errorR.search(data)
                 if match:
