@@ -4189,7 +4189,7 @@ your connection is down. Retrying in %i minutes..."""
         * text - the page text
         * sysop - is the user a sysop?
         """
-        if '<body class="mediawiki' not in text:
+        if '<div id="globalWrapper">' not in text:
             # Not a wiki page
             return
 
