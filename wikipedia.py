@@ -1360,14 +1360,29 @@ not supported by PyWikipediaBot!"""
                     retry_delay = 30
                 continue
             if self.site().has_mediawiki_message('longpageerror'):
+                # FIXME: Long page error detection isn't working in Vietnamese Wikipedia.
                 long_page_errorR = re.compile(
-                    html2unicode(
-                        self.site().mediawiki_message('longpageerror')
-                        ).replace(" $1", "(?P<length>[\d,. ]+)", 1).replace(" $2", "(?P<limit>[\d,. ]+)", 1)
-                )
+                    # Some wikis (e.g. Lithuanian and Slovak Wikipedia) use {{plural}} in
+                    # [[MediaWiki:longpageerror]]
+                    re.sub(r'\\{\\{plural\\:.*?\\}\\}', '.*?',
+                        re.escape(
+                            html2unicode(
+                                self.site().mediawiki_message('longpageerror')
+                            )
+                        )
+                    ).replace("\$1", "(?P<length>[\d,.\s]+)", 1).replace("\$2", "(?P<limit>[\d,.\s]+)", 1),
+                re.UNICODE)
+
                 match = long_page_errorR.search(data)
                 if match:
-                    raise LongPageError(match.group('length'), match.group('limit'))
+                    # Some wikis (e.g. Lithuanian Wikipedia) don't use $2 parameter in
+                    # [[MediaWiki:longpageerror]]
+                    longpage_length = 0 ; longpage_limit = 0
+                    if 'length' in match.groups():
+                        longpage_length = match.group('length')
+                    if 'limit' in match.groups():
+                        longpage_limit = match.group('limit')
+                    raise LongPageError(longpage_length, longpage_limit)
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
             if data.strip() != u"":
