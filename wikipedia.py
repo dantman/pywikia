@@ -640,7 +640,7 @@ not supported by PyWikipediaBot!"""
                 self._getexception = SectionError
                 raise
         return self._contents
-    
+
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
                      oldid=None, nofollow_redirects=False,
                      change_edit_time=True):
@@ -1360,11 +1360,12 @@ not supported by PyWikipediaBot!"""
                     retry_delay = 30
                 continue
             if self.site().has_mediawiki_message('longpageerror'):
-                long_page_errorR = re.compile(
-                    html2unicode(
-                        self.site().mediawiki_message('longpageerror')
-                        ).replace(" $1", "(?P<length>[\d,. ]+)").replace(" $2", "(?P<limit>[\d,. ]+)")
-                )
+                longpage = html2unicode(self.site().mediawiki_message('longpageerror'))
+                longpage = longpage.replace(" $1", "(?P<length>[\d,. ]+)", 1).replace(" $2", "(?P<limit>[\d,. ]+)", 1)
+                # some messages might display several times $1 or $2
+                # (bug #1932907).
+                longpage = re.sub('$[12]', '.*', longpage)
+                long_page_errorR = re.compile(longpage)
                 match = long_page_errorR.search(data)
                 if match:
                     raise LongPageError(match.group('length'), match.group('limit'))
@@ -5516,7 +5517,7 @@ For other possible configuration variables check config.py.
     sys.exit(1)
 
 # Set socket timeout
-socket.setdefaulttimeout(config.socket_timeout) 
+socket.setdefaulttimeout(config.socket_timeout)
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of
