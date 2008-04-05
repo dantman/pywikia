@@ -1360,12 +1360,11 @@ not supported by PyWikipediaBot!"""
                     retry_delay = 30
                 continue
             if self.site().has_mediawiki_message('longpageerror'):
-                longpage = html2unicode(self.site().mediawiki_message('longpageerror'))
-                longpage = longpage.replace(" $1", "(?P<length>[\d,. ]+)", 1).replace(" $2", "(?P<limit>[\d,. ]+)", 1)
-                # some messages might display several times $1 or $2
-                # (bug #1932907).
-                longpage = re.sub('$[12]', '.*', longpage)
-                long_page_errorR = re.compile(longpage)
+                long_page_errorR = re.compile(
+                    html2unicode(
+                        self.site().mediawiki_message('longpageerror')
+                        ).replace(" $1", "(?P<length>[\d,. ]+)", 1).replace(" $2", "(?P<limit>[\d,. ]+)", 1)
+                )
                 match = long_page_errorR.search(data)
                 if match:
                     raise LongPageError(match.group('length'), match.group('limit'))
