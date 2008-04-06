@@ -1607,6 +1607,7 @@ not supported by PyWikipediaBot!"""
             try:
                 thistxt = self.get()
             except (IsRedirectPage, NoPage):
+                self._isDisambig = False
                 return []
 
         # remove commented-out stuff etc.
