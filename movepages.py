@@ -50,6 +50,7 @@ summary={
     'nl': u'Bot: paginatitel gewijzigd',
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Bot: Página movida',
+    'ru': u'Переименование страницы при помощи робота',
 }
 
 deletesummary={
@@ -57,12 +58,14 @@ deletesummary={
     'en': u'Robot: Deleting redirect after page has been moved',
     'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
     'pt': u'Bot: Página apagada depois de movida',
+    'ru': u'Робот: удаление перенаправления после переименования страницы',
     # These are too unspecific:
     #'ar': u'حذف الصفحة بواسطة البوت',
     #'el': u'Διαγραφή σελίδων με bot',
     #'fr': u'Page supprimée par bot',
     #'nl': u'Pagina verwijderd door robot',
     #'pl': u'Usunięcie artykułu przez robota',
+
 }
 
 class MovePagesBot:
