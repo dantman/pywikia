@@ -128,7 +128,7 @@ talk_report = {
     'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו אותו במקרה זה!\n\n%s\n%s--~~~~',
     'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n%s--~~~~',
     'kk': u'== Өлі сілтеме ==\n\nӨздікті бот бірнеше жегілгенде келесі сыртқы сілтемеге қатынай алмады. Бұл сілтеменің қатыналуын тексеріп шығыңыз да, не түзетіңіз, не аластаңыз!\n\n%s\n%s--~~~~',
-    'ksh': u'== Han enne kapdde Weblengk jefonge ==\n\nEsch han bonge die Weblingks paa Mol jetschäck. Se han allemooLde nit jedon Doht ens donnoh loore, un dä Lengk reparreere odo eruß nämme.\n\n%s\n%s--~~~~',
+    'ksh': u'== Han enne kappodde Weblengk jefonge ==\n\nEsch han bonge die Weblingks paa Mol jetschäck. Se han allemoolde nit jedon Doht ens donnoh loore, un dä Lengk reparreere odo eruß nämme.\n\n%s\n%s--~~~~',
     'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
     'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
     'no': u'{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
