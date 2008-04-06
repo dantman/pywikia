@@ -46,6 +46,7 @@ summary={
     'de': u'Bot: Seite verschoben',
     'el': u'Μετακίνηση σελίδων με bot',
     'fr': u'Bot: Page renommée',
+    'ja': u'ロボットによる: ページの移動',
     'he': u'בוט: מעביר דף',
     'nl': u'Bot: paginatitel gewijzigd',
     'pl': u'Przeniesienie artykułu przez robota',
@@ -57,6 +58,7 @@ deletesummary={
     'de': u'Bot: Lösche nach Seitenverschiebung nicht benötigte Umleitung',
     'en': u'Robot: Deleting redirect after page has been moved',
     'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
+    'ja': u'ロボットによる: ページの移動後のリダイレクトページの削除',
     'pt': u'Bot: Página apagada depois de movida',
     'ru': u'Робот: удаление перенаправления после переименования страницы',
     # These are too unspecific:
