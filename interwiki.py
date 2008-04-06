@@ -264,6 +264,32 @@ docuReplacements = {
     '&pagegenerators_help;': pagegenerators.parameterHelp
 }
 
+class XmlDumpLmoLinkPageGenerator:
+    """
+    Generator which will yield Pages that might contain selflinks.
+    These pages will be retrieved from a local XML dump file
+    (cur table).
+    """
+    def __init__(self, xmlFilename):
+        """
+        Arguments:
+            * xmlFilename  - The dump's path, either absolute or relative
+        """
+
+        self.xmlFilename = xmlFilename
+
+    def __iter__(self):
+        import xmlreader
+        mysite = wikipedia.getSite()
+        dump = xmlreader.XmlDump(self.xmlFilename)
+        r = re.compile(r'\d')
+        for entry in dump.parse():
+            if not r.search(entry.title):
+                selflinkR = re.compile(r'\[\[lmo:')
+                if selflinkR.search(entry.text):
+                    yield wikipedia.Page(mysite, entry.title)
+
+
 class SaveError(wikipedia.Error):
     """
     An attempt to save a page with changed interwiki has failed.
@@ -282,14 +308,21 @@ class GiveUpOnPage(wikipedia.Error):
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
+    'az': (u'Bot redaktəsi ', u'əlavə edilir', u'çıxardılır', u'dəyişdirilir'),
     'bat-smg': (u'robots ', u'Pridedama', u'Trėnama', u'Keitama'),
+    'bcl': (u'robot ', u'minadugang', u'minahali', u'minamodifikar'),
     'be': (u'робат ', u'Дадаем', u'Выдаляем', u'Мяняем'),
     'be-x-old': (u'робат ', u'дадаў', u'выдаліў', u'зьмяніў'),
     'bg': (u'Робот ', u'Добавяне', u'Изтриване', u'Промяна'),
     'bn': (u'রোবট ', u'যোগ করছে', u'মুছে ফেলছে', u'পরিবর্তন সাধন করছে'),
+    'bpy': (u'রোবট ', u'তিলকরের', u'থেইকরের', u'বদালার'),
     'br': (u'Robot ', u'ouzhpennet', u'tennet', u'kemmet'),
     'ca': (u'Robot ', u'afegeix', u'esborra', u'modifica'),
+    'ceb': (u'robot ', u'Gidugang', u'Gitangtang', u'Gimodipikar'),
+    'crh': (u'robot ', u'ekley', u'çetleştire', u'deñiştire'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
+    'cv': (u'робот ', u'хушрĕ', u'кăларса пăрахрĕ', u'улăштарчĕ'),
+    'cy': (u'robot ', u'Ychwanegu', u'Tynnu', u'Newid'),
     'csb':(u'robot ', u'dodôwô', u'rëmô', u'pòprôwiô'),
     'da': (u'robot ', u'Tilføjer', u'Fjerner', u'Ændrer'),
     'de': (u'Bot: ', u'Ergänze', u'Entferne', u'Ändere'),
@@ -301,12 +334,15 @@ msg = {
     'eu': (u'robota ', u'Erantsia', u'Ezabatua', u'Aldatua'),
     'fa': (u'ربات ', u'افزودن', u'حذف', u'اصلاح'),
     'fi': (u'Botti ', u'lisäsi', u'poisti', u'muokkasi'),
+    'fiu-vro': (u'robot ', u'manopandminõ', u'ärqvõtminõ', u'tävvendämine'),
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'frp': (u'robot ', u'Apond', u'Retire', u'Modifie'),
     'fur': (u'Robot: ', u'o zonti', u'o cambii', u'o gjavi'),
     'gl': (u'bot ', u'Engadido', u'Eliminado', u'Modificado'),
+    'gn': (u'bot ', u'ojoapy', u'oñembogue', u'oñemoambue'),
     'he': (u'בוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
+    'hsb': (u'bot ', u'přidał', u'wotstronił', u'změnił'),
     'ht': (u'wobo ', u'Ajoute', u'Anlve', u'Modifye'),
     'hu': (u'Robot: ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
@@ -319,11 +355,17 @@ msg = {
     'ko': (u'로봇이 ', u'더함', u'지움', u'바꿈'),
     'kk': (u'Боттың ', u'үстегені', u'аластағаны', u'түзеткені'),
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
-    'la': (u'robotum ', u'addit', u'abdit', u'mutat'),
+    'ku': (u'robot ', u'serzêde kirin', u'jêbirin', u'guhêrandin'),
+    'la': (u'bot ', u'addit', u'abdit', u'mutat'),
     'lb': (u'Bot ', u'Derbäi setzen', u'Ewech huelen', u'Änneren'),
     'lmo': (u'Robot ', u'jontant', u'trant via', u'modifiant'),
+    'ln': (u'bot ', u'ebakisí', u'elongólí', u'ebongolí'),
     'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
     'lv': (u'robots ', u'pievieno', u'izņem', u'izmaina'),
+    'mk': (u'Бот ', u'Додава', u'Брише', u'Менува'),
+    'ml': (u'യന്ത്രം ', u'ചേര്‍ക്കുന്നു', u'നീക്കുന്നു', u'പുതുക്കുന്നു'),
+    'mn': (u'робот ', u'Нэмж байна', u'Арилгаж байна', u'Өөрчилж байна'),
+    'mr': (u'सांगकाम्या ', u'वाढविले', u'काढले', u'बदलले'),
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
     'nds-nl': (u'bot', u'derbie', u'derof', u'aanders'),
@@ -340,13 +382,16 @@ msg = {
     'ru': (u'робот ', u'добавил', u'удалил', u'изменил'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
+    'sq': (u'robot ', u'Futje', u'Largim', u'Ndryshim'),
     'sr': (u'Бот', u'Додаје', u'Брише', u'Мења'),
     'su': (u'bot ', u'Nambih', u'Miceun', u'Ngarobih'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     'sw': (u'roboti ', u'Nyongeza', u'Ondoa', u'Badiliko'),
     'ta': (u'தானியங்கி',u'இணைப்பு',u'அழிப்பு',u'மாற்றல்'),
+    'te': (u'యంత్రము ', u'కలుపుతున్నది', u'తొలగిస్తున్నది', u'మార్పులు చేస్తున్నది'),
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
+    'tl': (u'robot ', u'dinagdag', u'tinanggal', u'binago'),
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
     'tr': (u'Bot değişikliği', u'Ekleniyor', u'Kaldırılıyor', u'Değiştiriliyor'),
     'th': (u'โรบอต ', u'เพิ่ม', u'ลบ', u'แก้ไข'),
@@ -354,6 +399,7 @@ msg = {
     'uz': (u'Bot', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
+    'yi': (u'באט ', u'צוגעלייגט', u'אראפגענומען', u'געענדערט'),
     'yue': (u'機械人 ', u'加', u'減', u'改'),
     'zh': (u'機器人 ', u'正在新增', u'移除', u'修改'),
     'zh-classical': (u'僕 ', u'增', u'削', u'修'),
@@ -1481,7 +1527,13 @@ if __name__ == "__main__":
         genFactory = pagegenerators.GeneratorFactory()
 
         for arg in wikipedia.handleArgs():
-            if arg == '-noauto':
+            if arg.startswith('-xml'):
+                if len(arg) == 4:
+                    xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
+                else:
+                    xmlFilename = arg[5:]
+                hintlessPageGen = XmlDumpLmoLinkPageGenerator(xmlFilename)
+            elif arg == '-noauto':
                 globalvar.auto = False
             elif arg.startswith('-hint:'):
                 hints.append(arg[6:])
