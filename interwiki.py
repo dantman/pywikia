@@ -29,6 +29,11 @@ These command-line arguments can be used to specify which pages to work on:
 
                    This implies -noredirect.
 
+    -new:          Work on the 100 newest pages. If given as -new:x, will work
+                   on the x newest pages.
+
+                   This implies -noredirect.
+
     -restore:      restore a set of "dumped" pages the robot was working on
                    when it terminated.
 
@@ -1598,6 +1603,13 @@ if __name__ == "__main__":
                 else:
                     startMonth = 1
                 hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
+            elif arg.startswith('-new'):
+                if len(arg) > 5 and arg[4] == ':' and arg[5:].isdigit():
+                    # Looks as if the user gave a specific number of pages
+                    newPages = int(arg[5:])
+                else:
+                    newPages = 100
+                hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages)
             elif arg.startswith('-skipfile:'):
                 skipfile = arg[10:]
                 skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
