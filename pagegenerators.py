@@ -708,26 +708,27 @@ class PreloadingGenerator(ThreadedGenerator):
 
     def generator(self):
         try:
-            # this array will contain up to pageNumber pages and will be flushed
-            # after these pages have been preloaded and yielded.
-            somePages = []
-            for page in self.wrapped_gen:
-                if self.finished.isSet():
-                    return
-                somePages.append(page)
-                # We don't want to load too many pages at once using XML export.
-                # We only get a maximum number at a time.
-                if len(somePages) >= self.pageNumber:
+            try:
+                # this array will contain up to pageNumber pages and will be flushed
+                # after these pages have been preloaded and yielded.
+                somePages = []
+                for page in self.wrapped_gen:
+                    if self.finished.isSet():
+                        return
+                    somePages.append(page)
+                    # We don't want to load too many pages at once using XML export.
+                    # We only get a maximum number at a time.
+                    if len(somePages) >= self.pageNumber:
+                        for loaded_page in self.preload(somePages):
+                            yield loaded_page
+                        somePages = []
+                if somePages:
+                    # wrapped generator is exhausted but some pages still unloaded
+                    # preload remaining pages
                     for loaded_page in self.preload(somePages):
                         yield loaded_page
-                    somePages = []
-            if somePages:
-                # wrapped generator is exhausted but some pages still unloaded
-                # preload remaining pages
-                for loaded_page in self.preload(somePages):
-                    yield loaded_page
-        except Exception, e:
-            wikipedia.output(unicode(e))
+            except Exception, e:
+                wikipedia.output(unicode(e))
         finally:
             if hasattr(self.wrapped_gen, "stop"):
                 self.wrapped_gen.stop()
