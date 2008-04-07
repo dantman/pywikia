@@ -51,6 +51,7 @@ def parseRestrictions(restrictions):
         moveRestriction = 'sysop'
     return editRestriction, moveRestriction
 
+
 class XmlEntry:
     """
     Represents a page.
@@ -67,6 +68,7 @@ class XmlEntry:
         self.moveRestriction = moveRestriction
         self.revisionid = revisionid
 
+
 class XmlHeaderEntry:
     """
     Represents a header entry
@@ -77,6 +79,7 @@ class XmlHeaderEntry:
         self.generator = u''
         self.case = u''
         self.namespaces = {}
+
 
 class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
     def __init__(self):
@@ -239,7 +242,9 @@ class XmlDump(object):
         """Return a generator that will yield XmlEntry objects"""
         print 'Reading XML dump...'
         if not 'iterparse' in globals():
-            wikipedia.output(u'NOTE: cElementTree not found. Using slower fallback solution. Consider installing the python-celementtree package.')
+            wikipedia.output(
+u'''WARNING: cElementTree not found. Using slower fallback solution.
+Consider installing the python-celementtree package.''')
             return self.regex_parse()
         else:
             return self.new_parse()
@@ -271,13 +276,9 @@ class XmlDump(object):
                 text = revision.findtext("{%s}text" % uri)
                 editRestriction, moveRestriction \
                         = parseRestrictions(restrictions)
-
-                yield XmlEntry(title=title,
-                               id=pageid,
-                               text=text or u'',
-                               username=username,
-                               ipedit=bool(ipeditor),
-                               timestamp= timestamp,
+                yield XmlEntry(title=title, id=pageid, text=text or u'',
+                               username=username, ipedit=bool(ipeditor),
+                               timestamp=timestamp,
                                editRestriction=editRestriction,
                                moveRestriction=moveRestriction,
                                revisionid=revisionid
@@ -344,11 +345,10 @@ class XmlDump(object):
                         username = m.group('ip')
                         ipedit = True
                     yield XmlEntry(title = m.group('title'),
-                                   id = m.group('pageid'),
-                                   text = text,
-                                   username = username,
-                                   ipedit=ipedit,
-                                   timestamp = m.group('timestamp'),
+                                   id=m.group('pageid'), text=text,
+                                   username=username, ipedit=ipedit,
+                                   timestamp=m.group('timestamp'),
                                    editRestriction = editRestriction,
-                                   moveRestriction = moveRestriction,
-                                   revisionid = m.group('revisionid'))
+                                   moveRestriction=moveRestriction,
+                                   revisionid=m.group('revisionid')
+                                  )

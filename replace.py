@@ -102,7 +102,7 @@ talk about HTTP, where the typo has become part of the standard:
     python replace.py referer referrer -file:typos.txt -excepttext:HTTP
 """
 #
-# (C) Daniel Herding, 2004
+# (C) Daniel Herding & the Pywikipediabot Team, 2004-2008
 #
 # Distributed under the terms of the MIT license.
 #
@@ -156,6 +156,7 @@ msg = {
        'zh': u'機器人:執行文字代換作業 %s',
        }
 
+
 class XmlDumpReplacePageGenerator:
     """
     Iterator that will yield Pages that might contain text to replace.
@@ -190,9 +191,6 @@ class XmlDumpReplacePageGenerator:
         self.parser = dump.parse()
 
     def __iter__(self):
-        return self
-
-    def next(self):
         try:
             for entry in self.parser:
                 if self.skipping:
@@ -205,17 +203,16 @@ class XmlDumpReplacePageGenerator:
                     for old, new in self.replacements:
                         new_text = wikipedia.replaceExcept(
                                         new_text, old, new, self.excsInside)
-                        if new_text != entry.text:
-                            return wikipedia.Page(self.site, entry.title)
+                    if new_text != entry.text:
+                        yield wikipedia.Page(self.site, entry.title)
         except KeyboardInterrupt:
             try:
                 if not self.skipping:
                     wikipedia.output(
-                        'To resume, use "-xmlstart:%s" on the command line.'
-                         % entry.title)
+                        u'To resume, use "-xmlstart:%s" on the command line.'
+                        % entry.title)
             except NameError:
                 pass
-            raise KeyboardInterrupt
 
     def isTitleExcepted(self, title):
         if self.exceptions.has_key('title'):
@@ -230,6 +227,7 @@ class XmlDumpReplacePageGenerator:
                 if exc.search(text):
                     return True
         return False
+
 
 class ReplaceRobot:
     """
@@ -336,7 +334,8 @@ class ReplaceRobot:
                 # Load the page's text from the wiki
                 original_text = page.get()
                 if not page.canBeEdited():
-                    wikipedia.output(u"You can't edit page %s" % page.aslink())
+                    wikipedia.output(u"You can't edit page %s"
+                                     % page.aslink())
                     continue
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % page.aslink())
@@ -363,7 +362,8 @@ u'Skipping %s because it contains text that is on the exceptions list.'
                 cats = page.categories()
                 if self.addedCat not in cats:
                     cats.append(self.addedCat)
-                    new_text = wikipedia.replaceCategoryLinks(new_text, cats)
+                    new_text = wikipedia.replaceCategoryLinks(new_text,
+                                                              cats)
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
@@ -388,7 +388,8 @@ u'Skipping %s because it contains text that is on the exceptions list.'
                         u'Cannot change %s because of blacklist entry %s'
                         % (page.title(), e.url))
                 except wikipedia.PageNotSaved, error:
-                    wikipedia.output(u'Error putting page: %s' % (error.args,))
+                    wikipedia.output(u'Error putting page: %s'
+                                     % (error.args,))
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Skipping %s (locked page)'
                                      % (page.title(),))
@@ -613,9 +614,13 @@ u'Press Enter to use this default message, or enter a description of the\nchange
         gen = XmlDumpReplacePageGenerator(xmlFilename, xmlStart,
                                           replacements, exceptions)
     elif useSql:
-        whereClause = 'WHERE (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern) for (old, new) in replacements])
+        whereClause = 'WHERE (%s)' % ' OR '.join(
+            ["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern)
+             for (old, new) in replacements])
         if exceptions:
-            exceptClause = 'AND NOT (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(exc.pattern) for exc in exceptions])
+            exceptClause = 'AND NOT (%s)' % ' OR '.join(
+                ["old_text RLIKE '%s'" % prepareRegexForMySQL(exc.pattern)
+                 for exc in exceptions])
         else:
             exceptClause = ''
         query = u"""
@@ -640,10 +645,12 @@ LIMIT 200""" % (whereClause, exceptClause)
     if namespaces != []:
         gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     if xmlFilename:
-        # XML parsing can be quite slow, so we preload less pages each time.
-        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
+        # XML parsing can be quite slow, so use smaller batches and
+        # longer lookahead.
+        preloadingGen = pagegenerators.PreloadingGenerator(gen,
+                                            pageNumber=20, lookahead=1000)
     else:
-        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 60)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=60)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall,
                        allowoverlap, recursive, None, sleep)
     bot.run()
