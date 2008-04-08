@@ -4646,7 +4646,6 @@ your connection is down. Retrying in %i minutes..."""
             path = self.log_address(number, mode = 'upload')
             get_throttle()
             html = self.getUrl(path)
-            print regexp.findall(html)
             for m in regexp.finditer(html):
                 image = m.group('image')
 
