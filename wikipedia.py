@@ -828,6 +828,7 @@ not supported by PyWikipediaBot!"""
     def previousRevision(self):
         """Return the revision id for the previous revision of this Page."""
         vh = self.getVersionHistory(revCount=2)
+        print vh
         return vh[1][0]
 
     def exists(self):
@@ -972,8 +973,19 @@ not supported by PyWikipediaBot!"""
 
         """
         if not hasattr(self, '_isDisambig'):
-            foo = self.templates()
-        return self._isDisambig
+            locdis = self.site().family.disambig( self._site.lang )
+
+            for tn in self.templates():
+                tn = tn[:1].upper() + tn[1:]
+                tn = tn.replace(u'_', u' ')
+                while u"  " in tn:
+                    tn = tn.replace(u"  ", u" ")
+                if tn in locdis:
+                    _isDisambig = True
+                    break
+            else:
+                _isDisambig = False
+        return _isDisambig
 
     def getReferences(self,
             follow_redirects=True, withTemplateInclusion=True,
@@ -1154,7 +1166,7 @@ not supported by PyWikipediaBot!"""
                             force, callback))
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
-            force=False):
+            force=False, deleted = True):
         """Save the page with the contents of the first argument as the text.
 
         Optional parameters:
@@ -1207,10 +1219,11 @@ not supported by PyWikipediaBot!"""
         # of Bordeaux
         if self.site().lang == 'eo':
             newtext = encodeEsperantoX(newtext)
-        return self._putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
+        return self._putPage(newtext, comment, watchArticle, minorEdit,
+                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, deleted = deleted)
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
-                newPage=False, token=None, newToken=False, sysop=False):
+                newPage=False, token=None, newToken=False, sysop=False, deleted=True):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1297,7 +1310,7 @@ not supported by PyWikipediaBot!"""
                 time.sleep(5)
                 continue
             # A second text area means that an edit conflict has occured.
-            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
+            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data and deleted == True:
                 raise EditConflict(u'An edit conflict has occured.')
             if self.site().has_mediawiki_message("spamprotectiontitle")\
                     and self.site().mediawiki_message('spamprotectiontitle') in data:
@@ -1545,8 +1558,7 @@ not supported by PyWikipediaBot!"""
                 try:
                     page = Page(self.site(), title)
                 except Error:
-                    if title.strip(" "):
-                        output(u"Page %s contains invalid link to [[%s]]."
+                    output(u"Page %s contains invalid link to [[%s]]."
                            % (self.title(), title))
                     continue
                 if not withImageLinks and page.isImage():
@@ -1602,12 +1614,10 @@ not supported by PyWikipediaBot!"""
 
         If thistxt is set, it is used instead of current page content.
         """
-        check_disambig = (thistxt is None)
         if not thistxt:
             try:
                 thistxt = self.get()
             except (IsRedirectPage, NoPage):
-                self._isDisambig = False
                 return []
 
         # remove commented-out stuff etc.
@@ -1652,13 +1662,10 @@ not supported by PyWikipediaBot!"""
                 try:
                     name = Page(self.site(), name).title()
                 except Error:
-                    if name.strip():
-                        output(u"Page %s contains invalid template name {{%s}}."
+                    output(u"Page %s contains invalid template name {{%s}}."
                            % (self.title(), name.strip()))
                     continue
-                if check_disambig and \
-                        name in self.site().family.disambig(self.site().lang):
-                    self._isDisambig = True
+
                 # Parameters
                 paramString = m.group('params')
                 params = []
@@ -1669,25 +1676,20 @@ not supported by PyWikipediaBot!"""
                     for m2 in Rlink.finditer(paramString):
                         count2 += 1
                         text = m2.group()
-                        paramString = paramString.replace(text,
-                                        '%s%d%s' % (marker2, count2, marker2))
+                        paramString = paramString.replace(text, '%s%d%s' % (marker2, count2, marker2))
                         links[count2] = text
                     # Parse string
                     markedParams = paramString.split('|')
                     # Replace markers
                     for param in markedParams:
                         for m2 in Rmarker.finditer(param):
-                            param = param.replace(m2.group(),
-                                                  inside[int(m2.group(1))])
+                            param = param.replace(m2.group(), inside[int(m2.group(1))])
                         for m2 in Rmarker2.finditer(param):
-                            param = param.replace(m2.group(),
-                                                  links[int(m2.group(1))])
+                            param = param.replace(m2.group(), links[int(m2.group(1))])
                         params.append(param)
 
                 # Add it to the result
                 result.append((name, params))
-        if check_disambig and not hasattr(self, "_isDisambig"):
-            self._isDisambig = False
         return result
 
     def getRedirectTarget(self):
@@ -4639,7 +4641,7 @@ your connection is down. Retrying in %i minutes..."""
         """Yield ImagePages from Special:Log&type=upload"""
 
         seen = set()
-        regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title=".*?"\s*>(?P<image>.+?)</a>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
+        regexp = re.compile(r'(?:<li[^>]*>|<div class="mw-log-entry"[^>]*>)(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title=".*?"\s*>(?P<image>.+?)</a>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
 
         while True:
             path = self.log_address(number, mode = 'upload')
