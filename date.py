@@ -649,6 +649,7 @@ formats = {
         'uz' :      dh_simpleYearAD,
         'vec':      dh_simpleYearAD,
         'vi' :      dh_simpleYearAD,
+        'vo' :      dh_simpleYearAD,
         'wa' :      dh_simpleYearAD,
         'zh' :      lambda v: dh_yearAD( v, u'%d年' ),
         'zh-min-nan' :  lambda v: dh_yearAD( v, u'%d nî' ),
@@ -1363,6 +1364,7 @@ addFmt ('uk', False,       [ u"%d січня", u"%d лютого", u"%d бере
 addFmt ('ur', False,       [ u"%d جنوری", u"%d فروری", u"%d مارچ", u"%d اپریل", u"%d مئ", u"%d جون", u"%d جلائ", u"%d اگست", u"%d ستمب", u"%d اکتوبر", u"%d نومب", u"%d دسمب" ])
 addFmt2('vec',False, u"%%d de %s", False )
 addFmt ('vi', False,       makeMonthList( u"%%d tháng %d" ))
+addFmt2('vo', False, u"%s %%d", False )
 addFmt ('zh', False,       makeMonthList( u"%d月%%d日" ))
 
 # Walloon names depend on the day number, thus we must generate various different patterns
