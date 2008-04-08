@@ -385,7 +385,7 @@ def parselog(wsite, raw, talk, number):
     # and i put them in a list (i find it more easy and secure).
     while 1:
         # FIXME: That's the regex, if there are problems, take a look here.
-        reg = r'\(<a href=\"/w/index.php\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
+        reg = r'\(<a href=\"/w/index\.php\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
@@ -749,7 +749,10 @@ def main(settingsBot):
                 'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
         # The URL for new users is the same in every project. It should not be changed.
-        URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d&offset=%d" % (limit, offset_variable)
+        if offset_variable == 0:
+            URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d" % limit
+        else:
+            URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d&offset=%d" % (limit, offset_variable)
         log = wsite.getUrl(URL)
         wikipedia.output(u'Loading latest %s new users from %s...\n' % (limit, wsite.hostname()))
         # Determine which signature to use
