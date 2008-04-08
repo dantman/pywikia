@@ -21,6 +21,10 @@ Furthermore, the following command line parameters are supported:
 
 -skipredirects    Skip redirect pages (Warning: increases server load)
 
+-summary          Prompt for a custom summary, bypassing the predefined message
+                  texts.
+                  Argument can also be given as "-summary:XYZ".
+
 """
 #
 # (C) Leonardo Gregianin, 2006
@@ -71,16 +75,19 @@ deletesummary={
 }
 
 class MovePagesBot:
-    def __init__(self, generator, addprefix, delete, always, skipredirects):
+    def __init__(self, generator, addprefix, delete, always, skipredirects, summary):
         self.generator = generator
         self.addprefix = addprefix
         self.delete = delete
         self.always = always
         self.skipredirects = skipredirects
+        self.summary = summary
 
     def moveOne(self, page, newPageTitle):
         try:
-            msg = wikipedia.translate(wikipedia.getSite(), summary)
+            msg = self.summary
+            if not msg:
+                msg = wikipedia.translate(wikipedia.getSite(), summary)
             wikipedia.output(u'Moving page %s to [[%s]]' % (page.aslink(), newPageTitle))
             if page.move(newPageTitle, msg, throttle=True):
                 if self.delete:
@@ -202,6 +209,7 @@ def main():
     delete = False
     always = False
     skipredirects = False
+    summary = None
 
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
@@ -224,6 +232,11 @@ def main():
                 prefix = wikipedia.input(u'Enter the prefix:')
             else:
                 prefix = arg[8:]
+        elif arg.startswith('-summary'):
+            if len(arg) == len('-summary'):
+                summary = wikipedia.input(u'Enter the summary:')
+            else:
+                summary = arg[9:]
         else:
             generator = genFactory.handleArg(arg)
             if generator:
@@ -231,11 +244,11 @@ def main():
 
     if oldName and newName:
         page = wikipedia.Page(wikipedia.getSite(), oldName)
-        bot = MovePagesBot(None, prefix, delete, always, skipredirects)
+        bot = MovePagesBot(None, prefix, delete, always, skipredirects, summary)
         bot.moveOne(page, newName)
     elif gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects)
+        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects, summary)
         bot.run()
     else:
         wikipedia.showHelp('movepages')
