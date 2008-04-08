@@ -4641,13 +4641,12 @@ your connection is down. Retrying in %i minutes..."""
         """Yield ImagePages from Special:Log&type=upload"""
 
         seen = set()
-        regexp = re.compile(r'(?:<li[^>]*>|<div class="mw-log-entry"[^>]*>)(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title=".*?"\s*>(?P<image>.+?)</a>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
-
+        regexp = re.compile(r'(?:<li[^>]*>|<div class="mw-log-entry">)(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title=".*?"\s*>(?P<image>.+?)</a>(?:.*?<span class="comment">\((?P<comment>.*?)\)</span>)?', re.UNICODE)
         while True:
             path = self.log_address(number, mode = 'upload')
             get_throttle()
             html = self.getUrl(path)
-
+            print regexp.findall(html)
             for m in regexp.finditer(html):
                 image = m.group('image')
 
@@ -4661,7 +4660,6 @@ your connection is down. Retrying in %i minutes..."""
                     date = m.group('date')
                     user = m.group('user')
                     comment = m.group('comment') or ''
-
                     yield ImagePage(self, image), date, user, comment
             if not repeat:
                 break
