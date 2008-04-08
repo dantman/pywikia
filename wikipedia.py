@@ -973,19 +973,8 @@ not supported by PyWikipediaBot!"""
 
         """
         if not hasattr(self, '_isDisambig'):
-            locdis = self.site().family.disambig( self._site.lang )
-
-            for tn in self.templates():
-                tn = tn[:1].upper() + tn[1:]
-                tn = tn.replace(u'_', u' ')
-                while u"  " in tn:
-                    tn = tn.replace(u"  ", u" ")
-                if tn in locdis:
-                    _isDisambig = True
-                    break
-            else:
-                _isDisambig = False
-        return _isDisambig
+            foo = self.templates()
+        return self._isDisambig
 
     def getReferences(self,
             follow_redirects=True, withTemplateInclusion=True,
@@ -1614,10 +1603,12 @@ not supported by PyWikipediaBot!"""
 
         If thistxt is set, it is used instead of current page content.
         """
+        check_disambig = (thistxt is None)
         if not thistxt:
             try:
                 thistxt = self.get()
             except (IsRedirectPage, NoPage):
+                self._isDisambig = False
                 return []
 
         # remove commented-out stuff etc.
@@ -1645,7 +1636,8 @@ not supported by PyWikipediaBot!"""
                 # Make sure it is not detected again
                 count += 1
                 text = m.group()
-                thistxt = thistxt.replace(text, '%s%d%s' % (marker, count, marker))
+                thistxt = thistxt.replace(text,
+                                          '%s%d%s' % (marker, count, marker))
                 for m2 in Rmarker.finditer(text):
                     # Make sure stored templates don't contain markers
                     text = text.replace(m2.group(), inside[int(m2.group(1))])
@@ -1662,10 +1654,14 @@ not supported by PyWikipediaBot!"""
                 try:
                     name = Page(self.site(), name).title()
                 except Error:
-                    output(u"Page %s contains invalid template name {{%s}}."
+                    if name.strip():
+                        output(
+                            u"Page %s contains invalid template name {{%s}}."
                            % (self.title(), name.strip()))
                     continue
-
+                if check_disambig and \
+                        name in self.site().family.disambig(self.site().lang):
+                    self._isDisambig = True
                 # Parameters
                 paramString = m.group('params')
                 params = []
@@ -1676,20 +1672,25 @@ not supported by PyWikipediaBot!"""
                     for m2 in Rlink.finditer(paramString):
                         count2 += 1
                         text = m2.group()
-                        paramString = paramString.replace(text, '%s%d%s' % (marker2, count2, marker2))
+                        paramString = paramString.replace(text,
+                                        '%s%d%s' % (marker2, count2, marker2))
                         links[count2] = text
                     # Parse string
                     markedParams = paramString.split('|')
                     # Replace markers
                     for param in markedParams:
                         for m2 in Rmarker.finditer(param):
-                            param = param.replace(m2.group(), inside[int(m2.group(1))])
+                            param = param.replace(m2.group(),
+                                                  inside[int(m2.group(1))])
                         for m2 in Rmarker2.finditer(param):
-                            param = param.replace(m2.group(), links[int(m2.group(1))])
+                            param = param.replace(m2.group(),
+                                                  links[int(m2.group(1))])
                         params.append(param)
 
                 # Add it to the result
                 result.append((name, params))
+        if check_disambig and not hasattr(self, "_isDisambig"):
+            self._isDisambig = False
         return result
 
     def getRedirectTarget(self):
