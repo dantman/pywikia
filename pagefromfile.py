@@ -60,6 +60,7 @@ class PageFromFileRobot:
         'ia': u'Importation automatic de articulos',
         'id': u'Impor artikel automatis',
         'it': u'Caricamento automatico',
+        'ja': u'ロボットによる: 記事の作成',
         'ksh': u'Automatesch aanjelaat',
         'nl': u'Geautomatiseerde import',
         'no': u'bot: Automatisk import',
@@ -75,6 +76,7 @@ class PageFromFileRobot:
         'fr': u'attaché en haut',
         'id': u'ditambahkan di atas',
         'it': u'aggiungo in cima',
+        'ja': u'ロボットによる: 冒頭への追加',
         'ksh': u'Automatesch füürjesaz',
         'nl': u'bovenaan toegevoegd',
         'no': u'legger til øverst',
@@ -89,6 +91,7 @@ class PageFromFileRobot:
         'fr': u'attaché en bas',
         'id': u'ditambahkan di bawah',
         'it': u'aggiungo in fondo',
+        'ja': u'ロボットによる: 末尾への追加',
         'ksh': u'Automatesch aanjehange',
         'nl': u'onderaan toegevoegd',
         'no': u'legger til nederst',
@@ -97,12 +100,13 @@ class PageFromFileRobot:
     }
 
     msg_force = {
-        'en': u'bestehender Text überschrieben',
+        'de': u'bestehender Text überschrieben',
         'en': u'existing text overwritten',
         'he': u'הטקסט הישן נמחק',
         'fr': u'texte existant écrasé',
         'id': u'menimpa teks yang ada',
         'it': u'sovrascritto il testo esistente',
+        'ja': u'ロボットによる: ページの置換',
         'ksh': u'Automatesch ußjetuusch',
         'nl': u'bestaande tekst overschreven',
         'no': u'erstatter eksisterende tekst',
