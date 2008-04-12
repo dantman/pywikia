@@ -27,6 +27,8 @@ Furthermore, the following command line parameters are supported:
                   before the one specified (may also be given as
                   -xmlstart:Article).
 
+-addcat:cat_name  Adds "cat_name" category to every altered page.
+
 -excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -regex
                   argument is given, XYZ will be regarded as a regular
                   expression.
@@ -276,7 +278,11 @@ class ReplaceRobot:
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
         self.recursive = recursive
-        self.addedCat = addedCat
+        if addedCat:
+            site = wikipedia.getSite()
+            cat_ns = site.category_namespaces()[0]
+            self.addedCat = wikipedia.Page(site,
+                                           cat_ns + ':' + addedCat)
         self.sleep = sleep
 
     def isTitleExcepted(self, title):
@@ -333,7 +339,7 @@ class ReplaceRobot:
                     continue
                 try:
                     # Load the page's text from the wiki
-                    original_text = page.get()
+                    original_text = page.get(get_redirect=True)
                     if not page.canBeEdited():
                         wikipedia.output(u"You can't edit page %s"
                                          % page.aslink())
@@ -341,8 +347,6 @@ class ReplaceRobot:
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page %s not found' % page.aslink())
                     continue
-                except wikipedia.IsRedirectPage:
-                    original_text = page.get(get_redirect=True)
                 if self.isTextExcepted(original_text):
                     wikipedia.output(
     u'Skipping %s because it contains text that is on the exceptions list.'
@@ -360,7 +364,7 @@ class ReplaceRobot:
                         newest_text = self.doReplacements(new_text)
 
                 if self.addedCat:
-                    cats = page.categories()
+                    cats = page.categories(nofollow_redirects=True)
                     if self.addedCat not in cats:
                         cats.append(self.addedCat)
                         new_text = wikipedia.replaceCategoryLinks(new_text,
@@ -410,6 +414,7 @@ def prepareRegexForMySQL(pattern):
 
 
 def main():
+    add_cat = None
     gen = None
     # summary message
     summary_commandline = None
@@ -500,6 +505,8 @@ def main():
             recursive = True
         elif arg == '-nocase':
             caseInsensitive = True
+        elif arg.startswith('-addcat:'):
+            add_cat = arg[8:]
         elif arg.startswith('-namespace:'):
             try:
                 namespaces.append(int(arg[11:]))
@@ -654,8 +661,7 @@ LIMIT 200""" % (whereClause, exceptClause)
                                             pageNumber=20, lookahead=100)
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=60)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall,
-                       allowoverlap, recursive, None, sleep)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep)
     bot.run()
 
 if __name__ == "__main__":
