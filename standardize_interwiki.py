@@ -24,6 +24,7 @@ import difflib
 comment = {
     'de':u'Bot: Interwikilinks standardisieren',
     'en':u'Robot: interwiki standardization',
+    'fr':u'Bot : Standardisation des interwikis',
     'he':u'בוט: מסדר את האינטרוויקי',
     'it':u'Bot: Standardizzo interwiki',
     'ja':u'ロボットによる: 言語間リンクを標準化',
