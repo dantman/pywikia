@@ -33,7 +33,7 @@ def main():
     namespaces = []
     msg = {
         'de': u'Entferne in Spam-Blacklist eingetragenen Weblink auf %s',
-        'en': u'Removing links to spammed site %s',
+        'en': u'Removing links to spamming site %s',
         'he': u'מסיר קישורים לאתר ספאם %s',
         'it': u'Rimuovo link contenuto nella Spam-Blacklist %s',
         'ja': u'ロボットによる: 迷惑リンク削除 %s',
@@ -41,6 +41,7 @@ def main():
         'pt': u'Removendo links de spam do site %s',
         'ta': u'எரிதமாக இணைக்கப்பட்ட %s இணையத்தளம் நீக்கப்பட்டது',
         'zh': u'機器人: 移除廣告黑名單連結 %s',
+        'fr': u'Suppression du lien blacklisté %s'
     }
     spamSite = ''
     for arg in wikipedia.handleArgs():
@@ -95,7 +96,6 @@ def main():
         elif answer == "e":
             editor = editarticle.TextEditor()
             newtext = editor.edit(text, highlight = spamSite, jumpIndex = text.find(spamSite))
-            continue
         else:
             newtext = "\n".join(newpage)
         if newtext != text:
