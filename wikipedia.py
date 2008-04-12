@@ -4876,31 +4876,44 @@ your connection is down. Retrying in %i minutes..."""
             else:
                 break
 
-    def linksearch(self, siteurl):
+    def linksearch(self, siteurl, limit=500):
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         if siteurl.startswith('*.'):
             siteurl = siteurl[2:]
         output(u'Querying [[Special:Linksearch]]...')
         cache = []
+        R = re.compile('title ?=\"(.*?)\"')
         for url in [siteurl, '*.' + siteurl]:
-            path = self.linksearch_address(url)
-            get_throttle()
-            html = self.getUrl(path)
-            loc = html.find('<div class="mw-spcontent">')
-            if loc > -1:
-                html = html[loc:]
-            loc = html.find('<div class="printfooter">')
-            if loc > -1:
-                html = html[:loc]
-            R = re.compile('title ?=\"(.*?)\"')
-            for title in R.findall(html):
-                if not siteurl in title:
-                    # the links themselves have similar form
-                    if title in cache:
-                        continue
-                    else:
-                        cache.append(title)
-                        yield Page(self, title)
+            offset = 0
+            while True:
+                path = self.linksearch_address(url, limit=limit, offset=offset)
+                get_throttle()
+                html = self.getUrl(path)
+                #restricting the HTML source :
+                #when in the source, this div marks the beginning of the input
+                loc = html.find('<div class="mw-spcontent">')
+                if loc > -1:
+                    html = html[loc:]
+                #when in the source, marks the end of the linklist
+                loc = html.find('<div class="printfooter">')
+                if loc > -1:
+                    html = html[:loc]
+
+                #our regex fetches internal page links and the link they contain
+                links = R.findall(html)
+                if not links:
+                    #no more page to be fetched for that link
+                    break
+                for title in links:
+                    if not siteurl in title:
+                        # the links themselves have similar form
+                        if title in cache:
+                            continue
+                        else:
+                            cache.append(title)
+                            yield Page(self, title)
+                offset += limit
+                
 
     def __repr__(self):
         return self.family.name+":"+self.lang

@@ -411,7 +411,7 @@ def LinksearchPageGenerator(link, step=500, site=None):
     """
     if site is None:
         site = wikipedia.getSite()
-    for page in site.linksearch(link):
+    for page in site.linksearch(link, limit=step):
         yield page
 
 def SearchPageGenerator(query, number = 100, namespaces = None, site = None):
@@ -872,6 +872,9 @@ class GeneratorFactory:
             transclusionPage = wikipedia.Page(wikipedia.getSite(), 'Template:%s' % transclusionPageTitle)
             gen = ReferringPageGenerator(transclusionPage, onlyTemplateInclusion = True)
         elif arg.startswith('-start'):
+            if arg.startswith('-startxml'):
+                wikipedia.output(u'-startxml : wrong parameter')
+                sys.exit()
             firstPageTitle = arg[7:]
             if not firstPageTitle:
                 firstPageTitle = wikipedia.input(u'At which page do you want to start?')
