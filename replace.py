@@ -250,7 +250,7 @@ class ReplaceRobot:
                              are made.
             * allowoverlap - If True, when matches overlap, all of them are
                              replaced.
-            * addedCat  - If set to a value, add this category to every page
+            * addedCat     - If set to a value, add this category to every page
                              touched.
 
         Structure of the exceptions dictionary:
@@ -363,7 +363,7 @@ class ReplaceRobot:
                         new_text = newest_text
                         newest_text = self.doReplacements(new_text)
 
-                if self.addedCat:
+                if hasattr(self, "addedCat"):
                     cats = page.categories(nofollow_redirects=True)
                     if self.addedCat not in cats:
                         cats.append(self.addedCat)
