@@ -78,44 +78,44 @@ msg = {
 }
 
 template = {
-    'af': u'Link FA',
-    'bg': u'Link FA',
-    'br': u'Liamm PuB',
-    'bs': u'Link FA',
-    'ca': u'Enllaç AD',
-    'da': u'Link FA',
-    'de': u'Link FA',
-    'en': u'Link FA',
-    'eo': u'LigoElstara',
-    'es': u'destacado',
-    'fr': u'Lien AdQ',
-    'he': u'Link FA',
-    'hr': u'Link FA',
-    'ia': u'Link FA',
-    'io': u'Link FA',
-    'it': u'Link AdQ',
-    'ja': u'Link FA',
-    'ka': u'Link FA',
-    'ko': u'Link FA',
-    'lt': u'Link FA',
-    'lv': u'Link FA',
-    'nl': u'Link FA',
-    'no': u'Link UA',
-    'nn': u'Link FA',
-    'pl': u'Link FA',
-    'pt': u'Link FA',
-    'ru': u'Link FA',
-    'sl': u'Link FA',
-    'sr': u'Link FA',
-    'sv': u'UA',
-    'th': u'Link FA',
-    'tr': u'Link FA',
-    'vi': u'Liên kết chọn lọc',
-    'vo': u'Yüm YG',
-    'zh': u'Link FA',
-    'zh-classical': u'Link FA',
-    'zh-yue': u'Link FA',
-    'zh-min-nan': u'Link FA',
+    'af': ['Link FA'],
+    'bg': ['Link FA'],
+    'br': ['Liamm PuB'],
+    'bs': ['Link FA'],
+    'ca': [u'Enllaç AD'],
+    'da': ['Link FA'],
+    'de': ['Link FA'],
+    'en': ['Link FA'],
+    'eo': ['LigoElstara'],
+    'es': ['destacado'],
+    'fr': ['Lien AdQ', 'Link FA'],
+    'he': ['Link FA'],
+    'hr': ['Link FA'],
+    'ia': ['Link FA'],
+    'io': ['Link FA'],
+    'it': ['Link AdQ'],
+    'ja': ['Link FA'],
+    'ka': ['Link FA'],
+    'ko': ['Link FA'],
+    'lt': ['Link FA'],
+    'lv': ['Link FA'],
+    'nl': ['Link FA'],
+    'no': ['Link UA'],
+    'nn': ['Link FA'],
+    'pl': ['Link FA'],
+    'pt': ['Link FA'],
+    'ru': ['Link FA'],
+    'sl': ['Link FA'],
+    'sr': ['Link FA'],
+    'sv': ['UA'],
+    'th': ['Link FA'],
+    'tr': ['Link FA'],
+    'vi': [u'Liên kết chọn lọc'],
+    'vo': [u'Yüm YG'],
+    'zh': ['Link FA'],
+    'zh-classical': ['Link FA'],
+    'zh-yue': ['Link FA'],
+    'zh-min-nan': ['Link FA'],
 }
 
 featured_name = {
@@ -269,7 +269,8 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
     if nocache:
         cc={}
 
-    findtemplate = wikipedia.translate(wikipedia.getSite(), template)
+    templatelist = wikipedia.translate(wikipedia.getSite(), template)
+    findtemplate = '(' + '|'.join(templatelist) + ')'
     re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate.replace(u' ', u'[ _]'), fromsite.lang), re.IGNORECASE)
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
@@ -310,12 +311,12 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
 
                         ### Moving {{Link FA|xx}} to top of interwikis ###  
                         if template_on_top == True:
-                            text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories())
+                            text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(templatelist[0], fromsite.lang)), atrans.categories())
 
                         ### Placing {{Link FA|xx}} right next to corresponding interwiki ###
                         else:
                             text=(text[:m.end()]
-                                  + (u" {{%s|%s}}" % (findtemplate, fromsite.lang))
+                                  + (u" {{%s|%s}}" % (templatelist[0], fromsite.lang))
                                   + text[m.end():])
 
                         try:
