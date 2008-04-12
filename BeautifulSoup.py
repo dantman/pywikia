@@ -1648,7 +1648,6 @@ try:
 #    chardet.constants._debug = 1
 except:
     chardet = None
-chardet = None
 
 # cjkcodecs and iconv_codec make Python know about more character encodings.
 # Both are available from http://cjkpython.i18n.org/
