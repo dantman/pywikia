@@ -254,7 +254,7 @@ class NoReferencesBot:
         # Create a new section for the references tag
         for section in wikipedia.translate(page.site(), placeBeforeSections):
             # Find out where to place the new section
-            sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
+            sectionR = re.compile(r'\r\n(?P<ident>=+) *%s *=+\r\n' % section)
             index = 0
             while index < len(oldText):
                 match = sectionR.search(oldText, index)
@@ -265,7 +265,8 @@ class NoReferencesBot:
                     else:
                         wikipedia.output(u'Adding references section before %s section...\n' % section)
                         index = match.start()
-                        self.createReferenceSection(page, index)
+                        ident = match.group('ident')
+                        self.createReferenceSection(page, index, ident)
                         return
                 else:
                     break
@@ -296,9 +297,9 @@ class NoReferencesBot:
         index = len(tmpText)
         self.createReferenceSection(page, index)
 
-    def createReferenceSection(self, page, index):
+    def createReferenceSection(self, page, index, ident = '=='):
         oldText = page.get()
-        newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(page.site(), referencesSections)[0]
+        newSection = u'\n%s %s %s\n\n<references/>\n' % (ident, wikipedia.translate(page.site(), referencesSections)[0], ident)
         newText = oldText[:index] + newSection + oldText[index:]
         self.save(page, newText)
 
