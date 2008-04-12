@@ -54,6 +54,7 @@ msg = {
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'pt':u'Bot: Adicionando a tag <references />',
     'zh':u'機器人: 增加遺失的 <references /> 標籤',
+    'fr':u'Robot: Ajout de la balise <references /> manquante',
 }
 
 # References sections are usually placed before further reading / external
@@ -73,6 +74,11 @@ placeBeforeSections = {
         u'Further reading',
         u'External links',
         u'See also',
+        u'Notes'
+    ],
+    'fr': [
+        u'Liens externes',
+        u'Voir aussi',
         u'Notes'
     ],
     'ja':[
@@ -106,6 +112,11 @@ referencesSections = {
         u'References',
         u'Footnotes',
         u'Notes',
+    ],
+    'fr': [
+        u'Références',
+        u'References',
+        u'Notes'
     ],
     'he': [
         u'הערות שוליים',
@@ -146,6 +157,7 @@ referencesTemplates = {
         'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],
+        'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'ja': [u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
         'zh': [u'Reflist'],
