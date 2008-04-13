@@ -828,7 +828,6 @@ not supported by PyWikipediaBot!"""
     def previousRevision(self):
         """Return the revision id for the previous revision of this Page."""
         vh = self.getVersionHistory(revCount=2)
-        print vh
         return vh[1][0]
 
     def exists(self):
@@ -1155,7 +1154,7 @@ not supported by PyWikipediaBot!"""
                             force, callback))
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
-            force=False, deleted = True):
+            force=False):
         """Save the page with the contents of the first argument as the text.
 
         Optional parameters:
@@ -1164,8 +1163,7 @@ not supported by PyWikipediaBot!"""
           watchArticle: a bool, add or remove this Page to/from bot user's
                         watchlist (if None, leave watchlist status unchanged)
           minorEdit: mark this edit as minor if True
-          force: ignore botMayEdit() setting
-
+          force: ignore botMayEdit() setting.
         """
         # Login
         try:
@@ -1209,10 +1207,10 @@ not supported by PyWikipediaBot!"""
         if self.site().lang == 'eo':
             newtext = encodeEsperantoX(newtext)
         return self._putPage(newtext, comment, watchArticle, minorEdit,
-                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, deleted = deleted)
+                             newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
-                newPage=False, token=None, newToken=False, sysop=False, deleted=True):
+                newPage=False, token=None, newToken=False, sysop=False):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1299,7 +1297,7 @@ not supported by PyWikipediaBot!"""
                 time.sleep(5)
                 continue
             # A second text area means that an edit conflict has occured.
-            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data and deleted == True:
+            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
             if self.site().has_mediawiki_message("spamprotectiontitle")\
                     and self.site().mediawiki_message('spamprotectiontitle') in data:
