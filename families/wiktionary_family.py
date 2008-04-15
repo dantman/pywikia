@@ -188,7 +188,6 @@ class Family(family.Family):
             'te': u'Wiktionary చర్చ',
             'tg': u'Баҳси Wiktionary',
             'th': u'คุยเรื่องWiktionary',
-            'tlh': u"Wiktionary ja'chuq",
             'tr': u'Vikisözlük tartışma',
             'tt': u'Wiktionary bäxäse',
             'uk': u'Обговорення Wiktionary',
