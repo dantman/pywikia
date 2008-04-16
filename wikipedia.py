@@ -3342,8 +3342,8 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
 
     if site is None:
         site = getSite()
-    if site.sitename() == 'wikipedia:de':
-        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22')
+    if site.sitename() == 'wikipedia:de' and "{{Personendaten" in oldtext:
+        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia on pages that contain the person data template because of the non-standard placement of that template. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22')
 
     s = categoryFormat(new, insite = site)
     if addOnly:
