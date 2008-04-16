@@ -1350,7 +1350,10 @@ not supported by PyWikipediaBot!"""
                 # We might have been using an outdated token
                 output(u"Changing page has failed. Retrying.")
                 return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
-            if data.find("<title>Wikimedia Error</title>") > -1:
+            # I think the error message title was changed from "Wikimedia Error"
+            # to "Wikipedia has a problem", but I'm not sure. Maybe we could
+            # just check for HTTP Status 500 (Internal Server Error)?
+            if "<title>Wikimedia Error</title>" in data or "has a problem</title>" in data:
                 output(
                 u"Wikimedia has technical problems; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
@@ -1359,7 +1362,7 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
-            if data.find(self.site().mediawiki_message('readonly')) or data.find(self.site().mediawiki_message('readonly_lag')):
+            if self.site().mediawiki_message('readonly') in data  or self.site().mediawiki_message('readonly_lag') in data:
                 output(u"The database is currently locked for write access; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
