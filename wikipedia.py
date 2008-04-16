@@ -1359,6 +1359,14 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
+            if data.find(self.site().mediawiki_message('readonly')) or data.find(self.site().mediawiki_message('readonly_lag')):
+                output(u"The database is currently locked for write access; will retry in %i minute%s."
+                       % (retry_delay, retry_delay != 1 and "s" or ""))
+                time.sleep(60 * retry_delay)
+                retry_delay *= 2
+                if retry_delay > 30:
+                    retry_delay = 30
+                continue
             if self.site().has_mediawiki_message('longpageerror'):
                 # FIXME: Long page error detection isn't working in Vietnamese Wikipedia.
                 long_page_errorR = re.compile(
