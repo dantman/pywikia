@@ -29,6 +29,7 @@ class BasicBot:
     # Edit summary message that should be used.
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
+        'ar': u'روبوت: تغيير ...',
         'de': u'Bot: Ändere ...',
         'en': u'Robot: changing ...',
         'pt': u'Bot: alterando...',

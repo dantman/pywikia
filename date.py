@@ -415,7 +415,7 @@ formats = {
             'als':      lambda v: slh( v, [u"Januar", u"Februar", u"März", u"April", u"Mai", u"Juni", u"Juli", u"August", u"September", u"Oktober", u"November", u"Dezember"] ),
             'an' :      lambda v: slh( v, [u"chinero", u"frebero", u"marzo", u"abril", u"mayo", u"chunio", u"chulio", u"agosto", u"setiembre", u"otubre", u"nobiembre", u"abiento"] ),
             'ang':      lambda v: slh( v, [u"Æfterra Gēola", u"Solmōnaþ", u"Hrēþmōnaþ", u"Ēastermōnaþ", u"Þrimilcemōnaþ", u"Sēremōnaþ", u"Mǣdmōnaþ", u"Wēodmōnaþ", u"Hāligmōnaþ", u"Winterfylleþ", u"Blōtmōnaþ", u"Gēolmōnaþ"] ),
-            'ar' :      lambda v: slh( v, [u"يناير", u"فبراير", u"مارس", u"إبريل", u"مايو", u"يونيو", u"يوليو", u"أغسطس", u"سبتمبر", u"أكتوبر", u"نوفمبر", u"ديسمبر"] ),
+            'ar' :      lambda v: slh( v, [u"يناير", u"فبراير", u"مارس", u"أبريل", u"مايو", u"يونيو", u"يوليو", u"أغسطس", u"سبتمبر", u"أكتوبر", u"نوفمبر", u"ديسمبر"] ),
             'ast':      lambda v: slh( v, [u"xineru", u"febreru", u"marzu", u"abril", u"mayu", u"xunu", u"xunetu", u"agostu", u"setiembre", u"ochobre", u"payares", u"avientu"] ),
             'be' :      lambda v: slh( v, [u"студзень", u"люты", u"сакавік", u"красавік", u"травень", u"чэрвень", u"ліпень", u"жнівень", u"верасень", u"кастрычнік", u"лістапад", u"сьнежань"] ),
             'bg' :      lambda v: slh( v, [u"януари", u"февруари", u"март", u"април", u"май", u"юни", u"юли", u"август", u"септември", u"октомври", u"ноември", u"декември"] ),
@@ -1281,7 +1281,7 @@ addFmt2('als',False, u"%%d. %s", True )
 addFmt ('an', False,       [ u"%d de chinero", u"%d de frebero", u"%d de marzo", u"%d d'abril", u"%d de mayo", u"%d de chunio", u"%d de chulio", u"%d d'agosto", u"%d de setiembre", u"%d d'otubre", u"%d de nobiembre", u"%d d'abiento" ])
 #addFmt ('ang',False,       [ u"%d Æfterra Gēola", u"%d Solmōnaþ", u"%d Hréþmónaþ", u"%d Éastermónaþ", u"%d Þrimilcemónaþ", u"%d Séremónaþ", u"%d Mǽdmónaþ", u"%d Wéodmónaþ", u"%d Háligmónaþ", u"%d Winterfylleþ", u"%d Blótmónaþ", u"%d Gēolmōnaþ" ])
 addFmt2('ang',False, u"%%d %s", True )
-addFmt ('ar', False,       [ u"%d يناير", u"%d فبراير", u"%d مارس", u"%d إبريل", u"%d مايو", u"%d يونيو", u"%d يوليو", u"%d أغسطس", u"%d سبتمبر", u"%d اكتوبر", u"%d نوفمبر", u"%d ديسمبر" ])
+addFmt ('ar', False,       [ u"%d يناير", u"%d فبراير", u"%d مارس", u"%d أبريل", u"%d مايو", u"%d يونيو", u"%d يوليو", u"%d أغسطس", u"%d سبتمبر", u"%d أكتوبر", u"%d نوفمبر", u"%d ديسمبر" ])
 addFmt ('ast',False,       [ u"%d de xineru", u"%d de febreru", u"%d de marzu", u"%d d'abril", u"%d de mayu", u"%d de xunu", u"%d de xunetu", u"%d d'agostu", u"%d de setiembre", u"%d d'ochobre", u"%d de payares", u"%d d'avientu" ])
 addFmt ('be', False,       [ u"%d студзеня", u"%d лютага", u"%d сакавіка", u"%d красавіка", u"%d траўня", u"%d чэрвеня", u"%d ліпеня", u"%d жніўня", u"%d верасьня", u"%d кастрычніка", u"%d лістапада", u"%d сьнежня" ])
 addFmt2('bg', False, u"%%d %s", False )
