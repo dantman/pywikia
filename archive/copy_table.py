@@ -41,6 +41,7 @@ import re, sys, string
 
 # Summary message
 msg={
+    "ar":u"روبوت: نسخ الجدول من ",
     "en":u"robot: copying table from ",
     "de":u"Bot: Kopiere Tabelle von ",
     "he":u"רובוט: מעתיק טבלה מתוך ",

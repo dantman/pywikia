@@ -12,7 +12,8 @@ __version__='$Id: brackethttp.py,v 1.13 2005/12/21 17:51:26 wikipedian Exp $'
 import re, sys
 import wikipedia
 
-myComment = {'en':u'Bot: URL fixed',
+myComment = {'ar':u'بوت: URL تم إصلاحها',
+             'en':u'Bot: URL fixed',
              'he':u'בוט: תוקנה כתובת URL',
              'pt':u'Bot: URL corrigido',
              'zh':u'機器人: 網址已修復',
