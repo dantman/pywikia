@@ -17,6 +17,7 @@ import sys, re
 import catlib
 
 msg = {
+    'ar': u'تغيير التحويلات في صفحة توضيح',
     'en': u'Changing redirects on a disambiguation page',
     'he': u'משנה קישורים להפניות בדף פירושונים',
     'ja': u'ロボットによる: 曖昧さ回避ページのリダイレクト修正',

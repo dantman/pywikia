@@ -47,6 +47,7 @@ docuReplacements = {
 
 # Summary messages in different languages
 msg = {
+    'ar':u'روبوت: إضافة وسم <references /> مفقود',
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
@@ -64,6 +65,11 @@ msg = {
 # Otherwise, it would try to put it in front of the "External links" section,
 # or if that fails, the "See also" section, etc.
 placeBeforeSections = {
+    'ar': [              # no explicit policy on where to put the references
+        u'وصلات خارجية',
+        u'انظر أيضا',
+        u'ملاحظات'
+    ],
     'de': [              # no explicit policy on where to put the references
         u'Literatur',
         u'Weblinks',
@@ -102,6 +108,10 @@ placeBeforeSections = {
 # The first title should be the preferred one: It's the one that
 # will be used when a new section has to be created.
 referencesSections = {
+    'ar': [             # not sure about which ones are preferred.
+        u'مراجع',
+        u'ملاحظات',
+    ],
     'de': [
         u'Einzelnachweise', # The "Einzelnachweise" title is disputed, some people prefer the other variants
         u'Quellen',
@@ -154,6 +164,7 @@ referencesSections = {
 # on your wiki, you don't have to enter anything here.
 referencesTemplates = {
     'wikipedia': {
+	    'ar': [u'Reflist',u'ثبت المراجع',u'قائمة المراجع'],
         'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],

@@ -44,6 +44,10 @@ nowCommons = {
     '_default': [
         u'NowCommons'
     ],
+	'ar': [
+        u'الآن كومنز',
+        u'الآن كومونز',
+    ],
     'de': [
         u'NowCommons',
         u'NC',

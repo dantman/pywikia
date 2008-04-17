@@ -59,6 +59,7 @@ summary={
 }
 
 deletesummary={
+    'ar': u'روبوت: حذف التحويلة بعد نقل الصفحة',
     'de': u'Bot: Lösche nach Seitenverschiebung nicht benötigte Umleitung',
     'en': u'Robot: Deleting redirect after page has been moved',
     'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
@@ -66,7 +67,6 @@ deletesummary={
     'pt': u'Bot: Página apagada depois de movida',
     'ru': u'Робот: удаление перенаправления после переименования страницы',
     # These are too unspecific:
-    #'ar': u'حذف الصفحة بواسطة البوت',
     #'el': u'Διαγραφή σελίδων με bot',
     #'fr': u'Page supprimée par bot',
     #'nl': u'Pagina verwijderd door robot',

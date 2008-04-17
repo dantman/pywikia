@@ -37,6 +37,7 @@ import wikipedia, config, pagegenerators, add_text
 
 commonscatTemplates = {
     'af' : u'CommonsKategorie',
+    'ar' : u'تصنيف كومنز',
     'als' : u'Commonscat',
     'az' : u'CommonsKat',
     'bg' : u'Commonscat',

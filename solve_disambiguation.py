@@ -76,6 +76,7 @@ import wikipedia, pagegenerators, editarticle
 
 # Summary message when working on disambiguation pages
 msg = {
+    'ar': u'توضيح بمساعدة روبوت: %s - غير الوصلة أو الوصلات إلى %s',
     'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota - Změněn(y) odkaz(y) na %s',
     'en': u'Robot-assisted disambiguation: %s - Changed link(s) to %s',
     'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
@@ -98,6 +99,7 @@ msg = {
 
 # Summary message when working on disambiguation pages and the link is removed
 msg_unlink = {
+    'ar': u'توضيح بمساعدة روبوت: %s - أزال الوصلة أو الوصلات.',
     'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota - Odstraněn(y) odkaz(y)',
     'en': u'Robot-assisted disambiguation: %s - Removed link(s).',
     'da': u'Retter flertydigt link til: %s - Fjernede link(s)',
@@ -120,6 +122,7 @@ msg_unlink = {
     
 # Summary message when working on redirects
 msg_redir = {
+    'ar': u'توضيح بمساعدة روبوت: %s - غير الوصلة أو الوصلات إلى %s',
     'cs': u'Robot opravil přesměrování na %s - Změněn(y) odkaz(y) na %s',
     'en': u'Robot-assisted disambiguation: %s - Changed link(s) to %s',
     'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
@@ -142,6 +145,7 @@ msg_redir = {
 
 # Summary message when working on redirects and the link is removed
 msg_redir_unlink = {
+    'ar': u'توضيح بمساعدة روبوت: %s - أزال الوصلة أو الوصلات',
     'cs': u'Robot opravil přesměrování na %s - Odstraněn(y) odkaz(y)',
     'en': u'Robot-assisted disambiguation: %s - Removed link(s)',
     'da': u'Retter flertydigt link til: %s - Fjernede link(s)',
@@ -164,6 +168,7 @@ msg_redir_unlink = {
 # disambiguation page name format for "primary topic" disambiguations
 # (Begriffsklärungen nach Modell 2)
 primary_topic_format = {
+    'ar': u'%s_(توضيح)',
     'cs': u'%s_(rozcestník)',
     'de': u'%s_(Begriffsklärung)',
     'en': u'%s_(disambiguation)',
@@ -189,6 +194,9 @@ primary_topic_format = {
 
 ignore_title = {
     'wikipedia': {
+	    'ar': [
+            u'تصنيف:صفحات توضيح',
+        ],
         'cs': [
             u'Wikipedie:Chybějící interwiki/.+',
             u'Wikipedie:Rozcestníky',

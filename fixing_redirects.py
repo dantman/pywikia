@@ -21,6 +21,7 @@ import pagegenerators
 import re, sys
 
 msg = {
+    'ar': u'بوت: إصلاح التحويلات',
     'en': u'Bot: Fixing redirects',
     'he': u'בוט: מתקן הפניות',
     'ja': u'ロボットによる:リダイレクト回避',
@@ -30,6 +31,7 @@ msg = {
 }
 
 featured_articles = {
+    'ar': u'ويكيبيديا:مقالات مختارة',
     'de': u'Wikipedia:Exzellente_Artikel',
     'en': u'Wikipedia:Featured_articles',
     'he': u'פורטל:ערכים_מומלצים',

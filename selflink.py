@@ -39,6 +39,7 @@ docuReplacements = {
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
 # in fixes.py.
 msg = {
+    'ar':u'روبوت: إزالة وصلات ذاتية',
     'de':u'Bot: Entferne Selbstlinks',
     'en':u'Robot: Removing selflinks',
     'he':u'בוט: מסיר קישורים של הדף לעצמו',

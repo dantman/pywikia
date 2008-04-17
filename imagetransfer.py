@@ -33,6 +33,7 @@ import re, sys, md5, urllib
 import wikipedia, upload, config, pagegenerators
 
 copy_message = {
+    'ar':u"هذه الصورة تم نقلها من %s. الوصف الأصلي كان:\r\n\r\n%s",
     'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
     'fr':u"Cette image est copiée de %s. La description originale était:\r\n\r\n%s",
@@ -48,6 +49,7 @@ copy_message = {
 }
 
 nowCommonsTemplate = {
+    'ar': u'{{subst:الآن_كومنز|Image:%s}}',
     'de': u'{{NowCommons|%s}}',
     'fr': u'{{Désormais sur Commons|%s}}',
     'en': u'{{subst:ncd|Image:%s}}',
@@ -70,6 +72,7 @@ nowCommonsTemplate = {
 #}
 
 nowCommonsMessage = {
+    'ar': u'الملف الآن متوفر في ويكيميديا كومنز.',
     'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
     'en': u'File is now available on Wikimedia Commons.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',

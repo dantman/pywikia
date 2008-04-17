@@ -103,6 +103,7 @@ docuReplacements = {
 }
 
 talk_report_msg = {
+    'ar': u'روبوت: الإبلاغ عن وصلات خارجية غير متوفرة',
     'de': u'Bot: Berichte nicht verfügbaren Weblink',
     'en': u'robot: Reporting unavailable external link',
     'fr': u'Bot: Rapporte lien externe inaccessible',
@@ -122,6 +123,7 @@ talk_report_msg = {
 # The second %s will be replaced by a hint to the Internet Archive,
 # in case the page has been archived there.
 talk_report = {
+    'ar': u'== وصلة ميتة ==\n\nخلال عدة عمليات أوتوماتيكية من البوت الوصلة الخارجية التالية كانت غير متوفرة. من فضلك تحقق من أن الوصلة لا تعمل وأزلها أو أصلحها في هذه الحالة!\n\n%s\n%s--~~~~',
     'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich unerreichbar ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n%s--~~~~',
     'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n%s--~~~~',
     'fr': u'== Lien mort ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et si oui corrigez ou retirez-le.\n\n%s\n%s--~~~~',
@@ -138,6 +140,7 @@ talk_report = {
 }
 
 talk_report_archive = {
+    'ar': u'\nصفحة الويب تم حفظها بواسطة أرشيف الإنترنت. من فضلك ضع في الاعتبار الوصل لنسخة مؤرشفة مناسبة: [%s]. ',
     'de': u'Die Webseite wurde vom Internet Archive gespeichert. Bitte verlinke gegebenenfalls eine geeignete archivierte Version: [%s]. ',
     'en': u'\nThe web page has been saved by the Internet Archive. Please consider linking to an appropriate archived version: [%s]. ',
     'fr': u"\nLa page a été sauvegardée dans l'''Internet Archive''. Il serait peut-être utile de faire pointer le lien vers une des versions archivées : [%s]. ",
