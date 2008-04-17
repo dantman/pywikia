@@ -30,6 +30,7 @@ import re, sys
 
 # Summary messages in different languages
 msg = {
+          'ar':u'روبوت: إزالة وصلات "%s"',
           'de':u'Bot: Entlinke "%s"',
           'en':u'Robot: Unlinking "%s"',
           'he':u'בוט: מסיר קישורים לדף "%s"',

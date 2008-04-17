@@ -46,7 +46,7 @@ class SpeedyRobot:
 
     csd_cat={
         'als': u'Kategorie:Wikipedia:Schnelllöschen',
-        'ar': u'تصنيف:صفحات حذف سريع',
+        'ar': u'تصنيف:صفحات للحذف السريع',
         'be': u'Катэгорыя:Вікіпэдыя:Кандыдатуры на выдаленьне',
         'cs': u'Kategorie:Stránky ke smazání',
         'de': u'Kategorie:Wikipedia:Schnelllöschen',
@@ -132,6 +132,7 @@ class SpeedyRobot:
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
+	    'ar':u'صفحة نقاش يتيمة',
         'de':u'Verwaiste Diskussionsseite',
         'en':u'Orphaned talk page',
         'he':u'דף שיחה של ערך שנמחק',

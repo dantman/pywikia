@@ -83,6 +83,7 @@ msg_double={
 
 # Reason for deleting broken redirects
 reason_broken={
+    'ar': u'روبوت: هدف التحويلة غير موجود',
     'en': u'Robot: Redirect target doesn\'t exist',
     'de': u'Bot: Weiterleitungsziel existiert nicht',
     'es': u'Robot: La página a la que redirige no existe',

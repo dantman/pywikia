@@ -23,6 +23,7 @@ except NameError:
     from sets import Set as set
 
 msg_created_for_renaming = {
+    'ar':u'روبوت: نقل من %s. المؤلفون: %s',
     'de':u'Bot: Verschoben von %s. Autoren: %s',
     'en':u'Robot: Moved from %s. Authors: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',

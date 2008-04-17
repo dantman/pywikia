@@ -47,6 +47,7 @@ docuReplacements = {
 
 # Summary messages in different languages
 msg = {
+    'ar': u'روبوت: تهيئة ISBN',
     'de': 'Bot: Formatiere ISBN',
     'en': 'Robot: Formatting ISBN',
     'he': u'בוט: מעצב ISBN',

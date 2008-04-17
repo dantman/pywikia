@@ -37,12 +37,14 @@ import wikipedia, pagegenerators, catlib
 import re
 
 comment1 = {
+    'ar':u'روبوت: تضمين قالب كومنز',
     'en':u'Robot: Include commons template',
     'he':u'בוט: מוסיף תבנית Commons',
     'ja':u'ロボットによる: テンプレcommons追加',
     'zh':u'機器人: 增加commons模板',
     }
 comment2 = {
+    'ar':u'روبوت: تضمين قالب تصنيف كومنز',
     'en':u'Robot: Include commonscat template',
     'he':u'בוט: מוסיף תבנית Commonscat',
     'ja':u'ロボットによる: テンプレcommonscat追加',

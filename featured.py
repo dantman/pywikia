@@ -52,7 +52,7 @@ def LINKS(site,name, ignore=[]):
     return links
 
 msg = {
-    'ar': u'بوت: وصلة مقالة مختارة ل [[%s:%s]]',
+    'ar': u'بوت: وصلة مقالة مختارة ل[[%s:%s]]',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'en': u'Bot: Featured article link for [[%s:%s]]',
     'cs': u'Bot: Nejlepší článek:  [[%s:%s]]',
@@ -80,7 +80,7 @@ msg = {
 
 template = {
     'af': ['Link FA'],
-    'ar': [u'وصلة مقالة مختارة'],
+    'ar': [u'وصلة مقالة مختارة', 'Link FA'],
     'bg': ['Link FA'],
     'br': ['Liamm PuB'],
     'bs': ['Link FA'],
@@ -124,7 +124,7 @@ featured_name = {
     'af': (BACK, u"Sjabloon:Voorbladartikel"),
     'am': (CAT, u"Category:Wikipedia:Featured_article"),
     'ast': (BACK, u"Plantilla:Destacaos"),
-    'ar': (BACK, u"قالب:مقالة مختارة"),
+    'ar': (CAT, u"تصنيف:مقالات مختارة"),
     # az: Vikipediya:Fəal məzmun
     #'be': (BACK, u"Шаблён:Выбраны артыкул"),
     'bg': (BACK, u"Шаблон:Избрана статия"),

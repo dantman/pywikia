@@ -26,6 +26,7 @@ import wikipedia
 import config
 
 msg = {
+    'ar': u'تعديل يدوي: %s',
     'de': u'Manuelle Bearbeitung: %s',
     'en': u'Manual edit: %s',
     'he': u'עריכה ידנית: %s',

@@ -61,7 +61,8 @@ docuReplacements = {
     '&params;':     pagegenerators.parameterHelp,
 }
 
-msg_no_warnings = {'de':u'Bot: Tabellensyntax konvertiert',
+msg_no_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول',
+                   'de':u'Bot: Tabellensyntax konvertiert',
                    'en':u'User-controlled Bot: table syntax updated',
                    'es':u'Bot controlado: actualizada sintaxis de tabla',
                    'fr':u'Bot: wikification syntaxe tableaux',
@@ -75,7 +76,8 @@ msg_no_warnings = {'de':u'Bot: Tabellensyntax konvertiert',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada',
                   }
 
-msg_one_warning = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
+msg_one_warning = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
+                   'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
                    'en':u'User-controlled Bot: table syntax updated - %d warning!',
                    'es':u'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
                    'fr':u'Bot: wikification syntaxe tableaux - %d avertissements !',
@@ -84,12 +86,13 @@ msg_one_warning = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
                    'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
                    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
                    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
-		   'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
+		           'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
                    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżenie!',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
                   }
 
-msg_multiple_warnings = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!',
+msg_multiple_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
+                         'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'en':u'User-controlled Bot: table syntax updated - %d warnings!',
                          'es':u'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
                          'fr':u'Bot: wikification syntaxe tableaux - %d avertissements !',

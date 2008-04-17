@@ -29,6 +29,7 @@ import sys
 #**********************#
 
 comment = {
+    'ar': u'صور للاستبعاد',
     'en': u'images for elimination',
     'he': u'תמונות להסרה',
     'it': u'Bot: segnalo immagine orfana da eliminare',

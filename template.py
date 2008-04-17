@@ -147,6 +147,7 @@ class TemplateRobot:
     """
     # Summary messages for replacing templates
     msg_change={
+	    'ar':u'روبوت: تغيير القالب: %s',
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
         'fr':u'Robot: Change modèle: %s',
@@ -167,6 +168,7 @@ class TemplateRobot:
 
     #Needs more translations!
     msgs_change={
+	    'ar':u'روبوت: تغيير القوالب: %s',
         'en':u'Robot: Changing templates: %s',
         'de':u'Bot: Ändere Vorlagen: %s',
         'fr':u'Bot: Modifie modèles %s',
@@ -184,6 +186,7 @@ class TemplateRobot:
     
     # Summary messages for removing templates
     msg_remove={
+	    'ar':u'روبوت: إزالة القالب: %s',
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
         'fr':u'Robot: Enlève le modèle: %s',
@@ -204,6 +207,7 @@ class TemplateRobot:
 
     #Needs more translations!
     msgs_remove={
+	    'ar':u'روبوت: إزالة القوالب: %s',
         'en':u'Robot: Removing templates: %s',
         'de':u'Bot: Entferne Vorlagen: %s',
         'he':u'בוט: מסיר תבניות: %s',
@@ -222,6 +226,7 @@ class TemplateRobot:
     # Summary messages for substituting templates
     #Needs more translations!
     msg_subst={
+	    'ar':u'روبوت: نسخ القالب: %s',
         'en':u'Robot: Substituting template: %s',
         'de':u'Bot: Umgehe Vorlage: %s',
         'fr':u'Bot: Remplace modèle : %s',
@@ -238,6 +243,7 @@ class TemplateRobot:
 
     #Needs more translations!
     msgs_subst={
+	    'ar':u'روبوت: نسخ القوالب: %s',
         'en':u'Robot: Substituting templates: %s',
         'de':u'Bot: Umgehe Vorlagen: %s',
         'fr':u'Bot: Remplace modèles : %s',

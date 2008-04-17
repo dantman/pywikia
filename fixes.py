@@ -21,6 +21,7 @@ fixes = {
     'HTML': {
         'regex': True,
         'msg': {
+		    'ar':u'روبوت: تحويل/تصليح HTML',
             'en':u'Robot: converting/fixing HTML',
             'de':u'Bot: konvertiere/korrigiere HTML',
             'fr':u'Robot: convertit/fixe HTML',
@@ -153,6 +154,7 @@ fixes = {
     'syntax': {
         'regex': True,
         'msg': {
+		    'ar':u'بوت: تصليح تهيئة الويكي',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'fr':u'Bot: Corrige wiki-syntaxe',
@@ -222,6 +224,7 @@ fixes = {
     'syntax-safe': {
         'regex': True,
         'msg': {
+		    'ar':u'بوت: تصليح تهيئة الويكي',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'fr':u'Bot: Corrige wiki-syntaxe',
@@ -371,6 +374,7 @@ fixes = {
     'isbn': {
         'regex': True,
         'msg': {
+		    'ar': u'روبوت: تصليح صيغة ISBN',
             'de': u'Bot: Korrigiere ISBN-Format',
             'en': u'Robot: Fixing ISBN format',
             'es': u'Arreglando formato ISBN',

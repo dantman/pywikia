@@ -62,6 +62,7 @@ except ImportError:
 
 # Summary messages in different languages
 msg = {
+       'ar':u'روبوت: معالجة مراجع تلقائية %s',
        'de':u'Bot: Automatisierte Textersetzung %s',
        'en':u'Robot: Automated reference processing %s',
        'es':u'Robot: Reemplazo automático de texto %s',

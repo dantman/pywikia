@@ -45,7 +45,7 @@ docuReplacements = {
 }
 
 summary={
-    'ar': u'نقل الصفحة بواسطة البوت',
+    'ar': u'روبوت: نقل الصفحة',
     'en': u'Robot: moved page',
     'de': u'Bot: Seite verschoben',
     'el': u'Μετακίνηση σελίδων με bot',

@@ -108,6 +108,7 @@ txt_find =  {
 # Summary for when the will add the no source
 comm = {
 		'commons':u'Bot: Marking newly uploaded untagged file',
+	    'ar'     :u'بوت: التعليم على ملف مرفوع حديثا غير موسوم',
 		'en'     :u'Bot: Marking newly uploaded untagged file',
 		'hu'     :u'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
 		'it'     :u"Bot: Aggiungo unverified",
@@ -129,6 +130,7 @@ empty = {
 # Summary that the bot use when it notify the problem with the image's license
 comm2 = {
 		'commons':"Bot: Requesting source information." ,
+	    'ar'     :"بوت: طلب معلومات المصدر." ,
 		'en'     :"Bot: Requesting source information." ,
 		'it'     :"Bot: Notifico l'unverified",
 		'ja'     :u"ロボットによる:出典とライセンス明記のお願い",
@@ -164,6 +166,7 @@ delete_immediately_head = {
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
 				'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
+				'ar'     :u'الملف [[:Image:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
 				'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
 				'it'     :u'{{subst:Utente:Filbot/Ext|%s}}',
 				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
@@ -173,6 +176,7 @@ delete_immediately_notification = {
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
 			'commons':u'Bot: Adding %s',
+			'ar'     :u'بوت: إضافة %s',
 			'en'     :u'Bot: Adding %s',
 			'it'     :u'Bot: Aggiungo %s',
 			'ja'     :u'ロボットによる: 追加 %s',
@@ -185,6 +189,7 @@ del_comm = {
 # will add if the image hasn't the license.
 nothing_head = {
 				'commons':u"",# Nothing, the template has already the header inside.
+				'ar'     :u"\n== صورة بدون ترخيص ==\n",
 				'en'     :u"\n== Image without license ==\n",
 				'ja'     :u'',
 				'it'     :u"\n\n== Immagine senza licenza ==\n",
@@ -261,6 +266,7 @@ report_text = {
 # The summary of the report
 comm10 = {
 		'commons':u'Bot: Updating the log',
+		'ar':u'بوت: تحديث السجل',
 		'en':u'Bot: Updating the log',
 		'it':u'Bot: Aggiorno il log',
 		'ja': u'ロボットによる:更新',

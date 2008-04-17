@@ -42,6 +42,7 @@ import sys, codecs, re
 import wikipedia, date, catlib
 
 msg={
+    'ar':u'إنشاء أو تحديث التصنيف:',
     'en':u'Creation or update of category:',
     'es':u'Creación o actualiza de la categoría:',
     'fr':u'Création ou mise à jour de categorie:', 

@@ -61,6 +61,7 @@ import wikipedia, pagegenerators
 import string, codecs
 
 msg={
+    'ar':u'تدقيق إملائي بمساعدة البوت',
     'en':u'Bot-aided spell checker',
     'es':u'Bot asistido de correción ortográfica',
     'fr':u'Correction orthographique par robot',

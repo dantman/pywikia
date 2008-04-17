@@ -23,6 +23,7 @@ wikipedia.get_throttle.setDelay(5)
 wikipedia.put_throttle.setDelay(10)
 
 msg={
+    'ar':u'بوت: تغيير التصنيفات',
     'en':u'Bot: Changing categories',
     'he':u'Bot: משנה קטגוריות',
     'fr':u'Bot: Change categories',

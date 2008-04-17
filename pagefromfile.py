@@ -53,6 +53,7 @@ class PageFromFileRobot:
     """
 
     msg = {
+	    'ar': u'استيراد تلقائي للمقالات',
         'de': u'Automatischer Import von Artikeln',
         'en': u'Automated import of articles',
         'fr': u'Import automatique',
@@ -70,6 +71,7 @@ class PageFromFileRobot:
 
     # The following messages are added to topic when the page already exists
     msg_top = {
+	    'ar': u'كتابة على الأعلى',
         'de': u'ergänze am Anfang',
         'en': u'append on top',
         'he': u'הוספה בראש הדף',
@@ -85,6 +87,7 @@ class PageFromFileRobot:
     }
 
     msg_bottom = {
+	    'ar': u'كتابة على الأسفل',
         'de': u'ergänze am Ende',
         'en': u'append on bottom',
         'he': u'הוספה בתחתית הדף',
@@ -100,6 +103,7 @@ class PageFromFileRobot:
     }
 
     msg_force = {
+	    'ar': u'تمت الكتابة على النص الموجود',
         'de': u'bestehender Text überschrieben',
         'en': u'existing text overwritten',
         'he': u'הטקסט הישן נמחק',

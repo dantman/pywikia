@@ -32,6 +32,7 @@ def main():
     automatic = False
     namespaces = []
     msg = {
+	    'ar': u'إزالة الوصلات إلى موقع سبام %s',
         'de': u'Entferne in Spam-Blacklist eingetragenen Weblink auf %s',
         'en': u'Removing links to spamming site %s',
         'he': u'מסיר קישורים לאתר ספאם %s',
