@@ -162,6 +162,7 @@ class TemplateRobot:
         'no':u'bot: Endrer mal: %s',
         'pl':u'Robot zmienia szablon: %s',
         'pt':u'Bot: Alterando predefinição: %s',
+        'ru':u'Робот: замена шаблона: %s',
         'sr':u'Бот: Измена шаблона: %s',
         'zh':u'機器人: 更改模板 %s',
     }
@@ -181,6 +182,7 @@ class TemplateRobot:
         'no':u'bot: Endrer maler: %s',
         'pl':u'Robot zmienia szablony: %s',
         'pt':u'Bot: Alterando predefinição: %s',
+        'ru':u'Робот: замена шаблонов: %s',
         'zh':u'機器人: 更改模板 %s',
     }
     
@@ -201,6 +203,7 @@ class TemplateRobot:
         'no':u'bot: Fjerner mal: %s',
         'pl':u'Robot usuwa szablon: %s',
         'pt':u'Bot: Removendo predefinição: %s',
+        'ru':u'Робот: удаление шаблона: %s',
         'sr':u'Бот: Уклањање шаблона: %s',
         'zh':u'機器人: 移除模板 %s',
     }
@@ -219,6 +222,7 @@ class TemplateRobot:
         'nl':u'Bot: Verwijderen sjablonen: %s',
         'no':u'bot: Fjerner maler: %s',
         'pl':u'Robot usuwa szablony: %s',
+        'ru':u'Робот: удаление шаблонов: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         'zh':u'機器人: 移除模板 %s',
     }
@@ -238,6 +242,7 @@ class TemplateRobot:
         'no':u'bot: Erstatter mal: %s',
         'pl':u'Robot podmienia szablon: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
+        'ru':u'Робот: подстановка шаблона: %s',
         'zh':u'機器人: 更換模板 %s',
     }
 
@@ -255,6 +260,7 @@ class TemplateRobot:
         'no':u'bot: Erstatter maler: %s',
         'pl':u'Robot podmienia szablony: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
+        'ru':u'Робот: подстановка шаблонов: %s',
         'zh':u'機器人: 更換模板 %s',
     }
 
