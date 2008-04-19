@@ -233,8 +233,8 @@ class CheckUsage(object):
 		if no_db: return
 
 		self.mysql_host_prefix = mysql_host_prefix
-		if 'host' in mysql_kwargs: del mysql_kwargs['host']
-		self.mysql_kwargs = mysql_kwargs
+		self.mysql_kwargs = mysql_kwargs.copy() # To be safe
+		if 'host' in self.mysql_kwargs: del self.mysql_kwargs['host']
 		self.use_autoconn = use_autoconn
 		self.mysql_retry_timeout = mysql_retry_timeout
 		self.mysql_max_retries = mysql_max_retries
@@ -292,7 +292,7 @@ class CheckUsage(object):
 				**self.mysql_kwargs)
 		else:
 			database = MySQLdb.connect(use_unicode = False,
-				host = host, **mysql_kwargs)
+				host = host, **self.mysql_kwargs)
 		cursor = database.cursor()
 		self.connections.append((database, cursor))
 		return database, cursor
@@ -380,5 +380,5 @@ class CheckUsage(object):
 			except: 
 				pass
 		if self.http:
-			self.conn.close()
+			self.http.close()
 			

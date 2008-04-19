@@ -18,7 +18,7 @@ Please refer to delinker.txt for full documentation.
 # 
 # (C) Kyle/Orgullomoore, 2006-2007
 # (C) Siebrand Mazeland, 2006-2007
-# (C) Bryan Tong Minh, 2007
+# (C) Bryan Tong Minh, 2007-2008
 #
 # Distributed under the terms of the MIT license.
 #
@@ -40,6 +40,7 @@ __version__ = '$Id$'
 import sys, os, threading, time
 import traceback
 import re, cgitb
+import threading
 
 import threadpool
 import checkusage
@@ -48,9 +49,10 @@ import wikipedia
 import config
 	
 def wait_callback(object):
-	output(u'Connection has been lost in %s. Attempting reconnection.' % repr(object), False)
+	output(u'%s Connection has been lost in %s. Attempting reconnection.' % (threading.currentThread(), repr(object)), False)
 	if hasattr(object, 'error'):
 		output(u'Error was %s: %s' % tuple(object.error))
+	
 def universal_unicode(s):
 	if type(s) is str:
 		return s.decode('utf-8', 'ignore')
@@ -432,6 +434,7 @@ class SummaryCache(object):
 			pass	
 			
 class CheckUsage(threadpool.Thread):
+	timeout = 30
 	def __init__(self, pool, CommonsDelinker):
 		threadpool.Thread.__init__(self, pool)
 		self.CommonsDelinker = CommonsDelinker
@@ -443,6 +446,7 @@ class CheckUsage(threadpool.Thread):
 		threadpool.Thread.run(self)
 		
 	def connect(self):
+		output(u'%s Connecting to databases' % self)
 		config = self.CommonsDelinker.config
 		if config['global']:
 			# Note: global use requires MySQL
@@ -516,6 +520,19 @@ class CheckUsage(threadpool.Thread):
 			traceback.print_exc(file = sys.stderr)
 			self.exit()
 			self.CommonsDelinker.thread_died()
+			
+	def starve(self):
+		self.pool.jobLock.acquire()
+		try:
+			if self.pool[id(self)].isSet(): return False
+			
+			output(u'%s Starving' % self)
+			self.CheckUsage.close()
+			del self.pool[id(self)]
+			self.pool.threads.remove(self)
+			return True
+		finally:
+			self.pool.jobLock.release()
 		
 class Logger(threadpool.Thread):
 	def __init__(self, pool, CommonsDelinker):
@@ -529,6 +546,7 @@ class Logger(threadpool.Thread):
 		threadpool.Thread.run(self)
 		
 	def connect(self):
+		output(u'%s Connecting to log database' % self)
 		self.database = connect_database()
 		self.cursor = self.database.cursor()
 		
@@ -597,16 +615,12 @@ class CommonsDelinker(object):
 		self.site.forceLogin()
 		
 		# Initialize workers
-		self.CheckUsages = threadpool.ThreadPool(CheckUsage)
-		[self.CheckUsages.add_thread(self) for i in xrange(self.config['checkusage_instances'])]
-		
-		self.Delinkers = threadpool.ThreadPool(Delinker)
-		[self.Delinkers.add_thread(self) for i in xrange(self.config['delinker_instances'])]
-			
-		self.Loggers = threadpool.ThreadPool(Logger)
+		self.CheckUsages = threadpool.ThreadPool(CheckUsage, self.config['checkusage_instances'], self)
+		self.Delinkers = threadpool.ThreadPool(Delinker, self.config['delinker_instances'], self)
 		if self.config.get('enable_logging', True):
-			[self.Loggers.add_thread(self) for i in xrange(self.config['logger_instances'])]
+			self.Loggers = threadpool.ThreadPool(Logger, self.config['logger_instances'], self)
 		else:
+			self.Loggers = threadpool.ThreadPool(Logger, 1, self)
 			self.Loggers.add_thread(self)
 		
 		self.http = checkusage.HTTP(self.site.hostname())

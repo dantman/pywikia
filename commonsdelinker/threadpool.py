@@ -18,7 +18,7 @@ argument the job. Please note that providing mutable variables to the jobqueue
 may cause thread unsafety!
 """
 #
-# (C) Bryan Tong Minh, 2007
+# (C) Bryan Tong Minh, 2007-2008
 #
 # Distributed under the terms of the MIT license.
 #
@@ -29,23 +29,28 @@ import sys, threading, os
  
 class ThreadPool(dict):
 	pools = []
-	def __init__(self, worker):
+	def __init__(self, worker, max_threads, *args, **kwargs):
 		dict.__init__(self)
- 
+
 		self.jobLock = threading.Lock()
 		self.jobQueue = []
 		self.worker = worker
 		self.threads = []
- 
+		
+		self.max_threads = max_threads
+		self.args = args
+		self.kwargs = kwargs
+
 		self.pools.append(self)
- 
+
 	def append(self, job):
 		self.jobLock.acquire()
+		counter = 0
 		try:
 			self.jobQueue.append(job)
+			# The amount of workers needed to be unlocked
 			unlock_workers = len(self.jobQueue)
-	 
-			counter = 0
+	
 			for event in self.itervalues():
 				if not event.isSet():
 					event.set()
@@ -54,16 +59,19 @@ class ThreadPool(dict):
 					break
 		finally:
 			self.jobLock.release()
- 
-	def add_thread(self, *args, **kwargs):
+		if counter == 0 and len(self.threads) < self.max_threads:
+			self.add_thread()
+			self.start()
+	
+	def add_thread(self):
 		self.jobLock.acquire()
 		try:
-			thread = self.worker(self, *args, **kwargs)
+			thread = self.worker(self, *self.args, **self.kwargs)
 			self.threads.append(thread)
 			self[id(thread)] = threading.Event()
 		finally:
 			self.jobLock.release()
- 
+	
 	def start(self):
 		for thread in self.threads:
 			if not thread.isAlive():
@@ -77,13 +85,14 @@ class ThreadPool(dict):
 				self[id(thread)].set()
 		finally:
 			self.jobLock.release()
- 
+
 class Thread(threading.Thread):
+	timeout = None
 	def __init__(self, pool):
 		threading.Thread.__init__(self)
 		self.pool = pool
 		self.quit = False
- 
+	
 	def run(self):
 		while True:
 			# No try..finally: lock.release() here:
@@ -100,30 +109,37 @@ class Thread(threading.Thread):
 		
 			if not self.pool.jobQueue:
 				# In case no job is available, wait for the pool 
-				# to  call and do not start a busy while loop.
+				# to call and do not start a busy while loop.
 				event = self.pool[id(self)]
 				self.pool.jobLock.release()
 				event.clear()
-				event.wait()
+				event.wait(self.timeout)
+				if not event.isSet() and self.timeout != None:
+					if self.starve(): return
 				continue
 			job = self.pool.jobQueue.pop(0)
 			self.pool.jobLock.release()
 		
 			self.do(job)
- 
+	
 	def exit(self):
 		self.pool.jobLock.acquire()
 		try:
 			self.quit = True
 			self.pool[id(self)].set()
+			del self.pool[id(self)]
+			self.pool.threads.remove(self)
 		finally:
 			self.pool.jobLock.release()
- 
+	
+	def starve(self):
+		pass
+
 def catch_signals():
 	import signal
 	signal.signal(signal.SIGINT, sig_handler)
 	signal.signal(signal.SIGTERM, sig_handler)
- 
+
 def sig_handler(signalnum, stack):
 		import signal
 		for pool in ThreadPool.pools:
@@ -138,28 +154,28 @@ def terminate():
 	# Maybe not a good idea, will also kill child processes
 	import signal
 	os.kill(0, signal.SIGTERM)
- 
+
 if __name__ == '__main__':
 	import time
 	# Test cases
- 
+	
 	class Worker(Thread):
 		def do(self, args):
 			print 'Working', self
 			time.sleep(10)
 			print 'Done', self
- 
+	
 	pool = ThreadPool(Worker)
 	print 'Spawning 5 threads'
 	[pool.add_thread() for i in xrange(5)]
 	pool.start()
- 
+	
 	print 'Doing 25 jobs'
 	for i in xrange(25):
 		print 'Job', i
 		pool.append(i)
 		time.sleep(i % 6)
- 
+	
 	for thread in pool.threads:
 		thread.exit()
 
