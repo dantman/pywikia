@@ -121,7 +121,7 @@ comm = {
 empty = {
 		'commons':'{{subst:welcome}}\n~~~~\n',
 		'en'     :'{{welcome}}\n~~~~\n',
-		'it'     :'{{benvenuto}}\n~~~~\n',
+		'it'     :'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
 		'ja':'{{welcome}}\n--~~~~\n',
 		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
 		'zh':'{{subst:welcome|sign=~~~~}}',
@@ -168,7 +168,7 @@ delete_immediately_notification = {
 				'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
 				'ar'     :u'الملف [[:Image:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
 				'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
-				'it'     :u'{{subst:Utente:Filbot/Ext|%s}}',
+				'it'     :u'{{subst:Utente:Filbot/Ext|%s}} --~~~~',
 				'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
 				'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
 				'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
