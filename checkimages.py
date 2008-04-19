@@ -235,7 +235,7 @@ page_with_settings = {
 					'commons':u'User:Filbot/Settings',
 					'en':None,
 					'hu':None,
-					'it':u'Utente:Nikbot/Settings#Settings',
+					'it':u'Progetto:Coordinamento/Immagini/Bot/Settings#Settings',
 					'ja':None,
 					'ta':None,
 					'zh':u"User:Alexbot/cisettings#Settings",
@@ -245,7 +245,7 @@ page_with_settings = {
 report_page = {
 				'commons':u'User:Filbot/Report',
 				'en'     :u'User:Filnik/Report',
-				'it'     :u'Utente:Nikbot/Report',
+				'it'     :u'Progetto:Coordinamento/Immagini/Bot/NowCommons',
 				'ja'     :u'User:Alexbot/report',
 				'hu'     :u'User:Bdamokos/Report',
 				'ta'     :u'Trengarasu/commonsimages',
