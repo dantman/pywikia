@@ -195,7 +195,7 @@ logbook = {
     'fa': u'Project:سیاهه خوشامد',
     'he': None, # no welcome log on he.wiki
     'id': None, # no welcome log on id.wiki
-    'it': u'Project:Benvenuto log',
+    'it': u'Project:Benvenuto Bot/Log',
     'ja': u'利用者:Alexbot/Welcomebotログ',
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
@@ -260,7 +260,7 @@ report_page = {
     'de': u'Benutzer:Filnik/Report',
     'en': u'Project:Administrator intervention against vandalism',
     'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
-    'it': u'Utente:Filbot/Report',
+    'it': u'Project:Benvenuto_Bot/Report',
     'ja': u'利用者:Alexbot/report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
@@ -287,7 +287,7 @@ bad_pag = {
     'ar': u'Project:سجل الترحيب/أسماء سيئة',
     'en': u'Project:Welcome log/Bad_names',
     'fa': u'Project:سیاهه خوشامد/نام بد',
-    'it': u'Utente:Filbot/Bad_words',
+    'it': u'Project:Benvenuto_Bot/Lista_Badwords',
     'ja':u'Project:不適切な名前の利用者',
     'nl': u'Project:Logboek_welkom/Bad_names',
     'no': u'Bruker:JhsBot/Daarlige ord',
@@ -316,7 +316,7 @@ random_sign = {
     'ar': u'Project:سجل الترحيب/توقيعات',
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
-    'it': u'Project:Benvenuto log/User',
+    'it': u'Project:Benvenuto_Bot/Firme',
     'ja':u'利用者:Alexbot/Welcomebotログ/List',
     'zh': u'user:Welcomebot/欢迎日志/用户',
     }
@@ -325,7 +325,7 @@ random_sign = {
 whitelist_pg = {
     'ar':u'Project:سجل الترحيب/قائمةبيضاء',
     'en':u'User:Filnik/whitelist',
-    'it':u'Utente:Filbot/whitelist',
+    'it':u'Project:Benvenuto_Bot/Lista_Whitewords',
     }
 
 # Text after the {{welcome}} template, if you want to add something
