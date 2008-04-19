@@ -481,7 +481,7 @@ class Family(family.Family):
                     u'2LCdisambig', u'3CC', u'3LC', u'4CC', u'4LC', u'4LA',
                     u'5CC', u'TLAdisambig', u'Hndis', u'Numberdis',
                     u'Roadis', u'Roaddis', u'Geodis', u'TLA', u'Surname',
-                    u'Dab', u'Disambig-cleanup', u'Disamb',
+                    u'Dab', u'Disambig-cleanup', u'Disamb', u'letter disambig',
                     u'Schooldis', u'Shipindex', u'Songdis', u'4cc', u'3cc'],
             'eo':  [u'Apartigilo', u'Disambig'],
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig', u'Disambig',u'Des'],
