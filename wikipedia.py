@@ -391,7 +391,12 @@ class Page(object):
                         # This page is from a different family
                         if verbose:
                             output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
-                        otherlang = self.site().lang
+                        if self.site().family.name in ['commons', 'meta']:
+                            #When the source wiki is commons or meta,
+                            #w:page redirects you to w:en:page
+                            otherlang = 'en'
+                        else:
+                            otherlang = self.site().lang
                         familyName = self.site().family.get_known_families(site = self.site())[lowerNs]
                         if familyName in ['commons', 'meta']:
                             otherlang = familyName
