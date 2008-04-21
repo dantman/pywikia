@@ -25,25 +25,27 @@ msg = {
     'en': u'Bot: Fixing redirects',
     'he': u'בוט: מתקן הפניות',
     'ja': u'ロボットによる:リダイレクト回避',
+    'nn': u'robot: retta omdirigeringar',
     'no': u'Robot: Retter omdirigeringer',
     'pt': u'Bot: Arrumando redirects',
-    'zh': u'機器人: 修復重定向',
     'sv': u'Bot: Rättar omdirigeringar',
+    'zh': u'機器人: 修復重定向',
 }
 
 featured_articles = {
     'ar': u'ويكيبيديا:مقالات مختارة',
     'de': u'Wikipedia:Exzellente_Artikel',
     'en': u'Wikipedia:Featured_articles',
-    'he': u'פורטל:ערכים_מומלצים',
     'es': u'Wikipedia:Artículos_destacados',
     'fr': u'Wikipédia:Articles_de_qualité',
+    'he': u'פורטל:ערכים_מומלצים',
     'it': u'Wikipedia:Articoli_in_vetrina',
     'ja': u'Wikipedia:秀逸な記事',
     'nl': u'Wikipedia:Etalage',
+    'nn': u'Wikipedia:Gode artiklar',
     'no': u'Wikipedia:Anbefalte artikler',
-    'sv': u'Wikipedia:Utvalda_artiklar',
     'pt': u'Wikipedia:Os_melhores_artigos',
+    'sv': u'Wikipedia:Utvalda_artiklar',
     'zh': u'Wikipedia:特色条目',
 }
 

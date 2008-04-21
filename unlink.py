@@ -34,6 +34,8 @@ msg = {
           'de':u'Bot: Entlinke "%s"',
           'en':u'Robot: Unlinking "%s"',
           'he':u'בוט: מסיר קישורים לדף "%s"',
+          'nn':u'robot: fjerna lenkje til "%s"',
+          'no':u'robot: fjerner lenke til "%s"',
           'pt':u'Bot: Retirando link para "%s"',
        }
 
