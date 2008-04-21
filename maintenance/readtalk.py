@@ -8,8 +8,8 @@ This tool will go through all the normal (not sysop) accounts configured in user
 TODO:
 *Error checking
 """
-import sys
-sys.path.append('..')
+import sys, re
+sys.path.append(re.sub('/[^/]*$', '', sys.path[0])) #sys.path.append('..')
 import wikipedia, config
 
 def main():
