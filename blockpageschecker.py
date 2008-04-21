@@ -88,8 +88,8 @@ templateTotalProtection = {
             'en': None, 
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
                   r'{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee].*?)\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
-            'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}',
-                 r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?(|[^\}]*)\}\}'],
+            'fr':[ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}',
+                 ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?(|[^\}]*)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)'],
             }
@@ -118,7 +118,7 @@ templateNoRegex = {
 # Category where the bot will check
 categoryToCheck = {
             'en':[u'Category:Protected'],
-            'fr':[u'Category:Page semi-protégée', u'Category:Page protégée'],
+            'fr':[u'Category:Page semi-protégée', u'Category:Page protégée', u'Catégorie:Article protégé'],
             'he':[u'קטגוריה:ויקיפדיה: דפים מוגנים', u'קטגוריה:ויקיפדיה: דפים מוגנים חלקית'],
             'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
             'ja':[u'Category:編集保護中の記事',u'Category:編集半保護中の記事',
@@ -294,7 +294,7 @@ def main():
 
         if not editRestr:
             # Deleting the template because the page doesn't need it.
-            replaceToPerform = '|'.join(TTP + TSP)
+            replaceToPerform = u'|'.join(TTP + TSP)
             text = re.sub('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
             if text != oldtext:
                 wikipedia.output(u'The page is editable for all, deleting the template...')
@@ -327,7 +327,7 @@ def main():
             if not moveRestr:
                 wikipedia.output(u'The page is movable for all, deleting the template...')
                 # Deleting the template because the page doesn't need it.
-                replaceToPerform = '|'.join(TSMP + TTMP)
+                replaceToPerform = u'|'.join(TSMP + TTMP)
                 text = re.sub('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
 
             elif moveRestr[0] == 'sysop':
