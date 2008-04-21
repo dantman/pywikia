@@ -72,28 +72,6 @@ docuReplacements = {
 #--------------------- PREFERENCES -------------------#
 ################### -- Edit below! -- #################
 
-# Use only regex! - Regex to delete the template
-templateToRemove = {
-            'en':[r'\{\{(?:[Tt]emplate:|)[Pp]p-protected\}\}', r'{\{([Tt]emplate:|)[Pp]p-dispute\}\}',
-                  r'{\{(?:[Tt]emplate:|)[Pp]p-template\}\}', r'{\{([Tt]emplate:|)[Pp]p-usertalk\}\}'],
-            'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}', 
-                 r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?\}\}',
-                 r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection\}\}'
-                ],
-            'he':[ur'\{\{(?:[Tt]emplate:|תבנית:|)מוגן(?: חלקית)?(?:\|?.*)\}\}'],
-            'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
-                  r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?))\}\}',
-                  r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}',
-                  r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
-                  r'{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee].*?)\}\}',
-                  r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
-            'ja':[ur'\{\{(?:[Tt]emplate:|)(?:半|移動|移動半|)保護(?:性急|)(?:[Ss]|)(?:\|.+|)?\}\}(\n+?|)'],
-            'pt':[r'\{\{(?:[Tt]emplate:|)[Pp]rotegido(?:\|*)\}\}',
-                  r'\{\{(?:[Tt]emplate:|)(?:[Ss]emi-|)[Pp]rotegid[ao](?:IP|[- _]ip|PP|)\}\}'],
-            'zh':[r'\{\{(?:[Tt]emplate:|)Protected(?:\|*)\}\}',r'\{\{(?:[Tt]emplate:|)Mini-protected(?:\|*)\}\}',
-                r'\{\{(?:[Tt]emplate:|)Protected logo(?:\|*)\}\}'],
-            }
-
 # Added a new feature! Please update and add the settings in order
 # to improve the intelligence of this script ;-)
 # Regex to get the semi-protection template
@@ -101,7 +79,7 @@ templateSemiProtection = {
             'en': None,
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
                   r'{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
-            'fr': [r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection(|[^\}]*)\}\}'],
+            'fr': [ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection(|[^\}]*)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)半保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)'],
             }
@@ -110,7 +88,7 @@ templateTotalProtection = {
             'en': None, 
             'it':[r'{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
                   r'{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee].*?)\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
-            'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}', 
+            'fr':[r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}',
                  r'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?(|[^\}]*)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)'],
@@ -170,20 +148,20 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
     """ Understand if the page is blocked and if it has the right template """
     for catchRegex in TTP: # TTP = templateTotalProtection
         resultCatch = re.findall(catchRegex, text)
-        if resultCatch != []:
+        if resultCatch:
             return ('sysop-total', catchRegex)
     for catchRegex in TSP:
         resultCatch = re.findall(catchRegex, text)
-        if resultCatch != []:
+        if resultCatch:
             return ('autoconfirmed-total', catchRegex)
     if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
         for catchRegex in TSMP:
             resultCatch = re.findall(catchRegex, text)
-            if resultCatch != []:
+            if resultCatch:
                 return ('sysop-move', catchRegex)
         for catchRegex in TTMP:
             resultCatch = re.findall(catchRegex, text)
-            if resultCatch != []:
+            if resultCatch:
                 return ('autoconfirmed-move', catchRegex)
     return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
@@ -209,34 +187,6 @@ def ProtectedPagesData(namespace = None):
             continue
         else:
             break
-
-def getRestrictions(page):
-    api_url = '/w/api.php?action=query&prop=info&inprop=protection&format=xml&titles=%s' % page.urlname()
-    text = wikipedia.getSite().getUrl(api_url)
-    if not 'pageid="' in text: # Avoid errors when you can't reach the APIs
-        raise wikipedia.Error("API problem, can't reach the APIs!")
-    match = re.findall(r'<protection>(.*?)</protection>', text)
-    status = 'editable'
-    if match != []:
-        text = match[0] # If there's the block "protection" take the settings inside it.
-        api_found = re.compile(r'<pr type="(.*?)" level="(.*?)" expiry="(.*?)" />')
-        results = api_found.findall(text)
-        if results != []:
-            if len(results) < 2:
-                result = results[0]
-                type_of_protection = result[0]; level = result[1]; expiry = result[2]
-                if type_of_protection == 'move':
-                    status = '%s-%s' % (level, type_of_protection)
-                else:
-                    status = '%s' % level
-            else:
-                for result in results:
-                    # If blocked both move and edit, select edit.
-                    if result[0] == 'move':
-                        continue
-                    type_of_protection = result[0]; level = result[1]; expiry = result[2]
-                    status = '%s' % level    
-    return status
         
 def ProtectedPages(namespace = 0):
     """ Return only the wiki page object and not the tuple with all the data as above """
@@ -265,7 +215,7 @@ def debugQuest(site, page):
 def main():
     """ Main Function """
     # Loading the comments
-    global templateToRemove; global categoryToCheck; global comment; global project_inserted
+    global categoryToCheck; global comment; global project_inserted
     if config.mylang not in project_inserted:
         wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
         wikipedia.stopme()
@@ -297,7 +247,6 @@ def main():
     # Load the right site
     site = wikipedia.getSite()
     # Take the right templates to use, the category and the comment
-    TTR = wikipedia.translate(site, templateToRemove)
     TSP = wikipedia.translate(site, templateSemiProtection)
     TTP = wikipedia.translate(site, templateTotalProtection)
     TSMP = wikipedia.translate(site, templateSemiMoveProtection)
@@ -324,7 +273,7 @@ def main():
         wikipedia.output('Loading %s...' % pagename)
         try:
             text = page.get()
-            editRestriction = getRestrictions(page)
+            restrictions = page.getRestrictions()
         except wikipedia.NoPage:
             wikipedia.output("%s doesn't exist! Skipping..." % pagename)
             continue
@@ -333,47 +282,69 @@ def main():
             if debug:
                 debugQuest(site, page)
             continue
-        if not page.canBeEdited():
-            wikipedia.output("%s is protected : this account can't edit it! Skipping..." % pagename)
+        if not page.canBeEdited():
+            wikipedia.output("%s is protected : this account can't edit it! Skipping..." % pagename)
             continue        
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
         TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
         # Only to see if the text is the same or not...
         oldtext = text
-        if editRestriction == 'sysop':         
+        editRestr = restrictions['edit']
+
+        if not editRestr:
+            # Deleting the template because the page doesn't need it.
+            replaceToPerform = '|'.join(TTP + TSP)
+            text = re.sub('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
+            if text != oldtext:
+                wikipedia.output(u'The page is editable for all, deleting the template...')
+            elif not moveBlockCheck:
+                wikipedia.output('Warning : This page is in a protection category, and is not edition-protected; yet no edit-protection templates could be found')
+
+        elif editRestr[0] == 'sysop':         
             if TemplateInThePage[0] == 'sysop-total' and TTP != None:
-                wikipedia.output(u'The page is protected to the sysop, skipping...')
-                continue
+                msg = 'The page is protected to the sysop'
+                if not moveBlockCheck:
+                    msg += ', skipping...'
+                wikipedia.output(msg)
             else:
                 wikipedia.output(u'The page is protected to the sysop, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[1], text)
-        elif moveBlockCheck and editRestriction == 'sysop-move':
-            if TemplateInThePage[0] == 'sysop-move' and TTMP != None:
-                wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
-                continue
-            else:
-                wikipedia.output(u'The page is protected from moving to the sysop, but the template seems not correct. Fixing...')
-                text = re.sub(TemplateInThePage[1], TNR[3], text)
-        elif editRestriction == 'autoconfirmed' and TSP != None:
+
+        elif TSP != None: # implicitely editRestr[0] = 'autoconfirmed'
             if TemplateInThePage[0] == 'autoconfirmed-total':                    
-                wikipedia.output(u'The page is editable only for the autoconfirmed users, skipping...')
-                continue
+                msg = 'The page is editable only for the autoconfirmed users'
+                if not moveBlockCheck:
+                    msg += ', skipping...'
+                wikipedia.output(msg)
             else:
                 wikipedia.output(u'The page is editable only for the autoconfirmed users, but the template seems not correct. Fixing...')
                 text = re.sub(TemplateInThePage[1], TNR[0], text)
-        elif moveBlockCheck == True and editRestriction == 'autoconfirmed-move' and TSMP != None:
-            if TemplateInThePage[0] == 'autoconfirmed-move':
-                wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
-                continue
-            else:
-                wikipedia.output(u'The page is movable only for the autoconfirmed users, but the template seems not correct. Fixing...')
-                text = re.sub(TemplateInThePage[1], TNR[2], text)
-        else:
-            wikipedia.output(u'The page is editable for all, deleting the template...')
-            # Deleting the template because the page doesn't need it.
-            for replaceToPerform in TTR:
-                text = re.sub('(?:<noinclude>|)%s(?:</noinclude>|)' % replaceToPerform, '', text)
+
+        
+        if moveBlockCheck:
+            moveRestr = restrictions['move']
+            if not moveRestr:
+                wikipedia.output(u'The page is movable for all, deleting the template...')
+                # Deleting the template because the page doesn't need it.
+                replaceToPerform = '|'.join(TSMP + TTMP)
+                text = re.sub('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
+
+            elif moveRestr[0] == 'sysop':
+                if TemplateInThePage[0] == 'sysop-move' and TTMP != None:
+                    wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
+                else:
+                    wikipedia.output(u'The page is protected from moving to the sysop, but the template seems not correct. Fixing...')
+                    text = re.sub(TemplateInThePage[1], TNR[3], text)
+
+            elif TSMP != None: #implicitely moveRestr[0] = 'autoconfirmed'
+                if TemplateInThePage[0] == 'autoconfirmed-move':
+                    wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
+                else:
+                    wikipedia.output(u'The page is movable only for the autoconfirmed users, but the template seems not correct. Fixing...')
+                    text = re.sub(TemplateInThePage[1], TNR[2], text)
+
+
         if oldtext != text:
             # Ok, asking if the change has to be performed and do it if yes.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
@@ -416,10 +387,6 @@ def main():
                         # Break only if the errors are one after the other
                         errorCount = 0
                         break
-        else:
-            wikipedia.output(u'No changes! Strange, try to check the regex used!')
-            if debug == True:
-                debugQuest(site, page)
                     
 if __name__ == "__main__":
     try:

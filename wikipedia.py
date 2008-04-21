@@ -265,6 +265,7 @@ class Page(object):
     previousRevision (*)  : The revision id of the previous version
     permalink (*)         : The url of the permalink of the current version
     getOldVersion(id) (*) : The text of a previous version of the page
+    getRestrictions       : Returns a protection dictionary
     getVersionHistory     : Load the version history information from wiki
     getVersionHistoryTable: Create a wiki table from the history data
     fullVersionHistory    : Return all past versions including wikitext
@@ -1128,6 +1129,30 @@ not supported by PyWikipediaBot!"""
                     raise
 
         return sysop
+
+    def getRestrictions(self):
+        """
+        Get the protections on the page.
+        * Returns a restrictions dictionary. Keys are 'edit' and 'move',
+          Values are None (no restriction for that action) or [level, expiry] :
+            * level is the level of auth needed to perform that action
+                ('autoconfirmed' or 'sysop')
+            * expiry is the expiration time of the restriction
+        """
+        api_url = '/w/api.php?action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
+        text = self.site().getUrl(api_url)
+        if not 'pageid="' in text: # Avoid errors when you can't reach the API
+            raise Error("API problem, can't reach the API!")
+        match = re.findall(r'<protection>(.*?)</protection>', text)
+        restrictions = { 'edit': None, 'move': None }
+
+        if match:
+            text = match[0] # If there's the block "protection" take the settings inside it.
+            api_found = re.compile(r'<pr type="(.*?)" level="(.*?)" expiry="(.*?)" />')
+            for entry in api_found.findall(text):
+                restrictions[ entry[0] ] = [ entry[1], entry[2] ]
+
+        return restrictions
 
     def put_async(self, newtext,
                   comment=None, watchArticle=None, minorEdit=True, force=False,
