@@ -165,6 +165,10 @@ try:
                 namespace = int(arg[11:])
 
     mysite = wikipedia.getSite()
+    if mysite.sitename() == 'wikipedia:nl':
+        wikipedia.output(u'\03{lightred}There is consensus on the Dutch Wikipedia that bots should not be used to fix redirects.\03{default}')
+        sys.exit()
+
     linktrail = mysite.linktrail()
     if featured:
         featuredList = wikipedia.translate(mysite, featured_articles)
