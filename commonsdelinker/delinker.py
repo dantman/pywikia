@@ -434,7 +434,7 @@ class SummaryCache(object):
 			pass	
 			
 class CheckUsage(threadpool.Thread):
-	timeout = 30
+	timeout = 120
 	def __init__(self, pool, CommonsDelinker):
 		threadpool.Thread.__init__(self, pool)
 		self.CommonsDelinker = CommonsDelinker

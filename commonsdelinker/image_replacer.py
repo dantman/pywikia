@@ -54,8 +54,7 @@ class Replacer(object):
 		
 		self.first_revision = 0
 		if self.config.get('replacer_report_replacements', False):
-			self.reporters = threadpool.ThreadPool(Reporter)
-			self.reporters.add_thread(self.site, self.config)
+			self.reporters = threadpool.ThreadPool(Reporter, 1, self.site, self.config)
 			self.reporters.start()
 			
 		
@@ -287,7 +286,10 @@ def main():
 			output('A critical error has occured! Aborting!')
 			traceback.print_exc(file = sys.stderr)
 	finally:
-		R.reporters.exit()
+		try:
+			R.reporters.exit()
+		except:
+			pass
 		wikipedia.stopme()
 		
 if __name__ == '__main__': main()
