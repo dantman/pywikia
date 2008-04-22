@@ -354,7 +354,7 @@ def main():
                     wikipedia.output(u'The page is movable only for the autoconfirmed users, but the template seems not correct. Fixing...')
                     text, changes = re.subn(TemplateInThePage[1], TNR[2], text)
 
-           if changes == 0:
+            if changes == 0:
                 # We tried to fix move-protection templates, but it did not work.
                 wikipedia.output('Warning : No move-protection template could be found')
 
