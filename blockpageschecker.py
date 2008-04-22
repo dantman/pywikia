@@ -291,17 +291,18 @@ def main():
         # Only to see if the text is the same or not...
         oldtext = text
         editRestr = restrictions['edit']
+        # keep track of the changes for each step (edit then move)
+        changes = -1
 
         if not editRestr:
+            # page is not edit-protected
             # Deleting the template because the page doesn't need it.
             replaceToPerform = u'|'.join(TTP + TSP)
-            text = re.sub('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
-            if text != oldtext:
-                wikipedia.output(u'The page is editable for all, deleting the template...')
-            elif not moveBlockCheck:
-                wikipedia.output('Warning : This page is in a protection category, and is not edition-protected; yet no edit-protection templates could be found')
+            texti, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
+            wikipedia.output(u'The page is editable for all, deleting the template...')
 
-        elif editRestr[0] == 'sysop':         
+        elif editRestr[0] == 'sysop':
+            # total edit protection         
             if TemplateInThePage[0] == 'sysop-total' and TTP != None:
                 msg = 'The page is protected to the sysop'
                 if not moveBlockCheck:
@@ -309,9 +310,10 @@ def main():
                 wikipedia.output(msg)
             else:
                 wikipedia.output(u'The page is protected to the sysop, but the template seems not correct. Fixing...')
-                text = re.sub(TemplateInThePage[1], TNR[1], text)
+                text, changes = re.subn(TemplateInThePage[1], TNR[1], text)
 
-        elif TSP != None: # implicitely editRestr[0] = 'autoconfirmed'
+        elif TSP != None:
+            # implicitely editRestr[0] = 'autoconfirmed', edit-Semi-protection
             if TemplateInThePage[0] == 'autoconfirmed-total':                    
                 msg = 'The page is editable only for the autoconfirmed users'
                 if not moveBlockCheck:
@@ -319,30 +321,42 @@ def main():
                 wikipedia.output(msg)
             else:
                 wikipedia.output(u'The page is editable only for the autoconfirmed users, but the template seems not correct. Fixing...')
-                text = re.sub(TemplateInThePage[1], TNR[0], text)
+                text, changes = re.subn(TemplateInThePage[1], TNR[0], text)
 
+        if changes == 0:
+            # We tried to fix edit-protection templates, but it did not work.
+            wikipedia.output('Warning : No edit-protection template could be found')
         
         if moveBlockCheck:
+            # checking move protection now
             moveRestr = restrictions['move']
+            changes = -1
+
             if not moveRestr:
                 wikipedia.output(u'The page is movable for all, deleting the template...')
                 # Deleting the template because the page doesn't need it.
                 replaceToPerform = u'|'.join(TSMP + TTMP)
-                text = re.sub('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
+                text, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
 
             elif moveRestr[0] == 'sysop':
+                # move-total-protection
                 if TemplateInThePage[0] == 'sysop-move' and TTMP != None:
                     wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
                 else:
                     wikipedia.output(u'The page is protected from moving to the sysop, but the template seems not correct. Fixing...')
-                    text = re.sub(TemplateInThePage[1], TNR[3], text)
+                    text, changes = re.subn(TemplateInThePage[1], TNR[3], text)
 
-            elif TSMP != None: #implicitely moveRestr[0] = 'autoconfirmed'
+            elif TSMP != None:
+                # implicitely moveRestr[0] = 'autoconfirmed', move-semi-protection
                 if TemplateInThePage[0] == 'autoconfirmed-move':
                     wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
                 else:
                     wikipedia.output(u'The page is movable only for the autoconfirmed users, but the template seems not correct. Fixing...')
-                    text = re.sub(TemplateInThePage[1], TNR[2], text)
+                    text, changes = re.subn(TemplateInThePage[1], TNR[2], text)
+
+           if changes == 0:
+                # We tried to fix move-protection templates, but it did not work.
+                wikipedia.output('Warning : No move-protection template could be found')
 
 
         if oldtext != text:
