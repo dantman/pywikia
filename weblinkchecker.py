@@ -123,20 +123,38 @@ talk_report_msg = {
 # The second %s will be replaced by a hint to the Internet Archive,
 # in case the page has been archived there.
 talk_report = {
-    'ar': u'== وصلة ميتة ==\n\nخلال عدة عمليات أوتوماتيكية من البوت الوصلة الخارجية التالية كانت غير متوفرة. من فضلك تحقق من أن الوصلة لا تعمل وأزلها أو أصلحها في هذه الحالة!\n\n%s\n%s--~~~~',
-    'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich unerreichbar ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n%s--~~~~',
-    'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n%s--~~~~',
-    'fr': u'== Lien mort ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et si oui corrigez ou retirez-le.\n\n%s\n%s--~~~~',
-    'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו אותו במקרה זה!\n\n%s\n%s--~~~~',
-    'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n%s--~~~~',
-    'kk': u'== Өлі сілтеме ==\n\nӨздікті бот бірнеше жегілгенде келесі сыртқы сілтемеге қатынай алмады. Бұл сілтеменің қатыналуын тексеріп шығыңыз да, не түзетіңіз, не аластаңыз!\n\n%s\n%s--~~~~',
-    'ksh': u'== Han enne kappodde Weblengk jefonge ==\n\nEsch han bonge die Weblingks paa Mol jetschäck. Se han allemoolde nit jedon Doht ens donnoh loore, un dä Lengk reparreere odo eruß nämme.\n\n%s\n%s--~~~~',
-    'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
-    'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
-    'no': u'{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
-    'pl': u'== Martwy link ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
-    'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
-    'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
+    'ar': u'== %s ==\n\nخلال عدة عمليات أوتوماتيكية من البوت الوصلة الخارجية التالية كانت غير متوفرة. من فضلك تحقق من أن الوصلة لا تعمل وأزلها أو أصلحها في هذه الحالة!\n\n%s\n%s--~~~~',
+    'de': u'== %s ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich unerreichbar ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n%s--~~~~',
+    'en': u'== %s ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n%s--~~~~',
+    'fr': u'== %s ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et si oui corrigez ou retirez-le.\n\n%s\n%s--~~~~',
+    'he': u'== %s ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו אותו במקרה זה!\n\n%s\n%s--~~~~',
+    'ia': u'== %s ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n%s--~~~~',
+    'kk': u'== %s ==\n\nӨздікті бот бірнеше жегілгенде келесі сыртқы сілтемеге қатынай алмады. Бұл сілтеменің қатыналуын тексеріп шығыңыз да, не түзетіңіз, не аластаңыз!\n\n%s\n%s--~~~~',
+    'ksh': u'== %s ==\n\nEsch han bonge die Weblingks paa Mol jetschäck. Se han allemoolde nit jedon Doht ens donnoh loore, un dä Lengk reparreere odo eruß nämme.\n\n%s\n%s--~~~~',
+    'nds': u'== %s ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
+    'nl': u'== %s ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
+    # This is not a good solution as it only works on the Norwegian Wikipedia, not on Wiktionary etc.
+    'no': u'%s{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
+    'pl': u'== %s ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
+    'pt': u'== %s ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
+    'sr': u'== %s ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
+}
+
+talk_report_header = {
+    'ar': u'وصلة ميتة',
+    'de': u'Toter Weblink',
+    'en': u'Dead link',
+    'fr': u'Lien mort',
+    'he': u'קישור שבור',
+    'ia': u'Ligamine defuncte',
+    'kk': u'Өлі сілтем',
+    'ksh': u'Han enne kappodde Weblengk jefonge',
+    'nds': u'Weblenk geiht nich mehr',
+    'nl': u'Dode link',
+    'no': u'',
+    'pl': u'Martwy link',
+    'pt': u'Link quebrado',
+    'sr': u'Покварене спољашње повезнице',
 }
 
 talk_report_archive = {
@@ -537,10 +555,11 @@ class History:
             txtfile.write('=== %s ===\n' % containingPage.title()[:3])
         txtfile.write(errorReport)
         txtfile.close()
+
         if self.reportThread and not containingPage.isTalkPage():
             self.reportThread.report(url, errorReport, containingPage, archiveURL)
-    
-            
+
+
     def setLinkDead(self, url, error, page):
         """
         Adds the fact that the link was found dead to the .dat file.
@@ -645,7 +664,15 @@ class DeadLinkReportThread(threading.Thread):
                     archiveMsg = wikipedia.translate(wikipedia.getSite(), talk_report_archive) % archiveURL
                 else:
                     archiveMsg = u''
-                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (errorReport, archiveMsg)
+                # The header will default to "Dead link". But if there is already such a header, we'll
+                # use "Dead link 2", "Dead link 3", etc.
+                header = wikipedia.translate(wikipedia.getSite(), talk_report_header)
+                i = 1
+                # Check if there is already such a header on the talk page.
+                while re.search('= *' + header + ' *=', content) is not None:
+                    i += 1
+                    header = wikipedia.translate(wikipedia.getSite(), talk_report_header) + " " + str(i)
+                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (header, errorReport, archiveMsg)
                 try:
                     talkPage.put(content)
                 except wikipedia.SpamfilterError, error:
