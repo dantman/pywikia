@@ -21,6 +21,7 @@ These command line parameters can be used to specify which pages to work on:
                    -start:Category:M.
 
     -always        Don't prompt you for each replacement.
+    -ignoremsg     Don't stop when the bot has new messages
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
@@ -201,9 +202,10 @@ class XmlDumpNoReferencesPageGenerator:
 
 class NoReferencesBot:
 
-    def __init__(self, generator, always = False):
+    def __init__(self, generator, always = False, ignoreMsg = False):
         self.generator = generator
         self.always = always
+        self.ignoreMsg = ignoreMsg
         mysite = wikipedia.getSite()
         self.refR = re.compile('</ref>', re.IGNORECASE)
         self.referencesR = re.compile('<references */>', re.IGNORECASE)
@@ -341,8 +343,9 @@ class NoReferencesBot:
         if self.always:
             try:
                 page.put_async(newText)
-                if mysite.messages:
-                    wikipedia.crash()
+                if mysite.messages() and not self.ignoreMsg:
+                    wikipedia.output(u'NOTE: You have unread messages, stopping...')
+                    wikipedia.stopme()
             except wikipedia.EditConflict:
                 wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
             except wikipedia.SpamfilterError, e:
@@ -352,11 +355,9 @@ class NoReferencesBot:
         else:
             # Save the page in the background. No need to catch exceptions.
             page.put_async(newText)
-        path = mysite.put_address('Non-existing_page')
-        text = mysite.getUrl(path)
-        if '<div class="usermessage">' in text:
-          output(u'NOTE: You have unread messages on %s' % self)
-          wikipedia.crash()
+        if mysite.messages() and not self.ignoreMsg:
+          wikipedia.output(u'NOTE: You have unread messages, stopping...')
+          wikipedia.stopme()
         return
 
     def run(self):
@@ -367,11 +368,9 @@ class NoReferencesBot:
         for page in self.generator:
             if self.lacksReferences(page):
                 self.addReferences(page)
-                path = mysite.put_address('Non-existing_page')
-                text = mysite.getUrl(path)
-                if '<div class="usermessage">' in text:
-                  output(u'NOTE: You have unread messages on %s' % self)
-                  wikipedia.crash()
+                if mysite.messages() and not self.ignoreMsg:
+                  wikipedia.output(u'NOTE: You have unread messages, stopping...')
+                  wikipedia.stopme()
 
 def main():
     #page generator
@@ -384,6 +383,8 @@ def main():
     namespaces = []
     # Never ask before changing a page
     always = False
+    # Stop when the bot has new messages
+    ignoreMsg = False
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
@@ -403,6 +404,8 @@ def main():
                 namespaces.append(arg[11:])
         elif arg == '-always':
             always = True
+        elif arg == '-ignoremsg':
+            ignoreMsg = True
         else:
             generator = genFactory.handleArg(arg)
             if generator:
@@ -419,7 +422,7 @@ def main():
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
         preloadingGen = pagegenerators.PreloadingGenerator(gen,pageNumber=500)
-        bot = NoReferencesBot(preloadingGen, always = always)
+        bot = NoReferencesBot(preloadingGen, always, ignoreMsg)
         bot.run()
 
 if __name__ == "__main__":
