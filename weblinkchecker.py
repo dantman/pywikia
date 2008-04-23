@@ -140,7 +140,7 @@ talk_report = {
     'sr': u'== %s ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
 }
 
-talk_report_header = {
+talk_report_caption = {
     'ar': u'وصلة ميتة',
     'de': u'Toter Weblink',
     'en': u'Dead link',
@@ -664,17 +664,18 @@ class DeadLinkReportThread(threading.Thread):
                     archiveMsg = wikipedia.translate(wikipedia.getSite(), talk_report_archive) % archiveURL
                 else:
                     archiveMsg = u''
-                # The header will default to "Dead link". But if there is already such a header, we'll
+                # The caption will default to "Dead link". But if there is already such a caption, we'll
                 # use "Dead link 2", "Dead link 3", etc.
-                header = wikipedia.translate(wikipedia.getSite(), talk_report_header)
+                caption = wikipedia.translate(wikipedia.getSite(), talk_report_caption)
                 i = 1
-                # Check if there is already such a header on the talk page.
-                while re.search('= *' + header + ' *=', content) is not None:
+                # Check if there is already such a caption on the talk page.
+                while re.search('= *' + caption + ' *=', content) is not None:
                     i += 1
-                    header = wikipedia.translate(wikipedia.getSite(), talk_report_header) + " " + str(i)
-                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (header, errorReport, archiveMsg)
+                    caption = wikipedia.translate(wikipedia.getSite(), talk_report_caption) + " " + str(i)
+                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (caption, errorReport, archiveMsg)
+                comment = u'[[%s#%s|→]]%s' % (talkPage.title(), caption, wikipedia.translate(wikipedia.getSite(), talk_report_msg))
                 try:
-                    talkPage.put(content)
+                    talkPage.put(content, comment)
                 except wikipedia.SpamfilterError, error:
                     wikipedia.output(u'\03{lightaqua}** SpamfilterError while trying to change %s: %s\03{default}' % (talkPage.aslink(), error.url))
 
@@ -698,12 +699,9 @@ class WeblinkCheckerRobot:
         self.history = History(reportThread)
 
     def run(self):
-        comment = wikipedia.translate(wikipedia.getSite(), talk_report_msg)
-        wikipedia.setAction(comment)
-        
         for page in self.generator:
            self.checkLinksIn(page)
-    
+
     def checkLinksIn(self, page):
         try:
             text = page.get()
