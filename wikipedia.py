@@ -2297,17 +2297,23 @@ not supported by PyWikipediaBot!"""
 
             token = self.site().getToken(self, sysop = True)
 
-            #Translate 'none' to ''
+            # Translate 'none' to ''
             if edit == 'none': edit = ''
             if move == 'none': move = ''
-            if duration == 'none' or duration == None: duration = 'infinite'
-            if cascading == False: cascading = '0'
-            else: cascading = '1'
 
-            if edit != 'sysop' or move != 'sysop':
-                # You can't block a page as autoconfirmed and cascading, prevent the error
+            # Translate no duration to infinite
+            if duration == 'none' or duration == None: duration = 'infinite'
+
+            # Get cascading
+            if cascading == False:
                 cascading = '0'
-                output(u"NOTE: The page can't be blocked with cascading and not also with only-sysop. Set cascading \"off\"")
+            else:
+                if edit != 'sysop' or move != 'sysop':
+                    # You can't protect a page as autoconfirmed and cascading, prevent the error
+                    cascading = '0'
+                    output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
+                else:
+                    cascading = '1'
 
             predata = {
                 'mwProtect-cascade': cascading,
