@@ -1141,8 +1141,12 @@ not supported by PyWikipediaBot!"""
         """
         api_url = '/w/api.php?action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
         text = self.site().getUrl(api_url)
-        if not 'pageid="' in text: # Avoid errors when you can't reach the API
-            raise Error("API problem, can't reach the API!")
+        if 'missing=""' in text:
+            raise NoPage('Page %s does not exist' % self.aslink())
+        elif not 'pageid="' in text:
+            # I don't know what may happen here.
+            # We may want to have better error handling
+            raise Error("BUG> API problem.")
         match = re.findall(r'<protection>(.*?)</protection>', text)
         restrictions = { 'edit': None, 'move': None }
 
