@@ -203,7 +203,13 @@ def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     # MediaWiki parses templates before parsing external links. Thus, there
     # might be a | or a } directly after a URL which does not belong to
     # the URL itself.
-    # Blow up templates with spaces to avoid these problems.
+
+    # First, remove the curly braces of inner templates:
+    nestedTemplateR = re.compile(r'{{([^}]*?){{(.*?)}}(.*?)}}')
+    while nestedTemplateR.search(text):
+        text = nestedTemplateR.sub(r'{{\1 \2 \3}}', text)
+
+    # Then blow up the templates with spaces so that the | and }} will not be regarded as part of the link:.
     templateWithParamsR = re.compile(r'{{([^}]*?[^ ])\|([^ ][^}]*?)}}', re.DOTALL)
     while templateWithParamsR.search(text):
         text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
