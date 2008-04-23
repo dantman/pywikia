@@ -1142,6 +1142,7 @@ not supported by PyWikipediaBot!"""
         api_url = '/w/api.php?action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
         text = self.site().getUrl(api_url)
         if 'missing=""' in text:
+            self._getexception = NoPage
             raise NoPage('Page %s does not exist' % self.aslink())
         elif not 'pageid="' in text:
             # I don't know what may happen here.
