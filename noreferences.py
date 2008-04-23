@@ -50,7 +50,7 @@ msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
-    'ja':u'ロボットによる:失くした <references /> をタグ',
+    'ja':u'ロボットによる: <references /> タグを追加。',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'pt':u'Bot: Adicionando a tag <references />',
     'zh':u'機器人: 增加遺失的 <references /> 標籤',
