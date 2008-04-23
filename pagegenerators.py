@@ -106,6 +106,9 @@ parameterHelp = """\
                   Argument can be given as "-unwatched:n" where
                   n is the maximum number of articles to work on.
 
+-usercontribs     Work on all articles that were edited by a certain user :
+                  Example : -usercontribs:DumZiBoT
+
 -weblink          Work on all articles that contain an external link to
                   a given URL; may be given as "-weblink:url"
 
@@ -413,6 +416,40 @@ def LinksearchPageGenerator(link, step=500, site=None):
         site = wikipedia.getSite()
     for page in site.linksearch(link, limit=step):
         yield page
+
+def UserContributionsGenerator(username, number = 250, namespaces = [], site = None ):
+    """
+    Yields number unique pages edited by user:username
+    namespaces : list of namespace numbers to fetch contribs from
+    """
+    import urllib
+    if site is None:
+        site = wikipedia.getSite()
+    if number > 500:
+        # the api does not allow more than 500 results for anonymous users
+        number = 500
+    apiQ = site.api_address() + 'action=query&list=usercontribs&ucuser='
+    apiQ += urllib.quote(username.encode(site.encoding()))
+    apiQ += '&ucprop=title&uclimit=%s&format=xml' % number
+    if namespaces:
+        apiQ += '&ucnamespace=%s' % '|'.join(map(str, namespaces))
+    titlesRe = re.compile('title="(.*?)"')
+    ucstartRe = re.compile('ucstart="(.*?)"')
+    ucstart = ''
+    # An user is likely to contribute on several pages,
+    # keeping track of titles
+    titleList = []
+    while True:
+        result = site.getUrl(apiQ + ucstart)
+        for title in titlesRe.findall(result):
+            if not title in titleList:
+                titleList.append(title)
+                yield wikipedia.Page(site, title)
+        m = ucstartRe.search(result)
+        if m:
+            ucstart = '&ucstart=' + m.group(1)
+        else:
+            break
 
 def SearchPageGenerator(query, number = 100, namespaces = None, site = None):
     """
@@ -815,6 +852,8 @@ class GeneratorFactory:
                 gen = UnwatchedPagesPageGenerator()
             else:
                 gen = UnwatchedPagesPageGenerator(number = int(arg[11:]))
+        elif arg.startswith('-usercontribs'):
+            gen = UserContributionsGenerator(arg[14:])
         elif arg.startswith('-withoutinterwiki'):
             if len(arg) == 17:
                 gen = WithoutInterwikiPageGenerator()
