@@ -1139,7 +1139,11 @@ not supported by PyWikipediaBot!"""
                 ('autoconfirmed' or 'sysop')
             * expiry is the expiration time of the restriction
         """
-        api_url = self.site().api_address()
+        restrictions = { 'edit': None, 'move': None }
+        try:
+            api_url = self.site().api_address()
+        except NotImplementedError:
+            return restrictions
         api_url += 'action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
         text = self.site().getUrl(api_url)
         if 'missing=""' in text:
@@ -1150,7 +1154,6 @@ not supported by PyWikipediaBot!"""
             # We may want to have better error handling
             raise Error("BUG> API problem.")
         match = re.findall(r'<protection>(.*?)</protection>', text)
-        restrictions = { 'edit': None, 'move': None }
 
         if match:
             text = match[0] # If there's the block "protection" take the settings inside it.
