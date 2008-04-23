@@ -37,8 +37,6 @@ __version__='$Id: selflink.py 4187 2007-09-03 11:37:19Z wikipedian $'
 import wikipedia, pagegenerators, catlib
 import editarticle
 import re, sys
-global mysite
-mysite =wikipedia.getSite()
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
@@ -193,12 +191,11 @@ class XmlDumpNoReferencesPageGenerator:
 
     def __iter__(self):
         import xmlreader
-        mysite = wikipedia.getSite()
         dump = xmlreader.XmlDump(self.xmlFilename)
         for entry in dump.parse():
             text = wikipedia.removeDisabledParts(entry.text)
             if self.refR.search(text) and not self.referencesR.search(text):
-                yield wikipedia.Page(mysite, entry.title)
+                yield wikipedia.Page(wikipedia.getSite(), entry.title)
 
 class NoReferencesBot:
 
@@ -206,7 +203,7 @@ class NoReferencesBot:
         self.generator = generator
         self.always = always
         self.ignoreMsg = ignoreMsg
-        mysite = wikipedia.getSite()
+        self.site = wikipedia.getSite()
         self.refR = re.compile('</ref>', re.IGNORECASE)
         self.referencesR = re.compile('<references */>', re.IGNORECASE)
         try:
@@ -259,7 +256,7 @@ class NoReferencesBot:
         oldText = page.get()
 
         # Is there an existing section where we can add the references tag?
-        for section in wikipedia.translate(page.site(), referencesSections):
+        for section in wikipedia.translate(self.site, referencesSections):
             sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
             index = 0
             while index < len(oldText):
@@ -277,7 +274,7 @@ class NoReferencesBot:
                     break
 
         # Create a new section for the references tag
-        for section in wikipedia.translate(page.site(), placeBeforeSections):
+        for section in wikipedia.translate(self.site, placeBeforeSections):
             # Find out where to place the new section
             sectionR = re.compile(r'\r\n(?P<ident>=+) *%s *=+\r\n' % section)
             index = 0
@@ -304,7 +301,7 @@ class NoReferencesBot:
         # keep removing interwiki links, templates etc. from the bottom.
         # At the end, look at the length of the temp text. That's the position
         # where we'll insert the references section.
-        catNamespaces = '|'.join(page.site().category_namespaces())
+        catNamespaces = '|'.join(self.site.category_namespaces())
         categoryPattern  = r'\[\[\s*(%s)\s*:[^\n]*\]\]\s*' % catNamespaces
         interwikiPattern = r'\[\[([a-zA-Z\-]+)\s?:([^\[\]\n]*)\]\]\s*'
         # won't work with nested templates
@@ -324,7 +321,7 @@ class NoReferencesBot:
 
     def createReferenceSection(self, page, index, ident = '=='):
         oldText = page.get()
-        newSection = u'\n%s %s %s\n\n<references/>\n' % (ident, wikipedia.translate(page.site(), referencesSections)[0], ident)
+        newSection = u'\n%s %s %s\n\n<references/>\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident)
         newText = oldText[:index] + newSection + oldText[index:]
         self.save(page, newText)
 
@@ -343,7 +340,7 @@ class NoReferencesBot:
         if self.always:
             try:
                 page.put_async(newText)
-                if mysite.messages() and not self.ignoreMsg:
+                if self.site.messages() and not self.ignoreMsg:
                     wikipedia.output(u'NOTE: You have unread messages, stopping...')
                     wikipedia.stopme()
             except wikipedia.EditConflict:
@@ -355,20 +352,19 @@ class NoReferencesBot:
         else:
             # Save the page in the background. No need to catch exceptions.
             page.put_async(newText)
-        if mysite.messages() and not self.ignoreMsg:
+        if self.site.messages() and not self.ignoreMsg:
           wikipedia.output(u'NOTE: You have unread messages, stopping...')
           wikipedia.stopme()
         return
 
     def run(self):
-        mysite =wikipedia.getSite()
-        comment = wikipedia.translate(wikipedia.getSite(), msg)
+        comment = wikipedia.translate(self.site, msg)
         wikipedia.setAction(comment)
 
         for page in self.generator:
             if self.lacksReferences(page):
                 self.addReferences(page)
-                if mysite.messages() and not self.ignoreMsg:
+                if self.site.messages() and not self.ignoreMsg:
                   wikipedia.output(u'NOTE: You have unread messages, stopping...')
                   wikipedia.stopme()
 
