@@ -211,49 +211,41 @@ class NoReferencesBot:
         except KeyError:
             self.referencesTemplates = []
 
-    def lacksReferences(self, page):
+    def lacksReferences(self, text, verbose = True):
         """
         Checks whether or not the page is lacking a references tag.
         """
-        # Show the title of the page we're working on.
-        # Highlight the title in purple.
-        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-        try:
-            oldText = page.get()
-            oldTextCleaned = wikipedia.removeDisabledParts(oldText)
-            if not self.refR.search(oldTextCleaned):
+        oldTextCleaned = wikipedia.removeDisabledParts(text)
+        if not self.refR.search(oldTextCleaned):
+            if verbose:
                 wikipedia.output(u'No changes necessary: no ref tags found.')
-                return False
-            elif self.referencesR.search(oldTextCleaned):
+            return False
+        elif self.referencesR.search(oldTextCleaned):
+            if verbose:
                 wikipedia.output(u'No changes necessary: references tag found.')
-                return False
-            else:
-                templateR =''
-                part = '\{\{('
-                for template in self.referencesTemplates:
-                    templateR += part + template
-                    part = '|'
-                templateR+=')'
-                if re.search(templateR,oldTextCleaned,re.I):
+            return False
+        else:
+            templateR =''
+            part = '\{\{('
+            for template in self.referencesTemplates:
+                templateR += part + template
+                part = '|'
+            templateR+=')'
+            if re.search(templateR,oldTextCleaned,re.I):
+                if verbose:
                     wikipedia.output(u'No changes necessary: references template found.')
-                    return False
+                return False
+            if verbose:
                 wikipedia.output(u'Found ref without references.')
-                return True
-        except wikipedia.NoPage:
-            wikipedia.output(u"Page %s does not exist?!" % page.aslink())
-        except wikipedia.IsRedirectPage:
-            wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
-        except wikipedia.LockedPage:
-            wikipedia.output(u"Page %s is locked?!" % page.aslink())
-        return False
+            return True
 
-    def addReferences(self, page):
+    def addReferences(self, oldText):
         """
         Tries to add a references tag into an existing section where it fits
         into. If there is no such section, creates a new section containing
         the references tag.
+        * Returns : The modified pagetext
         """
-        oldText = page.get()
 
         # Is there an existing section where we can add the references tag?
         for section in wikipedia.translate(self.site, referencesSections):
@@ -268,8 +260,7 @@ class NoReferencesBot:
                     else:
                         wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
                         newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
-                        self.save(page, newText)
-                        return
+                        return newText
                 else:
                     break
 
@@ -288,8 +279,7 @@ class NoReferencesBot:
                         wikipedia.output(u'Adding references section before %s section...\n' % section)
                         index = match.start()
                         ident = match.group('ident')
-                        self.createReferenceSection(page, index, ident)
-                        return
+                        return self.createReferenceSection(oldText, index, ident)
                 else:
                     break
         # This gets complicated: we want to place the new references
@@ -317,13 +307,11 @@ class NoReferencesBot:
                 break
         wikipedia.output(u'Found no section that can be preceeded by a new references section. Placing it before interwiki links, categories, and bottom templates.')
         index = len(tmpText)
-        self.createReferenceSection(page, index)
+        return self.createReferenceSection(oldText, index)
 
-    def createReferenceSection(self, page, index, ident = '=='):
-        oldText = page.get()
+    def createReferenceSection(self, oldText, index, ident = '=='):
         newSection = u'\n%s %s %s\n\n<references/>\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident)
-        newText = oldText[:index] + newSection + oldText[index:]
-        self.save(page, newText)
+        return oldText[:index] + newSection + oldText[index:]
 
     def save(self, page, newText):
         """
@@ -362,8 +350,23 @@ class NoReferencesBot:
         wikipedia.setAction(comment)
 
         for page in self.generator:
-            if self.lacksReferences(page):
-                self.addReferences(page)
+            # Show the title of the page we're working on.
+            # Highlight the title in purple.
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            try:
+                text = page.get()
+            except wikipedia.NoPage:
+                wikipedia.output(u"Page %s does not exist?!" % page.aslink())
+                continue
+            except wikipedia.IsRedirectPage:
+                wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
+                continue
+            except wikipedia.LockedPage:
+                wikipedia.output(u"Page %s is locked?!" % page.aslink())
+                continue
+            if self.lacksReferences(text):
+                newText = self.addReferences(text)
+                self.save(page, newText)
                 if self.site.messages() and not self.ignoreMsg:
                   wikipedia.output(u'NOTE: You have unread messages, stopping...')
                   wikipedia.stopme()
