@@ -1139,7 +1139,8 @@ not supported by PyWikipediaBot!"""
                 ('autoconfirmed' or 'sysop')
             * expiry is the expiration time of the restriction
         """
-        api_url = '/w/api.php?action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
+        api_url = self.site().api_address()
+        api_url += 'action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
         text = self.site().getUrl(api_url)
         if 'missing=""' in text:
             self._getexception = NoPage
