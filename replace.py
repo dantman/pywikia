@@ -131,9 +131,10 @@ __version__='$Id$'
 msg = {
        'ar':u'%s روبوت : استبدال تلقائي للنص',
        'de':u'Bot: Automatisierte Textersetzung %s',
-       'en':u'Robot: Automated text replacement %s',
        'el':u'Ρομπότ: Αυτόματη αντικατάσταση κειμένου %s',
+       'en':u'Robot: Automated text replacement %s',
        'es':u'Robot: Reemplazo automático de texto %s',
+       'fa':u'ربات: تغییر خودکار متن %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'he':u'בוט: החלפת טקסט אוטומטית %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
