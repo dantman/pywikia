@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-This is a Bot written by Filnik to add a text in a given category.
+This is a Bot written by Filnik to add a text at the end of the page but above categories,
+interwiki and template for the stars of the interwiki.
 
 These command line parameters can be used to specify which pages to work on:
 
@@ -15,8 +16,8 @@ Furthermore, the following command line parameters are supported:
 -except             Use a regex to understand if the template is already in the page
 -excepturl          Use the html page as text where you want to see if there's the text, not the wiki-page.
 -newimages          Add text in the new images
--untagged           Add text in the images that doesn't have any license template
--always             If used, the bot won't asked if it should add the text specified
+-untagged           Add text in the images that don't have any license template
+-always             If used, the bot won't ask if it should add the text specified
 -up                 If used, put the text above and not below
 
 --- Example ---
@@ -36,11 +37,11 @@ or you need some help regarding this script, you can find us here:
 """
 
 #
-# (C) Filnik, 2007
+# (C) Filnik, 2007-2008
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: AddText.py,v 1.0 2007/11/27 17:08:30 filnik Exp$'
+__version__ = '$Id: add_text.py,v 1.5 2008/04/25 17:08:30 filnik Exp$'
 #
 
 import re, pagegenerators, urllib2, urllib
