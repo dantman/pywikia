@@ -24,6 +24,8 @@ These command line parameters can be used to specify which pages to work on:
                   or when you have problems with them. (add the namespace after ":" where
                   you want to check - default checks all protected pages)
 
+-moveprotected:   Same as -protectedpages, for moveprotected pages
+
 Furthermore, the following command line parameters are supported:
 
 -always         Doesn't ask every time if the bot should make the change or not, do it always.
@@ -166,35 +168,6 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
                 return ('autoconfirmed-move', catchRegex)
     return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
-def ProtectedPagesData(namespace = None):
-    """ Yield all the pages blocked, using Special:ProtectedPages """
-    # Avoid problems of encoding and stuff like that, let it divided please
-    url = '/w/index.php?title=Special:ProtectedPages&type=edit&level=0'
-    if namespace != None: # /!\ if namespace seems simpler, but returns false when ns=0
-
-        url += '&namespace=%s' % namespace    
-    site = wikipedia.getSite()
-    parser_text = site.getUrl(url)
-    while 1:
-        #<li><a href="/wiki/Pagina_principale" title="Pagina principale">Pagina principale</a>‎ <small>(6.522 byte)</small> ‎(protetta)</li>
-        m = re.findall(r'<li><a href=".*?" title=".*?">(.*?)</a>.*?<small>\((.*?)\)</small>.*?\((.*?)\)</li>', parser_text)
-        for data in m:
-            title = data[0]
-            size = data[1]
-            status = data[2]
-            yield (title, size, status)
-        nextpage = re.findall(r'<.ul>\(.*?\).*?\(.*?\).*?\(<a href="(.*?)".*?</a>\) +?\(<a href=', parser_text)
-        if nextpage != []:
-            parser_text = site.getUrl(nextpage[0].replace('&amp;', '&'))
-            continue
-        else:
-            break
-        
-def ProtectedPages(namespace = 0):
-    """ Return only the wiki page object and not the tuple with all the data as above """
-    for data in ProtectedPagesData(namespace):
-        yield wikipedia.Page(wikipedia.getSite(), data[0])
-
 def debugQuest(site, page):
     quest = wikipedia.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
     pathWiki = site.family.nicepath(site.lang)
@@ -226,6 +199,8 @@ def main():
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
+    # Load the right site
+    site = wikipedia.getSite()
     # Loading the default options.
     for arg in wikipedia.handleArgs():
         if arg == '-always':
@@ -236,9 +211,15 @@ def main():
             debug = True
         elif arg.startswith('-protectedpages'):
             if len(arg) == 15:
-                generator = ProtectedPages()
+                generator = site.protectedpages(namespace = 0)
             else:
-                generator = ProtectedPages(int(arg[16:]))
+                generator = site.protectedpages(namespace = int(arg[16:]))
+        elif arg.startswith('-moveprotected'):
+            if len(arg) == 14:
+                generator = site.protectedpages(namespace = 0, type = 'move')
+            else:
+                generator = site.protectedpages(namespace = int(arg[16:]),
+                                                type = 'move')
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
@@ -246,8 +227,6 @@ def main():
                 generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         else:
             generator = genFactory.handleArg(arg)
-    # Load the right site
-    site = wikipedia.getSite()
     # Take the right templates to use, the category and the comment
     TSP = wikipedia.translate(site, templateSemiProtection)
     TTP = wikipedia.translate(site, templateTotalProtection)
@@ -284,15 +263,27 @@ def main():
             if debug:
                 debugQuest(site, page)
             continue
+        """
+        # This check does not work :
+        # PreloadingGenerator cannot set correctly page.editRestriction
+        # (see bug #1949476 ) 
         if not page.canBeEdited():
-            wikipedia.output("%s is protected : this account can't edit it! Skipping..." % pagename)
-            continue        
+            wikipedia.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
+            continue
+        """        
+        editRestr = restrictions['edit']
+        if editRestr and editRestr[0] == 'sysop':
+            try:
+                config.sysopnames[site.family.name][site.lang]
+            except:
+                wikipedia.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
+                continue
+            
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
         TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
         # Only to see if the text is the same or not...
         oldtext = text
-        editRestr = restrictions['edit']
         # keep track of the changes for each step (edit then move)
         changes = -1
 

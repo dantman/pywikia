@@ -3773,6 +3773,7 @@ class Site(object):
         search(query): query results from Special:Search
         allpages(): Special:Allpages
         prefixindex(): Special:Prefixindex
+        protectedpages(): Special:ProtectedPages
         newpages(): Special:Newpages
         newimages(): Special:Log&type=upload
         longpages(): Special:Longpages
@@ -3843,6 +3844,7 @@ class Site(object):
         deadendpages_address: Special:Deadendpages.
         ancientpages_address: Special:Ancientpages.
         lonelypages_address: Special:Lonelypages.
+        protectedpages_address: Special:ProtectedPages
         unwatchedpages_address: Special:Unwatchedpages.
         uncategorizedcategories_address: Special:Uncategorizedcategories.
         uncategorizedimages_address: Special:Uncategorizedimages.
@@ -4930,6 +4932,34 @@ your connection is down. Retrying in %i minutes..."""
             else:
                 break
 
+    def protectedpages(self, namespace = None, type = 'edit', lvl = 0):
+        """ Yield all the protected pages, using Special:ProtectedPages
+            * namespace is a namespace number
+            * type can be 'edit' or 'move
+            * lvl : protection level, can be 0, 'autoconfirmed', or 'sysop'
+        """
+        # Avoid problems of encoding and stuff like that, let it divided please
+        url = self.protectedpages_address()
+        url += '&type=%s&level=%s' % (type, lvl)
+        if namespace != None: # /!\ if namespace seems simpler, but returns false when ns=0
+    
+            url += '&namespace=%s' % namespace    
+        parser_text = self.getUrl(url)
+        while 1:
+            #<li><a href="/wiki/Pagina_principale" title="Pagina principale">Pagina principale</a>‎ <small>(6.522 byte)</small> ‎(protetta)</li>
+            m = re.findall(r'<li><a href=".*?" title=".*?">(.*?)</a>.*?<small>\((.*?)\)</small>.*?\((.*?)\)</li>', parser_text)
+            for data in m:
+                title = data[0]
+                size = data[1]
+                status = data[2]
+                yield Page(self, title)
+            nextpage = re.findall(r'<.ul>\(.*?\).*?\(.*?\).*?\(<a href="(.*?)".*?</a>\) +?\(<a href=', parser_text)
+            if nextpage != []:
+                parser_text = self.getUrl(nextpage[0].replace('&amp;', '&'))
+                continue
+            else:
+                break
+
     def linksearch(self, siteurl, limit=500):
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         if siteurl.startswith('*.'):
@@ -5222,6 +5252,10 @@ your connection is down. Retrying in %i minutes..."""
     def lonelypages_address(self, n=500):
         """Return path to Special:Lonelypages."""
         return self.family.lonelypages_address(self.lang, n)
+
+    def protectedpages_address(self, n=500):
+        """Return path to Special:ProtectedPages"""
+        return self.family.protectedpages_address(self.lang, n)
 
     def unwatchedpages_address(self, n=500):
         """Return path to Special:Unwatchedpages."""
