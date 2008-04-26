@@ -926,7 +926,8 @@ def checkbot():
                                                 wikipedia.output(u'A white template found, skipping the template...')
                                                 if l != '' and l != ' ': # Check that l is not nothing or a space
                                                         # Deleting! (replace the template with nothing)
-                                                        g = g.lower().replace('{{%s' % l, '')
+                                                        print l
+                                                        g = re.sub(r'\{\{(?:template:|)%s' % l.lower(), r'', g.lower())
                                                         hiddenTemplateFound = True
                         for a_word in something: # something is the array with {{, MIT License and so on.
                                 if a_word in g:
