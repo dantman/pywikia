@@ -461,7 +461,7 @@ class main:
 		elif second_text == False:
 			talk_page.put(testoattuale + head + notification, comment = commentox, minorEdit = False)
 			
-	def untaggedGenerator(self, untaggedProject):
+	def untaggedGenerator(self, untaggedProject, limit):
 		lang = untaggedProject.split('.', 1)[0]
 		project = '.%s' % untaggedProject.split('.', 1)[1]
 		if lang == 'commons':
@@ -809,7 +809,7 @@ def checkbot():
                 mainClass = main(site)
                 # Untagged is True? Let's take that generator
                 if untagged == True:
-                        generator =  mainClass.untaggedGenerator(projectUntagged)
+                        generator =  mainClass.untaggedGenerator(projectUntagged, limit)
                         normal = False # Ensure that normal is False
                 # Normal True? Take the default generator
                 if normal == True:
