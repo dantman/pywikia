@@ -740,6 +740,13 @@ def checkbot():
                         catSelected = catlib.Category(wikipedia.getSite(), 'Category:%s' % catName)
                         generator = pagegenerators.CategorizedPageGenerator(catSelected)
                         repeat = False
+                elif arg.startswith('-ref'):
+                        if len(arg) == 4:
+                                refName = str(wikipedia.input(u'The references of what page should I parse?'))
+                        elif len(arg) > 4:
+                                refName = str(arg[5:])
+                        generator = pagegenerators.ReferringPageGenerator(wikipedia.Page(wikipedia.getSite(), refName))
+                        repeat = False
                 elif arg.startswith('-untagged'):
                         untagged = True    
                         if len(arg) == 9:
@@ -926,7 +933,6 @@ def checkbot():
                                                 wikipedia.output(u'A white template found, skipping the template...')
                                                 if l != '' and l != ' ': # Check that l is not nothing or a space
                                                         # Deleting! (replace the template with nothing)
-                                                        print l
                                                         g = re.sub(r'\{\{(?:template:|)%s' % l.lower(), r'', g.lower())
                                                         hiddenTemplateFound = True
                         for a_word in something: # something is the array with {{, MIT License and so on.
