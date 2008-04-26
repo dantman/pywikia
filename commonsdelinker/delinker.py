@@ -535,6 +535,8 @@ class CheckUsage(threadpool.Thread):
 			self.pool.jobLock.release()
 		
 class Logger(threadpool.Thread):
+	timeout = 360
+	
 	def __init__(self, pool, CommonsDelinker):
 		threadpool.Thread.__init__(self, pool)
 		self.CommonsDelinker = CommonsDelinker
@@ -607,7 +609,21 @@ class Logger(threadpool.Thread):
 			traceback.print_exc(file = sys.stderr)
 			self.exit()
 			self.CommonsDelinker.thread_died()
+		
+	def starve(self):
+		self.pool.jobLock.acquire()
+		try:
+			if self.pool[id(self)].isSet(): return False
 			
+			output(u'%s Starving' % self)
+			self.database.close()
+			del self.pool[id(self)]
+			self.pool.threads.remove(self)
+			return True
+		finally:
+			self.pool.jobLock.release()
+
+
 class CommonsDelinker(object):
 	def __init__(self):
 		self.config = config.CommonsDelinker
@@ -832,33 +848,8 @@ class CommonsDelinker(object):
 			time.sleep(self.config['timeout'])
 			
 	def thread_died(self):
-		# A thread died, it may be possible that we cannot 
-		# function any more. Currently only for CheckUsages
-		# and Loggers. Delinkers should not be able to die.
-		cu = 0
-		self.CheckUsages.jobLock.acquire()
-		for thread in self.CheckUsages.threads:
-			if thread.isAlive() and not thread.quit:
-				cu += 1
-		self.CheckUsages.jobLock.release()
-		lg = 0
-		self.Loggers.jobLock.acquire()
-		for thread in self.Loggers.threads:
-			if thread.isAlive() and not thread.quit:
-				lg += 1
-		unlogged = self.Loggers.jobQueue[:]
-		self.Loggers.jobLock.release()
-		
-		# We can no longer function if we have only one
-		# CheckUsage or zero Loggers available. 
-		# TODO: config settings?
-		if cu <= 1:
-			output(u'ERROR!!! Too few CheckUsages left to function', False)
-			threadpool.terminate()
-		if lg <= 0:
-			output(u'ERROR!!! Too few Loggers left to function', False)
-			print >>sys.stderr, 'Currently unlogged:', unlogged
-			threadpool.terminate()
+		# Obsolete
+		return
 			
 	@staticmethod
 	def output(*args):
