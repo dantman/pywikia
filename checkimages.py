@@ -75,10 +75,11 @@ import wikipedia, config, os, locale, sys
 import cPickle, pagegenerators, catlib
 
 locale.setlocale(locale.LC_ALL, '')
+
 #########################################################################################################################
 # <------------------------------------------- Change only below! ----------------------------------------------------->#
 #########################################################################################################################
- 
+
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
   'commons':'\n{{subst:nld}}',
@@ -198,8 +199,10 @@ nothing_head = {
                 'zh'     :u'',
                 }
 # That's the text that the bot will add if it doesn't find the license.
+# Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 nothing_notification = {
-                'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
+                'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:" + \
+                "__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~",
                 'en'     :u"{{subst:image source|Image:%s}} --~~~~",
                 'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
                 'ja'	 :u"\n{{subst:image source|Image:%s}}--~~~~",
@@ -291,8 +294,9 @@ HiddenTemplate = {
         }
  
 # Template added when the bot finds only an hidden template and nothing else.
+# Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 HiddenTemplateNotification = {
-        'commons': """\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~""",
+        'commons': """\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
         'en': None,
         'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
         'ta': None,
@@ -628,7 +632,15 @@ class main:
 # I've seen that the report class before (the main) was to long to be called so,
 # here there is a function that has all the settings, so i can call it once ^__^
 def report(newtext, image, notification, head, notification2 = None, unver = True, commx = None, bot_list = bot_list):
+    # Adding the bot's nickname at the notification text if needed.
     botolist = wikipedia.translate(wikipedia.getSite(), bot_list)
+    project = wikipedia.getSite().family.name
+    bot = config.usernames[project]
+    botnick = bot[wikipedia.getSite().lang]
+    notification = re.sub('__botnick__', botnick, notification)
+    if notification2 != None:
+        notification2 = re.sub('__botnick__', botnick, notification2)
+    # Ok, done, let's loop.
     while 1:
         run = main(site = wikipedia.getSite())
         secondrun = run.general(newtext, image, notification, head, botolist)
@@ -950,15 +962,22 @@ def checkbot():
             # Deleting the useless template from the description (before adding something
             # in the image the original text will be reloaded, don't worry).
             hiddenTemplateFound = False
+            white_template_found = 0
             for l in hiddentemplate:
                 if tagged == False:
                     res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n|\})' % l.lower(), g.lower())
                     if res != []:
-                        wikipedia.output(u'A white template found, skipping the template...')
+                        white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
                             # Deleting! (replace the template with nothing)
                             g = re.sub(r'\{\{(?:template:|)%s' % l.lower(), r'', g.lower())
                             hiddenTemplateFound = True
+            if white_template_found == 1:
+                wikipedia.output(u'A white template found, skipping the template...')
+            elif white_template_found == 0:
+                pass # if nothing found, print nothing
+            else:
+                wikipedia.output(u'White templates found: %s; skipping those templates...' % white_template_found)                
             for a_word in something: # something is the array with {{, MIT License and so on.
                 if a_word in g:
                     # There's a template, probably a license (or I hope so)
