@@ -491,9 +491,12 @@ class Family(family.Family):
             'fo':  [u'Fleiri týdningar'],
             # See http://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Bandeau_pour_page_d%27homonymie
             'fr':  [u'Homonymie', u'Arrondissements homonymes',
+                    u'Bandeau standard pour page d\'homonymie',
+                    u'Bandeau homonymie',
                     u'Batailles homonymes', u'Cantons homonymes',
                     u'Homonymie de clubs sportifs', u'Homonymie dynastique',
                     u'Homonymie de comtés', u'Internationalisation',
+                    u'Isomérie', u'Homonymie de nom romain',
                     u'Paronymie', u'Personnes homonymes',
                     u'Sigles n lettres', u'Unités homonymes',
                     u'Villes homonymes'],
