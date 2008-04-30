@@ -108,6 +108,9 @@ class Delinker(threadpool.Thread):
 		skipped_images = {}
 		for (lang, family), pages in usage.iteritems():
 			site = self.CommonsDelinker.get_site(lang, family)
+			if not site:
+				output(u'%s Warning! Unknown site %s:%s' % (self, family, lang))
+				continue
 			
 			try:
 				summary = self.get_summary(site, image, admin, reason, replacement)
@@ -737,10 +740,14 @@ class CommonsDelinker(object):
 			if key not in self.sites:
 				self.sites[key] = []
 			for site, used in self.sites[key]:
+				if not site: return False
 				if not used:
 					self.sites[key][self.sites[key].index((site, False))] = (site, True)
 					return site
-			site = wikipedia.Site(code, fam)
+			try:
+				site = wikipedia.Site(code, fam)
+			except wikipedia.NoSuchSite:
+				site = False
 			self.sites[key].append((site, True))
 			return site
 		finally:
