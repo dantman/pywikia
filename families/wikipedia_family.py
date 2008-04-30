@@ -498,7 +498,7 @@ class Family(family.Family):
                     u'Homonymie de comtés', u'Internationalisation',
                     u'Isomérie', u'Homonymie de nom romain',
                     u'Paronymie', u'Personnes homonymes',
-                    u'Sigles n lettres', u'Unités homonymes',
+                    u'Sigle', u'Unités homonymes',
                     u'Villes homonymes'],
             'frp': [u'Homonimos'],
             'fy':  [u'Tfs', u'Neibetsjuttings'],
