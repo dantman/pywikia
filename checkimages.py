@@ -18,6 +18,8 @@ This script understands the following command-line arguments:
     -commons        - The Bot will check if an image on Commons has the same name
                     and if true it report the image.
 
+    -duplicates     - Checking if the image has duplicates.
+
     -break	        - To break the bot after the first check (default: recursive)
 
     -time[:#]	- Time in seconds between repeat runs (default: 30)
@@ -55,9 +57,9 @@ while Findonly= search only if the exactly text that you give is in the image's 
 ---- Known issues/FIXMEs: ----
 * Fix the "real-time" regex and function
 * Add the "catch the language" function for commons.
-* Add new documentation
+* Fix and reorganise the new documentation
 * Add a report for the image tagged.
-* Fix the settings part when the bot save the data (make it better)
+* Implement: Special:FileDuplicateSearch/Image.jpg
 """
 
 #
@@ -70,11 +72,15 @@ while Findonly= search only if the exactly text that you give is in the image's 
 __version__ = '$Id$'
 #
 
-import re, time, urllib2
-import wikipedia, config, os, locale, sys
-import cPickle, pagegenerators, catlib
+import re, time, urllib, urllib2, os, locale, sys
+import wikipedia, config, pagegenerators, catlib 
 
 locale.setlocale(locale.LC_ALL, '')
+
+class NoHash(wikipedia.Error):
+    """ The APIs don't return any Hash for the image searched.
+        Really Strange, better to raise an error.
+    """
 
 #########################################################################################################################
 # <------------------------------------------- Change only below! ----------------------------------------------------->#
@@ -214,12 +220,12 @@ nothing_notification = {
 # This is a list of what bots used this script in your project.
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
 bot_list = {
-            'commons':['Siebot', 'CommonsDelinker'],
-            'en'     :['OrphanBot'],
-            'it'     :['Filbot', 'Nikbot', '.snoopyBot.'],
-            'ja'     :['alexbot'],
-            'ta'     :['TrengarasuBOT'],
-            'zh'     :['alexbot'],
+            'commons':[u'Siebot', u'CommonsDelinker', u'Filbot', u'John Bot', u'Sz-iwbot', u'ABFbot'],
+            'en'     :[u'OrphanBot'],
+            'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
+            'ja'     :[u'alexbot'],
+            'ta'     :[u'TrengarasuBOT'],
+            'zh'     :[u'alexbot'],
             }
  
 # The message that the bot will add the second time that find another license problem.
@@ -248,7 +254,7 @@ page_with_settings = {
 report_page = {
                 'commons':u'User:Filbot/Report',
                 'en'     :u'User:Filnik/Report',
-                'it'     :u'Progetto:Coordinamento/Immagini/Bot/NowCommons',
+                'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
                 'ja'     :u'User:Alexbot/report',
                 'hu'     :u'User:Bdamokos/Report',
                 'ta'     :u'Trengarasu/commonsimages',
@@ -415,8 +421,8 @@ class main:
         talk_page = wikipedia.Page(self.site, pagina_discussione)
         self.talk_page = talk_page
         return True
-    # There is the function to put the advise in talk page.
     def put_talk(self, notification, head, notification2 = None, commx = None):
+        """ Function to put the warning in talk page of the uploader."""
         commento2 = wikipedia.translate(self.site, comm2)
         talk_page = self.talk_page
         notification = self.notification
@@ -476,6 +482,7 @@ class main:
             talk_page.put(testoattuale + head + notification, comment = commentox, minorEdit = False)
 			
     def untaggedGenerator(self, untaggedProject, limit):
+        """ Generator that yield the images without license. It's based on a tool of the toolserver. """
         lang = untaggedProject.split('.', 1)[0]
         project = '.%s' % untaggedProject.split('.', 1)[1]
         if lang == 'commons':
@@ -494,6 +501,7 @@ class main:
                 yield wikiPage
 	
     def regexGenerator(self, regexp, textrun):
+        """ Generator used when an user use a regex parsing a page to yield the results """
         pos = 0
         done = list()
         ext_list = list()
@@ -510,15 +518,15 @@ class main:
                 yield image
                 #continue
 
-    def checkImage(self, image):
+    def checkImageOnCommons(self, image):
+        """ Checking if the image is on commons """
         self.image = image
-        # Search regular expression to find links like this (and the class attribute is optional too)
-        # title="Immagine:Nvidia.jpg"
-        wikipedia.output(u'Checking if %s is on commons...' % image)
-        commons = wikipedia.getSite('commons', 'commons') 
-        if wikipedia.Page(commons, u'Image:%s' % image).exists():
-            wikipedia.output(u'%s is on commons!' % image)
-            imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % image)
+        wikipedia.output(u'Checking if %s is on commons...' % self.image)
+        commons = wikipedia.getSite('commons', 'commons')
+        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:%s\]\]$" % (self.image, self.image)
+        if wikipedia.Page(commons, u'Image:%s' % self.image).exists():
+            wikipedia.output(u'%s is on commons!' % self.image)
+            imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
             on_commons_text = imagePage.getImagePageHtml()
             if "<div class='sharedUploadNotice'>" in on_commons_text:
                 wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
@@ -529,39 +537,68 @@ class main:
                 wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % image)
                 return True # Problems? No, it's only not on commons but the image needs a check
             else:            
-                repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]"
-                self.report_image(self.image, self.rep_page, self.com, repme)
+                repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, self.image)
+                self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
                 # Problems? No, return True
                 return True
         else:
             # Problems? No, return True
             return True
-    def report_image(self, image, rep_page = None, com = None, rep_text = None):
-        if rep_page == None:
-            rep_page = self.rep_page
-        if com == None:
-            com = self.com
-        if rep_text == None:
-            rep_text = self.rep_text
+
+    def convert_to_url(self, page):
+        # Function stolen from wikipedia.py
+        """The name of the page this Page refers to, in a form suitable for the URL of the page."""
+        title = page.replace(" ", "_")
+        encodedTitle = title.encode(self.site.encoding())
+        return urllib.quote(encodedTitle)
+
+    def checkImageDuplicated(self, image):
+        """ Function to check the duplicated images. """
+        self.image = image
+        duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.image, self.image)
+        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+        wikipedia.output(u'Checking if %s has duplicates...' % image)
+        get_hash = self.site.getUrl('/w/api.php?action=query&format=xml&titles=Image:%s&prop=imageinfo&iiprop=sha1' % self.convert_to_url(self.image))
+        hash_found_list = re.findall(r'<ii sha1="(.*?)" />', get_hash)
+        if hash_found_list != []:
+            hash_found = hash_found_list[0]
+        else:
+            raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
+        get_duplicates = self.site.getUrl('/w/api.php?action=query&format=xml&list=allimages&aisha1=%s' % hash_found)
+        duplicates = re.findall(r'<img name="(.*?)".*?/>', get_duplicates)
+        if len(duplicates) > 1:
+            if len(duplicates) == 2:
+                wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
+            else:
+                wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.image, len(duplicates) - 1))
+            repme = "\n*[[:Image:%s]] has the following duplicates:" % self.image
+            for duplicate in duplicates:
+                if duplicate == self.image:
+                    continue # the image itself, not report also this as duplicate
+                repme += "\n**[[:Image:%s]]" % duplicate
+            self.report_image(self.image, self.rep_page, self.com, repme + '\n', addings = False, regex = duplicateRegex)            
+        
+    def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
+        """ Function to report the images in the report page when needed. """
+        if rep_page == None: rep_page = self.rep_page
+        if com == None: com = self.com
+        if rep_text == None: rep_text = self.rep_text
         another_page = wikipedia.Page(self.site, rep_page)
-		
-        if another_page.exists():      
+	if regex == None: regex = image
+        if another_page.exists():
             text_get = another_page.get()
         else:
             text_get = str()
         if len(text_get) >= self.logFulNumber:
             raise LogIsFull("The log page (%s) is full! Please delete the old images reported." % another_page.title())  
         pos = 0
-        # The talk page includes "_" between the two names, in this way i replace them to " "
-        regex = image
-        n = re.compile(regex, re.UNICODE)
+        # The talk page includes "_" between the two names, in this way i replace them to " "        
+        n = re.compile(regex, re.UNICODE|re.M)
         y = n.search(text_get, pos)
         if y == None:
-            # Adding the log :)
-            if "\'\'\'Commons\'\'\'" in rep_text:
-                rep_text = rep_text % (image, image)
-            else:
-                rep_text = rep_text % image
+            # Adding the log
+            if addings:
+                rep_text = rep_text % image # Adding the name of the image in the report if not done already              
             another_page.put(text_get + rep_text, comment = com, minorEdit = False)
             wikipedia.output(u"...Reported...")
             reported = True
@@ -572,6 +609,7 @@ class main:
         return reported
 	
     def takesettings(self):
+        """ Function to take the settings from the wiki. """
         pos = 0
         if self.settings == None: lista = None
         else:
@@ -609,6 +647,7 @@ class main:
         return lista
 	
     def load(self, raw):
+        """ Load a list of object from a string using regex. """
         list_loaded = list()
         pos = 0
         load_2 = True
@@ -693,6 +732,7 @@ def checkbot():
     regexGen = False # Use the regex generator
     untagged = False # Use the untagged generator
     skip_list = list() # Inizialize the skip list used below
+    duplicatesActive = False
         
     # Here below there are the parameters.
     for arg in wikipedia.handleArgs():
@@ -710,6 +750,8 @@ def checkbot():
             repeat = False
         elif arg == '-commons':
             commonsActive = True
+        elif arg == '-duplicates':
+            duplicatesActive = True
         elif arg.startswith('-skip'):
             if len(arg) == 5:
                 skip = True
@@ -874,8 +916,7 @@ def checkbot():
         else: wikipedia.output(u'\t   >> No additional settings found! <<')
         # Not the main, but the most important loop.
         #parsed = False
-        for image in generator:
-            
+        for image in generator:            
             # When you've a lot of image to skip before working use this workaround, otherwise
             # let this commented, thanks. [ decoment also parsed = False if you want to use it
             #
@@ -930,9 +971,11 @@ def checkbot():
                 skip_list.append('skip = Off') # Only to print it once
             # Check on commons if there's already an image with the same name
             if commonsActive == True:
-                response = mainClass.checkImage(imageName)
+                response = mainClass.checkImageOnCommons(imageName)
                 if response == False:
                     continue
+            if duplicatesActive == True:
+                mainClass.checkImageDuplicated(imageName)
             parentesi = False # parentesi are these in italian: { ( ) } []
             delete = False
             tagged = False
