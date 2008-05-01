@@ -88,13 +88,14 @@ class NoHash(wikipedia.Error):
 
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
-  'commons':'\n{{subst:nld}}',
-  'en'     :'\n{{subst:nld}}',
-  'it'     :'\n{{subst:unverdata}}',
-  'ja'     :'{{subst:Nsd}}',
-  'hu'     :u'\n{{nincslicenc|~~~~~}}',
-  'ta'     :'\n{{subst:nld}}',
-  'zh'     :'{{subst:No license/auto}}',
+    'commons':'\n{{subst:nld}}',
+    'de'     :u'{{Benutzer:ABF/D|~~~~}} {{Dateiüberprüfung/benachrichtigt (Kategorie)|{{subst:LOCALYEAR}}|{{subst:LOCALMONTH}}|{{subst:LOCALDAY}}}} {{Dateiüberprüfung/benachrichtigt (Text)|Lizenz|||||}} --This was added by ~~~~-- ',
+    'en'     :'\n{{subst:nld}}',
+    'it'     :'\n{{subst:unverdata}}',
+    'ja'     :'{{subst:Nsd}}',
+    'hu'     :u'\n{{nincslicenc|~~~~~}}',
+    'ta'     :'\n{{subst:nld}}',
+    'zh'     :'{{subst:No license/auto}}',
 }
  
 # Text that the bot will try to see if there's already or not. If there's a
@@ -103,19 +104,21 @@ n_txt = {
 # '{{nld' --> '\{\{(?:template:|)no[ _]license ?(?:\||\n|\}) ?' (case insensitive).
 # If there's not a {{ it will work as usual (if x in Text)
 txt_find =  {
-  'commons':[u'{{no license', u'{{nld', u'{{no permission since'],
-  'en':[u'{{nld', u'{{no license'],
-  'hu':[u'{{nincsforrás',u'{{nincslicenc'],
-  'it':[u'{{unverdata', u'{{unverified'],
-  'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
-  'ta':[u'{{no source', u'{{nld', u'{{no license'],
-  'zh':[u'{{no source', u'{{unknown', u'{{No license',],
+        'commons':[u'{{no license', u'{{nld', u'{{no permission since'],
+        'de':[u'{{DÜP', u'{{Dateiüberprüfung'],  
+        'en':[u'{{nld', u'{{no license'],
+        'hu':[u'{{nincsforrás',u'{{nincslicenc'],
+        'it':[u'{{unverdata', u'{{unverified'],
+        'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
+        'ta':[u'{{no source', u'{{nld', u'{{no license'],
+        'zh':[u'{{no source', u'{{unknown', u'{{No license',],
         }
  
 # Summary for when the will add the no source
 comm = {
+        'ar'     :u'بوت: التعليم على ملف مرفوع حديثا غير موسوم',    
         'commons':u'Bot: Marking newly uploaded untagged file',
-      'ar'     :u'بوت: التعليم على ملف مرفوع حديثا غير موسوم',
+        'de'     :u'Bot: Markierung als Bild ohne Lizenz',
         'en'     :u'Bot: Marking newly uploaded untagged file',
         'hu'     :u'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
         'it'     :u"Bot: Aggiungo unverified",
@@ -127,6 +130,7 @@ comm = {
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
 empty = {
         'commons':'{{subst:welcome}}\n~~~~\n',
+        'de':'{{subst:willkommen}} ~~~~',
         'en'     :'{{welcome}}\n~~~~\n',
         'it'     :'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
         'ja':'{{welcome}}\n--~~~~\n',
@@ -136,8 +140,9 @@ empty = {
  
 # Summary that the bot use when it notify the problem with the image's license
 comm2 = {
+        'ar'     :"بوت: طلب معلومات المصدر." ,    
         'commons':"Bot: Requesting source information." ,
-      'ar'     :"بوت: طلب معلومات المصدر." ,
+        'de'     :u'Bot:Notify User',
         'en'     :"Bot: Requesting source information." ,
         'it'     :"Bot: Notifico l'unverified",
         'ja'     :u"ロボットによる:出典とライセンス明記のお願い",
@@ -149,7 +154,7 @@ comm2 = {
         }
  
 # if the file has an unknown extension it will be tagged with this template.
-# In reality, there aren't unknown extension, they are only not allewed... ^__^
+# In reality, there aren't unknown extension, they are only not allowed...
 delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
@@ -172,8 +177,8 @@ delete_immediately_head = {
  
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
+                'ar'     :u'الملف [[:Image:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',    
                 'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
-                'ar'     :u'الملف [[:Image:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
                 'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'it'     :u'{{subst:Utente:Filbot/Ext|%s}} --~~~~',
                 'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
@@ -182,8 +187,8 @@ delete_immediately_notification = {
                 }
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
+            'ar'     :u'بوت: إضافة %s',    
             'commons':u'Bot: Adding %s',
-            'ar'     :u'بوت: إضافة %s',
             'en'     :u'Bot: Adding %s',
             'it'     :u'Bot: Aggiungo %s',
             'ja'     :u'ロボットによる: 追加 %s',
@@ -195,8 +200,9 @@ del_comm = {
 # This is the most important header, because it will be used a lot. That's the header that the bot
 # will add if the image hasn't the license.
 nothing_head = {
+                'ar'     :u"\n== صورة بدون ترخيص ==\n",    
                 'commons':u"",# Nothing, the template has already the header inside.
-                'ar'     :u"\n== صورة بدون ترخيص ==\n",
+                'de'     :u"\n== Bild ohne Lizenz ==\n",
                 'en'     :u"\n== Image without license ==\n",
                 'ja'     :u'',
                 'it'     :u"\n\n== Immagine senza licenza ==\n",
@@ -209,6 +215,7 @@ nothing_head = {
 nothing_notification = {
                 'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:" + \
                 "__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~",
+                'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|Image:%s}} --~~~~",
                 'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
                 'ja'	 :u"\n{{subst:image source|Image:%s}}--~~~~",
@@ -221,6 +228,7 @@ nothing_notification = {
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
 bot_list = {
             'commons':[u'Siebot', u'CommonsDelinker', u'Filbot', u'John Bot', u'Sz-iwbot', u'ABFbot'],
+            'de'     :['ABFbot'],
             'en'     :[u'OrphanBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
             'ja'     :[u'alexbot'],
@@ -231,6 +239,7 @@ bot_list = {
 # The message that the bot will add the second time that find another license problem.
 second_message_without_license = {
                 'commons':None,
+                'de':None,
                 'en': None,
                 'it':u':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
                 'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
@@ -242,6 +251,7 @@ second_message_without_license = {
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
                     'commons':u'User:Filbot/Settings',
+                    'de':None,
                     'en':None,
                     'hu':None,
                     'it':u'Progetto:Coordinamento/Immagini/Bot/Settings#Settings',
@@ -253,6 +263,7 @@ page_with_settings = {
 # This is the page where the bot will store them.
 report_page = {
                 'commons':u'User:Filbot/Report',
+                'de'     :u'Benutzer:ABFbot/Report',
                 'en'     :u'User:Filnik/Report',
                 'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
                 'ja'     :u'User:Alexbot/report',
@@ -265,6 +276,7 @@ timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
             'commons':u"\n*[[:Image:%s]] " + timeselected,
+            'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:Image:%s]] " + timeselected,
             'it':u"\n*[[:Immagine:%s]] " + timeselected,
             'ja':u"\n*[[:Immagine:%s]] " + timeselected,
@@ -276,6 +288,7 @@ report_text = {
 comm10 = {
         'commons':u'Bot: Updating the log',
         'ar':u'بوت: تحديث السجل',
+        'de': u'Bot:schreibe Log',
         'en':u'Bot: Updating the log',
         'it':u'Bot: Aggiorno il log',
         'ja': u'ロボットによる:更新',
@@ -291,6 +304,7 @@ comm10 = {
 # because they are already put in the regex).
 HiddenTemplate = {
         'commons':['information', 'trademarked', 'trademark'],
+        'de':[u'information'],
         'en':['information'],
         'it':['edp', 'informazioni[ _]file', 'information', 'trademark'],
         'ja':[u'Information'],
@@ -303,13 +317,14 @@ HiddenTemplate = {
 # Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 HiddenTemplateNotification = {
         'commons': """\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
+        'de': None,
         'en': None,
         'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
         'ta': None,
         }
  
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['commons', 'en', 'ja', 'hu', 'it', 'ta', 'zh']
+project_inserted = ['ar', 'commons', 'de', 'en', 'ja', 'hu', 'it', 'ta', 'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
