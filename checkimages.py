@@ -570,7 +570,7 @@ class main:
     def checkImageDuplicated(self, image):
         """ Function to check the duplicated images. """
         self.image = image
-        duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.image, self.image)
+        duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
         wikipedia.output(u'Checking if %s has duplicates...' % image)
         get_hash = self.site.getUrl('/w/api.php?action=query&format=xml&titles=Image:%s&prop=imageinfo&iiprop=sha1' % self.convert_to_url(self.image))
@@ -590,11 +590,11 @@ class main:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
             else:
                 wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.image, len(duplicates) - 1))
-            repme = "\n*[[:Image:%s]] has the following duplicates:" % self.image
+            repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
             for duplicate in duplicates:
-                if duplicate == self.image:
+                if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
                     continue # the image itself, not report also this as duplicate
-                repme += "\n**[[:Image:%s]]" % duplicate
+                repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)
             self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
         return True # Ok - No problem. Let's continue the checking phase
         
