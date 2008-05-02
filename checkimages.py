@@ -59,7 +59,6 @@ while Findonly= search only if the exactly text that you give is in the image's 
 * Add the "catch the language" function for commons.
 * Fix and reorganise the new documentation
 * Add a report for the image tagged.
-* Implement: Special:FileDuplicateSearch/Image.jpg
 """
 
 #
@@ -77,25 +76,20 @@ import wikipedia, config, pagegenerators, catlib
 
 locale.setlocale(locale.LC_ALL, '')
 
-class NoHash(wikipedia.Error):
-    """ The APIs don't return any Hash for the image searched.
-        Really Strange, better to raise an error.
-    """
-
 #########################################################################################################################
 # <------------------------------------------- Change only below! ----------------------------------------------------->#
 #########################################################################################################################
 
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
-    'commons':'\n{{subst:nld}}',
+    'commons':u'\n{{subst:nld}}',
     'de'     :u'{{Benutzer:ABF/D|~~~~}} {{Dateiüberprüfung/benachrichtigt (Kategorie)|{{subst:LOCALYEAR}}|{{subst:LOCALMONTH}}|{{subst:LOCALDAY}}}} {{Dateiüberprüfung/benachrichtigt (Text)|Lizenz|||||}} --This was added by ~~~~-- ',
-    'en'     :'\n{{subst:nld}}',
-    'it'     :'\n{{subst:unverdata}}',
-    'ja'     :'{{subst:Nsd}}',
+    'en'     :u'\n{{subst:nld}}',
+    'it'     :u'\n{{subst:unverdata}}',
+    'ja'     :u'{{subst:Nsd}}',
     'hu'     :u'\n{{nincslicenc|~~~~~}}',
-    'ta'     :'\n{{subst:nld}}',
-    'zh'     :'{{subst:No license/auto}}',
+    'ta'     :u'\n{{subst:nld}}',
+    'zh'     :u'{{subst:No license/auto}}',
 }
  
 # Text that the bot will try to see if there's already or not. If there's a
@@ -129,22 +123,22 @@ comm = {
 
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
 empty = {
-        'commons':'{{subst:welcome}}\n~~~~\n',
-        'de':'{{subst:willkommen}} ~~~~',
-        'en'     :'{{welcome}}\n~~~~\n',
-        'it'     :'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
-        'ja':'{{welcome}}\n--~~~~\n',
+        'commons':u'{{subst:welcome}}\n~~~~\n',
+        'de'     :u'{{subst:willkommen}} ~~~~',
+        'en'     :u'{{welcome}}\n~~~~\n',
+        'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
+        'ja'     :u'{{welcome}}\n--~~~~\n',
         'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
-        'zh':'{{subst:welcome|sign=~~~~}}',
+        'zh'     :u'{{subst:welcome|sign=~~~~}}',
         }
  
 # Summary that the bot use when it notify the problem with the image's license
 comm2 = {
-        'ar'     :"بوت: طلب معلومات المصدر." ,    
-        'commons':"Bot: Requesting source information." ,
+        'ar'     :u"بوت: طلب معلومات المصدر." ,    
+        'commons':u"Bot: Requesting source information." ,
         'de'     :u'Bot:Notify User',
-        'en'     :"Bot: Requesting source information." ,
-        'it'     :"Bot: Notifico l'unverified",
+        'en'     :u"Bot: Requesting source information." ,
+        'it'     :u"Bot: Notifico l'unverified",
         'ja'     :u"ロボットによる:出典とライセンス明記のお願い",
         'hu'     :u'Robot: Forrásinformáció kérése',
         'ja'     :u'{{welcome}}\n--~~~~\n',
@@ -159,7 +153,7 @@ delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
             'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
-            'ja':u'{{db|知らないファイルフォーマット%s}}',
+            'ja'     :u'{{db|知らないファイルフォーマット%s}}',
             'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
             'ta'     :u'{{delete|இந்தக் கோப்பு .%s என்றக் கோப்பு நீட்சியைக் கொண்டுள்ளது.}}',
             'zh'     :u'{{delete|未知檔案格式%s}}',
@@ -228,7 +222,7 @@ nothing_notification = {
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
 bot_list = {
             'commons':[u'Siebot', u'CommonsDelinker', u'Filbot', u'John Bot', u'Sz-iwbot', u'ABFbot'],
-            'de'     :['ABFbot'],
+            'de'     :[u'ABFbot'],
             'en'     :[u'OrphanBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
             'ja'     :[u'alexbot'],
@@ -287,14 +281,14 @@ report_text = {
 # The summary of the report
 comm10 = {
         'commons':u'Bot: Updating the log',
-        'ar':u'بوت: تحديث السجل',
-        'de': u'Bot:schreibe Log',
-        'en':u'Bot: Updating the log',
-        'it':u'Bot: Aggiorno il log',
-        'ja': u'ロボットによる:更新',
-        'hu': u'Robot: A napló frissítése',
-        'ta': u'தானியங்கி:பட்டியலை இற்றைப்படுத்தல்',
-        'zh': u'機器人:更新記錄',
+        'ar'     :u'بوت: تحديث السجل',
+        'de'     :u'Bot:schreibe Log',
+        'en'     :u'Bot: Updating the log',
+        'it'     :u'Bot: Aggiorno il log',
+        'ja'     :u'ロボットによる:更新',
+        'hu'     :u'Robot: A napló frissítése',
+        'ta'     :u'தானியங்கி:பட்டியலை இற்றைப்படுத்தல்',
+        'zh'     :u'機器人:更新記錄',
         }
  
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
@@ -303,12 +297,12 @@ comm10 = {
 # Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
 # because they are already put in the regex).
 HiddenTemplate = {
-        'commons':['information', 'trademarked', 'trademark'],
+        'commons':[u'information', u'trademarked', u'trademark'],
         'de':[u'information'],
-        'en':['information'],
-        'it':['edp', 'informazioni[ _]file', 'information', 'trademark'],
+        'en':[u'information'],
+        'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark'],
         'ja':[u'Information'],
-        'hu':[u'információ','enwiki', 'azonnali'],
+        'hu':[u'információ', u'enwiki', u'azonnali'],
         'ta':[u'information'],
         'zh':[u'information'],
         }
@@ -316,7 +310,7 @@ HiddenTemplate = {
 # Template added when the bot finds only an hidden template and nothing else.
 # Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 HiddenTemplateNotification = {
-        'commons': """\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
+        'commons': u"""\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
         'de': None,
         'en': None,
         'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
@@ -324,19 +318,25 @@ HiddenTemplateNotification = {
         }
  
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['ar', 'commons', 'de', 'en', 'ja', 'hu', 'it', 'ta', 'zh']
+project_inserted = [u'ar', u'commons', u'de', u'en', u'ja', u'hu', u'it', u'ta', u'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
 # <------------------------------------------- Change only above! ----------------------------------------------------> #
 #########################################################################################################################
 
+# Error Classes
 class LogIsFull(wikipedia.Error):
     """An exception indicating that the log is full and the Bot cannot add other data to prevent Errors."""
 
 class NothingFound(wikipedia.Error):
     """ An exception indicating that a regex has return [] instead of results."""
 
+class NoHash(wikipedia.Error):
+    """ The APIs don't return any Hash for the image searched.
+        Really Strange, better to raise an error. """
+
+# Other common useful functions
 def printWithTimeZone(message):
     """ Function to print the messages followed by the TimeZone encoded correctly. """
     if message[-1] != ' ':
@@ -578,7 +578,11 @@ class main:
         if hash_found_list != []:
             hash_found = hash_found_list[0]
         else:
-            raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
+            if imagePage.exists():
+                raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
+            else:
+                wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
+                return False # Error, we need to skip the page.
         get_duplicates = self.site.getUrl('/w/api.php?action=query&format=xml&list=allimages&aisha1=%s' % hash_found)
         duplicates = re.findall(r'<img name="(.*?)".*?/>', get_duplicates)
         if len(duplicates) > 1:
@@ -591,7 +595,8 @@ class main:
                 if duplicate == self.image:
                     continue # the image itself, not report also this as duplicate
                 repme += "\n**[[:Image:%s]]" % duplicate
-            self.report_image(self.image, self.rep_page, self.com, repme + '\n', addings = False, regex = duplicateRegex)            
+            self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
+        return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
         """ Function to report the images in the report page when needed. """
@@ -984,13 +989,6 @@ def checkbot():
                        # the user has set 0 as images to skip
                 wikipedia.output(u'\t\t>> No images to skip...<<')
                 skip_list.append('skip = Off') # Only to print it once
-            # Check on commons if there's already an image with the same name
-            if commonsActive == True:
-                response = mainClass.checkImageOnCommons(imageName)
-                if response == False:
-                    continue
-            if duplicatesActive == True:
-                mainClass.checkImageDuplicated(imageName)
             parentesi = False # parentesi are these in italian: { ( ) } []
             delete = False
             tagged = False
@@ -1006,6 +1004,16 @@ def checkbot():
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
                 continue
+            # Check on commons if there's already an image with the same name
+            if commonsActive == True:
+                response = mainClass.checkImageOnCommons(imageName)
+                if response == False:
+                    continue
+            # Check if there are duplicates of the image on the project selected
+            if duplicatesActive == True:
+                response2 = mainClass.checkImageDuplicated(imageName)
+                if response2 == False:
+                    continue      
             # Is the image already tagged? If yes, no need to double-check, skip
             for i in TextFind:
                 # If there are {{ use regex, otherwise no (if there's not the {{ may not be a template
