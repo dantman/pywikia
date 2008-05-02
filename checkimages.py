@@ -316,7 +316,18 @@ HiddenTemplateNotification = {
         'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
         'ta': None,
         }
- 
+# Stub - will make it better in future (no time now)
+duplicatesText = {
+        'commons':u'\n{{Dupe|__image__}}',
+        'en':None,
+        'it':u'\n{{Cancella subito|Immagine doppia di __image__}}',
+        }
+duplicatesRegex = {
+        'commons':r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
+        'en':None,
+        'it':r'\{\{(?:[Tt]emplate:|)[Cc]ancella[ _]subito[|}]',
+        }
+
 # Add your project (in alphabetical order) if you want that the bot start
 project_inserted = [u'ar', u'commons', u'de', u'en', u'ja', u'hu', u'it', u'ta', u'zh']
 
@@ -569,6 +580,10 @@ class main:
 
     def checkImageDuplicated(self, image):
         """ Function to check the duplicated images. """
+        # {{Dupe|Image:Blanche_Montel.jpg}}
+        # report(unvertext, imageName, notification, head)
+        dupText = wikipedia.translate(self.site, duplicatesText)
+        dupRegex = wikipedia.translate(self.site, duplicatesRegex)
         self.image = image
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
@@ -594,8 +609,20 @@ class main:
             for duplicate in duplicates:
                 if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
                     continue # the image itself, not report also this as duplicate
-                repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)
-            self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
+                repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)    
+            result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
+            if result and not dupText == None and not dupRegex == None:
+                for duplicate in duplicates:
+                    if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
+                        continue # the image itself, not report also this as duplicate
+                    DupePage = wikipedia.Page(self.site, u'Image:%s' % duplicate)
+                    try:
+                        DupPageText = DupePage.get()
+                    except wikipedia.NoPage:
+                        continue # The page doesn't exists
+                    if re.findall(dupRegex, DupPageText) == []:
+                        wikipedia.output(u'Adding the duplicate template in the image...')
+                        report(re.sub(r'__image__', r'%s' % self.image, dupText), duplicate)                
         return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
@@ -690,13 +717,14 @@ class main:
 
 # I've seen that the report class before (the main) was to long to be called so,
 # here there is a function that has all the settings, so i can call it once ^__^
-def report(newtext, image, notification, head, notification2 = None, unver = True, commx = None, bot_list = bot_list):
+def report(newtext, image, notification = None, head = None, notification2 = None, unver = True, commx = None, bot_list = bot_list):
     # Adding the bot's nickname at the notification text if needed.
     botolist = wikipedia.translate(wikipedia.getSite(), bot_list)
     project = wikipedia.getSite().family.name
     bot = config.usernames[project]
     botnick = bot[wikipedia.getSite().lang]
-    notification = re.sub('__botnick__', botnick, notification)
+    if notification != None:
+        notification = re.sub('__botnick__', botnick, notification)
     if notification2 != None:
         notification2 = re.sub('__botnick__', botnick, notification2)
     # Ok, done, let's loop.
@@ -727,14 +755,17 @@ def report(newtext, image, notification, head, notification2 = None, unver = Tru
             else:
                 if resPutMex == False:
                     break
-        try:
-            run.put_talk(notification, head, notification2, commx)
-        except wikipedia.EditConflict:
-            wikipedia.output(u"Edit Conflict! Retrying...")
+        if notification != None and head != None:
             try:
                 run.put_talk(notification, head, notification2, commx)
-            except:
-                wikipedia.output(u"Another error... skipping the user..")
+            except wikipedia.EditConflict:
+                wikipedia.output(u"Edit Conflict! Retrying...")
+                try:
+                    run.put_talk(notification, head, notification2, commx)
+                except:
+                    wikipedia.output(u"Another error... skipping the user..")
+                    break
+            else:
                 break
         else:
             break
