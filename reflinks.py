@@ -11,6 +11,10 @@ one of these page has been edited, it stops.
 
 DumZiBoT is running that script on en: & fr: at every new dump, running it on de: is not allowed anymore.
 
+As it uses it, you need to configure noreferences.py for your wiki, or it will not work.
+
+pdfinfo is needed for parsing pdf titles.
+
 See [[:en:User:DumZiBoT/refLinks]] for more information on the bot.
 
 &params;
