@@ -90,7 +90,8 @@ linksInRef = re.compile(
 	ur'^\[\]\s<>"]+\([^\[\]\s<>"]+[^\[\]\s\.:;\\,<>\?"]+|'+
 	# unbracketed without ()
 	ur'[^\[\]\s<>"]+[^\[\]\s\)\.:;\\,<>\?"]+|[^\[\]\s<>"]+))[!?,\s]*\]?\s*</ref>')
-listof404pages = 'http://www.twoevils.org/files/wikipedia/404-links.txt'
+#http://www.twoevils.org/files/wikipedia/404-links.txt.gz
+listof404pages = '404-links.txt'
 
 class XmlDumpPageGenerator:
     def __init__(self, xmlFilename, xmlStart, namespaces):
@@ -286,7 +287,11 @@ class ReferencesRobot:
         Runs the Bot
         """
         wikipedia.setAction(wikipedia.translate(self.site, msg))
-        deadLinks = codecs.open(listof404pages, 'r', 'latin_1').read() 
+        try:
+            deadLinks = codecs.open(listof404pages, 'r', 'latin_1').read() 
+        except IOError:
+            wikipedia.output('You need to download http://www.twoevils.org/files/wikipedia/404-links.txt.gz and to ungzip it in the same directory')
+            raise
         socket.setdefaulttimeout(30)
         editedpages = 0
         for page in self.generator:
@@ -322,7 +327,7 @@ class ReferencesRobot:
                     headers = f.info()
                     contentType = headers.getheader('Content-Type')
                     if contentType and not self.MIME.search(contentType):
-                        if ref.link.lower().endswith('.pdf') and not ignorepdf:
+                        if ref.link.lower().endswith('.pdf') and not self.ignorepdf:
                             # If file has a PDF suffix
                             self.getPDFTitle(ref, f)
                         else:
