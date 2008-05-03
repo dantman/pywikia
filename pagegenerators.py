@@ -728,7 +728,8 @@ def PageWithTalkPageGenerator(generator):
         if not page.isTalkPage():
             yield page.toggleTalkPage()
 
-class PreloadingGenerator(ThreadedGenerator):
+
+class PreloadingGenerator(object):
     """
     Yields the same pages as generator generator. Retrieves 60 pages (or
     another number specified by pageNumber), loads them using
@@ -740,10 +741,10 @@ class PreloadingGenerator(ThreadedGenerator):
     def __init__(self, generator, pageNumber=60, lookahead=10):
         self.wrapped_gen = generator
         self.pageNumber = pageNumber
-        ThreadedGenerator.__init__(self, name="Preloading-Thread",
-                                   qsize=lookahead)
+#        ThreadedGenerator.__init__(self, name="Preloading-Thread",
+#                                   qsize=lookahead)
 
-    def generator(self):
+    def __iter__(self):
         try:
             # this array will contain up to pageNumber pages and will be flushed
             # after these pages have been preloaded and yielded.

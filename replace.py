@@ -332,76 +332,73 @@ class ReplaceRobot:
         """
         # Run the generator which will yield Pages which might need to be
         # changed.
-        try:
-            for page in self.generator:
-                if self.isTitleExcepted(page.title()):
-                    wikipedia.output(
-                        u'Skipping %s because the title is on the exceptions list.'
-                        % page.aslink())
-                    continue
-                try:
-                    # Load the page's text from the wiki
-                    original_text = page.get(get_redirect=True)
-                    if not page.canBeEdited():
-                        wikipedia.output(u"You can't edit page %s"
-                                         % page.aslink())
-                        continue
-                except wikipedia.NoPage:
-                    wikipedia.output(u'Page %s not found' % page.aslink())
-                    continue
-                if self.isTextExcepted(original_text):
-                    wikipedia.output(
-    u'Skipping %s because it contains text that is on the exceptions list.'
-                        % page.aslink())
-                    continue
-                new_text = self.doReplacements(original_text)
-                if new_text == original_text:
-                    wikipedia.output('No changes were necessary in %s'
+        for page in self.generator:
+            if self.isTitleExcepted(page.title()):
+                wikipedia.output(
+                    u'Skipping %s because the title is on the exceptions list.'
+                    % page.aslink())
+                continue
+            try:
+                # Load the page's text from the wiki
+                original_text = page.get(get_redirect=True)
+                if not page.canBeEdited():
+                    wikipedia.output(u"You can't edit page %s"
                                      % page.aslink())
                     continue
-                if self.recursive:
+            except wikipedia.NoPage:
+                wikipedia.output(u'Page %s not found' % page.aslink())
+                continue
+            if self.isTextExcepted(original_text):
+                wikipedia.output(
+u'Skipping %s because it contains text that is on the exceptions list.'
+                    % page.aslink())
+                continue
+            new_text = self.doReplacements(original_text)
+            if new_text == original_text:
+                wikipedia.output('No changes were necessary in %s'
+                                 % page.aslink())
+                continue
+            if self.recursive:
+                newest_text = self.doReplacements(new_text)
+                while (newest_text!=new_text):
+                    new_text = newest_text
                     newest_text = self.doReplacements(new_text)
-                    while (newest_text!=new_text):
-                        new_text = newest_text
-                        newest_text = self.doReplacements(new_text)
 
-                if hasattr(self, "addedCat"):
-                    cats = page.categories(nofollow_redirects=True)
-                    if self.addedCat not in cats:
-                        cats.append(self.addedCat)
-                        new_text = wikipedia.replaceCategoryLinks(new_text,
-                                                                  cats)
-                # Show the title of the page we're working on.
-                # Highlight the title in purple.
-                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
-                                 % page.title())
-                wikipedia.showDiff(original_text, new_text)
-                if not self.acceptall:
-                    choice = wikipedia.inputChoice(
-                                u'Do you want to accept these changes?',
-                                ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                    if choice in ['a', 'A']:
-                        self.acceptall = True
-                    if choice in ['y', 'Y']:
-                        page.put_async(new_text)
-                if self.acceptall:
-                    try:
-                        page.put(new_text)
-                    except wikipedia.EditConflict:
-                        wikipedia.output(u'Skipping %s because of edit conflict'
-                                         % (page.title(),))
-                    except wikipedia.SpamfilterError, e:
-                        wikipedia.output(
-                            u'Cannot change %s because of blacklist entry %s'
-                            % (page.title(), e.url))
-                    except wikipedia.PageNotSaved, error:
-                        wikipedia.output(u'Error putting page: %s'
-                                         % (error.args,))
-                    except wikipedia.LockedPage:
-                        wikipedia.output(u'Skipping %s (locked page)'
-                                         % (page.title(),))
-        finally:
-            self.generator.stop()
+            if hasattr(self, "addedCat"):
+                cats = page.categories(nofollow_redirects=True)
+                if self.addedCat not in cats:
+                    cats.append(self.addedCat)
+                    new_text = wikipedia.replaceCategoryLinks(new_text,
+                                                              cats)
+            # Show the title of the page we're working on.
+            # Highlight the title in purple.
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                             % page.title())
+            wikipedia.showDiff(original_text, new_text)
+            if not self.acceptall:
+                choice = wikipedia.inputChoice(
+                            u'Do you want to accept these changes?',
+                            ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                if choice in ['a', 'A']:
+                    self.acceptall = True
+                if choice in ['y', 'Y']:
+                    page.put_async(new_text)
+            if self.acceptall:
+                try:
+                    page.put(new_text)
+                except wikipedia.EditConflict:
+                    wikipedia.output(u'Skipping %s because of edit conflict'
+                                     % (page.title(),))
+                except wikipedia.SpamfilterError, e:
+                    wikipedia.output(
+                        u'Cannot change %s because of blacklist entry %s'
+                        % (page.title(), e.url))
+                except wikipedia.PageNotSaved, error:
+                    wikipedia.output(u'Error putting page: %s'
+                                     % (error.args,))
+                except wikipedia.LockedPage:
+                    wikipedia.output(u'Skipping %s (locked page)'
+                                     % (page.title(),))
 
 def prepareRegexForMySQL(pattern):
     pattern = pattern.replace('\s', '[:space:]')
