@@ -27,6 +27,9 @@ See [[:en:User:DumZiBoT/refLinks]] for more information on the bot.
 
 -xmlstart               Page to start with when using an XML dump
 
+-ignorepdf              Do not handle PDF files (handy if you use Windows and 
+                        can't get pdfinfo)
+
 Basic pagegenerators commands, -page, etc...
 """
 # (C) 2008 - Nicolas Dumazet ( en:User:NicDumZ )
@@ -87,7 +90,7 @@ linksInRef = re.compile(
 	ur'^\[\]\s<>"]+\([^\[\]\s<>"]+[^\[\]\s\.:;\\,<>\?"]+|'+
 	# unbracketed without ()
 	ur'[^\[\]\s<>"]+[^\[\]\s\)\.:;\\,<>\?"]+|[^\[\]\s<>"]+))[!?,\s]*\]?\s*</ref>')
-listof404pages = 'http://www.twoevils.org/files/wikipedia/404-links.txt.gz'
+listof404pages = 'http://www.twoevils.org/files/wikipedia/404-links.txt'
 
 class XmlDumpPageGenerator:
     def __init__(self, xmlFilename, xmlStart, namespaces):
@@ -183,10 +186,11 @@ class RefLink:
             self.title = self.title.title()
 
 class ReferencesRobot:
-    def __init__(self, generator, acceptall = False, limit = None):
+    def __init__(self, generator, acceptall = False, limit = None, ignorepdf = False ):
         self.generator = generator
         self.acceptall = acceptall
         self.limit = limit
+        self.ignorepdf = ignorepdf
         self.site = wikipedia.getSite()
         self.stopPage = wikipedia.translate(self.site, stopPage)
         self.stopPageRevId = wikipedia.Page(self.site, 
@@ -318,7 +322,7 @@ class ReferencesRobot:
                     headers = f.info()
                     contentType = headers.getheader('Content-Type')
                     if contentType and not self.MIME.search(contentType):
-                        if ref.link.lower().endswith('.pdf'):
+                        if ref.link.lower().endswith('.pdf') and not ignorepdf:
                             # If file has a PDF suffix
                             self.getPDFTitle(ref, f)
                         else:
@@ -490,6 +494,7 @@ def main():
     PageTitles = []
     xmlFilename = None
     always = False
+    ignorepdf = False
     limit = None
     namespaces = []
     generator = None
@@ -505,6 +510,8 @@ def main():
             wikipedia.setAction(arg[9:])
         elif arg == '-always':
             always = True
+        elif arg == '-ignorepdf':
+            ignorepdf= True
         elif arg.startswith('-limit:'):
             limit = int(arg[7:])
         elif arg.startswith('-xmlstart'):
@@ -538,7 +545,7 @@ def main():
         sys.exit()
     generator = pagegenerators.PreloadingGenerator(generator, pageNumber = 50)
     generator = pagegenerators.RedirectFilterPageGenerator(generator)
-    bot = ReferencesRobot(generator, always, limit)
+    bot = ReferencesRobot(generator, always, limit, ignorepdf)
     bot.run()
 
 if __name__ == "__main__":
