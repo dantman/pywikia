@@ -44,18 +44,22 @@ import subprocess, tempfile, os
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
             'it':u'Utente:DumZiBoT/EditThisPageToStopMe',
+            'hu':'User:Damibot/EditThisPageToStopMe',
             'en':u'User:DumZiBoT/EditThisPageToStopMe'}
 
 msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
+        'hu':u'Robot: Forráshivatkozások konvertálása',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'{{lien mort}}',
                'de':u'',
+               'hu':u'{{halott link}}',
                'en':u'{{dead link}}'}
 
 comment = {'fr':u'Titre généré automatiquement',
            'de':u'Automatisch generierter titel',
+           'hu':u'Robot generálta cím',
            'en':u'Bot generated title'}
 
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)

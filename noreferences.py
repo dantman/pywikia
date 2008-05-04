@@ -86,6 +86,10 @@ placeBeforeSections = {
         u'Voir aussi',
         u'Notes'
     ],
+   'hu': [
+        u'Külső hivatkozások',
+        u'Lásd még',
+    ],
     'ja':[
         u'外部リンク',
     ],
@@ -130,6 +134,13 @@ referencesSections = {
     'he': [
         u'הערות שוליים',
     ],
+   'hu': [
+        u'Források és jegyzetek',
+        u'Források',
+        u'Jegyzetek',
+        u'Hivatkozások',
+        u'Megjegyzések',
+    ],
     'ja':[
         u'脚注',
         u'脚注欄',
@@ -168,6 +179,7 @@ referencesTemplates = {
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
+        'hu': [u'reflist'],
         'ja': [u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
         'zh': [u'Reflist'],
