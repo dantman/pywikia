@@ -2718,6 +2718,7 @@ class Family:
         'fi': [u'ohjaus', u'uudelleenohjaus'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
+        'hu': [u'átirányítás'],
         'id': [u'alih'],
         'is': [u'tilvísun'],
         'jv': [u'alih'],
