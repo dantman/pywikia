@@ -474,6 +474,8 @@ not supported by PyWikipediaBot!"""
             title = title.replace(u"''", u'%27%27')
         if underscore:
             title = title.replace(' ', '_')
+        if self.site().lang == 'eo':
+            title = decodeEsperantoX(title)
         return title
 
     def titleWithoutNamespace(self, underscore=False):
@@ -1319,8 +1321,8 @@ not supported by PyWikipediaBot!"""
             except ServerError:
                 output(u''.join(traceback.format_exception(*sys.exc_info())))
                 output(
-            u'Got a server error when putting; will retry in %i minute%s.'
-                       % (retry_delay, retry_delay != 1 and "s" or ""))
+            u'Got a server error when putting %s; will retry in %i minute%s.'
+                       % (self.aslink(), retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
                 retry_delay *= 2
                 if retry_delay > 30:
@@ -2044,7 +2046,7 @@ not supported by PyWikipediaBot!"""
         else:
             if self.site().mediawiki_message('articleexists') in data or self.site().mediawiki_message('delete_and_move') in data:
                 if safe:
-                    output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+                    output(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
                     return False
                 else:
                     try:
@@ -2053,6 +2055,12 @@ not supported by PyWikipediaBot!"""
                     except NoUsername:
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
                         return False
+            elif not self.exists():
+                raise NoPage(u'Page move failed: Source page [[%s]] does not exist.' % newtitle)
+                return False
+            elif  Page(self.site(),newtitle).exists():
+                raise PageNotSaved(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
+                return False
             else:
                 output(u'Page move failed for unknown reason.')
                 try:
@@ -2084,7 +2092,7 @@ not supported by PyWikipediaBot!"""
              if mark and self.exists():
                  text = self.get(get_redirect = True)
                  output(u'Cannot delete page %s - marking the page for deletion instead:' % self.aslink())
-                 self.put(u'{{delete}}\n%s ~~~~\n----\n\n%s' % (reason, text), comment = reason)
+                 self.put(u'{{delete|%s}}\n%s ~~~~\n----\n\n%s' % (reason, reason, text), comment = reason)
                  return
              else:
                  raise
@@ -3195,19 +3203,15 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
             if '|' in pagetitle:
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]
-            if not pagetitle:
-                output(u"ERROR: %s - ignoring impossible link to %s:%s"
-                       % (pageLink, lang, pagetitle))
-            else:
-                # we want the actual page objects rather than the titles
-                site = insite.getSite(code = lang)
-                try:
-                    result[site] = Page(site, pagetitle, insite = insite)
-                except Error:
-                    output(
+            # we want the actual page objects rather than the titles
+            site = insite.getSite(code = lang)
+            try:
+                result[site] = Page(site, pagetitle, insite = insite)
+            except Error:
+                output(
         u"[getLanguageLinks] Text contains invalid interwiki link [[%s:%s]]."
                            % (lang, pagetitle))
-                    continue
+                continue
     return result
 
 def removeLanguageLinks(text, site = None, marker = ''):
