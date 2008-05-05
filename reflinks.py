@@ -49,7 +49,7 @@ stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
 
 msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
-        'hu':u'Robot: Forráshivatkozások konvertálása',
+        'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'{{lien mort}}',
