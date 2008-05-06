@@ -640,7 +640,6 @@ class CommonsDelinker(object):
 			self.Loggers = threadpool.ThreadPool(Logger, self.config['logger_instances'], self)
 		else:
 			self.Loggers = threadpool.ThreadPool(Logger, 1, self)
-			self.Loggers.add_thread(self)
 		
 		self.http = checkusage.HTTP(self.site.hostname())
 		
