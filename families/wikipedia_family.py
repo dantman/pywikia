@@ -99,8 +99,10 @@ class Family(family.Family):
             'la': u'Vicipaedia',
             'lbe': u'Википедия',
             'lo': u'ວິກິພີເດຍ',
+            'lv': u'Vikipēdija',
             'mk': u'Википедија',
             'ml': u'വിക്കിപീഡിയ',
+            'mr': u'विकिपीडिया',
             'mt': u'Wikipedija',
             'nds-nl': u'Wikipedie',
             'new': u'विकिपिडिया',
@@ -206,6 +208,7 @@ class Family(family.Family):
             'ku': u'Wîkîpediya nîqaş',
             'kv': u'Обсуждение Wikipedia',
             'la': [u'Disputatio Vicipaediae', u'Disputatio Wikipedia'],
+            'lad': u'Wikipedia Discusión',
             'lb': u'Wikipedia Diskussioun',
             'lbe': u'Википедиялиясса ихтилат',
             'li': u'Euverlèk Wikipedia',
@@ -214,11 +217,11 @@ class Family(family.Family):
             'ln': u'Discussion Wikipedia',
             'lo': u'ສົນທະນາກ່ຽວກັບວິກິພີເດຍ',
             'lt': u'Wikipedia aptarimas',
-            'lv': u'Wikipedia diskusija',
+            'lv': u'Vikipēdijas diskusija',
             'mg': u'Discussion Wikipedia',
             'mk': u'Разговор за Википедија',
             'ml': u'വിക്കിപീഡിയ സംവാദം',
-            'mr': u'Wikipedia चर्चा',
+            'mr': u'विकिपीडिया चर्चा',
             'ms': u'Perbincangan Wikipedia',
             'mt': u'Wikipedija talk',
             'mzn': u'بحث Wikipedia',
@@ -313,6 +316,7 @@ class Family(family.Family):
             'lv': u'Portāls',
             'mk': u'Портал',
             'ml': u'കവാടം',
+            'mr': u'दालन',
             'ms': u'Portal',
             'nds': u'Portal',
             'new': u'दबू',
@@ -378,6 +382,7 @@ class Family(family.Family):
             'lv': u'Portāla diskusija',
             'mk': u'Разговор за Портал',
             'ml': u'കവാടത്തിന്റെ സംവാദം',
+            'mr': u'दालन चर्चा',
             'ms': u'Portal talk',
             'nds': u'Portal Diskuschoon',
             'new': u'दबू खँलाबँला',
@@ -409,6 +414,7 @@ class Family(family.Family):
         }
 
         self.namespaces[102] = {
+            'als': u'Buech',
             'ca': u'Viquiprojecte',
             'cs': u'Rejstřík',
             'es': u'Wikiproyecto',
@@ -427,6 +433,7 @@ class Family(family.Family):
         }
 
         self.namespaces[103] = {
+            'als': u'Buech Diskussion',
             'ca': u'Viquiprojecte Discussió',
             'cs': u'Rejstřík diskuse',
             'es': u'Wikiproyecto Discusión',
@@ -445,12 +452,14 @@ class Family(family.Family):
         }
 
         self.namespaces[104] = {
+            'als': u'Wort',
             'es': u'Anexo',
             'fr': u'Référence',
             'lt': u'Sąrašas',
         }
 
         self.namespaces[105] = {
+            'als': u'Wort Diskussion',
             'es': u'Anexo Discusión',
             'fr': u'Discussion Référence',
             'lt': u'Sąrašo aptarimas',
