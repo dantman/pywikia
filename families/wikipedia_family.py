@@ -310,6 +310,7 @@ class Family(family.Family):
             'la': u'Porta',
             'li': u'Portaol',
             'lmo': u'Portal',
+            'lv': u'Portāls',
             'mk': u'Портал',
             'ml': u'കവാടം',
             'ms': u'Portal',
@@ -374,6 +375,7 @@ class Family(family.Family):
             'la': u'Disputatio Portae',
             'li': u'Euverlèk portaol',
             'lmo': u'Descüssiú Portal',
+            'lv': u'Portāla diskusija',
             'mk': u'Разговор за Портал',
             'ml': u'കവാടത്തിന്റെ സംവാദം',
             'ms': u'Portal talk',
@@ -420,6 +422,7 @@ class Family(family.Family):
             'pl': u'Wikiprojekt',
             'pt': u'Anexo',
             'ro': u'Proiect',
+            'scn': u'Pruggettu',
             'vec': u'Projeto',
         }
 
@@ -437,6 +440,7 @@ class Family(family.Family):
             'pl': u'Dyskusja Wikiprojektu',
             'pt': u'Anexo Discussão',
             'ro': u'Discuţie Proiect',
+            'scn': u'Discussioni pruggettu',
             'vec': u'Discussion projeto',
         }
 
