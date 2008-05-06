@@ -374,11 +374,13 @@ class CheckUsage(object):
 		
 		
 	def close(self):
+		if getattr(self, 'http'):
+			self.http.close()
+		if not hasattr(self, 'databases'): return
 		for connection, cursor in self.databases.itervalues():
 			try:
 				connection.close()
 			except: 
 				pass
-		if self.http:
-			self.http.close()
+
 			
