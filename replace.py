@@ -130,6 +130,7 @@ __version__='$Id$'
 # below.`v
 msg = {
        'ar':u'%s روبوت : استبدال تلقائي للنص',
+       'cs':u'Robot automaticky nahradil text: %s',
        'de':u'Bot: Automatisierte Textersetzung %s',
        'el':u'Ρομπότ: Αυτόματη αντικατάσταση κειμένου %s',
        'en':u'Robot: Automated text replacement %s',
