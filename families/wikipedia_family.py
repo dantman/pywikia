@@ -511,6 +511,7 @@ class Family(family.Family):
             'hu':  [u'Egyert', u'Disambig', u'Egyért'],
             'hy':  [u'Երկիմաստ', u'Disambig'],
             'ia':  [u'Disambiguation', u'Disambig'],
+            'id':  [u'Disingkat',u'Disambig'],
             'io':  [u'Homonimo', u'Disambig'],
             'is':  [u'Aðgreining', u'Disambig'],
             'it':  [u'Disambigua', u'Sigla2', u'Sigla3', u'Sigla4', u'Cogni'],
