@@ -59,8 +59,11 @@ This script understands the following command-line arguments:
     -limit[:#]     Use this parameter to define how may users should be
                    checked (default:50)
 
-    -offset[:#]    Skip the latest # new users to give interactive users
-                   a chance to welcome the new user (default: 0)
+    -offset[:TIME] Skip the latest new users (those newer than TIME) 
+                   to give interactive users a chance to welcome the 
+                   new users (default: now)
+                   Timezone is the server timezone, GMT for Wikimedia
+                   TIME format : yyyymmddhhmmss
 
     -numberlog[:#] The number of users to welcome before refreshing the
                    welcome log (default: 4)
@@ -565,9 +568,12 @@ def mainSettings():
                 time_variable = int(arg[6:])
         elif arg.startswith('-offset'):
             if len(arg) == 7:
-                offset_variable = int(wikipedia.input(u'Which offset for new users would you like to use?'))
+                offset_variable = int(wikipedia.input(u'Which time offset for new users would you like to use?'))
             else:
                 offset_variable = int(arg[8:])
+            if len(str(offset_variable)) != 14:
+                # upon request, we might want to check for software version here
+                raise ValueError("Mediawiki has changed, -offset:# is not supported anymore, but -offset:TIMESTAMP is, assuming TIMESTAMP is yyyymmddhhmmss. Please read this script source header for documentation.")
         elif arg.startswith('-file:'):
             random = True
             fileOption = True
@@ -748,11 +754,11 @@ def main(settingsBot):
         say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi',
                 'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
-        # The URL for new users is the same in every project. It should not be changed.
-        if offset_variable == 0:
-            URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d" % limit
-        else:
-            URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d&offset=%d" % (limit, offset_variable)
+        # think about non-wikimedia wikis. Use Site functions.
+        URL = wsite.log_address(limit, 'newusers') 
+        if offset_variable != 0:
+            URL += "&offset=%d" % offset_variable
+        print URL
         log = wsite.getUrl(URL)
         wikipedia.output(u'Loading latest %s new users from %s...\n' % (limit, wsite.hostname()))
         # Determine which signature to use
