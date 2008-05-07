@@ -3766,6 +3766,7 @@ class Site(object):
     versionnumber: Return int identifying the MediaWiki version.
     live_version: Return version number read from Special:Version.
     checkCharset(charset): Warn if charset doesn't match family file.
+    server_time : returns server time (currently userclock depending)
 
     linktrail: Return regex for trailing chars displayed as part of a link.
     disambcategory: Category in which disambiguation pages are listed.
@@ -3974,6 +3975,11 @@ class Site(object):
             self._load(sysop = sysop)
             index = self._userIndex(sysop)
             return right in self._rights[index]
+
+    def server_time(self):
+        """returns a datetime object representing server time"""
+        # It is currently user-clock depending
+        return self.family.get_server_time()
 
     def messages(self, sysop = False):
         """Returns true if the user has new messages, and false otherwise."""

@@ -1,5 +1,6 @@
 # -*- coding: utf-8  -*-
 import config, urllib, re
+from datetime import timedelta, datetime
 
 __version__='$Id$'
 
@@ -39,6 +40,11 @@ class Family:
         ]
 
         self.langs = {}
+        
+        # The timedelta to GMT of the server.
+        # Exemple for a server running CET :
+        # timedelta(hours=+1)
+        self.servergmtoffset = timedelta()
 
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
@@ -3051,3 +3057,8 @@ class Family:
     def shared_image_repository(self, code):
         """Return the shared image repository, if any."""
         return (None, None)
+
+    def server_time(self):
+        """Returns a datetime object representing server time"""
+        # TODO : If the local computer time is wrong, result wll be wrong
+        return datetime.utcnow() + self.servergmtoffset

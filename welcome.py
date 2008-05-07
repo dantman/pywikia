@@ -65,6 +65,9 @@ This script understands the following command-line arguments:
                    Timezone is the server timezone, GMT for Wikimedia
                    TIME format : yyyymmddhhmmss
 
+    -timeoffset[:#] Skip the latest new users, accounts newer than
+                    # minutes
+
     -numberlog[:#] The number of users to welcome before refreshing the
                    welcome log (default: 4)
 
@@ -171,6 +174,7 @@ __version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 import wikipedia, config, string, locale
 import time, re, cPickle, os, urllib
 import codecs, sys
+from datetime import timedelta
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -542,7 +546,8 @@ def mainSettings():
     number = 1                  # number of edits that an user required to be welcomed
     numberlog = 15              # number of users that are required to add the log :)
     limit = 50                  # number of users that the bot load to check
-    offset_variable = 0         # number of newest users to skip each run
+    offset_variable = 0         # skip users newer than that timestamp
+    timeoffset_variable = 0     # skip users newer than # minutes
     recursive = True            # define if the Bot is recursive or not
     time_variable = 3600        # how much time (sec.) the bot sleeps before restart
     log_variable = True         # create the welcome log or not
@@ -561,6 +566,11 @@ def mainSettings():
                 number = int(wikipedia.input(u'After how many edits would you like to welcome new users? (0 is allowed)'))
             else:
                 number = int(arg[6:])
+        elif arg.startswith('-timeoffset'):
+            if len(arg) == 11:
+                timeoffset_variable = int(wikipedia.input(u'Which time offset (in minutest) for new users would you like to use?'))
+            else:
+                timeoffset_variable = int(arg[12:])
         elif arg.startswith('-time'):
             if len(arg) == 5:
                 time_variable = int(wikipedia.input(u'For how many seconds would you like to bot to sleep before checking again?'))
@@ -568,12 +578,12 @@ def mainSettings():
                 time_variable = int(arg[6:])
         elif arg.startswith('-offset'):
             if len(arg) == 7:
-                offset_variable = int(wikipedia.input(u'Which time offset for new users would you like to use?'))
+                offset_variable = int(wikipedia.input(u'Which time offset for new users would you like to use? (yyyymmddhhmmss)'))
             else:
                 offset_variable = int(arg[8:])
             if len(str(offset_variable)) != 14:
                 # upon request, we might want to check for software version here
-                raise ValueError("Mediawiki has changed, -offset:# is not supported anymore, but -offset:TIMESTAMP is, assuming TIMESTAMP is yyyymmddhhmmss. Please read this script source header for documentation.")
+                raise ValueError("Mediawiki has changed, -offset:# is not supported anymore, but -offset:TIMESTAMP is, assuming TIMESTAMP is yyyymmddhhmmss. -timeoffset is now also supported. Please read this script source header for documentation.")
         elif arg.startswith('-file:'):
             random = True
             fileOption = True
@@ -606,8 +616,11 @@ def mainSettings():
     # TODO: Maybe it's better change the tuple with a dictionary..
     wsite = wikipedia.getSite()
     filename = 'welcome-%s-%s.data' % (wsite.family.name, wsite.lang)  # file where is stored the random signature index
+    if offset_variable and timeoffset_variable:
+        wikipedia.output('WARING: both -offset and -timeoffset were provided, ignoring -offset')
+        offset_variable = 0
     return (None, ask, filename, fileOption, fileSignName, filter_wp, limit, log_variable, number, numberlog, offset_variable, random, recursive,
-            savedata, sign, time_variable)
+            savedata, sign, time_variable, timeoffset_variable)
 
 def main(settingsBot):
     # Taking the messages inside the function namespace.
@@ -636,6 +649,7 @@ def main(settingsBot):
     savedata = settingsBot[13]
     sign = settingsBot[14]
     time_variable = settingsBot[15]
+    timeoffset_variable = settingsBot[16]
 
     # The site
     wsite = wikipedia.getSite()
@@ -756,9 +770,11 @@ def main(settingsBot):
 
         # think about non-wikimedia wikis. Use Site functions.
         URL = wsite.log_address(limit, 'newusers') 
+        if timeoffset_variable != 0:
+            time = wsite.server_time() - timedelta(minutes=timeoffset_variable)
+            offset_variable = int(time.strftime("%Y%m%d%H%M%S"))
         if offset_variable != 0:
             URL += "&offset=%d" % offset_variable
-        print URL
         log = wsite.getUrl(URL)
         wikipedia.output(u'Loading latest %s new users from %s...\n' % (limit, wsite.hostname()))
         # Determine which signature to use
