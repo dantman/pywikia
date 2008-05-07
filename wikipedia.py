@@ -3979,7 +3979,7 @@ class Site(object):
     def server_time(self):
         """returns a datetime object representing server time"""
         # It is currently user-clock depending
-        return self.family.get_server_time()
+        return self.family.server_time()
 
     def messages(self, sysop = False):
         """Returns true if the user has new messages, and false otherwise."""
