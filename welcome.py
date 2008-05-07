@@ -200,6 +200,7 @@ logbook = {
     'de': None, # no welcome log on de.wiki
     'en': u'Project:Welcome log',
     'fa': u'Project:سیاهه خوشامد',
+    'fr': u'Wikipedia:Prise de décision/Accueil automatique des nouveaux par un robot/log',
     'he': None, # no welcome log on he.wiki
     'id': None, # no welcome log on id.wiki
     'it': u'Project:Benvenuto Bot/Log',
@@ -217,6 +218,7 @@ summary = {
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
     'fa':u'خوش آمدید!',
+    'fr':u'Bienvenue sur Wikipedia !',
     'he':u'ברוך הבא!',
     'id':u'Selamat datang',
     'it':u'Benvenuto!',
@@ -236,6 +238,7 @@ netext = {
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}} %s',
     'fa':u'{{جا:خوشامد}} %s',
+    'fr':u'{{subst:Discussion Projet:Aide/Bienvenue}} %s',
     'he':u'{{ס:ברוך הבא}} %s',
     'id':u'{{sdbot|%s}}',
     'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
@@ -253,6 +256,7 @@ summary2 = {
     'de':u'Aktualisiere Logdatei',
     'en':u'Updating log',
     'fa':u'به روز رسانی سیاهه',
+    'fr':u'Mise a jour du log',
     'it':u'Aggiorno il log',
     'ja':u'更新記録',
     'nl':u'Logboek bijwerken',
@@ -310,6 +314,7 @@ report_text = {
     'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
     'en':u'\n*{{Userlinks|%s}} ' + timeselected,
     'fa':u'\n*{{کاربر|%s}}' + timeselected,
+    'fr':u'\n*{{u|%s}} ' + timeselected,
     'it':u"\n{{Reported|%s|",
     'ja':u"\n*{{User2|%s}}" + timeselected,
     'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
@@ -323,6 +328,7 @@ random_sign = {
     'ar': u'Project:سجل الترحيب/توقيعات',
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
+    'fr': u'Projet:Service de Parrainage Actif/Signatures',
     'it': u'Project:Benvenuto_Bot/Firme',
     'ja':u'利用者:Alexbot/Welcomebotログ/List',
     'zh': u'user:Welcomebot/欢迎日志/用户',
