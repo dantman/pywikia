@@ -432,7 +432,7 @@ def main():
     else:
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-        preloadingGen = pagegenerators.PreloadingGenerator(gen,pageNumber=500)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = NoReferencesBot(preloadingGen, always, ignoreMsg)
         bot.run()
 
