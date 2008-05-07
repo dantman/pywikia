@@ -588,7 +588,7 @@ class main:
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
         wikipedia.output(u'Checking if %s has duplicates...' % image)
-        get_hash = self.site.getUrl('/w/api.php?action=query&format=xml&titles=Image:%s&prop=imageinfo&iiprop=sha1' % self.convert_to_url(self.image))
+        get_hash = self.site.getUrl(self.site.apipath() + '?action=query&format=xml&titles=Image:%s&prop=imageinfo&iiprop=sha1' % self.convert_to_url(self.image))
         hash_found_list = re.findall(r'<ii sha1="(.*?)" />', get_hash)
         if hash_found_list != []:
             hash_found = hash_found_list[0]
@@ -598,7 +598,7 @@ class main:
             else:
                 wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
                 return False # Error, we need to skip the page.
-        get_duplicates = self.site.getUrl('/w/api.php?action=query&format=xml&list=allimages&aisha1=%s' % hash_found)
+        get_duplicates = self.site.getUrl(self.site.apipath() + '?action=query&format=xml&list=allimages&aisha1=%s' % hash_found)
         duplicates = re.findall(r'<img name="(.*?)".*?/>', get_duplicates)
         if len(duplicates) > 1:
             if len(duplicates) == 2:

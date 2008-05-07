@@ -67,7 +67,7 @@ class Importer(wikipedia.Page):
             answer = wikipedia.inputChoice(u'Do you want to import %s?' % target, ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
             host = self.site().hostname()
-            address = '/w/index.php?title=%s&action=submit' % self.urlname()
+            address = self.site().path() + '?title=%s&action=submit' % self.urlname()
             # You need to be a sysop for the import.
             self.site().forceLogin(sysop = True)
             # Getting the token.

@@ -250,12 +250,16 @@ class RedirectGenerator:
                     wikipedia.output(u'\nChecking redirect %i of %i...'
                                      % (num + 1, len(redict)))
 
+    # /wiki/
+    wiki = re.escape(wikipedia.getSite().nice_get_address(''))
+    # /w/index.php
+    index = re.escape(wikipedia.getSite().path())
     move_regex = re.compile(
-        r'<li>.*?<a href="/wiki/User:.*?>.*?</a> '
-        r'\(<a href="/wiki/User_talk:.*?>Talk</a> \| '
-        r'<a href="/wiki/Special:Contributions/.*?>contribs</a>\) '
-        r'moved <a href="/w/index\.php\?title=.*?>(.*?)</a> to '
-        r'<a href="/wiki/.*?>.*?</a>.*?</li>' )
+        r'<li>.*?<a href="' + wiki + r'User:.*?>.*?</a> '
+        r'\(<a href="' + wiki + r'User_talk:.*?>Talk</a> \| '
+        r'<a href="' + wiki + r'Special:Contributions/.*?>contribs</a>\) '
+        r'moved <a href="' + index + r'?title=.*?>(.*?)</a> to '
+        r'<a href="' + index + r'.*?>.*?</a>.*?</li>' )
 
     def get_moved_pages_redirects(self):
         '''generate redirects to recently-moved pages'''
@@ -263,7 +267,7 @@ class RedirectGenerator:
         site = wikipedia.getSite()
         while offset <= 10000: # MW won't accept offset value > 10000
             move_url = \
-                "/w/index.php?title=Special:Log&limit=500&offset=%i&type=move"\
+                site.path() + "?title=Special:Log&limit=500&offset=%i&type=move"\
                        % offset
             try:
                 move_list = site.getUrl(move_url)

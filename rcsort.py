@@ -41,7 +41,7 @@ for element in form:
 if not 'limit' in form:
     post += '&limit=1000'
 
-text = mysite.getUrl('/w/index.php?%s'%post)
+text = mysite.getUrl(mysite.path() + '?%s'%post)
 
 text = text.split('\n')
 rcoptions = False
@@ -62,10 +62,10 @@ for line in text:
             count += 1
             lines.append((user,count,line))
     elif line.find('rcoptions') > -1:
-        print line.replace("/w/index.php?title=Speciaal:RecenteWijzigingen&amp;","rcsort.py?")
+        print line.replace(mysite.path() + "?title=Speciaal:RecenteWijzigingen&amp;","rcsort.py?")
         rcoptions = True
     elif newbies and line.find('Nieuwste') > -1:
-        line =  line.replace("/w/index.php?title=Speciaal:Bijdragen&amp;","rcsort.py?").replace("target=newbies","newbies=true")
+        line =  line.replace(mysite.path() + "?title=Speciaal:Bijdragen&amp;","rcsort.py?").replace("target=newbies","newbies=true")
         if line.find('</fieldset>') > -1:
             line = line[line.find('</fieldset>')+11:]
         print line
