@@ -778,8 +778,8 @@ def main(settingsBot):
         # think about non-wikimedia wikis. Use Site functions.
         URL = wsite.log_address(limit, 'newusers') 
         if timeoffset_variable != 0:
-            time = wsite.server_time() - timedelta(minutes=timeoffset_variable)
-            offset_variable = int(time.strftime("%Y%m%d%H%M%S"))
+            now = wsite.server_time() - timedelta(minutes=timeoffset_variable)
+            offset_variable = int(now.strftime("%Y%m%d%H%M%S"))
         if offset_variable != 0:
             URL += "&offset=%d" % offset_variable
         log = wsite.getUrl(URL)
