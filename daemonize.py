@@ -42,7 +42,7 @@ def daemonize(close_fd = True, chdir = True, write_pid = False, redirect_std = N
             return
         else:
             # Write out the pid
-            f = open(sys.argv[0] + '.pid', 'w')
+            f = open(os.path.basename(sys.argv[0]) + '.pid', 'w')
             f.write(str(pid))
             f.close()
             os._exit(0)
