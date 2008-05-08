@@ -20,6 +20,8 @@ This script understands the following command-line arguments:
 
     -duplicates     - Checking if the image has duplicates.
 
+    -duplicatesreport - Report the duplicates in a log *AND* put the template in the images.
+
     -break	        - To break the bot after the first check (default: recursive)
 
     -time[:#]	- Time in seconds between repeat runs (default: 30)
@@ -320,13 +322,19 @@ HiddenTemplateNotification = {
 duplicatesText = {
         'commons':u'\n{{Dupe|__image__}}',
         'en':None,
-        'it':u'\n{{Cancella subito|Immagine doppia di __image__}}',
+        'it':u'\n{{Cancella subito|Immagine doppia di [[:__image__]]}}',
         }
 duplicatesRegex = {
         'commons':r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
         'en':None,
         'it':r'\{\{(?:[Tt]emplate:|)[Cc]ancella[ _]subito[|}]',
         }
+
+# Another stub
+emailPageWithText = {
+        'de':'Benutzer:ABF/D3',
+        'en':None,
+        }   
 
 # Add your project (in alphabetical order) if you want that the bot start
 project_inserted = [u'ar', u'commons', u'de', u'en', u'ja', u'hu', u'it', u'ta', u'zh']
@@ -381,9 +389,14 @@ def pageText(url):
         response.close()
     return text
 
+def sendEmail():
+    """ Function that let you send email trough the Wikipedia system """
+    pass # Empty, need work
+
+
 # Here there is the main class.
 class main:
-    def __init__(self, site, logFulNumber = 25000):
+    def __init__(self, site, logFulNumber = 25000, sendemailActive = False, duplicatesReport = False):
         """ Constructor, define some global variable """
         self.site = site
         self.logFulNumber = logFulNumber
@@ -393,15 +406,67 @@ class main:
         self.com = wikipedia.translate(site, comm10)
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
-    def general(self, newtext, image, notification, head, botolist):
-        """ This class can be called for two reason. So I need two different constructors, one with common data
-        and another with the data that I required... maybe it can be added on the other function, but in this way
-        seems more clear what parameters I need """
+        # Adding the bot's nickname at the notification text if needed.
+        botolist = wikipedia.translate(wikipedia.getSite(), bot_list)
+        project = wikipedia.getSite().family.name
+        bot = config.usernames[project]
+        botnick = bot[wikipedia.getSite().lang]
+        self.botnick = botnick
+        self.botolist = botolist.append(botnick)
+        self.sendemailActive = sendemailActive
+    def report(self, newtext, image, notification = None, head = None, notification2 = None, unver = True, commx = None):
+        """ Function to make the reports easier (or I hope so). """
+        # Defining some useful variable for next...
         self.newtext = newtext
         self.image = image
         self.head = head
         self.notification = notification
-        self.botolist = botolist
+        if self.notification != None:
+            self.notification = re.sub('__botnick__', self.botnick, notification)
+        if self.notification2 != None:
+            self.notification2 = re.sub('__botnick__', self.botnick, notification2)
+        self.commx = commx        
+        # Ok, done, let's loop.
+        while 1:
+            if unver == True:
+                try:
+                    resPutMex = run.put_mex()
+                except wikipedia.NoPage:
+                    wikipedia.output(u"The page has been deleted! Skip!")
+                    break
+                except wikipedia.EditConflict:
+                    wikipedia.output(u"Edit conflict! Skip!")
+                    break
+                else:
+                    if resPutMex == False:
+                        break
+            else:
+                try:
+                    resPutMex = run.put_mex(False)
+                except wikipedia.NoPage:
+                    wikipedia.output(u"The page has been deleted!")
+                    break
+                except wikipedia.EditConflict:
+                    wikipedia.output(u"Edit conflict! Skip!")
+                    break
+                else:
+                    if resPutMex == False:
+                        break
+            if self.notification != None and self.head != None:
+                try:
+                    run.put_talk()
+                except wikipedia.EditConflict:
+                    wikipedia.output(u"Edit Conflict! Retrying...")
+                    try:
+                        run.put_talk()
+                    except:
+                        wikipedia.output(u"Another error... skipping the user..")
+                        break
+                else:
+                    break
+            else:
+                break
+
     def put_mex(self, put = True):
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the image. """
@@ -446,49 +511,44 @@ class main:
         # Defing the talk page (pagina_discussione = talk_page ^__^ )
         talk_page = wikipedia.Page(self.site, pagina_discussione)
         self.talk_page = talk_page
+        self.luser = luser
         return True
-    def put_talk(self, notification, head, notification2 = None, commx = None):
+    def put_talk(self):
         """ Function to put the warning in talk page of the uploader."""
         commento2 = wikipedia.translate(self.site, comm2)
-        talk_page = self.talk_page
-        notification = self.notification
-        if notification2 == None:
-            notification2 = notification
+        emailPageName = wikipedia.translate(self.site, emailPageWithText)
+        if self.notification2 == None:
+            self.notification2 = self.notification
         else:
-            notification2 = notification2 % self.image
-        head = self.head
+            self.notification2 = self.notification2 % self.image
         second_text = False
         # Getting the talk page's history, to check if there is another advise...
         # The try block is used to prevent error if you use an old wikipedia.py's version.
         edit_to_load = 10
-        if talk_page.exists():
+        if self.talk_page.exists():
             try:
-                history = talk_page.getVersionHistory(False, False, False, edit_to_load)
+                history = self.talk_page.getVersionHistory(False, False, False, edit_to_load)
             except TypeError:
-                history = talk_page.getVersionHistory(False, False, False)
+                history = self.talk_page.getVersionHistory(False, False, False)
             latest_edit = history[0]
             latest_user = latest_edit[2]
             wikipedia.output(u'The latest user that has written something is: %s' % latest_user)
         else:
             wikipedia.output(u'The user page is blank')
 
-        if talk_page.exists():
+        if self.talk_page.exists():
             try:
-                testoattuale = talk_page.get() # Actual text
+                testoattuale = self.talk_page.get() # Actual text
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u'The user talk is a redirect, trying to get the right talk...')
                 try:
-                    talk_page = talk_page.getRedirectTarget()
-                    testoattuale = talk_page.get()
+                    self.talk_page = self.talk_page.getRedirectTarget()
+                    testoattuale = self.talk_page.get()
                 except wikipedia.NoPage:
                     second_text = False
                     ti_es_ti = wikipedia.translate(self.site, empty)
                     testoattuale = ti_es_ti                               
-            project = self.site.family.name
-            bot = config.usernames[project]
-            botnick = bot[self.site.lang]
-            botolist = self.botolist + [botnick]
-            for i in botolist:
+            for i in self.botolist:
                 if latest_user == i:
                     second_text = True
                     # A block to prevent the second message if the bot also welcomed users...
@@ -498,14 +558,22 @@ class main:
             second_text = False
             ti_es_ti = wikipedia.translate(self.site, empty)
             testoattuale = ti_es_ti
-        if commx == None:
+        if self.commx == None:
             commentox = commento2
         else:
-            commentox = commx
+            commentox = self.commx
         if second_text == True:
-            talk_page.put("%s\n\n%s" % (testoattuale, notification2), comment = commentox, minorEdit = False)
+            self.talk_page.put("%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
         elif second_text == False:
-            talk_page.put(testoattuale + head + notification, comment = commentox, minorEdit = False)
+            self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
+        if emailPageName != None:
+            emailPage = wikipedia.Page(self.site, emailPageName)
+            try:
+                emailText = emailPage.get()
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                return # Exit
+            if self.sendemailActive:
+                sendEmail(self.luser, re.sub(r'__user-nickname__', '%s' % self.luser, emailText))            
 			
     def untaggedGenerator(self, untaggedProject, limit):
         """ Generator that yield the images without license. It's based on a tool of the toolserver. """
@@ -605,15 +673,16 @@ class main:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
             else:
                 wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.image, len(duplicates) - 1))
+            if duplicatesReport:
             repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
-            for duplicate in duplicates:
-                if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
-                    continue # the image itself, not report also this as duplicate
-                repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)    
-            result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
-            if result and not dupText == None and not dupRegex == None:
                 for duplicate in duplicates:
                     if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
+                        continue # the image itself, not report also this as duplicate
+                    repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)    
+                result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
+            if result and not dupText == None and not dupRegex == None:
+                for duplicate in duplicates:
+                    if wikipedia.Page(self.site, u'Image:%s' % duplicate) == wikipedia.Page(self.site, u'Image:%s' % self.image):
                         continue # the image itself, not report also this as duplicate
                     DupePage = wikipedia.Page(self.site, u'Image:%s' % duplicate)
                     try:
@@ -622,7 +691,7 @@ class main:
                         continue # The page doesn't exists
                     if re.findall(dupRegex, DupPageText) == []:
                         wikipedia.output(u'Adding the duplicate template in the image...')
-                        report(re.sub(r'__image__', r'%s' % self.image, dupText), duplicate)                
+                        self.report(re.sub(r'__image__', r'%s' % self.image, dupText), duplicate)                
         return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
@@ -714,61 +783,6 @@ class main:
             word = xl.group(2)
             if word not in list_loaded:
                 list_loaded.append(word)  
-
-# I've seen that the report class before (the main) was to long to be called so,
-# here there is a function that has all the settings, so i can call it once ^__^
-def report(newtext, image, notification = None, head = None, notification2 = None, unver = True, commx = None, bot_list = bot_list):
-    # Adding the bot's nickname at the notification text if needed.
-    botolist = wikipedia.translate(wikipedia.getSite(), bot_list)
-    project = wikipedia.getSite().family.name
-    bot = config.usernames[project]
-    botnick = bot[wikipedia.getSite().lang]
-    if notification != None:
-        notification = re.sub('__botnick__', botnick, notification)
-    if notification2 != None:
-        notification2 = re.sub('__botnick__', botnick, notification2)
-    # Ok, done, let's loop.
-    while 1:
-        run = main(site = wikipedia.getSite())
-        secondrun = run.general(newtext, image, notification, head, botolist)
-        if unver == True:
-            try:
-                resPutMex = run.put_mex()
-            except wikipedia.NoPage:
-                wikipedia.output(u"The page has been deleted! Skip!")
-                break
-            except wikipedia.EditConflict:
-                wikipedia.output(u"Edit conflict! Skip!")
-                break
-            else:
-                if resPutMex == False:
-                    break
-        else:
-            try:
-                resPutMex = run.put_mex(False)
-            except wikipedia.NoPage:
-                wikipedia.output(u"The page has been deleted!")
-                break
-            except wikipedia.EditConflict:
-                wikipedia.output(u"Edit conflict! Skip!")
-                break
-            else:
-                if resPutMex == False:
-                    break
-        if notification != None and head != None:
-            try:
-                run.put_talk(notification, head, notification2, commx)
-            except wikipedia.EditConflict:
-                wikipedia.output(u"Edit Conflict! Retrying...")
-                try:
-                    run.put_talk(notification, head, notification2, commx)
-                except:
-                    wikipedia.output(u"Another error... skipping the user..")
-                    break
-            else:
-                break
-        else:
-            break
                         
 def checkbot():
     # Command line configurable parameters
@@ -783,8 +797,10 @@ def checkbot():
     regexGen = False # Use the regex generator
     untagged = False # Use the untagged generator
     skip_list = list() # Inizialize the skip list used below
-    duplicatesActive = False
-        
+    duplicatesActive = False # Use the duplicate option
+    duplicatesReport = False # Use the duplicate-report option
+    sendemailActive = False # Use the send-email option
+    
     # Here below there are the parameters.
     for arg in wikipedia.handleArgs():
         if arg.startswith('-limit'):
@@ -803,6 +819,10 @@ def checkbot():
             commonsActive = True
         elif arg == '-duplicates':
             duplicatesActive = True
+        elif arg == '-duplicatereport':
+            duplicatesReport = True
+        elif arg == '-sendemail':
+            sendemailActive = True                   
         elif arg.startswith('-skip'):
             if len(arg) == 5:
                 skip = True
@@ -927,7 +947,7 @@ def checkbot():
     # Main Loop
     while 1:
         # Defing the Main Class.
-        mainClass = main(site)
+        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport)
         # Untagged is True? Let's take that generator
         if untagged == True:
             generator =  mainClass.untaggedGenerator(projectUntagged, limit)
@@ -1150,7 +1170,7 @@ def checkbot():
                         reported = True
                     if reported == True:
                         #if imagestatus_used == True:
-                        report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
+                        self.report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
                     else:
                         wikipedia.output(u"Skipping the image...")
                     some_problem = False
@@ -1167,7 +1187,7 @@ def checkbot():
                     canctext = di % extension
                     notification = din % imageName
                     head = dih
-                    report(canctext, imageName, notification, head)
+                    self.report(canctext, imageName, notification, head)
                     delete = False
                     continue
                 elif g in nothing:
@@ -1177,7 +1197,7 @@ def checkbot():
                     else:
                         notification = nn % imageName
                     head = nh 
-                    report(unvertext, imageName, notification, head, smwl)
+                    self.report(unvertext, imageName, notification, head, smwl)
                     continue
                 else:
                     wikipedia.output(u"%s has only text and not the specific license..." % imageName)
@@ -1186,7 +1206,7 @@ def checkbot():
                     else:
                         notification = nn % imageName
                     head = nh
-                    report(unvertext, imageName, notification, head, smwl)
+                    self.report(unvertext, imageName, notification, head, smwl)
                     continue
     # A little block to perform the repeat or to break.
         if repeat == True:
