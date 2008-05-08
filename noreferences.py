@@ -238,12 +238,7 @@ class NoReferencesBot:
             return False
         else:
             if self.referencesTemplates:
-                templateR =''
-                part = '\{\{('
-                for template in self.referencesTemplates:
-                    templateR += part + template
-                    part = '|'
-                templateR+=')'
+                templateR = u'{{(' + u'|'.join(self.referencesTemplates) + ')'
                 if re.search(templateR, oldTextCleaned, re.IGNORECASE):
                     if verbose:
                         wikipedia.output(u'No changes necessary: references template found.')
