@@ -329,9 +329,9 @@ duplicate_user_talk_head = {
         'it': u'\n\n== Immagine doppia ==\n',
         }
 duplicates_user_talk_text = {
-        'commons':u'{{subst:User:Filnik/duplicates|Image:%s}}',
+        'commons':u'{{subst:User:Filnik/duplicates|Image:%s|Image:%s}}',
         'en':None,
-        'it':u"{{subst:Utente:Filbot/duplicati|%s}} --~~~~",
+        'it':u"{{subst:Utente:Filbot/duplicati|%s|%s}} --~~~~",
         }
 
 duplicates_comment = {
@@ -715,6 +715,7 @@ class main:
                         continue # The page doesn't exists
                     if re.findall(dupRegex, DupPageText) == []:
                         wikipedia.output(u'Adding the duplicate template in the image...')
+                        dupTalkText = dupTalkText % (duplicate, self.image)
                         self.report(re.sub(r'__image__', r'%s' % self.image, dupText),
                                     duplicate, dupTalkText, dupTalkHead, commx = dupComment, unver = False)                
         return True # Ok - No problem. Let's continue the checking phase
