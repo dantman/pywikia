@@ -237,16 +237,17 @@ class NoReferencesBot:
                 wikipedia.output(u'No changes necessary: references tag found.')
             return False
         else:
-            templateR =''
-            part = '\{\{('
-            for template in self.referencesTemplates:
-                templateR += part + template
-                part = '|'
-            templateR+=')'
-            if re.search(templateR,oldTextCleaned,re.I):
-                if verbose:
-                    wikipedia.output(u'No changes necessary: references template found.')
-                return False
+            if self.referencesTemplates:
+                templateR =''
+                part = '\{\{('
+                for template in self.referencesTemplates:
+                    templateR += part + template
+                    part = '|'
+                templateR+=')'
+                if re.search(templateR, oldTextCleaned, re.IGNORECASE):
+                    if verbose:
+                        wikipedia.output(u'No changes necessary: references template found.')
+                    return False
             if verbose:
                 wikipedia.output(u'Found ref without references.')
             return True
