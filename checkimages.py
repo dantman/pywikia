@@ -408,6 +408,17 @@ def sendEmail():
     """ Function that let you send email trough the Wikipedia system """
     pass # Empty, need work
 
+def returnOlderTime(listGiven, timeListGiven):
+    for element in listGiven:
+        time = element[0]
+        imageName = element[1]
+        not_the_oldest = False
+        for time_selected in timeListGiven:
+            if time > time_selected:
+                not_the_oldest = True
+                break
+        if not_the_oldest == False:
+            return imageName     
 
 # Here there is the main class.
 class main:
@@ -431,6 +442,8 @@ class main:
         self.botolist = botolist
         self.sendemailActive = sendemailActive
         self.duplicatesReport = duplicatesReport
+        image_n = self.site.image_namespace()
+        self.image_namespace = "%s:" % image_n # Example: "User_talk:"
     def report(self, newtext, image, notification = None, head = None, notification2 = None, unver = True, commx = None):
         """ Function to make the reports easier (or I hope so). """
         # Defining some useful variable for next...
@@ -501,10 +514,8 @@ class main:
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
             p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
-        image_n = self.site.image_namespace()
-        image_namespace = "%s:" % image_n # Example: "User_talk:"
         # paginetta it's the image page object.
-        paginetta = wikipedia.ImagePage(self.site, image_namespace + self.image)
+        paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
         # I take the data of the latest uploader and I take only the name
         imagedata = paginetta.getFileVersionHistory()
         #print imagedata # Let it so for de-buggin porpuse (wikipedia.output gives error)
@@ -517,7 +528,7 @@ class main:
             # We have a problem! Report and exit!         
             return False
         try:
-            nick = paginetta.getFileVersionHistory()[-1][1]
+            nick = paginetta.getFileVersionHistory()[0][1] # Get the latest uploader
         except IndexError:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
             repme = "\n*[[:Image:%s]] seems to have problems ('''no data found in the image''')"
@@ -705,19 +716,33 @@ class main:
                 if not result:
                     return True # If Errors, exit (but continue the check)
             if not dupText == None and not dupRegex == None:
+                time_image_list = list()
+                time_list = list()
                 for duplicate in duplicates:
-                    if wikipedia.Page(self.site, u'Image:%s' % duplicate) == wikipedia.Page(self.site, u'Image:%s' % self.image):
-                        continue # the image itself, not report also this as duplicate
-                    DupePage = wikipedia.Page(self.site, u'Image:%s' % duplicate)
+                    DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
+                    imagedata = DupePage.getFileVersionHistory()[-1][0]
+                    # Example: 21:15, 5 ott 2005
+                    data = time.strptime(imagedata, "%H:%M, %d %b %Y")
+                    data_seconds = time.mktime(data)
+                    time_image_list.append([data_seconds, self.image])
+                    time_list.append(data_seconds)
+                older_image = returnOlderTime(time_image_list, time_list)
+                # And if the images are more than two?
+                for duplicate in duplicates: 
+                    if wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, duplicate)) == \
+                       wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, older_image)):
+                        continue # the older image, not report also this as duplicate
                     try:
                         DupPageText = DupePage.get()
                     except wikipedia.NoPage:
                         continue # The page doesn't exists
                     if re.findall(dupRegex, DupPageText) == []:
                         wikipedia.output(u'Adding the duplicate template in the image...')
-                        dupTalkText = dupTalkText % (duplicate, self.image)
-                        self.report(re.sub(r'__image__', r'%s' % self.image, dupText),
-                                    duplicate, dupTalkText, dupTalkHead, commx = dupComment, unver = False)                
+                        self.report(re.sub(r'__image__', r'%s' % older_image, dupText), duplicate,
+                                    dupTalkText % (duplicate, older_image), dupTalkHead, commx = dupComment, unver = True)
+                    else:
+                        wikipedia.output(u"Already put the dupe-template in the image's page or in the dupe's page. Skip.")
+                        break
         return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
