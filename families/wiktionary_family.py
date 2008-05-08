@@ -81,11 +81,13 @@ class Family(family.Family):
             'pt': u'Wikcionário',
             'ro': u'Wikţionar',
             'ru': u'Викисловарь',
+            'scn': u'Wikizziunariu',
             'sk': u'Wikislovník',
             'sl': u'Wikislovar',
             'sr': u'Викиречник',
             'tr': u'Vikisözlük',
             'tt': u'Wiktionary',
+            'uk': u'Вікісловник',
             'ur': u'وکی لغت',
             'uz': u'Vikilug‘at',
             'vo': u'Vükivödabuk',
@@ -145,6 +147,7 @@ class Family(family.Family):
             'jv': u'Dhiskusi Wiktionary',
             'ka': u'ვიქსიკონი განხილვა',
             'kk': u'Уикисөздік талқылауы',
+            'kl': u'Wiktionary-diskussion',
             'km': u'ការពិភាក្សាអំពីWiktionary',
             'kn': u'Wiktionary ಚರ್ಚೆ',
             'ko': u'위키낱말사전토론',
@@ -176,7 +179,7 @@ class Family(family.Family):
             'ru': u'Обсуждение Викисловаря',
             'sa': u'Wiktionaryसंभाषणं',
             'sc': u'Wiktionary discussioni',
-            'scn': u'Discussioni Wiktionary',
+            'scn': u'Discussioni Wikizziunariu',
             'si': u'Wiktionary සාකච්ඡාව',
             'sk': u'Diskusia k Wikislovníku',
             'sl': u'Pogovor o Wikislovarju',
@@ -190,7 +193,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องWiktionary',
             'tr': u'Vikisözlük tartışma',
             'tt': u'Wiktionary bäxäse',
-            'uk': u'Обговорення Wiktionary',
+            'uk': u'Обговорення Вікісловника',
             'ur': u'تبادلۂ خیال وکی لغت',
             'uz': u'Vikilug‘at munozarasi',
             'vi': u'Thảo luận Wiktionary',
@@ -218,6 +221,7 @@ class Family(family.Family):
             'ru': [u'Приложение', u'Appendix'],
             'sr': u'Портал',
             'sv': u'WT',
+            'uk': u'Додаток',
         }
         self.namespaces[101] = {
             'bg': u'Словоформи беседа',
@@ -237,6 +241,7 @@ class Family(family.Family):
             'ru': [u'Обсуждение приложения', u'Appendix talk'],
             'sr': u'Разговор о порталу',
             'sv': u'WT-diskussion',
+            'uk': u'Обговорення додатка',
         }
 
         self.namespaces[102] = {
@@ -250,6 +255,7 @@ class Family(family.Family):
             'ro': u'Apendice',
             'ru': [u'Конкорданс', u'Concordance'],
             'sv': u'Appendix',
+            'uk': u'Індекс',
         }
 
         self.namespaces[103] = {
@@ -263,6 +269,7 @@ class Family(family.Family):
             'ro': u'Discuţie Apendice',
             'ru': [u'Обсуждение конкорданса', u'Concordance talk'],
             'sv': u'Appendixdiskussion',
+            'uk': u'Обговорення індексу',
         }
 
         self.namespaces[104] = {

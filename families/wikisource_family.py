@@ -135,6 +135,7 @@ class Family(family.Family):
             'nl': u'Hoofdportaal',
             'pt': u'Portal',
             'sl': u'Stran',
+            'tr': u'Kişi',
         }
         self.namespaces[101] = {
             'bg': u'Автор беседа',
@@ -148,6 +149,7 @@ class Family(family.Family):
             'nl': u'Overleg hoofdportaal',
             'pt': u'Portal Discussão',
             'sl': u'Pogovor o strani',
+            'tr': u'Kişi tartışma',
         }
         self.namespaces[102] = {
             'ar': u'مؤلف',
@@ -209,6 +211,7 @@ class Family(family.Family):
         }
 
         self.namespaces[106] = {
+            'en': u'Index',
             'he': u'ביאור',
             'hy': u'Ինդեքս',
             'it': u'Portale',
@@ -217,6 +220,7 @@ class Family(family.Family):
         }
 
         self.namespaces[107] = {
+            'en': u'Index talk',
             'he': u'שיחת ביאור',
             'hy': u'Ինդեքսի քննարկում',
             'it': u'Discussioni portale',

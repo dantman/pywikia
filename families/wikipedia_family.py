@@ -93,6 +93,7 @@ class Family(family.Family):
             'io': u'Wikipedio',
             'ka': u'ვიკიპედია',
             'kk': u'Уикипедия',
+            'km': u'វិគីភីឌា',
             'kn': u'ವಿಕಿಪೀಡಿಯ',
             'ko': u'위키백과',
             'ku': u'Wîkîpediya',
@@ -202,7 +203,7 @@ class Family(family.Family):
             'kab': u'Amyannan n Wikipedia',
             'kk': u'Уикипедия талқылауы',
             'kl': u'Wikipedia-diskussion',
-            'km': u'ការពិភាក្សាអំពីWikipedia',
+            'km': u'ការពិភាក្សាអំពីវិគីភីឌា',
             'kn': u'ವಿಕಿಪೀಡಿಯ ಚರ್ಚೆ',
             'ko': u'위키백과토론',
             'ksh': u'Wikipedia Klaaf',
@@ -465,6 +466,30 @@ class Family(family.Family):
             'es': u'Anexo Discusión',
             'fr': u'Discussion Référence',
             'lt': u'Sąrašo aptarimas',
+        }
+
+        self.namespaces[106] = {
+            'als': u'Text',
+        }
+
+        self.namespaces[107] = {
+            'als': u'Text Diskussion',
+        }
+
+        self.namespaces[108] = {
+            'als': u'Spruch',
+        }
+
+        self.namespaces[109] = {
+            'als': u'Spruch Diskussion',
+        }
+
+        self.namespaces[110] = {
+            'als': u'Nochricht',
+        }
+
+        self.namespaces[111] = {
+            'als': u'Nochricht Diskussion',
         }
 
         self.disambiguationTemplates = {
