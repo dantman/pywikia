@@ -318,11 +318,26 @@ HiddenTemplateNotification = {
         'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
         'ta': None,
         }
-# Stub - will make it better in future (no time now)
+# Stub - will make it better in future, work in progress.
 duplicatesText = {
         'commons':u'\n{{Dupe|__image__}}',
         'en':None,
         'it':u'\n{{Cancella subito|Immagine doppia di [[:__image__]]}}',
+        }
+duplicate_user_talk_head = {
+        'commons':None,
+        'it': u'\n\n== Immagine doppia ==\n',
+        }
+duplicates_user_talk_text = {
+        'commons':u'{{subst:User:Filnik/duplicates|Image:%s}}',
+        'en':None,
+        'it':u"{{subst:Utente:Filbot/duplicati|%s}} --~~~~",
+        }
+
+duplicates_comment = {
+        'commons':u'Bot: Dupe image found',
+        'en':None,
+        'it':u'Bot: Trovata immagine doppia',
         }
 duplicatesRegex = {
         'commons':r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
@@ -407,13 +422,15 @@ class main:
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
         # Adding the bot's nickname at the notification text if needed.
-        botolist = wikipedia.translate(wikipedia.getSite(), bot_list)
+        botolist = wikipedia.translate(wikipedia.getSite(), bot_list)     
         project = wikipedia.getSite().family.name
         bot = config.usernames[project]
         botnick = bot[wikipedia.getSite().lang]
         self.botnick = botnick
-        self.botolist = botolist.append(botnick)
+        botolist.append(botnick)
+        self.botolist = botolist
         self.sendemailActive = sendemailActive
+        self.duplicatesReport = duplicatesReport
     def report(self, newtext, image, notification = None, head = None, notification2 = None, unver = True, commx = None):
         """ Function to make the reports easier (or I hope so). """
         # Defining some useful variable for next...
@@ -421,6 +438,7 @@ class main:
         self.image = image
         self.head = head
         self.notification = notification
+        self.notification2 = notification2
         if self.notification != None:
             self.notification = re.sub('__botnick__', self.botnick, notification)
         if self.notification2 != None:
@@ -430,7 +448,7 @@ class main:
         while 1:
             if unver == True:
                 try:
-                    resPutMex = run.put_mex()
+                    resPutMex = self.put_mex()
                 except wikipedia.NoPage:
                     wikipedia.output(u"The page has been deleted! Skip!")
                     break
@@ -442,7 +460,7 @@ class main:
                         break
             else:
                 try:
-                    resPutMex = run.put_mex(False)
+                    resPutMex = self.put_mex(False)
                 except wikipedia.NoPage:
                     wikipedia.output(u"The page has been deleted!")
                     break
@@ -454,11 +472,11 @@ class main:
                         break
             if self.notification != None and self.head != None:
                 try:
-                    run.put_talk()
+                    self.put_talk()
                 except wikipedia.EditConflict:
                     wikipedia.output(u"Edit Conflict! Retrying...")
                     try:
-                        run.put_talk()
+                        self.put_talk()
                     except:
                         wikipedia.output(u"Another error... skipping the user..")
                         break
@@ -652,6 +670,10 @@ class main:
         # report(unvertext, imageName, notification, head)
         dupText = wikipedia.translate(self.site, duplicatesText)
         dupRegex = wikipedia.translate(self.site, duplicatesRegex)
+        dupTalkHead = wikipedia.translate(self.site, duplicate_user_talk_head)
+        dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
+        dupComment = wikipedia.translate(self.site, duplicates_comment)
+
         self.image = image
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
@@ -673,14 +695,16 @@ class main:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
             else:
                 wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.image, len(duplicates) - 1))
-            if duplicatesReport:
-            repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
+            if self.duplicatesReport:
+                repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
                 for duplicate in duplicates:
                     if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
                         continue # the image itself, not report also this as duplicate
                     repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)    
                 result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
-            if result and not dupText == None and not dupRegex == None:
+                if not result:
+                    return True # If Errors, exit (but continue the check)
+            if not dupText == None and not dupRegex == None:
                 for duplicate in duplicates:
                     if wikipedia.Page(self.site, u'Image:%s' % duplicate) == wikipedia.Page(self.site, u'Image:%s' % self.image):
                         continue # the image itself, not report also this as duplicate
@@ -691,7 +715,8 @@ class main:
                         continue # The page doesn't exists
                     if re.findall(dupRegex, DupPageText) == []:
                         wikipedia.output(u'Adding the duplicate template in the image...')
-                        self.report(re.sub(r'__image__', r'%s' % self.image, dupText), duplicate)                
+                        self.report(re.sub(r'__image__', r'%s' % self.image, dupText),
+                                    duplicate, dupTalkText, dupTalkHead, commx = dupComment, unver = False)                
         return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
@@ -1170,7 +1195,7 @@ def checkbot():
                         reported = True
                     if reported == True:
                         #if imagestatus_used == True:
-                        self.report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
+                        mainClass.report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
                     else:
                         wikipedia.output(u"Skipping the image...")
                     some_problem = False
@@ -1187,7 +1212,7 @@ def checkbot():
                     canctext = di % extension
                     notification = din % imageName
                     head = dih
-                    self.report(canctext, imageName, notification, head)
+                    mainClass.report(canctext, imageName, notification, head)
                     delete = False
                     continue
                 elif g in nothing:
@@ -1197,7 +1222,7 @@ def checkbot():
                     else:
                         notification = nn % imageName
                     head = nh 
-                    self.report(unvertext, imageName, notification, head, smwl)
+                    mainClass.report(unvertext, imageName, notification, head, smwl)
                     continue
                 else:
                     wikipedia.output(u"%s has only text and not the specific license..." % imageName)
@@ -1206,7 +1231,7 @@ def checkbot():
                     else:
                         notification = nn % imageName
                     head = nh
-                    self.report(unvertext, imageName, notification, head, smwl)
+                    mainClass.report(unvertext, imageName, notification, head, smwl)
                     continue
     # A little block to perform the repeat or to break.
         if repeat == True:
