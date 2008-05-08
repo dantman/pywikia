@@ -6,8 +6,8 @@ without title, (i.e. <ref>[http://www.google.fr/]</ref> or
 the link to use it as the title of the wiki link in the reference, i.e.
 <ref>[http://www.google.fr/search?q=test test - Google Search]</ref>
 
-The bot checks every 20 edits its talk page and a special stop page : if
-one of these page has been edited, it stops.
+The bot checks every 20 edits a special stop page : if
+the page has been edited, it stops.
 
 DumZiBoT is running that script on en: & fr: at every new dump, running it on de: is not allowed anymore.
 
@@ -493,9 +493,6 @@ class ReferencesRobot:
                 if actualRev != self.stopPageRevId:
                     wikipedia.output(u'[[%s]] has been edited : Someone wants us to stop.' % self.stopPage)
                     return
-            if self.site.messages():
-                wikipedia.output(u'Bot has new messages. Better stop to check.')
-                return
 
 def main():
     genFactory = pagegenerators.GeneratorFactory()
