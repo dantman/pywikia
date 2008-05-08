@@ -442,6 +442,8 @@ not supported by PyWikipediaBot!"""
             self._userName = None
             self._ipedit = None
             self._editTime = None
+            # For the Flagged Revisions MediaWiki extension
+            self._revisionId = None
             self._deletedRevs = None
         except NoSuchSite:
             raise
@@ -746,6 +748,9 @@ not supported by PyWikipediaBot!"""
             self.moveRestriction = m.group(1);
         else:
             self.moveRestriction = ''
+        m = re.search('name=["\']baseRevId["\'] type=["\']hidden["\'] value="(\d+)"', text)
+        if m:
+            self._revisionId = m.group(1)
         if change_edit_time:
             # Get timestamps
             m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
@@ -1280,6 +1285,8 @@ not supported by PyWikipediaBot!"""
         else:
             predata['wpEdittime'] = self._editTime
             predata['wpStarttime'] = self._startTime
+        if self._revisionId:
+            predata['baseRevId'] = self._revisionId
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit:
             predata['wpMinoredit'] = '1'
@@ -2653,6 +2660,8 @@ class _GetAll(object):
         text = entry.text
         editRestriction = entry.editRestriction
         moveRestriction = entry.moveRestriction
+        revisionId = entry.revisionid
+
         page = Page(self.site, title)
         successful = False
         for page2 in self.pages:
@@ -2665,6 +2674,7 @@ class _GetAll(object):
                     page2._permalink = entry.revisionid
                     page2._userName = username
                     page2._ipedit = ipedit
+                    page2._revisionId = revisionId
                     page2._editTime = timestamp
                     section = page2.section()
                     m = self.site.redirectRegex().match(text)
