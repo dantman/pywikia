@@ -198,7 +198,8 @@ class XmlDumpNoReferencesPageGenerator:
         """
         self.xmlFilename = xmlFilename
         self.refR = re.compile('</ref>', re.IGNORECASE)
-        self.referencesR = re.compile('<references */>', re.IGNORECASE)
+        # The references tab can contain additional spaces and a group attribute.
+        self.referencesR = re.compile('<references.*?/>', re.IGNORECASE)
 
     def __iter__(self):
         import xmlreader
@@ -215,7 +216,7 @@ class NoReferencesBot:
         self.always = always
         self.site = wikipedia.getSite()
         self.refR = re.compile('</ref>', re.IGNORECASE)
-        self.referencesR = re.compile('<references */>', re.IGNORECASE)
+        self.referencesR = re.compile('<references.*?/>', re.IGNORECASE)
         try:
             self.referencesTemplates = referencesTemplates[wikipedia.getSite().family.name][wikipedia.getSite().lang]
         except KeyError:
