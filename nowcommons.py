@@ -9,8 +9,8 @@ Files are downloaded and compared. If the files match, it can be deleted on
 the source wiki. If multiple versions of the file exist, the script will not
 delete. If the MD5 comparison is not equal, the script will not delete.
 
-A sysop account on the local wiki is required if you want this script to work
-properly.
+A sysop account on the local wiki is required if you want all features of
+this script to work properly.
 
 This script understands various command-line arguments:
     -autonomous:    run automatically, do not ask any questions. All files
@@ -29,6 +29,9 @@ This script understands various command-line arguments:
                     file, including where it is used as a template parameter
                     or in galleries.  However, it can also make more
                     mistakes.
+
+    -replaceonly:   Use this if you do not have a local sysop account, but do
+                    wish to replace links from the NowCommons template.
 
 Known issues. Please fix these if you are capable and motivated:
 - if a file marked nowcommons is not present on Wikimedia Commons, the bot
@@ -53,6 +56,7 @@ autonomous = False
 replace = False
 replacealways = False
 replaceloose = False
+replaceonly = False
 
 for arg in wikipedia.handleArgs():
     if arg == '-autonomous':
@@ -64,6 +68,8 @@ for arg in wikipedia.handleArgs():
         replacealways = True
     if arg == '-replaceloose':
         replaceloose = True
+    if arg == '-replaceonly':
+        replaceonly = True
 
 nowCommons = {
     '_default': [
@@ -193,20 +199,21 @@ class NowCommonsDeleteBot:
                     else:
                         wikipedia.output(u'No page is using \"\03{lightgreen}%s\03{default}\" anymore.' % localImagePage.titleWithoutNamespace())
                 commonsText = commonsImagePage.get()
-                if md5 == commonsImagePage.getFileMd5Sum():
-                    wikipedia.output(u'The image is identical to the one on Commons.')
-                    if autonomous == False:
-                        wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % page.title())
-                        wikipedia.output(localImagePage.get())
-                        wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % commonsImagePage.title())
-                        wikipedia.output(commonsText)
-                        choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
-                        if choice == 'y':
+                if replaceonly == False:
+                    if md5 == commonsImagePage.getFileMd5Sum():
+                        wikipedia.output(u'The image is identical to the one on Commons.')
+                        if autonomous == False:
+                            wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % page.title())
+                            wikipedia.output(localImagePage.get())
+                            wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % commonsImagePage.title())
+                            wikipedia.output(commonsText)
+                            choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
+                            if choice == 'y':
+                                localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
+                        else:
                             localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
                     else:
-                        localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
-                else:
-                    wikipedia.output(u'The image is not identical to the one on Commons.')
+                        wikipedia.output(u'The image is not identical to the one on Commons.')
             except (wikipedia.NoPage, wikipedia.IsRedirectPage), e:
                 wikipedia.output(u'%s' % e)
                 continue
