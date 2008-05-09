@@ -9,12 +9,26 @@ Files are downloaded and compared. If the files match, it can be deleted on
 the source wiki. If multiple versions of the file exist, the script will not
 delete. If the MD5 comparison is not equal, the script will not delete.
 
-A sysop account is required for this script to work.
+A sysop account on the local wiki is required if you want this script to work
+properly.
 
 This script understands various command-line arguments:
-    -autonomous:   run automatically, do not ask any questions. All files
-                   that qualify for deletion are deleted. Reduced screen
-                   output.
+    -autonomous:    run automatically, do not ask any questions. All files
+                    that qualify for deletion are deleted. Reduced screen
+                    output.
+
+    -replace:       replace links if the files are equal and the file names
+                    differ
+
+    -replacealways: replace links if the files are equal and the file names
+                    differ without asking for confirmation
+
+    -replaceloose:  Do loose replacements.  This will replace all occurences
+                    of the name of the image (and not just explicit image
+                    syntax).  This should work to catch all instances of the
+                    file, including where it is used as a template parameter
+                    or in galleries.  However, it can also make more
+                    mistakes.
 
 Known issues. Please fix these if you are capable and motivated:
 - if a file marked nowcommons is not present on Wikimedia Commons, the bot
@@ -31,14 +45,25 @@ __version__ = '$Id$'
 
 import sys, re
 import wikipedia, pagegenerators
+import image
 # only for nowCommonsMessage
 from imagetransfer import nowCommonsMessage
 
 autonomous = False
+replace = False
+replacealways = False
+replaceloose = False
 
 for arg in wikipedia.handleArgs():
     if arg == '-autonomous':
         autonomous = True
+    if arg == '-replace':
+        replace = True
+    if arg == '-replacealways':
+        replace = True
+        replacealways = True
+    if arg == '-replaceloose':
+        replaceloose = True
 
 nowCommons = {
     '_default': [
@@ -65,7 +90,7 @@ nowCommons = {
         u'גם בוויקישיתוף'
     ],
     'ja':[
-        u'NowCommons', 
+        u'NowCommons',
     ],
     'ia': [
         u'OraInCommons'
@@ -82,7 +107,7 @@ nowCommons = {
         u'NowCommons'
     ],
     'zh':[
-        u'NowCommons', 
+        u'NowCommons',
         u'Nowcommons',
         u'NCT',
     ],
@@ -104,7 +129,7 @@ class NowCommonsDeleteBot:
     def __init__(self):
         self.site = wikipedia.getSite()
         if repr(self.site) == 'commons:commons':
-            sys.exit('Don\'t run this bot on Commons!')
+            sys.exit('Do not run this bot on Commons!')
         ncList = self.ncTemplates()
         self.nowCommonsTemplate = wikipedia.Page(self.site, 'Template:' + ncList[0])
 
@@ -150,23 +175,23 @@ class NowCommonsDeleteBot:
                 if not filenameOnCommons:
                     wikipedia.output(u'NowCommons template not found.')
                     continue
-                commonsImagePage = wikipedia.ImagePage(commons,
-                                               'Image:%s' % filenameOnCommons)
+                commonsImagePage = wikipedia.ImagePage(commons, 'Image:%s' % filenameOnCommons)
                 if len(localImagePage.getFileVersionHistory()) > 1:
-                    wikipedia.output(u"""\
-This image has a version history. Please delete it manually after making sure
-that the old versions aren't worth keeping.""")
+                    wikipedia.output(u"This image has a version history. Please delete it manually after making sure that the old versions are not worth keeping.""")
                     continue
                 if localImagePage.titleWithoutNamespace() != commonsImagePage.titleWithoutNamespace():
                     usingPages = list(localImagePage.usingPages())
                     if usingPages and usingPages != [localImagePage]:
-                        wikipedia.output(
-            '%s is still used in %i pages. Please change them manually.'
-                                % (localImagePage.title(), len(usingPages)))
+                        wikipedia.output(u'\"\03{lightred}%s\03{default}\" is still used in %i pages.' % (localImagePage.titleWithoutNamespace(), len(usingPages)))
+                        if replace == True:
+                                wikipedia.output(u'Replacing \"\03{lightred}%s\03{default}\" by \"\03{lightgreen}%s\03{default}\".' % (localImagePage.titleWithoutNamespace(), commonsImagePage.titleWithoutNamespace()))
+                                oImageRobot = image.ImageRobot(pagegenerators.FileLinksGenerator(localImagePage), localImagePage.titleWithoutNamespace(), commonsImagePage.titleWithoutNamespace(), '', replacealways, replaceloose)
+                                oImageRobot.run()
+                        else:
+                            wikipedia.output(u'Please change them manually.')
                         continue
                     else:
-                        wikipedia.output('No page is using %s anymore.'
-                                         % localImagePage.title())
+                        wikipedia.output(u'No page is using \"\03{lightgreen}%s\03{default}\" anymore.' % localImagePage.titleWithoutNamespace())
                 commonsText = commonsImagePage.get()
                 if md5 == commonsImagePage.getFileMd5Sum():
                     wikipedia.output(u'The image is identical to the one on Commons.')
@@ -180,6 +205,8 @@ that the old versions aren't worth keeping.""")
                             localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
                     else:
                         localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
+                else:
+                    wikipedia.output(u'The image is not identical to the one on Commons.')
             except (wikipedia.NoPage, wikipedia.IsRedirectPage), e:
                 wikipedia.output(u'%s' % e)
                 continue
