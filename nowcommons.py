@@ -89,6 +89,10 @@ nowCommons = {
         u'NowCommons',
         u'Ncd',
     ],
+    'eo': [
+        u'Nun en komunejo',
+        u'NowCommons',
+    ],
     'fr': [
         u'Désormais sur Commons'
     ],
