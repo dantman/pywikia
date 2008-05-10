@@ -1401,7 +1401,8 @@ not supported by PyWikipediaBot!"""
             # I think the error message title was changed from "Wikimedia Error"
             # to "Wikipedia has a problem", but I'm not sure. Maybe we could
             # just check for HTTP Status 500 (Internal Server Error)?
-            if "<title>Wikimedia Error</title>" in data or "has a problem</title>" in data:
+            if ("<title>Wikimedia Error</title>" in data or "has a problem</title>" in data) \:
+                or response.status == 500:
                 output(
                 u"Wikimedia has technical problems; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
