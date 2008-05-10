@@ -2594,6 +2594,10 @@ class Family:
             ],
         }
 
+        # LDAP domain if your wiki uses LDAP authentication,
+        # http://www.mediawiki.org/wiki/Extension:LDAP_Authentication
+        self.ldapDomain = ()
+
     def _addlang(self, code, location, namespaces = {}):
         """Add a new language to the langs and namespaces of the family.
            This is supposed to be called in the constructor of the family."""

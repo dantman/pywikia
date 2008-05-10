@@ -109,6 +109,7 @@ class LoginManager:
         predata = {
             "wpName": self.username.encode(self.site.encoding()),
             "wpPassword": self.password,
+            "wpDomain": self.site.family.ldapDomain,     # VistaPrint fix
             "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
             "wpRemember": str(int(bool(remember)))
         }

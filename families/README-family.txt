@@ -138,6 +138,13 @@ class Family(family.Family):          # REQUIRED
         # When both at the bottom should categories come after interwikilinks?
         self.categories_last = []
 
+        # SETTINGS FOR LDAP AUTHENTICATION
+        # If your wiki uses:
+        #  http://www.mediawiki.org/wiki/Extension:LDAP_Authentication.
+        # then uncomment this line and define the user's domain required
+        # at login.
+        #self.name = 'domain here'
+
     def protocol(self, code):
         """
         Can be overridden to return 'https'. Other protocols are not supported.
