@@ -722,7 +722,10 @@ class main:
                     DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
                     imagedata = DupePage.getFileVersionHistory()[-1][0]
                     # Example: 21:15, 5 ott 2005
-                    data = time.strptime(imagedata, "%H:%M, %d %b %Y")
+                    try:
+                        data = time.strptime(imagedata, "%H:%M, %d %b %Y")
+                    except ValueError:
+                        data = time.strptime(imagedata, "%H:%M, %d %B %Y")
                     data_seconds = time.mktime(data)
                     time_image_list.append([data_seconds, self.image])
                     time_list.append(data_seconds)
