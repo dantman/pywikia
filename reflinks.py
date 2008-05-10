@@ -67,7 +67,7 @@ dirIndex = re.compile(ur'^\w+://[^/]+/((default|index)\.(asp|aspx|cgi|htm|html|p
 domain = re.compile(ur'^(\w+)://(?:www.|)([^/]+)')
 badtitles = {'en':
                 # is
-                ur'(?is) (test|'
+                ur'(?is)(test|'
                 # starts with
                 +'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$))'
                 # anywhere
@@ -77,9 +77,9 @@ badtitles = {'en':
                 +')',
             'fr':
                 #is
-                ur'(?is) (test|'
+                ur'(?is)(test|'
                 # starts with
-                ur'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$))'
+                + ur'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$))'
                 # anywhere
                 +'|(404|page|file|site).*(not *found|en +travaux)'
                 # ends with
