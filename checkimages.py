@@ -13,34 +13,36 @@ Everything that needs customisation is indicated by comments.
 
 This script understands the following command-line arguments:
 
-    -limit          - The number of images to check (default: 80)
+    -limit              - The number of images to check (default: 80)
 
-    -commons        - The Bot will check if an image on Commons has the same name
-                    and if true it report the image.
+    -commons            - The Bot will check if an image on Commons has the same name
+                        and if true it report the image.
 
-    -duplicates     - Checking if the image has duplicates.
+    -duplicates         - Checking if the image has duplicates.
 
-    -duplicatesreport - Report the duplicates in a log *AND* put the template in the images.
+    -duplicatesreport   - Report the duplicates in a log *AND* put the template in the images.
+
+    -sendemail          - Send an email after tagging.
 
     -break	        - To break the bot after the first check (default: recursive)
 
-    -time[:#]	- Time in seconds between repeat runs (default: 30)
+    -time[:#]	        - Time in seconds between repeat runs (default: 30)
 
-    -wait[:#]       - Wait x second before check the images (default: 0)
+    -wait[:#]           - Wait x second before check the images (default: 0)
 
-    -skip[:#]	- The bot skip the first [:#] images (default: 0)
+    -skip[:#]	        - The bot skip the first [:#] images (default: 0)
 
-    -start[:#]	- Use allpages() as generator (it starts already form Image:[:#])
+    -start[:#]	        - Use allpages() as generator (it starts already form Image:[:#])
 
-    -cat[:#]        - Use a category as generator
+    -cat[:#]            - Use a category as generator
 
-    -regex[:#]      - Use regex, must be used with -url or -page
+    -regex[:#]          - Use regex, must be used with -url or -page
 
-    -page[:#]       - Define the name of the wikipage where are the images
+    -page[:#]           - Define the name of the wikipage where are the images
 
-    -url[:#]	- Define the url where are the images
+    -url[:#]	        - Define the url where are the images
 
-    -untagged[:#]   - Use daniel's tool as generator ( http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php )
+    -untagged[:#]       - Use daniel's tool as generator ( http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php )
 
 ---- Istructions for the real-time settings  ----
 * For every new block you have to add:
@@ -66,7 +68,7 @@ while Findonly= search only if the exactly text that you give is in the image's 
 #
 # (C) Kyle/Orgullomoore, 2006-2007 (newimage.py)
 # (C) Siebrand Mazeland, 2007
-# (C) Filnik, 2007
+# (C) Filnik, 2007-2008
 #
 # Distributed under the terms of the MIT license.
 #
@@ -320,9 +322,9 @@ HiddenTemplateNotification = {
         }
 # Stub - will make it better in future, work in progress.
 duplicatesText = {
-        'commons':u'\n{{Dupe|__image__}}',
+        'commons':u'\n{{Dupe|Image:__image__}}',
         'en':None,
-        'it':u'\n{{Cancella subito|Immagine doppia di [[:__image__]]}}',
+        'it':u'\n{{Cancella subito|Immagine doppia di [[:Immagine:__image__]]}}',
         }
 duplicate_user_talk_head = {
         'commons':None,
@@ -345,11 +347,18 @@ duplicatesRegex = {
         'it':r'\{\{(?:[Tt]emplate:|)[Cc]ancella[ _]subito[|}]',
         }
 
-# Another stub
+## Put None if you don't use this option or simply add nothing if en
+## is still None.
+# Page where is stored the message to send as email to the users
 emailPageWithText = {
         'de':'Benutzer:ABF/D3',
         'en':None,
-        }   
+        }
+# Title of the email
+emailSubject = {
+        'de':'Problemen mit Deinem Bild auf der Deutschen Wikipedia',
+        'en':None,
+        }
 
 # Add your project (in alphabetical order) if you want that the bot start
 project_inserted = [u'ar', u'commons', u'de', u'en', u'ja', u'hu', u'it', u'ta', u'zh']
@@ -404,11 +413,8 @@ def pageText(url):
         response.close()
     return text
 
-def sendEmail():
-    """ Function that let you send email trough the Wikipedia system """
-    pass # Empty, need work
-
 def returnOlderTime(listGiven, timeListGiven):
+    """ Get some time and return the oldest of them """
     for element in listGiven:
         time = element[0]
         imageName = element[1]
@@ -419,6 +425,50 @@ def returnOlderTime(listGiven, timeListGiven):
                 break
         if not_the_oldest == False:
             return imageName     
+
+class EmailSender(wikipedia.Page):
+    """ Class to send emails through the Wikipedia's dedicated page. """
+    def __init__(self, site, user):
+        self.wikisite = site
+        self.user = user
+        page_special_name = u'Special:EmailUser'
+        self.page_special_name = page_special_name
+        page = '%s/%s' % (self.page_special_name, self.user)
+        self.page = page
+        wikipedia.Page.__init__(self, site, page, None, 0)
+ 
+    def send(self, subject, text, prompt = True):
+        """ Send an email through wikipedia's page. """
+        host = self.site().hostname()
+        address = '/w/index.php?title=%s&target=%s&action=submit' % (self.page_special_name, self.user)
+        # Getting the token.
+        token = self.site().getToken(self)
+        # Defing the predata.
+        predata = {
+            "wpSubject" : subject,
+            "wpText" : text,
+            'wpSend' : "Send",
+            'wpCCMe' : '0',
+        }
+        predata['wpEditToken'] = token
+        if self.site().hostname() in config.authenticate.keys():
+            predata['Content-type'] = 'application/x-www-form-urlencoded'
+            predata['User-agent'] = wikipedia.useragent
+            data = self.site().urlEncode(predata)
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+            data = u''
+        else:
+            response, data = self.site().postForm(address, predata, sysop = False)
+        if data:
+            if 'var wgAction = "success";' in data:
+                wikipedia.output(u'Email sent')
+                return True
+            else:
+                wikipedia.output(u'Email not sent')
+                return False
+        else:
+            wikipedia.output(u'No data found.')
+            return False
 
 # Here there is the main class.
 class main:
@@ -513,7 +563,7 @@ class main:
         # You can use this function also to find only the user that
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
-            p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
+            pass#p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
         # paginetta it's the image page object.
         paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
         # I take the data of the latest uploader and I take only the name
@@ -546,6 +596,7 @@ class main:
         """ Function to put the warning in talk page of the uploader."""
         commento2 = wikipedia.translate(self.site, comm2)
         emailPageName = wikipedia.translate(self.site, emailPageWithText)
+        emailSubj = wikipedia.translate(self.site, emailSubject)
         if self.notification2 == None:
             self.notification2 = self.notification
         else:
@@ -592,17 +643,19 @@ class main:
         else:
             commentox = self.commx
         if second_text == True:
-            self.talk_page.put("%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
+            pass#self.talk_page.put("%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
         elif second_text == False:
-            self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
-        if emailPageName != None:
+            pass#self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
+        if emailPageName != None and emailSubj != None:
             emailPage = wikipedia.Page(self.site, emailPageName)
             try:
                 emailText = emailPage.get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 return # Exit
             if self.sendemailActive:
-                sendEmail(self.luser, re.sub(r'__user-nickname__', '%s' % self.luser, emailText))            
+                text_to_send = re.sub(r'__user-nickname__', '%s' % self.luser, emailText)
+                emailClass = EmailSender(self.site, self.luser)
+                emailClass.send(emailSubj, text_to_send)            
 			
     def untaggedGenerator(self, untaggedProject, limit):
         """ Generator that yield the images without license. It's based on a tool of the toolserver. """
@@ -731,15 +784,18 @@ class main:
                     time_list.append(data_seconds)
                 older_image = returnOlderTime(time_image_list, time_list)
                 # And if the images are more than two?
+                Page_oder_image = wikipedia.ImagePage(self.site, u'Image:%s' % older_image)
                 for duplicate in duplicates: 
                     if wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, duplicate)) == \
                        wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, older_image)):
                         continue # the older image, not report also this as duplicate
+                    DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
                     try:
                         DupPageText = DupePage.get()
+                        older_page_text = Page_oder_image.get()
                     except wikipedia.NoPage:
                         continue # The page doesn't exists
-                    if re.findall(dupRegex, DupPageText) == []:
+                    if re.findall(dupRegex, DupPageText) == [] and e.findall(dupRegex, older_page_text) == []:
                         wikipedia.output(u'Adding the duplicate template in the image...')
                         self.report(re.sub(r'__image__', r'%s' % older_image, dupText), duplicate,
                                     dupTalkText % (duplicate, older_image), dupTalkHead, commx = dupComment, unver = True)
