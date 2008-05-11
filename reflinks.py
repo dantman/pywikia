@@ -44,22 +44,26 @@ import subprocess, tempfile, os
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
             'it':u'Utente:DumZiBoT/EditThisPageToStopMe',
+            'ko':u'사용자:GrassnBreadRefBot/EditThisPageToStopMe1',
             'hu':'User:Damibot/EditThisPageToStopMe',
             'en':u'User:DumZiBoT/EditThisPageToStopMe'}
 
 msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
+        'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'{{lien mort}}',
                'de':u'',
                'hu':u'{{halott link}}',
+               'ko':u'{{죽은 바깥 고리}}',
                'en':u'{{dead link}}'}
 
 comment = {'fr':u'Titre généré automatiquement',
            'de':u'Automatisch generierter titel',
            'hu':u'Robot generálta cím',
+           'ko':u'봇이 따온 제목',
            'en':u'Bot generated title'}
 
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)
@@ -424,6 +428,9 @@ class ReferencesRobot:
                 elif u'.jp' in ref.link:
                     enc.append("shift jis 2004")
                     enc.append("cp932")
+                elif u'.kr' in ref.link:
+                    enc.append("euc-kr")
+                    enc.append("cp949")
                 elif u'.zh' in ref.link:
                     enc.append("gbk")
                 

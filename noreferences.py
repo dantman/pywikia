@@ -50,6 +50,7 @@ msg = {
     'en':u'Robot: Adding missing <references /> tag',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
     'ja':u'ロボットによる: <references /> タグを追加。',
+    'ko':u'봇: 이전에 없던 <references /> 추가',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'pt':u'Bot: Adicionando a tag <references />',
     'zh':u'機器人: 增加遺失的 <references /> 標籤',
@@ -91,6 +92,16 @@ placeBeforeSections = {
     ],
     'ja':[
         u'外部リンク',
+    ],
+    'ko':[               # no explicit policy on where to put the references
+        u'외부 링크',
+        u'외부링크',
+        u'바깥 고리',
+        u'바깥고리',
+        u'바깥 링크',
+        u'바깥링크'
+        u'외부 고리',
+        u'외부고리'
     ],
     'lt': [              # no explicit policy on where to put the references
         u'Nuorodos'
@@ -147,6 +158,13 @@ referencesSections = {
         u'出典',
         u'注釈',
     ],
+    'ko':[              # 
+        u'주석',
+        u'각주'
+        u'주석 및 참고 자료'
+        u'주석 및 참고자료',
+        u'주석 및 참고 출처'
+    ],
     'lt': [             # not sure about which ones are preferred.
         u'Šaltiniai',
         u'Literatūra',
@@ -180,6 +198,7 @@ referencesTemplates = {
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'hu': [u'reflist'],
         'ja': [u'Reflist'],
+        'ko': [u'주석', u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
         'zh': [u'Reflist'],
     },
