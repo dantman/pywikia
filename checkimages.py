@@ -486,7 +486,7 @@ class main:
         botolist = wikipedia.translate(wikipedia.getSite(), bot_list)     
         project = wikipedia.getSite().family.name
         bot = config.usernames[project]
-        botnick = bot[wikipedia.getSite().lang]
+        botnick = bot[self.site.lang]
         self.botnick = botnick
         botolist.append(botnick)
         self.botolist = botolist
@@ -563,7 +563,7 @@ class main:
         # You can use this function also to find only the user that
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
-            pass#p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
+            p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
         # paginetta it's the image page object.
         paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
         # I take the data of the latest uploader and I take only the name
@@ -643,9 +643,9 @@ class main:
         else:
             commentox = self.commx
         if second_text == True:
-            pass#self.talk_page.put("%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
+            self.talk_page.put("%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
         elif second_text == False:
-            pass#self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
+            self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
         if emailPageName != None and emailSubj != None:
             emailPage = wikipedia.Page(self.site, emailPageName)
             try:
@@ -795,7 +795,7 @@ class main:
                         older_page_text = Page_oder_image.get()
                     except wikipedia.NoPage:
                         continue # The page doesn't exists
-                    if re.findall(dupRegex, DupPageText) == [] and e.findall(dupRegex, older_page_text) == []:
+                    if re.findall(dupRegex, DupPageText) == [] and re.findall(dupRegex, older_page_text) == []:
                         wikipedia.output(u'Adding the duplicate template in the image...')
                         self.report(re.sub(r'__image__', r'%s' % older_image, dupText), duplicate,
                                     dupTalkText % (duplicate, older_image), dupTalkHead, commx = dupComment, unver = True)
