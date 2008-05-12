@@ -63,7 +63,7 @@ report_dead_links_on_talk - If set to true, causes the script to report dead
                             times during a timespan of at least one week.
 
 Syntax examples:
-    python weblinkchecker.py
+    python weblinkchecker.py -start:!
         Loads all wiki pages in alphabetical order using the Special:Allpages
         feature.
 
