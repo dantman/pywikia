@@ -417,10 +417,20 @@ class LinkChecker(object):
         except httplib.error, error:
             return False, u'HTTP Error: %s' % error.__class__.__name__
         except socket.error, error:
-            # TODO: decode error[1]. On Linux, it's encoded in UTF-8.
+            # http://docs.python.org/lib/module-socket.html :
+            # socket.error :
+            # The accompanying value is either a string telling what went
+            # wrong or a pair (errno, string) representing an error 
+            # returned by a system call, similar to the value 
+            # accompanying os.error
+            if isinstance(error, basestring):
+                msg = error
+            else:
+                msg = error[1]
+            # TODO: decode msg. On Linux, it's encoded in UTF-8.
             # How is it encoded in Windows? Or can we somehow just
             # get the English message?
-            return False, u'Socket Error: %s' % repr(error[1])
+            return False, u'Socket Error: %s' % repr(msg)
         if wasRedirected:
             if self.url in self.redirectChain:
                 if useHEAD:
