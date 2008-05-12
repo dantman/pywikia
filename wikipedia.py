@@ -223,13 +223,13 @@ class Page(object):
     """Page: A MediaWiki page
 
     Constructor has two required parameters:
-      1) The wikimedia Site on which the page resides [note that, if the
+      1) The wiki Site on which the page resides [note that, if the
          title is in the form of an interwiki link, the Page object may
          have a different Site than this]
       2) The title of the page as a unicode string
 
     Optional parameters:
-      insite - the wikimedia Site where this link was found (to help decode
+      insite - the wiki Site where this link was found (to help decode
                interwiki links)
       defaultNamespace - A namespace to use if the link does not contain one
 
@@ -1403,8 +1403,7 @@ not supported by PyWikipediaBot!"""
             # just check for HTTP Status 500 (Internal Server Error)?
             if ("<title>Wikimedia Error</title>" in data or "has a problem</title>" in data) \
                 or response.status == 500:
-                output(
-                u"Wikimedia has technical problems; will retry in %i minute%s."
+                output(u"Server error encountered; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
                 retry_delay *= 2
@@ -3721,7 +3720,7 @@ class Site(object):
     Constructor takes four arguments; only code is mandatory:
 
     code            language code for Site
-    fam             Wikimedia family (optional: defaults to configured).
+    fam             Wiki family (optional: defaults to configured).
                     Can either be a string or a Family object.
     user            User to use (optional: defaults to configured)
     persistent_http Use a persistent http connection. An http connection
