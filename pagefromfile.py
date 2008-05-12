@@ -66,7 +66,8 @@ class PageFromFileRobot:
         'nl': u'Geautomatiseerde import',
         'no': u'bot: Automatisk import',
         'pl': u'Automatyczny import artykułów',
-        'pt': u'Importação automática de artigos'
+        'pt': u'Importação automática de artigos',
+        'zh': u'機器人: 自動匯入頁面',
     }
 
     # The following messages are added to topic when the page already exists
@@ -83,7 +84,8 @@ class PageFromFileRobot:
         'nl': u'bovenaan toegevoegd',
         'no': u'legger til øverst',
         'pl': u'dodaj na górze',
-        'pt': u'adicionado no topo'
+        'pt': u'adicionado no topo',
+        'zh': u'機器人: 增加至最上層',
     }
 
     msg_bottom = {
@@ -100,6 +102,7 @@ class PageFromFileRobot:
         'no': u'legger til nederst',
         'pl': u'dodaj na dole',
         'pt': u'adicionando no fim'
+        'zh': u'機器人: 增加至最底層',
     }
 
     msg_force = {
@@ -116,6 +119,7 @@ class PageFromFileRobot:
         'no': u'erstatter eksisterende tekst',
         'pl': u'aktualny tekst nadpisany',
         'pt': u'sobrescrever texto'
+        'zh': u'機器人: 覆寫已存在的文字',
     }
 
     def __init__(self, reader, force, append, summary, minor, autosummary, debug):
