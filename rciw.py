@@ -20,15 +20,7 @@ import threading
 import re
 import wikipedia
 import time
-
-class iwThread(threading.Thread):
-    def __init__(self, toiw):
-        threading.Thread.__init__(self)
-        self.toiw = toiw
-    def run(self):
-        bot = interwiki.InterwikiBot()
-        bot.add(self.toiw)
-        bot.run()
+from Queue import Queue
 
 class SignerBot(SingleServerIRCBot):
     def __init__(self, site, channel, nickname, server, port=6667):
@@ -37,6 +29,22 @@ class SignerBot(SingleServerIRCBot):
         self.other_ns = re.compile(u'14\[\[07(' + u'|'.join(site.namespaces()) + u')')
         interwiki.globalvar.autonomous = True
         self.site = site
+        self.queue = Queue()
+        # Start 20 threads
+        for i in range(20):
+            t = threading.Thread(target=self.worker)
+            t.start()
+
+    def worker(self):
+        bot = interwiki.InterwikiBot()
+        while True:
+            # Will wait until one page is available
+            bot.add(self.queue.get())
+            bot.queryStep()
+            self.queue.task_done()
+
+    def join(self):
+        self.queue.join()
 
     def on_nicknameinuse(self, c, e):
         c.nick(c.get_nickname() + "_")
@@ -52,9 +60,9 @@ class SignerBot(SingleServerIRCBot):
         if not self.other_ns.match(msg):
             name = msg[8:msg.find(u'14',9)]
             page = wikipedia.Page(self.site, name)
-            thread = iwThread(page)
-            thread.start()
-            
+            # the Queue has for now an (theoric) unlimited size,
+            # it is a simple atomic append(), no need to acquire a semaphore
+            self.queue.put_nowait(page)
 
     def on_dccmsg(self, c, e):
 	pass
@@ -69,13 +77,18 @@ class SignerBot(SingleServerIRCBot):
 	pass
 
 def main():
-    global times
-    times = []
     site = wikipedia.getSite()
     site.forceLogin()
     chan = '#' + site.language() + '.' + site.family.name
     bot = SignerBot(site, chan, site.loggedInAs(), "irc.wikimedia.org", 6667)
-    bot.start()
+    try:
+        bot.start()
+    except:
+        # Quit IRC
+        bot.stop()
+        # Join the IW threads
+        bot.join()
+        raise
 
 if __name__ == "__main__":
     main()
