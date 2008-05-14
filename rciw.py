@@ -63,6 +63,7 @@ class SignerBot(SingleServerIRCBot):
             # the Queue has for now an (theoric) unlimited size,
             # it is a simple atomic append(), no need to acquire a semaphore
             self.queue.put_nowait(page)
+            print self.queue.qsize()
 
     def on_dccmsg(self, c, e):
 	pass
@@ -85,7 +86,7 @@ def main():
         bot.start()
     except:
         # Quit IRC
-        bot.stop()
+        bot.disconnect()
         # Join the IW threads
         bot.join()
         raise

@@ -52,18 +52,21 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZi
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
+        'es':u'Formateando las referencias que no tuvieran titulos (Pruebas por [[Wikipedia:Bot/Autorizaciones#DumZiBoT]] )',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
-deadLinkTag = {'fr':u'{{lien mort}}',
+deadLinkTag = {'fr':u'%s {{lien mort}}',
                'de':u'',
-               'hu':u'{{halott link}}',
-               'ko':u'{{죽은 바깥 고리}}',
-               'en':u'{{dead link}}'}
+               'hu':u'%s {{halott link}}',
+               'ko':u'%s {{죽은 바깥 고리}}',
+               'es':u'{{enlace roto2|%s}}',
+               'en':u'%s {{dead link}}'}
 
 comment = {'fr':u'Titre généré automatiquement',
            'de':u'Automatisch generierter titel',
            'hu':u'Robot generálta cím',
            'ko':u'봇이 따온 제목',
+           'es':u'Título generado por un bot',
            'en':u'Bot generated title'}
 
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)
@@ -149,8 +152,8 @@ class RefLink:
         return '<ref%s>%s</ref>' % (self.refname, self.link)
     
     def refDead(self):
-        tag = wikipedia.translate(self.site, deadLinkTag)
-        return '<ref%s>[%s]%s</ref>' % (self.refname, self.link, tag)
+        tag = wikipedia.translate(self.site, deadLinkTag) % self.link
+        return '<ref%s>%s</ref>' % (self.refname, tag)
 
     def transform(self, ispdf = False):
         #convert html entities
@@ -202,8 +205,13 @@ class ReferencesRobot:
         self.ignorepdf = ignorepdf
         self.site = wikipedia.getSite()
         self.stopPage = wikipedia.translate(self.site, stopPage)
-        self.stopPageRevId = wikipedia.Page(self.site, 
-                                            self.stopPage).latestRevision()
+        try :
+            self.stopPageRevId = wikipedia.Page(self.site, 
+                                                self.stopPage).latestRevision()
+        except wikipedia.NoPage :
+            wikipedia.output(u'The stop page %s does not exist' 
+                                % self.stopPage.aslink())
+            wikipedia.stopme()
         self.META_CONTENT = re.compile(ur'(?i)<meta[^>]*content\-type[^>]*>')
         self.CHARSET = re.compile(ur'(?i)charset\s*=\s*(?P<enc>[^\'";>/]*)')
         self.TITLE = re.compile(ur'(?is)(?<=<title>).*?(?=</title>)')
