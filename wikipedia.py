@@ -1079,12 +1079,12 @@ not supported by PyWikipediaBot!"""
                 if self.site().has_mediawiki_message("Istemplate") \
                         and self._istemplatemessage in textafter:
                     istemplate = True
-
             if (withTemplateInclusion or onlyTemplateInclusion or not istemplate
                     ) and (not redirectsOnly or isredirect
                     ) and (not onlyTemplateInclusion or istemplate
                     ):
                 yield p
+                continue
 
             if isredirect and follow_redirects:
                 sublist = link.find("ul")
@@ -1301,15 +1301,17 @@ not supported by PyWikipediaBot!"""
             predata['masteredit'] = '1'
 
         retry_delay = 1
+        already_advise = False
         while True:
             # Check whether we are not too quickly after the previous
             # putPage, and wait a bit until the interval is acceptable
             put_throttle()
             # Which web-site host are we submitting to?
-            if newPage:
-                output(u'Creating page %s' % self.aslink(forceInterwiki=True))
-            else:
-                output(u'Changing page %s' % self.aslink(forceInterwiki=True))
+            if not already_advise:
+                if newPage:
+                    output(u'Creating page %s' % self.aslink(forceInterwiki=True))
+                else:
+                    output(u'Changing page %s' % self.aslink(forceInterwiki=True))
             # Submit the prepared information
             if self.site().hostname() in config.authenticate.keys():
                 predata["Content-type"] = "application/x-www-form-urlencoded"
@@ -1376,7 +1378,12 @@ not supported by PyWikipediaBot!"""
             if '<label for=\'wpRecreate\'' in data:
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
-                raise EditConflict(u'Someone deleted the page.')
+                # raise EditConflict(u'Someone deleted the page.')
+                # No raise, simply define these variables and retry:
+                predata['wpEdittime'] = self._editTime
+                predata['wpStarttime'] = self._startTime
+                already_advise = True # Note print "Creating/Changing" again without reason..
+                continue
             if self.site().has_mediawiki_message("viewsource")\
                     and self.site().mediawiki_message('viewsource') in data:
                 # The page is locked. This should have already been
