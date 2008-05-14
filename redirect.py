@@ -263,15 +263,22 @@ class RedirectGenerator:
 
     def get_moved_pages_redirects(self):
         '''generate redirects to recently-moved pages'''
-        offset = max(0, self.offset)
+        # this will run forever, until user interrupts it
+        import datetime
+
+        offsetpattern = re.compile(
+r"""\(<a href="/w/index\.php\?title=Special:Log&amp;offset=(\d+)&amp;limit=500&amp;type=move" title="Special:Log" rel="next">older 500</a>\)""")
+        start = datetime.datetime.utcnow() - datetime.timedelta(0, 3600)
+        # one hour ago
+        offset = start.strftime("%Y%m%d%H%M%S")
         site = wikipedia.getSite()
-        while offset <= 10000: # MW won't accept offset value > 10000
+        while True:
             move_url = \
-                site.path() + "?title=Special:Log&limit=500&offset=%i&type=move"\
+                site.path() + "?title=Special:Log&limit=500&offset=%s&type=move"\
                        % offset
             try:
                 move_list = site.getUrl(move_url)
-#                wikipedia.output(u"[%i]" % offset)
+#                wikipedia.output(u"[%s]" % offset)
             except:
                 import traceback
                 traceback.print_exc()
@@ -281,13 +288,16 @@ class RedirectGenerator:
                 # to it need to be changed
                 try:
                     for page in wikipedia.Page(site, moved_page
-                                          ).getReferences(follow_redirects=True,
-                                                          redirectsOnly=True):
+                                ).getReferences(follow_redirects=True,
+                                                redirectsOnly=True):
                         yield page
                 except wikipedia.NoPage:
                     # original title must have been deleted after move
                     continue
-            offset += 500
+            m = offsetpattern.search(move_list)
+            if not m:
+                break
+            offset = m.group(1)
 
 
 class RedirectRobot:
