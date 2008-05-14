@@ -836,6 +836,9 @@ not supported by PyWikipediaBot!"""
             # When we get the page with getall, the permalink is received
             # automatically
             getall(self.site(),[self],force=True)
+            # Check for exceptions
+            if hasattr(self, '_getexception'):
+                raise self._getexception
         return int(self._permalink)
 
     def previousRevision(self):
