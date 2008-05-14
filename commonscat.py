@@ -178,7 +178,7 @@ def addCommonscat (page = None, summary = None, always = False):
             #We found one or more commonscat links, build the template and add it to our page
             #TODO: We should check if we found more than one different link.            
             commonscat = "{{" + getTemplate(page.site().language()) + "|" + commonscat + "}}";
-            add_text.add_text(page, commonscat, summary, None, None, always);
+            (success, always) = add_text.add_text(page, commonscat, summary, None, None, always);
             #updateInterwiki(page, commonscatpage)
     return (True, always);
 
