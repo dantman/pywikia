@@ -36,6 +36,7 @@ TODO:
 import wikipedia, config, pagegenerators, add_text
 
 commonscatTemplates = {
+    '_default': u'Commonscat',
     'af' : u'CommonsKategorie',
     'ar' : u'تصنيف كومنز',
     'als' : u'Commonscat',
@@ -45,7 +46,7 @@ commonscatTemplates = {
     'cs' : u'Commonscat',
     'da' : u'Commonscat',
     'de' : u'Commonscat',
-    'en' : u'Commonscat',
+    'en' : u'Commons cat',
     'eo' : u'Commonscat',
     'es' : u'Commonscat',
     'eu' : u'Commonskat',
@@ -88,6 +89,11 @@ commonscatTemplates = {
     'zh-yue' : u'同享類'
 }
 
+ignoreTemplates = {    
+    'en' : [u'Category redirect', u'Commons', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
+    'nl' : [u'Commons']
+}
+
 def getTemplate (lang = None):
     '''
     Get the template name in a language. Expects the language code, returns the translation.
@@ -96,6 +102,16 @@ def getTemplate (lang = None):
         return commonscatTemplates[lang]
     else:
         return u'Commonscat'
+
+def skipPage(page):
+    '''
+    Do we want to skip this page?
+    '''
+    if ignoreTemplates.has_key(page.site().language()):
+        for template in page.templates():
+            if template in ignoreTemplates[page.site().language()]:                
+                return True
+    return False    
 
 def updateInterwiki (wikipediaPage = None, commonsPage = None):
     '''
@@ -140,7 +156,8 @@ def addCommonscat (page = None, summary = None, always = False):
         #       if commonscatpage != None:
         #            updateInterwiki (page, commonscatpage)
         #        #Should remove the template if something is wrong
-                
+    elif skipPage(page):
+        wikipedia.output("Found a template in the skip list. Skipping " + page.title());                
     else:
         #Follow the interwiki's
         for ipage in page.interwiki():
