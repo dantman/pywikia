@@ -1259,7 +1259,8 @@ not supported by PyWikipediaBot!"""
                              newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
-                newPage=False, token=None, newToken=False, sysop=False):
+                newPage=False, token=None, newToken=False, sysop=False,
+                captchaId=None, captchaAnswer=None ):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1277,6 +1278,9 @@ not supported by PyWikipediaBot!"""
             'wpSummary': encodedComment,
             'wpTextbox1': encodedText,
         }
+        if captchaId:
+            predata["wpCaptchaId"] = captchaId
+            predata["wpCaptchaWord"] = captchaAnswer
         # Add server lag parameter (see config.py for details)
         if config.maxlag:
             predata['maxlag'] = str(config.maxlag)
@@ -1452,6 +1456,18 @@ not supported by PyWikipediaBot!"""
                     if 'limit' in match.groups():
                         longpage_limit = match.group('limit')
                     raise LongPageError(longpage_length, longpage_limit)
+
+            # We might have been prompted for a captcha if the
+            # account is not autoconfirmed, checking....
+            captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
+            match = captchaR.search(data)
+            if match:
+                id = match.group('id')
+                if not config.solve_captcha:
+                    raise wikipedia.CaptchaError(id)
+                url = self.site().protocol() + '://' + self.site().hostname() + self.site().captcha_image_address(id)
+                answer = ui.askForCaptcha(url)
+                return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captchaId=id, captchaAnswer = answer)
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
             if data.strip() != u"":
