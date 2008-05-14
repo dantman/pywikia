@@ -59,10 +59,14 @@ while Findonly= search only if the exactly text that you give is in the image's 
 * Text= This is the template that the bot will use when it will report the image's problem.
 
 ---- Known issues/FIXMEs: ----
+* Clean the code, some passages are pretty difficult to understand if you're not the coder.
 * Fix the "real-time" regex and function
 * Add the "catch the language" function for commons.
 * Fix and reorganise the new documentation
 * Add a report for the image tagged.
+* Duplicates: check the usage, find out which image is most usued and "delete" the other ones.
+* -> if the other ones are used, advise it in the message!
+
 """
 
 #
@@ -322,9 +326,9 @@ HiddenTemplateNotification = {
         }
 # Stub - will make it better in future, work in progress.
 duplicatesText = {
-        'commons':u'\n{{Dupe|Image:__image__}}',
+        'commons':u'\n{{Dupe|__image__}}',
         'en':None,
-        'it':u'\n{{Cancella subito|Immagine doppia di [[:Immagine:__image__]]}}',
+        'it':u'\n{{Cancella subito|Immagine doppia di [[:__image__]]}}',
         }
 duplicate_user_talk_head = {
         'commons':None,
@@ -336,10 +340,15 @@ duplicates_user_talk_text = {
         'it':u"{{subst:Utente:Filbot/duplicati|%s|%s}} --~~~~",
         }
 
-duplicates_comment = {
+duplicates_comment_talk = {
         'commons':u'Bot: Dupe image found',
         'en':None,
-        'it':u'Bot: Trovata immagine doppia',
+        'it':u"Bot: Notifico l'immagine doppia trovata",
+        }
+duplicates_comment_image = {
+        'commons':u'Bot: Tagging dupe image',
+        'en':None,
+        'it':u'Bot: Immagine doppia, da cancellare',
         }
 duplicatesRegex = {
         'commons':r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
@@ -415,6 +424,10 @@ def pageText(url):
 
 def returnOlderTime(listGiven, timeListGiven):
     """ Get some time and return the oldest of them """
+    #print listGiven; print timeListGiven
+    #Output:
+    #[[1210596312.0, u'Autoritratto.png'], [1210590240.0, u'Duplicato.png'], [1210592052.0, u'Duplicato_2.png']]
+    #[1210596312.0, 1210590240.0, 1210592052.0]
     for element in listGiven:
         time = element[0]
         imageName = element[1]
@@ -494,7 +507,8 @@ class main:
         self.duplicatesReport = duplicatesReport
         image_n = self.site.image_namespace()
         self.image_namespace = "%s:" % image_n # Example: "User_talk:"
-    def report(self, newtext, image, notification = None, head = None, notification2 = None, unver = True, commx = None):
+    def report(self, newtext, image, notification = None, head = None,
+               notification2 = None, unver = True, commTalk = None, commImage = None):
         """ Function to make the reports easier (or I hope so). """
         # Defining some useful variable for next...
         self.newtext = newtext
@@ -506,12 +520,16 @@ class main:
             self.notification = re.sub('__botnick__', self.botnick, notification)
         if self.notification2 != None:
             self.notification2 = re.sub('__botnick__', self.botnick, notification2)
-        self.commx = commx        
+        self.commTalk = commTalk
+        if commImage == None:
+            self.commImage = self.commento
+        else:
+            self.commImage = commImage
         # Ok, done, let's loop.
         while 1:
             if unver == True:
                 try:
-                    resPutMex = self.put_mex()
+                    resPutMex = self.tag_image()
                 except wikipedia.NoPage:
                     wikipedia.output(u"The page has been deleted! Skip!")
                     break
@@ -523,7 +541,7 @@ class main:
                         break
             else:
                 try:
-                    resPutMex = self.put_mex(False)
+                    resPutMex = self.tag_image(False)
                 except wikipedia.NoPage:
                     wikipedia.output(u"The page has been deleted!")
                     break
@@ -535,11 +553,11 @@ class main:
                         break
             if self.notification != None and self.head != None:
                 try:
-                    self.put_talk()
+                    self.put_mex_in_talk()
                 except wikipedia.EditConflict:
                     wikipedia.output(u"Edit Conflict! Retrying...")
                     try:
-                        self.put_talk()
+                        self.put_mex_in_talk()
                     except:
                         wikipedia.output(u"Another error... skipping the user..")
                         break
@@ -548,7 +566,7 @@ class main:
             else:
                 break
 
-    def put_mex(self, put = True):
+    def tag_image(self, put = True):
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the image. """
         # Defing the image's Page Object
@@ -563,7 +581,7 @@ class main:
         # You can use this function also to find only the user that
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
-            p.put(testoa + self.newtext, comment = self.commento, minorEdit = True)
+            p.put(testoa + self.newtext, comment = self.commImage, minorEdit = True)
         # paginetta it's the image page object.
         paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
         # I take the data of the latest uploader and I take only the name
@@ -592,7 +610,7 @@ class main:
         self.talk_page = talk_page
         self.luser = luser
         return True
-    def put_talk(self):
+    def put_mex_in_talk(self):
         """ Function to put the warning in talk page of the uploader."""
         commento2 = wikipedia.translate(self.site, comm2)
         emailPageName = wikipedia.translate(self.site, emailPageWithText)
@@ -638,10 +656,10 @@ class main:
             second_text = False
             ti_es_ti = wikipedia.translate(self.site, empty)
             testoattuale = ti_es_ti
-        if self.commx == None:
+        if self.commTalk == None:
             commentox = commento2
         else:
-            commentox = self.commx
+            commentox = self.commTalk
         if second_text == True:
             self.talk_page.put("%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
         elif second_text == False:
@@ -731,12 +749,12 @@ class main:
     def checkImageDuplicated(self, image):
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
-        # report(unvertext, imageName, notification, head)
         dupText = wikipedia.translate(self.site, duplicatesText)
         dupRegex = wikipedia.translate(self.site, duplicatesRegex)
         dupTalkHead = wikipedia.translate(self.site, duplicate_user_talk_head)
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
-        dupComment = wikipedia.translate(self.site, duplicates_comment)
+        dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
+        dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
 
         self.image = image
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
@@ -774,17 +792,20 @@ class main:
                 for duplicate in duplicates:
                     DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
                     imagedata = DupePage.getFileVersionHistory()[-1][0]
-                    # Example: 21:15, 5 ott 2005
                     try:
+                        # Example: 21:15, 5 ott 2005
                         data = time.strptime(imagedata, "%H:%M, %d %b %Y")
                     except ValueError:
+                        # Example: 21:15, 5 Ottobre 2005
                         data = time.strptime(imagedata, "%H:%M, %d %B %Y")
                     data_seconds = time.mktime(data)
-                    time_image_list.append([data_seconds, self.image])
+                    time_image_list.append([data_seconds, duplicate])
                     time_list.append(data_seconds)
                 older_image = returnOlderTime(time_image_list, time_list)
                 # And if the images are more than two?
                 Page_oder_image = wikipedia.ImagePage(self.site, u'Image:%s' % older_image)
+                string = ''
+                images_to_tag_list = []
                 for duplicate in duplicates: 
                     if wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, duplicate)) == \
                        wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, older_image)):
@@ -796,12 +817,24 @@ class main:
                     except wikipedia.NoPage:
                         continue # The page doesn't exists
                     if re.findall(dupRegex, DupPageText) == [] and re.findall(dupRegex, older_page_text) == []:
-                        wikipedia.output(u'Adding the duplicate template in the image...')
-                        self.report(re.sub(r'__image__', r'%s' % older_image, dupText), duplicate,
-                                    dupTalkText % (duplicate, older_image), dupTalkHead, commx = dupComment, unver = True)
+                        wikipedia.output(u'%s is a duplicate and has to be tagged...' % duplicate)
+                        images_to_tag_list.append(duplicate)
+                        if duplicate != duplicates[-1]:
+                            string += "[[:%s%s]], " % (self.image_namespace, duplicate)
+                        else:
+                            string += "[[:%s%s]]" % (self.image_namespace, duplicate)
                     else:
                         wikipedia.output(u"Already put the dupe-template in the image's page or in the dupe's page. Skip.")
-                        break
+                        return True # Ok - No problem. Let's continue the checking phase
+                older_image_ns = '%s%s' % (self.image_namespace, older_image) # adding the namespace
+                if len(images_to_tag_list) > 1:
+                    for image_to_tag in images_to_tag_list[:-1]:
+                        self.report(re.sub(r'__image__', r'%s' % older_image_ns, dupText), image_to_tag,
+                                    commImage = dupComment_image, unver = True)
+                if len(images_to_tag_list) != 0:                        
+                    self.report(re.sub(r'__image__', r'%s' % older_image_ns, dupText), images_to_tag_list[-1],
+                        dupTalkText % (older_image_ns, string), dupTalkHead, commTalk = dupComment_talk,
+                            commImage = dupComment_image, unver = True)                    
         return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
