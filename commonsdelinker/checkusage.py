@@ -339,8 +339,8 @@ class CheckUsage(object):
 			apipath = site.apipath()
 		
 		# FIXME: Use continue
-		kwargs = {'action': 'query', 'titles': u'Image:' + image,
-			'prop': 'info'}
+		kwargs = {'action': 'query', 'iutitle': u'Image:' + image,
+			'titles': u'Image:' + image, 'prop': 'info'}
 		kwargs['list'] = 'imageusage'
 		kwargs['iulimit'] = '500'
 		
