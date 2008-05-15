@@ -336,17 +336,17 @@ class RedirectRobot:
                 try:
                     targetPage.get()
                 except wikipedia.NoPage:
-                    if self.prompt(u'Do you want to delete %s?'
-                                   % redir_page.aslink()):
+                    if self.prompt(u'Redirect target %s does not exist. Do you want to delete %s?'
+                                   % (targetPage.aslink(), redir_page.aslink())):
                         redir_page.delete(reason, prompt = False)
                 except wikipedia.IsRedirectPage:
                     wikipedia.output(
-            u'Redirect target is also a redirect! Won\'t delete anything.')
+            u'Redirect target %s is also a redirect! Won\'t delete anything.' % targetPage.aslink())
                 else:
                     #we successfully get the target page, meaning that
                     #it exists and is not a redirect: no reason to touch it.
                     wikipedia.output(
-            u'Redirect target does exist! Won\'t delete anything.')
+            u'Redirect target %s does exist! Won\'t delete anything.' % targetPage.aslink())
                 # idle for 1 minute
             wikipedia.output(u'')
             wikipedia.put_throttle()
