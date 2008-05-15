@@ -126,9 +126,11 @@ class Thread(threading.Thread):
 		self.pool.jobLock.acquire()
 		try:
 			self.quit = True
-			self.pool[id(self)].set()
-			del self.pool[id(self)]
-			self.pool.threads.remove(self)
+			if id(self) in self.pool:
+				self.pool[id(self)].set()
+				del self.pool[id(self)]
+			if self in self.pool.threads:
+				self.pool.threads.remove(self)
 		finally:
 			self.pool.jobLock.release()
 	

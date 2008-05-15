@@ -445,7 +445,10 @@ class CheckUsage(threadpool.Thread):
 		self.site = CommonsDelinker.site
 		
 	def run(self):
-		self.connect()
+		try:
+			self.connect()
+		except:
+			return self.exit()
 		threadpool.Thread.run(self)
 		
 	def connect(self):
