@@ -3101,7 +3101,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
             dontTouchRegexes.append(exc)
     index = 0
     markerpos = len(text)
-    while index < len(text):
+    while True:
         match = old.search(text, index)
         if not match:
             # nothing left to replace
