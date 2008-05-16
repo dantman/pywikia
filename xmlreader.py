@@ -131,8 +131,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.username = u''
             self.ipedit = True
         elif name == 'restrictions':
-                self.destination = 'restrictions'
-                self.restrictions = u''
+            self.destination = 'restrictions'
+            self.restrictions = u''
         elif name == 'title':
             self.destination = 'title'
             self.title=u''
@@ -180,6 +180,9 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             elif name == 'siteinfo':
                 self.headercallback(self.header)
                 self.header = None
+        # Characters between this closing tag and the next opening tag is
+        # ignored, it's just whitespace for XML formatting.
+        self.destination = None
 
     def characters(self, data):
         if self.destination == 'text':
