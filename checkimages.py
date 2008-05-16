@@ -305,7 +305,8 @@ comm10 = {
 # Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
 # because they are already put in the regex).
 HiddenTemplate = {
-        'commons':[u'information', u'trademarked', u'trademark'],
+        'commons':[u'information', u'trademarked', u'trademark', u'uncategorized[ _]image', u'needscategory',
+                   u'dupe', u'duplicate', u'uncat', u'uncategorized', u'watermark'],
         'de':[u'information'],
         'en':[u'information'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark'],
