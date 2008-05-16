@@ -22,13 +22,12 @@ class Family(family.Family):
             'sd', 'ga', 'az', 'th', 'tt', 'mk', 'ti', 'gu', 'tl', 'ts',
             'fo', 'qu', 'rw', 'cy', 'bs', 'mr', 'su', 'an', 'ie', 'chr',
             'am', 'yi', 'wo', 'kn', 'mn', 'nah', 'gd', 'be', 'pa', 'lv',
-            'zu', 'nn', 'km', 'ps', 'mi', 'so', 'dv', 'tg', 'bn', 'mg',
-            'ha', 'ka', 'eu', 'na', 'sa', 'gv', 'tpi', 'ss', 'ay', 'ne',
-            'jbo', 'uz', 'gn', 'tn', 'ch', 'as', 'mt', 'jv', 'pi', 'sh',
-            'lb', 'ks', 'tk', 'iu', 'sg', 'fj', 'als', 'xh', 'ik', 'kw',
-            'ln', 'sm', 'si', 'za', 'roa-rup', 'mh', 'ba', 'sn', 'or', 'ak',
-            'bh', 'lo', 'bm', 'yo', 'bi', 'to', 'aa', 'av', 'rn', 'tw',
-            'dz', 'om', 'ab', 'my', 'wa', 'sc', 'cr', 'bo', 'rm', 'hsb',
+            'zu', 'nn', 'km', 'ps', 'mi', 'so', 'tg', 'dv', 'bn', 'ka',
+            'mg', 'ha', 'eu', 'na', 'sa', 'gv', 'tpi', 'ss', 'ay', 'ne',
+            'jbo', 'uz', 'gn', 'tn', 'mt', 'jv', 'sh', 'lb', 'ks', 'tk',
+            'sg', 'fj', 'als', 'ik', 'kw', 'ln', 'sm', 'si', 'za', 'roa-rup',
+            'mh', 'sn', 'or', 'lo', 'yo', 'dz', 'my', 'wa', 'sc', 'bo', 
+			'rm', 'hsb'
         ]
 
         for lang in self.languages_by_size:
