@@ -324,7 +324,10 @@ class Page(object):
             # Convert URL-encoded characters to unicode
             # Sometimes users copy the link to a site from one to another.
             # Try both the source site and the destination site to decode.
-            t = url2unicode(t, site = insite, site2 = site)
+            try:
+                t = url2unicode(t, site = insite, site2 = site)
+            except UnicodeDecodeError:
+                raise Error(u'Bad page title : %s' % t)
 
             # Normalize unicode string to a NFC (composed) format to allow
             # proper string comparisons. According to
@@ -1736,7 +1739,7 @@ not supported by PyWikipediaBot!"""
                     continue
                 try:
                     name = Page(self.site(), name).title()
-                except:
+                except Error:
                     if name.strip():
                         output(
                             u"Page %s contains invalid template name {{%s}}."
