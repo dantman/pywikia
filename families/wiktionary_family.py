@@ -12,22 +12,21 @@ class Family(family.Family):
         self.name = 'wiktionary'
 
         self.languages_by_size = [
-            'fr', 'en', 'vi', 'tr', 'ru', 'io', 'zh', 'el', 'ar', 'pl',
-            'fi', 'it', 'de', 'hu', 'sv', 'pt', 'ku', 'ko', 'ta', 'id',
-            'te', 'es', 'nl', 'ja', 'lt', 'bg', 'vo', 'li', 'gl', 'et',
-            'sr', 'fa', 'is', 'ro', 'af', 'scn', 'br', 'sl', 'hy', 'he',
-            'zh-min-nan', 'no', 'la', 'sq', 'ur', 'simple', 'da', 'ca', 'ast', 'uk',
-            'fy', 'cs', 'hr', 'oc', 'sw', 'ang', 'kk', 'ml', 'hi', 'ia',
-            'eo', 'co', 'csb', 'st', 'sk', 'kl', 'nds', 'ms', 'ky', 'ug',
-            'sd', 'ga', 'az', 'th', 'tt', 'mk', 'ti', 'gu', 'tl', 'ts',
-            'fo', 'qu', 'rw', 'cy', 'bs', 'mr', 'su', 'an', 'ie', 'chr',
-            'am', 'yi', 'wo', 'kn', 'mn', 'nah', 'gd', 'be', 'pa', 'lv',
-            'zu', 'nn', 'km', 'ps', 'mi', 'so', 'tg', 'dv', 'bn', 'ka',
-            'mg', 'ha', 'eu', 'na', 'sa', 'gv', 'tpi', 'ss', 'ay', 'ne',
-            'jbo', 'uz', 'gn', 'tn', 'mt', 'jv', 'sh', 'lb', 'ks', 'tk',
-            'sg', 'fj', 'als', 'ik', 'kw', 'ln', 'sm', 'si', 'za', 'roa-rup',
-            'mh', 'sn', 'or', 'lo', 'yo', 'dz', 'my', 'wa', 'sc', 'bo', 
-			'rm', 'hsb'
+            'fr', 'en', 'vi', 'tr', 'ru', 'io', 'zh', 'ta', 'el', 'pl',
+            'fi', 'it', 'de', 'hu', 'sv', 'pt', 'lt', 'ku', 'ko', 'id',
+            'nl', 'te', 'es', 'ja', 'bg', 'vo', 'gl', 'li', 'et', 'sr',
+            'fa', 'ro', 'is', 'af', 'br', 'scn', 'ar', 'lo', 'sl', 'no',
+            'he', 'hy', 'fy', 'zh-min-nan', 'la', 'uk', 'sq', 'oc', 'ca',
+            'simple', 'da', 'ur', 'hsb', 'ast', 'tt', 'cs', 'ml', 'hr', 'kk',
+            'sw', 'ang', 'hi', 'eo', 'ia', 'co', 'csb', 'st', 'sk', 'ms',
+            'kl', 'nds', 'ky', 'sd', 'ug', 'ga', 'th', 'az', 'mk', 'ti',
+            'gu', 'tl', 'an', 'ts', 'km', 'fo', 'qu', 'rw', 'cy', 'bs',
+            'mr', 'kn', 'su', 'am', 'wo', 'chr', 'ie', 'yi', 'mn', 'be',
+            'nah', 'eu', 'gd', 'lv', 'pa', 'zu', 'nn', 'ps', 'mi', 'so',
+            'tg', 'dv', 'bn', 'ka', 'mg', 'ha', 'kw', 'ss', 'na', 'sa',
+            'gv', 'ay', 'tpi', 'ne', 'jbo', 'jv', 'gn', 'uz', 'tn', 'mt',
+            'sh', 'lb', 'ks', 'tk', 'sg', 'fj', 'als', 'ik', 'si', 'ln',
+            'sm', 'za', 'roa-rup', 'sn', 'yo', 'dz', 'my', 'wa', 'sc',
         ]
 
         for lang in self.languages_by_size:
@@ -355,16 +354,20 @@ class Family(family.Family):
             'bh': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Bihari_Wiktionary
             'bi': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Bislama_Wiktionary
             'bm': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Bambara_Wiktionary
+            'bo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Tibetan_Wiktionary
             'ch': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Chamorro_Wiktionary
             'cr': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Nehiyaw_Wiktionary
             'dk': 'da',
             'iu': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Inuktitut_Wiktionary	
             'jp': 'ja',
+            'mh': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Marshallese_Wiktionary
             'mo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Moldovan_Wiktionary
             'minnan':'zh-min-nan',
             'nb': 'no',
             'om': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Oromoo_Wiktionary
+            'or': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Oriya_Wiktionary
             'pi': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Pali_Bhasa_Wiktionary
+            'rm': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Rhaetian_Wiktionary
             'rn': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Kirundi_Wiktionary
             'to': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Tongan_Wiktionary
             'tlh': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Klingon_Wiktionary
