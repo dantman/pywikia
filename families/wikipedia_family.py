@@ -36,7 +36,7 @@ class Family(family.Family):
             'cr', 've', 'ss', 'rw', 'xh', 'kl', 'ik', 'bug', 'dz', 'ts',
             'kv', 'bi', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'ny', 'ab',
             'fj', 'tw', 'lbe', 'za', 'ff', 'tum', 'ha', 'sn', 'sg', 'lg',
-            'ki', 'rn', 'chy', 'aa', 'mh', 'ng',
+            'ki', 'rn', 'chy', 'aa', 'ng',
         ]
 
         for lang in self.languages_by_size:
