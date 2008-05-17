@@ -1736,7 +1736,7 @@ not supported by PyWikipediaBot!"""
                     continue
                 try:
                     name = Page(self.site(), name).title()
-                except Error:
+                except:
                     if name.strip():
                         output(
                             u"Page %s contains invalid template name {{%s}}."
