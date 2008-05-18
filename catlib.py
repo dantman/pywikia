@@ -410,6 +410,9 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     site = article.site()
     changesMade = False
 
+    if not article.canBeEdited():
+        wikipedia.output("Can't edit %s, skipping it..." & article.aslink())
+        return False
     if inPlace == True:
         oldtext = article.get(nofollow_redirects=True)
         newtext = wikipedia.replaceCategoryInPlace(oldtext, oldCat, newCat)
@@ -481,6 +484,9 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         except wikipedia.LockedPage:
             wikipedia.output(
                     u'Skipping %s because page is locked' % article.title())
+        except wikipedia.PageNotSaved, error:
+            wikipedia.output(u"Saving page %s failed: %s"
+                             % (article.aslink(), error.message))
 
 def test():
     site = wikipedia.getSite()
