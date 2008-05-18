@@ -3388,7 +3388,7 @@ def removeCategoryLinks(text, site, marker = ''):
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace, re.I)
     text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre', 'source'], marker = marker)
     return text.strip()
 
@@ -3412,7 +3412,7 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
     # spaces and underscores in page titles are interchangeable, and collapsible
     title = title.replace(r"\ ", "[ _]+").replace(r"\_", "[ _]+")
     categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
-                            % (catNamespace, title))
+                            % (catNamespace, title), re.I)
     if newcat is None:
         text = replaceExcept(oldtext, categoryR, '',
                              ['nowiki', 'comment', 'math', 'pre', 'source'])
