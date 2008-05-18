@@ -792,10 +792,12 @@ not supported by PyWikipediaBot!"""
                 redirtarget = "%s#%s" % (m.group(1), self.section())
             else:
                 redirtarget = m.group(1)
-            if get_redirect:
-                self._redirarg = redirtarget
-            elif not nofollow_redirects:
-                raise IsRedirectPage(redirtarget)
+            #avoid dummy #REDIRECT[[]]
+            if redirtarget:
+                if get_redirect:
+                    self._redirarg = redirtarget
+                elif not nofollow_redirects:
+                    raise IsRedirectPage(redirtarget)
         if self.section():
             # TODO: What the hell is this? Docu please.
             m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))

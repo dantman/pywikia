@@ -52,7 +52,7 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZi
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
-        'es':u'Formateando las referencias que no tuvieran titulos (Pruebas por [[Wikipedia:Bot/Autorizaciones#DumZiBoT]] )',
+        'es':u'Formateando las referencias que no tuvieran títulos (Pruebas por [[Wikipedia:Bot/Autorizaciones#DumZiBoT]] )',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'%s {{lien mort}}',
