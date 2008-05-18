@@ -3370,7 +3370,7 @@ def getCategoryLinks(text, site):
     # and HTML comments
     text = removeDisabledParts(text)
     catNamespace = '|'.join(site.category_namespaces())
-    R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:\s*(?P<catName>.+?)(?:\|(?P<sortKey>.+?))?\s*\]\]' % catNamespace)
+    R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:\s*(?P<catName>.+?)(?:\|(?P<sortKey>.+?))?\s*\]\]' % catNamespace, re.I)
     for match in R.finditer(text):
         cat = catlib.Category(site, '%s:%s' % (match.group('namespace'), match.group('catName')), sortKey = match.group('sortKey'))
         result.append(cat)
