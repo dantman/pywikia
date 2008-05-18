@@ -353,7 +353,7 @@ msg = {
     'hu': (u'Robot: ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'id': (u'bot ', u'Menambah', u'Membuang', u'Mengubah'),
-    'ie': (u'Bot: ', u'ha adjuntet', u'ha removet', u'ha modificat'),
+    'ie': (u'Bot: ', u'Adjuntet', u'Removet', u'Modificat'),
     'io': (u'roboto ', u'adjuntas', u'efacas', u'modifikas'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'Bot: ', u'Aggiungo', u'Tolgo', u'Modifico'),
