@@ -4287,7 +4287,8 @@ your connection is down. Retrying in %i minutes..."""
         if m:
             charset = m.group(1)
         else:
-            output(u"WARNING: No character set found.")
+            if verbose:
+                output(u"WARNING: No character set found.")
             # UTF-8 as default
             charset = 'utf-8'
         # Check if this is the charset we expected
