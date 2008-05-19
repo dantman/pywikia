@@ -15,7 +15,7 @@ try:
         'rvprop'    :'user|timestamp|content',
         }
     
-    print query.GetData('en', params,
+    print query.GetData(params,
                         useAPI = True, encodeTitle = False)
     
 finally:
@@ -41,10 +41,11 @@ __version__ = '$Id$'
 
 import wikipedia, simplejson, urllib, time
 
-def GetData(lang, params, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True):
+def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True):
     """Get data from the query api, and convert it into a data object
     """
-    site = wikipedia.getSite(lang)
+    if site == None:
+        site = wikipedia.getSite()
     
     for k,v in params.iteritems():
         if not IsString(v):
