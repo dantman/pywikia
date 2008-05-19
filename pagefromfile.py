@@ -118,7 +118,7 @@ class PageFromFileRobot:
         'nl': u'bestaande tekst overschreven',
         'no': u'erstatter eksisterende tekst',
         'pl': u'aktualny tekst nadpisany',
-        'pt': u'sobrescrever texto'
+        'pt': u'sobrescrever texto',
         'zh': u'機器人: 覆寫已存在的文字',
     }
 
