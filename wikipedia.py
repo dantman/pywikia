@@ -4423,10 +4423,21 @@ your connection is down. Retrying in %i minutes..."""
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
         try:
-            from xml.etree.cElementTree import XML
+            from xml.etree.cElementTree import XML # 2.5
         except ImportError:
-            from cElementTree import XML
-
+            try:
+                from cElementTree import XML
+            except ImportError:
+                output('Module cElementTree not found, using instead the slower ElementTree')
+                try:
+                    from xml.etree.ElementTree import XML # 2.5 
+                except ImportError:
+                    try:
+                        from elementtree.ElementTree import XML
+                    except ImportError:
+                        output('ERROR: You need to install cElementTree, or ElementTree module to be able to parse mediawiki messages')
+                        stopme()
+                        sys.exit(1)
         # Allmessages is retrieved once for all in a session
         if not self._mediawiki_messages:
             if verbose:
