@@ -375,6 +375,7 @@ msg = {
     'mn': (u'робот ', u'Нэмж байна', u'Арилгаж байна', u'Өөрчилж байна'),
     'mr': (u'सांगकाम्या ', u'वाढविले', u'काढले', u'बदलले'),
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
+    'nah': (u'Tepozcuayollotl', u'Tlamahxiltilli', u'Tlaquixtilli', u'Tlapatlalli'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
     'nds-nl': (u'bot', u'derbie', u'derof', u'aanders'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
