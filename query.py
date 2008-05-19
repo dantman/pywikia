@@ -1,15 +1,50 @@
-""" Please describe your module here ;) """
+#!/usr/bin/python
+# -*- coding: utf-8  -*-
+"""
 
+This module allow you to use the API in a simple and easy way. Here there's an example:
+
+-- Example --
+--- Code ---
+try:
+    params = {
+        'action'    :'query',
+        'prop'      :'revisions',
+        'titles'    :'Test',
+        'rvlimit'   :'2',
+        'rvprop'    :'user|timestamp|content',
+        }
+    
+    print query.GetData('en', params,
+                        useAPI = True, encodeTitle = False)
+    
+finally:
+    wikipedia.stopme()
+--- Output ---
+(It's a whole line, but I've put some brakets to make it clearer)
+{u'query-continue': {u'revisions': {u'rvstartid': 212496859}}, u'query': {u'pages': {u'11089416': {u'ns': 0, u'pageid': 11089416,
+u'revisions': [{u'timestamp': u'2008-05-16T02:24:54Z', u'anon': u'', u'*': u"TEXT HERE", u'user': u'69.221.252.225'},
+{u'timestamp': u'2008-05-16T02:23:49Z', u'anon': u'', u'*': u"TEXT TWO HERE", u'user': u'69.221.252.225'}], u'title': u'Test'}}}}
+
+-- To Do --
+Put a better documentation
+    
+"""
+#
+# (C) Yurik, 2007
+# (C) Filnik, 2008
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
-import wikipedia
-import simplejson
-import urllib
-import time
+#
 
-def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True ):
+import wikipedia, simplejson, urllib, time
+
+def GetData(lang, params, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True):
     """Get data from the query api, and convert it into a data object
     """
-    site = wikipedia.getSite( lang )
+    site = wikipedia.getSite(lang)
     
     for k,v in params.iteritems():
         if not IsString(v):
@@ -30,19 +65,19 @@ def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5, enco
     if 'titles' in params:
         titlecount = params['titles'].count('|')
         if encodeTitle:
-            data = urllib.urlencode( {'titles' : params['titles']} )
+            data = urllib.urlencode({'titles' : params['titles']})
             del params['titles']
     
     if useAPI:
-        path = site.api_address() + urllib.urlencode( params.items() )
+        path = site.api_address() + urllib.urlencode(params.items())
     else:
-        path = site.query_address() + urllib.urlencode( params.items() )
+        path = site.query_address() + urllib.urlencode(params.items())
     
     if verbose:
         if titlecount > 0:
-            wikipedia.output( u"Requesting %d titles from %s:%s" % (titlecount, lang, path) )
+            wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, lang, path))
         else:
-            wikipedia.output( u"Request %s:%s" % (lang, path) )
+            wikipedia.output(u"Request %s:%s" % (lang, path))
     
     lastError = None
     retry_idle_time = 5
@@ -57,12 +92,12 @@ def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5, enco
             
         except ValueError, error:
             retryCount -= 1
-            wikipedia.output( u"Error downloading data: %s" % error )
-            wikipedia.output( u"Request %s:%s" % (lang, path) )
-            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n' + path, jsontext)
+            wikipedia.output(u"Error downloading data: %s" % error)
+            wikipedia.output(u"Request %s:%s" % (lang, path))
+            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s' % path, jsontext)
             lastError = error
             if retryCount >= 0:
-                wikipedia.output( u"Retrying in %i seconds..." % retry_idle_time )
+                wikipedia.output(u"Retrying in %i seconds..." % retry_idle_time)
                 time.sleep(retry_idle_time)
                 # Next time wait longer, but not longer than half an hour
                 retry_idle_time *= 2
