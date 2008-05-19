@@ -593,8 +593,8 @@ class main:
         data = query.GetData(params, useAPI = True, encodeTitle = False)
         try:
             # We don't know the page's id, if any other better idea please change it
-            for x in data['query']['pages']:
-                nick = data['query']['pages'][x][u'imageinfo'][0]['user']
+            pageid = data['query']['pages'].keys()[0]
+            nick = data['query']['pages'][pageid][u'imageinfo'][0]['user']
         except IndexError:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
             repme = "\n*[[:Image:%s]] problems '''with the APIs'''"
