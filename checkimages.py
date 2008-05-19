@@ -80,7 +80,7 @@ __version__ = '$Id$'
 #
 
 import re, time, urllib, urllib2, os, locale, sys
-import wikipedia, config, pagegenerators, catlib 
+import wikipedia, config, pagegenerators, catlib, query
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -585,22 +585,19 @@ class main:
             p.put(testoa + self.newtext, comment = self.commImage, minorEdit = True)
         # paginetta it's the image page object.
         paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
-        # I take the data of the latest uploader and I take only the name
-        imagedata = paginetta.getFileVersionHistory()
-        #print imagedata # Let it so for de-buggin porpuse (wikipedia.output gives error)
-        # When an Image is deleted from Commons and someone has add something in the wikipedia page
-        # The bot doesn't catch the data properly :-)
-        if imagedata == list():
-            wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
-            repme = "\n*[[:Image:%s]] seems to have problems ('''no data found in the image''')"
-            self.report_image(self.image, self.rep_page, self.com, repme)
-            # We have a problem! Report and exit!         
-            return False
+        params = {
+            'action'    :'query',
+            'prop'      :'imageinfo',
+            'titles'    :self.image_namespace + self.image,
+            }
+        data = query.GetData(params, useAPI = True, encodeTitle = False)
         try:
-            nick = paginetta.getFileVersionHistory()[0][1] # Get the latest uploader
+            # We don't know the page's id, if any other better idea please change it
+            for x in data['query']['pages']:
+                nick = data['query']['pages'][x][u'imageinfo'][0]['user']
         except IndexError:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
-            repme = "\n*[[:Image:%s]] seems to have problems ('''no data found in the image''')"
+            repme = "\n*[[:Image:%s]] problems '''with the APIs'''"
             # We have a problem! Report and exit!
             self.report_image(self.image, self.rep_page, self.com, repme)
             return False
