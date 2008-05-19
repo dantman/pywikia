@@ -101,7 +101,7 @@ class PageFromFileRobot:
         'nl': u'onderaan toegevoegd',
         'no': u'legger til nederst',
         'pl': u'dodaj na dole',
-        'pt': u'adicionando no fim'
+        'pt': u'adicionando no fim',
         'zh': u'機器人: 增加至最底層',
     }
 
