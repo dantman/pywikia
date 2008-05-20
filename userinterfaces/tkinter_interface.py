@@ -6,6 +6,7 @@ import threading
 import time
 import tkMessageBox, tkSimpleDialog
 from Tkinter import *
+from gui import EditBoxWindow
 
 color_pattern = re.compile(r"%s\{(?P<colorname>\w+)\}" % "\x03")
 
@@ -23,96 +24,6 @@ class MainloopThread(threading.Thread):
 
     def run(self):
         self.window.mainloop()
-
-
-class EditBoxWindow:
-    def __init__(self, text):
-        # create a new window if necessary
-        #self.parent = parent or Tk()
-        self.top = Toplevel()
-        self.top_frame = Frame(self.top)
-
-        scrollbar = Scrollbar(self.top_frame)
-        # textarea with vertical scrollbar
-        self.editbox = Text(self.top_frame, yscrollcommand=scrollbar.set)
-        # add scrollbar to main frame, associate it with our editbox
-        scrollbar.pack(side=RIGHT, fill=Y)
-        scrollbar.config(command=self.editbox.yview)
-        # put given text into our textarea
-        self.editbox.insert(END, text)
-
-        # put textarea into top frame, using all available space
-        self.editbox.pack(anchor=CENTER, fill=BOTH)
-        self.top_frame.pack(side=TOP)
-        # enable word wrap
-        self.editbox.tag_add('all', '1.0', END)
-        self.editbox.tag_config('all', wrap=WORD)
-
-        # lower left subframe which will contain a textfield and a Search button
-        self.bottom_left_frame = Frame(self.top)
-        self.textfield = Entry(self.bottom_left_frame)
-        self.textfield.pack(side=LEFT, fill=X, expand=1)
-
-        buttonSearch = Button(self.bottom_left_frame, text='search', command=self.highlight)
-        buttonSearch.pack(side=RIGHT)
-        self.bottom_left_frame.pack(side=LEFT, expand=1)
-
-        # lower right subframe which will contain OK and Cancel buttons
-        self.bottom_right_frame = Frame(self.top)
-
-        buttonOK = Button(self.bottom_right_frame, text='OK', command=self.pressedOK)
-        buttonCancel = Button(self.bottom_right_frame, text='Cancel', command=self.top.destroy)
-        buttonOK.pack(side=LEFT, fill=X)
-        buttonCancel.pack(side=RIGHT, fill=X)
-        self.bottom_right_frame.pack(side=RIGHT, expand=1)
-
-        # create a toplevel menu
-        # menubar = Menu(root)
-        # menubar.add_command(label="Hello!", command=self.hello)
-        # menubar.add_command(label="Quit!", command=self.hello)
-
-        # display the menu
-        # root.config(menu=menubar)
-
-    def edit(self):
-        return self.text
-
-    def highlight(self, searchkey = None):
-        """
-        Action-function for the Button: highlight all occurences of string.
-        Taken from O'Reilly's Python in a Nutshell.
-        """
-        #remove previous uses of tag 'found', if any
-        self.editbox.tag_remove('found', '1.0', END)
-        # get string to look for (if empty, no searching)
-        s = searchkey or self.textfield.get()
-        if s:
-            # start from the beginning (and when we come to the end, stop)
-            idx = '1.0'
-            while True:
-                # highlight next occurence, exit loop if no more
-                idx =self.editbox.search(s, idx, nocase=1, stopindex=END)
-                if not idx:
-                    break
-                # index right after the end of the occurence
-                lastidx = '%s+%dc' % (idx, len(s))
-                # tag the whole occurence (start included, stop excluded)
-                self.editbox.tag_add('found', idx, lastidx)
-                # prepare to search for next occurence
-                idx = lastidx
-            # use a red foreground for all the tagged occurencs
-            self.editbox.tag_config('found', foreground='red')
-
-    # called when user pushes the OK button.
-    # saves the buffer into a variable, and closes the window.
-    def pressedOK(self):
-        self.text = self.editbox.get('1.0', END)
-        # if the editbox contains ASCII characters only, editbox.get() will
-        # return string, otherwise unicode (very annoying). We only want
-        # it to return unicode, so we work around this.  
-        if type(self.text) == type(''):
-            self.text = unicode(self.text, 'ascii')
-        self.top.destroy()
 
 
 class CustomMessageBox(tkSimpleDialog.Dialog):

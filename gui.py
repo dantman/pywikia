@@ -1,5 +1,3 @@
-#coding: utf-8
-
 '''
 A window with a unicode textfield where the user can e.g. edit
 the contents of an article
@@ -9,63 +7,246 @@ the contents of an article
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
 #     Wikiwichtel
+# (C) the PyWikipediabot team, 2008
 #
 # Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 
 from Tkinter import *
+from ScrolledText import ScrolledText
+import tkSimpleDialog
+
+from idlelib.configHandler import idleConf
+from idlelib import SearchDialog, ReplaceDialog
+
 import wikipedia
 
-class EditBoxWindow:
 
-    # called when user pushes the OK button.
-    # saves the buffer into a variable, and closes the window.
-    def pressedOK(self):
-        self.text = self.editbox.get('1.0', END)
-        # if the editbox contains ASCII characters only, editbox.get() will
-        # return string, otherwise unicode (very annoying). We only want
-        # it to return unicode, so we work around this.  
-        if type(self.text) == type(''):
-            self.text = unicode(self.text, 'ascii')
-        self.myParent.destroy()
+class TextEditor(ScrolledText):
+    """A text widget with some editing enhancements.
 
-    def __init__(self, parent = None):
+    A lot of code here is copied or adapted from the idlelib/EditorWindow.py
+    file in the standard Python distribution.
+
+    """
+    def __init__(self, master=None, **kwargs):
+        # get default settings from user's IDLE configuration
+        currentTheme=idleConf.CurrentTheme()
+        textcf = dict(padx=5, wrap='word',
+                      foreground=idleConf.GetHighlight(currentTheme,
+                        'normal', fgBg='fg'),
+                      background=idleConf.GetHighlight(currentTheme,
+                        'normal', fgBg='bg'),
+                      highlightcolor=idleConf.GetHighlight(currentTheme,
+                        'hilite', fgBg='fg'),
+                      highlightbackground=idleConf.GetHighlight(currentTheme,
+                        'hilite', fgBg='bg'),
+                      insertbackground=idleConf.GetHighlight(currentTheme,
+                        'cursor', fgBg='fg'),
+                      width=idleConf.GetOption('main','EditorWindow','width'),
+                      height=idleConf.GetOption('main','EditorWindow','height')
+                    )
+        fontWeight = 'normal'
+        if idleConf.GetOption('main', 'EditorWindow', 'font-bold', type='bool'):
+            fontWeight='bold'
+        textcf['font']=(idleConf.GetOption('main', 'EditorWindow', 'font'),
+                        idleConf.GetOption('main', 'EditorWindow', 'font-size'),
+                        fontWeight)
+        # override defaults with any user-specified settings
+        textcf.update(kwargs)
+        ScrolledText.__init__(self, master, **textcf)
+
+        self.bind("<<cut>>", self.cut)
+        self.bind("<<copy>>", self.copy)
+        self.bind("<<paste>>", self.paste)
+        self.bind("<<select-all>>", self.select_all)
+        self.bind("<<remove-selection>>", self.remove_selection)
+        self.bind("<<find>>", self.find_event)
+        self.bind("<<find-again>>", self.find_again_event)
+        self.bind("<<find-selection>>", self.find_selection_event)
+        self.bind("<<replace>>", self.replace_event)
+        self.bind("<<goto-line>>", self.goto_line_event)
+        self.bind("<<del-word-left>>", self.del_word_left)
+        self.bind("<<del-word-right>>", self.del_word_right)
+
+        keydefs = {'<<copy>>': ['<Control-Key-c>', '<Control-Key-C>'],
+                   '<<cut>>': ['<Control-Key-x>', '<Control-Key-X>'],
+                   '<<del-word-left>>': ['<Control-Key-BackSpace>'],
+                   '<<del-word-right>>': ['<Control-Key-Delete>'],
+                   '<<end-of-file>>': ['<Control-Key-d>', '<Control-Key-D>'],
+                   '<<find-again>>': ['<Control-Key-g>', '<Key-F3>'],
+                   '<<find-selection>>': ['<Control-Key-F3>'],
+                   '<<find>>': ['<Control-Key-f>', '<Control-Key-F>'],
+                   '<<goto-line>>': ['<Alt-Key-g>', '<Meta-Key-g>'],
+                   '<<paste>>': ['<Control-Key-v>', '<Control-Key-V>'],
+                   '<<redo>>': ['<Control-Shift-Key-Z>'],
+                   '<<remove-selection>>': ['<Key-Escape>'],
+                   '<<replace>>': ['<Control-Key-h>', '<Control-Key-H>'],
+                   '<<select-all>>': ['<Control-Key-a>'],
+                   '<<undo>>': ['<Control-Key-z>', '<Control-Key-Z>'],
+                  }
+        for event, keylist in keydefs.items():
+            if keylist:
+                self.event_add(event, *keylist)
+
+    def cut(self,event):
+        if self.tag_ranges("sel"):
+            self.event_generate("<<Cut>>")
+        return "break"
+
+    def copy(self,event):
+        if self.tag_ranges("sel"):
+            self.event_generate("<<Copy>>")
+        return "break"
+
+    def paste(self,event):
+        self.event_generate("<<Paste>>")
+        return "break"
+
+    def select_all(self, event=None):
+        self.tag_add("sel", "1.0", "end-1c")
+        self.mark_set("insert", "1.0")
+        self.see("insert")
+        return "break"
+
+    def remove_selection(self, event=None):
+        self.tag_remove("sel", "1.0", "end")
+        self.see("insert")
+
+    def del_word_left(self, event):
+        self.event_generate('<Meta-Delete>')
+        return "break"
+
+    def del_word_right(self, event):
+        self.event_generate('<Meta-d>')
+        return "break"
+
+    def find_event(self, event):
+        if not self.tag_ranges("sel"):
+            found = self.tag_ranges("found")
+            if found:
+                self.tag_add("sel", found[0], found[1])
+            else:
+                self.tag_add("sel", "1.0", "1.0+1c")
+        SearchDialog.find(self)
+        return "break"
+
+    def find_again_event(self, event):
+        SearchDialog.find_again(self)
+        return "break"
+
+    def find_selection_event(self, event):
+        SearchDialog.find_selection(self)
+        return "break"
+
+    def replace_event(self, event):
+        ReplaceDialog.replace(self)
+        return "break"
+
+    def find_all(self, s):
+        '''
+        Highlight all occurrences of string s, and select the first one. If
+        the string has already been highlighted, jump to the next occurrence
+        after the current selection. (You cannot go backwards using the
+        button, but you can manually place the cursor anywhere in the
+        document to start searching from that point.)
+
+        '''
+        if hasattr(self, "_highlight") and self._highlight == s:
+            try:
+                if self.get(SEL_FIRST, SEL_LAST) == s:
+                    return self.find_selection_event(None)
+                else:
+                    # user must have changed the selection
+                    found = self.tag_nextrange('found', SEL_LAST)
+            except TclError:
+                # user must have unset the selection
+                found = self.tag_nextrange('found', INSERT)
+            if not found:
+                # at last occurrence, scroll back to the top
+                found = self.tag_nextrange('found', 1.0)
+            if found:
+                self.do_highlight(found[0], found[1])
+        else:
+            # find all occurrences of string s;
+            # adapted from O'Reilly's Python in a Nutshell
+            # remove previous uses of tag 'found', if any
+            self.tag_remove('found', '1.0', END)
+            if s:
+                self._highlight = s
+                # start from the beginning (and when we come to the end, stop)
+                idx = '1.0'
+                while True:
+                    # find next occurence, exit loop if no more
+                    idx = self.search(s, idx, nocase=1, stopindex=END)
+                    if not idx:
+                        break
+                    # index right after the end of the occurence
+                    lastidx = '%s+%dc' % (idx, len(s))
+                    # tag the whole occurence (start included, stop excluded)
+                    self.tag_add('found', idx, lastidx)
+                    # prepare to search for next occurence
+                    idx = lastidx
+                # use a red foreground for all the tagged occurences
+                self.tag_config('found', foreground='red')
+                found = self.tag_nextrange('found', 1.0)
+                if found:
+                    self.do_highlight(found[0], found[1])
+
+    def do_highlight(self, start, end):
+        """Select and show the text from index start to index end."""
+        self.see(start)
+        self.tag_remove(SEL, '1.0', END)
+        self.tag_add(SEL, start, end)
+        self.focus_set()
+
+    def goto_line_event(self, event):
+        lineno = tkSimpleDialog.askinteger("Goto",
+                "Go to line number:", parent=self)
+        if lineno is None:
+            return "break"
+        if lineno <= 0:
+            self.bell()
+            return "break"
+        self.mark_set("insert", "%d.0" % lineno)
+        self.see("insert")
+
+
+class EditBoxWindow(Frame):
+
+    def __init__(self, parent = None, **kwargs):
         if parent == None:
             # create a new window
             parent = Tk()
-        self.myParent = parent
+        self.parent = parent
+        Frame.__init__(self, parent)
+        self.editbox = TextEditor(self, **kwargs)
+        self.editbox.pack(side=TOP)
 
-        self.top_frame = Frame(parent)
-
-        scrollbar = Scrollbar(self.top_frame)
-        # textarea with vertical scrollbar
-        self.editbox = Text(self.top_frame, yscrollcommand=scrollbar.set)
-        # add scrollbar to main frame, associate it with our editbox
-        scrollbar.pack(side=RIGHT, fill=Y)
-        scrollbar.config(command=self.editbox.yview)
-
-        # put textarea into top frame, using all available space
-        self.editbox.pack(anchor=CENTER, fill=BOTH)
-        self.top_frame.pack(side=TOP)
-
+        bottom = Frame(parent)
         # lower left subframe which will contain a textfield and a Search button
-        self.bottom_left_frame = Frame(parent)
-        self.textfield = Entry(self.bottom_left_frame)
+        bottom_left_frame = Frame(bottom)
+        self.textfield = Entry(bottom_left_frame)
         self.textfield.pack(side=LEFT, fill=X, expand=1)
 
-        buttonSearch = Button(self.bottom_left_frame, text='Find', command=self.find)
+        buttonSearch = Button(bottom_left_frame, text='Find next',
+                              command=self.find)
         buttonSearch.pack(side=RIGHT)
-        self.bottom_left_frame.pack(side=LEFT, expand=1)
-        
-        # lower right subframe which will contain OK and Cancel buttons
-        self.bottom_right_frame = Frame(parent)
+        bottom_left_frame.pack(side=LEFT, expand=1)
 
-        buttonOK = Button(self.bottom_right_frame, text='OK', command=self.pressedOK)
-        buttonCancel = Button(self.bottom_right_frame, text='Cancel', command=parent.destroy)
+        # lower right subframe which will contain OK and Cancel buttons
+        bottom_right_frame = Frame(bottom)
+
+        buttonOK = Button(bottom_right_frame, text='OK',
+                          command=self.pressedOK)
+        buttonCancel = Button(bottom_right_frame, text='Cancel',
+                              command=parent.destroy)
         buttonOK.pack(side=LEFT, fill=X)
         buttonCancel.pack(side=RIGHT, fill=X)
-        self.bottom_right_frame.pack(side=RIGHT, expand=1)
+        bottom_right_frame.pack(side=RIGHT, expand=1)
+
+        bottom.pack(side=TOP)
 
         # create a toplevel menu
         # menubar = Menu(root)
@@ -74,7 +255,7 @@ class EditBoxWindow:
 
         # display the menu
         # root.config(menu=menubar)
-
+        self.pack()
 
     def edit(self, text, jumpIndex = None, highlight = None):
         """
@@ -93,7 +274,7 @@ class EditBoxWindow:
         # start search if required
         if highlight:
             self.textfield.insert(END, highlight)
-            self.find()
+            self.editbox.find_all(highlight)
         if jumpIndex:
             print jumpIndex
             line = text[:jumpIndex].count('\n') + 1 # lines are indexed starting at 1
@@ -102,55 +283,51 @@ class EditBoxWindow:
             # should already be helpful.
             self.editbox.see('%d.%d' % (line, column))
         # wait for user to push a button which will destroy (close) the window
-        self.myParent.mainloop()
+        self.parent.mainloop()
         return self.text 
 
     def find(self):
-        '''
-        Action-function for the Button: highlight all occurences of a string.
-        Taken from O'Reilly's Python in a Nutshell.
-        '''
-        #remove previous uses of tag 'found', if any
-        self.editbox.tag_remove('found', '1.0', END)
-        # get string to look for (if empty, no searching)
+        # get text to search for
         s = self.textfield.get()
         if s:
-            # start from the beginning (and when we come to the end, stop)
-            idx = '1.0'
-            while True:
-                # find next occurence, exit loop if no more
-                idx =self.editbox.search(s, idx, nocase=1, stopindex=END)
-                if not idx:
-                    break
-                # index right after the end of the occurence
-                lastidx = '%s+%dc' % (idx, len(s))
-                # tag the whole occurence (start included, stop excluded)
-                self.editbox.tag_add('found', idx, lastidx)
-                # prepare to search for next occurence
-                idx = lastidx
-            # use a red foreground for all the tagged occurencs
-            self.editbox.tag_config('found', foreground='red')
-       
+            self.editbox.find_all(s)
 
+    def pressedOK(self):
+        # called when user pushes the OK button.
+        # saves the buffer into a variable, and closes the window.
+        self.text = self.editbox.get('1.0', END)
+        # if the editbox contains ASCII characters only, get() will
+        # return string, otherwise unicode (very annoying). We only want
+        # it to return unicode, so we work around this.  
+        if isinstance(self.text, str):
+            self.text = unicode(self.text)
+        self.parent.destroy()
+
+    def debug(self, event=None):
+        self.quit()
+        return "break"
+
+
+#### the following class isn't used anywhere in the framework: ####
 class ListBoxWindow:
 
     # called when user pushes the OK button.
     # closes the window.
     def pressedOK(self):
         #ok closes listbox
-        self.myParent.destroy()
+        self.parent.destroy()
 
     def __init__(self, parent = None):
         if parent == None:
             # create a new window
             parent = Tk()
-        self.myParent = parent
+        self.parent = parent
 
         #selectable: only one item
         self.listbox = Listbox(parent, selectmode=SINGLE)
         # put list into main frame, using all available space
         self.listbox.pack(anchor=CENTER, fill=BOTH)
-        
+
         # lower subframe which will contain one button
         self.bottom_frame = Frame(parent)
         self.bottom_frame.pack(side=BOTTOM)
@@ -178,9 +355,12 @@ class ListBoxWindow:
 
 
 if __name__=="__main__":
-    root = Tk()
-    page = wikipedia.Page(wikipedia.getSite(), u'Wiki')
-    content = page.get()
-    myapp = EditBoxWindow(root)
-    myapp.edit(content, highlight = page.title())
-
+    try:
+        root = Tk()
+        page = wikipedia.Page(wikipedia.getSite(), u'Wiki')
+        content = page.get()
+        myapp = EditBoxWindow(root)
+        myapp.bind("<Control-d>", myapp.debug)
+        v = myapp.edit(content, highlight = page.title())
+    finally:
+        wikipedia.stopme()
