@@ -344,6 +344,7 @@ msg = {
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'frp': (u'robot ', u'Apond', u'Retire', u'Modifie'),
     'fur': (u'Robot: ', u'o zonti', u'o cambii', u'o gjavi'),
+    'fy': (u'Bot ', u'- derby', u'- fuort', u'- oars'),
     'gl': (u'bot ', u'Engadido', u'Eliminado', u'Modificado'),
     'gn': (u'bot ', u'ojoapy', u'oñembogue', u'oñemoambue'),
     'he': (u'בוט ', u'מוסיף', u'מסיר', u'משנה'),
