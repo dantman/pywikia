@@ -4435,7 +4435,7 @@ your connection is down. Retrying in %i minutes..."""
                     try:
                         from elementtree.ElementTree import XML
                     except ImportError:
-                        output('ERROR: You need to install cElementTree, or ElementTree module to be able to parse mediawiki messages')
+                        output('ERROR: One of the cElementTree, or the ElementTree module is now needed to be able to parse mediawiki messages. Please install (c)ElementTree. (Note that python 2.5 natively includes these librairies : upgrading to python 2.5 will solve this issue.)')
                         stopme()
                         sys.exit(1)
         # Allmessages is retrieved once for all in a session
