@@ -181,7 +181,10 @@ class CosmeticChangesToolkit:
                 # [[page_title|link_text]]trailing_chars
                 # We only work on namespace 0 because pipes and linktrails work
                 # differently for images and categories.
-                page = wikipedia.Page(self.site, titleWithSection)
+                try:
+                    page = wikipedia.Page(self.site, titleWithSection)
+                except wikipedia.InvalidTitle:
+                    return match.group()
                 if page.namespace() == 0:
                     # Replace underlines by spaces, also multiple underlines
                     titleWithSection = re.sub('_+', ' ', titleWithSection)

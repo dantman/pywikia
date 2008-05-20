@@ -167,6 +167,9 @@ class IsRedirectPage(Error):
 class IsNotRedirectPage(Error):
     """Page is not a redirect page"""
 
+class InvalidTitle(Error):
+    """Invalid page title"""
+
 class LockedPage(Error):
     """Page is locked"""
 
@@ -328,7 +331,7 @@ class Page(object):
             try:
                 t = url2unicode(t, site = insite, site2 = site)
             except UnicodeDecodeError:
-                raise Error(u'Bad page title : %s' % t)
+                raise InvalidTitle(u'Bad page title : %s' % t)
 
             # Normalize unicode string to a NFC (composed) format to allow
             # proper string comparisons. According to
@@ -354,7 +357,7 @@ class Page(object):
                 self._namespace = defaultNamespace
 
             if not t:
-                raise Error(u"Invalid title '%s'" % title )
+                raise InvalidTitle(u"Invalid title '%s'" % title )
 
             self._namespace = defaultNamespace
             #
@@ -1069,7 +1072,7 @@ not supported by PyWikipediaBot!"""
                 output(u"DBG> invalid <li> item in Whatlinkshere: %s" % link)
             try:
                 p = Page(self.site(), title)
-            except Error:
+            except InvalidTitle:
                 output(u"DBG> Whatlinkshere:%s contains invalid link to %s"
                        % (self.title(), title))
                 continue
@@ -1564,7 +1567,7 @@ not supported by PyWikipediaBot!"""
                 output(
     u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!"
                         % (self.aslink(), newSite, newTitle))
-            except Error:
+            except InvalidTitle:
                 output(
     u"ERROR: link from %s to [[%s:%s]] is improperly formatted?"
                         % (self.aslink(), newSite, newTitle))
@@ -1633,7 +1636,7 @@ not supported by PyWikipediaBot!"""
             if not self.site().isInterwikiLink(title):
                 try:
                     page = Page(self.site(), title)
-                except Error:
+                except InvalidTitle:
                     output(u"Page %s contains invalid link to [[%s]]."
                            % (self.title(), title))
                     continue
@@ -1740,7 +1743,7 @@ not supported by PyWikipediaBot!"""
                     continue
                 try:
                     name = Page(self.site(), name).title()
-                except Error:
+                except InvalidTitle:
                     if name.strip():
                         output(
                             u"Page %s contains invalid template name {{%s}}."
@@ -2613,7 +2616,7 @@ class ImagePage(Page):
         for match in lineR.finditer(titleList):
             try:
                 yield Page(self.site(), match.group('title'))
-            except Error:
+            except InvalidTitle:
                 output(
         u"Image description page %s contains invalid reference to [[%s]]."
                     % (self.title(), match.group('title')))
@@ -3247,7 +3250,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
             site = insite.getSite(code = lang)
             try:
                 result[site] = Page(site, pagetitle, insite = insite)
-            except Error:
+            except InvalidTitle:
                 output(
         u"[getLanguageLinks] Text contains invalid interwiki link [[%s:%s]]."
                            % (lang, pagetitle))
