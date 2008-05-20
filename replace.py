@@ -112,6 +112,7 @@ talk about HTTP, where the typo has become part of the standard:
 from __future__ import generators
 import sys, re, time
 import wikipedia, pagegenerators, catlib, config
+import editarticle
 
 # Imports predefined replacements tasks from fixes.py
 import fixes
@@ -371,19 +372,32 @@ u'Skipping %s because it contains text that is on the exceptions list.'
                     cats.append(self.addedCat)
                     new_text = wikipedia.replaceCategoryLinks(new_text,
                                                               cats)
-            # Show the title of the page we're working on.
-            # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
-                             % page.title())
-            wikipedia.showDiff(original_text, new_text)
-            if not self.acceptall:
+            while True:
+                # Show the title of the page we're working on.
+                # Highlight the title in purple.
+                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                                 % page.title())
+                wikipedia.showDiff(original_text, new_text)
+                if self.acceptall:
+                    break
                 choice = wikipedia.inputChoice(
                             u'Do you want to accept these changes?',
-                            ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                            ['Yes', 'No', 'Edit', 'All', "Quit"],
+                            ['y', 'N', 'e', 'a', 'q'], 'N')
+                if choice in "Ee":
+                    editor = editarticle.TextEditor()
+                    as_edited = editor.edit(new_text)
+                    # if user didn't press Cancel
+                    if as_edited and as_edited != new_text:
+                        new_text = as_edited
+                    continue
+                if choice in "Qq":
+                    return
                 if choice in ['a', 'A']:
                     self.acceptall = True
                 if choice in ['y', 'Y']:
                     page.put_async(new_text)
+                break
             if self.acceptall:
                 try:
                     page.put(new_text)
