@@ -30,6 +30,7 @@ class SignerBot(SingleServerIRCBot):
         interwiki.globalvar.autonomous = True
         self.site = site
         self.queue = Queue()
+        self.processed = []
         # Start 20 threads
         for i in range(20):
             t = threading.Thread(target=self.worker)
@@ -56,13 +57,18 @@ class SignerBot(SingleServerIRCBot):
 	pass
 
     def on_pubmsg(self, c, e):
-        msg = unicode(e.arguments()[0],'utf-8')
+        try:
+            msg = unicode(e.arguments()[0],'utf-8')
+        except UnicodeDecodeError:
+            return
         if not self.other_ns.match(msg):
             name = msg[8:msg.find(u'14',9)]
-            page = wikipedia.Page(self.site, name)
-            # the Queue has for now an (theoric) unlimited size,
-            # it is a simple atomic append(), no need to acquire a semaphore
-            self.queue.put_nowait(page)
+            if not name in self.processed:
+                self.processed.append(name)
+                page = wikipedia.Page(self.site, name)
+                # the Queue has for now an unlimited size,
+                # it is a simple atomic append(), no need to acquire a semaphore
+                self.queue.put_nowait(page)
 
     def on_dccmsg(self, c, e):
 	pass
