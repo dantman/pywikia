@@ -258,14 +258,6 @@ class ReferencesRobot:
         wikipedia.output(u'HTTP error (%s) for %s on %s' 
                           % (err_num, link, pagetitleaslink),
                          toStdout = True)
-        f = codecs.open(
-                wikipedia.config.datafilepath(
-                    'reflinks-httpErrorLog', 
-                    'reflinks-%s-%s.txt' % (self.site.family.name, 
-                                            self.site.lang)),
-                'a', 'utf-8')
-        f.write(u'%s: %s from %s\n' % (err_num, link, pagetitleaslink))
-        f.close()
 
     def getPDFTitle(self, ref, f): 
         wikipedia.output( u'PDF file.' )
@@ -378,7 +370,9 @@ class ReferencesRobot:
                     wikipedia.output(u'\03{lightred}Bad link\03{default} : %s in %s' % (ref.url, page.aslink()))
                     continue
                 except urllib2.HTTPError, e:
-                    self.httpError(e.code, ref.url, page.aslink())
+                    wikipedia.output(u'HTTP error (%s) for %s on %s' 
+                                        % (e.code, ref.url, page.aslink()),
+                                    toStdout = True)
                     if e.code == 410: # 410 Gone, indicates that the resource has been purposely removed
                         repl = ref.refDead()
                         new_text = new_text.replace(match.group(), repl)
