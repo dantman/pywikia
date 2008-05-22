@@ -36,6 +36,9 @@ These command line parameters can be used to specify which pages to work on:
 -namespace   Only process templates in the namespace with the given number or
              name. This parameter may be used multiple times.
 
+-ignore      HTTP return codes to ignore. Can be provided several times :
+                -ignore:401 -ignore:500
+
 Furthermore, the following command line parameters are supported:
 
 -talk        Overrides the report_dead_links_on_talk config variable, enabling
@@ -272,7 +275,7 @@ class LinkChecker(object):
     Warning: Also returns false if your Internet connection isn't working
     correctly! (This will give a Socket Error)
     '''
-    def __init__(self, url, redirectChain = [], serverEncoding = None):
+    def __init__(self, url, redirectChain = [], serverEncoding = None, HTTPignore = []):
         """
         redirectChain is a list of redirects which were resolved by
         resolveRedirect(). This is needed to detect redirect loops.
@@ -293,6 +296,7 @@ class LinkChecker(object):
         }
         self.redirectChain = redirectChain + [url]
         self.changeUrl(url)
+        self.HTTPignore = HTTPignore
 
     def getConnection(self):
         if self.scheme == 'http':
@@ -438,7 +442,7 @@ class LinkChecker(object):
                     # which leads to a cyclic list of redirects.
                     # We simply start from the beginning, but this time,
                     # we don't use HEAD, but GET requests.
-                    redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding)
+                    redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding, HTTPignore = self.HTTPignore)
                     return redirChecker.check(useHEAD = False)
                 else:
                     urlList = ['[%s]' % url for url in self.redirectChain + [self.url]]
@@ -449,13 +453,13 @@ class LinkChecker(object):
                     # which leads to a long (or infinite) list of redirects.
                     # We simply start from the beginning, but this time,
                     # we don't use HEAD, but GET requests.
-                    redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding)
+                    redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding, HTTPignore = self.HTTPignore)
                     return redirChecker.check(useHEAD = False)
                 else:
                     urlList = ['[%s]' % url for url in self.redirectChain + [self.url]]
                     return False, u'Long Chain of Redirects: %s' % ' -> '.join(urlList)
             else:
-                redirChecker = LinkChecker(self.url, self.redirectChain, self.serverEncoding)
+                redirChecker = LinkChecker(self.url, self.redirectChain, self.serverEncoding, HTTPignore = self.HTTPignore)
                 return redirChecker.check(useHEAD = useHEAD)
         else:
             try:
@@ -473,24 +477,27 @@ class LinkChecker(object):
             # read the server's encoding, in case we need it later
             self.readEncodingFromResponse(response)
             # site down if the server status is between 400 and 499
-            siteDown = response.status in range(400, 500)
-            return not siteDown, '%s %s' % (response.status, response.reason)
+            alive = response.status in range(400, 500)
+            if response.status in self.HTTPignore:
+                alive = False
+            return alive, '%s %s' % (response.status, response.reason)
 
 class LinkCheckThread(threading.Thread):
     '''
     A thread responsible for checking one URL. After checking the page, it
     will die.
     '''
-    def __init__(self, page, url, history):
+    def __init__(self, page, url, history, HTTPignore):
         threading.Thread.__init__(self)
         self.page = page
         self.url = url
         self.history = history
         # identification for debugging purposes
         self.setName((u'%s - %s' % (page.title(), url)).encode('utf-8', 'replace'))
+        self.HTTPignore = HTTPignore
         
     def run(self):
-        linkChecker = LinkChecker(self.url)
+        linkChecker = LinkChecker(self.url, HTTPignore = self.HTTPignore)
         try:
             ok, message = linkChecker.check()
         except:
@@ -696,7 +703,7 @@ class WeblinkCheckerRobot:
     Robot which will use several LinkCheckThreads at once to search for dead
     weblinks on pages provided by the given generator.
     '''
-    def __init__(self, generator):
+    def __init__(self, generator, HTTPignore = []):
         self.generator = generator
         if config.report_dead_links_on_talk:
             #wikipedia.output("Starting talk page thread")
@@ -707,6 +714,7 @@ class WeblinkCheckerRobot:
         else:
             reportThread = None
         self.history = History(reportThread)
+        self.HTTPignore = HTTPignore
 
     def run(self):
         for page in self.generator:
@@ -729,7 +737,7 @@ class WeblinkCheckerRobot:
                 while threading.activeCount() >= config.max_external_links:
                     # wait 100 ms
                     time.sleep(0.1)
-                thread = LinkCheckThread(page, url, self.history)
+                thread = LinkCheckThread(page, url, self.history, self.HTTPignore)
                 # thread dies when program terminates
                 thread.setDaemon(True)
                 thread.start()
@@ -760,6 +768,7 @@ def main():
     # Which namespaces should be processed?
     # default to [] which means all namespaces will be processed
     namespaces = []
+    HTTPignore = []
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
@@ -777,6 +786,8 @@ def main():
                 namespaces.append(arg[11:])
         elif arg == '-repeat':
             gen = RepeatPageGenerator()
+        elif arg.startswith('-ignore:'):
+            HTTPignore.append(int(arg[8:]))
         else:
             generator = genFactory.handleArg(arg)
             if generator:
@@ -797,7 +808,7 @@ def main():
         pageNumber = max(240, config.max_external_links * 2)
         gen = pagegenerators.PreloadingGenerator(gen, pageNumber = pageNumber)
         gen = pagegenerators.RedirectFilterPageGenerator(gen)
-        bot = WeblinkCheckerRobot(gen)
+        bot = WeblinkCheckerRobot(gen, HTTPignore)
         try:
             bot.run()
         finally:
