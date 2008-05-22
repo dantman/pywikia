@@ -614,7 +614,7 @@ class Family(family.Family):
             'uk':  [u'DisambigG', u'Disambig'],
             'vec': [u'Disambigua'],
             'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig', u'Hndis'],
-            'vls': [u'Dp', u'Dpintro'],
+            'vls': [u'Db', u'Dp', u'Dpintro'],
             'vo':  [u'Telplänov'],
             'wa':  [u'Omonimeye', u'Disambig'],
             'yi':  [u'באדייטען'],
