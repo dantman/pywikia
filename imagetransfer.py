@@ -75,6 +75,7 @@ nowCommonsMessage = {
     'ar': u'الملف الآن متوفر في ويكيميديا كومنز.',
     'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
     'en': u'File is now available on Wikimedia Commons.',
+    'eo': u'Dosiero nun estas havebla en la Wikimedia-Komunejo.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
