@@ -7,9 +7,14 @@ and to check for interwikis in those recently modified articles.
 In use on hu:, not sure if this scales well on a large wiki such
 as en: (Depending on the edit rate, the number of IW threads
 could grow continuously without ever decreasing)
+
+Params:
+
+-safe  Does not handle the same page more than once in a session
+
 """
 
-# Author: Kisbes
+# Authors: Kisbes
 # http://hu.wikipedia.org/wiki/User:Kisbes
 # License : GFDL
 
@@ -22,8 +27,8 @@ import wikipedia
 import time
 from Queue import Queue
 
-class SignerBot(SingleServerIRCBot):
-    def __init__(self, site, channel, nickname, server, port=6667):
+class IWRCBot(SingleServerIRCBot):
+    def __init__(self, site, channel, nickname, server, port, safe):
         SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel
         self.other_ns = re.compile(u'14\[\[07(' + u'|'.join(site.namespaces()) + u')')
@@ -31,6 +36,7 @@ class SignerBot(SingleServerIRCBot):
         self.site = site
         self.queue = Queue()
         self.processed = []
+        self.safe = safe
         # Start 20 threads
         for i in range(20):
             t = threading.Thread(target=self.worker)
@@ -61,14 +67,18 @@ class SignerBot(SingleServerIRCBot):
             msg = unicode(e.arguments()[0],'utf-8')
         except UnicodeDecodeError:
             return
-        if not self.other_ns.match(msg):
-            name = msg[8:msg.find(u'14',9)]
-            if not name in self.processed:
-                self.processed.append(name)
-                page = wikipedia.Page(self.site, name)
-                # the Queue has for now an unlimited size,
-                # it is a simple atomic append(), no need to acquire a semaphore
-                self.queue.put_nowait(page)
+        if self.other_ns.match(msg):
+            return
+
+        name = msg[8:msg.find(u'14',9)]
+        if self.safe:
+            if name in self.processed:
+                return
+            self.processed.append(name)
+        page = wikipedia.Page(self.site, name)
+        # the Queue has for now an unlimited size,
+        # it is a simple atomic append(), no need to acquire a semaphore
+        self.queue.put_nowait(page)
 
     def on_dccmsg(self, c, e):
 	pass
@@ -83,10 +93,14 @@ class SignerBot(SingleServerIRCBot):
 	pass
 
 def main():
+    safe = False
+    for arg in wikipedia.handleArgs():
+        if arg == 'safe':
+            safe = True
     site = wikipedia.getSite()
     site.forceLogin()
     chan = '#' + site.language() + '.' + site.family.name
-    bot = SignerBot(site, chan, site.loggedInAs(), "irc.wikimedia.org", 6667)
+    bot = IWRCBot(site, chan, site.loggedInAs(), "irc.wikimedia.org", 6667, safe)
     try:
         bot.start()
     except:
