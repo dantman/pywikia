@@ -80,7 +80,7 @@ __version__ = '$Id$'
 #
 
 import re, time, urllib, urllib2, os, locale, sys
-import wikipedia, config, pagegenerators, catlib, query
+import wikipedia, config, pagegenerators, catlib
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -585,17 +585,9 @@ class main:
             p.put(testoa + self.newtext, comment = self.commImage, minorEdit = True)
         # paginetta it's the image page object.
         paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
-        params = {
-            'action'    :'query',
-            'prop'      :'imageinfo',
-            'titles'    :self.image_namespace + self.image,
-            }
-        data = query.GetData(params, useAPI = True, encodeTitle = False)
         try:
-            # We don't know the page's id, if any other better idea please change it
-            pageid = data['query']['pages'].keys()[0]
-            nick = data['query']['pages'][pageid][u'imageinfo'][0]['user']
-        except IndexError:
+            nick = paginetta.getLatestUploader()
+        except wikipedia.NoPage:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
             repme = "\n*[[:Image:%s]] problems '''with the APIs'''"
             # We have a problem! Report and exit!
