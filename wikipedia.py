@@ -131,7 +131,7 @@ import simplejson
 # longer needed.
 locale.setlocale(locale.LC_ALL, '')
 
-import config, login
+import config, login, query
 
 try:
     set # introduced in Python2.4: faster and future
@@ -2579,6 +2579,8 @@ class ImagePage(Page):
         Return value is a list of tuples containing (timestamp, username,
         resolution, filesize, comment).
 
+        Currently not working
+
         """
         result = []
         history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
@@ -2599,6 +2601,38 @@ class ImagePage(Page):
                 comment = match.group('comment') or ''
                 result.append((datetime, username, resolution, size, comment))
         return result
+
+    def getLatestUploader(self):
+        """ Function that uses the APIs to detect the latest uploader of the image """
+        params = {
+            'action'    :'query',
+            'prop'      :'imageinfo',
+            'titles'    :self.title(),
+            }
+        data = query.GetData(params, useAPI = True, encodeTitle = False)
+        try:
+            # We don't know the page's id, if any other better idea please change it
+            pageid = data['query']['pages'].keys()[0]
+            nick = data['query']['pages'][pageid][u'imageinfo'][0]['user']
+            return nick
+        except IndexError:
+            raise NoPage(u'API Error, nothing found in the APIs')
+
+    def getLatestUploader(self):
+        """ Function that uses the APIs to detect the latest uploader of the image """
+        params = {
+            'action'    :'query',
+            'prop'      :'imageinfo',
+            'titles'    :self.title(),
+            }
+        data = query.GetData(params, useAPI = True, encodeTitle = False)
+        try:
+            # We don't know the page's id, if any other better idea please change it
+            pageid = data['query']['pages'].keys()[0]
+            nick = data['query']['pages'][pageid][u'imageinfo'][0]['user']
+            return nick
+        except IndexError:
+            raise NoPage(u'API Error, nothing found in the APIs')
 
     def getFileVersionHistoryTable(self):
         """Return the version history in the form of a wiki table."""
