@@ -236,7 +236,7 @@ templates = {
             'pos' : 'top'},
     },
     'zh': {
-        u'{{db-reason}}' :{
+        u'{{Delete}}' :{
             'msg' : u'機器人掛上模板: 本文應被刪除。',
             'pos': 'top'},
         
@@ -244,16 +244,16 @@ templates = {
             'msg' : u'機器人掛上模板: 本文需清理',
             'pos': 'top'},
 
-        u'{{uncategorized}}' :{
+        u'{{subst:Uncategorized/auto}}' :{
             'msg' : u'機器人掛上模板:  本頁需要適當的頁面分類',
-            'pos' : u'top'},
+            'pos' : u'bottom'},
 
-        u'{{notability}}':{
+        u'{{subst:Notability/auto}}':{
             'msg' : u'機器人掛上模板:  本條目主題未突顯其知名度或顯著性',
             'pos': 'top'},
 
-        u'{{Refimprove}}':{
-            'msg' : u'機器人掛上模板:  本條目需要補充參考或來源',
+        u'{{subst:refimprove/auto}}':{
+            'msg' : u'機器人掛上模板:  本條目参考文献不足',
             'pos': 'top'},
 
         u'{{copyedit}}':{
@@ -264,12 +264,12 @@ templates = {
             'msg' : u'機器人掛上模板:  本條目沒有列出任何參考或來源',
             'pos': 'top'},
 
-        u'{{wikify}}' :{
+        u'{{subst:wikify/auto}}' :{
             'msg' : u'機器人掛上模板:  本條目需要維基化',
             'pos' : 'top'},
 
         u'{{subst:Notchinese/auto}}':{
-		    'msg' : u'機器人掛上模板: 翻譯中條目',
+		    'msg' : u'機器人掛上模板: 本条目没有翻译',
             'pos' : 'top'},
 
         u'{{subst:Substub/auto}}' :{
@@ -279,6 +279,16 @@ templates = {
         u'{{stub}}':{
             'msg' : u'機器人掛上模板: 本文是小作品',
             'pos': 'bottom'},
+        u'{{notchinesetitle}}':{
+            'msg' : u'機器人掛上模板: 本条目名称需要翻译成中文',
+            'pos': 'top'},
+        u'{{subst:Translating/auto}}':{
+            'msg' : u'機器人掛上模板: 本条目没有翻译完成',
+            'pos': 'top'}, 
+        u'{{fansite}}':{
+            'msg' : u'機器人掛上模板: 本条目內容類似愛好者網站',
+            'pos': 'top'}, 			
+         
     },
 }
 
@@ -315,7 +325,7 @@ done = {
     'pl':('{{ek}}', u'{{dopracować}}', '{{linki}}', u'{{źródła}}', u'{{stub}}'),
     'pt':('{{wikificar}}', '{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}', u'{{apagar vaidade}}'),
     'sv':(u'{{radera', u'{{Radera', u'{{städa}}', u'{{stub}}', u'{{verifieras}}', u'{{språkvård}}', u'{{Källor', u'{{källor', u'{{wikify}}', u'{{Ickewiki}}', u'{{ickewiki}}', u'{{Wikify}}'),
-    'zh':(u'{{VfD}}',u'{{AfD}}',u'{{unreferenced}}',u'{{db-reason}}',u'{{cleanup}}',u'{{stub}}',u'{{uncategorized}}',u'{{notability}}',u'{{Refimprove}}',u'{{copyedit}}',u'{{unreferenced}}',u'{{wikify}}',u'{{Substub}}',),
+    'zh':(u'{{VfD}}',u'{{AfD}}',u'{{unreferenced}}',u'{{db-reason}}',u'{{cleanup}}',u'{{stub}}',u'{{uncategorized}}',u'{{notability}}',u'{{copyedit}}',u'{{unreferenced}}',u'{{wikify}}',u'{{Translating}}',u'{{copyvio}}',u'{{Notchinese}}'),
     }
 
 # TODO: merge 'done' with 'templates' above
