@@ -17,10 +17,9 @@ from Tkinter import *
 from ScrolledText import ScrolledText
 import tkSimpleDialog
 
+from idlelib import SearchDialog, ReplaceDialog, configDialog
 from idlelib.configHandler import idleConf
-from idlelib import SearchDialog, ReplaceDialog
-
-import wikipedia
+from idlelib.MultiCall import MultiCallCreator
 
 
 class TextEditor(ScrolledText):
@@ -57,39 +56,6 @@ class TextEditor(ScrolledText):
         textcf.update(kwargs)
         ScrolledText.__init__(self, master, **textcf)
 
-        self.bind("<<cut>>", self.cut)
-        self.bind("<<copy>>", self.copy)
-        self.bind("<<paste>>", self.paste)
-        self.bind("<<select-all>>", self.select_all)
-        self.bind("<<remove-selection>>", self.remove_selection)
-        self.bind("<<find>>", self.find_event)
-        self.bind("<<find-again>>", self.find_again_event)
-        self.bind("<<find-selection>>", self.find_selection_event)
-        self.bind("<<replace>>", self.replace_event)
-        self.bind("<<goto-line>>", self.goto_line_event)
-        self.bind("<<del-word-left>>", self.del_word_left)
-        self.bind("<<del-word-right>>", self.del_word_right)
-
-        keydefs = {'<<copy>>': ['<Control-Key-c>', '<Control-Key-C>'],
-                   '<<cut>>': ['<Control-Key-x>', '<Control-Key-X>'],
-                   '<<del-word-left>>': ['<Control-Key-BackSpace>'],
-                   '<<del-word-right>>': ['<Control-Key-Delete>'],
-                   '<<end-of-file>>': ['<Control-Key-d>', '<Control-Key-D>'],
-                   '<<find-again>>': ['<Control-Key-g>', '<Key-F3>'],
-                   '<<find-selection>>': ['<Control-Key-F3>'],
-                   '<<find>>': ['<Control-Key-f>', '<Control-Key-F>'],
-                   '<<goto-line>>': ['<Alt-Key-g>', '<Meta-Key-g>'],
-                   '<<paste>>': ['<Control-Key-v>', '<Control-Key-V>'],
-                   '<<redo>>': ['<Control-Shift-Key-Z>'],
-                   '<<remove-selection>>': ['<Key-Escape>'],
-                   '<<replace>>': ['<Control-Key-h>', '<Control-Key-H>'],
-                   '<<select-all>>': ['<Control-Key-a>'],
-                   '<<undo>>': ['<Control-Key-z>', '<Control-Key-Z>'],
-                  }
-        for event, keylist in keydefs.items():
-            if keylist:
-                self.event_add(event, *keylist)
-
     def cut(self,event):
         if self.tag_ranges("sel"):
             self.event_generate("<<Cut>>")
@@ -118,11 +84,11 @@ class TextEditor(ScrolledText):
         self.event_generate('<Meta-Delete>')
         return "break"
 
-    def del_word_right(self, event):
+    def del_word_right(self, event=None):
         self.event_generate('<Meta-d>')
         return "break"
 
-    def find_event(self, event):
+    def find_event(self, event=None):
         if not self.tag_ranges("sel"):
             found = self.tag_ranges("found")
             if found:
@@ -132,15 +98,15 @@ class TextEditor(ScrolledText):
         SearchDialog.find(self)
         return "break"
 
-    def find_again_event(self, event):
+    def find_again_event(self, event=None):
         SearchDialog.find_again(self)
         return "break"
 
-    def find_selection_event(self, event):
+    def find_selection_event(self, event=None):
         SearchDialog.find_selection(self)
         return "break"
 
-    def replace_event(self, event):
+    def replace_event(self, event=None):
         ReplaceDialog.replace(self)
         return "break"
 
@@ -221,8 +187,42 @@ class EditBoxWindow(Frame):
             parent = Tk()
         self.parent = parent
         Frame.__init__(self, parent)
-        self.editbox = TextEditor(self, **kwargs)
+        self.editbox = MultiCallCreator(TextEditor)(self, **kwargs)
         self.editbox.pack(side=TOP)
+
+        # add key and event bindings to self.editbox
+        self.editbox.bind("<<cut>>", self.editbox.cut)
+        self.editbox.bind("<<copy>>", self.editbox.copy)
+        self.editbox.bind("<<paste>>", self.editbox.paste)
+        self.editbox.bind("<<select-all>>", self.editbox.select_all)
+        self.editbox.bind("<<remove-selection>>", self.editbox.remove_selection)
+        self.editbox.bind("<<find>>", self.editbox.find_event)
+        self.editbox.bind("<<find-again>>", self.editbox.find_again_event)
+        self.editbox.bind("<<find-selection>>", self.editbox.find_selection_event)
+        self.editbox.bind("<<replace>>", self.editbox.replace_event)
+        self.editbox.bind("<<goto-line>>", self.editbox.goto_line_event)
+        self.editbox.bind("<<del-word-left>>", self.editbox.del_word_left)
+        self.editbox.bind("<<del-word-right>>", self.editbox.del_word_right)
+        self.editbox.bind("<<open-config-dialog>>", self.config_dialog)
+        keydefs = {'<<copy>>': ['<Control-Key-c>', '<Control-Key-C>'],
+                   '<<cut>>': ['<Control-Key-x>', '<Control-Key-X>'],
+                   '<<del-word-left>>': ['<Control-Key-BackSpace>'],
+                   '<<del-word-right>>': ['<Control-Key-Delete>'],
+                   '<<end-of-file>>': ['<Control-Key-d>', '<Control-Key-D>'],
+                   '<<find-again>>': ['<Control-Key-g>', '<Key-F3>'],
+                   '<<find-selection>>': ['<Control-Key-F3>'],
+                   '<<find>>': ['<Control-Key-f>', '<Control-Key-F>'],
+                   '<<goto-line>>': ['<Alt-Key-g>', '<Meta-Key-g>'],
+                   '<<paste>>': ['<Control-Key-v>', '<Control-Key-V>'],
+                   '<<redo>>': ['<Control-Shift-Key-Z>'],
+                   '<<remove-selection>>': ['<Key-Escape>'],
+                   '<<replace>>': ['<Control-Key-h>', '<Control-Key-H>'],
+                   '<<select-all>>': ['<Control-Key-a>'],
+                   '<<undo>>': ['<Control-Key-z>', '<Control-Key-Z>'],
+                  }
+        for event, keylist in keydefs.items():
+            if keylist:
+                self.editbox.event_add(event, *keylist)
 
         bottom = Frame(parent)
         # lower left subframe which will contain a textfield and a Search button
@@ -249,15 +249,64 @@ class EditBoxWindow(Frame):
         bottom.pack(side=TOP)
 
         # create a toplevel menu
-        # menubar = Menu(root)
-        # menubar.add_command(label="Hello!", command=self.hello)
-        # menubar.add_command(label="Quit!", command=self.hello)
+        menubar = Menu(root)
+        
+        findmenu = Menu(menubar)
+        findmenu.add_command(label="Find",
+                             command=self.editbox.find_event,
+                             accelerator="Ctrl+F",
+                             underline=0)
+        findmenu.add_command(label="Find again",
+                             command=self.editbox.find_again_event,
+                             accelerator="Ctrl+G",
+                             underline=6)
+        findmenu.add_command(label="Find all",
+                             command=self.find_all,
+                             underline=5)
+        findmenu.add_command(label="Find selection",
+                             command=self.editbox.find_selection_event,
+                             accelerator="Ctrl+F3",
+                             underline=5)
+        findmenu.add_command(label="Replace",
+                             command=self.editbox.replace_event,
+                             accelerator="Ctrl+H",
+                             underline=0)
+        menubar.add_cascade(label="Find", menu=findmenu, underline=0)
 
+        editmenu = Menu(menubar)
+        editmenu.add_command(label="Cut",
+                             command=self.editbox.cut,
+                             accelerator="Ctrl+X",
+                             underline=2)
+        editmenu.add_command(label="Copy",
+                             command=self.editbox.copy,
+                             accelerator="Ctrl+C",
+                             underline=0)
+        editmenu.add_command(label="Paste",
+                             command=self.editbox.paste,
+                             accelerator="Ctrl+V",
+                             underline=0)
+        editmenu.add_separator()
+        editmenu.add_command(label="Select all",
+                             command=self.editbox.select_all,
+                             accelerator="Ctrl+A",
+                             underline=7)
+        editmenu.add_command(label="Clear selection",
+                             command=self.editbox.remove_selection,
+                             accelerator="Esc")
+        menubar.add_cascade(label="Edit", menu=editmenu, underline=0)
+
+        optmenu = Menu(menubar)
+        optmenu.add_command(label="Settings...",
+                            command=self.config_dialog,
+                            underline=0)
+        menubar.add_cascade(label="Options", menu=optmenu, underline=0)
+        
         # display the menu
-        # root.config(menu=menubar)
+        root.config(menu=menubar)
         self.pack()
 
-    def edit(self, text, jumpIndex = None, highlight = None):
+    def edit(self, text, jumpIndex=None, highlight=None):
         """
         Parameters:
             * text      - a Unicode string
@@ -273,8 +322,7 @@ class EditBoxWindow(Frame):
         self.editbox.tag_config('all', wrap = WORD)
         # start search if required
         if highlight:
-            self.textfield.insert(END, highlight)
-            self.editbox.find_all(highlight)
+            self.find_all(highlight)
         if jumpIndex:
             print jumpIndex
             line = text[:jumpIndex].count('\n') + 1 # lines are indexed starting at 1
@@ -286,11 +334,18 @@ class EditBoxWindow(Frame):
         self.parent.mainloop()
         return self.text 
 
+    def find_all(self, target):
+        self.textfield.insert(END, target)
+        self.editbox.find_all(target)
+
     def find(self):
         # get text to search for
         s = self.textfield.get()
         if s:
             self.editbox.find_all(s)
+
+    def config_dialog(self, event=None):
+        configDialog.ConfigDialog(self, 'Settings')
 
     def pressedOK(self):
         # called when user pushes the OK button.
@@ -355,6 +410,7 @@ class ListBoxWindow:
 
 
 if __name__=="__main__":
+    import wikipedia
     try:
         root = Tk()
         page = wikipedia.Page(wikipedia.getSite(), u'Wiki')
