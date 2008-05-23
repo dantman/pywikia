@@ -316,6 +316,7 @@ msg = {
     'als': (u'Bötli: ', u'Ygfüegt', u'Ussergnoh', u'Gändret'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
     'az': (u'Bot redaktəsi ', u'əlavə edilir', u'çıxardılır', u'dəyişdirilir'),
+    'bar': (u'Boterl: ', u'Aini', u'Aussi', u'Obàsst'),
     'bat-smg': (u'robots ', u'Pridedama', u'Trėnama', u'Keitama'),
     'bcl': (u'robot ', u'minadugang', u'minahali', u'minamodifikar'),
     'be': (u'робат ', u'Дадаем', u'Выдаляем', u'Мяняем'),
