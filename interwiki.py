@@ -310,8 +310,10 @@ class GiveUpOnPage(wikipedia.Error):
     """
     The user chose not to work on this page and its linked pages any more.
     """
+
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
+    'als': (u'Bötli: ', u'Ygfüegt', u'Ussergnoh', u'Gändret'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
     'az': (u'Bot redaktəsi ', u'əlavə edilir', u'çıxardılır', u'dəyişdirilir'),
     'bat-smg': (u'robots ', u'Pridedama', u'Trėnama', u'Keitama'),
