@@ -2155,6 +2155,7 @@ not supported by PyWikipediaBot!"""
             reason = reason.encode(self.site().encoding())
             token = self.site().getToken(self, sysop = True)
             predata = {
+                'wpDeleteReasonList': 'other',
                 'wpReason': reason,
                 'wpComment': reason,
                 'wpConfirm': '1',
