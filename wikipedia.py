@@ -78,6 +78,8 @@ Wikitext manipulation functions for interlanguage links:
         getLanguageLinks
     interwikiFormat(links): convert a dict of interlanguage links to text
         (using same dict format as getLanguageLinks)
+    interwikiSort(sites, inSite): sorts a list of sites according to interwiki
+        sort preference of inSite.
     url2link: Convert urlname of a wiki page into interwiki link format.
 
 Wikitext manipulation functions for category links:
@@ -3348,25 +3350,9 @@ def interwikiFormat(links, insite = None):
         insite = getSite()
     if not links:
         return ''
+    
+    ar = interwikiSort(links.keys(), insite)
     s = []
-    ar = links.keys()
-    ar.sort()
-    putfirst = insite.interwiki_putfirst()
-    if putfirst:
-        #In this case I might have to change the order
-        ar2 = []
-        for code in putfirst:
-            # The code may not exist in this family?
-            if code in insite.family.obsolete:
-                code = insite.family.obsolete[code]
-            if code in insite.validLanguageLinks():
-                site = insite.getSite(code = code)
-                if site in ar:
-                    del ar[ar.index(site)]
-                    ar2 = ar2 + [site]
-        ar = ar2 + ar
-    if insite.interwiki_putfirst_doubled(ar):
-        ar = insite.interwiki_putfirst_doubled(ar) + ar
     for site in ar:
         try:
             link = links[site].aslink(forceInterwiki=True)
@@ -3379,9 +3365,35 @@ def interwikiFormat(links, insite = None):
         sep = u'\r\n'
     s=sep.join(s) + u'\r\n'
     return s
+    
+# Sort sites according to local interwiki sort logic
+def interwikiSort(sites, insite = None):
+    if insite is None:
+      insite = getSite()
+    if not sites:
+      return []
 
+    sites.sort()
+    putfirst = insite.interwiki_putfirst()
+    if putfirst:
+        #In this case I might have to change the order
+        firstsites = []
+        for code in putfirst:
+            # The code may not exist in this family?
+            if code in insite.family.obsolete:
+                code = insite.family.obsolete[code]
+            if code in insite.validLanguageLinks():
+                site = insite.getSite(code = code)
+                if site in sites:
+                    del sites[sites.index(site)]
+                    firstsites = firstsites + [site]
+        sites = firstsites + sites
+    if insite.interwiki_putfirst_doubled(sites): #some implementations return False
+        sites = insite.interwiki_putfirst_doubled(sites) + sites
+        
+    return sites
+    
 # Wikitext manipulation functions dealing with category links
-
 def getCategoryLinks(text, site):
     import catlib
     """Return a list of category links found in text.
