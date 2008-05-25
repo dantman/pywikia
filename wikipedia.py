@@ -4458,22 +4458,6 @@ your connection is down. Retrying in %i minutes..."""
 
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
-        try:
-            from xml.etree.cElementTree import XML # 2.5
-        except ImportError:
-            try:
-                from cElementTree import XML
-            except ImportError:
-                output('Module cElementTree not found, using instead the slower ElementTree')
-                try:
-                    from xml.etree.ElementTree import XML # 2.5 
-                except ImportError:
-                    try:
-                        from elementtree.ElementTree import XML
-                    except ImportError:
-                        output('ERROR: One of the cElementTree, or the ElementTree module is now needed to be able to parse mediawiki messages. Please install (c)ElementTree. (Note that python 2.5 natively includes these librairies : upgrading to python 2.5 will solve this issue.)')
-                        stopme()
-                        sys.exit(1)
         # Allmessages is retrieved once for all in a session
         if not self._mediawiki_messages:
             if verbose:
@@ -4484,15 +4468,15 @@ your connection is down. Retrying in %i minutes..."""
                 get_throttle()
                 xml = self.getUrl(self.get_address("Special:Allmessages") 
                                     + "&ot=xml")
-                decode = xml.encode(self.encoding())
-                tree = XML(decode)
+                tree = BeautifulStoneSoup(xml)
                 # xml structure is :
                 # <messages lang="fr">
                 #    <message name="about">À propos</message>
                 #    ...
                 # </messages>
-                for msg in tree.getiterator('message'):
-                    self._mediawiki_messages[msg.get('name').lower()] = msg.text
+                self._mediawiki_messages = dict([(tag.get('name').lower(), tag.string) 
+                    for tag in tree.findAll('message')])
+                
                 if not self._mediawiki_messages:
                     # No messages could be added.
                     # We assume that the server is down.
