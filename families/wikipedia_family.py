@@ -618,6 +618,7 @@ class Family(family.Family):
             'vo':  [u'Telplänov'],
             'wa':  [u'Omonimeye', u'Disambig'],
             'yi':  [u'באדייטען'],
+            'zea': [u'db'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页', u'消歧義'],
             'zh-classical':  [u'Disambig', u'釋義', u'消歧義', u''],
             'zh-min-nan': [u'Khu-pia̍t-ia̍h', 'KhPI', u'Disambig'],
