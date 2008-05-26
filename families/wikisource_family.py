@@ -17,7 +17,7 @@ class Family(family.Family):
             'sv', 'ar', 'la', 'ml', 'is', 'ja', 'bs', 'uk', 'el', 'ca',
             'ko', 'sl', 'bn', 'hy', 'no', 'da', 'id', 'ta', 'az', 'mk',
             'kn', 'bg', 'fa', 'vi', 'sk', 'cy', 'et', 'lt', 'gl', 'zh-min-nan',
-            'yi', 'ht', 'fo', 'ang',
+            'yi', 'ht', 'fo', 'ang', 'li',
         ]
 
         self.langs = {
@@ -56,6 +56,7 @@ class Family(family.Family):
             'hy': u'Վիքիդարան',
             'is': u'Wikiheimild',
             'la': u'Vicifons',
+            'li': u'Wikibrónne',
             'lt': u'Vikišaltiniai',
             'ml': u'വിക്കിഗ്രന്ഥശാല',
             'nb': u'Wikikilden',
@@ -101,6 +102,7 @@ class Family(family.Family):
             'kn': u'Wikisource ಚರ್ಚೆ',
             'ko': u'Wikisource토론',
             'la': u'Disputatio Vicifontis',
+            'li': u'Euverlèk Wikibrónne',
             'lt': u'Vikišaltiniai aptarimas',
             'mk': u'Разговор за Wikisource',
             'ml': u'വിക്കിഗ്രന്ഥശാല സംവാദം',

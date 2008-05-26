@@ -14,7 +14,7 @@ class Family(family.Family):
         self.languages_by_size = [
             'en', 'pl', 'de', 'it', 'fr', 'es', 'pt', 'sv', 'ja', 'zh',
             'sr', 'ru', 'nl', 'he', 'sd', 'uk', 'fi', 'ca', 'ro', 'no',
-            'th', 'bs', 'ar', 'bg', 'ta',
+            'th', 'bs', 'ar', 'bg', 'ta', 'cs', 'hu',
         ]
 
         for lang in self.languages_by_size:
@@ -34,9 +34,11 @@ class Family(family.Family):
             'bg': u'Уикиновини',
             'bs': u'Wikivijesti',
             'ca': u'Viquinotícies',
+            'cs': u'Wikizprávy',
             'es': u'Wikinoticias',
             'fi': u'Wikiuutiset',
             'he': u'ויקיחדשות',
+            'hu': u'Wikihírek',
             'it': u'Wikinotizie',
             'ja': u'ウィキニュース',
             'no': u'Wikinytt',
@@ -53,11 +55,13 @@ class Family(family.Family):
             'bg': u'Уикиновини беседа',
             'bs': u'Razgovor s Wikivijestima',
             'ca': u'Viquinotícies Discussió',
+            'cs': u'Wikizprávy diskuse',
             'de': u'Wikinews Diskussion',
             'es': u'Wikinoticias Discusión',
             'fi': u'Keskustelu Wikiuutisista',
             'fr': u'Discussion Wikinews',
             'he': u'שיחת ויקיחדשות',
+            'hu': u'Wikihírek vita',
             'it': u'Discussioni Wikinotizie',
             'ja': u'ウィキニュース‐ノート',
             'nl': u'Overleg Wikinews',
