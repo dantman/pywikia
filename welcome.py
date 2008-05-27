@@ -209,6 +209,7 @@ logbook = {
     'no': u'Project:Velkomstlogg',
     'pt': None, # no welcome log on pt.wiki
     'sq': u'Project:Tung log',
+    'sr': u'Project:Добродошлице',
     'zh': u'user:Welcomebot/欢迎日志',
     }
 #The edit summary for the welcome message (e.g. Welcome!).
@@ -227,6 +228,7 @@ summary = {
     'no':u'Velkommen!',
     'pt':u'Bem vindo!',
     'sq':u'Tung',
+    'sr':u'Добродошли!',
     'zh':u'欢迎！',
     }
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
@@ -247,6 +249,7 @@ netext = {
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'pt':u'{{subst:bem vindo}} %s',
     'sq':u'{{subst:tung}} %s',
+    'sr':u'{{Добродошлица}} %s',
     'zh':u'{{subst:welcome|sign=%s}}',
     }
 # The edit summary for updating the welcome log (e.g. Updating log).
@@ -262,6 +265,7 @@ summary2 = {
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
     'sq':u'Rifreskoj log',
+    'sr':u'Освежавање записа',
     'zh':u'更新日志',
     }
 # The page where the bot will report users with a possibly bad username.
@@ -276,6 +280,7 @@ report_page = {
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
     'sq': u'User:EagleBot/Report',
+    'sr': u'User:SashatoBot/Записи',
     }
 # The edit summary for reporting a possibly bad username.
 comment = {
@@ -299,10 +304,11 @@ bad_pag = {
     'en': u'Project:Welcome log/Bad_names',
     'fa': u'Project:سیاهه خوشامد/نام بد',
     'it': u'Project:Benvenuto_Bot/Lista_Badwords',
-    'ja':u'Project:不適切な名前の利用者',
+    'ja': u'Project:不適切な名前の利用者',
     'nl': u'Project:Logboek_welkom/Bad_names',
     'no': u'Bruker:JhsBot/Daarlige ord',
     'sq': u'User:Eagleal/Bad_names',
+    'sr': u'Додавање корисника за проверу',
     }
 
 timeselected = u' ~~~~~' # Defining the time used after the signature
