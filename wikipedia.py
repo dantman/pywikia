@@ -5147,7 +5147,7 @@ your connection is down. Retrying in %i minutes..."""
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
 
-        return re.compile(r'#' + redirKeywordsR +
+        return re.compile('\n*#' + redirKeywordsR +
                                    '.*?\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
 
