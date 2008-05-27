@@ -56,6 +56,41 @@ class TextEditor(ScrolledText):
         textcf.update(kwargs)
         ScrolledText.__init__(self, master, **textcf)
 
+    def add_bindings(self):
+        # due to IDLE dependencies, this can't be called from __init__
+        # add key and event bindings
+        self.bind("<<cut>>", self.cut)
+        self.bind("<<copy>>", self.copy)
+        self.bind("<<paste>>", self.paste)
+        self.bind("<<select-all>>", self.select_all)
+        self.bind("<<remove-selection>>", self.remove_selection)
+        self.bind("<<find>>", self.find_event)
+        self.bind("<<find-again>>", self.find_again_event)
+        self.bind("<<find-selection>>", self.find_selection_event)
+        self.bind("<<replace>>", self.replace_event)
+        self.bind("<<goto-line>>", self.goto_line_event)
+        self.bind("<<del-word-left>>", self.del_word_left)
+        self.bind("<<del-word-right>>", self.del_word_right)
+        keydefs = {'<<copy>>': ['<Control-Key-c>', '<Control-Key-C>'],
+                   '<<cut>>': ['<Control-Key-x>', '<Control-Key-X>'],
+                   '<<del-word-left>>': ['<Control-Key-BackSpace>'],
+                   '<<del-word-right>>': ['<Control-Key-Delete>'],
+                   '<<end-of-file>>': ['<Control-Key-d>', '<Control-Key-D>'],
+                   '<<find-again>>': ['<Control-Key-g>', '<Key-F3>'],
+                   '<<find-selection>>': ['<Control-Key-F3>'],
+                   '<<find>>': ['<Control-Key-f>', '<Control-Key-F>'],
+                   '<<goto-line>>': ['<Alt-Key-g>', '<Meta-Key-g>'],
+                   '<<paste>>': ['<Control-Key-v>', '<Control-Key-V>'],
+                   '<<redo>>': ['<Control-Shift-Key-Z>'],
+                   '<<remove-selection>>': ['<Key-Escape>'],
+                   '<<replace>>': ['<Control-Key-h>', '<Control-Key-H>'],
+                   '<<select-all>>': ['<Control-Key-a>'],
+                   '<<undo>>': ['<Control-Key-z>', '<Control-Key-Z>'],
+                  }
+        for event, keylist in keydefs.items():
+            if keylist:
+                self.event_add(event, *keylist)
+
     def cut(self,event):
         if self.tag_ranges("sel"):
             self.event_generate("<<Cut>>")
@@ -189,41 +224,9 @@ class EditBoxWindow(Frame):
         Frame.__init__(self, parent)
         self.editbox = MultiCallCreator(TextEditor)(self, **kwargs)
         self.editbox.pack(side=TOP)
-
-        # add key and event bindings to self.editbox
-        self.editbox.bind("<<cut>>", self.editbox.cut)
-        self.editbox.bind("<<copy>>", self.editbox.copy)
-        self.editbox.bind("<<paste>>", self.editbox.paste)
-        self.editbox.bind("<<select-all>>", self.editbox.select_all)
-        self.editbox.bind("<<remove-selection>>", self.editbox.remove_selection)
-        self.editbox.bind("<<find>>", self.editbox.find_event)
-        self.editbox.bind("<<find-again>>", self.editbox.find_again_event)
-        self.editbox.bind("<<find-selection>>", self.editbox.find_selection_event)
-        self.editbox.bind("<<replace>>", self.editbox.replace_event)
-        self.editbox.bind("<<goto-line>>", self.editbox.goto_line_event)
-        self.editbox.bind("<<del-word-left>>", self.editbox.del_word_left)
-        self.editbox.bind("<<del-word-right>>", self.editbox.del_word_right)
-        self.editbox.bind("<<open-config-dialog>>", self.config_dialog)
-        keydefs = {'<<copy>>': ['<Control-Key-c>', '<Control-Key-C>'],
-                   '<<cut>>': ['<Control-Key-x>', '<Control-Key-X>'],
-                   '<<del-word-left>>': ['<Control-Key-BackSpace>'],
-                   '<<del-word-right>>': ['<Control-Key-Delete>'],
-                   '<<end-of-file>>': ['<Control-Key-d>', '<Control-Key-D>'],
-                   '<<find-again>>': ['<Control-Key-g>', '<Key-F3>'],
-                   '<<find-selection>>': ['<Control-Key-F3>'],
-                   '<<find>>': ['<Control-Key-f>', '<Control-Key-F>'],
-                   '<<goto-line>>': ['<Alt-Key-g>', '<Meta-Key-g>'],
-                   '<<paste>>': ['<Control-Key-v>', '<Control-Key-V>'],
-                   '<<redo>>': ['<Control-Shift-Key-Z>'],
-                   '<<remove-selection>>': ['<Key-Escape>'],
-                   '<<replace>>': ['<Control-Key-h>', '<Control-Key-H>'],
-                   '<<select-all>>': ['<Control-Key-a>'],
-                   '<<undo>>': ['<Control-Key-z>', '<Control-Key-Z>'],
-                  }
-        for event, keylist in keydefs.items():
-            if keylist:
-                self.editbox.event_add(event, *keylist)
-
+        self.editbox.add_bindings()
+        self.bind("<<open-config-dialog>>", self.config_dialog)
+        
         bottom = Frame(parent)
         # lower left subframe which will contain a textfield and a Search button
         bottom_left_frame = Frame(bottom)
