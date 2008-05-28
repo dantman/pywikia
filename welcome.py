@@ -45,7 +45,7 @@ be on the local wiki:
 This script understands the following command-line arguments:
 
     -edit[:#]      Define how many edits a new user needs to be welcomed
-                   (default: 1)
+                   (default: 1, max: 50)
 
     -time[:#]      Define how many seconds the bot sleeps before restart
                    (default: 3600)
@@ -374,48 +374,39 @@ def urlname(talk_page, site):
 
 def load_word_function(wsite, raw):
     """ This is a function used to load the badword and the whitelist."""
-    list_loaded = list()
-    pos = 0
-    # I search with a regex how many user have not the talk page
-    # and i put them in a list (i find it more easy and secure).
-    while 1:
-        regl = r"(\"|\')(.*?)(\"|\')(, |\))"
-        page = re.compile(regl, re.UNICODE)
-        xl = page.search(raw, pos)
-        if xl == None:
-            if len(list_loaded) >= 1:
-                wikipedia.output(u'\nReal-time list loaded.')
-                return list_loaded
-                break
-            elif len(done) == 0:
-                wikipedia.output(u'There was no input on the real-time page.')
-                load_2 = False
-                continue
-        pos = xl.end()
-        badword = xl.group(2)
-        if badword not in list_loaded:
-             list_loaded.append(badword)
+    regl = r"(?:\"|\')(.*?)(?:\"|\')(?:, |\))"
+    page = re.compile(regl, re.UNICODE)
+
+    list_loaded = page.findall(raw)
+
+    if len(list_loaded) == 0:
+        wikipedia.output(u'There was no input on the real-time page.')
+    else:
+        wikipedia.output(u'\nReal-time list loaded.')
+    return list_loaded
 
 def parselog(wsite, raw, talk, number):
     """ The function to load the users (only users who have a certain number of edits) """
+    #FIXME : Why is there a need for this 'done' list ? 
     done = list()
-    pos = 0
+
+    autocreated = wikipedia.mediawiki_message('newuserlog-autocreate-entry')
+    
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure).
-    while 1:
-        # FIXME: That's the regex, if there are problems, take a look here.
-        
-        reg = r'\(<a href=\"' + re.escape(wsite.path()) + r'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
-        p = re.compile(reg, re.UNICODE)
-        x = p.search(raw, pos)
-        if x == None:
-            if len(done) >= 1:
-                wikipedia.output(u'\nLoaded all users...')
-                break
-            elif len(done) == 0:
-                wikipedia.output(u'There is nobody to be welcomed...')
-                break
-        pos = x.end()
+
+    # XXX: That's the regex, if there are problems, take a look here.
+      
+    reg = u'\(<a href=\"' + re.escape(wsite.path()) 
+            + u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
+            + u'.*?\) (?P<reason>.*?)  </li>'
+    p = re.compile(reg, re.UNICODE)
+    
+    for x in p.finditer(raw):
+        #skip autocreated users (SUL)
+        if autocreated in x.group('reason'):
+            wikipedia.output(u'%s has been created automatically, skipping...')
+            continue
         username = x.group('user')
         if username not in done:
             done.append(username)
@@ -425,7 +416,11 @@ def parselog(wsite, raw, talk, number):
         con = '%sSpecial:Contributions/%s' % (pathWiki, userpage.urlname())
         # Getting the contribs...
         contribs = wsite.getUrl(con)
-        contribnum = contribs.count('<li>') # It counts the first 50 edits but it shouldn't be a problem.
+
+        #FIXME: It counts the first 50 edits
+        # if number > 50, it won't work
+        contribnum = contribs.count('<li>') 
+
         if contribnum >= number:
             wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
             # The user must be welcomed, return his data.
@@ -433,15 +428,19 @@ def parselog(wsite, raw, talk, number):
         elif contribnum < number:
             if contribnum == 0:
                 wikipedia.output(u'%s has no contributions.' % userpage.titleWithoutNamespace() )
-                # That user mustn't be welcomed, return None.
-                yield None
             else:
                 wikipedia.output(u'%s has only %s contributions.' % (userpage.titleWithoutNamespace(), str(contribnum)) )
-                # That user mustn't be welcomed, return None.
-                yield None
+            # That user mustn't be welcomed.
+            continue
+
+    if len(done) == 0:
+        wikipedia.output(u'There is nobody to be welcomed...')
+    else:
+        wikipedia.output(u'\nLoaded all users...')
 
 def report(wsite, rep_page, username, com, rep):
     """  The function to report the username to a wiki-page. """
+
     another_page = wikipedia.Page(wsite, rep_page)
     if another_page.exists():
         text_get = another_page.get()
@@ -482,7 +481,7 @@ def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
     """ Function to load the random signatures. """
     reg = r"^\* ?(.*?)$"
     creg = re.compile(reg, re.M)
-    if fileOption == False:
+    if not fileOption:
         signPage = wikipedia.Page(wsite, signPageTitle)
         signText = signPage.get()
     else:
@@ -696,7 +695,7 @@ def main(settingsBot):
         welcomer = u'{{subst:Benvenuto}} %s'
 
     welcomed_users = list()
-    if savedata == True and os.path.exists(
+    if savedata and os.path.exists(
                                 wikipedia.config.datafilepath(filename)):
         f = file(filename)
         number_user = cPickle.load(f)
@@ -707,7 +706,7 @@ def main(settingsBot):
 
     # Here there is the main loop.
     while True:
-        if filter_wp == True:
+        if filter_wp:
             # A standard list of bad username components (you can change/delate it in your project...).
             # [ I divided the list into three to make it smaller...]
             elencoaf =      [' ano', ' anus', 'anal ', 'babies', 'baldracca', 'balle', 'bastardo',
@@ -756,7 +755,7 @@ def main(settingsBot):
             elencovarie = list()
         # Joining the three lists..
         elenco = elencoaf + elencogz + elencovarie
-        if filter_wp == True:
+        if filter_wp:
             # That is the default whitelist (it contains few name because it has been improved in the latest days..).
             whitelist_default = ['emiliano']
             if wtlpg != None:
@@ -791,7 +790,7 @@ def main(settingsBot):
         log = wsite.getUrl(URL)
         wikipedia.output(u'Loading latest %s new users from %s...\n' % (limit, wsite.hostname()))
         # Determine which signature to use
-        if random == True:
+        if random:
             try:
                 wikipedia.output(u'Loading random signatures...')
                 signList = defineSign(wsite, signPageTitle, fileSignName, fileOption)
@@ -799,10 +798,8 @@ def main(settingsBot):
                 wikipedia.output(u'The list with signatures is not available... Using default signature...')
                 random = False
         for found_result in parselog(wsite, log, talk, number):
-            if found_result == None:
-                continue
             # Compiling the signature to be used.
-            if random == True:
+            if random:
                 if number_user + 1 > len(signList):
                     number_user = 0
                     yield number_user
@@ -828,10 +825,12 @@ def main(settingsBot):
                 wikipedia.output(u'%s has been blocked! Skipping...' % usertalkpage.titleWithoutNamespace())
                 continue
             # Understand if the user has a bad-username.
+            username = str(username).encode(config.console_encoding)
+            lower_uname = username.lower()
             for word in elenco:
-                username = str(username).encode(config.console_encoding)
-                if word.lower() in username.lower():
+                if word.lower() in lower_uname:
                     baduser = True
+                    # What's this ? Docu please.
                     if wsite.lang == 'it':
                         final_rep = "%s%s}}" % (rep_text, word)
                         break
@@ -839,40 +838,46 @@ def main(settingsBot):
                         final_rep = rep_text
                         break
             # Checking in the whitelist...
+            
+            # FIXME I believe this is broken
             for xy in whitelist:
-                if xy.lower() in username.lower():
-                    username.replace(xy, '')
+                if xy.lower() in lower_uname:
+                    # the next line does *not* change username
+                    # besides replacing xy is useless if only xy.lower()
+                    # is in username
+                    lower_uname.replace(xy, '')
                     for word in elenco:
-                        if word.lower() in username.lower():
-                            baduser = True
-                            break
-                        else:
-                            baduser = False
-                            break
+                        baduser = word.lower() in lower_uname:
+                        break
             # He has a badusername, trying to report him...
             if baduser:
+                # FIXME : while 1 ? What the... ? Do we need a while here ? Documentation please.
                 while 1:
-                    if ask == True:
+                    if ask:
                         wikipedia.output(u'%s may have an unwanted username, what shall I do?' % usertalkpage.titleWithoutNamespace())
+
+                        # FIXME : consider using inputChoice here
+
                         answer = wikipedia.input(u'[B]lock or [W]elcome?')
                         for w in block:
                             if w in answer:
                                 if not usertalkpage.exists():
                                     # Check if the user has been already blocked (second check).
-                                    ki = blocked(wsite, username)
-                                    if ki == True:
+                                    if blocked(wsite, username):
                                         wikipedia.output(u'%s has been blocked! Skipping him...' % usertalkpage.titleWithoutNamespace())
+                                        # FIXME: that continue will continue on "for w in block:". Do we really want to do this ?
                                         continue
                                     report(wsite, rep_page, username, com, final_rep)
                                     break
                                 else:
                                     wikipedia.output(u'The discussion page of the bad-user already exists...')
                                     running = False
+                                    #FIXME : Why don't we break here ?
                         for w in say_hi:
                             if w in answer:
                                 baduser = False
                                 break
-                    elif ask == False:
+                    else:
                         wikipedia.output(u'%s is possibly an unwanted username. He will be reported.' % usertalkpage.titleWithoutNamespace())
                         if not usertalkpage.exists():
                             report(wsite, rep_page, username, com, final_rep)
@@ -898,7 +903,7 @@ def main(settingsBot):
                     wikipedia.output(u'%s has been already welcomed when i was loading all the users... skipping' % usertalkpage.titleWithoutNamespace())
                     continue
             # That's the log
-            if log_variable == True and logg:
+            if log_variable and logg:
                 if len(welcomed_users) == 1:
                     wikipedia.output(u'One user has been welcomed.')
                 elif len(welcomed_users) == 0:
@@ -916,7 +921,7 @@ def main(settingsBot):
             # If we haven't to report, do nothing.
             elif log_variable == False:
                 pass
-        if log_variable == True and logg and len(welcomed_users) != 0:
+        if log_variable and logg and len(welcomed_users) != 0:
             if len(welcomed_users) == 1:
                 wikipedia.output(u'Putting the log of the latest user...')
             else:
@@ -926,7 +931,7 @@ def main(settingsBot):
             if logresult2 == False:
                 continue
         # If recursive, don't exit, repeat after one hour.
-        if recursive == True:
+        if recursive :
             waitstr = unicode(time_variable)
             if locale.getlocale()[1]:
                 strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()), locale.getlocale()[1])
@@ -936,6 +941,7 @@ def main(settingsBot):
             time.sleep(time_variable)
         # If not recursive, break.
         elif recursive == False:
+            #FIXME : others "yields" yield a single integer. Why are we doing this here ? 'STOP' is not even being retrieved
             yield [number_user, 'STOP']
 
 if __name__ == "__main__":
@@ -949,6 +955,9 @@ if __name__ == "__main__":
             random = settingsBot[11]
             savedata = settingsBot[13]
             # I need to know what is the number_user, in this way I get it.
+            #FIXME: Do we need to do this ?
+            # in other words, why can't main() return a SINGLE value,
+            # an integer, number_user ?
             for x in main(settingsBot):
                 try:
                     number_user = x[0]
@@ -957,11 +966,12 @@ if __name__ == "__main__":
                 else:
                     break
         except wikipedia.BadTitle:
+            #FIXME : This kind of error should be catched earlier.
             wikipedia.output(u"Wikidown or server's problem. Quit.")
             wikipedia.stopme()
     finally:
         # If there is the savedata, the script must save the number_user.
-        if random == True and savedata == True and number_user != None:
+        if random and savedata and number_user != None:
             f = file(filename, 'w')
             cPickle.dump(number_user, f)
             f.close()
