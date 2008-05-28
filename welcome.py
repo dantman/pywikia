@@ -210,6 +210,7 @@ logbook = {
     'pt': None, # no welcome log on pt.wiki
     'sq': u'Project:Tung log',
     'sr': u'Project:Добродошлице',
+    'vo': None, # no welcome log on vo.wiki
     'zh': u'user:Welcomebot/欢迎日志',
     }
 #The edit summary for the welcome message (e.g. Welcome!).
@@ -229,6 +230,7 @@ summary = {
     'pt':u'Bem vindo!',
     'sq':u'Tung',
     'sr':u'Добродошли!',
+    'vo':u'Benokömö!',
     'zh':u'欢迎！',
     }
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
@@ -250,6 +252,7 @@ netext = {
     'pt':u'{{subst:bem vindo}} %s',
     'sq':u'{{subst:tung}} %s',
     'sr':u'{{Добродошлица}} %s',
+    'vo':u'{{benokömö}} %s',
     'zh':u'{{subst:welcome|sign=%s}}',
     }
 # The edit summary for updating the welcome log (e.g. Updating log).
