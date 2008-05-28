@@ -933,9 +933,7 @@ class Subject(object):
                         if acceptall: 
                             answer = 'a'
                         else: 
-                            answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'])
-                            if not answer:
-                                answer = 'a'
+                            answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'], 'a')
                         if answer == 'l': # accept all
                             acceptall = True
                             answer = 'a'

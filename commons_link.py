@@ -81,9 +81,9 @@ class CommonsLinkBot:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
                                     choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                                    if choice in ['a', 'A']:
+                                    if choice == 'a':
                                         self.acceptall = True
-                                if self.acceptall or choice in ['y', 'Y']:
+                                if self.acceptall or choice == 'y':
                                     try:
                                         msg = wikipedia.translate(wikipedia.getSite(), comment1)
                                         page.put(text, msg)
@@ -125,9 +125,9 @@ class CommonsLinkBot:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
                                     choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                                    if choice in ['a', 'A']:
+                                    if choice == 'a':
                                         self.acceptall = True
-                                if self.acceptall or choice in ['y', 'Y']:
+                                if self.acceptall or choice == 'y':
                                     try:
                                         msg = wikipedia.translate(wikipedia.getSite(), comment2)
                                         page.put(text, msg)

@@ -149,7 +149,7 @@ for page in gen:
 
         if len(sys.argv)!=1:
             choice = wikipedia.inputChoice(u'Do you want to clean the page?',  ['Yes', 'No'], ['y', 'n'], 'n')
-            if choice in ['n', 'N']:
+            if choice == 'n':
                continue
         try:
             put(page, output, add_comment)

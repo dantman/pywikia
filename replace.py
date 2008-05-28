@@ -384,18 +384,18 @@ u'Skipping %s because it contains text that is on the exceptions list.'
                             u'Do you want to accept these changes?',
                             ['Yes', 'No', 'Edit', 'All', "Quit"],
                             ['y', 'N', 'e', 'a', 'q'], 'N')
-                if choice in "Ee":
+                if choice == 'e':
                     editor = editarticle.TextEditor()
                     as_edited = editor.edit(new_text)
                     # if user didn't press Cancel
                     if as_edited and as_edited != new_text:
                         new_text = as_edited
                     continue
-                if choice in "Qq":
+                if choice == 'q':
                     return
-                if choice in ['a', 'A']:
+                if choice == 'a':
                     self.acceptall = True
-                if choice in ['y', 'Y']:
+                if choice == 'y':
                     page.put_async(new_text)
                 break
             if self.acceptall:

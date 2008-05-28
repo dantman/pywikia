@@ -88,12 +88,12 @@ def main(give_url,image_url):
 
     for image in ilinks:
         answer = wikipedia.inputChoice(u'Include image %s?' % image, ['yes', 'no', 'stop'], ['y', 'N', 's'], 'N')
-        if answer in ["y","Y"]:
+        if answer == 'y':
             desc = wikipedia.input(u"Give the description of this image:")
             desc = desc + "\r\n\n\r" + basicdesc
             uploadBot = upload.UploadRobot(image, desc)
             uploadBot.run()
-        elif answer in ["s","S"]:
+        elif answer == 's':
             break
 try:
     url = u''

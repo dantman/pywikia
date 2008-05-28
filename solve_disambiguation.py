@@ -578,7 +578,7 @@ class DisambiguationRobot(object):
             if disambPage.isRedirectPage():
                 target = self.alternatives[0]
                 choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refPage.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
-                if choice in ['y', 'Y']:
+                if choice == 'y':
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     try:
                         refPage.put_async(redir_text,comment=self.comment)
@@ -586,14 +586,14 @@ class DisambiguationRobot(object):
                         wikipedia.output(u'Page not saved: %s' % error.args)
             else:
                 choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refPage.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
-                if choice in ['y', 'Y']:
+                if choice == 'y':
                     gen = ReferringPageGeneratorWithIgnore(refPage, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
                     for refPage2 in preloadingGen:
                         # run until the user selected 'quit'
                         if not self.treat(refPage2, refPage):
                             break
-                elif choice in ['c', 'C']:
+                elif choice == 'c':
                     text=refPage.get(throttle=False,get_redirect=True)
                     include = "redirect"
         except wikipedia.NoPage:
@@ -936,7 +936,7 @@ def main():
                 else:
                     answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?'
                              % page.title(), ['yes', 'no'], ['y', 'N'], 'N')
-                    if answer in ('Y', 'y'):
+                    if answer == 'y':
                         alternatives.append(page.title())
             else:
                 alternatives.append(arg[5:])

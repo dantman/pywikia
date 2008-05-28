@@ -66,10 +66,10 @@ def appendtext(page, apptext, always):
     if text != page.get():
         wikipedia.showDiff(page.get(),text)
         choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-        if choice.lower() in ['a', 'all']:
+        if choice == 'a':
             always = True
             choice = 'y'
-        if choice.lower() in ['y', 'yes']:
+        if choice == 'y':
             msg = wikipedia.translate(wikipedia.getSite(), comment)
             page.put(text, msg)
 

@@ -122,14 +122,14 @@ class MovePagesBot:
         if self.addprefix or self.appendAll or self.regexAll:
             if not self.always:
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
-                if choice2 in ['y', 'Yes', 'Y']:
+                if choice2 == 'y':
                     self.moveOne(page, newPageTitle)
-                elif choice2 in ['a', 'all', 'A']:
+                elif choice2 == 'a':
                     self.always = True
                     self.moveOne(page, newPageTitle)
-                elif choice2 in ['q', 'Q', 'quit']:
+                elif choice2 == 'q':
                     sys.exit()
-                elif choice2 in ['n', 'N', 'no']:
+                elif choice2 == 'n':
                     pass
                 else:
                     self.treat(page)
@@ -151,14 +151,14 @@ class MovePagesBot:
                     else:
                         newPageTitle = (u'%s:%s' % (namesp, newPageTitle))
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
-                if choice2 in ['y', 'Y', 'yes']:
+                if choice2  == 'y':
                     self.moveOne(page, newPageTitle)
-                elif choice2 in ['a', 'A', 'all']:
+                elif choice2 == 'a':
                     self.appendAll = True
                     self.moveOne(page, newPageTitle)
-                elif choice2 in ['q', 'Q', 'quit']:
+                elif choice2 == 'q':
                     sys.exit()
-                elif choice2 in ['n', 'no', 'N']:
+                elif choice2 == 'n':
                     pass
                 else:
                     self.treat(page)
@@ -176,20 +176,20 @@ class MovePagesBot:
                     else:
                         newPageTitle = self.regex.sub(self.replacePattern, page.title())
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
-                if choice2 in ['y', 'Y', 'yes']:
+                if choice2 == 'y':
                     self.moveOne(page, newPageTitle)
-                elif choice2 in ['a', 'A', 'all']:
+                elif choice2 == 'a':
                     self.regexAll = True
                     self.moveOne(page, newPageTitle)
-                elif choice2 in ['q', 'Q', 'quit']:
+                elif choice2 == 'q':
                     sys.exit()
-                elif choice2 in ['n', 'no', 'N']:
+                elif choice2 == 'n':
                     pass
                 else:
                     self.treat(page)
-            elif choice in ['n', 'N', 'no']:
+            elif choice == 'n':
                 pass
-            elif choice in ['q', 'Q', 'quit']:
+            elif choice == 'q':
                 sys.exit()
             else:
                 self.treat(page)

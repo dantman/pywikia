@@ -356,15 +356,12 @@ def main():
             # Ok, asking if the change has to be performed and do it if yes.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             wikipedia.showDiff(oldtext, text)
-            choice = ''
-            while 1:
-                if not always:
-                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                if choice.lower() in ['a', 'all']:
+            if not always:
+                choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                if choice == 'a':
                     always = True
-                if choice.lower() in ['n', 'no']:
-                    break
-                if choice.lower() in ['y', 'yes'] or always:
+            if always or choice == 'y':
+                while 1:
                     try:
                         page.put(text, commentUsed, force=True)
                     except wikipedia.EditConflict:

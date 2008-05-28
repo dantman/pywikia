@@ -189,11 +189,11 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         if putText:
             if not always:
                 choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-            if choice.lower() in ['a', 'all']:
+            if choice == 'a':
                 always = True
-            if choice.lower() in ['n', 'no']:
+            if choice == 'n':
                 return (False, always)
-            if choice.lower() in ['y', 'yes'] or always:
+            if choice == 'y' or always:
                 try:
                     page.put(newtext, summary)
                 except wikipedia.EditConflict:

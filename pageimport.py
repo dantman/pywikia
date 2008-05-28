@@ -65,7 +65,7 @@ class Importer(wikipedia.Page):
         answer = 'y'
         if prompt:
             answer = wikipedia.inputChoice(u'Do you want to import %s?' % target, ['Yes', 'No'], ['y', 'N'], 'N')
-        if answer in ['y', 'Y']:
+        if answer == 'y':
             host = self.site().hostname()
             address = self.site().path() + '?title=%s&action=submit' % self.urlname()
             # You need to be a sysop for the import.

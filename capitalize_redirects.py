@@ -69,9 +69,9 @@ class CapitalizeBot:
                     choice = wikipedia.inputChoice(
                             u'Do you want to create a redirect?',
                             ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                    if choice in ['a', 'A']:
+                    if choice == 'a':
                         self.acceptall = True
-                if self.acceptall or choice in ['y', 'Y']:
+                if self.acceptall or choice == 'y':
                     try:
                         wikipedia.setAction(
                             wikipedia.translate(wikipedia.getSite(), msg)

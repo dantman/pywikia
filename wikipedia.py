@@ -2147,10 +2147,10 @@ not supported by PyWikipediaBot!"""
         answer = 'y'
         if prompt and not hasattr(self.site(), '_noDeletePrompt'):
             answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
-            if answer in ['a', 'A']:
+            if answer == 'a':
                 answer = 'y'
                 self.site()._noDeletePrompt = True
-        if answer in ['y', 'Y']:
+        if answer == 'y':
             host = self.site().hostname()
             address = self.site().delete_address(self.urlname())
 
@@ -2346,10 +2346,10 @@ not supported by PyWikipediaBot!"""
                 u'Do you want to change the protection level of %s?'
                     % self.aslink(forceInterwiki = True),
                 ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
-            if answer in ['a', 'A']:
+            if answer == 'a':
                 answer = 'y'
                 self.site()._noProtectPrompt = True
-        if answer in ['y', 'Y']:
+        if answer == 'y':
             host = self.site().hostname()
 
             token = self.site().getToken(self, sysop = True)

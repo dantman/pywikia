@@ -248,11 +248,11 @@ def main():
                 wikipedia.showDiff(oldtxt, newtxt) # Showing the changes
                 choice = 'y' # Default answer
                 if not always:
-                    choice = wikipedia.inputChoice(u'Orphan page found, shall I add the template?',  [u'Yes', u'No', u'All'], [u'y', u'n', u'a'], [u'Y', u'N', 'A'])
-                if choice.lower() in [u'a', u'all']:
+                    choice = wikipedia.inputChoice(u'Orphan page found, shall I add the template?',  ['Yes', 'No', 'All'], ['y', 'n', 'a'])
+                if choice == 'a':
                     always = True
                     choice = 'y'
-                if choice.lower() in [u'y', u'yes']:
+                if choice == 'y':
                     try:
                         page.put(newtxt, comment)
                     except wikipedia.EditConflict:

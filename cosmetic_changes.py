@@ -364,9 +364,9 @@ class CosmeticChangesBot:
             if changedText != page.get():
                 if not self.acceptall:
                     choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                    if choice in ['a', 'A']:
+                    if choice == 'a':
                         self.acceptall = True
-                if self.acceptall or choice in ['y', 'Y']:
+                if self.acceptall or choice == 'y':
                     page.put(changedText)
             else:
                 wikipedia.output('No changes were necessary in %s' % page.title())

@@ -273,13 +273,13 @@ class UploadRobot:
 
                 if self.targetSite.mediawiki_message('uploadwarning') in returned_html:
                     answer = wikipedia.inputChoice(u"You have recevied an upload warning message. Ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
-                    if answer in ["y", "Y"]:
+                    if answer == "y":
                         self.ignoreWarning = 1
                         self.keepFilename = True
                         return self.upload_image(debug)
                 else:
                     answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
-                    if answer in ["y", "Y"]:
+                    if answer == "y":
                         return self.upload_image(debug)
                     else:
                         return

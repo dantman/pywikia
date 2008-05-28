@@ -233,9 +233,9 @@ class ReferencesRobot:
                                            u'these changes?', 
                                            ['Yes', 'No', 'All'], 
                                            ['y', 'N', 'a'], 'N')
-            if choice in ['a', 'A']:
+            if choice == 'a':
                 self.acceptall = True
-            if choice in ['y', 'Y']:
+            if choice == 'y':
                 page.put_async(new)
         if self.acceptall:
             try:
