@@ -130,7 +130,7 @@ class imageTransfer (threading.Thread):
         #    tosend[k]=tosend[k].encode('utf-8')
         tosend=urllib.urlencode(tosend)
         print tosend
-        CH=pageTextPost('http://tools.wikimedia.de/~magnus/commonshelper.php', tosend)
+        CH=pageTextPost('http://www.toolserver.org/~magnus/commonshelper.php', tosend)
         print 'Got CH desc.'
         wikipedia.output(CH);
         tablock=CH.split('<textarea ')[1].split('>')[0]
@@ -303,7 +303,7 @@ def main(args):
                 skip = True            
             else:
                 # The first upload is last in the list.
-                (datetime, username, resolution, size, comment) = imagepage.getFileVersionHistory().pop()
+                username = imagepage.getLatestUploader()               
                 while True:
 
                     # Do the Tkdialog to accept/reject and change te name        
