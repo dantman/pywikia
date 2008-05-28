@@ -31,7 +31,7 @@ class Family:
             'uz', 'pa', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'nds', 'pl',
             'pt', 'crh', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'se',
             'sm', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
-            'simple', 'sd', 'szl', 'ss', ' sk', 'cu', 'sl', 'so', 'sr', 'sh', 'stq',
+            'simple', 'sd', 'szl', 'ss', 'sk', 'cu', 'sl', 'so', 'sr', 'sh', 'stq',
             'srn', 'su', 'fi', 'sv', 'tl', 'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet',
             'th', 'vi', 'ti', 'tg', 'tpi', 'to', 'chr', 'chy', 've', 'tr',
             'tk', 'tw', 'udm', 'bug', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa',
