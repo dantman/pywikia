@@ -387,29 +387,29 @@ def load_word_function(wsite, raw):
 
 def parselog(wsite, raw, talk, number):
     """ The function to load the users (only users who have a certain number of edits) """
-    #FIXME : Why is there a need for this 'done' list ? 
+    #FIXME : Why is there a need for this 'done' list ? We're not even checking for duplicates...
     done = list()
 
-    autocreated = wikipedia.mediawiki_message('newuserlog-autocreate-entry')
+    autocreated = wsite.mediawiki_message('newuserlog-autocreate-entry')
     
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure).
 
     # XXX: That's the regex, if there are problems, take a look here.
       
-    reg = u'\(<a href=\"' + re.escape(wsite.path()) 
-            + u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
-            + u'.*?\) (?P<reason>.*?)  </li>'
+    reg =  u'\(<a href=\"' + re.escape(wsite.path()) 
+    reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
+    reg += u'.*?\) (?P<reason>.*?) \u200E </li>'
     p = re.compile(reg, re.UNICODE)
     
     for x in p.finditer(raw):
-        #skip autocreated users (SUL)
-        if autocreated in x.group('reason'):
-            wikipedia.output(u'%s has been created automatically, skipping...')
-            continue
         username = x.group('user')
         if username not in done:
             done.append(username)
+        #skip autocreated users (SUL)
+        if autocreated in x.group('reason'):
+            wikipedia.output(u'%s has been created automatically, skipping...' % username)
+            continue
         userpage = wikipedia.Page(wsite, username)
         # Defing the contrib's page of the user.
         pathWiki = wsite.family.nicepath(wsite.lang)
@@ -847,7 +847,7 @@ def main(settingsBot):
                     # is in username
                     lower_uname.replace(xy, '')
                     for word in elenco:
-                        baduser = word.lower() in lower_uname:
+                        baduser = word.lower() in lower_uname
                         break
             # He has a badusername, trying to report him...
             if baduser:
