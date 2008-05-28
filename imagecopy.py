@@ -303,7 +303,11 @@ def main(args):
                 skip = True            
             else:
                 # The first upload is last in the list.
-                username = imagepage.getLatestUploader()               
+                try:
+                    username = imagepage.getLatestUploader()               
+                except NotImplementedError:
+                    #No API, using the page file instead
+                    (datetime, username, resolution, size, comment) = imagepage.getFileVersionHistory().pop()
                 while True:
 
                     # Do the Tkdialog to accept/reject and change te name        
