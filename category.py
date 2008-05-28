@@ -530,6 +530,7 @@ class CategoryRemoveRobot:
     }
 
     msg_remove={
+        'ar':u'روبوت: إزالة من %s',
         'da':u'Robot: Fjerner fra %s',
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
