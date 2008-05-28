@@ -543,6 +543,7 @@ class Family(family.Family):
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig', u'Disambig',u'Des'],
             'et':  [u'Täpsustuslehekülg', u'Täpsustus', u'Disambig'],
             'eu':  [u'Argipen', u'Disambig'],
+            'ext': [u'Desambiguáncia'],
             'fa':  [u'ابهام‌زدایی'],
             'fi':  [u'Täsmennyssivu', u'Disambig'],
             'fo':  [u'Fleiri týdningar'],
