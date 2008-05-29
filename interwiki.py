@@ -401,6 +401,7 @@ msg = {
     'su': (u'bot ', u'Nambih', u'Miceun', u'Ngarobih'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     'sw': (u'roboti ', u'Nyongeza', u'Ondoa', u'Badiliko'),
+    'szl': (u'Bot ', u'dodowo', u'wyćepuje', u'zmjyńo'),
     'ta': (u'தானியங்கி',u'இணைப்பு',u'அழிப்பு',u'மாற்றல்'),
     'te': (u'యంత్రము ', u'కలుపుతున్నది', u'తొలగిస్తున్నది', u'మార్పులు చేస్తున్నది'),
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
