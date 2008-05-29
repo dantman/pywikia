@@ -392,6 +392,9 @@ cosmetic_changes = False
 # foreign wiki, set cosmetic_changes_mylang_only to False, but be careful!
 cosmetic_changes_mylang_only = True
 
+# Use the experimental disk cache to prevent huge memory usage
+use_diskcache = False
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.

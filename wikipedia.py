@@ -127,6 +127,7 @@ import unicodedata
 import xmlreader
 from BeautifulSoup import *
 import simplejson
+import diskcache
 
 # Set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
@@ -4477,6 +4478,11 @@ your connection is down. Retrying in %i minutes..."""
                     output(u'Elementtree was not found, using BeautifulSoup instead')
                 elementtree = False
 
+            if config.use_diskcache:
+                _dict = diskcache.CachedReadOnlyDictI
+            else:
+                _dict = dict
+
             retry_idle_time = 1
             while True:
                 get_throttle()
@@ -4490,13 +4496,13 @@ your connection is down. Retrying in %i minutes..."""
                 if elementtree:
                     decode = xml.encode(self.encoding())
                     tree = XML(decode)
-                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.text)
-                    for tag in tree.getiterator('message')])
+                    self._mediawiki_messages = _dict([(tag.get('name').lower(), tag.text)
+                            for tag in tree.getiterator('message')])
                 else:
                     tree = BeautifulStoneSoup(xml)
-                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.string)
-                    for tag in tree.findAll('message')])
-
+                    self._mediawiki_messages = _dict([(tag.get('name').lower(), tag.string)
+                            for tag in tree.findAll('message')])
+                
                 if not self._mediawiki_messages:
                     # No messages could be added.
                     # We assume that the server is down.
