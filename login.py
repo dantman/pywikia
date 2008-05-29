@@ -93,7 +93,7 @@ class LoginManager:
                     return True
             return False
         else:
-            # No bot policies on other 
+            # No bot policies on other
             return True
 
     def getCookie(self, remember=True, captchaId = None, captchaAnswer = None):
@@ -120,7 +120,7 @@ class LoginManager:
 
         if self.site.hostname() in config.authenticate.keys():
             headers = {
-                "Content-type": "application/x-www-form-urlencoded", 
+                "Content-type": "application/x-www-form-urlencoded",
                 "User-agent": wikipedia.useragent
             }
             data = self.site.urlEncode(predata)
@@ -182,10 +182,10 @@ class LoginManager:
 
     def readPassword(self):
         """
-            Reads passwords from a file. DO NOT FORGET TO REMOVE READ 
+            Reads passwords from a file. DO NOT FORGET TO REMOVE READ
             ACCESS FOR OTHER USERS!!! Use chmod 600 password-file.
-            All lines below should be valid Python tuples in the form 
-            (code, family, username, password) or (username, password) 
+            All lines below should be valid Python tuples in the form
+            (code, family, username, password) or (username, password)
             to set a default password for an username. Default usernames
             should occur above specific usernames.
 

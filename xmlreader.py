@@ -188,9 +188,9 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         if self.destination == 'text':
             self.text += data
         elif self.destination == 'id':
-            self.id += data 
+            self.id += data
         elif self.destination == 'revisionid':
-            self.revisionid += data 
+            self.revisionid += data
         elif self.destination == 'restrictions':
             self.restrictions += data
         elif self.destination == 'title':

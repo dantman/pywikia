@@ -547,7 +547,7 @@ class Family(family.Family):
             'fa':  [u'ابهام‌زدایی'],
             'fi':  [u'Täsmennyssivu', u'Disambig'],
             'fo':  [u'Fleiri týdningar'],
-            # See http://fr.wikipedia.org/wiki/MediaWiki:Disambiguationspage 
+            # See http://fr.wikipedia.org/wiki/MediaWiki:Disambiguationspage
             'fr':  [u'Homonymie', u'Arrondissements homonymes', u'Disambig',
                     u'Bandeau standard pour page d\'homonymie',
                     u'Batailles homonymes', u'Cantons homonymes',

@@ -3350,7 +3350,7 @@ def interwikiFormat(links, insite = None):
         insite = getSite()
     if not links:
         return ''
-    
+
     ar = interwikiSort(links.keys(), insite)
     s = []
     for site in ar:
@@ -3365,7 +3365,7 @@ def interwikiFormat(links, insite = None):
         sep = u'\r\n'
     s=sep.join(s) + u'\r\n'
     return s
-    
+
 # Sort sites according to local interwiki sort logic
 def interwikiSort(sites, insite = None):
     if insite is None:
@@ -3390,9 +3390,9 @@ def interwikiSort(sites, insite = None):
         sites = firstsites + sites
     if insite.interwiki_putfirst_doubled(sites): #some implementations return False
         sites = insite.interwiki_putfirst_doubled(sites) + sites
-        
+
     return sites
-    
+
 # Wikitext manipulation functions dealing with category links
 def getCategoryLinks(text, site):
     import catlib
@@ -4465,12 +4465,12 @@ your connection is down. Retrying in %i minutes..."""
                   u"Retrieving mediawiki messages from Special:Allmessages")
             elementtree = True
             try:
-                try:    
-                    from xml.etree.cElementTree import XML # 2.5    
-                except ImportError:     
-                    try:    
-                        from cElementTree import XML    
-                    except ImportError:     
+                try:
+                    from xml.etree.cElementTree import XML # 2.5
+                except ImportError:
+                    try:
+                        from cElementTree import XML
+                    except ImportError:
                         from elementtree.ElementTree import XML
             except ImportError:
                 if verbose:
@@ -4480,7 +4480,7 @@ your connection is down. Retrying in %i minutes..."""
             retry_idle_time = 1
             while True:
                 get_throttle()
-                xml = self.getUrl(self.get_address("Special:Allmessages") 
+                xml = self.getUrl(self.get_address("Special:Allmessages")
                                     + "&ot=xml")
                 # xml structure is :
                 # <messages lang="fr">
@@ -4489,14 +4489,14 @@ your connection is down. Retrying in %i minutes..."""
                 # </messages>
                 if elementtree:
                     decode = xml.encode(self.encoding())
-                    tree = XML(decode) 
-                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.text) 
+                    tree = XML(decode)
+                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.text)
                     for tag in tree.getiterator('message')])
                 else:
                     tree = BeautifulStoneSoup(xml)
-                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.string) 
+                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.string)
                     for tag in tree.findAll('message')])
-                
+
                 if not self._mediawiki_messages:
                     # No messages could be added.
                     # We assume that the server is down.
@@ -5033,8 +5033,8 @@ your connection is down. Retrying in %i minutes..."""
         url = self.protectedpages_address()
         url += '&type=%s&level=%s' % (type, lvl)
         if namespace != None: # /!\ if namespace seems simpler, but returns false when ns=0
-    
-            url += '&namespace=%s' % namespace    
+
+            url += '&namespace=%s' % namespace
         parser_text = self.getUrl(url)
         while 1:
             #<li><a href="/wiki/Pagina_principale" title="Pagina principale">Pagina principale</a>‎ <small>(6.522 byte)</small> ‎(protetta)</li>
@@ -5088,7 +5088,6 @@ your connection is down. Retrying in %i minutes..."""
                             cache.append(title)
                             yield Page(self, title)
                 offset += limit
-                
 
     def __repr__(self):
         return self.family.name+":"+self.lang

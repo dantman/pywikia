@@ -40,7 +40,7 @@ class Family:
         ]
 
         self.langs = {}
-        
+
         # The timedelta to GMT of the server.
         # Exemple for a server running CET :
         # timedelta(hours=+1)
