@@ -4458,23 +4458,43 @@ your connection is down. Retrying in %i minutes..."""
 
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
-        # Allmessages is retrieved once for all in a session
+        # Allmessages is retrieved once for all per created Site object
         if not self._mediawiki_messages:
             if verbose:
                 output(
                   u"Retrieving mediawiki messages from Special:Allmessages")
+            elementtree = True
+            try:
+                try:    
+                    from xml.etree.cElementTree import XML # 2.5    
+                except ImportError:     
+                    try:    
+                        from cElementTree import XML    
+                    except ImportError:     
+                        from elementtree.ElementTree import XML
+            except ImportError:
+                if verbose:
+                    output(u'Elementtree was not found, using BeautifulSoup instead')
+                elementtree = False
+
             retry_idle_time = 1
             while True:
                 get_throttle()
                 xml = self.getUrl(self.get_address("Special:Allmessages") 
                                     + "&ot=xml")
-                tree = BeautifulStoneSoup(xml)
                 # xml structure is :
                 # <messages lang="fr">
                 #    <message name="about">À propos</message>
                 #    ...
                 # </messages>
-                self._mediawiki_messages = dict([(tag.get('name').lower(), tag.string) 
+                if elementtree:
+                    decode = xml.encode(self.encoding())
+                    tree = XML(decode) 
+                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.text) 
+                    for tag in tree.getiterator('message')])
+                else:
+                    tree = BeautifulStoneSoup(xml)
+                    self._mediawiki_messages = dict([(tag.get('name').lower(), tag.string) 
                     for tag in tree.findAll('message')])
                 
                 if not self._mediawiki_messages:
