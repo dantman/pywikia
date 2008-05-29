@@ -89,7 +89,7 @@ import wikipedia, config
 import pagegenerators, add_text
 from upload import *
 NL=''
-                
+
 def pageTextPost(url,postinfo):
     print url
     m=re.search(ur'http://(.*?)(/.*)',url)
@@ -98,7 +98,7 @@ def pageTextPost(url,postinfo):
     else:
             domain=m.group(1)
             path=m.group(2)
-            
+
     h = httplib.HTTP(domain)
     h.putrequest('POST', path)
     h.putheader('Host', domain)
@@ -118,7 +118,7 @@ class imageTransfer (threading.Thread):
         self.imagePage = imagePage
         self.newname = newname
         threading.Thread.__init__ ( self )
-        
+
     def run(self):
         tosend={'language':str(self.imagePage.site().language()),
                 'image':self.imagePage.titleWithoutNamespace().encode('utf-8'),
@@ -143,7 +143,7 @@ class imageTransfer (threading.Thread):
         #urlEncoding='utf-8'
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
-    
+
         #add {{NowCommons}}, first force to get the page so we dont run into edit conflicts
         imtxt=self.imagePage.get(force=True)
         if self.newname!=self.imagePage.titleWithoutNamespace():
@@ -153,7 +153,7 @@ class imageTransfer (threading.Thread):
             self.imagePage.put(imtxt+u'\n\n{{NowCommons}}', u'{{NowCommons}}')
             print 'Nowcommons.\n'
         return
-        
+
 #-label ok skip view
 #textarea
 archivo=wikipedia.config.datafilepath("Uploadbot.localskips.txt")
@@ -163,7 +163,7 @@ except IOError:
     tocreate=open(archivo, 'w')
     tocreate.write("{{NowCommons")
     tocreate.close()
-    
+
 def getautoskip():
     '''
     Get a list of templates to skip.
@@ -173,7 +173,7 @@ def getautoskip():
     f.close()
     toreturn=txt.split('{{')[1:]
     return toreturn
-    
+
 class Tkdialog:
     def __init__(self, image_title, content, uploader, url, templates, commonsconflict=0):
         self.root=Tk()
@@ -195,50 +195,51 @@ class Tkdialog:
         textarea.config(state=DISABLED, height=8, width=40, padx=0, pady=0, wrap=WORD, yscrollcommand=scrollbar.set)
         scrollbar.config(command=textarea.yview)
         self.entry=Entry(self.root)
-        
+
         self.templatelist=Listbox(self.root, bg="white", height=5)
-                
+
         for template in templates:
             self.templatelist.insert(END, template)
         autoskipButton=Button(self.root, text="Add to AutoSkip", command=self.add2autoskip)
         browserButton=Button(self.root, text='View in browser', command=self.openInBrowser)
         skipButton=Button(self.root, text="Skip", command=self.skipFile)
         okButton=Button(self.root, text="OK", command=self.okFile)
-        
+
         ##Start grid
         label.grid(row=0)
         okButton.grid(row=0, column=1, rowspan=2)
         skipButton.grid(row=0, column=2, rowspan=2)
         browserButton.grid(row=0, column=3, rowspan=2)
-        
+
         self.entry.grid(row=1)
 
-        
         textarea.grid(row=2, column=1, columnspan=3)
         scrollbar.grid(row=2, column=5)
         self.templatelist.grid(row=2, column=0)
-        
+
         autoskipButton.grid(row=3, column=0)
         imageinfo.grid(row=3, column=1, columnspan=4)
 
-        
     def okFile(self):
         '''
         The user pressed the OK button.
         '''
         self.changename=self.entry.get()
         self.root.destroy()
+        
     def skipFile(self):
         '''
         The user pressed the Skip button.
         '''
         self.skip=1
         self.root.destroy()
+        
     def openInBrowser(self):
         '''
         The user pressed the View in browser button.
         '''
         webbrowser.open(self.url)
+        
     def add2autoskip(self):
         '''
         The user pressed the Add to AutoSkip button.
@@ -249,13 +250,14 @@ class Tkdialog:
         toadd.write('{{'+template)
         toadd.close()
         self.skipFile()
-        
+
     def getnewname(self):
         '''
         Activate the dialog and return the new name and if the image is skipped.
         '''
         self.root.mainloop()
         return (self.changename, self.skip)
+
 
 def doiskip(pagetext):
     '''
@@ -270,6 +272,7 @@ def doiskip(pagetext):
         if re.search(rex, pagetext):
             return True
     return False
+
 
 def main(args):
     generator = None;
@@ -296,7 +299,7 @@ def main(args):
     for page in pregenerator:        
         if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
             imagepage = wikipedia.ImagePage(page.site(), page.title())
-            
+
             #First do autoskip.         
             if doiskip(imagepage.get()):
                 wikipedia.output("Skipping " + page.title())
@@ -312,19 +315,20 @@ def main(args):
 
                     # Do the Tkdialog to accept/reject and change te name        
                     (newname, skip)=Tkdialog(imagepage.titleWithoutNamespace(), imagepage.get(), username, imagepage.permalink(), imagepage.templates()).getnewname()
-                
+
                     if skip:
                         wikipedia.output('Skipping this image')
                         break
-                   
+
                     # Did we enter a new name?
                     if len(newname)==0:                
                         #Take the old name
                         newname=imagepage.titleWithoutNamespace()
-                           
+
                     # Check if the image already exists
-                    CommonsPage=wikipedia.Page(wikipedia.Site('commons', 'commons'), 'Image:'+newname)
-                    
+                    CommonsPage=wikipedia.Page(
+                                   wikipedia.getSite('commons', 'commons'),
+                                   'Image:'+newname)
                     if not CommonsPage.exists():
                         break
                     else:
@@ -333,7 +337,7 @@ def main(args):
 
             if not skip:
                 imageTransfer(imagepage, newname).start()
-                     
+
     wikipedia.output(u'Still ' + str(threading.activeCount()) + u' active threads, lets wait')    
     for openthread in threading.enumerate():
         if openthread != threading.currentThread():

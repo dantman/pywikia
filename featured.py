@@ -363,9 +363,10 @@ if __name__=="__main__":
     fromlang.sort()
     try:
         for ll in fromlang:
-            fromsite=wikipedia.Site(ll)
-            if not fromsite==wikipedia.getSite():
-                featuredWithInterwiki(fromsite, wikipedia.getSite(), template_on_top)
+            fromsite = wikipedia.getSite(ll)
+            if  fromsite != wikipedia.getSite():
+                featuredWithInterwiki(fromsite, wikipedia.getSite(),
+                                      template_on_top)
     finally:
         wikipedia.stopme()
         if not nocache:

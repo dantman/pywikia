@@ -167,7 +167,7 @@ class NowCommonsDeleteBot:
                 return filenameOnCommons
 
     def run(self):
-        commons = wikipedia.Site('commons', 'commons')
+        commons = wikipedia.getSite('commons', 'commons')
         comment = wikipedia.translate(self.site, nowCommonsMessage)
 
         for page in self.getPageGenerator():

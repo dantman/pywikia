@@ -30,14 +30,14 @@ def featuredArticles(site):
     wikipedia.output('\03{lightred}** wikipedia:%s has %i featured articles\03{default}' % (site.lang, len(arts)))
     
 if __name__=="__main__":
-    mysite=wikipedia.getSite()
-    fromlang=featured_name.keys()
+    mysite = wikipedia.getSite()
+    fromlang = featured_name.keys()
     fromlang.sort()
     try:
         for ll in fromlang:
-            fromsite=wikipedia.Site(ll)
-            if not fromsite==wikipedia.getSite():
-                arts=featuredArticles(fromsite)
-        arts_mysite=featuredArticles(mysite)
+            fromsite = wikipedia.getSite(ll)
+            if fromsite != mysite:
+                arts = featuredArticles(fromsite)
+        arts_mysite = featuredArticles(mysite)
     finally:
         wikipedia.stopme()

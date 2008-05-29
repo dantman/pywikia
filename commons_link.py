@@ -60,7 +60,7 @@ class CommonsLinkBot:
         for page in self.generator:
             try:
                 wikipedia.output(u'\n>>>> %s <<<<' % page.title())
-                commons = wikipedia.Site('commons', 'commons')
+                commons = wikipedia.getSite('commons', 'commons')
                 commonspage = wikipedia.Page(commons, page.title())
                 try:
                     getcommons = commonspage.get(get_redirect=True)
@@ -104,7 +104,7 @@ class CommonsLinkBot:
         for page in self.generator:
             try:
                 wikipedia.output(u'\n>>>> %s <<<<' % page.title())
-                getCommons = wikipedia.Site('commons', 'commons')
+                getCommons = wikipedia.getSite('commons', 'commons')
                 commonsCategory = catlib.Category(getCommons,'Category:%s'%page.title())
                 try:
                     getcommonscat = commonsCategory.get(get_redirect=True)

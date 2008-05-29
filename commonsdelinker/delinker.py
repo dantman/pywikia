@@ -747,7 +747,7 @@ class CommonsDelinker(object):
 					self.sites[key][self.sites[key].index((site, False))] = (site, True)
 					return site
 			try:
-				site = wikipedia.Site(code, fam)
+				site = wikipedia.getSite(code, fam)
 			except wikipedia.NoSuchSite:
 				site = False
 			self.sites[key].append((site, True))

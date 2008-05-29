@@ -204,7 +204,7 @@ class Replacer(object):
 
 class Reporter(threadpool.Thread):
 	def __init__(self, pool, site, config):
-		self.site = wikipedia.Site(site.lang, site.family,
+		self.site = wikipedia.getSite(site.lang, site.family,
 			site.user, True)
 		self.config = config
 		

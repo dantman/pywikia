@@ -1120,7 +1120,7 @@ class Subject(object):
                     # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
                     # where useless bot-created articles were mass-deleted. See for example:
                     # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
-                    if rmPage.site() == wikipedia.Site('lmo', 'wikipedia'):
+                    if rmPage.site() == wikipedia.getSite('lmo', 'wikipedia'):
                         wikipedia.output('Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % rmPage.aslink())
                     else:
                     ##########
@@ -1147,7 +1147,7 @@ class Subject(object):
                     # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
                     # where useless bot-created articles were mass-deleted. See for example:
                     # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
-                    if len(removing) == 1 and removing[0].site() == wikipedia.Site('lmo', 'wikipedia'):
+                    if len(removing) == 1 and removing[0].site() == wikipedia.getSite('lmo', 'wikipedia'):
                         wikipedia.output('Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % removing[0].aslink())
                     else:
                     ##########
