@@ -55,12 +55,12 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZi
         'es':u'Formateando las referencias que no tuvieran títulos (Pruebas por [[Wikipedia:Bot/Autorizaciones#DumZiBoT]] )',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
-deadLinkTag = {'fr':u'%s {{lien mort}}',
+deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'de':u'',
-               'hu':u'%s {{halott link}}',
-               'ko':u'%s {{죽은 바깥 고리}}',
+               'hu':u'[%s] {{halott link}}',
+               'ko':u'[%s] {{죽은 바깥 고리}}',
                'es':u'{{enlace roto2|%s}}',
-               'en':u'%s {{dead link}}'}
+               'en':u'[%s] {{dead link}}'}
 
 comment = {'fr':u'Titre généré automatiquement',
            'de':u'Automatisch generierter titel',
