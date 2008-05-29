@@ -3358,7 +3358,7 @@ def interwikiFormat(links, insite = None):
             link = links[site].aslink(forceInterwiki=True)
             s.append(link)
         except AttributeError:
-            s.append(insite.linkto(links[site], othersite=insite))
+            s.append(getSite(site).linkto(links[site], othersite=insite))
     if insite.lang in insite.family.interwiki_on_one_line:
         sep = u' '
     else:
@@ -5096,7 +5096,8 @@ your connection is down. Retrying in %i minutes..."""
     def linkto(self, title, othersite = None):
         """Return unicode string in the form of a wikilink to 'title'
 
-        Use optional Site argument 'othersite' to generate an interwiki link.
+        Use optional Site argument 'othersite' to generate an interwiki link
+        from the other site to the current site.
 
         """
         if othersite and othersite.lang != self.lang:
