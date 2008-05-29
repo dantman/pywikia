@@ -3358,7 +3358,7 @@ def interwikiFormat(links, insite = None):
             link = links[site].aslink(forceInterwiki=True)
             s.append(link)
         except AttributeError:
-            s.append(site.linkto(links[site], othersite=insite))
+            s.append(insite.linkto(links[site], othersite=insite))
     if insite.lang in insite.family.interwiki_on_one_line:
         sep = u' '
     else:
