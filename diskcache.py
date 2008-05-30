@@ -62,7 +62,10 @@ class CachedReadOnlyDictI(object):
         if type(key) is unicode:
             key = key.encode('utf-8')
             
-        index = key[0]
+        try:
+            index = key[0]
+        except IndexError:
+            raise KeyError(key)
         if not ((index >= 'a' and index <= 'z') or (index >= '0' and index <= '9')):
             raise KeyError(key)
         

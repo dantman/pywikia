@@ -4517,10 +4517,12 @@ your connection is down. Retrying in %i minutes..."""
                 break
 
         key = key.lower()
-        if self._mediawiki_messages[key] is None:
+        try:
+            value = self._mediawiki_messages[key]
+            return value
+        except KeyError:
             raise KeyError("MediaWiki key '%s' does not exist on %s"
                            % (key, self))
-        return self._mediawiki_messages[key]
 
     def has_mediawiki_message(self, key):
         """Return True iff this site defines a MediaWiki message for 'key'."""
