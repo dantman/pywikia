@@ -1,4 +1,5 @@
 import random
+import sys
 import os
 # http://mail.python.org/pipermail/python-list/2006-March/375280.html
 try:
@@ -47,10 +48,10 @@ class CachedReadOnlyDictI(object):
                 
             if len(key) > 0xFF:
                 raise RuntimeError('Key length must be smaller than %i' % 0xFF)
-            if len(value) > 0xFFFF:
-                raise RuntimeError('Value length must be smaller than %i' % 0xFFFF)
+            if len(value) > 0xFFFFFF:
+                raise RuntimeError('Value length must be smaller than %i' % 0xFFFFFF)
                 
-            self.cache_file.write('%02x%s%04x%s' % (len(key), key, len(value), value))
+            self.cache_file.write('%02x%s%06x%s' % (len(key), key, len(value), value))
             
         self.lookup = lookup
         self.cache_file.seek(0)
@@ -93,7 +94,7 @@ class CachedReadOnlyDictI(object):
             length = int(self.read(2, key), 16)
             k = self.read(length, key)
             if k == key:
-                length = int(self.read(4, key), 16)
+                length = int(self.read(6, key), 16)
                 value = self.read(length, key).decode('utf-8')
                 if len(self.cache) > self.max_size:
                     del self.cache[0]
@@ -103,7 +104,7 @@ class CachedReadOnlyDictI(object):
             elif k[0] != index:
                 raise KeyError(key)
             
-            length = int(self.read(4, key), 16)
+            length = int(self.read(6, key), 16)
             self.cache_file.seek(length, os.SEEK_CUR)
         
         
