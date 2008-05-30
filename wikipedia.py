@@ -4215,16 +4215,17 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         return response, data
 
-    def getUrl(self, path, retry = True, sysop = False, data = None, compress = True):
+    def getUrl(self, path, retry = True, sysop = False, data = None, compress = True, no_hostname = False):
         """
         Low-level routine to get a URL from the wiki.
 
         Parameters:
-            path  - The absolute path, without the hostname.
-            retry - If True, retries loading the page when a network error
-                    occurs.
-            sysop - If True, the sysop account's cookie will be used.
-            data  - An optional dict providing extra post request parameters
+            path        - The absolute path, without the hostname.
+            retry       - If True, retries loading the page when a network error
+                        occurs.
+            sysop       - If True, the sysop account's cookie will be used.
+            data        - An optional dict providing extra post request parameters.
+            no_hostname - Open the URL given, don't add the hostname before.
 
            Returns the HTML text of the page converted to unicode.
         """
@@ -4260,8 +4261,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     uo.addheader('Cookie', self.cookies(sysop = sysop))
                 if compress:
                     uo.addheader('Accept-encoding', 'gzip')
-
-            url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
+            if no_hostname == True: # This allow users to parse also toolserver's script
+                url = path          # and other useful pages without using some other functions.
+            else:
+                url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
             data = self.urlEncode(data)
 
             # Try to retrieve the page until it was successfully loaded (just in
