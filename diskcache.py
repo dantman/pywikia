@@ -1,5 +1,10 @@
-import os
 import random
+import os
+# http://mail.python.org/pipermail/python-list/2006-March/375280.html
+try:
+     os.SEEK_SET
+except AttributeError:
+     os.SEEK_SET, os.SEEK_CUR, os.SEEK_END = range(3)
 
 ## Dictionary like disk caching module
 ## (c) Copyright 2008 - Bryan Tong Minh / The Pywikipediabot team
