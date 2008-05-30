@@ -71,7 +71,7 @@ while Findonly= search only if the exactly text that you give is in the image's 
 
 #
 # (C) Kyle/Orgullomoore, 2006-2007 (newimage.py)
-# (C) Siebrand Mazeland, 2007
+# (C) Siebrand Mazeland, 2007 
 # (C) Filnik, 2007-2008
 #
 # Distributed under the terms of the MIT license.
@@ -401,28 +401,6 @@ def printWithTimeZone(message):
         time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
     wikipedia.output(u"%s%s" % (message, time_zone))
                         
-def pageText(url):
-    """ Function used to get HTML text from every reachable URL """
-    # When the page is not a wiki-page (as for untagged generator) you need that function
-    try:
-        request = urllib2.Request(url)
-        user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-        request.add_header("User-Agent", user_agent)
-        response = urllib2.urlopen(request)
-        text = response.read()
-        response.close()
-        # When you load to many users, urllib2 can give this error.
-    except urllib2.HTTPError:
-        printWithTimeZone(u"Server error. Pausing for 10 seconds... ")
-        time.sleep(10)
-        request = urllib2.Request(url)
-        user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-        request.add_header("User-Agent", user_agent)
-        response = urllib2.urlopen(request)
-        text = response.read()
-        response.close()
-    return text
-
 def returnOlderTime(listGiven, timeListGiven):
     """ Get some time and return the oldest of them """
     #print listGiven; print timeListGiven
@@ -673,7 +651,7 @@ class main:
             link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
         else:
             link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=%s&wikifam=%s&order=img_timestamp&max=%s&ofs=0&max=%s' % (lang, project, limit, limit)         
-        text = pageText(link)
+        text = self.site.getUrl(link, no_hostname = True)
         regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
         results = re.findall(regexp, text)
         if results == []:
@@ -1090,7 +1068,7 @@ def checkbot():
             generator = pagegenerators.NewimagesPageGenerator(number = limit, site = site)
         # if urlUsed and regexGen, get the source for the generator
         if urlUsed == True and regexGen == True:
-            textRegex = pagetext(regexPageUrl)
+            textRegex = site.getUrl(regexPageUrl, no_hostname = True)
         # Not an url but a wiki page as "source" for the regex
         elif regexGen == True:
             pageRegex = wikipedia.Page(site, regexPageName)
