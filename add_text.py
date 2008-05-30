@@ -88,13 +88,13 @@ def pageText(url):
     return text
 
 def untaggedGenerator(untaggedProject, limit = 500):
-    """ Function to get the pages returned by this tool: http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php """
+    """ Function to get the pages returned by this tool: http://toolserver.org/~daniel/WikiSense/UntaggedImages.php """
     lang = untaggedProject.split('.', 1)[0]
     project = '.' + untaggedProject.split('.', 1)[1]
     if lang == 'commons':
-        link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
+        link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
     else:
-        link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)
+        link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)
     text = pageText(link)
     #print text
     regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""

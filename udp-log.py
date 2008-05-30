@@ -8,7 +8,7 @@
 import sys, re, socket
 __version__ = '$Id$'
 
-TARGET_HOST = 'tools.wikimedia.de'
+TARGET_HOST = 'toolserver.org'
 TARGET_PORT = 42448
 
 input = sys.stdin.read()

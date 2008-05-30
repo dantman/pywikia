@@ -2161,7 +2161,7 @@ class Family:
 
         # A dictionary where keys are family codes that can be used in
         # inter-family interwiki links. Values are not used yet.
-        # Generated from http://tools.wikimedia.de/~daniel/interwiki-en.txt:
+        # Generated from http://toolserver.org/~daniel/interwiki-en.txt:
         # remove interlanguage links from file, then run
         # f = open('interwiki-en.txt')
         # for line in f.readlines():

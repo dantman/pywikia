@@ -92,7 +92,7 @@ class prefetchThread (threading.Thread):
         Get category suggestions from commonshelper. Parse them and return a list of suggestions.        
         '''
         parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace(), 'r' : 'on', 'go-clean' : 'Find+Categories'})        
-        commonsHelperPage = urllib.urlopen("http://tools.wikimedia.de/~daniel/WikiSense/CommonSense.php?%s" % parameters)        
+        commonsHelperPage = urllib.urlopen("http://toolserver.org/~daniel/WikiSense/CommonSense.php?%s" % parameters)        
         
         commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usage>(\d)+)\)(.*)#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)(.*)#EOF$', re.MULTILINE + re.DOTALL)
         matches = commonsenseRe.search(commonsHelperPage.read())

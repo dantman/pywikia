@@ -42,7 +42,7 @@ This script understands the following command-line arguments:
 
     -url[:#]	        - Define the url where are the images
 
-    -untagged[:#]       - Use daniel's tool as generator ( http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php )
+    -untagged[:#]       - Use daniel's tool as generator ( http://toolserver.org/~daniel/WikiSense/UntaggedImages.php )
 
 ---- Istructions for the real-time settings  ----
 * For every new block you have to add:
@@ -648,9 +648,9 @@ class main:
         lang = untaggedProject.split('.', 1)[0]
         project = '.%s' % untaggedProject.split('.', 1)[1]
         if lang == 'commons':
-            link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
+            link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
         else:
-            link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=%s&wikifam=%s&order=img_timestamp&max=%s&ofs=0&max=%s' % (lang, project, limit, limit)         
+            link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikilang=%s&wikifam=%s&order=img_timestamp&max=%s&ofs=0&max=%s' % (lang, project, limit, limit)         
         text = self.site.getUrl(link, no_hostname = True)
         regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
         results = re.findall(regexp, text)
