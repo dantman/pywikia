@@ -90,7 +90,7 @@ templateSemiProtection = {
 templateTotalProtection = {
             'en': None, 
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
-                  r'\{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee].*?)\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
+                  r'\{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee])\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
             'fr':[ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}',
                  ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?(|[^\}]*)\}\}'],
             'ja':[ur'\{\{(?:[Tt]emplate:|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
@@ -291,7 +291,7 @@ def main():
             # page is not edit-protected
             # Deleting the template because the page doesn't need it.
             replaceToPerform = u'|'.join(TTP + TSP)
-            texti, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
+            text, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
             wikipedia.output(u'The page is editable for all, deleting the template...')
 
         elif editRestr[0] == 'sysop':
