@@ -4482,7 +4482,6 @@ your connection is down. Retrying in %i minutes..."""
                 elementtree = False
 
             if config.use_diskcache:
-                import functools
                 _dict = lambda x : diskcache.CachedReadOnlyDictI(x, prefix = "msg-%s-%s-" % (self.family.name, self.lang))
             else:
                 _dict = dict
