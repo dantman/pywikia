@@ -13,10 +13,10 @@ except AttributeError:
 
 class CachedReadOnlyDictI(object):
     """A cached readonly dict with case insensitive keys."""
-    def __init__(self, data, max_size = 10, cache_base = 'cache'):
+    def __init__(self, data, prefix = "", max_size = 10, cache_base = 'cache'):
         self.max_size = max_size
         while True:
-            self.cache_path = os.path.join(cache_base, ''.join(
+            self.cache_path = os.path.join(cache_base, prefix + ''.join(
                 [random.choice('abcdefghijklmnopqrstuvwxyz') 
                     for i in xrange(16)]))
             if not os.path.exists(self.cache_path): break
