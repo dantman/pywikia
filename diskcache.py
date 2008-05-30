@@ -1,4 +1,5 @@
 import random
+import config
 import sys
 import os
 # http://mail.python.org/pipermail/python-list/2006-March/375280.html
@@ -16,7 +17,7 @@ class CachedReadOnlyDictI(object):
     def __init__(self, data, prefix = "", max_size = 10, cache_base = 'cache'):
         self.max_size = max_size
         while True:
-            self.cache_path = os.path.join(cache_base, prefix + ''.join(
+            self.cache_path = config.datafilepath(cache_base, prefix + ''.join(
                 [random.choice('abcdefghijklmnopqrstuvwxyz') 
                     for i in xrange(16)]))
             if not os.path.exists(self.cache_path): break
