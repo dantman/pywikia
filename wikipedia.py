@@ -128,6 +128,7 @@ import xmlreader
 from BeautifulSoup import *
 import simplejson
 import diskcache
+import weakref
 
 # Set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
@@ -3753,8 +3754,11 @@ def html2unicode(text, ignore = []):
             found = False
     return result
 
-
-def Family(fam = None, fatal = True):
+# Warning! _familyCache does not necessarily have to be consistent between
+# two statements. Always ensure that a local reference is created when
+# accessing Family objects 
+_familyCache = weakref.WeakValueDictionary()
+def Family(fam = None, fatal = True, force = False):
     """
     Import the named family.
 
@@ -3763,6 +3767,11 @@ def Family(fam = None, fatal = True):
     """
     if fam == None:
         fam = config.family
+    
+    family = _familyCache.get(fam)
+    if family and not force:
+        return family
+        
     try:
         # search for family module in the 'families' subdirectory
         sys.path.append(config.datafilepath('families'))
@@ -3778,7 +3787,10 @@ does not exist. Also check your configuration file."""
             sys.exit(1)
         else:
             raise ValueError("Family %s does not exist" % repr(fam))
-    return myfamily.Family()
+    
+    family = myfamily.Family()
+    _familyCache[fam] = family
+    return family
 
 
 class Site(object):
