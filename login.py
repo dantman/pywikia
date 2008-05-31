@@ -106,17 +106,27 @@ class LoginManager:
 
         Returns cookie data if succesful, None otherwise.
         """
-        predata = {
-            "wpName": self.username.encode(self.site.encoding()),
-            "wpPassword": self.password,
-            "wpDomain": self.site.family.ldapDomain,     # VistaPrint fix
-            "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
-            "wpRemember": str(int(bool(remember)))
-        }
-        if captchaId:
-            predata["wpCaptchaId"] = captchaId
-            predata["wpCaptchaWord"] = captchaAnswer
-        address = self.site.login_address()
+        if config.use_api_login:
+            predata = {
+                'action': 'login', 
+                'lgname': self.username.encode(self.site.encoding()),
+                'lgpassword': self.password,
+                'lgdomain': self.site.family.ldapDomain,
+            }
+            address = self.site.api_address()
+        else:
+            predata = {
+                "wpName": self.username.encode(self.site.encoding()),
+                "wpPassword": self.password,
+                "wpDomain": self.site.family.ldapDomain,     # VistaPrint fix
+                "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
+                "wpRemember": str(int(bool(remember))),
+                "wpSkipCookieCheck": '1'
+            }
+            if captchaId:
+                predata["wpCaptchaId"] = captchaId
+                predata["wpCaptchaWord"] = captchaAnswer
+            address = self.site.login_address()
 
         if self.site.hostname() in config.authenticate.keys():
             headers = {
@@ -140,18 +150,13 @@ class LoginManager:
                     n += 1
                     L.append(m.group(1))
 
+            got_token = False
             log_data = []
             for Ldata in L:
-                if (re.match('.*_session=.*', Ldata)):
-                    log_data.append(Ldata)
-                elif (re.match('.*UserID=.*', Ldata)):
-                    log_data.append(Ldata)
-                elif (re.match('.*UserName=.*', Ldata)):
-                    log_data.append(Ldata)
-                elif (re.match('.*Token=.*', Ldata)):
-                    log_data.append(Ldata)
-
-            if len(log_data) == 4:
+                if 'Token=' in Ldata:
+                    got_token = True
+            
+            if got_token:
                 return "\n".join(L)
             elif not captchaAnswer:
                 captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')

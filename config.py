@@ -69,6 +69,9 @@ authenticate = {}
 # By default you are asked for a password on the terminal.
 password_file = None
 
+# Login using the API. This is less likely to break.
+use_api_login = False
+
 # Get the names of all known families, and initialize
 # with empty dictionaries
 import wikipediatools as _wt
