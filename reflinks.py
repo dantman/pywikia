@@ -76,21 +76,21 @@ badtitles = {'en':
                 # is
                 ur'(?is)(test|'
                 # starts with
-                +'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$))'
+                +'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$)).*'
                 # anywhere
-                +'|(404|page|file).*not( *be)? *found'
+                +'|.*((404|page|file).*not( *be)? *found).*'
                 # ends with
-                +'|(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on)\W*$'
+                +'|.*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on)\W*$'
                 +')',
             'fr':
                 #is
                 ur'(?is)(test|'
                 # starts with
-                + ur'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$))'
+                + ur'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$)).*'
                 # anywhere
-                +'|(404|page|file|site).*(not *found|en +travaux)'
+                +'|.*((404|page|file|site).*(not *found|en +travaux)).*'
                 # ends with
-                +'|(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on)\W*$'
+                +'|.*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on)\W*$'
                 +')'}
 
 
@@ -472,7 +472,7 @@ class ReferencesRobot:
                     wikipedia.output(u'%s : Hybrid encoding...' % ref.link)
                     continue
                
-                if self.titleBlackList.search(ref.title):
+                if self.titleBlackList.match(ref.title):
                     repl = ref.refLink()
                     new_text = new_text.replace(match.group(), repl)
                     wikipedia.output(u'\03{lightred}WARNING\03{default} %s : Blacklisted title (%s)' % (ref.link, ref.title))
