@@ -25,6 +25,8 @@ Furthermore, the following command line parameters are supported:
 python add_text.py -cat:catname -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{([Tt]emplate:|)[Ss]omething" -up
 
 # Command used on it.wikipedia to put the template in the page without any category.
+# But warning! Put it in a line, otherwise it won't work correctly.
+
 python add_text.py -excepturl:"<p class='catlinks'>" -uncat -text:"{{Categorizzare}}"
 -except:"\{\{([Tt]emplate:|)[Cc]ategorizzare" -summary:"Bot: Aggiungo template Categorizzare"
 
@@ -195,7 +197,10 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                 return (False, always)
             if choice == 'y' or always:
                 try:
-                    page.put(newtext, summary)
+                    if always:
+                        page.put(newtext, summary)
+                    else:
+                        page.put_async(newtext, summary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Edit conflict! skip!')
                     return (False, always)
