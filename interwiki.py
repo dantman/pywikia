@@ -330,7 +330,7 @@ msg = {
     'crh': (u'robot ', u'ekley', u'çetleştire', u'deñiştire'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
     'cv': (u'робот ', u'хушрĕ', u'кăларса пăрахрĕ', u'улăштарчĕ'),
-    'cy': (u'robot ', u'Ychwanegu', u'Tynnu', u'Newid'),
+    'cy': (u'robot ', u'yn ychwanegu', u'yn tynnu', u'yn newid'),
     'csb':(u'robot ', u'dodôwô', u'rëmô', u'pòprôwiô'),
     'da': (u'robot ', u'Tilføjer', u'Fjerner', u'Ændrer'),
     'de': (u'Bot: ', u'Ergänze', u'Entferne', u'Ändere'),
