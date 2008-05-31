@@ -90,6 +90,73 @@ import pagegenerators, add_text
 from upload import *
 NL=''
 
+nowCommonsTemplate = {
+    '_default': u'{{NowCommons|%s}}',
+    'af': u'{{NowCommons|Image:%s}}',
+    'als': u'{{NowCommons|%s}}',
+    'ar': u'{{الآن كومنز|%s}}',
+    'bar': u'{{NowCommons|%s}}',
+    'bg': u'{{NowCommons|%s}}',
+    'ca': u'{{AraCommons|%s}}',
+    'cs': u'{{NowCommons|%s}}',
+    'da': u'{{NowCommons|%s}}',
+    'de': u'{{NowCommons|%s}}',
+    'dsb': u'{{NowCommons|%s}}',
+    'en': u'{{subst:ncd|%s}}',
+    'eo': u'{{Nun en komunejo|%s}}',
+    'es': u'{{EnCommons|%s}}',
+    'et': u'{{NüüdCommonsis|%s}}',
+    'fa': u'{{NowCommons|%s}}',
+    'fi': u'{{NowCommons|%s}}',
+    'fr': u'{{Image sur Commons|%s}}',
+    'he': u'{{גם בוויקישיתוף|%s}}',
+    'hr': u'{{NowCommons|%s}}',
+    'hsb': u'{{NowCommons|%s}}',
+    'hu': u'{{Azonnali-commons|%s}}',
+    'ia': u'{{NowCommons|%s}}',
+    'id': u'{{NowCommons|%s}}',
+    'it': u'{{NowCommons|%s}}',
+    'ja': u'{{NowCommons|%s}}',
+    'ko': u'{{NowCommons|%s}}',
+    'ku': u'{{NowCommons|%s}}',
+    'la': u'{{NowCommons|%s}}',
+    'mk': u'{{NowCommons|%s}}',
+    'ms': u'{{NowCommons|%s}}',
+    'nl': u'{{NuCommons|%s}}',
+    'nn': u'{{No på Commons|%s}}',
+    'no': u'{{NowCommons|%s}}',
+    'pl': u'{{NowCommons|%s}}',
+    'pt': u'{{NowCommons|%s}}',
+    'ro': u'{{AcumCommons|%s}}',
+    'ru': u'{{Перенесено на Викисклад|%s}}',
+    'sl': u'{{OdslejZbirka|%s}}',
+    'sr': u'{{NowCommons|%s}}',
+    'sv': u'{{NowCommons|%s}}',
+    'uk': u'{{NowCommons|%s}}',
+    'ur': u'{{NowCommons|%s}}',
+    'vi': u'{{NowCommons|%s}}',
+    'zh': u'{{NowCommons|%s}}',
+    'zh-min-nan': u'{{Commons ū|%s}}',
+    'zh-yue': u'{{NowCommons|%s}}',
+}
+
+nowCommonsMessage = {
+    '_default': u'File is now available on Wikimedia Commons.',
+    'ar': u'الملف الآن متوفر في ويكيميديا كومنز.',
+    'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
+    'en': u'File is now available on Wikimedia Commons.',
+    'eo': u'Dosiero nun estas havebla en la Wikimedia-Komunejo.',
+    'he': u'הקובץ זמין כעת בוויקישיתוף.',
+    'ia': u'Le file es ora disponibile in Wikimedia Commons.',
+    'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
+    'kk': u'Файлды енді Wikimedia Ортаққорынан қатынауға болады.',
+    'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
+    'nl': u'Dit bestand staat nu op [[w:nl:Wikimedia Commons|Wikimedia Commons]].',
+    'pl': u'Plik jest teraz dostępny na Wikimedia Commons.',
+    'pt': u'Arquivo está agora na Wikimedia Commons.',
+    'sr': u'Слика је сада доступна и на Викимедија Остави.',
+}
+
 def pageTextPost(url,postinfo):
     print url
     m=re.search(ur'http://(.*?)(/.*)',url)
@@ -146,12 +213,19 @@ class imageTransfer (threading.Thread):
 
         #add {{NowCommons}}, first force to get the page so we dont run into edit conflicts
         imtxt=self.imagePage.get(force=True)
-        if self.newname!=self.imagePage.titleWithoutNamespace():
-            self.imagePage.put(imtxt+u'\n\n{{NowCommons|'+self.newname.decode('utf-8')+'}}', u'{{NowCommons}}')
-            print 'Nowcommons with different name.\n'
+
+        if nowCommonsTemplate.has_key(self.imagePage.site().language()):
+            addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname.decode('utf-8')
         else:
-            self.imagePage.put(imtxt+u'\n\n{{NowCommons}}', u'{{NowCommons}}')
-            print 'Nowcommons.\n'
+            addTemplate = nowCommonsTemplate['_default'] % self.newname.decode('utf-8')
+
+        if nowCommonsMessage.has_key(self.imagePage.site().language()):
+            commentText = nowCommonsMessage[self.imagePage.site().language()]
+        else:
+            commentText = nowCommonsMessage['_default']
+
+        self.imagePage.put(imtxt + addTemplate, comment = commentText)
+
         return
 
 #-label ok skip view
