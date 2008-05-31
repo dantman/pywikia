@@ -390,9 +390,7 @@ def load_word_function(wsite, raw):
 
 def parselog(wsite, raw, talk, number):
     """ The function to load the users (only users who have a certain number of edits) """
-    #FIXME : Why is there a need for this 'done' list ? We're not even checking for duplicates...
-    done = list()
-
+    someone_found = False
     autocreated = wsite.mediawiki_message('newuserlog-autocreate-entry')
     
     # I search with a regex how many user have not the talk page
@@ -406,9 +404,8 @@ def parselog(wsite, raw, talk, number):
     p = re.compile(reg, re.UNICODE)
     
     for x in p.finditer(raw):
+        someone_found = True
         username = x.group('user')
-        if username not in done:
-            done.append(username)
         #skip autocreated users (SUL)
         if autocreated in x.group('reason'):
             wikipedia.output(u'%s has been created automatically, skipping...' % username)
@@ -422,6 +419,7 @@ def parselog(wsite, raw, talk, number):
 
         #FIXME: It counts the first 50 edits
         # if number > 50, it won't work
+        # (not *so* useful, it should be enough).
         contribnum = contribs.count('<li>') 
 
         if contribnum >= number:
@@ -436,7 +434,7 @@ def parselog(wsite, raw, talk, number):
             # That user mustn't be welcomed.
             continue
 
-    if len(done) == 0:
+    if someone_found:
         wikipedia.output(u'There is nobody to be welcomed...')
     else:
         wikipedia.output(u'\nLoaded all users...')
@@ -778,10 +776,6 @@ def main(settingsBot):
             whitelist_default = list()
         # Join the whitelist words.
         whitelist = list_white + whitelist_default
-        # List of words that the bot understands when it asks the operator for input.
-        block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
-        say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi',
-                'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
         # think about non-wikimedia wikis. Use Site functions.
         URL = wsite.log_address(limit, 'newusers') 
@@ -830,64 +824,54 @@ def main(settingsBot):
             # Understand if the user has a bad-username.
             username = str(username).encode(config.console_encoding)
             lower_uname = username.lower()
-            for word in elenco:
+            for word in elenco: # elenco = list of bad words
                 if word.lower() in lower_uname:
                     baduser = True
-                    # What's this ? Docu please.
+                    # The format of the italian report template is:
+                    # {{Reported|NICKNAME|BADWORD}}
+                    # The nickname is already added before and
+                    # here we add the "badword" part, but
+                    # this function is used only in the italian wiki.
                     if wsite.lang == 'it':
                         final_rep = "%s%s}}" % (rep_text, word)
                         break
                     else:
                         final_rep = rep_text
                         break
-            # Checking in the whitelist...
-            
-            # FIXME I believe this is broken
+            # Checking in the whitelist...            
             for xy in whitelist:
                 if xy.lower() in lower_uname:
-                    # the next line does *not* change username
-                    # besides replacing xy is useless if only xy.lower()
-                    # is in username
-                    lower_uname.replace(xy, '')
+                    # Deleting the white word found and check
+                    # the word that remains for badwords inside.
+                    lower_uname = lower_uname.replace(xy, '')
                     for word in elenco:
                         baduser = word.lower() in lower_uname
                         break
             # He has a badusername, trying to report him...
             if baduser:
-                # FIXME : while 1 ? What the... ? Do we need a while here ? Documentation please.
-                while 1:
-                    if ask:
-                        wikipedia.output(u'%s may have an unwanted username, what shall I do?' % usertalkpage.titleWithoutNamespace())
-
-                        # FIXME : consider using inputChoice here
-
-                        answer = wikipedia.input(u'[B]lock or [W]elcome?')
-                        for w in block:
-                            if w in answer:
-                                if not usertalkpage.exists():
-                                    # Check if the user has been already blocked (second check).
-                                    if blocked(wsite, username):
-                                        wikipedia.output(u'%s has been blocked! Skipping him...' % usertalkpage.titleWithoutNamespace())
-                                        # FIXME: that continue will continue on "for w in block:". Do we really want to do this ?
-                                        continue
-                                    report(wsite, rep_page, username, com, final_rep)
-                                    break
-                                else:
-                                    wikipedia.output(u'The discussion page of the bad-user already exists...')
-                                    running = False
-                                    #FIXME : Why don't we break here ?
-                        for w in say_hi:
-                            if w in answer:
-                                baduser = False
-                                break
-                    else:
-                        wikipedia.output(u'%s is possibly an unwanted username. He will be reported.' % usertalkpage.titleWithoutNamespace())
+                if ask:
+                    answer = wikipedia.inputChoice(u'%s may have an unwanted username, do you want to report this user?'
+                                    % usertalkpage.titleWithoutNamespace(), ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                    if answer.lower() in ['yes', 'y']:
                         if not usertalkpage.exists():
+                            # Check if the user has been already blocked (second check).
+                            if blocked(wsite, username):
+                                wikipedia.output(u'%s has been blocked! Skipping him...' % usertalkpage.titleWithoutNamespace())
                             report(wsite, rep_page, username, com, final_rep)
-                            break
+                            continue
                         else:
                             wikipedia.output(u'The discussion page of the bad-user already exists...')
-                            break
+                            continue
+                    if answer.lower() in ['no', 'n', 'nope']:
+                        baduser = False
+                else:
+                    wikipedia.output(u'%s is possibly an unwanted username. He will be reported.' % usertalkpage.titleWithoutNamespace())
+                    if not usertalkpage.exists():
+                        report(wsite, rep_page, username, com, final_rep)
+                        continue
+                    else:
+                        wikipedia.output(u'The discussion page of the bad-user already exists...')
+                        continue
             # He has a good username, welcome!
             else:
                 if not usertalkpage.exists():
@@ -944,34 +928,32 @@ def main(settingsBot):
             time.sleep(time_variable)
         # If not recursive, break.
         elif recursive == False:
-            #FIXME : others "yields" yield a single integer. Why are we doing this here ? 'STOP' is not even being retrieved
-            yield [number_user, 'STOP']
+            yield number_user
+            break
 
 if __name__ == "__main__":
     # Use try and finally, to put the wikipedia.stopme() always at the end of the code.
     try:
-        try:
-            number_user = None
-            settingsBot = mainSettings()
-            # Take two settings for the "finally" block.
-            filename = settingsBot[2]
-            random = settingsBot[11]
-            savedata = settingsBot[13]
-            # I need to know what is the number_user, in this way I get it.
-            #FIXME: Do we need to do this ?
-            # in other words, why can't main() return a SINGLE value,
-            # an integer, number_user ?
-            for x in main(settingsBot):
-                try:
-                    number_user = x[0]
-                except TypeError:
-                    number_user = x
-                else:
-                    break
-        except wikipedia.BadTitle:
-            #FIXME : This kind of error should be catched earlier.
-            wikipedia.output(u"Wikidown or server's problem. Quit.")
-            wikipedia.stopme()
+        #try:
+        number_user = 0
+        settingsBot = mainSettings()
+        # Take two settings for the "finally" block.
+        filename = settingsBot[2]
+        random = settingsBot[11]
+        savedata = settingsBot[13]
+        # I need to know what is the number_user, in this way I get it.
+        # If recursive, just wait some error or something to get the number
+        # and save it, otherwise just save the first one.
+        for number_user in main(settingsBot):
+            pass # number_user get with the for cicle the value
+        #except wikipedia.BadTitle:
+            # If the server is down, pywikipediabot raise that error.
+            # Better to catch it in order not to get useless errors
+            # (in particular if you're running that script on toolserver).
+            # FixME: put this except in a better "place" (next to the part
+            # that raises the error)
+        #    wikipedia.output(u"Wikidown or server's problem. Quit.")
+        #    wikipedia.stopme()
     finally:
         # If there is the savedata, the script must save the number_user.
         if random and savedata and number_user != None:
