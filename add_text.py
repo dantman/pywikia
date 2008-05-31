@@ -27,7 +27,7 @@ python add_text.py -cat:catname -summary:"Bot: Adding a template" -text:"{{Somet
 # Command used on it.wikipedia to put the template in the page without any category.
 # But warning! Put it in a line, otherwise it won't work correctly.
 
-python add_text.py -excepturl:"<p class='catlinks'>" -uncat -text:"{{Categorizzare}}"
+python add_text.py -excepturl:"class='catlinks'>" -uncat -text:"{{Categorizzare}}"
 -except:"\{\{([Tt]emplate:|)[Cc]ategorizzare" -summary:"Bot: Aggiungo template Categorizzare"
 
 --- Credits and Help ---
