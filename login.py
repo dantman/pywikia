@@ -140,10 +140,13 @@ class LoginManager:
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
-            #Retrieve a session cookie
-            session = self.site.getUrl(login_address, cookie_only=True)
+            if config.use_api_login:
+                response, data = self.site.postData(address, self.site.urlEncode(predata))
+            else:
+                #Retrieve a session cookie
+                session = self.site.getUrl(login_address, cookie_only=True)
 
-            response, data = self.site.postForm(address, predata, cookies=session)
+                response, data = self.site.postForm(address, predata, cookies=session)
             Reat=re.compile(': (.*?);')
             L = []
 
