@@ -52,7 +52,7 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZi
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
-        'es':u'Formateando las referencias que no tuvieran títulos (Pruebas por [[Wikipedia:Bot/Autorizaciones#DumZiBoT]] )',
+        'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
         'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'[%s] {{lien mort}}',
@@ -72,27 +72,35 @@ comment = {'fr':u'Titre généré automatiquement',
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)
 dirIndex = re.compile(ur'^\w+://[^/]+/((default|index)\.(asp|aspx|cgi|htm|html|phtml|mpx|mspx|php|shtml|var))?$', re.IGNORECASE)
 domain = re.compile(ur'^(\w+)://(?:www.|)([^/]+)')
-badtitles = {'en':
-                # is
-                ur'(?is)(test|'
-                # starts with
-                +'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$)).*'
-                # anywhere
-                +'|.*((404|page|file).*not( *be)? *found).*'
-                # ends with
-                +'|.*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on)\W*$'
-                +')',
-            'fr':
-                #is
-                ur'(?is)(test|'
-                # starts with
-                + ur'^\W*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on|untitled *(document|page|$)).*'
-                # anywhere
-                +'|.*((404|page|file|site).*(not *found|en +travaux)).*'
-                # ends with
-                +'|.*(register|registration|(sign|log)[ \-]?in|subscribe|sign[ \-]?up|log[ \-]?on)\W*$'
-                +')'}
-
+globalbadtitles = """
+# is
+(test|
+# starts with
+    ^\W*(
+            register
+            |registration
+            |(sign|log)[ \-]?in
+            |subscribe
+            |sign[ \-]?up
+            |log[ \-]?on
+            |untitled *(document|page|$)
+        ).*
+# anywhere
+    |.*(404|page|file).*not([ ]*be)?[ ]*found.*
+# ends with
+    |.*(
+            register
+            |registration
+            |(sign|log)[ \-]?in
+            |subscribe|sign[ \-]?up
+            |log[ \-]?on
+        )\W*$
+)
+"""
+badtitles = { 'en': '',
+              'fr': '.*(404|page|site).*en +travaux.*',
+              'es': '.*sitio.*no +disponible.*'
+            }
 
 linksInRef = re.compile(
 	# bracketed URLs
@@ -218,7 +226,9 @@ class ReferencesRobot:
         self.NON_HTML = re.compile(ur'(?is)<script[^>]*>.*?</script>|<style[^>]*>.*?</style>|<!--.*?-->|<!\[CDATA\[.*?\]\]>')
         str = ur'application/(?:xhtml\+xml|xml)|text/(?:ht|x)ml'
         self.MIME = re.compile(str)
-        self.titleBlackList = re.compile(wikipedia.translate(self.site, badtitles))   
+        self.titleBlackList = re.compile(
+                                '(' + globalbadtitles + '|' + wikipedia.translate(self.site, badtitles) + ')',
+                                 re.I | re.S | re.X)
         self.norefbot = noreferences.NoReferencesBot(None)
  
     def put_page(self, page, new):
@@ -477,8 +487,8 @@ class ReferencesRobot:
                     new_text = new_text.replace(match.group(), repl)
                     wikipedia.output(u'\03{lightred}WARNING\03{default} %s : Blacklisted title (%s)' % (ref.link, ref.title))
                     continue
-                if len(ref.title) > 250:
-                    ref.title = ref.title[:250] + "..."
+                if len(ref.title) > 175:
+                    ref.title = ref.title[:175] + "..."
 
                 repl = ref.refTitle()
                 new_text = new_text.replace(match.group(), repl)
