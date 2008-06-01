@@ -2979,7 +2979,7 @@ class Family:
         return "%s?useskin=monobook&title=%s:Allmessages&ot=html" % (self.path(code), self.special_namespace_url(code))
 
     def login_address(self, code):
-        return '%s?useskin=monobook&title=%s:Userlogin&action=submit' % (self.path(code), self.special_namespace_url(code))
+        return '%s?useskin=monobook&title=%s:Userlogin' % (self.path(code), self.special_namespace_url(code))
 
     def captcha_image_address(self, code, id):
         return '%s?useskin=monobook&title=%s:Captcha/image&wpCaptchaId=%s' % (self.path(code), self.special_namespace_url(code), id)

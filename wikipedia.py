@@ -4143,12 +4143,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             l.append('wpEditToken=' + wpEditToken)
         return '&'.join(l)
 
-    def postForm(self, address, predata, sysop=False, useCookie=True):
+    def postForm(self, address, predata, sysop=False, cookies = None):
         """Post http form data to the given address at this site.
 
-        address is the absolute path without hostname.
-        predata is a dict or any iterable that can be converted to a dict,
+        address - the absolute path without hostname.
+        predata - a dict or any iterable that can be converted to a dict,
         containing keys and values for the http form.
+        cookies - the cookies to send with the form. If None, send self.cookies
 
         Return a (response, data) tuple, where response is the HTTP
         response object and data is a Unicode string containing the
@@ -4157,14 +4158,18 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """
         data = self.urlEncode(predata)
         try:
-            return self.postData(address, data, sysop=sysop,
-                                 useCookie=useCookie)
+            if cookies:
+                return self.postData(address, data, sysop=sysop,
+                                        cookies=cookies)
+            else:
+                return self.postData(address, data, sysop=sysop,
+                                    cookies=self.cookies(sysop = sysop))
         except socket.error, e:
             raise ServerError(e)
 
     def postData(self, address, data,
                  contentType='application/x-www-form-urlencoded',
-                 sysop=False, useCookie=True, compress=True):
+                 sysop=False, compress=True, cookies=None):
         """Post encoded data to the given http address at this site.
 
         address is the absolute path without hostname.
@@ -4191,8 +4196,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         conn.putheader('Content-Length', str(len(data)))
         conn.putheader('Content-type', contentType)
         conn.putheader('User-agent', useragent)
-        if useCookie and self.cookies(sysop = sysop):
-            conn.putheader('Cookie', self.cookies(sysop = sysop))
+        if cookies:
+            conn.putheader('Cookie', cookies)
         if False: #self.persistent_http:
             conn.putheader('Connection', 'Keep-Alive')
         if compress:
@@ -4209,7 +4214,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             # Blub.
             conn.close()
             conn.connect()
-            return self.postData(address, data, contentType, sysop, useCookie)
+            return self.postData(address, data, contentType, sysop, useCookie, compress, cookie)
 
         data = response.read()
 
@@ -4227,7 +4232,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         return response, data
 
-    def getUrl(self, path, retry = True, sysop = False, data = None, compress = True, no_hostname = False):
+    def getUrl(self, path, retry = True, sysop = False, data = None, 
+               compress = True, no_hostname = False, cookie_only=False):
         """
         Low-level routine to get a URL from the wiki.
 
@@ -4237,6 +4243,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                         occurs.
             sysop       - If True, the sysop account's cookie will be used.
             data        - An optional dict providing extra post request parameters.
+            cookie_only - Only return the cookie the server sent us back
             no_hostname - Open the URL given, don't add the hostname before.
 
            Returns the HTML text of the page converted to unicode.
@@ -4319,6 +4326,8 @@ your connection is down. Retrying in %i minutes..."""
 
             headers = f.info()
 
+        if cookie_only:
+         return headers.get('set-cookie', '')
         contentType = headers.get('content-type', '')
         contentEncoding = headers.get('content-encoding', '')
 

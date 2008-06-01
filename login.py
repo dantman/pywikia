@@ -126,7 +126,8 @@ class LoginManager:
             if captchaId:
                 predata["wpCaptchaId"] = captchaId
                 predata["wpCaptchaWord"] = captchaAnswer
-            address = self.site.login_address()
+            login_address = self.site.login_address()
+            address = login_address + '&action=submit'
 
         if self.site.hostname() in config.authenticate.keys():
             headers = {
@@ -139,23 +140,23 @@ class LoginManager:
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
-            response, data = self.site.postForm(address, predata, useCookie=False)
-            n = 0
+            #Retrieve a session cookie
+            session = self.site.getUrl(login_address, cookie_only=True)
+
+            response, data = self.site.postForm(address, predata, cookies=session)
             Reat=re.compile(': (.*?);')
             L = []
 
             for eat in response.msg.getallmatchingheaders('set-cookie'):
                 m = Reat.search(eat)
                 if m:
-                    n += 1
                     L.append(m.group(1))
 
             got_token = False
-            log_data = []
             for Ldata in L:
                 if 'Token=' in Ldata:
                     got_token = True
-            
+
             if got_token:
                 return "\n".join(L)
             elif not captchaAnswer:
@@ -168,8 +169,8 @@ class LoginManager:
                     url = self.site.protocol() + '://' + self.site.hostname() + self.site.captcha_image_address(id)
                     answer = wikipedia.ui.askForCaptcha(url)
                     return self.getCookie(remember = remember, captchaId = id, captchaAnswer = answer)
-            else:
-                return None
+
+            return None
 
     def storecookiedata(self, data):
         """
