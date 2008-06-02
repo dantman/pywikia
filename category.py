@@ -88,7 +88,7 @@ docuReplacements = {
 # Summary messages
 msg_add={
     'ar':u'إضافة [[تصنيف:%s]]',
-    'bat-smg': u'Robots: Pridedama [[Kateguorėjė:%s]]',
+    'bat-smg':u'Robots: Pridedama [[Kateguorėjė:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
@@ -152,7 +152,7 @@ msg_change={
 
 deletion_reason_move = {
     'ar':u'روبوت: التصنيف نقل إلى [[:تصنيف:%s|%s]]',
-    'bat-smg' u'Robots: Kateguorėjė bova parvadėnta i [[:Kateguorėjė:%s|%s]]',
+    'bat-smg':u'Robots: Kateguorėjė bova parvadėnta i [[:Kateguorėjė:%s|%s]]',
     'da':u'Robot: Kategori flyttet til [[:Category:%s|%s]]',
     'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
@@ -539,7 +539,7 @@ class CategoryRemoveRobot:
 
     msg_remove={
         'ar':u'روبوت: إزالة من %s',
-        'bat-smg': u'Robots: Trėnama ėš  %s',
+        'bat-smg':u'Robots: Trėnama ėš  %s',
         'da':u'Robot: Fjerner fra %s',
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
