@@ -286,7 +286,7 @@ def sorted_by_last_name(catlink, pagelink):
 
         Parameters: catlink - The Category to be linked
                     pagelink - the Page to be placed in the category
-        
+
         Trailing words in brackets will be removed. Example: If
         category_name is 'Author' and pl is a Page to [[Alexandre Dumas
         (senior)]], this function will return this Category:
