@@ -124,7 +124,7 @@ msg_change={
     'en':u'Robot: Changing %s',
     'es':u'Bot: Cambiada %s',
     'id':u'Bot: Mengganti %s',
-    'fi':u'Botti vaihtoi luokan %s',
+    'fi':u'Botti muutti luokan %s',
     'fr':u'Robot : modifie [[%s]]',
     'he':u'בוט: משנה %s',
     'ia':u'Robot: Modification de %s',
@@ -153,6 +153,7 @@ deletion_reason_move = {
     'da':u'Robot: Kategori flyttet til [[:Category:%s|%s]]',
     'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
+    'fi':u'Botti siirsi luokan nimelle [[:Luokka:%s|%s]]',
     'fr':u'Robot : catégorie déplacée sur [[:Category:%s|%s]]',
     'he':u'בוט: הקטגוריה הועברה לשם [[:קטגוריה:%s|%s]]',
     'ia':u'Robot: Categoria transferite a [[:Category:%s|%s]]',
@@ -178,6 +179,7 @@ deletion_reason_move = {
 
 cfd_templates = {
     'en':['cfd', 'cfr', 'cfru', 'cfr-speedy', 'cfm', 'cfdu'],
+    'fi':['roskaa', 'poistettava', 'korjattava/nimi', u'yhdistettäväLuokka'],
     'he':[u'הצבעת מחיקה', u'למחוק'],
     }
 
@@ -459,6 +461,7 @@ class CategoryListifyRobot:
     '''
     listify_msg={
         'en':u'Robot: Listifying from %s (%d entries)',
+        'fi':u'Botti listasi luokan %s (%d jäsentä)',
         'he':u'בוט: יוצר רשימה מהקטגוריה %s (%d דפים)',
         'kk':u'Бот: %s дегеннен (%d буын) тізімдеді',
         'nds-nl':u'Bot: lieste van %s (%d pagina\'s)',
@@ -514,6 +517,7 @@ class CategoryRemoveRobot:
         'da':u'Robot: Kategorien blev opløst',
         'de':u'Bot: Kategorie wurde aufgelöst',
         'en':u'Robot: Category was disbanded',
+        'fi':u'Botti tyhjensi luokan',
         'he':u'בוט: הקטגוריה פורקה',
         'ia':u'Robot: Categoria esseva dissolvite',
         'kk':u'Бот: Санат тарқатылды',
@@ -535,6 +539,7 @@ class CategoryRemoveRobot:
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
         'es':u'Bot: Eliminada de la %s',
+        'fi':u'Botti poisti luokasta %s',
         'he':u'בוט: מסיר את הדף מהקטגוריה %s',
         'ia':u'Robot: Eliminate de %s',
         'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
@@ -781,6 +786,7 @@ class CategoryTreeRobot:
             'da': u'(også i %s)',
             'de': u'(auch in %s)',
             'en': u'(also in %s)',
+            'fi': u'(myös luokassa %s)',
             'fr': u'(également dans %s)',
             'he': u'(גם בקטגוריות %s)',
             'ia': u'(equalmente in %s)',

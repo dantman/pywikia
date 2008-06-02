@@ -26,6 +26,7 @@ msg_created_for_renaming = {
     'ar':u'روبوت: نقل من %s. المؤلفون: %s',
     'de':u'Bot: Verschoben von %s. Autoren: %s',
     'en':u'Robot: Moved from %s. Authors: %s',
+    'fi':u'Botti siirsi luokan %s. Muokkaajat: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     'he':u'בוט: הועבר מהשם %s. כותבים: %s',
     'ia':u'Robot: Transferite de %s. Autores: %s',
@@ -389,8 +390,8 @@ class Category(wikipedia.Page):
             while (newtext[pos:pos+1] == "\n"):
                 pos = pos + 1
             newtext = newtext[pos:]
-            targetCat.put(newtext, creationSummary)
-            return True
+        targetCat.put(newtext, creationSummary)
+        return True
 
 #def Category(code, name):
 #    """Factory method to create category link objects from the category name"""
