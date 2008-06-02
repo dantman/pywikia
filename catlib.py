@@ -407,7 +407,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     oldCat and newCat should be Category objects.
     If newCat is None, the category will be removed.
     """
-    cats = article.categories(nofollow_redirects=True)
+    cats = article.categories(get_redirect=True)
     site = article.site()
     changesMade = False
 
@@ -415,7 +415,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         wikipedia.output("Can't edit %s, skipping it..." & article.aslink())
         return False
     if inPlace == True:
-        oldtext = article.get(nofollow_redirects=True)
+        oldtext = article.get(get_redirect=True)
         newtext = wikipedia.replaceCategoryInPlace(oldtext, oldCat, newCat)
         if newtext == oldtext:
             wikipedia.output(
@@ -465,7 +465,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     if not changesMade:
         wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
     else:
-        text = article.get(nofollow_redirects=True)
+        text = article.get(get_redirect=True)
         try:
             text = wikipedia.replaceCategoryLinks(text, newCatList)
         except ValueError:

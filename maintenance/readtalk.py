@@ -21,7 +21,7 @@ def main():
             username = config.usernames[familyName][lang]
             page = wikipedia.Page(site, u'User_Talk:' + username)
             wikipedia.output(u'Reading talk page from ' + lang + u' ' + familyName)
-            wikipedia.output(page.get (nofollow_redirects=True))
+            wikipedia.output(page.get (get_redirect=True))
 
 if __name__ == "__main__":
     try:

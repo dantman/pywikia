@@ -176,7 +176,7 @@ class Delinker(threadpool.Thread):
 		# TODO: Per site config.
 		if page.namespace() in self.CommonsDelinker.config['delink_namespaces']:
 			try:
-				text = page.get(nofollow_redirects = True)
+				text = page.get(get_redirect = True)
 			except wikipedia.NoPage:
 				return 'failed'
 			new_text = text

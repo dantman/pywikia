@@ -576,7 +576,7 @@ not supported by PyWikipediaBot!"""
         return self.autoFormat()[0] is not None
 
     def get(self, force=False, get_redirect=False, throttle=True,
-            sysop=False, nofollow_redirects=False, change_edit_time=True):
+            sysop=False, change_edit_time=True):
         """Return the wiki-text of the page.
 
         This will retrieve the page from the server if it has not been
@@ -592,18 +592,11 @@ not supported by PyWikipediaBot!"""
         target of the redirect, do not raise an exception.
         If force is True, reload all page attributes, including
         errors.
-        If nofollow_redirects is True, ignore redirects entirely (do not
-        raise an exception for redirects but do not mark the page as a
-        redirect or save the redirect target page).
         If change_edit_time is False, do not check this version for changes
         before saving. This should be used only if the page has been loaded
         previously.
 
         """
-        # TODO: is the description of nofollow_redirects accurate? I can't
-        # tell where nofollow_redirects is doing anything different than
-        # get_redirect!
-
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
         # because all scripts are prepared for NoPage exceptions raised by
@@ -628,19 +621,17 @@ not supported by PyWikipediaBot!"""
                     delattr(self,attr)
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
-            if hasattr(self, '_redirarg') and not get_redirect and not nofollow_redirects:
+            if hasattr(self, '_redirarg') and not get_redirect:
                 raise IsRedirectPage, self._redirarg
             elif hasattr(self, '_getexception'):
                 if self._getexception == IsRedirectPage and get_redirect:
-                    pass
-                elif self._getexception == IsRedirectPage and nofollow_redirects:
                     pass
                 else:
                     raise self._getexception
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents = self._getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop, nofollow_redirects=nofollow_redirects)
+                self._contents = self._getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop)
                 hn = self.section()
                 if hn:
                     m = re.search("=+ *%s *=+" % hn, self._contents)
@@ -655,7 +646,7 @@ not supported by PyWikipediaBot!"""
             except IsRedirectPage, arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
-                if not get_redirect and not nofollow_redirects:
+                if not get_redirect:
                     raise
             except SectionError:
                 self._getexception = SectionError
@@ -663,8 +654,7 @@ not supported by PyWikipediaBot!"""
         return self._contents
 
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
-                     oldid=None, nofollow_redirects=False,
-                     change_edit_time=True):
+                     oldid=None, change_edit_time=True):
         """Get the contents of the Page via the edit page.
 
         Do not use this directly, use get() instead.
@@ -801,7 +791,7 @@ not supported by PyWikipediaBot!"""
                 redirtarget = m.group(1)
             if get_redirect:
                 self._redirarg = redirtarget
-            elif not nofollow_redirects:
+            else:
                 raise IsRedirectPage(redirtarget)
         if self.section():
             # TODO: What the hell is this? Docu please.
@@ -820,8 +810,7 @@ not supported by PyWikipediaBot!"""
         return x
 
     def getOldVersion(self, oldid, force=False, get_redirect=False,
-                      throttle=True, sysop=False, nofollow_redirects=False,
-                      change_edit_time=True):
+                      throttle=True, sysop=False, change_edit_time=True):
         """Return text of an old revision of this page; same options as get()."""
         # TODO: should probably check for bad pagename, NoPage, and other
         # exceptions that would prevent retrieving text, as get() does
@@ -831,7 +820,6 @@ not supported by PyWikipediaBot!"""
         return self._getEditPage(
                         get_redirect=get_redirect, throttle=throttle,
                         sysop=sysop, oldid=oldid,
-                        nofollow_redirects=nofollow_redirects,
                         change_edit_time=change_edit_time
                     )
 
@@ -1578,7 +1566,7 @@ not supported by PyWikipediaBot!"""
                         % (self.aslink(), newSite, newTitle))
         return result
 
-    def categories(self, nofollow_redirects=False):
+    def categories(self, get_redirect=False):
         """Return a list of categories that the article is in.
 
         This will retrieve the page text to do its work, so it can raise
@@ -1589,7 +1577,7 @@ not supported by PyWikipediaBot!"""
 
         """
         try:
-            category_links_to_return = getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
+            category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
         except NoPage:
             category_links_to_return = []
         return category_links_to_return
@@ -1682,14 +1670,14 @@ not supported by PyWikipediaBot!"""
                 results.append(ImagePage(self.site(), ns + ':' + imageName))
         return list(set(results))
 
-    def templates(self):
+    def templates(self, get_redirect=False):
         """Return a list of titles (unicode) of templates used on this Page.
 
         Template parameters are ignored.
         """
-        return [template for (template, param) in self.templatesWithParams()]
+        return [template for (template, param) in self.templatesWithParams(get_redirect=get_redirect)]
 
-    def templatesWithParams(self, thistxt=None):
+    def templatesWithParams(self, thistxt=None, get_redirect=False):
         """Return a list of templates used on this Page.
 
         Return value is a list of tuples. There is one tuple for each use of
@@ -1701,7 +1689,7 @@ not supported by PyWikipediaBot!"""
         check_disambig = (thistxt is None)
         if not thistxt:
             try:
-                thistxt = self.get()
+                thistxt = self.get(get_redirect=get_redirect)
             except (IsRedirectPage, NoPage):
                 self._isDisambig = False
                 return []
