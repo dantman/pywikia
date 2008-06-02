@@ -121,6 +121,10 @@ class DjVuTextBot:
 	    djvutxt = wikipedia.translate(wikipedia.getSite(), self.blank)
 	text = '<noinclude>{{PageQuality|1|%s}}<div class="pagetext">%s</noinclude>%s<noinclude><references/></div></noinclude>' % (self.username,"\n\n\n",djvutxt)
 
+        # convert to wikisyntax
+        #   this adds a second line feed, which makes a new paragraph
+	text = text.replace('', "\n")
+
         # only save if something was changed
         if (not exists and text) or text != page.get():
             # Show the title of the page we're working on.
