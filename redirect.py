@@ -49,6 +49,7 @@ __version__='$Id$'
 msg_double={
     'en': u'Robot: Fixing double redirect',
     'ar': u'روبوت: تصليح تحويلة مزدوجة',
+    'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
     'br': u'Kempennet adkas doubl gant robot',
     'de': u'Bot: Korrigiere doppelten Redirect',
     'es': u'Robot: Arreglando doble redirección',
@@ -64,6 +65,7 @@ msg_double={
     'ko': u'로봇: 이중 넘겨주기 수정',
     'kk': u'Бот: Шынжырлы айдатуды түзетті',
     'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
+    'lb': u'Bot: Duebel Viruleedung gefléckt',
     'lt': u'robotas: Taisomas dvigubas peradresavimas',
     'nl': u'Robot: Dubbele doorverwijzing gecorrigeerd',
     'nn': u'robot: retta dobbel omdirigering',

@@ -53,6 +53,7 @@ def LINKS(site,name, ignore=[]):
 
 msg = {
     'ar': u'بوت: وصلة مقالة مختارة ل[[%s:%s]]',
+    'bat-smg': u'Robots: Pavīzdėnė straipsnė nūruoda [[%s:%s]]',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'en': u'Bot: Featured article link for [[%s:%s]]',
     'cs': u'Bot: Nejlepší článek:  [[%s:%s]]',
@@ -64,6 +65,7 @@ msg = {
     'ja': u'ロボットによる: 秀逸な項目へのリンク [[%s:%s]]',
     'ka': u'ბოტი: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
     'ko': u'로봇：알찬 글 [[%s:%s]] 를 가리키는 링크',
+    'lb': u'Bot:Exzellenten Arikel Link op [[%s:%s]]',
     'lt': u'Bot: Pavyzdinis straipsnis [[%s:%s]]',
     'nl': u'Bot: Etalage-artikel link voor [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en utmerka artikkel',

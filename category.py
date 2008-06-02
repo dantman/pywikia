@@ -88,6 +88,7 @@ docuReplacements = {
 # Summary messages
 msg_add={
     'ar':u'إضافة [[تصنيف:%s]]',
+    'bat-smg' u'Robots: Pridedama [[Kateguorėjė:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
@@ -99,11 +100,12 @@ msg_add={
     'ia':u'Robot: Addition de [[Categoria:%s]]',
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     'it':u'Bot: Aggiungo [[Categoria:%s]]',
-    'lt':u'robotas: Pridedama [[Kategorija:%s]]',
     'ja':u'ロボットによる: カテゴリ追加 [[Category:%s]]',
     'kk':u'Бот: [[Санат:%s]] үстеді',
     'ko': u'로봇: [[분류:%s]] 추가',
     'ksh':u'Bot: [[Saachjropp:%s]] erinjedonn',
+    'lb': u'Bot: Derbäi setzen [[Kategorie:%s]]',
+    'lt':u'robotas: Pridedama [[Kategorija:%s]]',
     'nds':u'Kat-Bot: [[Kategorie:%s]] rin',
     'nds-nl':u'bot: [[kattegerie:%s]] derbie edaon',
     'nl':u'Bot: [[Categorie:%s]] toegevoegd',
@@ -150,6 +152,7 @@ msg_change={
 
 deletion_reason_move = {
     'ar':u'روبوت: التصنيف نقل إلى [[:تصنيف:%s|%s]]',
+    'bat-smg' u'Robots: Kateguorėjė bova parvadėnta i [[:Kateguorėjė:%s|%s]]',
     'da':u'Robot: Kategori flyttet til [[:Category:%s|%s]]',
     'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
@@ -160,10 +163,11 @@ deletion_reason_move = {
     'id':u'Bot: Kategori dipindahkan ke [[:Category:%s|%s]]',
     'it':u'Bot: La categoria è stata sostituita da [[:Categoria:%s|%s]]',
     'ja':u'ロボットによる: カテゴリ [[:Category:%s]]へ移動',
-    'lt':u'robotas: Kategorija pervadinta į [[:Category:%s|%s]]',
     'kk':u'Бот: Санат [[:Санат:%s|%s]] дегенге жылжытылды',
     'ko': u'로봇: 분류가 [[:분류:%s|%s]]로 옮겨짐',
     'ksh':u'Bot: Saachjropp noh [[:Category:%s|%s]] jeschovve',
+    'lb': u'Bot: Kategorie gouf gréckelt: Nei [[:Kategorie:%s|%s]]',
+    'lt':u'robotas: Kategorija pervadinta į [[:Category:%s|%s]]',
     'nds':u'Kat-Bot: Kategorie na [[:Category:%s|%s]] schaven',
     'nds-nl':u'Bot: kattegerie is herneumd naor [[:Kattegerie:%s|%s]]',
     'nl':u'Bot: Categorie is hernoemd naar [[:Category:%s|%s]]',
@@ -535,6 +539,7 @@ class CategoryRemoveRobot:
 
     msg_remove={
         'ar':u'روبوت: إزالة من %s',
+        'bat-smg': u'Robots: Trėnama ėš  %s',
         'da':u'Robot: Fjerner fra %s',
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
@@ -545,6 +550,7 @@ class CategoryRemoveRobot:
         'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
         'kk':u'Бот: %s дегеннен аластатты',
         'ksh':u'Bot: uß de %s ußjedraare',
+        'lb': u'Bot: Ewech huele vun %s',
         'nds':u'Kat-Bot: rut ut %s',
         'nds-nl':u'Bot: vort-ehaold uut %s',
         'nl':u'Bot: Verwijderd uit %s',
