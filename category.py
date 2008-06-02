@@ -88,7 +88,7 @@ docuReplacements = {
 # Summary messages
 msg_add={
     'ar':u'إضافة [[تصنيف:%s]]',
-    'bat-smg' u'Robots: Pridedama [[Kateguorėjė:%s]]',
+    'bat-smg': u'Robots: Pridedama [[Kateguorėjė:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
