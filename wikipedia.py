@@ -2905,7 +2905,7 @@ class Throttle(object):
         self.setDelay(mindelay)
 
     def logfn(self):
-        return config.datafilepath('throttle.log')
+        return config.datafilepath('logs', 'throttle.log')
 
     def checkMultiplicity(self):
         self.lock.acquire()
