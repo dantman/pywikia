@@ -669,7 +669,7 @@ formats = {
         'es' :      lambda v: dh_yearBC( v, u'%d adC' ),
         'et' :      lambda v: dh_yearBC( v, u'%d eKr' ),
         'eu' :      lambda v: dh_yearBC( v, u'K. a. %d' ),
-        'fi' :      lambda v: dh_yearBC( v, u'%d eaa' ),
+        'fi' :      lambda v: dh_yearBC( v, u'%d eaa.' ),
         'fo' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
         'fr' :      lambda v: dh_yearBC( v, u'-%d' ),
         'gl' :      lambda v: dh_yearBC( v, u'-%d' ),
@@ -837,9 +837,9 @@ formats = {
 
         # decades ending in 00 are spelled differently
         'fi' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosikymmen eaa'),  lambda p: p == 0),
-            (lambda v: dh_decBC( v, u'%d-luku eaa' ),                       lambda p: (p % 100 != 0)),
-            (lambda v: dh_decBC( v, u'%d-vuosikymmen eaa' ),                alwaysTrue)]),
+            (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosikymmen eaa.'),  lambda p: p == 0),
+            (lambda v: dh_decBC( v, u'%d-luku eaa.' ),                       lambda p: (p % 100 != 0)),
+            (lambda v: dh_decBC( v, u'%d-vuosikymmen eaa.' ),                alwaysTrue)]),
 
         'fr' :      lambda v: dh_decBC( v, u'Années -%d' ),
         'he' :      lambda v: dh_decBC( v, u'שנות ה־%d לפני הספירה' ),
@@ -1020,8 +1020,8 @@ formats = {
         'es' :      lambda v: dh_centuryBC( v, u'Siglo %R adC' ),
         'et' :      lambda v: dh_centuryBC( v, u'%d. aastatuhat eKr' ),
         'fi' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata eaa'),				lambda p: p == 1),
-            (lambda v: dh( v, u'%d00-luku eaa', lambda i: i-1, lambda ii: ii[0]+1 ),    alwaysTrue)]),
+            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata eaa.'),				lambda p: p == 1),
+            (lambda v: dh( v, u'%d00-luku eaa.', lambda i: i-1, lambda ii: ii[0]+1 ),    alwaysTrue)]),
         'fr' :      lambda m: multi( m, [
             (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),   					lambda p: p == 1),
             (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),    					alwaysTrue)]),        
@@ -1083,7 +1083,11 @@ formats = {
         'es' :      lambda v: dh_millenniumAD( v, u'%R milenio' ),
 
         'fi' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosituhat'),                       lambda p: p == 0),
+            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosituhat'),                       lambda p: p == 1),
+            (lambda v: dh_constVal( v, 2, u'Toinen vuosituhat'),                       lambda p: p == 2),
+            (lambda v: dh_constVal( v, 3, u'Kolmas vuosituhat'),                       lambda p: p == 3),
+            (lambda v: dh_constVal( v, 4, u'Neljäs vuosituhat'),                       lambda p: p == 4),
+            (lambda v: dh_constVal( v, 5, u'Viides vuosituhat'),                       lambda p: p == 5),
             (lambda v: dh( v, u'%d000-vuosituhat', lambda i: i-1, lambda ii: ii[0]+1 ),     alwaysTrue)]),
 
         'fr' :      lambda m: multi( m, [
@@ -1128,8 +1132,8 @@ formats = {
         'en' :      lambda v: dh_millenniumBC( v, u'%dst millennium BC' ),
         'es' :      lambda v: dh_millenniumBC( v, u'%R milenio adC' ),
         'fi' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosituhat eaa'),                   lambda p: p == 0),
-            (lambda v: dh( v, u'%d000-vuosituhat eaa', lambda i: i-1, lambda ii: ii[0]+1 ), alwaysTrue)]),
+            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosituhat eaa.'),                   lambda p: p == 1),
+            (lambda v: dh( v, u'%d000-vuosituhat eaa.', lambda i: i-1, lambda ii: ii[0]+1 ), alwaysTrue)]),
         'fr' :      lambda v: dh_millenniumBC( v, u'%Rer millénaire av. J.-C.' ),
         'he' :      lambda m: multi( m, [
             (lambda v: dh_millenniumAD( v, u'האלף הראשון %d לפני הספירה' ),                lambda p: p == 1),
@@ -1159,6 +1163,7 @@ formats = {
 
     'Cat_Year_MusicAlbums': {
         'en' :      lambda v: dh_yearAD( v, u'%d albums' ),
+        'fi' :      lambda v: dh_yearAD( v, u'Vuoden %d albumit' ),
         'fr' :      lambda v: dh_yearAD( v, u'Album musical sorti en %d' ),
         'he' :      lambda v: dh_yearAD( v, u'אלבומי %d' ),
         'pl' :      lambda v: dh_yearAD( v, u'Albumy muzyczne wydane w roku %d' ),
@@ -1406,7 +1411,7 @@ addFmt2('en', True, u"%s %%d", True )
 addFmt2('eo', True, u"%s de %%d" )
 addFmt2('es', True, u"%s de %%d", True )
 addFmt2('et', True, u"%s %%d", True )
-addFmt ('fi', True,     [ None, None, None, None, None, u"Huhtikuu %d", None, None, None, None, None, None ])
+addFmt2('fi', True, u"%s %%d", True )
 addFmt ('fr', True,     [ u"Janvier %d", u"Février %d", u"Mars %d", u"Avril %d", u"Mai %d", u"Juin %d", u"Juillet %d", u"Août %d", u"Septembre %d", u"Octobre %d", u"Novembre %d", u"Décembre %d" ])
 addFmt2('he', True, u"%s %%d", True )
 addFmt2('it', True, u"Attualità/Anno %%d - %s", True )
