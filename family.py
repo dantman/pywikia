@@ -255,7 +255,7 @@ class Family:
                 'tr': u'Özel',
                 'tt': u'Maxsus',
                 'udm': u'Панель',
-                'uk': u'Спеціальні',
+                'uk': u'Спеціальна',
                 'ur': u'خاص',
                 'uz': u'Maxsus',
                 'vec':u'Speciale',
