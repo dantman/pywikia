@@ -2086,14 +2086,13 @@ not supported by PyWikipediaBot!"""
                         # Try to delete and move
                         return self.move(newtitle = newtitle, reason = reason, movetalkpage = movetalkpage, throttle = throttle, deleteAndMove = True)
                     except NoUsername:
+                        #We dont have the user rights to delete
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
                         return False
             elif not self.exists():
                 raise NoPage(u'Page move failed: Source page [[%s]] does not exist.' % newtitle)
-                return False
-            elif  Page(self.site(),newtitle).exists():
+            elif Page(self.site(),newtitle).exists():
                 raise PageNotSaved(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
-                return False
             else:
                 output(u'Page move failed for unknown reason.')
                 try:

@@ -99,6 +99,9 @@ class MovePagesBot:
             wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
         except wikipedia.LockedPage:
             wikipedia.output(u'Page %s is locked!' % page.title())
+        except wikipedia.PageNotSaved, e:
+            #target newPageTitle already exists
+            wikipedia.output(e.message)
 
     def treat(self, page):
         # Show the title of the page we're working on.

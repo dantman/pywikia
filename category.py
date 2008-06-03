@@ -422,8 +422,16 @@ class CategoryMoveRobot:
                 oldTalk = self.oldCat.toggleTalkPage()
                 if oldTalk.exists():
                     newTalkTitle = newCat.toggleTalkPage().title()
-                    if oldTalk.move(newTalkTitle, reason):
-                        oldMovedTalk = oldTalk
+                    try:
+                        talkMoved = oldTalk.move(newTalkTitle, reason)
+                    except (wikipedia.NoPage, wikipedia.PageNotSaved), e:
+                        #in order :
+                        #Source talk does not exist, or
+                        #Target talk already exists
+                        wikipedia.output(e.message)
+                    else:
+                        if talkMoved:
+                            oldMovedTalk = oldTalk
 
         # Move articles
         gen = pagegenerators.CategorizedPageGenerator(self.oldCat,
