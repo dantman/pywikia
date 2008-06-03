@@ -113,6 +113,7 @@ from __future__ import generators
 import sys, re, time
 import wikipedia, pagegenerators, catlib, config
 import editarticle
+import webbrowser
 
 # Imports predefined replacements tasks from fixes.py
 import fixes
@@ -350,29 +351,29 @@ class ReplaceRobot:
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % page.aslink())
                 continue
-            if self.isTextExcepted(original_text):
-                wikipedia.output(
-u'Skipping %s because it contains text that is on the exceptions list.'
-                    % page.aslink())
-                continue
-            new_text = self.doReplacements(original_text)
-            if new_text == original_text:
-                wikipedia.output('No changes were necessary in %s'
-                                 % page.aslink())
-                continue
-            if self.recursive:
-                newest_text = self.doReplacements(new_text)
-                while (newest_text!=new_text):
-                    new_text = newest_text
-                    newest_text = self.doReplacements(new_text)
-
-            if hasattr(self, "addedCat"):
-                cats = page.categories(nofollow_redirects=True)
-                if self.addedCat not in cats:
-                    cats.append(self.addedCat)
-                    new_text = wikipedia.replaceCategoryLinks(new_text,
-                                                              cats)
+            new_text = original_text
             while True:
+                if self.isTextExcepted(new_text):
+                    wikipedia.output(
+    u'Skipping %s because it contains text that is on the exceptions list.'
+                        % page.aslink())
+                    break
+                new_text = self.doReplacements(new_text)
+                if new_text == original_text:
+                    wikipedia.output('No changes were necessary in %s'
+                                     % page.aslink())
+                    break
+                if self.recursive:
+                    newest_text = self.doReplacements(new_text)
+                    while (newest_text!=new_text):
+                        new_text = newest_text
+                        newest_text = self.doReplacements(new_text)
+                if hasattr(self, "addedCat"):
+                    cats = page.categories(nofollow_redirects=True)
+                    if self.addedCat not in cats:
+                        cats.append(self.addedCat)
+                        new_text = wikipedia.replaceCategoryLinks(new_text,
+                                                                  cats)
                 # Show the title of the page we're working on.
                 # Highlight the title in purple.
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
@@ -382,14 +383,23 @@ u'Skipping %s because it contains text that is on the exceptions list.'
                     break
                 choice = wikipedia.inputChoice(
                             u'Do you want to accept these changes?',
-                            ['Yes', 'No', 'Edit', 'All', "Quit"],
-                            ['y', 'N', 'e', 'a', 'q'], 'N')
+                            ['Yes', 'No', 'Edit', 'open in Browser', 'All', "Quit"],
+                            ['y', 'N', 'e', 'b', 'a', 'q'], 'N')
                 if choice == 'e':
                     editor = editarticle.TextEditor()
-                    as_edited = editor.edit(new_text)
+                    as_edited = editor.edit(original_text)
                     # if user didn't press Cancel
                     if as_edited and as_edited != new_text:
                         new_text = as_edited
+                    continue
+                if choice == 'b':
+                    webbrowser.open("http://%s%s" % (
+                        page.site().hostname(),
+                        page.site().nice_get_address(page.title())
+                    ))
+                    wikipedia.input("Press Enter when finished in browser.")
+                    original_text = page.get(get_redirect=True, force=True)
+                    new_text = original_text
                     continue
                 if choice == 'q':
                     return
@@ -397,8 +407,9 @@ u'Skipping %s because it contains text that is on the exceptions list.'
                     self.acceptall = True
                 if choice == 'y':
                     page.put_async(new_text)
+                # choice must be 'N'
                 break
-            if self.acceptall:
+            if self.acceptall and new_text != original_text:
                 try:
                     page.put(new_text)
                 except wikipedia.EditConflict:
