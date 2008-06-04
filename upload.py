@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to upload images to wikipedia.
 
@@ -34,7 +34,7 @@ def post_multipart(site, address, fields, files, cookies):
     Return the server's response page.
     """
     contentType, body = encode_multipart_formdata(fields, files)
-    return site.postData(address, body, contentType = contentType)
+    return site.postData(address, body, contentType = contentType, cookies = cookies)
 
 def encode_multipart_formdata(fields, files):
     """
