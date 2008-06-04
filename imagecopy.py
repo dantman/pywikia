@@ -197,6 +197,23 @@ nowCommonsMessage = {
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
 }
 
+moveToCommonsTemplate = {
+    'ar': [u'نقل إلى كومنز'],
+    'en': [u'Commons ok', u'Move to commons', u'Copy to Wikimedia Commons', u'To commons'],
+    'fi':[u'Commonsiin'],
+    'fr':[u'Image pour Commons'],
+    'hsb':[u'Kopěruj do Wikimedia Commons'],
+    'hu':[u'Commonsba'],
+    'is':[u'Færa á Commons'],
+    'ms':[u'Hantar ke Wikimedia Commons'],
+    'nl': [u'Verplaats naar Wikimedia Commons', u'VNC'],
+    'ru':[u'На Викисклад'],
+    'sl':[u'Skopiraj v Zbirko'],
+    'sr':[u'За оставу'],
+    'sv':[u'Till Commons'],
+    'zh':[u'Copy to Wikimedia Commons'],
+}
+
 def pageTextPost(url,postinfo):
     print url
     m=re.search(ur'http://(.*?)(/.*)',url)
@@ -251,9 +268,17 @@ class imageTransfer (threading.Thread):
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
 
-        #add {{NowCommons}}, first force to get the page so we dont run into edit conflicts
+        #Should maybe check if the image actually was uploaded
+
+        #Get a fresh copy, force to get the page so we dont run into edit conflicts
         imtxt=self.imagePage.get(force=True)
 
+        #Remove the move to commons templates
+        if moveToCommonsTemplate.has_key(self.imagePage.site().language()):
+            for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
+                imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
+
+        #add {{NowCommons}} 
         if nowCommonsTemplate.has_key(self.imagePage.site().language()):
             addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname.decode('utf-8')
         else:
@@ -264,8 +289,8 @@ class imageTransfer (threading.Thread):
         else:
             commentText = nowCommonsMessage['_default']
 
+        wikipedia.showDiff(self.imagePage.get(), imtxt+addTemplate)
         self.imagePage.put(imtxt + addTemplate, comment = commentText)
-
         return
 
 #-label ok skip view
