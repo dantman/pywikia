@@ -400,7 +400,7 @@ def parselog(wsite, raw, talk, number):
       
     reg =  u'\(<a href=\"' + re.escape(wsite.path()) 
     reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
-    reg += u'.*?\) (?P<reason>.*?) \u200E </li>'
+    reg += u'.*?\) (?P<reason>.*?) . </li>'
     p = re.compile(reg, re.UNICODE)
     
     for x in p.finditer(raw):
