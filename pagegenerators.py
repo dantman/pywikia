@@ -74,6 +74,9 @@ parameterHelp = """\
 -new              Work on the 60 newest pages. If given as -new:x, will work
                   on the x newest pages.
 
+-imagelinks       Work on all images that are linked from a certain page.
+                  Argument can also be given as "-imagelinks:linkingpagetitle". 
+
 -newimages        Work on the 100 newest images. If given as -newimages:x,
                   will work on the x newest images.
 
@@ -257,8 +260,8 @@ def FileLinksGenerator(referredImagePage):
         yield page
 
 def ImagesPageGenerator(pageWithImages):
-    for page in pageWithImages.imagelinks(followRedirects = False, loose = True):
-        yield page
+    for imagePage in pageWithImages.imagelinks(followRedirects = False, loose = True):
+        yield imagePage
 
 def UnusedFilesGenerator(number = 100, repeat = False, site = None, extension = None):
     if site is None:
@@ -942,6 +945,12 @@ class GeneratorFactory:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
             else:
               gen = NewpagesPageGenerator(number = 60)
+        elif arg.startswith('-imagelinks'):            
+            imagelinkstitle = arg[len('-imagelinks:'):]
+            if not imagelinkstitle:
+                imagelinkstitle = wikipedia.input(u'Images on which page should be processed?')
+            imagelinksPage = wikipedia.Page(wikipedia.getSite(), imagelinkstitle)
+            gen = ImagesPageGenerator(imagelinksPage)
         elif arg.startswith('-search'):
             mediawikiQuery = arg[8:]
             if not mediawikiQuery:
