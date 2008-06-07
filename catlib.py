@@ -412,7 +412,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     changesMade = False
 
     if not article.canBeEdited():
-        wikipedia.output("Can't edit %s, skipping it..." & article.aslink())
+        wikipedia.output("Can't edit %s, skipping it..." % article.aslink())
         return False
     if inPlace == True:
         oldtext = article.get(get_redirect=True)
