@@ -79,6 +79,7 @@ msg = {
     'ar': u'توضيح بمساعدة روبوت: %s - غير الوصلة أو الوصلات إلى %s',
     'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota - Změněn(y) odkaz(y) na %s',
     'en': u'Robot-assisted disambiguation: %s - Changed link(s) to %s',
+    'es': u'Bot:Desambiguación asistida: %s - Cambiando enlace(s) para %s',
     'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
     'de': u'Bot-unterstützte Begriffsklärung: %s - Link(s) ersetzt durch %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s - Modifications du (des) lien(s) pour %s',

@@ -56,6 +56,7 @@ msg = {
     'bat-smg': u'Robots: Pavīzdėnė straipsnė nūruoda [[%s:%s]]',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'en': u'Bot: Featured article link for [[%s:%s]]',
+    'es': u'Bot: Enlace a artículo destacado para: [[%s:%s]]',
     'de': u'Bot: [[%s:%s]] ist ein ausgezeichneter Artikel',
     'cs': u'Bot: Nejlepší článek:  [[%s:%s]]',
     'fi': u'Bot: Suositeltu artikkeli -tähti: [[%s:%s]]',
