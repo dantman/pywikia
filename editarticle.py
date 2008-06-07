@@ -30,6 +30,7 @@ msg = {
     'de': u'Manuelle Bearbeitung: %s',
     'en': u'Manual edit: %s',
     'he': u'עריכה ידנית: %s',
+    'ja': u'手動編集: %s',
     'pt': u'Editando manualmente com bot: %s',
     'sv': u'Manuell redigering: %s',
     'is': u'Handvirk breyting: %s',
