@@ -58,9 +58,11 @@ Known issues/FIXMEs (no critical issues known):
   succesfully on nl.wp (12k+ files copied and deleted locally) and en.wp
   (about 100 files copied and SieBot has bot approval for tagging {{ncd}}
   with this bot)
+** Implemented
 * {{NowCommons|xxx}} requires the namespace prefix Image: on most wikis
   and can be left out on others. This needs to be taken care of when
   implementing i18n
+** Implemented
 * This bot should probably get a small tutorial at meta with a few
   screenshots.
 """
@@ -88,6 +90,7 @@ import time, threading
 import wikipedia, config
 import pagegenerators, add_text
 from upload import *
+from image import *
 NL=''
 
 nowCommonsTemplate = {
@@ -199,7 +202,7 @@ nowCommonsMessage = {
 
 moveToCommonsTemplate = {
     'ar': [u'نقل إلى كومنز'],
-    'en': [u'Commons ok', u'Move to commons', u'Copy to Wikimedia Commons', u'To commons'],
+    'en': [u'Commons ok', u'Copy to Wikimedia Commons', u'Move to commons', u'Movetocommons', u'To commons'],
     'fi':[u'Commonsiin'],
     'fr':[u'Image pour Commons'],
     'hsb':[u'Kopěruj do Wikimedia Commons'],
@@ -212,6 +215,12 @@ moveToCommonsTemplate = {
     'sr':[u'За оставу'],
     'sv':[u'Till Commons'],
     'zh':[u'Copy to Wikimedia Commons'],
+}
+
+imageMoveMessage = {
+    '_default': u'[[:Image:%s|Image]] moved to [[:commons:Image:%s|commons]].',
+    'en': u'[[:Image:%s|Image]] moved to [[:commons:Image:%s|commons]].',
+    'nl': u'[[:Image:%s|Afbeelding]] is verplaatst naar [[:commons:Image:%s|commons]].',
 }
 
 def pageTextPost(url,postinfo):
@@ -268,29 +277,41 @@ class imageTransfer (threading.Thread):
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
 
-        #Should maybe check if the image actually was uploaded
+        #Should check if the image actually was uploaded
+        if wikipedia.Page(wikipedia.getSite('commons', 'commons'), u'Image:' + self.newname.decode('utf-8')).exists():
+            #Get a fresh copy, force to get the page so we dont run into edit conflicts
+            imtxt=self.imagePage.get(force=True)
 
-        #Get a fresh copy, force to get the page so we dont run into edit conflicts
-        imtxt=self.imagePage.get(force=True)
+            #Remove the move to commons templates
+            if moveToCommonsTemplate.has_key(self.imagePage.site().language()):
+                for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
+                    imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
 
-        #Remove the move to commons templates
-        if moveToCommonsTemplate.has_key(self.imagePage.site().language()):
-            for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
-                imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
+            #add {{NowCommons}} 
+            if nowCommonsTemplate.has_key(self.imagePage.site().language()):
+                addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname.decode('utf-8')
+            else:
+                addTemplate = nowCommonsTemplate['_default'] % self.newname.decode('utf-8')
 
-        #add {{NowCommons}} 
-        if nowCommonsTemplate.has_key(self.imagePage.site().language()):
-            addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname.decode('utf-8')
-        else:
-            addTemplate = nowCommonsTemplate['_default'] % self.newname.decode('utf-8')
+            if nowCommonsMessage.has_key(self.imagePage.site().language()):
+                commentText = nowCommonsMessage[self.imagePage.site().language()]
+            else:
+                commentText = nowCommonsMessage['_default']
 
-        if nowCommonsMessage.has_key(self.imagePage.site().language()):
-            commentText = nowCommonsMessage[self.imagePage.site().language()]
-        else:
-            commentText = nowCommonsMessage['_default']
+            wikipedia.showDiff(self.imagePage.get(), imtxt+addTemplate)
+            self.imagePage.put(imtxt + addTemplate, comment = commentText)
 
-        wikipedia.showDiff(self.imagePage.get(), imtxt+addTemplate)
-        self.imagePage.put(imtxt + addTemplate, comment = commentText)
+            self.gen = pagegenerators.FileLinksGenerator(self.imagePage)
+            self.preloadingGen = pagegenerators.PreloadingGenerator(self.gen)
+
+            #If the image is uploaded under a different name, replace all instances
+            if self.imagePage.titleWithoutNamespace() != self.newname.decode('utf-8'):
+                if imageMoveMessage.has_key(self.imagePage.site().language()):
+                    moveSummary = imageMoveMessage[self.imagePage.site().language()] % (self.imagePage.titleWithoutNamespace(), self.newname.decode('utf-8'))
+                else:
+                    moveSummary = imageMoveMessage['_default'] % (self.imagePage.titleWithoutNamespace(), self.newname.decode('utf-8'))
+                imagebot = ImageRobot(generator = self.preloadingGen, oldImage = self.imagePage.titleWithoutNamespace(), newImage = self.newname.decode('utf-8'), summary = moveSummary, always = True, loose = True)
+                imagebot.run()        
         return
 
 #-label ok skip view
