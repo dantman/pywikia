@@ -252,7 +252,7 @@ class EditBoxWindow(Frame):
         bottom.pack(side=TOP)
 
         # create a toplevel menu
-        menubar = Menu(root)
+        menubar = Menu(self.parent)
         
         findmenu = Menu(menubar)
         findmenu.add_command(label="Find",
@@ -306,7 +306,7 @@ class EditBoxWindow(Frame):
         menubar.add_cascade(label="Options", menu=optmenu, underline=0)
         
         # display the menu
-        root.config(menu=menubar)
+        self.parent.config(menu=menubar)
         self.pack()
 
     def edit(self, text, jumpIndex=None, highlight=None):
