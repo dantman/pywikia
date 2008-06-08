@@ -133,9 +133,11 @@ class Replacer(object):
 			('rvprop', 'timestamp|user|comment|content'),
 			('rvlimit', '50'),
 			('format', 'json'),
-			('rvend', since),
-			('rvexcludeuser', username.encode('utf-8'))
 		]
+		if username:
+			predata.append(('rvexcludeuser', username.encode('utf-8'))
+		if since:
+			predata.append(('rvend', since))
 		response, data = self.site.postForm(address, predata)
 		data = simplejson.loads(data)
 		if 'error' in data:
@@ -144,7 +146,7 @@ class Replacer(object):
 		page = data['query']['pages'].values()[0]
 		if 'missing' in page:
 			raise Exception('Missing page!')
-		return page.get('revisions', ())
+		return page.get('revisions', [])
 		
 	def examine_revision_history(self, revisions, replacement, username):
 		for revision in revisions:
