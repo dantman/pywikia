@@ -267,7 +267,7 @@ class Delinker(threadpool.Thread):
 					simple_replacer, match.group(2)), match.group(3))
 			new_text = re.sub(r_galleries, gallery_replacer, new_text)
 			
-			if text == new_text:
+			if text == new_text or self.CommonsDelinker.config.get('force_complex', False):
 				# All previous steps did not work, so the image is
 				# likely embedded in a complicated template.
 				hook = 'complex'
