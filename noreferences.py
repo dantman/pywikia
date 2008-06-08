@@ -309,7 +309,7 @@ class NoReferencesBot:
 
         # Is there an existing section where we can add the references tag?
         for section in wikipedia.translate(self.site, referencesSections):
-            sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
+            sectionR = re.compile(r'\r\n=+ *%s *=+ *\r\n' % section)
             index = 0
             while index < len(oldText):
                 match = sectionR.search(oldText, index)
@@ -327,7 +327,7 @@ class NoReferencesBot:
         # Create a new section for the references tag
         for section in wikipedia.translate(self.site, placeBeforeSections):
             # Find out where to place the new section
-            sectionR = re.compile(r'\r\n(?P<ident>=+) *%s *=+\r\n' % section)
+            sectionR = re.compile(r'\r\n(?P<ident>=+) *%s *(?P=ident) *\r\n' % section)
             index = 0
             while index < len(oldText):
                 match = sectionR.search(oldText, index)
