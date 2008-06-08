@@ -4696,7 +4696,8 @@ your connection is down. Retrying in %i minutes..."""
             path = self.shortpages_address(n = number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">hist</a>\) .<a href=".+?" title="(?P<title>.+?)">.+?</a> .\[(?P<length>\d+)(.+?)\]</li>', re.UNICODE)
+            entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">.+?</a>\) .<a href=".+?" title="(?P<title>.+?)">.+?</a> .\[(?P<length>[\d.,]+).*?\]</li>', re.UNICODE)
+
             for m in entryR.finditer(html):
                 title = m.group('title')
                 length = int(m.group('length'))
