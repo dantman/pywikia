@@ -3415,8 +3415,11 @@ def removeCategoryLinks(text, site, marker = ''):
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace, re.I)
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\]\s*' % catNamespace, re.I)
     text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre', 'source'], marker = marker)
+    if marker:
+        #avoid having multiple linefeeds at the end of the text
+        text = re.sub('\s*%s' % re.escape(marker), '\r\n' + marker, text.strip())
     return text.strip()
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
@@ -3490,7 +3493,7 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
                 newtext = s2.replace(marker,'').strip() + site.family.category_text_separator + s
             else:
                 interwiki = getLanguageLinks(s2)
-                s2 = removeLanguageLinks(s2.replace(marker,'').strip(), site) + site.family.category_text_separator + s
+                s2 = removeLanguageLinks(s2.replace(marker,''), site) + site.family.category_text_separator + s
                 newtext = replaceLanguageLinks(s2, interwiki, site)
         newtext = newtext.replace(marker,'')
     else:
