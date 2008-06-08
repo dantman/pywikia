@@ -148,8 +148,9 @@ class TemplateRobot:
     # Summary messages for replacing templates
     msg_change={
 	    'ar':u'روبوت: تغيير القالب: %s',
-        'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
+        'en':u'Robot: Changing template: %s',
+        'es':u'Robot: Cambiada la plantilla: %s',
         'fr':u'Robot: Change modèle: %s',
         'he':u'בוט: משנה תבנית: %s',
         'hu':u'Robot: Sablon csere: %s',
@@ -170,8 +171,9 @@ class TemplateRobot:
     #Needs more translations!
     msgs_change={
 	    'ar':u'روبوت: تغيير القوالب: %s',
-        'en':u'Robot: Changing templates: %s',
         'de':u'Bot: Ändere Vorlagen: %s',
+        'en':u'Robot: Changing templates: %s',
+        'es':u'Robot: Cambiando las plantillas: %s',
         'fr':u'Bot: Modifie modèles %s',
         'he':u'בוט: משנה תבניות: %s',
         'kk':u'Бот: Мына үлгілер өзгертілді: %s',
@@ -189,8 +191,9 @@ class TemplateRobot:
     # Summary messages for removing templates
     msg_remove={
 	    'ar':u'روبوت: إزالة القالب: %s',
-        'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
+        'en':u'Robot: Removing template: %s',
+        'es':u'Robot: Retirando la plantilla: %s',
         'fr':u'Robot: Enlève le modèle: %s',
         'he':u'בוט: מסיר תבנית: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
@@ -211,8 +214,9 @@ class TemplateRobot:
     #Needs more translations!
     msgs_remove={
 	    'ar':u'روبوت: إزالة القوالب: %s',
-        'en':u'Robot: Removing templates: %s',
         'de':u'Bot: Entferne Vorlagen: %s',
+        'en':u'Robot: Removing templates: %s',
+        'es':u'Robot: Retirando las plantillas: %s',
         'he':u'בוט: מסיר תבניות: %s',
         'fr':u'Bot: Enlève modèles : %s',
         'kk':u'Бот: Мына үлгілер аластатылды: %s',
@@ -231,8 +235,9 @@ class TemplateRobot:
     #Needs more translations!
     msg_subst={
 	    'ar':u'روبوت: نسخ القالب: %s',
-        'en':u'Robot: Substituting template: %s',
         'de':u'Bot: Umgehe Vorlage: %s',
+        'en':u'Robot: Substituting template: %s',
+        'es':u'Robot: Sustituyendo la plantilla: %s',
         'fr':u'Bot: Remplace modèle : %s',
         'he':u'בוט: מכליל תבנית בקוד הדף: %s',
         'kk':u'Бот: Мына үлгі бәделдірленді: %s',
@@ -249,8 +254,9 @@ class TemplateRobot:
     #Needs more translations!
     msgs_subst={
 	    'ar':u'روبوت: نسخ القوالب: %s',
-        'en':u'Robot: Substituting templates: %s',
         'de':u'Bot: Umgehe Vorlagen: %s',
+        'en':u'Robot: Substituting templates: %s',
+        'es':u'Robot: Sustituyendo las plantillas: %s',
         'fr':u'Bot: Remplace modèles : %s',
         'he':u'בוט: מכליל תבניות בקוד הדף: %s',
         'kk':u'Бот: Мына үлгілер бәделдірленді: %s',
