@@ -48,6 +48,7 @@ msg = {
     'ar':u'روبوت: إضافة وسم <references /> مفقود',
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
+    'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
     'ja':u'ロボットによる: <references /> タグを追加。',
     'ko':u'봇: 이전에 없던 <references /> 추가',
@@ -85,6 +86,12 @@ placeBeforeSections = {
         u'Enlaces externos',
         u'Véase también',
         u'Notas',
+    ],
+    'fi': [
+        u'Kirjallisuutta',
+        u'Aiheesta muualla',
+        u'Ulkoiset linkit',
+        u'Linkkejä',
     ],
     'fr': [
         u'Liens externes',
@@ -145,6 +152,10 @@ referencesSections = {
         u'Referencias',
         u'Notas',
     ],
+    'fi': [
+        u'Lähteet',
+        u'Viitteet',
+    ],
     'fr': [
         u'Références',
         u'References',
@@ -200,17 +211,26 @@ referencesSections = {
 # on your wiki, you don't have to enter anything here.
 referencesTemplates = {
     'wikipedia': {
-	    'ar': [u'Reflist',u'ثبت المراجع',u'قائمة المراجع'],
+        'ar': [u'Reflist',u'ثبت المراجع',u'قائمة المراجع'],
         'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],
         'es': ['Listaref', 'Reflist'],
+        'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'hu': [u'reflist'],
         'ja': [u'Reflist'],
         'ko': [u'주석', u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
         'zh': [u'Reflist'],
+    },
+}
+
+# Text to be added instead of the <references /> tag.
+# Define this only if required by your wiki.
+referencesSubstitute = {
+    'wikipedia': {
+        'fi': u'{{viitteet}}',
     },
 }
 
@@ -250,6 +270,10 @@ class NoReferencesBot:
             self.referencesTemplates = referencesTemplates[wikipedia.getSite().family.name][wikipedia.getSite().lang]
         except KeyError:
             self.referencesTemplates = []
+        try:
+            self.referencesText = referencesSubstitute[wikipedia.getSite().family.name][wikipedia.getSite().lang]
+        except KeyError:
+            self.referencesText = u'<references/>'
 
     def lacksReferences(self, text, verbose = True):
         """
@@ -295,7 +319,7 @@ class NoReferencesBot:
                         index = match.end()
                     else:
                         wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
-                        newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
+                        newText = oldText[:match.end()] + u'\n' + self.referencesText + u'\n' + oldText[match.end():]
                         return newText
                 else:
                     break
@@ -346,7 +370,7 @@ class NoReferencesBot:
         return self.createReferenceSection(oldText, index)
 
     def createReferenceSection(self, oldText, index, ident = '=='):
-        newSection = u'\n%s %s %s\n\n<references/>\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident)
+        newSection = u'\n%s %s %s\n\n%s\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident, self.referencesText)
         return oldText[:index] + newSection + oldText[index:]
 
     def save(self, page, newText):
