@@ -129,7 +129,7 @@ docuReplacements = {
 
 # Standard library imports
 import re, codecs, sys
-import threading, Queue
+import threading, Queue, traceback
 import urllib, urllib2, time
 
 # Application specific imports
@@ -768,6 +768,7 @@ class PreloadingGenerator(object):
                 for loaded_page in self.preload(somePages):
                     yield loaded_page
         except Exception, e:
+            traceback.print_exc()
             wikipedia.output(unicode(e))
 
     def preload(self, page_list):
