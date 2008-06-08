@@ -135,7 +135,7 @@ import weakref
 # longer needed.
 locale.setlocale(locale.LC_ALL, '')
 
-import config, login, query
+import config, login, query, version
 
 try:
     set # introduced in Python2.4: faster and future
@@ -1233,7 +1233,8 @@ not supported by PyWikipediaBot!"""
             self.get(force = True, change_edit_time = False)
             self._editrestriction = False
         # If no comment is given for the change, use the default
-        comment = comment or action
+	comment = comment or action
+	comment = comment + ' [r' + version.getversiondict()['rev'] + ']'
         if config.cosmetic_changes and not self.isTalkPage():
             old = newtext
             if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
@@ -5699,7 +5700,6 @@ def handleArgs():
         elif arg == '-nolog':
             setLogfileStatus(False)
         elif arg == '-verbose' or arg == "-v":
-            import version
             output(u'Pywikipediabot %s' % (version.getversion()))
             output(u'Python %s' % (sys.version))
             verbose += 1
@@ -6286,7 +6286,7 @@ if config.authenticate:
     urllib2.install_opener(authenticateURLopener)
 
 if __name__ == '__main__':
-    import version, doctest
+    import doctest
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
