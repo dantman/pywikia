@@ -125,10 +125,10 @@ class SpeedyRobot:
             u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
             u'Unknown':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
             u'TempPage':u'[[WP:CSD]]: 臨時頁面',
-            u'NowCommons':u'[[WP:CSD#I7|CSD I7]]: 被[[:commons:|維基共享資源]]取代的圖片',
-            u'Nowcommons':u'[[WP:CSD#I7|CSD I7]]: 被[[:commons:|維基共享資源]]取代的圖片',
+            u'NowCommons':u'[[WP:CSD#I7|CSD I7]]: 此圖片已存在於[[:commons:|維基共享資源]]',
+            u'Nowcommons':u'[[WP:CSD#I7|CSD I7]]: 此圖片已存在於[[:commons:|維基共享資源]]',
             u'RoughTranslation':u'[[WP:CSD#G7|CSD G7]]: 機器翻譯',
-            u'Advert':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
+            u'Advert':u'[[WP:CSD#G11|CSD G11]]: [[WP:NOT#維基百科不是宣傳工具|廣告、宣傳頁面]]',
             },
     }
 
