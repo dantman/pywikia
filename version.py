@@ -11,6 +11,8 @@ import time
 import sys
 import wikipediatools
 
+cache = None
+
 class ParseError(Exception):
     """ Parsing went wrong """
 
@@ -18,6 +20,9 @@ def getversion():
     return '%(tag)s (r%(rev)s, %(date)s)' % getversiondict()
     
 def getversiondict():
+    global cache
+    if cache:
+      return cache
     try:
         (tag, rev, date) = getversion_svn()
     except Exception, e:
@@ -30,10 +35,11 @@ def getversiondict():
             date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
             rev = d[2] + ' (wikipedia.py)'
     datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
-    return {'tag': tag, 'rev': rev, 'date': datestring}
+    cache = {'tag': tag, 'rev': rev, 'date': datestring}
+    return cache
 
 def getversion_svn():
-    entries = open(os.path.join(wikipediatools.get_base_dir, '.svn/entries'))
+    entries = open(os.path.join(wikipediatools.get_base_dir(), '.svn/entries'))
     for i in range(4):
         entries.readline()
     tag = entries.readline().strip()
