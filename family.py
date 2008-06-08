@@ -3147,3 +3147,7 @@ class Family:
         """Returns a datetime object representing server time"""
         # TODO : If the local computer time is wrong, result wll be wrong
         return datetime.utcnow() + self.servergmtoffset
+    
+    def isPublic(self):
+        """Does the wiki require logging in before viewing it ?"""
+        return True
