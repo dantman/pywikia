@@ -28,7 +28,7 @@ def getversiondict():
     except Exception, e:
         try:
             (tag, rev, date) = getversion_nightly()
-        except IOError, e:
+        except Exception, e:
             import wikipedia
             d = wikipedia.__version__.split(' ')
             tag = ''
