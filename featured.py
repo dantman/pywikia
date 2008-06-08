@@ -95,6 +95,7 @@ template = {
     'en': ['Link FA'],
     'eo': ['LigoElstara'],
     'es': ['destacado'],
+    'eu': ['NA lotura', 'Link FA'],
     'fr': ['Lien AdQ', 'Link FA'],
     'he': ['Link FA'],
     'hr': ['Link FA'],
@@ -144,6 +145,7 @@ featured_name = {
     'en': (CAT, u"Category:Wikipedia featured articles"),
     'es': (CAT, u"Categoría:Wikipedia:Artículos destacados"),
     # et: Vikipeedia:Eeskujulikud artiklid    
+    'eu': (CAT, u'Kategoria:Nabarmendutako artikuluak'),
     'fi': (BACK, u"Malline:Suositeltu"),
     'fr': (CAT, u"Catégorie:Article de qualité"),
     'he': (CAT, u"קטגוריה:ערכים מומלצים"),
