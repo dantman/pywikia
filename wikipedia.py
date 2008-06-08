@@ -4673,14 +4673,15 @@ your connection is down. Retrying in %i minutes..."""
         #      implemented is fairly useless
         # this comment applies to all the XXXXpages methods following, as well
         seen = set()
+        path = self.longpages_address(n=number)
+        entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">.+?</a>\) .<a href=".+?" title="(?P<title>.+?)">.+?</a> .\[(?P<length>[\d.,]+).*?\]</li>', re.UNICODE)
+
         while True:
-            path = self.longpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">hist</a>\) .<a href=".+?" title="(?P<title>.+?)">.+?</a> .\[(?P<length>\d+)(.+?)\]</li>', re.UNICODE)
             for m in entryR.finditer(html):
                 title = m.group('title')
-                length = int(m.group('length'))
+                length = int(re.sub('[.,]', '', m.group('length')))
                 if title not in seen:
                     seen.add(title)
                     page = Page(self, title)
@@ -4692,15 +4693,16 @@ your connection is down. Retrying in %i minutes..."""
         """Yield Pages and lengths from Special:Shortpages."""
         throttle = True
         seen = set()
+        path = self.shortpages_address(n = number)
+        entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">.+?</a>\) .<a href=".+?" title="(?P<title>.+?)">.+?</a> .\[(?P<length>[\d.,]+).*?\]</li>', re.UNICODE)
+
         while True:
-            path = self.shortpages_address(n = number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">.+?</a>\) .<a href=".+?" title="(?P<title>.+?)">.+?</a> .\[(?P<length>[\d.,]+).*?\]</li>', re.UNICODE)
 
             for m in entryR.finditer(html):
                 title = m.group('title')
-                length = int(m.group('length'))
+                length = int(re.sub('[., ]', '', m.group('length')))
 
                 if title not in seen:
                     seen.add(title)
