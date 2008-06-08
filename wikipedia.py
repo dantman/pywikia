@@ -127,7 +127,6 @@ import unicodedata
 import xmlreader
 from BeautifulSoup import *
 import simplejson
-import diskcache
 import weakref
 
 # Set the locale to system default. This will ensure correct string
@@ -4479,45 +4478,60 @@ your connection is down. Retrying in %i minutes..."""
             if verbose:
                 output(
                   u"Retrieving mediawiki messages from Special:Allmessages")
-            elementtree = True
-            try:
+            # Only MediaWiki r27393/1.12 and higher support XML output for Special:Allmessages
+            if self.versionnumber() < 12:
+                usePHP = True
+            else:
+                usePHP = False
+                elementtree = True
                 try:
-                    from xml.etree.cElementTree import XML # 2.5
-                except ImportError:
                     try:
-                        from cElementTree import XML
+                        from xml.etree.cElementTree import XML # 2.5
                     except ImportError:
-                        from elementtree.ElementTree import XML
-            except ImportError:
-                if verbose:
-                    output(u'Elementtree was not found, using BeautifulSoup instead')
-                elementtree = False
+                        try:
+                            from cElementTree import XML
+                        except ImportError:
+                            from elementtree.ElementTree import XML
+                except ImportError:
+                    if verbose:
+                        output(u'Elementtree was not found, using BeautifulSoup instead')
+                    elementtree = False
 
             if config.use_diskcache:
+                import diskcache
                 _dict = lambda x : diskcache.CachedReadOnlyDictI(x, prefix = "msg-%s-%s-" % (self.family.name, self.lang))
             else:
                 _dict = dict
 
             retry_idle_time = 1
             while True:
-                get_throttle()
-                xml = self.getUrl(self.get_address("Special:Allmessages")
-                                    + "&ot=xml")
-                # xml structure is :
-                # <messages lang="fr">
-                #    <message name="about">À propos</message>
-                #    ...
-                # </messages>
-                if elementtree:
-                    decode = xml.encode(self.encoding())
-                    tree = XML(decode)
-                    self._mediawiki_messages = _dict([(tag.get('name').lower(), tag.text)
-                            for tag in tree.getiterator('message')])
+                if usePHP:
+                    phppage = self.getUrl(self.get_address("Special:Allmessages")
+                                      + "&ot=php")
+                    Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
+                    # Previous regexp don't match empty messages. Fast workaround...
+                    phppage = re.sub("(?m)^('.*?' =&gt;) '',", r"\1 ' ',", phppage)
+                    self._mediawiki_messages = _dict([(name.strip().lower(),
+                        html2unicode(message.replace("\\'", "'")))
+                            for (name, message) in Rphpvals.findall(phppage)])
                 else:
-                    tree = BeautifulStoneSoup(xml)
-                    self._mediawiki_messages = _dict([(tag.get('name').lower(), tag.string)
-                            for tag in tree.findAll('message')])
-                
+                    xml = self.getUrl(self.get_address("Special:Allmessages")
+                                        + "&ot=xml")
+                    # xml structure is :
+                    # <messages lang="fr">
+                    #    <message name="about">À propos</message>
+                    #    ...
+                    # </messages>
+                    if elementtree:
+                        decode = xml.encode(self.encoding())
+                        tree = XML(decode)
+                        self._mediawiki_messages = _dict([(tag.get('name').lower(), tag.text)
+                                for tag in tree.getiterator('message')])
+                    else:
+                        tree = BeautifulStoneSoup(xml)
+                        self._mediawiki_messages = _dict([(tag.get('name').lower(), html2unicode(tag.string))
+                                for tag in tree.findAll('message')])
+
                 if not self._mediawiki_messages:
                     # No messages could be added.
                     # We assume that the server is down.
