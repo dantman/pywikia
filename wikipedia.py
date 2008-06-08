@@ -4536,7 +4536,7 @@ your connection is down. Retrying in %i minutes..."""
                     # No messages could be added.
                     # We assume that the server is down.
                     # Wait some time, then try again.
-                    output('WARNING: No messages found in Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
+                    output(u'WARNING: No messages found in Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
@@ -5644,7 +5644,10 @@ def getSite(code=None, fam=None, user=None, persistent_http=None):
     if not _sites.has_key(key):
         _sites[key] = Site(code=code, fam=fam, user=user,
                            persistent_http=persistent_http)
-    return _sites[key]
+    ret =  _sites[key]
+    if not ret.family.isPublic():
+        ret.forceLogin()
+    return ret
 
 def setSite(site):
     global default_code, default_family
