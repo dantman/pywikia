@@ -2624,7 +2624,7 @@ class ImagePage(Page):
         titleList = re.search('(?s)<h2 id="filelinks">.+?<!-- end content -->',
                               self.getImagePageHtml()).group()
         lineR = re.compile(
-                    '<li><a href="[^\"]+?" title=".+?">(?P<title>.+?)</a></li>')
+                    '<li><a href="[^\"]+" title=".+?">(?P<title>.+?)</a></li>')
 
         for match in lineR.finditer(titleList):
             try:

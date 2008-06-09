@@ -2,6 +2,7 @@ import random
 import config
 import sys
 import os
+
 # http://mail.python.org/pipermail/python-list/2006-March/375280.html
 try:
      os.SEEK_SET
@@ -23,7 +24,7 @@ class CachedReadOnlyDictI(object):
             if not os.path.exists(self.cache_path): break
         self.cache_file = open(self.cache_path, 'wb+')
         
-        lookup = [-1 for i in xrange(36)]
+        lookup = [-1] * 36
         data.sort(key = lambda i: i[0])
         for key, value in data:
             if type(key) is unicode:
@@ -36,7 +37,7 @@ class CachedReadOnlyDictI(object):
                 raise RuntimeError('Only alphabetic keys are supported', key)
             
             if index < 'a':
-                index = ord(index) - 48 + 26# Numeric
+                index = ord(index) - 48 + 26 # Numeric
             else:
                 index = ord(index) - 97
             if lookup[index] == -1:
@@ -79,7 +80,7 @@ class CachedReadOnlyDictI(object):
         if index < 'a':
             if index < '0' or index > '9':
                 raise KeyError(key)
-            i = ord(index) - 48 + 26# Numeric
+            i = ord(index) - 48 + 26 # Numeric
         else:
             if index > 'z': 
                 raise KeyError(key)
