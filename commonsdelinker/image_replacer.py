@@ -135,7 +135,7 @@ class Replacer(object):
 			('format', 'json'),
 		]
 		if username:
-			predata.append(('rvexcludeuser', username.encode('utf-8'))
+			predata.append(('rvexcludeuser', username.encode('utf-8')))
 		if since:
 			predata.append(('rvend', since))
 		response, data = self.site.postForm(address, predata)
