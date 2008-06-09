@@ -46,6 +46,9 @@ __version__='$Id$'
 import re, codecs
 import wikipedia, config
 
+class NoTitle(Exception):
+    """No title found"""
+
 class PageFromFileRobot:
     """
     Responsible for writing pages to the wiki, with the titles and contents
@@ -152,8 +155,8 @@ class PageFromFileRobot:
         comment_bottom = comment + " - " + wikipedia.translate(mysite, self.msg_bottom)
         comment_force = comment + " *** " + wikipedia.translate(mysite, self.msg_force) + " ***"
 
-        #Remove trailing newlines (cause troubles when creating redirects)
-        contents = re.sub('^[\r\n]*','',contents)
+        # Remove trailing newlines (cause troubles when creating redirects)
+        contents = re.sub('^[\r\n]*','', contents)
 
         if page.exists():
             if self.append == "Top":
@@ -207,38 +210,48 @@ class PageFromFileReader:
         self.notitle = notitle
 
     def run(self):
-        f = codecs.open(self.filename, 'r', encoding = config.textfile_encoding)
+        wikipedia.output('Reading \'%s\'...' % self.filename)
+        try:
+            f = codecs.open(self.filename, 'r', encoding = config.textfile_encoding)
+        except IOError, err:
+            print err
+            return
+
         text = f.read()
         position = 0
+        length = 0
         while True:
-            length, title, contents = self.findpage(text[position:])
-            if length == 0:
+            position += length
+            try:
+                length, title, contents = self.findpage(text[position:])
+            except AttributeError:
+                if not length:
+                    wikipedia.output(u'\nStart or end marker not found.')
+                else:
+                    wikipedia.output(u'End of file.')
                 break
-            else:
-                position += length
-                yield title, contents
+            except NoTitle:
+                wikipedia.output(u'\nNo title found - skipping a page.')
+                continue
+
+            yield title, contents
 
     def findpage(self, text):
         pageR = re.compile(self.pageStartMarker + "(.*?)" + self.pageEndMarker, re.DOTALL)
         titleR = re.compile(self.titleStartMarker + "(.*?)" + self.titleEndMarker)
 
-        try:
-            location = pageR.search(text)
-            if self.include:
-                contents = location.group()
-            else:
-                contents = location.group(1)
-        except AttributeError:
-            wikipedia.output(u'\nStart or end marker not found.')
-            return 0, None, None
+        location = pageR.search(text)
+        if self.include:
+            contents = location.group()
+        else:
+            contents = location.group(1)
         try:
             title = titleR.search(contents).group(1)
             if self.notitle:
                 #Remove title (to allow creation of redirects)
                 contents = titleR.sub('', contents, count = 1)
         except AttributeError:
-            wikipedia.output(u'\nNo title found - skipping a page.')
-            return 0, None, None
+            raise NoTitle
         else:
             return location.end(), title, contents
 
