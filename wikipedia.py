@@ -2621,10 +2621,11 @@ class ImagePage(Page):
 
     def usingPages(self):
         """Yield Pages on which the image is displayed."""
-        titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>',
+        titleList = re.search('(?s)<h2 id="filelinks">.+?<!-- end content -->',
                               self.getImagePageHtml()).group()
         lineR = re.compile(
-                    '<li><a href=".+?" title=".+?">(?P<title>.+?)</a></li>')
+                    '<li><a href="[^\"]+?" title=".+?">(?P<title>.+?)</a></li>')
+
         for match in lineR.finditer(titleList):
             try:
                 yield Page(self.site(), match.group('title'))
