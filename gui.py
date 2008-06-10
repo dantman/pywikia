@@ -32,7 +32,7 @@ class TextEditor(ScrolledText):
     def __init__(self, master=None, **kwargs):
         # get default settings from user's IDLE configuration
         currentTheme=idleConf.CurrentTheme()
-        textcf = dict(padx=5, wrap='word',
+        textcf = dict(padx=5, wrap='word', undo='True',
                       foreground=idleConf.GetHighlight(currentTheme,
                         'normal', fgBg='fg'),
                       background=idleConf.GetHighlight(currentTheme,

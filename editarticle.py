@@ -184,8 +184,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except:
+    finally:
         wikipedia.stopme()
-        raise
-    wikipedia.stopme()
 
