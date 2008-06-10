@@ -779,7 +779,7 @@ class CategoryTreeRobot:
     def __init__(self, catTitle, catDB, filename = None, maxDepth = 10):
         self.catTitle = catTitle
         self.catDB = catDB
-        if not os.path.isabs(filename):
+        if filename and not os.path.isabs(filename):
             filename = wikipedia.config.datafilepath(filename)
         self.filename = filename
         # TODO: make maxDepth changeable with a parameter or config file entry
