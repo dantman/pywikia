@@ -48,6 +48,8 @@ import wikipedia, config
 
 class NoTitle(Exception):
     """No title found"""
+    def __init__(self, offset):
+        self.offset = offset
 
 class PageFromFileRobot:
     """
@@ -221,7 +223,6 @@ class PageFromFileReader:
         position = 0
         length = 0
         while True:
-            position += length
             try:
                 length, title, contents = self.findpage(text[position:])
             except AttributeError:
@@ -230,10 +231,12 @@ class PageFromFileReader:
                 else:
                     wikipedia.output(u'End of file.')
                 break
-            except NoTitle:
+            except NoTitle, err:
                 wikipedia.output(u'\nNo title found - skipping a page.')
+                position += err.offset
                 continue
 
+            position += length
             yield title, contents
 
     def findpage(self, text):
@@ -251,7 +254,7 @@ class PageFromFileReader:
                 #Remove title (to allow creation of redirects)
                 contents = titleR.sub('', contents, count = 1)
         except AttributeError:
-            raise NoTitle
+            raise NoTitle(location.end())
         else:
             return location.end(), title, contents
 
