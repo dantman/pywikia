@@ -288,6 +288,5 @@ class UI:
             webbrowser.open(url)
             return wikipedia.input(u'What is the solution of the CAPTCHA that is shown in your web browser?')
         except:
-            pass
-
-        return wikipedia.input(u'What is the solution of the CAPTCHA at %s ?' % url)
+            wikipedia.output(u'Error in opening web browser: %s' % sys.exc_info()[0])
+            return wikipedia.input(u'What is the solution of the CAPTCHA at %s ?' % url)
