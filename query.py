@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
+This module allow you to use the API in a simple and easy way.
 
-This module allow you to use the API in a simple and easy way. Here there's an example:
 
 -- Example --
---- Code ---
-try:
+
     params = {
         'action'    :'query',
         'prop'      :'revisions',
@@ -14,25 +13,13 @@ try:
         'rvlimit'   :'2',
         'rvprop'    :'user|timestamp|content',
         }
-    
+
     print query.GetData(params,
                         useAPI = True, encodeTitle = False)
-    
-finally:
-    wikipedia.stopme()
---- Output ---
-(It's a whole line, but I've put some brakets to make it clearer)
-{u'query-continue': {u'revisions': {u'rvstartid': 212496859}}, u'query': {u'pages': {u'11089416': {u'ns': 0, u'pageid': 11089416,
-u'revisions': [{u'timestamp': u'2008-05-16T02:24:54Z', u'anon': u'', u'*': u"TEXT HERE", u'user': u'69.221.252.225'},
-{u'timestamp': u'2008-05-16T02:23:49Z', u'anon': u'', u'*': u"TEXT TWO HERE", u'user': u'69.221.252.225'}], u'title': u'Test'}}}}
 
--- To Do --
-Put a better documentation
-    
 """
 #
-# (C) Yurik, 2007
-# (C) Filnik, 2008
+# (C) Yuri Astrakhan, 2006
 #
 # Distributed under the terms of the MIT license.
 #
@@ -46,7 +33,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
     """
     if site == None:
         site = wikipedia.getSite()
-    
+
     for k,v in params.iteritems():
         if not IsString(v):
             params[k] = unicode(v)
