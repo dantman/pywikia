@@ -18,10 +18,6 @@ __version__ = '$Id$'
 
 import wikipedia, sys
 
-# This is a purely interactive robot. We set the delays lower.
-wikipedia.get_throttle.setDelay(5)
-wikipedia.put_throttle.setDelay(10)
-
 msg={
     'ar':u'بوت: تغيير التصنيفات',
     'en':u'Bot: Changing categories',
@@ -82,7 +78,8 @@ def make_categories(page, list, site = None):
     for p in list:
         cattitle="%s:%s" % (site.category_namespace(), p)
         pllist.append(wikipedia.Page(site,cattitle))
-    page.put(wikipedia.replaceCategoryLinks(page.get(), pllist), comment = wikipedia.translate(site.lang, msg))
+    page.put_async(wikipedia.replaceCategoryLinks(page.get(), pllist),
+                   comment=wikipedia.translate(site.lang, msg))
 
 docorrections=True
 start=[]

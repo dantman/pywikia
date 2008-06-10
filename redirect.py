@@ -350,9 +350,7 @@ class RedirectRobot:
                     #it exists and is not a redirect: no reason to touch it.
                     wikipedia.output(
             u'Redirect target %s does exist! Won\'t delete anything.' % targetPage.aslink())
-                # idle for 1 minute
             wikipedia.output(u'')
-            wikipedia.put_throttle()
 
     def fix_double_redirects(self):
         mysite = wikipedia.getSite()
