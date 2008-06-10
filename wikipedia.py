@@ -1232,8 +1232,7 @@ not supported by PyWikipediaBot!"""
             self.get(force = True, change_edit_time = False)
             self._editrestriction = False
         # If no comment is given for the change, use the default
-	comment = comment or action
-	comment = comment + ' [r' + version.getversiondict()['rev'] + ']'
+        comment = comment or action
         if config.cosmetic_changes and not self.isTalkPage():
             old = newtext
             if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
