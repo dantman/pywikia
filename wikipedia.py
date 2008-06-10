@@ -1066,7 +1066,7 @@ not supported by PyWikipediaBot!"""
                 p = Page(self.site(), title)
             except InvalidTitle:
                 output(u"DBG> Whatlinkshere:%s contains invalid link to %s"
-                       % (self.title(), title))
+                        % (self.title(), title))
                 continue
             isredirect, istemplate = False, False
             textafter = link.a.findNextSibling(text=True)
@@ -1629,8 +1629,9 @@ not supported by PyWikipediaBot!"""
                 try:
                     page = Page(self.site(), title)
                 except InvalidTitle:
-                    output(u"Page %s contains invalid link to [[%s]]."
-                           % (self.title(), title))
+                    if verbose:
+                        output(u"Page %s contains invalid link to [[%s]]."
+                               % (self.title(), title))
                     continue
                 if not withImageLinks and page.isImage():
                     continue
