@@ -5971,7 +5971,8 @@ def writeToCommandLogFile():
     or report bugs.
     """
     # put quotation marks around all parameters
-    args = [decodeArg(sys.argv[0])] + map(lambda s: decodeArg('"%s"' % s), sys.argv[1:])
+    args = [decodeArg(sys.argv[0])
+            ] + [decodeArg('"%s"' % s) for s in sys.argv[1:]]
     commandLogFilename = config.datafilepath('logs', 'commands.log')
     try:
         commandLogFile = codecs.open(commandLogFilename, 'a', 'utf-8')
@@ -5979,9 +5980,11 @@ def writeToCommandLogFile():
         commandLogFile = codecs.open(commandLogFilename, 'w', 'utf-8')
     # add a timestamp in ISO 8601 formulation
     isoDate = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    commandLogFile.write(isoDate + ' ')
+    commandLogFile.write("%s r%s Python %s "
+                         % (isoDate, version.getversiondict()['rev'],
+                            sys.version.split()[0]))
     s = u' '.join(args)
-    commandLogFile.write(s + '\n')
+    commandLogFile.write(s + os.linesep)
     commandLogFile.close()
 
 def setLogfileStatus(enabled, logname = None):
