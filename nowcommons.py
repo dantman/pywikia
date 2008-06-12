@@ -161,7 +161,9 @@ class NowCommonsDeleteBot:
                 if params == []:
                     filenameOnCommons = localImagePage.titleWithoutNamespace()
                 elif self.site.lang in namespaceInTemplate:
-                    filenameOnCommons = params[0][params[0].index(':') + 1:]
+                    for par in params:
+                        if ':' in par:
+                            filenameOnCommons = par[par.index(':') + 1:]
                 else:
                     filenameOnCommons = params[0]
                 return filenameOnCommons
@@ -219,7 +221,7 @@ class NowCommonsDeleteBot:
                     else:
                         wikipedia.output(u'The image is not identical to the one on Commons.')
             except (wikipedia.NoPage, wikipedia.IsRedirectPage), e:
-                wikipedia.output(u'%s' % e)
+                wikipedia.output(u'%s' % e[0])
                 continue
 
 def main():
