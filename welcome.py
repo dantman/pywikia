@@ -197,6 +197,7 @@ locale.setlocale(locale.LC_ALL, '')
 logbook = {
     'commons': u'Project:Welcome log',
     'ar': u'Project:سجل الترحيب',
+    'da': None, # no welcome log on da.wiki
     'de': None, # no welcome log on de.wiki
     'en': u'Project:Welcome log',
     'fa': u'Project:سیاهه خوشامد',
@@ -217,6 +218,7 @@ logbook = {
 summary = {
     'commons':u'Welcome!',
     'ar':u'مرحبا!',
+    'da':u'Velkommen',    
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
     'fa':u'خوش آمدید!',
@@ -239,6 +241,7 @@ summary = {
 netext = {
     'commons':u'{{subst:welcome}} %s',
     'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}} %s',
+    'da':u'{{subst:v}}',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}} %s',
     'fa':u'{{جا:خوشامد}} %s',
