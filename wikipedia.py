@@ -486,8 +486,6 @@ not supported by PyWikipediaBot!"""
             title = title.replace(u"''", u'%27%27')
         if underscore:
             title = title.replace(' ', '_')
-        if self.site().lang == 'eo':
-            title = decodeEsperantoX(title)
         return title
 
     def titleWithoutNamespace(self, underscore=False):
@@ -636,8 +634,6 @@ not supported by PyWikipediaBot!"""
                     m = re.search("=+ *%s *=+" % hn, self._contents)
                     if verbose and not m:
                         output(u"WARNING: Section does not exist: %s" % self.aslink(forceInterwiki = True))
-                if self.site().lang == 'eo':
-                    self._contents = decodeEsperantoX(self._contents)
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
