@@ -1303,17 +1303,15 @@ not supported by PyWikipediaBot!"""
             predata['masteredit'] = '1'
 
         retry_delay = 1
-        already_advise = False
         while True:
             # Check whether we are not too quickly after the previous
             # putPage, and wait a bit until the interval is acceptable
             put_throttle()
             # Which web-site host are we submitting to?
-            if not already_advise:
-                if newPage:
-                    output(u'Creating page %s' % self.aslink(forceInterwiki=True))
-                else:
-                    output(u'Changing page %s' % self.aslink(forceInterwiki=True))
+            if newPage:
+                output(u'Creating page %s' % self.aslink(forceInterwiki=True))
+            else:
+                output(u'Changing page %s' % self.aslink(forceInterwiki=True))
             # Submit the prepared information
             if self.site().hostname() in config.authenticate.keys():
                 predata["Content-type"] = "application/x-www-form-urlencoded"
@@ -1384,7 +1382,6 @@ not supported by PyWikipediaBot!"""
                 # No raise, simply define these variables and retry:
                 predata['wpEdittime'] = self._editTime
                 predata['wpStarttime'] = self._startTime
-                already_advise = True # Note print "Creating/Changing" again without reason..
                 continue
             if self.site().has_mediawiki_message("viewsource")\
                     and self.site().mediawiki_message('viewsource') in data:
@@ -4426,6 +4423,7 @@ your connection is down. Retrying in %i minutes..."""
             # do any action
             if self._isLoggedIn[index]:
                 if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
+                    # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
                     if sysop:
                         output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
                     else:
@@ -4971,6 +4969,8 @@ your connection is down. Retrying in %i minutes..."""
         AllpagesPageGenerator from pagegenerators.py instead.
 
         """
+        monobook_error = True
+
         while True:
             # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
             start = start.encode(self.encoding())
@@ -4991,8 +4991,13 @@ your connection is down. Retrying in %i minutes..."""
                 ibegin = returned_html.index(begin_s)
                 iend = returned_html.index(end_s,ibegin + 3)
             except ValueError:
-                raise ServerError(
+                if monobook_error:
+                    raise ServerError(
 "Couldn't extract allpages special page. Make sure you're using MonoBook skin.")
+                else:
+                    # No list of wikilinks
+                    break
+            monobook_error = False
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
             if self.versionnumber()==2:
@@ -5036,6 +5041,13 @@ your connection is down. Retrying in %i minutes..."""
                         start = Page(self, allLinks[-1]).titleWithoutNamespace() + '!'
                 else:
                     break
+            #else:
+            #    # Don't send a new request if "Next page (pagename)" isn't present
+            #    Rnonext = re.compile(r'title="(Special|%s):.+?">%s</a></td></tr></table>' % (
+            #        self.mediawiki_message('nstab-special'),
+            #        re.escape(self.mediawiki_message('nextpage')).replace('\$1', '.*?')))
+            #    if not Rnonext.search(full_returned_html):
+            #        break
 
     def prefixindex(self, prefix, namespace=0, includeredirects=True):
         """Yield all pages with a given prefix.
