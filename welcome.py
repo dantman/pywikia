@@ -209,6 +209,7 @@ logbook = {
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
     'pt': None, # no welcome log on pt.wiki
+    'ru': None, # no welcome log on ru.wiki
     'sq': u'Project:Tung log',
     'sr': u'Project:Добродошлице',
     'vo': None, # no welcome log on vo.wiki
@@ -230,6 +231,7 @@ summary = {
     'nl':u'Welkom!',
     'no':u'Velkommen!',
     'pt':u'Bem vindo!',
+    'ru':u'Добро пожаловать!',
     'sq':u'Tung',
     'sr':u'Добродошли!',
     'vo':u'Benokömö!',
@@ -253,6 +255,7 @@ netext = {
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'pt':u'{{subst:bem vindo}} %s',
+    'ru':u'{{Hello}} %s',
     'sq':u'{{subst:tung}} %s',
     'sr':u'{{Добродошлица}} %s',
     'vo':u'{{benokömö}} %s',
@@ -270,6 +273,7 @@ summary2 = {
     'ja':u'更新記録',
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
+    'ru':u'Обновление',
     'sq':u'Rifreskoj log',
     'sr':u'Освежавање записа',
     'zh':u'更新日志',
@@ -285,6 +289,7 @@ report_page = {
     'ja': u'利用者:Alexbot/report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
+    'ru': u'Участник:LatitudeBot/Рапорт',
     'sq': u'User:EagleBot/Report',
     'sr': u'User:SashatoBot/Записи',
     }
@@ -299,6 +304,7 @@ comment = {
     'ja':u'不適切な利用者名の報告',
     'nl':u'Te controleren gebruikersnaam toegevoegd',
     'no':u'Legger til et brukernavn som m? sjekkes',
+    'ru':u'Добавлено подозрительное имя участника',
     'sq':u'Added username to be checked',
     'zh':u'回報不適當的用戶名稱',
     }
@@ -313,6 +319,7 @@ bad_pag = {
     'ja': u'Project:不適切な名前の利用者',
     'nl': u'Project:Logboek_welkom/Bad_names',
     'no': u'Bruker:JhsBot/Daarlige ord',
+    'ru': u'Участник:LatitudeBot/Чёрный список',
     'sq': u'User:Eagleal/Bad_names',
     'sr': u'Додавање корисника за проверу',
     }
@@ -343,6 +350,7 @@ random_sign = {
     'fr': u'Projet:Service de Parrainage Actif/Signatures',
     'it': u'Project:Benvenuto_Bot/Firme',
     'ja':u'利用者:Alexbot/Welcomebotログ/List',
+    'ru': u'Участник:LatitudeBot/Sign',
     'zh': u'user:Welcomebot/欢迎日志/用户',
     }
 # The page where the bot reads the real-time whitelist page.
@@ -351,6 +359,7 @@ whitelist_pg = {
     'ar':u'Project:سجل الترحيب/قائمةبيضاء',
     'en':u'User:Filnik/whitelist',
     'it':u'Project:Benvenuto_Bot/Lista_Whitewords',
+    'ru':u'LatitudeBot/Белый список',
     }
 
 # Text after the {{welcome}} template, if you want to add something
