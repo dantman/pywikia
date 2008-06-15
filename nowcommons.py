@@ -56,6 +56,7 @@ __version__ = '$Id$'
 
 import sys, re, webbrowser
 import wikipedia, pagegenerators
+import welcome # for urlname
 import image
 # only for nowCommonsMessage
 from imagetransfer import nowCommonsMessage
@@ -147,6 +148,12 @@ namespaceInTemplate = [
     'zh',
 ]
 
+# Stemma and stub are images not to be deleted (and are a lot) on it.wikipedia
+# if your project has images like that, put the word often used here to skip them
+word_to_skip = {
+    'en': [],
+    'it': ['stemma', 'stub'],
+    }
 
 #nowCommonsMessage = imagetransfer.nowCommonsMessage
 
@@ -168,6 +175,7 @@ class NowCommonsDeleteBot:
         # http://toolserver.org/~multichill/nowcommons.php?language=it&page=2&filter=
         lang = self.site.lang
         num_page = 0
+        word_to_skip_translated = wikipedia.translate(self.site, word_to_skip)
         while 1:
             url = 'http://toolserver.org/~multichill/nowcommons.php?language=%s&page=%s&filter=' % (lang, num_page)
             HTML_text = self.site.getUrl(url, no_hostname = True)
@@ -179,16 +187,23 @@ class NowCommonsDeleteBot:
                 found_something = True
                 image_local = x.group('imagelocal')
                 image_commons = x.group('imagecommons')
-                # Stemma and stub are images not to be deleted (and are a lot) on it.wikipedia
-                if lang == 'it':
-                    if 'stemma' in image_local.lower() or 'stub' in image_local.lower():
-                        continue
+                # Skip images that have something in the title (useful for it.wiki)
+                image_to_skip = False
+                for word in word_to_skip_translated:
+                    if word.lower() in image_local.lower():
+                        image_to_skip = True
+                if image_to_skip:
+                    continue
                 url_local = x.group('urllocal')
                 url_commons = x.group('urlcommons')
-                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<\n" % image_local)
+                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % image_local)
+                wikipedia.output(u'Local: %s\nCommons: %s\n' % (url_local, url_commons))
                 result1 = webbrowser.open(url_local, 0, 1)
                 result2 = webbrowser.open(url_commons, 0, 1)
-                choice = wikipedia.inputChoice(u'Are the two images equal?', ['Yes', 'No'], ['y', 'N'], 'N')
+                if image_local.split('Image:')[1] == image_commons:
+                    choice = wikipedia.inputChoice(u'The local and the commons images have the same name, continue?', ['Yes', 'No'], ['y', 'N'], 'N')
+                else:
+                    choice = wikipedia.inputChoice(u'Are the two images equal?', ['Yes', 'No'], ['y', 'N'], 'N')
                 if choice.lower() in ['y', 'yes']:            
                     yield [image_local, image_commons]
                 else:
@@ -263,6 +278,18 @@ class NowCommonsDeleteBot:
                                                 localImagePage.titleWithoutNamespace(), commonsImagePage.titleWithoutNamespace(),
                                                 '', replacealways, replaceloose)
                                 oImageRobot.run()
+                                # If the image is used with the urlname the previous function won't work
+                                if len(list(wikipedia.ImagePage(self.site, page.title()).usingPages())) > 0 and replaceloose:
+                                    oImageRobot = image.ImageRobot(pagegenerators.FileLinksGenerator(localImagePage),
+                                                    welcome.urlname(localImagePage.titleWithoutNamespace(), self.site), commonsImagePage.titleWithoutNamespace(),
+                                                    '', replacealways, replaceloose)
+                                    oImageRobot.run()                                
+                                # refresh because we want the updated list
+                                usingPages = len(list(wikipedia.ImagePage(self.site, page.title()).usingPages()))
+                                if usingPages > 0 and use_hash:
+                                    # just an enter
+                                    wikipedia.input(u'There are still %s pages with this image, confirm the manual removal from them please.' % usingPages)
+                                    
                         else:
                             wikipedia.output(u'Please change them manually.')
                         continue
