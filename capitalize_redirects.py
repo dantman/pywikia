@@ -57,6 +57,8 @@ class CapitalizeBot:
 
     def run(self):
         for page in self.generator:
+            if page.isRedirectPage():
+                page = page.getRedirectTarget()
             page_t = page.title()
             # Show the title of the page we're working on.
             # Highlight the title in purple.
