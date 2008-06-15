@@ -33,7 +33,15 @@ This script understands various command-line arguments:
     -replaceonly:   Use this if you do not have a local sysop account, but do
                     wish to replace links from the NowCommons template.
 
-Known issues. Please fix these if you are capable and motivated:
+    -hash:          Use the hash to identify the images that are the same. It
+                    doesn't work always, so the bot opens two tabs to let to
+                    the user to check if the images are equal or not.
+
+-- Example --
+python nowcommons.py -replaceonly -hash -replace -replaceloose -replacealways
+
+-- Known issues --
+Please fix these if you are capable and motivated:
 - if a file marked nowcommons is not present on Wikimedia Commons, the bot
   will exit.
 """
@@ -46,7 +54,7 @@ Known issues. Please fix these if you are capable and motivated:
 __version__ = '$Id$'
 #
 
-import sys, re
+import sys, re, webbrowser
 import wikipedia, pagegenerators
 import image
 # only for nowCommonsMessage
@@ -57,6 +65,7 @@ replace = False
 replacealways = False
 replaceloose = False
 replaceonly = False
+use_hash = False
 
 for arg in wikipedia.handleArgs():
     if arg == '-autonomous':
@@ -70,6 +79,8 @@ for arg in wikipedia.handleArgs():
         replaceloose = True
     if arg == '-replaceonly':
         replaceonly = True
+    if arg == '-hash':
+        use_hash = True
 
 nowCommons = {
     '_default': [
@@ -105,6 +116,9 @@ nowCommons = {
     'ia': [
         u'OraInCommons'
     ],
+    'it': [
+        u'NowCommons',
+    ],    
     'nl': [
         u'NuCommons',
         u'Nucommons',
@@ -126,6 +140,7 @@ nowCommons = {
 namespaceInTemplate = [
     'en',
     'ia',
+    'it',
     'ja',
     'lt',
     'ro',
@@ -149,9 +164,46 @@ class NowCommonsDeleteBot:
         else:
             return nowCommons['_default']
 
+    def useHashGenerator(self):
+        # http://toolserver.org/~multichill/nowcommons.php?language=it&page=2&filter=
+        lang = self.site.lang
+        num_page = 0
+        while 1:
+            url = 'http://toolserver.org/~multichill/nowcommons.php?language=%s&page=%s&filter=' % (lang, num_page)
+            HTML_text = self.site.getUrl(url, no_hostname = True)
+            reg = r'<[Aa] href="(?P<urllocal>.*?)">(?P<imagelocal>.*?)</[Aa]> +?</td><td>\n\s*?'
+            reg += r'<[Aa] href="(?P<urlcommons>http://commons.wikimedia.org/.*?)">Image:(?P<imagecommons>.*?)</[Aa]> +?</td><td>'
+            regex = re.compile(reg, re.UNICODE)
+            found_something = False
+            for x in regex.finditer(HTML_text):
+                found_something = True
+                image_local = x.group('imagelocal')
+                image_commons = x.group('imagecommons')
+                # Stemma and stub are images not to be deleted (and are a lot) on it.wikipedia
+                if lang == 'it':
+                    if 'stemma' in image_local.lower() or 'stub' in image_local.lower():
+                        continue
+                url_local = x.group('urllocal')
+                url_commons = x.group('urlcommons')
+                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<\n" % image_local)
+                result1 = webbrowser.open(url_local, 0, 1)
+                result2 = webbrowser.open(url_commons, 0, 1)
+                choice = wikipedia.inputChoice(u'Are the two images equal?', ['Yes', 'No'], ['y', 'N'], 'N')
+                if choice.lower() in ['y', 'yes']:            
+                    yield [image_local, image_commons]
+                else:
+                    continue
+            num_page += 1
+            # If no image found means that there aren't anymore, break.
+            if not found_something:
+                break
+
     def getPageGenerator(self):
-        gen = pagegenerators.ReferringPageGenerator(self.nowCommonsTemplate, followRedirects = True, onlyTemplateInclusion = True)
-        gen = pagegenerators.NamespaceFilterPageGenerator(gen, [6])
+        if use_hash:
+            gen = self.useHashGenerator()
+        else:
+            gen = pagegenerators.ReferringPageGenerator(self.nowCommonsTemplate, followRedirects = True, onlyTemplateInclusion = True)
+            gen = pagegenerators.NamespaceFilterPageGenerator(gen, [6])
         return gen
 
     def findFilenameOnCommons(self, localImagePage):
@@ -173,22 +225,32 @@ class NowCommonsDeleteBot:
         comment = wikipedia.translate(self.site, nowCommonsMessage)
 
         for page in self.getPageGenerator():
-            # Show the title of the page we're working on.
-            # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            if use_hash:
+                # Page -> Has the namespace | commons image -> Not
+                images_list = page # 0 -> local image, 1 -> commons image
+                page = wikipedia.Page(self.site, images_list[0])
+            else:
+                # If use_hash is true, we have already print this before, no need
+                # Show the title of the page we're working on.
+                # Highlight the title in purple.
+                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             try:
                 localImagePage = wikipedia.ImagePage(self.site, page.title())
                 if localImagePage.fileIsOnCommons():
                     wikipedia.output(u'File is already on Commons.')
                     continue
                 md5 = localImagePage.getFileMd5Sum()
-
-                filenameOnCommons = self.findFilenameOnCommons(localImagePage)
-                if not filenameOnCommons:
+                if use_hash:
+                    filenameOnCommons = images_list[1]
+                else:
+                    filenameOnCommons = self.findFilenameOnCommons(localImagePage)
+                if not filenameOnCommons and not use_hash:
                     wikipedia.output(u'NowCommons template not found.')
                     continue
                 commonsImagePage = wikipedia.ImagePage(commons, 'Image:%s' % filenameOnCommons)
-                if len(localImagePage.getFileVersionHistory()) > 1:
+                if localImagePage.titleWithoutNamespace() == commonsImagePage.titleWithoutNamespace() and use_hash:
+                    wikipedia.output(u'The local and the commons images have the same name')
+                if len(localImagePage.getFileVersionHistory()) > 1 and not use_hash:
                     wikipedia.output(u"This image has a version history. Please delete it manually after making sure that the old versions are not worth keeping.""")
                     continue
                 if localImagePage.titleWithoutNamespace() != commonsImagePage.titleWithoutNamespace():
@@ -197,7 +259,9 @@ class NowCommonsDeleteBot:
                         wikipedia.output(u'\"\03{lightred}%s\03{default}\" is still used in %i pages.' % (localImagePage.titleWithoutNamespace(), len(usingPages)))
                         if replace == True:
                                 wikipedia.output(u'Replacing \"\03{lightred}%s\03{default}\" by \"\03{lightgreen}%s\03{default}\".' % (localImagePage.titleWithoutNamespace(), commonsImagePage.titleWithoutNamespace()))
-                                oImageRobot = image.ImageRobot(pagegenerators.FileLinksGenerator(localImagePage), localImagePage.titleWithoutNamespace(), commonsImagePage.titleWithoutNamespace(), '', replacealways, replaceloose)
+                                oImageRobot = image.ImageRobot(pagegenerators.FileLinksGenerator(localImagePage),
+                                                localImagePage.titleWithoutNamespace(), commonsImagePage.titleWithoutNamespace(),
+                                                '', replacealways, replaceloose)
                                 oImageRobot.run()
                         else:
                             wikipedia.output(u'Please change them manually.')
@@ -214,7 +278,7 @@ class NowCommonsDeleteBot:
                             wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % commonsImagePage.title())
                             wikipedia.output(commonsText)
                             choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
-                            if choice == 'y':
+                            if choice.lower() in ['y', 'yes']:
                                 localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
                         else:
                             localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
