@@ -930,14 +930,7 @@ class GeneratorFactory:
             namespace = None
             if not prefix:
                 prefix = wikipedia.input(u'What page names are you looking for?')
-            colon = prefix.find(':')
-            if colon > 0:
-                namespace = wikipedia.getSite().getNamespaceIndex(prefix[0:colon])
-                # If the text before the colon is a valid namespace that
-                # that is not the main namespace, use the remainder.
-                if namespace:
-                    prefix = prefix[colon+1:]
-            gen = PrefixingPageGenerator(prefix = prefix, namespace = namespace)
+            gen = PrefixingPageGenerator(prefix = prefix)
         elif arg.startswith('-newimages'):
             limit = arg[11:] or wikipedia.input(u'How many images do you want to load?')
             gen = NewimagesPageGenerator(number = int(limit))
