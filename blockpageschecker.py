@@ -83,7 +83,7 @@ templateSemiProtection = {
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
                   r'\{\{(?:[Tt]emplate:|)[Aa]bp(?:|[ _]scad\|(?:.*?))\}\}'],
             'fr': [ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Ss]emi[- ]?protection(|[^\}]*)\}\}'],
-            'ja':[ur'\{\{(?:[Tt]emplate:|)半保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
+            'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)半保護(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Ss]|[Ss]emi|半)(?:\|.+|)\}\}(\n+?|)'],
             }
 # Regex to get the total-protection template
@@ -93,28 +93,28 @@ templateTotalProtection = {
                   r'\{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee])\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
             'fr':[ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}',
                  ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)(?:[Pp]age|[Aa]rchive|[Mm]odèle) protégée?(|[^\}]*)\}\}'],
-            'ja':[ur'\{\{(?:[Tt]emplate:|)保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
+            'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)保護(?:性急|)(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Nn]|[Nn]ormal)(?:\|.+|)\}\}(\n+?|)'],
             }
 # Regex to get the semi-protection move template
 templateSemiMoveProtection = {
             'en': None, 
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisobloccospostamento(?:|[ _]scad\|.*?|\|.*?)\}\}'],
-            'ja':[ur'\{\{(?:[Tt]emplate:|)移動半保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
+            'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)移動半保護(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)'],
             }
 # Regex to get the total-protection move template 
 templateTotalMoveProtection = {
             'en': None, 
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisobloccospostamento(?:|[ _]scad\|.*?|\|.*?)\}\}'],
-            'ja':[ur'\{\{(?:[Tt]emplate:|)移動保護(?:[Ss]|)(?:\|.+|)\}\}(\n+?|)'],
+            'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)移動保護(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)'],
             }
 # Array: 0 => Semi-block, 1 => Total Block, 2 => Semi-Move, 3 => Total-Move
 templateNoRegex = {
             'it':['{{Avvisobloccoparziale}}', '{{Avvisoblocco}}', None, None],
             'fr':['{{Semi-protection}}', '{{Protection}}', None, None],
-            'ja':[u'{{半保護}}', u'{{保護}}', u'{{移動半保護}}',u'{{移動保護}}'],
+            'ja':[u'{{半保護}}', u'{{保護}}', u'{{移動半保護}}', u'{{移動保護}}'],
             'zh':[u'{{Protected/semi}}',u'{{Protected}}',u'{{Protected/ms}}',u'{{Protected/move}}'],
             }
 
@@ -158,11 +158,11 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
         if resultCatch:
             return ('autoconfirmed-total', catchRegex)
     if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
-        for catchRegex in TSMP:
+        for catchRegex in TTMP:
             resultCatch = re.findall(catchRegex, text)
             if resultCatch:
                 return ('sysop-move', catchRegex)
-        for catchRegex in TTMP:
+        for catchRegex in TSMP:
             resultCatch = re.findall(catchRegex, text)
             if resultCatch:
                 return ('autoconfirmed-move', catchRegex)
