@@ -2063,7 +2063,7 @@ not supported by PyWikipediaBot!"""
             data = u''
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
-        if data == u'':
+        if data == u'' or self.site().mediawiki_message('pagemovedsub') in data:
             if deleteAndMove:
                 output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
             else:
@@ -2085,6 +2085,7 @@ not supported by PyWikipediaBot!"""
             elif not self.exists():
                 raise NoPage(u'Page move failed: Source page [[%s]] does not exist.' % newtitle)
             elif Page(self.site(),newtitle).exists():
+                #XXX : This might be buggy : if the move was successful, the target pase *has* been created
                 raise PageNotSaved(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
             else:
                 output(u'Page move failed for unknown reason.')
