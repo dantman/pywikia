@@ -152,7 +152,7 @@ namespaceInTemplate = [
 # if your project has images like that, put the word often used here to skip them
 word_to_skip = {
     'en': [],
-    'it': ['stemma', 'stub'],
+    'it': ['stemma', 'stub', 'hill40 '],
     }
 
 #nowCommonsMessage = imagetransfer.nowCommonsMessage
@@ -176,6 +176,7 @@ class NowCommonsDeleteBot:
         lang = self.site.lang
         num_page = 0
         word_to_skip_translated = wikipedia.translate(self.site, word_to_skip)
+        images_processed = list()
         while 1:
             url = 'http://toolserver.org/~multichill/nowcommons.php?language=%s&page=%s&filter=' % (lang, num_page)
             HTML_text = self.site.getUrl(url, no_hostname = True)
@@ -183,10 +184,15 @@ class NowCommonsDeleteBot:
             reg += r'<[Aa] href="(?P<urlcommons>http://commons.wikimedia.org/.*?)">Image:(?P<imagecommons>.*?)</[Aa]> +?</td><td>'
             regex = re.compile(reg, re.UNICODE)
             found_something = False
+            change_page = True
             for x in regex.finditer(HTML_text):
-                found_something = True
+                found_something = True                
                 image_local = x.group('imagelocal')
                 image_commons = x.group('imagecommons')
+                if image_local in images_processed:
+                    continue
+                change_page = False
+                images_processed.append(image_local)
                 # Skip images that have something in the title (useful for it.wiki)
                 image_to_skip = False
                 for word in word_to_skip_translated:
@@ -208,7 +214,9 @@ class NowCommonsDeleteBot:
                     yield [image_local, image_commons]
                 else:
                     continue
-            num_page += 1
+            # The page is dinamically updated, so we may don't need to change it
+            if change_page:
+                num_page += 1
             # If no image found means that there aren't anymore, break.
             if not found_something:
                 break
