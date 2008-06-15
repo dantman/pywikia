@@ -149,19 +149,23 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 
 def understandBlock(text, TTP, TSP, TSMP, TTMP):
     """ Understand if the page is blocked and if it has the right template """
-    resultCatch = re.findall(TTP, text)
-    if resultCatch:
-        return ('sysop-total', catchRegex)
-    resultCatch = re.findall(TSP, text)
-    if resultCatch:
-        return ('autoconfirmed-total', catchRegex)
-    if TSMP != '' and TTMP != '' and TTP != TTMP and TSP != TSMP:
-        resultCatch = re.findall(TTMP, text)
+    for catchRegex in TTP: # TTP = templateTotalProtection
+        resultCatch = re.findall(catchRegex, text)
         if resultCatch:
-            return ('sysop-move', catchRegex)
-        resultCatch = re.findall(TSMP, text)
+            return ('sysop-total', catchRegex)
+    for catchRegex in TSP:
+        resultCatch = re.findall(catchRegex, text)
         if resultCatch:
-            return ('autoconfirmed-move', catchRegex)
+            return ('autoconfirmed-total', catchRegex)
+    if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
+        for catchRegex in TTMP:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch:
+                return ('sysop-move', catchRegex)
+        for catchRegex in TSMP:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch:
+                return ('autoconfirmed-move', catchRegex)
     return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
 def debugQuest(site, page):
