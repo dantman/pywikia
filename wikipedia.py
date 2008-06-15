@@ -1303,10 +1303,12 @@ not supported by PyWikipediaBot!"""
             predata['masteredit'] = '1'
 
         retry_delay = 1
+        dblagged = False
         while True:
             # Check whether we are not too quickly after the previous
             # putPage, and wait a bit until the interval is acceptable
-            put_throttle()
+            if not dblagged:
+                put_throttle()
             # Which web-site host are we submitting to?
             if newPage:
                 output(u'Creating page %s' % self.aslink(forceInterwiki=True))
@@ -1344,8 +1346,11 @@ not supported by PyWikipediaBot!"""
                 if verbose:
                     output(data, newline=False)
                 output(u"Pausing 5 seconds due to database server lag.")
+                dblagged = True
                 time.sleep(5)
                 continue
+            # If it has gotten this far then we should reset dblagged
+            dblagged = False
             # A second text area means that an edit conflict has occured.
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
