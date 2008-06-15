@@ -32,8 +32,10 @@ class BasicBot:
         'ar': u'روبوت: تغيير ...',
         'de': u'Bot: Ändere ...',
         'en': u'Robot: changing ...',
+        'ja':u'ロボットによる：編集',
         'pt': u'Bot: alterando...',
         'sv': u'Bot: Ändrar ...',
+        'zh': u'機器人：編輯.....',
     }
 
     def __init__(self, generator, debug):

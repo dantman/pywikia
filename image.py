@@ -52,12 +52,14 @@ class ImageRobot:
         'fr': u'Bot: Remplace image %s par %s',
         'he': u'בוט: מחליף את התמונה %s בתמונה %s',
         'it': u"Bot: Sostituisco l'immagine %s con %s",
+        'ja': u'ロボットによる：画像置き換え %s から %s へ',
         'lt': u'robotas: vaizdas %s keičiamas į %s',
         'nn': u'robot: erstatta biletet %s med %s',
         'no': u'robot: erstatter bildet %s med %s',
         'nl': u'Bot: afbeelding %s vervangen door %s',
         'pl': u'Robot zamienia obraz %s na %s',
         'pt': u'Bot: Alterando imagem %s para %s',
+        'zh': u'機器人：取代圖像 %s 至 %s',
     }
 
     # Summary messages for removing images
@@ -69,12 +71,14 @@ class ImageRobot:
         'fr': u'Bot: Enleve image %s',
         'he': u'בוט: מסיר את התמונה %s',
         'it': u"Bot: Rimuovo l'immagine %s",
+        'ja': u'ロボットによる：画像削除 %s',
         'lt': u'robotas: Šalinamas vaizdas %s',
         'nl': u'Bot: afbeelding %s verwijderd',
         'no': u'robot: fjerner bildet %s',
         'nn': u'robot: fjerna biletet %s',
         'pl': u'Robot usuwa obraz %s',
         'pt': u'Bot: Alterando imagem %s',
+        'zh': u'機器人：移除圖像 %s',
     }
 
     def __init__(self, generator, oldImage, newImage = None, summary = '', always = False, loose = False):

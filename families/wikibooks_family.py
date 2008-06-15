@@ -69,6 +69,7 @@ class Family(family.Family):
             'sl': u'Wikiknjige',
             'sr': u'Викикњиге',
             'tr': u'Vikikitap',
+            'uk': u'Вікіпідручник',
             'ur': u'وکی کتب',
             'uz': u'Vikikitob',
             'vo': u'Vükibuks',
@@ -158,7 +159,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องWikibooks',
             'tr': u'Vikikitap tartışma',
             'tt': u'Wikibooks bäxäse',
-            'uk': u'Обговорення Wikibooks',
+            'uk': u'Обговорення Вікіпідручника',
             'ur': u'تبادلۂ خیال وکی کتب',
             'uz': u'Vikikitob munozarasi',
             'vi': u'Thảo luận Wikibooks',
@@ -176,6 +177,7 @@ class Family(family.Family):
             'ro': u'Raft',
             'ru': u'Полка',
             'tr': u'Yemek',
+            'uk': u'Полиця',
         }
 
         self.namespaces[101] = {
@@ -188,6 +190,7 @@ class Family(family.Family):
             'ro': u'Discuţie Raft',
             'ru': u'Обсуждение полки',
             'tr': u'Yemek tartışma',
+            'uk': u'Обговорення полиці',
         }
 
         self.namespaces[102] = {
@@ -201,6 +204,7 @@ class Family(family.Family):
             'ro': u'Wikijunior',
             'ru': u'Импортировано',
             'sr': u'Кувар',
+            'uk': u'Рецепт',
         }
 
         self.namespaces[103] = {
@@ -214,6 +218,7 @@ class Family(family.Family):
             'ro': u'Discuţie Wikijunior',
             'ru': u'Обсуждение импортированного',
             'sr': u'Разговор о кувару',
+            'uk': u'Обговорення рецепта',
         }
 
         self.namespaces[104] = {
@@ -285,6 +290,7 @@ class Family(family.Family):
 
         self.obsolete = {
             'aa': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Afar_Wikibooks
+            'ak': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Akan_Wikibooks
             'as': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Assamese_Wikibooks
             'ay': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Aymar_Wikibooks
             'ba': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Bashkir_Wikibooks
@@ -300,6 +306,7 @@ class Family(family.Family):
             'jp': 'ja',
             'ks': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Kashmiri_Wikibooks
             'ln': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lingala_Wikibooks
+            'mi': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Maori_Wikibooks
             'minnan':'zh-min-nan',
             'nah': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Nahuatl_Wikibooks
             'nb': 'no',

@@ -53,6 +53,7 @@ msg = {
     'he': u'בוט: מעצב ISBN',
     'ja': u'ロボットによる ISBN の書式化',
     'pt': u'Bot: Formatando ISBN',
+    'zh': u'機器人：ISBN格式化',
 }
 
 # Maps each group number to the list of its publisher number ranges.
