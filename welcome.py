@@ -243,7 +243,7 @@ summary = {
 netext = {
     'commons':u'{{subst:welcome}} %s',
     'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}} %s',
-    'da':u'{{subst:v}}',
+    'da':u'{{velkommen|%s}}',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}} %s',
     'fa':u'{{جا:خوشامد}} %s',
@@ -265,6 +265,7 @@ netext = {
 summary2 = {
     'commons':u'Updating log',
     'ar':u'تحديث السجل',
+    'da':u'Updating log',
     'de':u'Aktualisiere Logdatei',
     'en':u'Updating log',
     'fa':u'به روز رسانی سیاهه',
@@ -282,6 +283,7 @@ summary2 = {
 report_page = {
     'commons': u'Project:Administrators\' noticeboard/User problems/Usernames to be checked',
     'ar': 'Project:إخطار الإداريين/أسماء مستخدمين للفحص',
+    'da': u'Bruger:Broadbot/Report',
     'de': u'Benutzer:Filnik/Report',
     'en': u'Project:Administrator intervention against vandalism',
     'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
@@ -297,6 +299,7 @@ report_page = {
 comment = {
     'commons':u'Adding a username that needs to be checked',
     'ar':u'إضافة اسم مستخدم يحتاج للفحص',
+    'da':u'Adding a username that needs to be checked',
     'de':u'Ergänze zu überprüfenden Benutzernamen',
     'en':u'Adding a username that needs to be checked',
     'fa':u'افزودن حساب کاربری نیازمند بررسی',
@@ -330,6 +333,7 @@ timeselected = u' ~~~~~' # Defining the time used after the signature
 report_text = {
     'commons':u"\n*{{user3|%s}}" + timeselected,
     'ar':u"\n*{{user13|%s}}" + timeselected,
+    'da':u'\n*[[Bruger Diskussion:%s]] ' + timeselected,
     'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
     'en':u'\n*{{Userlinks|%s}} ' + timeselected,
     'fa':u'\n*{{کاربر|%s}}' + timeselected,
@@ -345,8 +349,9 @@ report_text = {
 # the random argument (this parameter is optional).
 random_sign = {
     'ar': u'Project:سجل الترحيب/توقيعات',
-    'fa': u'Project:سیاهه خوشامد/امضاها',
+    'da': u'Wikipedia:Velkommen/Signaturer',
     'en': u'User:Filnik/Sign',
+    'fa': u'Project:سیاهه خوشامد/امضاها',
     'fr': u'Projet:Service de Parrainage Actif/Signatures',
     'it': u'Project:Benvenuto_Bot/Firme',
     'ja':u'利用者:Alexbot/Welcomebotログ/List',

@@ -42,6 +42,7 @@ docuReplacements = {
 # Summary message when using this module as a stand-alone script
 msg_standalone = {
     'ar': u'روبوت: تغييرات طفيفة',
+    'da': u'Bot: Kosmetiske ændringer',
     'de': u'Bot: Kosmetische Änderungen',
     'en': u'Robot: Cosmetic changes',
     'es': u'Robot: Cambios triviales',
@@ -64,6 +65,7 @@ msg_standalone = {
 msg_append = {
     'ar': u'; تغييرات طفيفة',
     'de': u'; kosmetische Änderungen',
+    'da': u'; kosmetiske ændringer',
     'en': u'; cosmetic changes',
     'es': u'; cambios triviales',
     'fr': u'; changement de type cosmétique',
