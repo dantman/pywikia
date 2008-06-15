@@ -119,7 +119,7 @@ userinterface = 'terminal'
 # Currently only works if interface 'terminal' is set.
 transliterate = True
 
-# Should the system bell be ringed if the bot expects user input?
+# Should the system bell be rung if the bot expects user input?
 ring_bell = False
 
 # Colorization can be used to markup important text parts of the output.
