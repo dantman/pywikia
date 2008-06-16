@@ -164,7 +164,7 @@ class Family(family.Family):
             'crh': [u'Vikipediya muzakeresi', u'Vikipediya музакереси'],
             'cs': u'Wikipedie diskuse',
             'csb': u'Diskùsëjô Wiki',
-            'cu': u'Википедїѩ бесѣда',
+            'cu': u'Википедїѩ бєсѣ́да',
             'cv': u'Википеди сӳтсе явмалли',
             'cy': u'Sgwrs Wicipedia',
             'da': u'Wikipedia-diskussion',
