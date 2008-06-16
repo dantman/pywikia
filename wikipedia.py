@@ -4979,6 +4979,8 @@ your connection is down. Retrying in %i minutes..."""
 
         """
         monobook_error = True
+        if start == '':
+            start='!'
 
         while True:
             # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
