@@ -618,6 +618,7 @@ class Family(family.Family):
             'sl':  [u'Disambig', u'Razločitev', u'Disambig-ship'],
             'sq':  [u'Kthjellim', u'Disambig'],
             'sr':  [u'Вишезначна одредница', u'Disambig'],
+            'srn': [u'Dp'],
             'su':  [u'Disambig'],
             'sv':  [u'Betydelselista', u'Disambig', u'Förgrening', u'Gaffel',
                     u'Efternamn', u'Gren', u'Förgreningssida', u'3LC',
