@@ -622,8 +622,11 @@ class DisambiguationRobot(object):
                 if m.group('title') == '' or self.mysite.isInterwikiLink(m.group('title')):
                     continue
                 else:
-                    linkPage = wikipedia.Page(disambPage.site(), m.group('title'))
-                    # Check whether the link found is to disambPage.
+                    try:
+                        linkPage = wikipedia.Page(disambPage.site(), m.group('title'))
+                        # Check whether the link found is to disambPage.
+                    except wikipedia.InvalidTitle:
+                        continue
                     if linkPage != disambPage:
                         continue
     
