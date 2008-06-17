@@ -97,7 +97,7 @@ Wikitext manipulation functions for category links:
 Unicode utility functions:
     UnicodeToAsciiHtml: Convert unicode to a bytestring using HTML entities.
     url2unicode: Convert url-encoded text to unicode using a site's encoding.
-    unicode2html: Ensure unicode string is encodable; if not, convert to
+    unicode2html: Ensure unicode string is encodable; if not, convert it to
         ASCII for HTML.
     html2unicode: Replace HTML entities in text with unicode characters.
 
