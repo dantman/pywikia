@@ -46,6 +46,8 @@ class Family(family.Family):
         # Override defaults
         self.namespaces[2]['cs'] = u'Wikipedista'
         self.namespaces[3]['cs'] = u'Wikipedista diskuse'
+        self.namespaces[2]['hu'] = u'Szerkesztő'
+        self.namespaces[3]['hu'] = u'Szerkesztővita'
         self.namespaces[2]['pl'] = u'Wikipedysta'
         self.namespaces[3]['pl'] = u'Dyskusja wikipedysty'
 
@@ -197,7 +199,7 @@ class Family(family.Family):
             'hr': u'Razgovor Wikipedija',
             'hsb': u'Wikipedija diskusija',
             'ht': u'Diskisyon Wikipedya',
-            'hu': u'Wikipédia vita',
+            'hu': u'Wikipédia-vita',
             'hy': u'Վիքիփեդիայի քննարկում',
             'ia': u'Discussion Wikipedia',
             'id': u'Pembicaraan Wikipedia',
