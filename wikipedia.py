@@ -4385,6 +4385,12 @@ your connection is down. Retrying in %i minutes..."""
                     account = 'Your sysop account'
                 else:
                     account = 'Your account'
+                ################################################################
+                # The following line was added as a workaround for bug 1999239 #
+                # (Blocking bot account doesn't stop the bot run).             #
+                raise UserBlocked(self)                                        #
+                # End of workaround.                                           #
+                ################################################################
                 output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
             self._isBlocked[index] = blocked
 
