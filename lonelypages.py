@@ -63,6 +63,7 @@ docuReplacements = {
 
 # Template to add in the orphan pages
 Template = {
+            'ar':u'{{يتيمة|تاريخ={{نسخ:اسم_شهر}} {{نسخ:عام}}}}',
             'en':u'{{Orphan|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}',
             'it':u'{{O||mese={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}',
             'zh':u'{{subst:Orphan/auto}}',
@@ -70,6 +71,7 @@ Template = {
 
 # Comment that the Bot will use to put the template
 commento = {
+            'ar':u'روبوت: إضافة قالب يتيمة',
             'en':u'Bot: Orphan page, add template',
             'it':u'Bot: Voce orfana, aggiungo template {{O}}',
             'zh':u'機器人: 本頁的鏈入頁面太少',
@@ -78,6 +80,7 @@ commento = {
 # When you add a disambig to the list of disambig pages
 #(if you set disambigPage to None, you can put here nothing)
 commenttodisambig = {
+           'ar':u'روبوت: إضافة صفحة توضيح',
            'en':u'Bot: Adding a disambig page',
            'it':u'Bot: Aggiungo una disambigua',
            'zh':u'機器人: 增加消歧義頁面',
@@ -87,6 +90,7 @@ commenttodisambig = {
 # If you need help with regex, ask on botwiki ( http://botwiki.sno.cc )
 # Warning: put always "()" inside the regex, so the bot will find "something"
 exception = {
+            'ar': [ur'\{\{(?:قالب:|)(يتيمة)[\|\}]'],
             'en': [r'\{\{(?:template:|)(orphan)[\|\}]', r'\{\{(?:template:|)(wi)[\|\}]'],
             'it': [r'\{\{(?:template:|)(o)[\|\}]'],
             'zh': [r'\{\{(?:template:|)(orphan)[\|\}]'],
