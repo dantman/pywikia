@@ -33,6 +33,7 @@ msg = {
           'ar':u'روبوت: إزالة وصلات "%s"',
           'de':u'Bot: Entlinke "%s"',
           'en':u'Robot: Unlinking "%s"',
+          'fi':u'Botti poisti linkin sivulle "%s"',
           'he':u'בוט: מסיר קישורים לדף "%s"',
           'nn':u'robot: fjerna lenkje til "%s"',
           'no':u'robot: fjerner lenke til "%s"',

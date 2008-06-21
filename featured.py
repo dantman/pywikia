@@ -62,7 +62,7 @@ msg = {
     'eo': u'roboto: [[%s:%s]] estas artikolo elstara',
     'es': u'Bot: Enlace a artículo destacado para: [[%s:%s]]',
     'fa': u' ربات: [[%s:%s]] یک مقاله برگزیده‌است',
-    'fi': u'Bot: Suositeltu artikkeli -tähti: [[%s:%s]]',
+    'fi': u'Botti: [[%s:%s]] on suositeltu artikkeli',
     'fr': u'Bot: Lien AdQ pour [[%s:%s]]',
     'he': u'בוט: קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
