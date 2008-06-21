@@ -670,8 +670,6 @@ not supported by PyWikipediaBot!"""
         if throttle:
             get_throttle()
         textareaFound = False
-        readonly = False
-        checkBlocks = True
         retry_idle_time = 1
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
@@ -686,8 +684,6 @@ not supported by PyWikipediaBot!"""
                 i1 = m1.end()
                 i2 = m2.start()
                 textareaFound = True
-                if m1.group(1).find( "readonly" ) >= 0:
-                    readonly = True
             else:
                 # search for messages with no "view source" (aren't used in new versions)
                 if text.find(self.site().mediawiki_message('whitelistedittitle')) != -1:
@@ -698,11 +694,8 @@ not supported by PyWikipediaBot!"""
                 elif text.find('var wgPageName = "Special:Badtitle";') != -1:
                     raise BadTitle('BadTitle: %s' % self)
                 # find out if the username or IP has been blocked
-                # check this only once in this method
-                elif checkBlocks == True:
-                    checkBlocks = False;
-                    if self.site().isBlocked():
-                        raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                elif self.site().isBlocked():
+                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
                 # If there is no text area and the heading is 'View Source'
                 # but user is not blocked, the page does not exist, and is
                 # locked
@@ -727,10 +720,6 @@ not supported by PyWikipediaBot!"""
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
-        # We now know that there is a textarea.
-        # If read-only, check blocks.
-        if readonly and checkBlocks and self.site().isBlocked():
-            raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
         # Check for restrictions
         m = re.search('var wgRestrictionEdit = \\["(\w+)"\\]', text)
         if m:
@@ -1216,6 +1205,9 @@ not supported by PyWikipediaBot!"""
             pass
         sysop = self._getActionUser(action = 'edit', restriction = self.editRestriction, sysop = False)
         username = self.site().loggedInAs()
+
+        # Check blocks
+        self.site().checkBlocks(sysop = sysop)
 
         # Determine if we are allowed to edit
         if not force:
@@ -2037,6 +2029,9 @@ not supported by PyWikipediaBot!"""
         if deleteAndMove:
             sysop = self._getActionUser(action = 'delete', restriction = '', sysop = True)
 
+        # Check blocks
+        self.site().checkBlocks(sysop = sysop)
+
         if throttle:
             put_throttle()
         if reason == None:
@@ -2127,6 +2122,9 @@ not supported by PyWikipediaBot!"""
                  return
              else:
                  raise
+
+        # Check blocks
+        self.site().checkBlocks(sysop = True)
 
         if throttle:
             put_throttle()
@@ -2276,6 +2274,9 @@ not supported by PyWikipediaBot!"""
         # Login
         self._getActionUser(action = 'undelete', sysop = True)
 
+        # Check blocks
+        self.site().checkBlocks(sysop = sysop)
+
         if throttle:
             put_throttle()
 
@@ -2314,6 +2315,9 @@ not supported by PyWikipediaBot!"""
         """
         # Login
         self._getActionUser(action = 'protect', sysop = True)
+
+        # Check blocks
+        self.site().checkBlocks(sysop = sysop)
 
         address = self.site().protect_address(self.urlname())
         if unprotect:
@@ -4033,8 +4037,26 @@ class Site(object):
                 # Old info is about the anonymous user
                 self._userData[index] = False
 
+    def checkBlocks(self, sysop = False):
+        """Check if the user is blocked, and raise an exception if so."""
+        self._load(sysop = sysop)
+        index = self._userIndex(sysop)
+        if self._isBlocked[index]:
+            # User blocked
+            raise UserBlocked('User is blocked in site %s' % self)
+
     def isBlocked(self, sysop = False):
         """Check if the user is blocked."""
+        self._load(sysop = sysop)
+        index = self._userIndex(sysop)
+        if self._isBlocked[index]:
+            # User blocked
+            return True
+        else:
+            return False
+
+    def _getBlock(self, sysop = False):
+        """Get user block data from the API."""
         try:
             text = self.getUrl(u'%saction=query&meta=userinfo&uiprop=blockinfo'
                                % self.api_address(), sysop=sysop)
@@ -4378,19 +4400,13 @@ your connection is down. Retrying in %i minutes..."""
         # Check for blocks - but only if version is 1.11 (userinfo is available)
         # and the user data was not yet loaded
         if self.versionnumber() >= 11 and (not self._userData[index] or force):
-            blocked = self.isBlocked(sysop = sysop)
+            blocked = self._getBlock(sysop = sysop)
             if blocked and not self._isBlocked[index]:
                 # Write a warning if not shown earlier
                 if sysop:
                     account = 'Your sysop account'
                 else:
                     account = 'Your account'
-                ################################################################
-                # The following line was added as a workaround for bug 1999239 #
-                # (Blocking bot account doesn't stop the bot run).             #
-                raise UserBlocked(self)                                        #
-                # End of workaround.                                           #
-                ################################################################
                 output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
             self._isBlocked[index] = blocked
 
