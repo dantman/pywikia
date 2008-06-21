@@ -1343,6 +1343,8 @@ not supported by PyWikipediaBot!"""
                 continue
             # If it has gotten this far then we should reset dblagged
             dblagged = False
+            # Check blocks
+            self.site().checkBlocks(sysop = sysop)
             # A second text area means that an edit conflict has occured.
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
@@ -2070,6 +2072,7 @@ not supported by PyWikipediaBot!"""
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
             return True
         else:
+            self.site().checkBlocks(sysop = sysop)
             if self.site().mediawiki_message('articleexists') in data or self.site().mediawiki_message('delete_and_move') in data:
                 if safe:
                     output(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
@@ -2160,6 +2163,7 @@ not supported by PyWikipediaBot!"""
             else:
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
+                self.site().checkBlocks(sysop = sysop)
                 if self.site().mediawiki_message('actioncomplete') in data:
                     output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
                     return True
@@ -2392,6 +2396,7 @@ not supported by PyWikipediaBot!"""
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
+                self.site().checkBlocks(sysop = sysop)
                 output(u'Failed to change protection level of page %s:'
                        % self.aslink())
                 output(u"HTTP response code %s" % response.status)
