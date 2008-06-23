@@ -2318,7 +2318,7 @@ not supported by PyWikipediaBot!"""
 
         """
         # Login
-        self._getActionUser(action = 'protect', sysop = True)
+        sysop = self._getActionUser(action = 'protect', sysop = True)
 
         # Check blocks
         self.site().checkBlocks(sysop = sysop)
