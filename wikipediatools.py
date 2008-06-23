@@ -1,6 +1,10 @@
 __version__ = '$Id$'
 import os, sys
 
+def create_user_config_file():
+    import generate_user_files
+    generate_user_files.create_user_config()
+
 def get_base_dir():
     """Return the directory in which user-specific information is stored.
 
@@ -39,6 +43,7 @@ def get_base_dir():
     if not os.path.isdir(base_dir):
         raise RuntimeError("Directory '%s' does not exist." % base_dir)
     if not os.path.exists(os.path.join(base_dir, "user-config.py")):
-        raise RuntimeError("No user-config.py found in directory '%s'."
-                           % base_dir)
+        print("No user-config.py found in directory '%s'" % base_dir)
+        print("Creating...\n")
+        create_user_config_file()
     return base_dir
