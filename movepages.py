@@ -25,6 +25,10 @@ Furthermore, the following command line parameters are supported:
                   texts.
                   Argument can also be given as "-summary:XYZ".
 
+-pairs            Read pairs of file names from a file. The file must be in a format
+                  [[frompage]] [[topage]] [[frompage]] [[topage]] ...
+                  Argument can also be given as "-pairs:filename"
+
 """
 #
 # (C) Leonardo Gregianin, 2006
@@ -63,15 +67,15 @@ deletesummary={
     'ar': u'روبوت: حذف التحويلة بعد نقل الصفحة',
     'de': u'Bot: Lösche nach Seitenverschiebung nicht benötigte Umleitung',
     'en': u'Robot: Deleting redirect after page has been moved',
+    'el': u'Διαγραφή ανακατεύθυνσης μετά μετεκίνησης σελίδας',
     'fi': u'Botti poisti ohjauksen siirrettyyn sivuun',
+    'fr': u'Page de redirection supprimée après renommage',
     'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
     'ja': u'ロボットによる: ページの移動後のリダイレクトページの削除',
+    'nl': u'Redirect verwijderd na verplaatsen van pagina ',
     'pt': u'Bot: Página apagada depois de movida',
     'ru': u'Робот: удаление перенаправления после переименования страницы',
     # These are too unspecific:
-    #'el': u'Διαγραφή σελίδων με bot',
-    #'fr': u'Page supprimée par bot',
-    #'nl': u'Pagina verwijderd door robot',
     #'pl': u'Usunięcie artykułu przez robota',
 
 }
@@ -91,10 +95,9 @@ class MovePagesBot:
             if not msg:
                 msg = wikipedia.translate(wikipedia.getSite(), summary)
             wikipedia.output(u'Moving page %s to [[%s]]' % (page.aslink(), newPageTitle))
-            if page.move(newPageTitle, msg, throttle=True):
-                if self.delete:
-                    deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
-                    page.delete(deletemsg, prompt=not self.always, mark=True)
+            if page.move(newPageTitle, msg, throttle=True) and self.delete:
+                deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
+                page.delete(deletemsg, mark=True)
         except wikipedia.NoPage:
             wikipedia.output(u'Page %s does not exist!' % page.title())
         except wikipedia.IsRedirectPage:
@@ -215,6 +218,7 @@ def main():
     always = False
     skipredirects = False
     summary = None
+    fromToPairs = []
 
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
@@ -222,16 +226,36 @@ def main():
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
-        if arg == '-del':
+        if arg.startswith('-pairs'):
+            if len(arg) == len('-pairs'):
+                filename = wikipedia.input(u'Enter the name of the file containing pairs:')
+            else:
+                filename = arg[len('-pairs:'):]
+            oldName1 = None
+            for page in pagegenerators.TextfilePageGenerator(filename):
+                if oldName1:
+                    fromToPairs.append([oldName1, page.title()])
+                    oldName1 = None
+                else:
+                    oldName1 = page.title()
+            if oldName1:
+                wikipedia.output(u'WARNING: file %s contains odd number of links' % filename)
+        elif arg == '-del':
             delete = True
         elif arg == '-always':
             always = True
-        if arg == '-skipredirects':
+        elif arg == '-skipredirects':
             skipredirects = True
         elif arg.startswith('-from:'):
+            if oldName:
+                wikipedia.output(u'WARNING: -from:%s without -to:' % oldName)
             oldName = arg[len('-from:'):]
         elif arg.startswith('-to:'):
-            newName = arg[len('-to:'):]
+            if oldName:
+                fromToPairs.append([oldName, arg[len('-to:'):]])
+                oldName = None
+            else:
+                wikipedia.output(u'WARNING: %s without -from' % arg)
         elif arg.startswith('-prefix'):
             if len(arg) == len('-prefix'):
                 prefix = wikipedia.input(u'Enter the prefix:')
@@ -247,15 +271,17 @@ def main():
             if generator:
                 gen = generator
 
-    if oldName and newName:
-        page = wikipedia.Page(wikipedia.getSite(), oldName)
+    if oldName:
+        wikipedia.output(u'WARNING: -from:%s without -to:' % oldName)
+    for pair in fromToPairs:
+        page = wikipedia.Page(wikipedia.getSite(), pair[0])
         bot = MovePagesBot(None, prefix, delete, always, skipredirects, summary)
-        bot.moveOne(page, newName)
-    elif gen:
+        bot.moveOne(page, pair[1])
+    if gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects, summary)
+        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects)
         bot.run()
-    else:
+    elif not fromToPairs:
         wikipedia.showHelp('movepages')
 
 if __name__ == '__main__':
