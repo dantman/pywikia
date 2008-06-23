@@ -2637,6 +2637,25 @@ class Family:
         # http://www.mediawiki.org/wiki/Extension:LDAP_Authentication
         self.ldapDomain = ()
 
+        # Allows crossnamespace interwiki linking.
+        # Lists the possible crossnamespaces combinations
+        # keys are originating NS
+        # values are dicts where:
+        #   keys are the originating langcode, or _default
+        #   values are dicts where:
+        #       keys are the languages that can be linked to from the lang+ns, or _default
+        #       values are a list of namespace numbers
+        self.crossnamespace = {}
+        #### Examples :
+        ## Allowing linking to pt' 102 NS from any other lang' 0 NS is
+        # self.crossnamespace[0] = {
+        #     '_default': { 'pt': [102]}
+        # }
+        ## While allowing linking from pt' 102 NS to any other lang' = NS is
+        # self.crossnamespace[102] = {
+        #     'pt': { '_default': [0]}
+        # }
+
     def _addlang(self, code, location, namespaces = {}):
         """Add a new language to the langs and namespaces of the family.
            This is supposed to be called in the constructor of the family."""

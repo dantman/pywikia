@@ -591,6 +591,12 @@ class Subject(object):
             # We have seen this page before, don't ask again.
             return False
         elif self.originPage.namespace() != linkedPage.namespace():
+            # Allow for a mapping between different namespaces
+            crossFrom = self.originPage.site().family.crossnamespace.get(self.originPage.namespace(), {})
+            crossTo = crossFrom.get(self.originPage.site().language(), crossFrom.get('_default', {}))
+            nsmatch = crossTo.get(linkedPage.site().language(), crossTo.get('_default', []))
+            if linkedPage.namespace() in nsmatch:
+                return False
             if globalvar.autonomous:
                 wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()))
                 # Fill up foundIn, so that we will not write this notice

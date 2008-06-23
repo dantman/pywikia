@@ -837,6 +837,78 @@ class Family(family.Family):
                     'id', 'lv', 'sw', 'tt', 'uk', 'vo', 'ga', 'na', 'es',
                     'nl', 'da', 'dk', 'sv', 'test']
 
+        self.crossnamespace[0] = {
+            '_default': {
+                'pt': [102], 
+                'als': [104], 
+                'es': [104], 
+                'fr': [104], 
+                'lt': [104]
+            }
+        }
+        self.crossnamespace[1] = {
+            '_default': {
+                'pt': [103],
+                'als': [105], 
+                'es': [105],
+                'fr': [105],
+                'lt': [105]
+            }
+        }
+        self.crossnamespace[102] = {
+            'pt': {
+                '_default': [0],
+                'als': [0, 104], 
+                'es': [0, 104], 
+                'fr': [0, 104], 
+                'lt': [0, 104]
+            }
+        }
+        self.crossnamespace[103] = {
+            'pt': {
+                '_default': [1],
+                'als': [1, 105],
+                'es': [1, 105],
+                'fr': [1, 105],
+                'lt': [1, 105]
+            }
+        }
+        self.crossnamespace[104] = {
+            'als': {
+                '_default': [0],
+                'pt': [0, 102]
+            },
+            'es': { 
+                '_default': [0],
+                'pt': [0, 102]
+            },
+            'fr': {
+                '_default': [0],
+                'pt': [0, 102]
+            },
+            'lt': { 
+                '_default': [0],
+                'pt': [0, 102]
+            }
+        }
+        self.crossnamespace[105] = {
+            'als': {
+                '_default': [1],
+                'pt': [0, 103]
+            },
+            'es': {
+                '_default': [1],
+                'pt': [0, 103]
+            },
+            'fr': {
+                '_default': [1],
+                'pt': [0, 103]
+            },
+            'lt': {
+                '_default': [1],
+                'pt': [0, 103]
+            }
+        }
     def get_known_families(self, site):
         # In Swedish Wikipedia 's:' is part of page title not a family
         # prefix for 'wikisource'.
