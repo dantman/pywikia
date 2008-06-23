@@ -10,7 +10,7 @@ Parameters:
 """
 
 #
-# (C) Leogregianin, 2007
+# (C) Leonardo Gregianin, 2007
 # (C) Filnik, 2008
 #
 # Distributed under the terms of the MIT license.
@@ -33,7 +33,7 @@ comment = {
     'en': u'images for elimination',
     'he': u'תמונות להסרה',
     'it': u'Bot: segnalo immagine orfana da eliminare',
-    'pt': u'marcação de imagens para eliminação',
+    'pt': u'Bot: marcação de imagens para eliminação',
     }
 
 template_to_the_image = {
@@ -87,7 +87,7 @@ def main():
     basicgenerator = pagegenerators.UnusedFilesGenerator()
     generator = pagegenerators.PreloadingGenerator(basicgenerator)
     for page in generator:
-        #print page.title()
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% page.title())
         if except_text_translated not in page.getImagePageHtml() and 'http://' not in page.get():
             wikipedia.output(u'\n' + page.title())
             appendtext(page, template_image, always)
