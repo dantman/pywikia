@@ -2001,7 +2001,7 @@ not supported by PyWikipediaBot!"""
         else:
             response, data = self.site().postForm(address, predata)
         data = data.encode(self.site().encoding())
-        get_throttle.setDelay(time.time() - now)
+#        get_throttle.setDelay(time.time() - now)
         output = []
         # TODO: parse XML using an actual XML parser instead of regex!
         r = re.compile("\<revision\>.*?\<id\>(?P<id>.*?)\<\/id\>.*?\<timestamp\>(?P<timestamp>.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(?P<user>.*?)\</(?:ip|username)\>.*?\<text.*?\>(?P<content>.*?)\<\/text\>",re.DOTALL)
@@ -2837,7 +2837,7 @@ class _GetAll(object):
             # The XML parser doesn't expect a Unicode string, but an encoded one,
             # so we'll encode it back.
             data = data.encode(self.site.encoding())
-        get_throttle.setDelay(time.time() - now)
+#        get_throttle.setDelay(time.time() - now)
         return data
 
 def getall(site, pages, throttle=True, force=False):
