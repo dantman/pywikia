@@ -8,6 +8,9 @@ Can be using with:
 -featured      Run over featured pages
 -page:XXX      Run over only one page
 
+Run fixing_redirects.py -help to see all the command-line
+options -file, -ref, -links, ...
+
 """
 #
 # This script based on disambredir.py and solve_disambiguation.py
@@ -19,6 +22,12 @@ __version__='$Id: disambredir.py 4407 2007-10-03 17:27:14Z leogregianin $'
 import wikipedia
 import pagegenerators
 import re, sys
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 msg = {
     'ar': u'بوت: إصلاح التحويلات',
@@ -122,6 +131,7 @@ def treat(text, linkedPage, targetPage):
     return text
 
 def workon(page):
+    mysite = wikipedia.getSite()
     try:
         text = page.get()
     except wikipedia.IsRedirectPage:
@@ -139,11 +149,17 @@ def workon(page):
         comment = wikipedia.translate(mysite, msg)
         page.put(text, comment)
 
-try:
+def main():
     start = '!'
     featured = False
     title = None
     namespace = None
+    gen = None
+
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-start'):
@@ -163,6 +179,10 @@ try:
                 namespace = int(wikipedia.input(u'Which namespace should be processed?'))
             else:
                 namespace = int(arg[11:])
+        else:
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
 
     mysite = wikipedia.getSite()
     if mysite.sitename() == 'wikipedia:nl':
@@ -183,9 +203,14 @@ try:
     elif namespace is not None:
         for page in pagegenerators.AllpagesPageGenerator(start=start, namespace=namespace, includeredirects=False):
             workon(page)
+    elif gen:
+        for page in pagegenerators.PreloadingGenerator(gen):
+            workon(page)
     else:
         wikipedia.showHelp('fixing_redirects')
-        sys.exit()
 
-finally:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
