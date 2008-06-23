@@ -115,6 +115,17 @@ fixes['example'] = {
         f.close()
         print "'%s' written." % _fnf
 
-
-create_user_config()
-create_user_fixes()
+if __name__ == "__main__":
+    print "1: Create user_config.py file"
+    print "2: Create user_fixes.py file"
+    print "3: The two files"
+    choice = raw_input(u"What do you do? ")
+    if choice == "1":
+        create_user_config()
+    if choice == "2":
+        create_user_fixes()
+    if choice == "3":
+        create_user_config()
+        create_user_fixes()
+    if not choice in ["1", "2", "3"]:
+        print "Nothing to do"
