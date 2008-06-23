@@ -2163,7 +2163,7 @@ not supported by PyWikipediaBot!"""
             else:
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
-                self.site().checkBlocks(sysop = sysop)
+                self.site().checkBlocks(sysop = True)
                 if self.site().mediawiki_message('actioncomplete') in data:
                     output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
                     return True
@@ -2279,7 +2279,7 @@ not supported by PyWikipediaBot!"""
         self._getActionUser(action = 'undelete', sysop = True)
 
         # Check blocks
-        self.site().checkBlocks(sysop = sysop)
+        self.site().checkBlocks(sysop = True)
 
         if throttle:
             put_throttle()
@@ -2318,10 +2318,10 @@ not supported by PyWikipediaBot!"""
 
         """
         # Login
-        sysop = self._getActionUser(action = 'protect', sysop = True)
+        self._getActionUser(action = 'protect', sysop = True)
 
         # Check blocks
-        self.site().checkBlocks(sysop = sysop)
+        self.site().checkBlocks(sysop = True)
 
         address = self.site().protect_address(self.urlname())
         if unprotect:
@@ -2396,7 +2396,7 @@ not supported by PyWikipediaBot!"""
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
-                self.site().checkBlocks(sysop = sysop)
+                self.site().checkBlocks(sysop = True)
                 output(u'Failed to change protection level of page %s:'
                        % self.aslink())
                 output(u"HTTP response code %s" % response.status)
