@@ -1657,7 +1657,7 @@ not supported by PyWikipediaBot!"""
                 results.append(page)
         if loose:
             ns = getSite().image_namespace()
-            imageR = re.compile('\w\w\w+\.(?:gif|png|jpg|jpeg|svg)', re.IGNORECASE)
+            imageR = re.compile('\w\w\w+\.(?:gif|png|jpg|jpeg|svg|JPG|xcf|pdf|mid|ogg|djvu)', re.IGNORECASE)
             for imageName in imageR.findall(pageText):
                 results.append(ImagePage(self.site(), ns + ':' + imageName))
         return list(set(results))
