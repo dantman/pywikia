@@ -92,7 +92,7 @@ msg = {
     'nl': u'Robot-geholpen doorverwijzing: [[%s]] - Link(s) veranderd naar %s',
     'no': u'bot: Retter lenke til peker: %s - Endret lenke(r) til %s',
     'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Zmieniono link(i) %s',
-    'pt': u'Desambiguação assistida por bot: %s - Mudado(s) link(s) para %s',
+    'pt': u'Desambiguação assistida por bot: %s link(s) mudado(s) para %s',
     'ru': u'Разрешение значений с помощью бота: %s - Changed link(s) to %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Changed link(s) to %s',
     'sv': u'Länkar direkt till rätt artikel för: %s - Bytte länk(ar) till %s',
@@ -115,7 +115,7 @@ msg_unlink = {
     'nl': u'Robot-geholpen doorverwijzing: [[%s]] - Link(s) weggehaald.',
     'no': u'bot: Retter lenke til peker: %s - Fjernet lenke(r)',
     'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Usunięto link(i)',
-    'pt': u'Desambiguação assistida por bot: %s - Removido(s) link(s)',
+    'pt': u'Desambiguação assistida por bot: %s link(s) removido(s)',
     'ru': u'Разрешение значений с помощью бота: %s - Removed link(s)',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
     'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
@@ -138,7 +138,7 @@ msg_redir = {
     'nl': u'Robot-geholpen redirect-oplossing: [[%s]] - Link(s) veranderd naar %s',
     'no': u'bot: Endrer omdirigeringslenke: %s - Endret lenke(r) til %s',
     'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Zmieniono link(i) %s',
-    'pt': u'Desambiguação assistida por bot: %s - Mudado(s) link(s) para %s',
+    'pt': u'Desambiguação assistida por bot: %s link(s) mudados para %s',
     'ru': u'Разрешение значений с помощью бота: %s - Changed link(s) to %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Changed link(s) to %s',
     'sv': u'Länkar direkt till rätt artikel för: %s - Bytte länk(ar) till %s',
@@ -161,7 +161,7 @@ msg_redir_unlink = {
     'nl': u'Robot-geholpen redirect-oplossing: [[%s]] - Link(s) weggehaald',
     'no': u'bot: Endrer omdirigeringslenke: %s - Fjernet lenke(r)',
     'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Usunięto link(i)',
-    'pt': u'Desambiguação assistida por bot: %s - Removido(s) link(s)',
+    'pt': u'Desambiguação assistida por bot: %s link(s) removidos',
     'ru': u'Разрешение значений с помощью бота: %s - Removed link(s)',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
     'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
@@ -195,7 +195,7 @@ primary_topic_format = {
 
 ignore_title = {
     'wikipedia': {
-	    'ar': [
+        'ar': [
             u'تصنيف:صفحات توضيح',
         ],
         'cs': [

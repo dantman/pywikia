@@ -134,7 +134,7 @@ class SpeedyRobot:
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
-	    'ar':u'صفحة نقاش يتيمة',
+        'ar':u'صفحة نقاش يتيمة',
         'de':u'Verwaiste Diskussionsseite',
         'en':u'Orphaned talk page',
         'he':u'דף שיחה של ערך שנמחק',
