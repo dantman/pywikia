@@ -50,26 +50,31 @@ import pagegenerators
 # Summary messages for protecting from a category.
 msg_simple_protect = {
     'en': u'Bot: Protecting a list of files.',
+	'ar': u'بوت: حماية قائمة من الملفات.',
     'it': u'Bot: Protezione di una lista di pagine.',
     'pt': u'Bot: Protegendo uma lista de artigos.',
 }
 msg_protect_category = {
     'en': u'Robot - Protecting all pages from category %s',
+	'ar': u'روبوت - حماية كل الصفحات من التصنيف %s',
     'it': u'Bot: Protezione di tutte le pagine nella categoria %s.',
     'pt': u'Bot: Protegendo todos os artigos da categoria %s',
 }
 msg_protect_links = {
     'en': u'Robot - Protecting all pages linked from %s',
+	'ar': u'روبوت - حماية كل الصفحات الموصولة من %s',
     'it': u'Bot: Protezione di tutte le pagine linkate da %s.',
     'pt': u'Bot: Protegendo todos os artigos ligados a %s',
 }
 msg_protect_ref = {
     'en': u'Robot - Protecting all pages referring from %s',
+	'ar': u'روبوت - حماية كل الصفحات الراجعة من %s',
     'it': u'Bot: Protezione di tutte le pagine con link verso %s.',
     'pt': u'Bot: Protegendo todos os artigos afluentes a %s',
 }
 msg_protect_images = {
     'en': u'Robot - Protecting all images on page %s',
+	'ar': u'روبوت - حماية كل الصور في الصفحة %s',
     'it': u'Bot: Protezione di tutte le immagini presenti in %s.',
     'pt': u'Bot: Protegendo todas as imagens do artigo %s',
 }
