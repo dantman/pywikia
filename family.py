@@ -2849,7 +2849,7 @@ class Family:
         'kk': [u'айдау'],
         'mzn': [u'تغییرمسیر'],
         'nn': [u'omdiriger'],
-        'ru': [u'redirect', u'перенаправление', u'перенапр'], # localised version is not so used, so put the default
+        'ru': [u'REDIRECT', u'перенаправление', u'перенапр'], # localised version is not so used, so put the default
                                                                                 # one as the most used.
         'sk': [u'presmeruj'],
         'sr': [u'преусмери',u'Преусмери'], # Using lowercase only doesn't work?
