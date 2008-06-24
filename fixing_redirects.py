@@ -65,6 +65,9 @@ def treat(text, linkedPage, targetPage):
     """
     Based on the method of the same name in solve_disambiguation.py
     """
+    mysite = wikipedia.getSite()
+    linktrail = mysite.linktrail()
+    
     # make a backup of the original text so we can show the changes later
     linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
     curpos = 0
@@ -79,7 +82,7 @@ def treat(text, linkedPage, targetPage):
         if m.group('title') == '' or mysite.isInterwikiLink(m.group('title')):
             continue
         else:
-            actualLinkPage = wikipedia.Page(page.site(), m.group('title'))
+            actualLinkPage = wikipedia.Page(targetPage.site(), m.group('title'))
             # Check whether the link found is to page.
             if actualLinkPage != linkedPage:
                 continue
@@ -147,7 +150,10 @@ def workon(page):
         text = treat(text, page2, target)
     if text != page.get():
         comment = wikipedia.translate(mysite, msg)
-        page.put(text, comment)
+        try:
+            page.put(text, comment)
+        except (wikipedia.Error):
+            wikipedia.output('Error : unable to put %s' % page.aslink())
 
 def main():
     start = '!'
