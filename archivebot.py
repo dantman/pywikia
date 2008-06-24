@@ -63,6 +63,15 @@ messages = {
             'ArchiveSummary': u'Archiwizacja %(count)d wątków z [[%(from)s]].',
             'OlderThanSummary': u'starsze niż',
             },
+        # fix below
+        'pt': {
+            'ArchiveFull': u'(ARQUIVO COMPLETO)',
+            'InitialArchiveHeader': u'{{talkarchive}}',
+            'PageSummary': u'Arquivando %(count)d thread(s) (%(why)s) to %(archives)s.',
+            'ArchiveSummary': u'Archiving %(count)d thread(s) from [[%(from)s]].',
+            'OlderThanSummary': u'older than',
+            },
+
         'sv': {
             'ArchiveFull': u'(ARKIV FULLT)',
             'InitialArchiveHeader': u'{{arkiv}}',
@@ -475,6 +484,8 @@ def main():
             except:
                 wikipedia.output(u'Error occured while processing page [[%s]]' % pg.title())
                 traceback.print_exc()
+    else:
+        wikipedia.showHelp("archivebot")
 
 
 if __name__ == '__main__':
