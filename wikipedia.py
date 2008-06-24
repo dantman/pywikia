@@ -474,13 +474,19 @@ not supported by PyWikipediaBot!"""
         """Return the character encoding used on this Page's wiki Site."""
         return self._site.encoding()
 
-    def title(self, underscore = False, savetitle = False):
+    def title(self, underscore = False, savetitle = False, decode=False):
         """Return the title of this Page, as a Unicode string.
 
         If underscore is True, replace all ' ' characters with '_'.
         If savetitle is True, encode any wiki syntax in the title.
+        If decode is True, decodes the section title 
         """
         title = self._title
+        if decode:
+            begin = title.find('#')
+            if begin != -1:
+                anchor = self.section(underscore = underscore, decode = True)
+                title = title[:begin + 1] + anchor
         if savetitle:
             # Ensure there's no wiki syntax in the title
             title = title.replace(u"''", u'%27%27')
@@ -495,13 +501,19 @@ not supported by PyWikipediaBot!"""
         else:
             return self.sectionFreeTitle(underscore=underscore).split(':', 1)[1]
 
-    def section(self, underscore = False):
+    def section(self, underscore = False, decode=False):
         """Return the name of the section this Page refers to.
 
         The section is the part of the title following a '#' character, if any.
         If no section is present, return None.
         """
-        return self._section
+        section = self._section
+        if section and decode:
+            section = section.replace('.', '%')
+            section = url2unicode(section, self._site)
+            if not underscore:
+                section = section.replace('_', ' ')
+        return section
 
     def sectionFreeTitle(self, underscore=False):
         """Return the title of this Page, without the section (if any)."""
@@ -543,14 +555,14 @@ not supported by PyWikipediaBot!"""
                     and self.site().family.name != self.site().lang:
                 return u'[[%s:%s:%s]]' % (self.site().family.name,
                                           self.site().lang,
-                                          self.title(savetitle=True))
+                                          self.title(savetitle=True,decode=True))
             else:
                 return u'[[%s:%s]]' % (self.site().lang,
-                                       self.title(savetitle=True))
+                                       self.title(savetitle=True,decode=True))
         elif textlink and (self.isImage() or self.isCategory()):
-                return u'[[:%s]]' % self.title(savetitle=True)
+                return u'[[:%s]]' % self.title(savetitle=True,decode=True)
         else:
-            return u'[[%s]]' % self.title(savetitle=True)
+            return u'[[%s]]' % self.title(savetitle=True, decode=True)
 
     def autoFormat(self):
         """Return (dictName, value) if title is in date.autoFormat dictionary.
