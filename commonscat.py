@@ -84,6 +84,7 @@ commonscatTemplates = {
     'th' : u'Commonscat',
     'tr' : u'CommonsKat',
     'uk' : u'Commonscat',
+    'uz' : u'Commonscat',
     'vi' : u'Commonscat',
     'zh' : u'Commonscat',
     'zh-yue' : u'同享類'
