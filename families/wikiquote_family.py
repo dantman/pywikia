@@ -92,7 +92,7 @@ class Family(family.Family):
             'he': u'שיחת ויקיציטוט',
             'hi': u'Wikiquote वार्ता',
             'hr': u'Razgovor Wikicitat',
-            'hu': u'Wikidézet vita',
+            'hu': u'Wikidézet-vita',
             'hy': u'Վիքիքաղվածքի քննարկում',
             'id': u'Pembicaraan Wikiquote',
             'is': u'Wikivitnunspjall',

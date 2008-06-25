@@ -93,7 +93,7 @@ class Family(family.Family):
             'he': u'שיחת ויקיטקסט',
             'hr': u'Razgovor o Wikizvoru',
             'ht': u'Diskisyon Wikisòrs',
-            'hu': u'Wikiforrás vita',
+            'hu': u'Wikiforrás-vita',
             'hy': u'Վիքիդարանի քննարկում',
             'id': u'Pembicaraan Wikisource',
             'is': u'Wikiheimildspjall',

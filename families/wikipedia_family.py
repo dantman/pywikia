@@ -46,8 +46,6 @@ class Family(family.Family):
         # Override defaults
         self.namespaces[2]['cs'] = u'Wikipedista'
         self.namespaces[3]['cs'] = u'Wikipedista diskuse'
-        self.namespaces[2]['hu'] = u'Szerkesztő'
-        self.namespaces[3]['hu'] = u'Szerkesztővita'
         self.namespaces[2]['pl'] = u'Wikipedysta'
         self.namespaces[3]['pl'] = u'Dyskusja wikipedysty'
 

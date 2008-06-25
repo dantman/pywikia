@@ -134,7 +134,7 @@ class Family(family.Family):
             'hi': u'विक्षनरी वार्ता',
             'hr': u'Razgovor Wječnik',
             'hsb': u'Wiktionary diskusija',
-            'hu': u'Wikiszótár vita',
+            'hu': u'Wikiszótár-vita',
             'hy': u'Վիքիբառարանի քննարկում',
             'ia': u'Discussion Wiktionary',
             'id': u'Pembicaraan Wiktionary',
