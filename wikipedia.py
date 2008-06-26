@@ -215,6 +215,10 @@ class PageNotFound(Error):
 class CaptchaError(Error):
     """Captcha is asked and config.solve_captcha == False."""
 
+class NoHash(Error):
+    """ The APIs don't return any Hash for the image searched.
+        Really Strange, better to raise an error. """
+
 SaxError = xml.sax._exceptions.SAXParseException
 
 # Pre-compile re expressions
@@ -2627,10 +2631,43 @@ class ImagePage(Page):
         try:
             # We don't know the page's id, if any other better idea please change it
             pageid = data['query']['pages'].keys()[0]
-            nick = data['query']['pages'][pageid][u'imageinfo'][0]['user']
-            return nick
+            nick = data['query']['pages'][pageid][u'imageinfo'][0][u'user']
+            timestamp = data['query']['pages'][pageid][u'imageinfo'][0][u'timestamp']
+            return [nick, timestamp]
         except IndexError:
             raise NoPage(u'API Error, nothing found in the APIs')
+
+    def getDuplicates(self):
+        params = {
+            'action'    :'query',
+            'titles'    :self.title(),
+            'prop'      :'imageinfo',
+            'iiprop'    :'sha1',
+            }
+        data = query.GetData(params, useAPI = True, encodeTitle = False)
+        pageid = data['query']['pages'].keys()[0]
+        try:
+            hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
+        except KeyError:
+            if self.exists():
+                raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
+            else:
+                wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
+                return None
+        #action=query&format=xml&list=allimages&aisha1=%s
+        image_namespace = "%s:" % self._site.image_namespace() # Image:
+        params = {
+            'action'    :'query',
+            'list'      :'allimages',
+            'aisha1'    :hash_found,
+        }
+        data = query.GetData(params, useAPI = True, encodeTitle = False)
+        allimages = data['query']['allimages']
+        duplicates = list()
+        for imagedata in allimages:
+            image = imagedata[u'descriptionurl'].split('/wiki/%s' % image_namespace)[1]
+            duplicates.append(image)
+        return duplicates
 
     def getFileVersionHistoryTable(self):
         """Return the version history in the form of a wiki table."""
