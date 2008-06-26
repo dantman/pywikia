@@ -661,10 +661,10 @@ class main:
 
     def returnOlderTime(self, listGiven, timeListGiven):
         """ Get some time and return the oldest of them """
-        #print listGiven; print timeListGiven
-        #Output:
-        #[[1210596312.0, u'Autoritratto.png'], [1210590240.0, u'Duplicato.png'], [1210592052.0, u'Duplicato_2.png']]
-        #[1210596312.0, 1210590240.0, 1210592052.0]
+        # print listGiven; print timeListGiven
+        # -- Output: --
+        # [[1210596312.0, u'Autoritratto.png'], [1210590240.0, u'Duplicato.png'], [1210592052.0, u'Duplicato_2.png']]
+        # [1210596312.0, 1210590240.0, 1210592052.0]
         usage = False
         num = 0
         num_older = None
@@ -673,8 +673,8 @@ class main:
             imageName = element[1]
             imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % imageName)
             imageUsage = [page for page in imagePage.usingPages()]
-            if len(imageUsage) != 0 and imageUsage > max_usage:
-                max_usage = imageUsage
+            if len(imageUsage) > 0 and len(imageUsage) > max_usage:
+                max_usage = len(imageUsage)
                 num_older = num
             num += 1
         if num_older != None:
@@ -782,10 +782,10 @@ class main:
                     if re.findall(dupRegex, DupPageText) == [] and re.findall(dupRegex, older_page_text) == []:
                         wikipedia.output(u'%s is a duplicate and has to be tagged...' % duplicate)
                         images_to_tag_list.append(duplicate)
-                        if duplicate != duplicates[-1]:
-                            string += "[[:%s%s]], " % (self.image_namespace, duplicate)
-                        else:
-                            string += "[[:%s%s]]" % (self.image_namespace, duplicate)
+                        #if duplicate != duplicates[-1]:
+                        string += "*[[:%s%s]]\n" % (self.image_namespace, duplicate)
+                        #else:
+                        #    string += "*[[:%s%s]]" % (self.image_namespace, duplicate)
                     else:
                         wikipedia.output(u"Already put the dupe-template in the image's page or in the dupe's page. Skip.")
                         return True # Ok - No problem. Let's continue the checking phase
@@ -797,7 +797,9 @@ class main:
                 if len(images_to_tag_list) != 0:                        
                     self.report(re.sub(r'__image__', r'%s' % older_image_ns, dupText), images_to_tag_list[-1],
                         dupTalkText % (older_image_ns, string), dupTalkHead, commTalk = dupComment_talk,
-                            commImage = dupComment_image, unver = True)                    
+                            commImage = dupComment_image, unver = True)
+            if older_image != self.image:
+                return False # The image is a duplicate, it will be deleted.
         return True # Ok - No problem. Let's continue the checking phase
         
     def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
@@ -839,7 +841,7 @@ class main:
             lista = list()
             try:
                 testo = x.get()
-                rxp = "<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
+                rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
                 r = re.compile(rxp, re.UNICODE|re.M)
                 number = 1
                 while 1:
@@ -875,20 +877,18 @@ class main:
         load_2 = True
         # I search with a regex how many user have not the talk page
         # and i put them in a list (i find it more easy and secure)
-        while 1:
-            regl = "(\"|\')(.*?)(\"|\')(, |\])"
-            pl = re.compile(regl, re.UNICODE)
-            xl = pl.search(raw, pos)
+        regl = r"(?:\"|\')(.*?)(?:\"|\')(?:, |\])"
+        pl = re.compile(regl, re.UNICODE)
+        for xl in pl.finditer(raw):
             if xl == None:
                 if len(list_loaded) >= 1:
                     return list_loaded
                     break
-                elif len(done) == 0:
-                    break
             pos = xl.end()
-            word = xl.group(2)
+            word = xl.group(1)
             if word not in list_loaded:
-                list_loaded.append(word)  
+                list_loaded.append(word)
+        return list_loaded
                         
 def checkbot():
     """ Main function """
