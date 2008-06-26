@@ -173,6 +173,8 @@ def addCommonscat (page = None, summary = None, always = False):
                             commonscats.append(commonscatpage);
                             wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + commonscatpage.title() + ".");
                             commonscatpage = None
+            if len(commonscats) > 0:
+                break
         if len(commonscats) > 0:
             commonscatpage = commonscats.pop();
             commonscat = commonscatpage.titleWithoutNamespace()
