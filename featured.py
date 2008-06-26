@@ -81,7 +81,7 @@ msg = {
     'pl': u'Bot: Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Bot: Ligando artigos destacados para [[%s:%s]]',
     'ru': u'Робот: робот: избранная статья [[%s:%s]]',
-    'sk': u'Bot: [[%s:%s]] je najlep lnok',
+    'sk': u'Bot: [[%s:%s]] je najlepší článok',
     'sr': u'Bot: Међувики за изабране чланке за [[%s:%s]]',
     'sv': u'Bot: [[%s:%s]] är en utmärkt artikel',
     'th': u'บอต: ลิงก์บทความคัดสรร [[%s:%s]]',
