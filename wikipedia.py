@@ -2637,8 +2637,10 @@ class ImagePage(Page):
         except IndexError:
             raise NoPage(u'API Error, nothing found in the APIs')
 
-    def getDuplicates(self):
-        """ Function that uses APIs to give the duplicates of the given image """
+    def getHash(self):
+        """ Function that return the Hash of an image in oder to understand if two
+            Images are the same or not.
+            """
         params = {
             'action'    :'query',
             'titles'    :self.title(),
@@ -2656,22 +2658,9 @@ class ImagePage(Page):
             else:
                 wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
                 return None
-        # Now get all the images with the same hash
-        #action=query&format=xml&list=allimages&aisha1=%s
-        image_namespace = "%s:" % self._site.image_namespace() # Image:
-        params = {
-            'action'    :'query',
-            'list'      :'allimages',
-            'aisha1'    :hash_found,
-        }
-        data = query.GetData(params, useAPI = True, encodeTitle = False)
-        allimages = data['query']['allimages']
-        duplicates = list()
-        for imagedata in allimages:
-            image = imagedata[u'descriptionurl'].split('/wiki/%s' % image_namespace)[1]
-            duplicates.append(image)
-        return duplicates
-
+        else:
+            return hash_found
+            
     def getFileVersionHistoryTable(self):
         """Return the version history in the form of a wiki table."""
         lines = []
@@ -5729,6 +5718,33 @@ your connection is down. Retrying in %i minutes..."""
             return self._token[index]
         else:
             return False
+
+    def getImagesFromAnHash(self, hash_found = None):
+        """ Function that uses APIs to give the images that has the same hash. Useful
+            to find duplicates or nowcommons.
+            
+            NOTE: it returns also the image itself, if you don't want it, just
+            filter the list returned.
+
+            NOTE 2: it returns the image WITHOUT the image namespace.
+        """
+        if hash_found == None: # If the hash is none return None and not continue
+            return None
+        # Now get all the images with the same hash
+        #action=query&format=xml&list=allimages&aisha1=%s
+        image_namespace = "%s:" % self.image_namespace() # Image:
+        params = {
+            'action'    :'query',
+            'list'      :'allimages',
+            'aisha1'    :hash_found,
+        }
+        data = query.GetData(params, site = getSite(self.lang, self.family), useAPI = True, encodeTitle = False)
+        allimages = data['query']['allimages']
+        duplicates = list()
+        for imagedata in allimages:
+            image = imagedata[u'descriptionurl'].split('/wiki/%s' % image_namespace)[1]
+            duplicates.append(image)
+        return duplicates
 
 # Caches to provide faster access
 _sites = {}
