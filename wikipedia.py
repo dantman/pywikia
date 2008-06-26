@@ -2638,12 +2638,14 @@ class ImagePage(Page):
             raise NoPage(u'API Error, nothing found in the APIs')
 
     def getDuplicates(self):
+        """ Function that uses APIs to give the duplicates of the given image """
         params = {
             'action'    :'query',
             'titles'    :self.title(),
             'prop'      :'imageinfo',
             'iiprop'    :'sha1',
             }
+        # First of all we need the Hash that identify an image
         data = query.GetData(params, useAPI = True, encodeTitle = False)
         pageid = data['query']['pages'].keys()[0]
         try:
@@ -2654,6 +2656,7 @@ class ImagePage(Page):
             else:
                 wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
                 return None
+        # Now get all the images with the same hash
         #action=query&format=xml&list=allimages&aisha1=%s
         image_namespace = "%s:" % self._site.image_namespace() # Image:
         params = {
