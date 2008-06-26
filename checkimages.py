@@ -701,9 +701,12 @@ class main:
         """ Checking if the image is on commons """
         self.image = image
         wikipedia.output(u'Checking if %s is on commons...' % self.image)
-        commons = wikipedia.getSite('commons', 'commons')
+        commons_site = wikipedia.getSite('commons', 'commons')
         regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:%s\]\]$" % (self.image, self.image)
-        if wikipedia.Page(commons, u'Image:%s' % self.image).exists():
+        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+        hash_found = imagePage.getHash()
+        commons_image_with_this_hash = commons_site.getImagesFromAnHash(hash_found)
+        if commons_image_with_this_hash != []:
             wikipedia.output(u'%s is on commons!' % self.image)
             imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
             on_commons_text = imagePage.getImagePageHtml()
@@ -716,7 +719,7 @@ class main:
                 wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % image)
                 return True # Problems? No, it's only not on commons but the image needs a check
             else:            
-                repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, self.image)
+                repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
                 self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
                 # Problems? No, return True
                 return True
@@ -735,8 +738,9 @@ class main:
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
         self.image = image
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
-        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)               
-        duplicates = imagePage.getDuplicates()
+        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+        hash_found = imagePage.getHash()
+        duplicates = self.site.getImagesFromAnHash(hash_found)
         if duplicates == None:
             return False # Error, we need to skip the page.
         if len(duplicates) > 1:
