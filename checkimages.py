@@ -80,7 +80,7 @@ __version__ = '$Id$'
 #
 
 import re, time, urllib, urllib2, os, locale, sys
-import wikipedia, config, pagegenerators, catlib
+import wikipedia, config, pagegenerators, catlib, query
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -384,10 +384,6 @@ class LogIsFull(wikipedia.Error):
 class NothingFound(wikipedia.Error):
     """ An exception indicating that a regex has return [] instead of results."""
 
-class NoHash(wikipedia.Error):
-    """ The APIs don't return any Hash for the image searched.
-        Really Strange, better to raise an error. """
-
 # Other common useful functions
 def printWithTimeZone(message):
     """ Function to print the messages followed by the TimeZone encoded correctly. """
@@ -400,23 +396,6 @@ def printWithTimeZone(message):
         time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
     wikipedia.output(u"%s%s" % (message, time_zone))
                         
-def returnOlderTime(listGiven, timeListGiven):
-    """ Get some time and return the oldest of them """
-    #print listGiven; print timeListGiven
-    #Output:
-    #[[1210596312.0, u'Autoritratto.png'], [1210590240.0, u'Duplicato.png'], [1210592052.0, u'Duplicato_2.png']]
-    #[1210596312.0, 1210590240.0, 1210592052.0]
-    for element in listGiven:
-        time = element[0]
-        imageName = element[1]
-        not_the_oldest = False
-        for time_selected in timeListGiven:
-            if time > time_selected:
-                not_the_oldest = True
-                break
-        if not_the_oldest == False:
-            return imageName     
-
 class EmailSender(wikipedia.Page):
     """ Class to send emails through the Wikipedia's dedicated page. """
     def __init__(self, site, user):
@@ -424,6 +403,7 @@ class EmailSender(wikipedia.Page):
         self.user = user
         page_special_name = u'Special:EmailUser'
         self.page_special_name = page_special_name
+        # Special:EmailUser/Filnik
         page = '%s/%s' % (self.page_special_name, self.user)
         self.page = page
         wikipedia.Page.__init__(self, site, page, None, 0)
@@ -563,7 +543,7 @@ class main:
         # paginetta it's the image page object.
         paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
         try:
-            nick = paginetta.getLatestUploader()
+            nick = paginetta.getLatestUploader()[0]
         except wikipedia.NoPage:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
             repme = "\n*[[:Image:%s]] problems '''with the APIs'''"
@@ -679,6 +659,44 @@ class main:
                 yield image
                 #continue
 
+    def returnOlderTime(self, listGiven, timeListGiven):
+        """ Get some time and return the oldest of them """
+        #print listGiven; print timeListGiven
+        #Output:
+        #[[1210596312.0, u'Autoritratto.png'], [1210590240.0, u'Duplicato.png'], [1210592052.0, u'Duplicato_2.png']]
+        #[1210596312.0, 1210590240.0, 1210592052.0]
+        usage = False
+        num = 0
+        num_older = None
+        max_usage = 0
+        for element in listGiven:
+            imageName = element[1]
+            imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % imageName)
+            imageUsage = [page for page in imagePage.usingPages()]
+            if len(imageUsage) != 0 and imageUsage > max_usage:
+                max_usage = imageUsage
+                num_older = num
+            num += 1
+        if num_older != None:
+            return listGiven[num_older][1]
+        for element in listGiven:
+            time = element[0]
+            imageName = element[1]
+            not_the_oldest = False
+            for time_selected in timeListGiven:
+                if time > time_selected:
+                    not_the_oldest = True
+                    break
+            if not_the_oldest == False:
+                return imageName
+
+    def convert_to_url(self, page):
+        # Function stolen from wikipedia.py
+        """The name of the page this Page refers to, in a form suitable for the URL of the page."""
+        title = page.replace(" ", "_")
+        encodedTitle = title.encode(self.site.encoding())
+        return urllib.quote(encodedTitle)
+
     def checkImageOnCommons(self, image):
         """ Checking if the image is on commons """
         self.image = image
@@ -706,13 +724,6 @@ class main:
             # Problems? No, return True
             return True
 
-    def convert_to_url(self, page):
-        # Function stolen from wikipedia.py
-        """The name of the page this Page refers to, in a form suitable for the URL of the page."""
-        title = page.replace(" ", "_")
-        encodedTitle = title.encode(self.site.encoding())
-        return urllib.quote(encodedTitle)
-
     def checkImageDuplicated(self, image):
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
@@ -722,23 +733,12 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-
         self.image = image
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
-        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
-        wikipedia.output(u'Checking if %s has duplicates...' % image)
-        get_hash = self.site.getUrl(self.site.apipath() + '?action=query&format=xml&titles=Image:%s&prop=imageinfo&iiprop=sha1' % self.convert_to_url(self.image))
-        hash_found_list = re.findall(r'<ii sha1="(.*?)" />', get_hash)
-        if hash_found_list != []:
-            hash_found = hash_found_list[0]
-        else:
-            if imagePage.exists():
-                raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
-            else:
-                wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
-                return False # Error, we need to skip the page.
-        get_duplicates = self.site.getUrl(self.site.apipath() + '?action=query&format=xml&list=allimages&aisha1=%s' % hash_found)
-        duplicates = re.findall(r'<img name="(.*?)".*?/>', get_duplicates)
+        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)               
+        duplicates = imagePage.getDuplicates()
+        if duplicates == None:
+            return False # Error, we need to skip the page.
         if len(duplicates) > 1:
             if len(duplicates) == 2:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
@@ -758,17 +758,13 @@ class main:
                 time_list = list()
                 for duplicate in duplicates:
                     DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
-                    imagedata = DupePage.getFileVersionHistory()[-1][0]
-                    try:
-                        # Example: 21:15, 5 ott 2005
-                        data = time.strptime(imagedata, "%H:%M, %d %b %Y")
-                    except ValueError:
-                        # Example: 21:15, 5 Ottobre 2005
-                        data = time.strptime(imagedata, "%H:%M, %d %B %Y")
+                    imagedata = DupePage.getLatestUploader()[1]
+                    # '2008-06-18T08:04:29Z'
+                    data = time.strptime(imagedata, "%Y-%m-%dT%H:%M:%SZ")
                     data_seconds = time.mktime(data)
                     time_image_list.append([data_seconds, duplicate])
                     time_list.append(data_seconds)
-                older_image = returnOlderTime(time_image_list, time_list)
+                older_image = self.returnOlderTime(time_image_list, time_list)
                 # And if the images are more than two?
                 Page_oder_image = wikipedia.ImagePage(self.site, u'Image:%s' % older_image)
                 string = ''
@@ -895,6 +891,7 @@ class main:
                 list_loaded.append(word)  
                         
 def checkbot():
+    """ Main function """
     # Command line configurable parameters
     repeat = True # Restart after having check all the images?
     limit = 80 # How many images check?
