@@ -11,8 +11,10 @@ See imagerecat.py (still working on that one) to add these images to categories.
 #
 #
 
-import os, sys, re, codecs
-import wikipedia, config, pagegenerators  
+import os, sys, re, codecs 
+import wikipedia, config, pagegenerators, query  
+from datetime import datetime
+from datetime import timedelta 
 
 #Probably unneeded because these are hidden categories. Have to figure it out.
 ignoreCategories = [u'[[Category:CC-BY-SA-3.0]]',
@@ -1135,6 +1137,38 @@ ignoreTemplates = [ u'1000Bit',
 puttext = u'\n{{Uncategorized|year={{subst:CURRENTYEAR}}|month={{subst:CURRENTMONTHNAME}}|day={{subst:CURRENTDAY}}}}'
 putcomment = u'Please add categories to this image'
 
+def uploadedYesterday(site = None):
+    '''
+    Return a pagegenerator containing all the pictures uploaded yesterday.
+    Should probably copied to somewhere else
+    '''
+    result = []
+    dateformat ="%Y-%m-%dT00:00:00Z"
+    today = datetime.now()
+    yesterday = today + timedelta(days=-1)
+
+    params = {
+        'action'    :'query',
+        'list'      :'logevents',
+        'leprop'    :'title',
+        'letype'    :'upload',
+        'ledir'     :'newer',
+        'lelimit'   :'5000',
+        'lestart'   :yesterday.strftime(dateformat),
+        'leend'     :today.strftime(dateformat)
+        }    
+
+    data = query.GetData(params, site, useAPI = True, encodeTitle = False)
+    try:
+        for item in data['query']['logevents']:
+            result.append(item['title'])
+    except IndexError:
+        raise NoPage(u'API Error, nothing found in the APIs')
+    except KeyError:
+        raise NoPage(u'API Error, nothing found in the APIs')
+        
+    return pagegenerators.PagesFromTitlesGenerator(result, site)
+
 def isUncat(page):
     '''
     Do we want to skip this page?
@@ -1192,6 +1226,8 @@ def main(args):
                 generator = [wikipedia.Page(site, wikipedia.input(u'What page do you want to use?'))]
             else:
                 generator = [wikipedia.Page(site, arg[6:])]
+        elif arg.startswith('-yesterday'):
+            generator = uploadedYesterday(site)
         else:
             generator = genFactory.handleArg(arg)
     if not generator:        
