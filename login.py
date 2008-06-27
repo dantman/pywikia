@@ -149,12 +149,14 @@ class LoginManager:
                 if m:
                     L.append(m.group(1))
 
-            got_token = False
+            got_token = got_user = False
             for Ldata in L:
                 if 'Token=' in Ldata:
                     got_token = True
-
-            if got_token:
+                if 'User=' in Ldata or 'UserName=' in Ldata:
+                    got_user = True
+            
+            if got_token and got_user:
                 return "\n".join(L)
             elif not captchaAnswer:
                 captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
