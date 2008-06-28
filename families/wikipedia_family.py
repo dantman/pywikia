@@ -574,7 +574,7 @@ class Family(family.Family):
             'io':  [u'Homonimo', u'Disambig'],
             'is':  [u'Aðgreining', u'Disambig'],
             'it':  [u'Disambigua', u'Sigla2', u'Sigla3', u'Sigla4', u'Cogni'],
-            'ja':  [u'Aimai', u'Disambig'],
+            'ja':  [u'Aimai', u'Dab', u'曖昧さ回避', u'Disambig'],
             'ka':  [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
             'kab': [u'Asefham'],
             'kg':  [u'Bisongidila'],
