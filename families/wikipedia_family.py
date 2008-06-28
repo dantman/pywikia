@@ -583,7 +583,7 @@ class Family(family.Family):
             'ku':  [u'Cudakirin'],
             'kw':  [u'Klerheans'],
             'ksh': [u'Disambig',  u'disambig'],
-            'la':  [u'Discretiva'],
+            'la':  [u'Discretiva', u'Disnomen'],
             'lb':  [u'Homonymie', u'Disambig'],
             'li':  [u'Verdudeliking', u'Verdudelikingpazjena', u'Vp'],
             'lmo': [u'Desambiguació'],
