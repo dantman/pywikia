@@ -2641,25 +2641,29 @@ class ImagePage(Page):
         """ Function that return the Hash of an image in oder to understand if two
             Images are the same or not.
             """
-        params = {
-            'action'    :'query',
-            'titles'    :self.title(),
-            'prop'      :'imageinfo',
-            'iiprop'    :'sha1',
-            }
-        # First of all we need the Hash that identify an image
-        data = query.GetData(params, useAPI = True, encodeTitle = False)
-        pageid = data['query']['pages'].keys()[0]
-        try:
-            hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
-        except KeyError:
-            if self.exists():
-                raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
+        if self.exists():
+            params = {
+                'action'    :'query',
+                'titles'    :self.title(),
+                'prop'      :'imageinfo',
+                'iiprop'    :'sha1',
+                }
+            # First of all we need the Hash that identify an image
+            data = query.GetData(params, useAPI = True, encodeTitle = False)
+            pageid = data['query']['pages'].keys()[0]
+            try:
+                hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
+            except KeyError:
+                if self.exists():
+                    raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
+                else:
+                    wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
+                    return None
             else:
-                wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
-                return None
+                return hash_found
         else:
-            return hash_found
+            wikipedia.output(u'Image deleted before getting the Hash. Skipping...')
+            return None 
             
     def getFileVersionHistoryTable(self):
         """Return the version history in the form of a wiki table."""
