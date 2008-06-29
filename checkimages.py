@@ -465,12 +465,15 @@ class main:
         self.duplicatesReport = duplicatesReport
         image_n = self.site.image_namespace()
         self.image_namespace = "%s:" % image_n # Example: "User_talk:"
-    def report(self, newtext, image, notification = None, head = None,
+    def setParameters(self, image):
+        """ Function to set parameters, now only image but maybe it can be used for others in "future" """
+        self.image = image 
+    def report(self, newtext, image_to_report, notification = None, head = None,
                notification2 = None, unver = True, commTalk = None, commImage = None):
         """ Function to make the reports easier (or I hope so). """
         # Defining some useful variable for next...
+        self.image_to_report = image_to_report
         self.newtext = newtext
-        self.image = image
         self.head = head
         self.notification = notification
         self.notification2 = notification2
@@ -528,7 +531,7 @@ class main:
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the image. """
         # Defing the image's Page Object
-        p = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+        p = wikipedia.ImagePage(self.site, 'Image:%s' % self.image_to_report)
         # Get the image's description
         try:
             testoa = p.get()
@@ -541,14 +544,14 @@ class main:
         if put:
             p.put(testoa + self.newtext, comment = self.commImage, minorEdit = True)
         # paginetta it's the image page object.
-        paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image)
+        paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image_to_report)
         try:
             nick = paginetta.getLatestUploader()[0]
         except wikipedia.NoPage:
-            wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image)
+            wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image_to_report)
             repme = "\n*[[:Image:%s]] problems '''with the APIs'''"
             # We have a problem! Report and exit!
-            self.report_image(self.image, self.rep_page, self.com, repme)
+            self.report_image(self.image_to_report, self.rep_page, self.com, repme)
             return False
         luser = wikipedia.url2link(nick, self.site, self.site)
         pagina_discussione = "%s:%s" % (self.site.namespace(3), luser)
@@ -565,7 +568,7 @@ class main:
         if self.notification2 == None:
             self.notification2 = self.notification
         else:
-            self.notification2 = self.notification2 % self.image
+            self.notification2 = self.notification2 % self.image_to_report
         second_text = False
         # Getting the talk page's history, to check if there is another advise...
         # The try block is used to prevent error if you use an old wikipedia.py's version.
@@ -697,9 +700,8 @@ class main:
         encodedTitle = title.encode(self.site.encoding())
         return urllib.quote(encodedTitle)
 
-    def checkImageOnCommons(self, image):
+    def checkImageOnCommons(self):
         """ Checking if the image is on commons """
-        self.image = image
         wikipedia.output(u'Checking if %s is on commons...' % self.image)
         commons_site = wikipedia.getSite('commons', 'commons')
         regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\]$" % self.image
@@ -727,7 +729,7 @@ class main:
             # Problems? No, return True
             return True
 
-    def checkImageDuplicated(self, image):
+    def checkImageDuplicated(self):
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
         dupText = wikipedia.translate(self.site, duplicatesText)
@@ -736,7 +738,6 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-        self.image = image
         duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates:|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
         hash_found = imagePage.getHash()
@@ -1126,6 +1127,7 @@ def checkbot():
             except IndexError:# Namespace image not found, that's not an image! Let's skip...
                 wikipedia.output(u"%s is not an image, skipping..." % image.title())
                 continue
+            mainClass.setParameters(imageName) # Setting the image for the main class
             # Skip block
             if skip == True:
                 # If the images to skip are more the images to check, make them the same number
@@ -1164,16 +1166,16 @@ def checkbot():
                 wikipedia.output(u"Skipping %s because it has been deleted." % imageName)
                 continue
             except wikipedia.IsRedirectPage:
-                wikipedia.output(u"The file description for %s is a redirect?!" % imageName )
+                wikipedia.output(u"The file description for %s is a redirect?!" % imageName)
                 continue
             # Check on commons if there's already an image with the same name
             if commonsActive == True:
-                response = mainClass.checkImageOnCommons(imageName)
+                response = mainClass.checkImageOnCommons()
                 if response == False:
                     continue
             # Check if there are duplicates of the image on the project selected
             if duplicatesActive == True:
-                response2 = mainClass.checkImageDuplicated(imageName)
+                response2 = mainClass.checkImageDuplicated()
                 if response2 == False:
                     continue      
             # Is the image already tagged? If yes, no need to double-check, skip
