@@ -70,8 +70,11 @@ comment = {'fr':u'Titre généré automatiquement',
            'en':u'Bot generated title'}
 
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)
+# matches an URL at the index of a website
 dirIndex = re.compile(ur'^\w+://[^/]+/((default|index)\.(asp|aspx|cgi|htm|html|phtml|mpx|mspx|php|shtml|var))?$', re.IGNORECASE)
+# Extracts the domain name
 domain = re.compile(ur'^(\w+)://(?:www.|)([^/]+)')
+
 globalbadtitles = """
 # is
 (test|
@@ -97,11 +100,13 @@ globalbadtitles = """
         )\W*$
 )
 """
+# Language-specific bad titles
 badtitles = { 'en': '',
               'fr': '.*(404|page|site).*en +travaux.*',
               'es': '.*sitio.*no +disponible.*'
             }
 
+# Regex that match bare references
 linksInRef = re.compile(
 	# bracketed URLs
 	ur'(?i)<ref(?P<name>[^>]*)>\s*\[?(?P<url>(?:http|https|ftp)://(?:' +
@@ -109,10 +114,15 @@ linksInRef = re.compile(
 	ur'^\[\]\s<>"]+\([^\[\]\s<>"]+[^\[\]\s\.:;\\,<>\?"]+|'+
 	# unbracketed without ()
 	ur'[^\[\]\s<>"]+[^\[\]\s\)\.:;\\,<>\?"]+|[^\[\]\s<>"]+))[!?,\s]*\]?\s*</ref>')
-#http://www.twoevils.org/files/wikipedia/404-links.txt.gz
+
+# Download this file :
+# http://www.twoevils.org/files/wikipedia/404-links.txt.gz
+# ( maintained by User:Dispenser )
 listof404pages = '404-links.txt'
 
 class XmlDumpPageGenerator:
+    """Xml generator that yiels pages containing bare references"""
+
     def __init__(self, xmlFilename, xmlStart, namespaces):
         self.xmlFilename = xmlFilename
         self.xmlStart = xmlStart
@@ -145,6 +155,8 @@ class XmlDumpPageGenerator:
                 return page
 
 class RefLink:
+    """Container to handle a single bare reference"""
+
     def __init__(self, link, name):
         self.refname = name
         self.link = link
@@ -154,16 +166,20 @@ class RefLink:
         self.title = None
 
     def refTitle(self):
+        """Returns the <ref> with its new title"""
         return '<ref%s>[%s %s<!-- %s -->]</ref>' % (self.refname, self.link, self.title, self.linkComment)
 
     def refLink(self):
+        """No title has been found, return the unbracketed link"""
         return '<ref%s>%s</ref>' % (self.refname, self.link)
     
     def refDead(self):
+        """Dead link, tag it with a {{dead link}}"""
         tag = wikipedia.translate(self.site, deadLinkTag) % self.link
         return '<ref%s>%s</ref>' % (self.refname, tag)
 
     def transform(self, ispdf = False):
+        """Normalize the title"""
         #convert html entities
         if not ispdf:
             self.title = wikipedia.html2unicode(self.title)
@@ -185,6 +201,7 @@ class RefLink:
         #prevent multiple quotes being interpreted as '' or '''
         self.title = self.title.replace('\'\'', '\'&#39;')
         self.title = wikipedia.unicode2html(self.title, self.site.encoding())
+        # TODO : remove HTML when both opening and closing tags are included
 
     def avoid_uppercase(self):
         """
@@ -207,12 +224,24 @@ class RefLink:
 
 class ReferencesRobot:
     def __init__(self, generator, acceptall = False, limit = None, ignorepdf = False ):
+        """
+        - generator : Page generator
+        - acceptall : boolean, is -always on ?
+        - limit : int, stop after n modified pages
+        - ignorepdf : boolean
+        """
         self.generator = generator
         self.acceptall = acceptall
         self.limit = limit
         self.ignorepdf = ignorepdf
         self.site = wikipedia.getSite()
         self.stopPage = wikipedia.translate(self.site, stopPage)
+
+        self.titleBlackList = re.compile(
+                                '(' + globalbadtitles + '|' + wikipedia.translate(self.site, badtitles) + ')',
+                                 re.I | re.S | re.X)
+        self.norefbot = noreferences.NoReferencesBot(None)
+
         try :
             self.stopPageRevId = wikipedia.Page(self.site, 
                                                 self.stopPage).latestRevision()
@@ -220,16 +249,20 @@ class ReferencesRobot:
             wikipedia.output(u'The stop page %s does not exist' 
                                 % self.stopPage.aslink())
             wikipedia.stopme()
+            sys.exit(1)
+
+        # Regex to grasp content-type meta HTML tag in HTML source
         self.META_CONTENT = re.compile(ur'(?i)<meta[^>]*content\-type[^>]*>')
+        # Extract the encoding from a charset property (from content-type !)
         self.CHARSET = re.compile(ur'(?i)charset\s*=\s*(?P<enc>[^\'";>/]*)')
+        # Extract html title from page
         self.TITLE = re.compile(ur'(?is)(?<=<title>).*?(?=</title>)')
+        # Matches content inside <script>/<style>/HTML comments
         self.NON_HTML = re.compile(ur'(?is)<script[^>]*>.*?</script>|<style[^>]*>.*?</style>|<!--.*?-->|<!\[CDATA\[.*?\]\]>')
+
+        # Authorized mime types for HTML pages
         str = ur'application/(?:xhtml\+xml|xml)|text/(?:ht|x)ml'
         self.MIME = re.compile(str)
-        self.titleBlackList = re.compile(
-                                '(' + globalbadtitles + '|' + wikipedia.translate(self.site, badtitles) + ')',
-                                 re.I | re.S | re.X)
-        self.norefbot = noreferences.NoReferencesBot(None)
  
     def put_page(self, page, new):
         """
@@ -270,6 +303,10 @@ class ReferencesRobot:
                          toStdout = True)
 
     def getPDFTitle(self, ref, f): 
+        """
+        Use pdfinfo to retrieve title from a PDF.
+        Unix-only, I'm afraid.
+        """
         wikipedia.output( u'PDF file.' )
         fd, infile = tempfile.mkstemp()
         urlobj = os.fdopen(fd, 'r+w')
@@ -292,13 +329,6 @@ class ReferencesRobot:
         finally:
             urlobj.close()
             os.unlink(infile)
-
-    def replace(self, sub, text, repl):
-        new_text = text
-        for match in re.finditer(re.escape(sub), text):
-            if wikipedia.isDisabled(text, match.start()):
-                continue
-            #blablah
 
     def run(self):
         """
@@ -361,7 +391,7 @@ class ReferencesRobot:
                             repl = ref.refLink()
                         new_text = new_text.replace(match.group(), repl)
                         continue
-                    # Test if the redirect was valid
+                    # Get the real url where we end (http redirects !)
                     redir = f.geturl()
                     if redir != ref.link and domain.findall(redir) == domain.findall(link):
                         if soft404.search(redir) and not soft404.search(ref.link):
@@ -383,10 +413,8 @@ class ReferencesRobot:
                     wikipedia.output(u'HTTP error (%s) for %s on %s' 
                                         % (e.code, ref.url, page.aslink()),
                                     toStdout = True)
-                    if e.code == 410: # 410 Gone, indicates that the resource has been purposely removed
-                        repl = ref.refDead()
-                        new_text = new_text.replace(match.group(), repl)
-                    elif e.code == 404 and (u'\t%s\t' % ref.url in deadLinks):
+                    # 410 Gone, indicates that the resource has been purposely removed 
+                    if e.code == 410 or (e.code == 404 and (u'\t%s\t' % ref.url in deadLinks)):
                         repl = ref.refDead()
                         new_text = new_text.replace(match.group(), repl)
                     continue
@@ -395,7 +423,7 @@ class ReferencesRobot:
                         IOError, 
                         httplib.error), e:
                 #except (urllib2.URLError, socket.timeout, ftplib.error, httplib.error, socket.error), e:
-                    wikipedia.output(u'Can\'t get page %s : %s' % (ref.url, e))
+                    wikipedia.output(u'Can\'t retrieve page %s : %s' % (ref.url, e))
                     continue
                 except ValueError:
                     #Known bug of httplib, google for :
@@ -412,19 +440,23 @@ class ReferencesRobot:
                 enc = []
                 if meta_content:
                     tag = meta_content.group()
+                    # Prefer the contentType from the HTTP header :
                     if not contentType: 
                         contentType = tag
                     s = self.CHARSET.search(tag)
                     if s: 
                         tmp = s.group('enc').strip("\"' ").lower()
-                        enc.append(tmp)
-                        if tmp in ("gb 2312", "gb2312", "gb-2312", "gb_2312"):
+                        naked = re.sub('[ _\-]', '', tmp)
+                        # Convert to python correct encoding names
+                        if naked == "gb2312":
                             enc.append("gbk")
-                        if tmp in ("shift jis", "shiftjis", "shift-jis", "shift_jis"):
+                        elif naked == "shiftjis":
                             enc.append("shift jis 2004")
                             enc.append("cp932")
-                        if tmp in ("x euc jp", "x-euc-jp"):
+                        elif naked == "xeucjp":
                             enc.append("euc-jp")
+                        else:
+                            enc.append(tmp)
                 if not contentType:
                     wikipedia.output(u'No content-type found for %s' % ref.link)
                     continue
@@ -434,6 +466,8 @@ class ReferencesRobot:
                     new_text = new_text.replace(match.group(), repl)
                     continue
                             
+                # Ugly hacks to try to survive when both server and page return no encoding.
+                # Uses most used encodings for each national suffix
                 if u'.ru' in ref.link or u'.su' in ref.link:
                     # see http://www.sci.aha.ru/ATL/ra13a.htm : no server encoding, no page encoding
                     enc = enc + ['koi8-r', 'windows-1251']
@@ -460,6 +494,7 @@ class ReferencesRobot:
                     continue
                 
 
+                # Retrieves the first non empty string inside <title> tags
                 for m in self.TITLE.finditer(u.unicode):
                     t = m.group()
                     if t:
@@ -474,8 +509,11 @@ class ReferencesRobot:
                     wikipedia.output(u'%s : No title found...' % ref.link)
                     continue
                 if enc and u.originalEncoding not in enc:
+                    # BeautifulSoup thinks that the original encoding of our page was not one
+                    # of the encodings we specified. Output a warning.
                     wikipedia.output(u'\03{lightpurple}ENCODING\03{default} : %s (%s)' % (ref.link, ref.title))
                 
+                # XXX Ugly hack
                 if u'Ã©' in ref.title:
                     repl = ref.refLink()
                     new_text = new_text.replace(match.group(), repl)
@@ -487,6 +525,8 @@ class ReferencesRobot:
                     new_text = new_text.replace(match.group(), repl)
                     wikipedia.output(u'\03{lightred}WARNING\03{default} %s : Blacklisted title (%s)' % (ref.link, ref.title))
                     continue
+                
+                # Truncate long titles. 175 is arbitrary
                 if len(ref.title) > 175:
                     ref.title = ref.title[:175] + "..."
 
@@ -498,15 +538,17 @@ class ReferencesRobot:
                                  % page.aslink())
                 continue
 
-            # Do not add <references/> to templates !
+            # Add <references/> when needed, but ignore templates !
             if page.namespace != 10:
                 if self.norefbot.lacksReferences(new_text, verbose=False):
                     new_text = self.norefbot.addReferences(new_text)
             editedpages += 1
             self.put_page(page, new_text)
+
             if self.limit and editedpages >= self.limit:
                 wikipedia.output('Edited %s pages, stopping.' % self.limit)
                 return
+
             if editedpages % 20 == 0:
                 wikipedia.output('\03{lightgreen}Checking stop page...\03{default}')
                 actualRev = wikipedia.Page(self.site, 
