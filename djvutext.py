@@ -110,10 +110,10 @@ class DjVuTextBot:
         ################################################################
 
         print "fetching page %d" % (pageno)
-	cmd = "djvutxt -page=%d %s djvutxt.out" % (pageno, self.djvu)
+	cmd = "djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
         os.system ( cmd )
 
-        f = codecs.open("djvutxt.out", 'r', config.textfile_encoding)
+        f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding)
 
 	djvutxt = f.read()
 
