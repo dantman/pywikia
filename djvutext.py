@@ -69,14 +69,15 @@ class DjVuTextBot:
 	end = self.NoOfImages()
 
 	if self.pages:
-	    if self.pages.index('-'):
-	        pos = self.pages.index('-')
+	    pos = self.pages.find('-')
+	    if pos != -1:
 	        start = self.pages[:pos]
 		if pos < len(self.pages)-1:
 		    end = self.pages[pos+1:]
 		    end = int(end)
 	    else:
 	        start = self.pages
+		end = int(start)
 	i = int(start)
 	print "processing pages %d-%d" % (i, end)
 	while i <= end:
