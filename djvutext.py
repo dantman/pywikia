@@ -56,7 +56,7 @@ class DjVuTextBot:
 	self.ask = False
 
     def NoOfImages(self):
-	cmd = "djvused -e 'n' %s" % (self.djvu)
+	cmd = "djvused -e 'n' \"%s\"" % (self.djvu)
         count = os.popen( cmd ).readline().rstrip()
 	#count = count[:-1]
 	print "page count = %s" % count
