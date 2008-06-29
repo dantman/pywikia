@@ -215,7 +215,7 @@ referencesTemplates = {
         'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],
-        'es': ['Listaref', 'Reflist'],
+        'es': ['Listaref', 'Reflist', 'muchasref'],
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'hu': [u'reflist'],
