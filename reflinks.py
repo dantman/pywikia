@@ -498,8 +498,10 @@ class ReferencesRobot:
                                  % page.aslink())
                 continue
 
-            if self.norefbot.lacksReferences(new_text, verbose=False):
-                new_text = self.norefbot.addReferences(new_text)
+            # Do not add <references/> to templates !
+            if page.namespace != 10:
+                if self.norefbot.lacksReferences(new_text, verbose=False):
+                    new_text = self.norefbot.addReferences(new_text)
             editedpages += 1
             self.put_page(page, new_text)
             if self.limit and editedpages >= self.limit:
