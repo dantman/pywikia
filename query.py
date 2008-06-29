@@ -63,9 +63,9 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
     
     if verbose:
         if titlecount > 0:
-            wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, lang, path))
+            wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, site.lang, path))
         else:
-            wikipedia.output(u"Request %s:%s" % (lang, path))
+            wikipedia.output(u"Request %s:%s" % (site.lang, path))
     
     lastError = None
     retry_idle_time = 5
@@ -81,7 +81,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
         except ValueError, error:
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
-            wikipedia.output(u"Request %s:%s" % (lang, path))
+            wikipedia.output(u"Request %s:%s" % (site.lang, path))
             wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s' % path, jsontext)
             lastError = error
             if retryCount >= 0:
@@ -95,7 +95,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
     
     raise lastError
 
-def GetInterwikies( lang, titles, extraParams = None ):
+def GetInterwikies(site, titles, extraParams = None ):
     """ Usage example: data = GetInterwikies('ru','user:yurik')
     titles may be either ane title (as a string), or a list of strings
     extraParams if given must be a dict() as taken by GetData()
@@ -103,16 +103,16 @@ def GetInterwikies( lang, titles, extraParams = None ):
     
     params = {'titles':ListToParam(titles), 'what' : 'redirects|langlinks'}
     params = CombineParams( params, extraParams )
-    return GetData( lang, params )
+    return GetData(site, params )
 
-def GetLinks( lang, titles, extraParams = None ):
+def GetLinks(site, titles, extraParams = None ):
     """ Get list of templates for the given titles
     """
     params = {'titles':ListToParam(titles), 'what': 'redirects|links'}
     params = CombineParams( params, extraParams )
-    return GetData( lang, params )
+    return GetData(site, params )
 
-def GetDisambigTemplates(lang):
+def GetDisambigTemplates(site):
     """This method will return a set of disambiguation templates.
     Template:Disambig is always assumed to be default, and will be
     appended (in localized format) regardless of its existence.
@@ -125,7 +125,7 @@ def GetDisambigTemplates(lang):
     disListName = u"Wikipedia:Disambiguation Templates"
     disListId = 0
     
-    templateNames = GetLinks(lang, [disListName, disambigName])
+    templateNames = GetLinks(site, [disListName, disambigName])
     for id, page in templateNames['pages'].iteritems():
         if page['title'] == disambigName:
             if 'normalizedTitle' in page:
