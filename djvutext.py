@@ -90,6 +90,9 @@ class DjVuTextBot:
 
         linkingPage = wikipedia.Page(wikipedia.getSite(), self.index)
         self.prefix = linkingPage.titleWithoutNamespace()
+	if self.prefix[0:6] == 'Liber:':
+	    self.prefix = self.prefix[6:]
+	    wikipedia.output("Using prefix %s" % self.prefix)
         gen = self.PagesGenerator()
 
 	site = wikipedia.getSite()
@@ -103,7 +106,9 @@ class DjVuTextBot:
         """
         Loads the given page, does some changes, and saves it.
         """
-	page = wikipedia.Page(wikipedia.getSite(), 'Page:%s/%d' % (self.prefix, pageno) )
+	site = wikipedia.getSite()
+	page_namespace = site.family.namespaces[104]['la']
+	page = wikipedia.Page(site, '%s:%s/%d' % (page_namespace, self.prefix, pageno) )
 	exists = page.exists()
 
         ################################################################
