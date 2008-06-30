@@ -279,7 +279,7 @@ def main():
         bot.moveOne(page, pair[1])
     if gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects)
+        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects, summary)
         bot.run()
     elif not fromToPairs:
         wikipedia.showHelp('movepages')
