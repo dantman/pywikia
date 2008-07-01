@@ -166,6 +166,13 @@ msg_redir_unlink = {
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
     'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
     }
+
+# Summary message to (unknown)
+unknown_msg = {
+    'en' : u'(unknown)',
+    'pt' : u'(desconhecido)',
+    }
+
 # disambiguation page name format for "primary topic" disambiguations
 # (Begriffsklärungen nach Modell 2)
 primary_topic_format = {
@@ -838,7 +845,7 @@ or press enter to quit:""")
         targets = targets[:-2]
         
         if not targets:
-            targets = u'(unknown)'
+            targets = wikipedia.translate(self.mysite, unknown_msg)
         
         # first check whether user has customized the edit comment
         if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
