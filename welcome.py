@@ -206,6 +206,7 @@ logbook = {
     'id': None, # no welcome log on id.wiki
     'it': u'Project:Benvenuto Bot/Log',
     'ja': u'利用者:Alexbot/Welcomebotログ',
+    'ka': None, # no welcome log on ka.wiki
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
     'pt': None, # no welcome log on pt.wiki
@@ -228,6 +229,7 @@ summary = {
     'id':u'Selamat datang',
     'it':u'Benvenuto!',
     'ja':u'ウィキペディア日本語版へようこそ！',
+    'ka':u'კეთილი იყოს თქვენი მობრძანება!',
     'nl':u'Welkom!',
     'no':u'Velkommen!',
     'pt':u'Bem vindo!',
@@ -252,6 +254,7 @@ netext = {
     'id':u'{{sdbot|%s}}',
     'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
     'ja':u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
+    'ka':u'{{ახალი მომხმარებელი}}--%s',
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'pt':u'{{subst:bem vindo}} %s',
