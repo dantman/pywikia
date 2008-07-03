@@ -717,7 +717,7 @@ class main:
                 # Problems? Yes! We have to skip the check part for that image!
                 # Because it's on commons but someone has added something on your project.
                 return False
-            elif 'stemma' in image.lower() and self.site.lang == 'it':
+            elif 'stemma' in self.image.lower() and self.site.lang == 'it':
                 wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % image)
                 return True # Problems? No, it's only not on commons but the image needs a check
             else:            
