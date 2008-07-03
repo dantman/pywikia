@@ -5,6 +5,7 @@ Script to upload images to wikipedia.
 Arguments:
 
   -keep         Keep the filename as is
+  -filename     Target filename
   -noverify     Do not ask for verification of the upload description if one is given
 
 If any other arguments are given, the first is the URL or filename
@@ -298,6 +299,7 @@ def main(args):
     url = u''
     description = []
     keepFilename = False
+    useFilename = None
     verifyDescription = True
 
     # call wikipedia.py function to process all global wikipedia args
@@ -308,6 +310,8 @@ def main(args):
         if arg:
             if arg.startswith('-keep'):
                 keepFilename = True
+            elif arg.startswith('-filename:'):
+                useFilename = arg[10:]
             elif arg.startswith('-noverify'):
                 verifyDescription = False
             elif url == u'':
@@ -315,7 +319,7 @@ def main(args):
             else:
                 description.append(arg)
     description = u' '.join(description)
-    bot = UploadRobot(url, description=description, keepFilename=keepFilename, verifyDescription=verifyDescription)
+    bot = UploadRobot(url, description=description, useFilename=useFilename, keepFilename=keepFilename, verifyDescription=verifyDescription)
     bot.run()
 
 if __name__ == "__main__":
