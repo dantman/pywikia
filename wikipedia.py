@@ -2634,7 +2634,7 @@ class ImagePage(Page):
             nick = data['query']['pages'][pageid][u'imageinfo'][0][u'user']
             timestamp = data['query']['pages'][pageid][u'imageinfo'][0][u'timestamp']
             return [nick, timestamp]
-        except IndexError:
+        except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
 
     def getHash(self):
@@ -2653,7 +2653,7 @@ class ImagePage(Page):
             pageid = data['query']['pages'].keys()[0]
             try:
                 hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
-            except KeyError:
+            except (KeyError, IndexError):
                 if self.exists():
                     raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
                 else:
