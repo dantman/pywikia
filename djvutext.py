@@ -107,7 +107,7 @@ class DjVuTextBot:
         Loads the given page, does some changes, and saves it.
         """
 	site = wikipedia.getSite()
-	page_namespace = site.family.namespaces[104]['la']
+	page_namespace = site.family.namespaces[104][site.lang]
 	page = wikipedia.Page(site, '%s:%s/%d' % (page_namespace, self.prefix, pageno) )
 	exists = page.exists()
 
