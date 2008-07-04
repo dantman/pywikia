@@ -1254,10 +1254,6 @@ not supported by PyWikipediaBot!"""
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
-        # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
-        # of Bordeaux
-        if self.site().lang == 'eo':
-            newtext = encodeEsperantoX(newtext)
         return self._putPage(newtext, comment, watchArticle, minorEdit,
                              newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
@@ -2853,9 +2849,6 @@ class _GetAll(object):
     def getData(self):
         address = self.site.export_address()
         pagenames = [page.sectionFreeTitle() for page in self.pages]
-        # We need to use X convention for requested page titles.
-        if self.site.lang == 'eo':
-            pagenames = [encodeEsperantoX(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) is not unicode:
             output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
