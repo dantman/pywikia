@@ -92,7 +92,8 @@ commonscatTemplates = {
 
 ignoreTemplates = {    
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
-    'nl' : [u'Commons']
+    'ja' : [u'CommonscatS'],
+    'nl' : [u'Commons'],
 }
 
 def getTemplate (lang = None):
