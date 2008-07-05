@@ -6332,6 +6332,10 @@ def stopme():
        when it has stopped doing so. After a bot has run stopme() it will
        not slow down other bots any more.
     """
+    if config.use_diskcache:
+        for site in _sites.itervalues():
+            if site._mediawiki_messages:
+                site._mediawiki_messages.delete()
     get_throttle.drop()
 
 def _flush():
