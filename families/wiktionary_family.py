@@ -25,8 +25,8 @@ class Family(family.Family):
             'nah', 'eu', 'gd', 'lv', 'pa', 'zu', 'nn', 'ps', 'mi', 'so',
             'tg', 'dv', 'bn', 'ka', 'mg', 'ha', 'kw', 'ss', 'na', 'sa',
             'gv', 'ay', 'tpi', 'ne', 'jbo', 'jv', 'gn', 'uz', 'tn', 'mt',
-            'sh', 'lb', 'ks', 'tk', 'sg', 'fj', 'als', 'ik', 'si', 'ln',
-            'sm', 'za', 'roa-rup', 'yo', 'dz', 'my', 'wa', 'sc',
+            'iu', 'sh', 'lb', 'ks', 'tk', 'sg', 'fj', 'als', 'ik', 'si',
+            'ln', 'sm', 'za', 'roa-rup', 'yo', 'dz', 'my', 'wa', 'sc',
         ]
 
         for lang in self.languages_by_size:
@@ -359,8 +359,7 @@ class Family(family.Family):
             'bo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Tibetan_Wiktionary
             'ch': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Chamorro_Wiktionary
             'cr': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Nehiyaw_Wiktionary
-            'dk': 'da',
-            'iu': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Inuktitut_Wiktionary	
+            'dk': 'da',	
             'jp': 'ja',
             'mh': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Marshallese_Wiktionary
             'mo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Moldovan_Wiktionary
