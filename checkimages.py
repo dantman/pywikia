@@ -22,6 +22,8 @@ This script understands the following command-line arguments:
 
     -duplicatesreport   - Report the duplicates in a log *AND* put the template in the images.
 
+    -smartdetection     - Check in a category if the license found exist in realit or not.
+
     -sendemail          - Send an email after tagging.
 
     -break	        - To break the bot after the first check (default: recursive)
@@ -308,7 +310,7 @@ HiddenTemplate = {
                    u'dupe', u'duplicate', u'uncat', u'uncategorized', u'watermark', u'nocat', u'imageupload'],
         'de':[u'information'],
         'en':[u'information'],
-        'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark'],
+        'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
         'ja':[u'Information'],
         'hu':[u'információ', u'enwiki', u'azonnali'],
         'ta':[u'information'],
@@ -354,6 +356,11 @@ duplicatesRegex = {
         'commons':r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
         'en':None,
         'it':r'\{\{(?:[Tt]emplate:|)[Cc]ancella[ _]subito[|}]',
+        }
+
+category_with_licenses = {
+        'commons':'Category:License tags',
+        'it':'Categoria:Template Licenze copyright',
         }
 
 ## Put None if you don't use this option or simply add nothing if en
@@ -447,14 +454,14 @@ class main:
         """ Constructor, define some global variable """
         self.site = site
         self.logFulNumber = logFulNumber
-        self.settings = wikipedia.translate(site, page_with_settings)
-        self.rep_page = wikipedia.translate(site, report_page)
-        self.rep_text = wikipedia.translate(site, report_text)
-        self.com = wikipedia.translate(site, comm10)
+        self.settings = wikipedia.translate(self.site, page_with_settings)
+        self.rep_page = wikipedia.translate(self.site, report_page)
+        self.rep_text = wikipedia.translate(self.site, report_text)
+        self.com = wikipedia.translate(self.site, comm10)
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
         # Adding the bot's nickname at the notification text if needed.
-        botolist = wikipedia.translate(wikipedia.getSite(), bot_list)     
+        botolist = wikipedia.translate(self.site, bot_list)     
         project = wikipedia.getSite().family.name
         bot = config.usernames[project]
         botnick = bot[self.site.lang]
@@ -807,13 +814,13 @@ class main:
                 return False # The image is a duplicate, it will be deleted.
         return True # Ok - No problem. Let's continue the checking phase
         
-    def report_image(self, image, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
+    def report_image(self, image_to_report, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
         """ Function to report the images in the report page when needed. """
         if rep_page == None: rep_page = self.rep_page
         if com == None: com = self.com
         if rep_text == None: rep_text = self.rep_text
         another_page = wikipedia.Page(self.site, rep_page)
-	if regex == None: regex = image
+	if regex == None: regex = image_to_report
         if another_page.exists():
             text_get = another_page.get()
         else:
@@ -821,25 +828,24 @@ class main:
         if len(text_get) >= self.logFulNumber:
             raise LogIsFull("The log page (%s) is full! Please delete the old images reported." % another_page.title())  
         pos = 0
-        # The talk page includes "_" between the two names, in this way i replace them to " "        
+        # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.M)
         y = n.search(text_get, pos)
         if y == None:
             # Adding the log
             if addings:
-                rep_text = rep_text % image # Adding the name of the image in the report if not done already              
+                rep_text = rep_text % image_to_report # Adding the name of the image in the report if not done already              
             another_page.put(text_get + rep_text, comment = com, minorEdit = False)
             wikipedia.output(u"...Reported...")
             reported = True
         else:
             pos = y.end()
-            wikipedia.output(u"%s is already in the report page." % image)
+            wikipedia.output(u"%s is already in the report page." % image_to_report)
             reported = False
         return reported
 	
     def takesettings(self):
         """ Function to take the settings from the wiki. """
-        pos = 0
         if self.settings == None: lista = None
         else:
             x = wikipedia.Page(self.site, self.settings)
@@ -849,32 +855,41 @@ class main:
                 rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
                 r = re.compile(rxp, re.UNICODE|re.M)
                 number = 1
-                while 1:
-                    m = r.search(testo, pos)
-                    if m == None:
-                        if lista == list():
-                            wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
-                            lista = None
-                        else:
-                            break
-                    else:
-                        pos = m.end()
-                        name = str(m.group(1))
-                        find_tipe = str(m.group(2))
-                        find = str(m.group(3))
-                        imagechanges = str(m.group(4))
-                        summary = str(m.group(5))
-                        head = str(m.group(6))
-                        text = str(m.group(7))
-                        mexcatched = str(m.group(8))
-                        tupla = [number, name, find_tipe, find, imagechanges, summary, head, text, mexcatched]
-                        lista += [tupla]
-                        number += 1
+                for m in r.finditer(testo):
+                    name = str(m.group(1))
+                    find_tipe = str(m.group(2))
+                    find = str(m.group(3))
+                    imagechanges = str(m.group(4))
+                    summary = str(m.group(5))
+                    head = str(m.group(6))
+                    text = str(m.group(7))
+                    mexcatched = str(m.group(8))
+                    tupla = [number, name, find_tipe, find, imagechanges, summary, head, text, mexcatched]
+                    lista += [tupla]
+                    number += 1
+                if lista == list():
+                    wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
+                    lista = None                    
             except wikipedia.NoPage:
                 wikipedia.output(u"The settings' page doesn't exist!")
                 lista = None
         return lista
-	
+
+    def load_licenses(self):
+        """ Load the list of the licenses """
+	catName = wikipedia.translate(self.site, category_with_licenses)
+        cat = catlib.Category(wikipedia.getSite(), catName)
+        categories = [page.title() for page in pagegenerators.SubCategoriesPageGenerator(cat)]
+        categories.append(catName)
+        list_licenses = list()
+        wikipedia.output(u'\n\t...Loading the names of the licenses allowed...\n')
+        for catName in categories:
+            cat = catlib.Category(wikipedia.getSite(), catName)
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+            pages = [page for page in gen]
+            list_licenses.extend(pages)
+        return list_licenses
+    
     def load(self, raw):
         """ Load a list of object from a string using regex. """
         list_loaded = list()
@@ -885,11 +900,6 @@ class main:
         regl = r"(?:\"|\')(.*?)(?:\"|\')(?:, |\])"
         pl = re.compile(regl, re.UNICODE)
         for xl in pl.finditer(raw):
-            if xl == None:
-                if len(list_loaded) >= 1:
-                    return list_loaded
-                    break
-            pos = xl.end()
             word = xl.group(1)
             if word not in list_loaded:
                 list_loaded.append(word)
@@ -911,8 +921,9 @@ def checkbot():
     skip_list = list() # Inizialize the skip list used below
     duplicatesActive = False # Use the duplicate option
     duplicatesReport = False # Use the duplicate-report option
-    sendemailActive = False # Use the send-email option
-    
+    sendemailActive = False # Use the send-email
+    smartdetection = False # Enable the smart detection
+        
     # Here below there are the parameters.
     for arg in wikipedia.handleArgs():
         if arg.startswith('-limit'):
@@ -935,6 +946,8 @@ def checkbot():
             duplicatesReport = True
         elif arg == '-sendemail':
             sendemailActive = True                   
+        elif arg == '-smartdetection':
+            smartdetection = True   
         elif arg.startswith('-skip'):
             if len(arg) == 5:
                 skip = True
@@ -999,7 +1012,7 @@ def checkbot():
                 projectUntagged = str(wikipedia.input(u'In which project should I work?'))
             elif len(arg) > 9:
                 projectUntagged = str(arg[10:])          
-
+                
     # Understand if the generator it's the default or not.
     try:
         generator
@@ -1090,6 +1103,8 @@ def checkbot():
             wikipedia.output(u'Problems with loading the settigs, run without them.')
             tupla_written = None
             some_problem = False
+        # Load the list of licenses allowed for our project
+        list_licenses = mainClass.load_licenses()
         # Ensure that if the list given is empty it will be converted to "None"
         # (but it should be already done in the takesettings() function)
         if tupla_written == []: tupla_written = None
@@ -1200,7 +1215,8 @@ def checkbot():
                         white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
                             # Deleting! (replace the template with nothing)
-                            g = re.sub(r'\{\{(?:template:|)%s' % l.lower(), r'', g.lower())
+                            regex_white_template = re.compile(r'\{\{(?:template:|)%s' % l, re.IGNORECASE)
+                            g = regex_white_template.sub(r'', g)
                             hiddenTemplateFound = True
             if white_template_found == 1:
                 wikipedia.output(u'A white template found, skipping the template...')
@@ -1289,9 +1305,36 @@ def checkbot():
                     some_problem = False
                     continue
                 elif parentesi == True:
-                    printWithTimeZone(u"%s seems ok," % imageName)
+                    seems_ok = False
+                    license_found = None
+                    if smartdetection:                    
+                        regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n].*?|)\}\}', re.DOTALL)
+                        licenses_found = regex_find_licenses.findall(g)
+                        if licenses_found != []:                        
+                            for license_selected in licenses_found:
+                                #print template.exists()                        
+                                template = wikipedia.Page(site, 'Template:%s' % license_selected)
+                                if template.isRedirectPage():
+                                    template = template.getRedirectTarget()
+                                license_found = license_selected
+                                if template in list_licenses:
+                                    seems_ok = True
+                                    break
+                        if not seems_ok:
+                            rep_text_license_faked = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
+                            regexFakedLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
+                            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (imageName, license_found))
+                            mainClass.report_image(imageName, rep_text = rep_text_license_faked,
+                                                   addings = False, regex = regexFakedLicense)
+                    else:
+                        seems_ok = True
+                    if seems_ok:
+                        if license_found != None:
+                            printWithTimeZone(u"%s seems ok, license found: %s..." % (imageName, license_found))
+                        else:
+                            printWithTimeZone(u"%s seems ok..." % imageName)                            
                     # It works also without this... but i want only to be sure ^^
-                    parentesi = False
+                    parentesi = False             
                     continue
                 elif delete == True:
                     wikipedia.output(u"%s is not a file!" % imageName)
