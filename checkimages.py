@@ -1321,11 +1321,11 @@ def checkbot():
                                     seems_ok = True
                                     break
                         if not seems_ok:
-                            rep_text_license_faked = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
-                            regexFakedLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
+                            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
+                            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
                             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (imageName, license_found))
-                            mainClass.report_image(imageName, rep_text = rep_text_license_faked,
-                                                   addings = False, regex = regexFakedLicense)
+                            mainClass.report_image(imageName, rep_text = rep_text_license_fake,
+                                                   addings = False, regex = regexFakeLicense)
                     else:
                         seems_ok = True
                     if seems_ok:
