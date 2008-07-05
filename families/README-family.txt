@@ -58,7 +58,7 @@ class Family(family.Family):          # REQUIRED
             'fr': 'Nom du wiki',
             # ETC.
         }
-        
+
         # Wikimedia wikis all use "bodyContent" as the id of the <div>
         # element that contains the actual page content; change this for
         # wikis that use something else (e.g., mozilla family)
@@ -71,7 +71,7 @@ class Family(family.Family):          # REQUIRED
         self.nocapitalize = []
 
         # SETTINGS FOR WIKIS THAT USE DISAMBIGUATION PAGES:
-        
+
         # A list of disambiguation template names in different languages
         self.disambiguationTemplates = {
             'en': ['disambig', 'disambiguation'],
@@ -85,7 +85,7 @@ class Family(family.Family):          # REQUIRED
         }
 
         # SETTINGS FOR WIKIS THAT USE INTERLANGUAGE LINKS:
-        
+
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
         self.interwiki_attop = []
@@ -124,10 +124,10 @@ class Family(family.Family):          # REQUIRED
         self.obsolete = {}
 
         # SETTINGS FOR CATEGORY LINKS:
-        
+
         # Languages that want the category links at the top of the page
         self.category_attop = []
-        
+
         # languages that want the category links
         # one-after-another on a single line
         self.category_on_one_line = []
