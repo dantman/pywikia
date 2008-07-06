@@ -305,9 +305,18 @@ comm10 = {
 # Warning: Don't add template like "en, de, it" because they are already in (added in the code, below
 # Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
 # because they are already put in the regex).
+# Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
         'commons':[u'information', u'trademarked', u'trademark', u'uncategorized[ _]image', u'needscategory',
-                   u'dupe', u'duplicate', u'uncat', u'uncategorized', u'watermark', u'nocat', u'imageupload'],
+                   u'dupe', u'duplicate', u'uncat', u'uncategorized', u'watermark', u'nocat', u'imageupload',
+                   u'creative[ _]Commons[ _]copyright[ _]tags', u'EdwardCurtis', u'AskedForInfo', u'Civertan_license',
+                   u'autorisation[ _]photos[ _]aériennes[ _]Francis[ _]Leroy', u'PermissionOTRS', u'Debora[ _]Cordeiro',
+                   u'flickr-change-of-license', u'flickr-unfree-but', u'flickrreview', u'LocationRequired',
+                   u'MartinX', u'NGC7000', u'NYC[ _]Subway[ _]map', u'Njegos.org', u'OTRS[ _]pending',
+                   u'OTrondal', u'www\.hotelviewarea\.com', u'second[ _]?life', u'seattle[ _]neighborhood[ _]atlas[ _]disclaimer',
+                   u'Photos[ _]by[ _]the[ _]Norwegian[ _]Museum[ _]of[ _]Cultural[ _]History',
+                   u'PD-EstoniaPub', # This is not a copyright tag. Use Template:PD-EE-exempt instead.
+                   u'PCL', u'PBresseler', u'PAshieldsource', u'Openphotoreview'],
         'de':[u'information'],
         'en':[u'information'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
@@ -1321,8 +1330,8 @@ def checkbot():
                                     seems_ok = True
                                     break
                         if not seems_ok:
-                            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
-                            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: %s." % (imageName, license_found)
+                            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (imageName, license_found)
+                            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (imageName, license_found)
                             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (imageName, license_found))
                             mainClass.report_image(imageName, rep_text = rep_text_license_fake,
                                                    addings = False, regex = regexFakeLicense)
@@ -1375,10 +1384,10 @@ def checkbot():
 # Here there is the main loop. I'll take all the (name of the) images and then i'll check them.
 if __name__ == "__main__":
     try:
-        try:
-            checkbot()
-        except wikipedia.BadTitle:
-            wikipedia.output(u"Wikidown or server's problem, quit")
-            wikipedia.stopme()
+        #try:
+        checkbot()
+        #except wikipedia.BadTitle:
+        #    wikipedia.output(u"Wikidown or server's problem, quit")
+        #    wikipedia.stopme()
     finally:
         wikipedia.stopme()
