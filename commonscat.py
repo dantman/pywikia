@@ -154,7 +154,7 @@ commonscatTemplates = {
 
 ignoreTemplates = {    
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
-    'it' : [u'Ip|commons=', 'Interprogetto|commons='],
+    'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],
     'nl' : [u'Commons'],
 }
@@ -173,9 +173,16 @@ def skipPage(page):
     Do we want to skip this page?
     '''
     if ignoreTemplates.has_key(page.site().language()):
-        for template in page.templates():
-            if template in ignoreTemplates[page.site().language()]:
-                return True
+        templatesInThePage = page.templates()
+        templatesWithParams = page.templatesWithParams()
+        for template in ignoreTemplates[page.site().language()]:
+            if type(template) != type(tuple()):
+                if template in templatesInThePage:
+                    return True
+            else:
+                for (inPageTemplate, param) in templatesWithParams:
+                    if inPageTemplate == template[0] and template[1] in param[0]:
+                        return True                
     return False    
 
 def updateInterwiki (wikipediaPage = None, commonsPage = None):
