@@ -154,6 +154,7 @@ commonscatTemplates = {
 
 ignoreTemplates = {    
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
+    'it' : [u'Ip|commons=', 'Interprogetto|commons='],
     'ja' : [u'CommonscatS'],
     'nl' : [u'Commons'],
 }
@@ -173,7 +174,7 @@ def skipPage(page):
     '''
     if ignoreTemplates.has_key(page.site().language()):
         for template in page.templates():
-            if template in ignoreTemplates[page.site().language()]:                
+            if template in ignoreTemplates[page.site().language()]:
                 return True
     return False    
 
