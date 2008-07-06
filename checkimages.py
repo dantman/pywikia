@@ -1049,6 +1049,8 @@ def checkbot():
     # A template as {{en is not a license! Adding also them in the whitelist template...
     for langK in wikipedia.Family('wikipedia').langs.keys():
         hiddentemplate.append('%s' % langK)
+    # The template #if: isn't something to care about
+    hiddentemplate.append('#if:')
                 
     # If the images to skip are 0, set the skip variable to False (the same for the wait time)
     if skip_number == 0:
