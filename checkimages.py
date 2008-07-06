@@ -1325,12 +1325,16 @@ def checkbot():
                             for license_selected in licenses_found:
                                 #print template.exists()                        
                                 template = wikipedia.Page(site, 'Template:%s' % license_selected)
-                                if template.isRedirectPage():
-                                    template = template.getRedirectTarget()
+                                try:
+                                    if template.isRedirectPage():
+                                        template = template.getRedirectTarget()
+                                except wikipedia.BadTitle:
+                                    seems_ok = False # Template with wrong name
+                                else:
+                                    if template in list_licenses:
+                                        seems_ok = True
+                                        break
                                 license_found = license_selected
-                                if template in list_licenses:
-                                    seems_ok = True
-                                    break
                         if not seems_ok:
                             rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (imageName, license_found)
                             regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (imageName, license_found)
