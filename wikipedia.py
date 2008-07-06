@@ -5574,12 +5574,11 @@ your connection is down. Retrying in %i minutes..."""
 
     def checkCharset(self, charset):
         """Warn if charset returned by wiki doesn't match family file."""
-        if not hasattr(self,'charset'):
-            self.charset = charset
-        assert self.charset.lower() == charset.lower(), \
+        fromFamily = self.encoding()
+        assert fromFamily.lower() == charset.lower(), \
                "charset for %s changed from %s to %s" \
-                   % (repr(self), self.charset, charset)
-        if self.encoding().lower() != charset.lower():
+                   % (repr(self), fromFamily, charset)
+        if fromFamily.lower() != charset.lower():
             raise ValueError(
 "code2encodings has wrong charset for %s. It should be %s, but is %s"
                              % (repr(self), charset, self.encoding()))
@@ -6414,6 +6413,14 @@ def decompress_gzip(data):
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
+    
+    def http_error_default(self, url, fp, errcode, errmsg, headers):
+        if errcode == 401 or errcode == 404:
+            raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
+        else:
+            return urllib.FancyURLopener(self, url, fp, errcode, errmsg, headers)
+        
+        
 
 # Special opener in case we are using a site with authentication
 if config.authenticate:
