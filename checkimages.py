@@ -316,7 +316,7 @@ HiddenTemplate = {
                    u'OTrondal', u'www\.hotelviewarea\.com', u'second[ _]?life', u'seattle[ _]neighborhood[ _]atlas[ _]disclaimer',
                    u'Photos[ _]by[ _]the[ _]Norwegian[ _]Museum[ _]of[ _]Cultural[ _]History',
                    u'PD-EstoniaPub', # This is not a copyright tag. Use Template:PD-EE-exempt instead.
-                   u'PCL', u'PBresseler', u'PAshieldsource', u'Openphotoreview'],
+                   u'PCL', u'PBresseler', u'PAshieldsource', u'Openphotoreview', u'Flickr'],
         'de':[u'information'],
         'en':[u'information'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
