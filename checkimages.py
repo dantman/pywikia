@@ -316,7 +316,7 @@ HiddenTemplate = {
                    u'OTrondal', u'www\.hotelviewarea\.com', u'second[ _]?life', u'seattle[ _]neighborhood[ _]atlas[ _]disclaimer',
                    u'Photos[ _]by[ _]the[ _]Norwegian[ _]Museum[ _]of[ _]Cultural[ _]History',
                    u'PD-EstoniaPub', # This is not a copyright tag. Use Template:PD-EE-exempt instead.
-                   u'PCL', u'PBresseler', u'PAshieldsource', u'Openphotoreview', u'Flickr'],
+                   u'PCL', u'PBresseler', u'PAshieldsource', u'Openphotoreview', u'Flickr', u'User:Flickr[ _]upload bot/upload'],
         'de':[u'information'],
         'en':[u'information'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
@@ -1062,7 +1062,7 @@ def checkbot():
     # something = Minimal requirements for an image description.
     # If this fits, no tagging will take place (if there aren't other issues)
     # MIT license is ok on italian wikipedia, let also this here
-    something = ['{{', "'''MIT&nbsp;license'''"] # Don't put "}}" here, please. Useless and can give problems.
+    something = ['{{'] # Don't put "}}" here, please. Useless and can give problems.
     # Unused file extensions. Does not contain PDF.
     notallowed = ("xcf", "xls", "sxw", "sxi", "sxc", "sxd")
 
