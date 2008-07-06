@@ -60,6 +60,7 @@ msg = {
     'he': u'בוט: קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'hsb': u'Bot: [[%s:%s]] je wuběrny nastawk',
+    'hu': u'Bot: a(z) [[%s:%s]] kiemelt szócikk',
     'it': u'Bot: collegamento articolo in vetrina [[%s:%s]]',
     'ja': u'ロボットによる: 秀逸な項目へのリンク [[%s:%s]]',
     'ka': u'ბოტი: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',

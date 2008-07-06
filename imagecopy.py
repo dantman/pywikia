@@ -190,6 +190,7 @@ nowCommonsMessage = {
     'en': u'File is now available on Wikimedia Commons.',
     'eo': u'Dosiero nun estas havebla en la Wikimedia-Komunejo.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
+    'hu': u'A fájl most már elérhető a Wikimedia Commonson.',
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
     'kk': u'Файлды енді Wikimedia Ортаққорынан қатынауға болады.',
@@ -220,6 +221,7 @@ moveToCommonsTemplate = {
 imageMoveMessage = {
     '_default': u'[[:Image:%s|Image]] moved to [[:commons:Image:%s|commons]].',
     'en': u'[[:Image:%s|Image]] moved to [[:commons:Image:%s|commons]].',
+    'hu': u'[[:Image:%s|Kép]] átmozgatva a [[:commons:Image:%s|Commons]]ba.',
     'nl': u'[[:Image:%s|Afbeelding]] is verplaatst naar [[:commons:Image:%s|commons]].',
 }
 
