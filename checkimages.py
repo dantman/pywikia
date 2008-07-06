@@ -906,7 +906,7 @@ class main:
         regl = r"(\"|\')(.*?)\1(?:, |\])"
         pl = re.compile(regl, re.UNICODE)
         for xl in pl.finditer(raw):
-            word = xl.group(2),replace('\\', '\')
+            word = xl.group(2).replace('\\\\', '\\')
             if word not in list_loaded:
                 list_loaded.append(word)
         return list_loaded
