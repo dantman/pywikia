@@ -307,16 +307,7 @@ comm10 = {
 # because they are already put in the regex).
 # Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
-        'commons':[u'information', u'trademarked', u'trademark', u'uncategorized[ _]image', u'needscategory',
-                   u'dupe', u'duplicate', u'uncat', u'uncategorized', u'watermark', u'nocat', u'imageupload',
-                   u'creative[ _]Commons[ _]copyright[ _]tags', u'EdwardCurtis', u'AskedForInfo', u'Civertan_license',
-                   u'autorisation[ _]photos[ _]aériennes[ _]Francis[ _]Leroy', u'PermissionOTRS', u'Debora[ _]Cordeiro',
-                   u'flickr-change-of-license', u'flickr-unfree-but', u'flickrreview', u'LocationRequired',
-                   u'MartinX', u'NGC7000', u'NYC[ _]Subway[ _]map', u'Njegos.org', u'OTRS[ _]pending',
-                   u'OTrondal', u'www\.hotelviewarea\.com', u'second[ _]?life', u'seattle[ _]neighborhood[ _]atlas[ _]disclaimer',
-                   u'Photos[ _]by[ _]the[ _]Norwegian[ _]Museum[ _]of[ _]Cultural[ _]History',
-                   u'PD-EstoniaPub', # This is not a copyright tag. Use Template:PD-EE-exempt instead.
-                   u'PCL', u'PBresseler', u'PAshieldsource', u'Openphotoreview', u'Flickr', u'User:Flickr[ _]upload bot/upload'],
+        'commons':[u'information'],
         'de':[u'information'],
         'en':[u'information'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
@@ -325,6 +316,12 @@ HiddenTemplate = {
         'ta':[u'information'],
         'zh':[u'information'],
         }
+
+PageWithHiddenTemplates = {
+    'commons': u'User:Filbot/White_templates#White_templates',
+    'en':None,
+    'it':None,
+    }
  
 # Template added when the bot finds only an hidden template and nothing else.
 # Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
@@ -906,10 +903,10 @@ class main:
         load_2 = True
         # I search with a regex how many user have not the talk page
         # and i put them in a list (i find it more easy and secure)
-        regl = r"(?:\"|\')(.*?)(?:\"|\')(?:, |\])"
+        regl = r"(\"|\')(.*?)\1(?:, |\])"
         pl = re.compile(regl, re.UNICODE)
         for xl in pl.finditer(raw):
-            word = xl.group(1)
+            word = xl.group(2),replace('\\', '\')
             if word not in list_loaded:
                 list_loaded.append(word)
         return list_loaded
@@ -1043,14 +1040,6 @@ def checkbot():
     dels = wikipedia.translate(site, del_comm)
     smwl = wikipedia.translate(site, second_message_without_license)
     TextFind = wikipedia.translate(site, txt_find)
-    hiddentemplate = wikipedia.translate(site, HiddenTemplate)
-    # If there's an hidden template, change the used
-    HiddenTN = wikipedia.translate(site, HiddenTemplateNotification)
-    # A template as {{en is not a license! Adding also them in the whitelist template...
-    for langK in wikipedia.Family('wikipedia').langs.keys():
-        hiddentemplate.append('%s' % langK)
-    # The template #if: isn't something to care about
-    hiddentemplate.append('#if:')
                 
     # If the images to skip are 0, set the skip variable to False (the same for the wait time)
     if skip_number == 0:
@@ -1115,7 +1104,8 @@ def checkbot():
             tupla_written = None
             some_problem = False
         # Load the list of licenses allowed for our project
-        list_licenses = mainClass.load_licenses()
+        if smartdetection:
+            list_licenses = mainClass.load_licenses()
         # Ensure that if the list given is empty it will be converted to "None"
         # (but it should be already done in the takesettings() function)
         if tupla_written == []: tupla_written = None
@@ -1123,6 +1113,21 @@ def checkbot():
         if tupla_written != None: wikipedia.output(u'\t   >> Loaded the real-time page... <<')
         # No settings found, No problem, continue.
         else: wikipedia.output(u'\t   >> No additional settings found! <<')
+        hiddentemplate = wikipedia.translate(site, HiddenTemplate)
+        # If there's an hidden template, change the used
+        HiddenTN = wikipedia.translate(site, HiddenTemplateNotification)
+        # A template as {{en is not a license! Adding also them in the whitelist template...
+        for langK in wikipedia.Family('wikipedia').langs.keys():
+            hiddentemplate.append('%s' % langK)
+        # The template #if: isn't something to care about
+        hiddentemplate.append('#if:')
+        # Hidden template loading
+        pageHidden = wikipedia.translate(site, PageWithHiddenTemplates)
+        try:
+            pageHiddenText = wikipedia.Page(site, pageHidden).get()
+        except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+            pageHiddenText = ''
+        hiddentemplate.extend(mainClass.load(pageHiddenText))
         # Not the main, but the most important loop.
         #parsed = False
         for image in generator:            
