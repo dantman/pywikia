@@ -1123,11 +1123,12 @@ def checkbot():
         hiddentemplate.append('#if:')
         # Hidden template loading
         pageHidden = wikipedia.translate(site, PageWithHiddenTemplates)
-        try:
-            pageHiddenText = wikipedia.Page(site, pageHidden).get()
-        except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-            pageHiddenText = ''
-        hiddentemplate.extend(mainClass.load(pageHiddenText))
+        if pageHidden != None:
+            try:
+                pageHiddenText = wikipedia.Page(site, pageHidden).get()
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                pageHiddenText = ''
+            hiddentemplate.extend(mainClass.load(pageHiddenText))
         # Not the main, but the most important loop.
         #parsed = False
         for image in generator:            
