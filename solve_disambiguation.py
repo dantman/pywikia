@@ -82,6 +82,7 @@ msg = {
     'es': u'Bot:Desambiguación asistida: %s - Cambiando enlace(s) para %s',
     'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
     'de': u'Bot-unterstützte Begriffsklärung: %s - Link(s) ersetzt durch %s',
+    'fi': u'Täsmennystä botin avulla: %s korvattiin link(e)illä %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s - Modifications du (des) lien(s) pour %s',
     'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s',
     'ia': u'Disambiguation assistite per robot: %s - Changed link(s) to %s',
@@ -105,6 +106,7 @@ msg_unlink = {
     'en': u'Robot-assisted disambiguation: %s - Removed link(s).',
     'da': u'Retter flertydigt link til: %s - Fjernede link(s)',
     'de': u'Bot-unterstützte Begriffsklärung: %s - Link(s) entfernt',
+    'fi': u'Täsmennystä botin avulla: %s - poistettiin linkkejä.',
     'fr': u'Homonymie résolue à l\'aide du robot: %s - Retrait du (des) lien(s)',
     'he': u'הסרת קישור לדף פירושונים באמצעות בוט: %s',
     'ia': u'Disambiguation assistite per robot: %s - Removed link(s).',
@@ -128,6 +130,7 @@ msg_redir = {
     'en': u'Robot-assisted disambiguation: %s - Changed link(s) to %s',
     'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
     'de': u'Bot-unterstützte Redirectauflösung: %s - Link(s) ersetzt durch %s',
+    'fi': u'Täsmennystä botin avulla: %s korvattiin link(e)illä %s',
     'fr': u'Correction de lien vers redirect: %s - Modifications du (des) lien(s) pour %s',
     'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s שונה ל%s',
     'ia': u'Resolution de redirectiones assistite per robot: %s - Changed link(s) to %s',
@@ -152,6 +155,7 @@ msg_redir_unlink = {
     'da': u'Retter flertydigt link til: %s - Fjernede link(s)',
     'de': u'Bot-unterstützte Redirectauflösung: %s - Link(s) entfernt',
     'fr': u'Correction de lien vers redirect: %s - Retrait du (des) lien(s)',
+    'fi': u'Täsmennystä botin avulla: %s - poistettiin linkkejä',
     'he': u'הסרת קישור לדף פירושונים באמצעות בוט: %s',
     'ia': u'Resolution de redirectiones assistite per robot: %s - Removed link(s).',
     'it': u'Sistemazione automatica del redirect: %s - Collegamenti rimossi',
@@ -170,6 +174,7 @@ msg_redir_unlink = {
 # Summary message to (unknown)
 unknown_msg = {
     'en' : u'(unknown)',
+    'fi' : u'(tuntematon)',
     'pt' : u'(desconhecido)',
     }
 
@@ -180,6 +185,7 @@ primary_topic_format = {
     'cs': u'%s_(rozcestník)',
     'de': u'%s_(Begriffsklärung)',
     'en': u'%s_(disambiguation)',
+    'fi': u'%s_(täsmennyssivu)',
     'ia': u'%s_(disambiguation)',
     'it': u'%s_(disambigua)',
     'lt': u'%s_(reikšmės)',
@@ -270,6 +276,11 @@ ignore_title = {
             u'User:Egil/Sandbox',
             u'Wikipedia talk:Make only links relevant to the context',
             u'Wikipedia:Common words, searching for which is not possible',
+        ],
+        'fi': [
+            u'Wikipedia:Luettelo täsmennyssivuista',
+            u'Wikipedia:Luettelo (täsmennyssivuista)',
+            u'Wikipedia:Täsmennyssivu',
         ],
         'fr': [
             u'Wikipédia:Liens aux pages d\'homonymie',
@@ -490,6 +501,8 @@ class DisambiguationRobot(object):
     ignore_contents = {
         'de':(u'{{[Ii]nuse}}',
               u'{{[Ll]öschen}}',
+            ),
+        'fi':(u'{{[Tt]yöstetään}}',
             ),
         'kk':(u'{{[Ii]nuse}}',
               u'{{[Pp]rocessing}}',

@@ -666,7 +666,7 @@ class Family(family.Family):
             'et':  u'Täpsustusleheküljed',
             'eu':  u'Argipen orriak',
             'fa':  u'صفحات ابهام‌زدایی',
-            'fi':  u'Täsmennyssivu',
+            'fi':  u'Täsmennyssivut',
             'fo':  u'Fleiri týdningar',
             'fr':  u'Homonymie',
             'fy':  u'Trochferwiisside',
