@@ -111,6 +111,9 @@ movepages.py           : Bot page moves to another title.
 nowcommons.py          : This bot can be deleted images with NowCommons template.
 pagefromfile.py        : This bot takes its input from a file that contains a number of
                          pages to be put on the wiki.
+piper.py               : Pipes article text through external program(s) on STDIN and collects
+                         its STDOUT which is used as the new article text of it differs from the
+                         original.
 redirect.py            : Fix double redirects and broken redirects. Note:
                          solve_disambiguation also has functions which treat
                          redirects.
