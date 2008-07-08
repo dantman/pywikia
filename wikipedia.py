@@ -6423,7 +6423,7 @@ class MyURLopener(urllib.FancyURLopener):
         if errcode == 401 or errcode == 404:
             raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
         else:
-            return urllib.FancyURLopener(self, url, fp, errcode, errmsg, headers)
+            return urllib.FancyURLopener.http_error_default(self, url, fp, errcode, errmsg, headers)
         
         
 
