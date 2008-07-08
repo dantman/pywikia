@@ -5294,8 +5294,13 @@ your connection is down. Retrying in %i minutes..."""
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
 
-        return re.compile('\n*#' + redirKeywordsR +
-                                   '.*?\[\[(.+?)(?:\|.*?)?\]\]',
+        if self.versionnumber() > 12:
+            # in MW 1.13 (at least) a redirect directive can follow whitespace
+            prefix = r'[\n ]*'
+        else:
+            prefix = r'\n*'
+        return re.compile(prefix + '#' + redirKeywordsR
+                                 + '.*?\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
 
     # The following methods are for convenience, so that you can access
