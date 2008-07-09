@@ -738,7 +738,7 @@ class main:
                 # Because it's on commons but someone has added something on your project.
                 return False
             elif 'stemma' in self.image.lower() and self.site.lang == 'it':
-                wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % image)
+                wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.image)
                 return True # Problems? No, it's only not on commons but the image needs a check
             else:            
                 repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
