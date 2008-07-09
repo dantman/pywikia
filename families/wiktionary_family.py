@@ -26,7 +26,7 @@ class Family(family.Family):
             'tg', 'dv', 'bn', 'ka', 'mg', 'ha', 'kw', 'ss', 'na', 'sa',
             'gv', 'ay', 'tpi', 'ne', 'jbo', 'jv', 'gn', 'uz', 'tn', 'mt',
             'iu', 'sh', 'lb', 'ks', 'tk', 'sg', 'fj', 'als', 'ik', 'si',
-            'ln', 'sm', 'za', 'roa-rup', 'yo', 'dz', 'my', 'wa', 'sc',
+            'ln', 'sm', 'za', 'roa-rup', 'dz', 'my', 'wa',
         ]
 
         for lang in self.languages_by_size:
