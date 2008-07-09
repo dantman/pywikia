@@ -141,6 +141,7 @@ class Family(family.Family):
             'als': u'Wikipedia Diskussion',
             'an': u'Descusión Wikipedia',
             'ar': u'نقاش ويكيبيديا',
+            'as': u'Wikipedia वार्ता',
             'ast': u'Uiquipedia alderique',
             'av': u'Обсуждение Wikipedia',
             'ay': u'Wikipedia Discusión',

@@ -53,30 +53,35 @@ msg_simple_protect = {
     'ar': u'بوت: حماية قائمة من الملفات.',
     'it': u'Bot: Protezione di una lista di pagine.',
     'pt': u'Bot: Protegendo uma lista de artigos.',
+    'zh': u'機器人:保護清單中的所有檔案',
 }
 msg_protect_category = {
     'en': u'Robot - Protecting all pages from category %s',
     'ar': u'روبوت - حماية كل الصفحات من التصنيف %s',
     'it': u'Bot: Protezione di tutte le pagine nella categoria %s.',
     'pt': u'Bot: Protegendo todos os artigos da categoria %s',
+    'zh': u'機器人: 保護目錄 %s 的所有頁面',
 }
 msg_protect_links = {
     'en': u'Robot - Protecting all pages linked from %s',
     'ar': u'روبوت - حماية كل الصفحات الموصولة من %s',
     'it': u'Bot: Protezione di tutte le pagine linkate da %s.',
     'pt': u'Bot: Protegendo todos os artigos ligados a %s',
+    'zh': u'機器人: 保護所有從 %s 連結的頁面',
 }
 msg_protect_ref = {
     'en': u'Robot - Protecting all pages referring from %s',
     'ar': u'روبوت - حماية كل الصفحات الراجعة من %s',
     'it': u'Bot: Protezione di tutte le pagine con link verso %s.',
     'pt': u'Bot: Protegendo todos os artigos afluentes a %s',
+    'zh': u'機器人: 保護所有連至 %s 的頁面',
 }
 msg_protect_images = {
     'en': u'Robot - Protecting all images on page %s',
     'ar': u'روبوت - حماية كل الصور في الصفحة %s',
     'it': u'Bot: Protezione di tutte le immagini presenti in %s.',
     'pt': u'Bot: Protegendo todas as imagens do artigo %s',
+    'zh': u'機器人: 保護頁面 %s 中的所有圖條',
 }
  
 class ProtectionRobot:

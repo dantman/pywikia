@@ -214,7 +214,7 @@ logbook = {
     'sq': u'Project:Tung log',
     'sr': u'Project:Добродошлице',
     'vo': None, # no welcome log on vo.wiki
-    'zh': u'user:Welcomebot/欢迎日志',
+    'zh': u'User:Welcomebot/欢迎日志',
     }
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {

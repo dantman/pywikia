@@ -48,7 +48,8 @@ msg = {
     'nn':u'robot: fjerna sjølvlenkjer',
     'no':u'robot: fjerner selvlenker',
     'pl':u'Robot automatycznie usuwa linki zwrotne',
-    'pt':u'Bot: Retirando link para o próprio artigo'
+    'pt':u'Bot: Retirando link para o próprio artigo',
+    'zh':u'機器人:移除自我連結',
 }
 
 class XmlDumpSelflinkPageGenerator:

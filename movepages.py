@@ -61,6 +61,7 @@ summary={
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Bot: Página movida',
     'ru': u'Переименование страницы при помощи робота',
+    'zh': u'機器人:移動頁面',
 }
 
 deletesummary={
@@ -75,6 +76,7 @@ deletesummary={
     'nl': u'Redirect verwijderd na verplaatsen van pagina ',
     'pt': u'Bot: Página apagada depois de movida',
     'ru': u'Робот: удаление перенаправления после переименования страницы',
+    'zh': u'機器人:刪除頁面移動後的重定向',
     # These are too unspecific:
     #'pl': u'Usunięcie artykułu przez robota',
 

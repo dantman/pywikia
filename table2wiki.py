@@ -75,6 +75,7 @@ msg_no_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئ�
                    'no':u'bot: Konverter tabellsyntaks',
                    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada',
+                   'zh':u'機器人：表格語法更新',
                   }
 
 msg_one_warning = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
@@ -91,6 +92,7 @@ msg_one_warning = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئ�
 		           'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
                    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżenie!',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
+                   'zh':u'機器人：表格語法更新 - %d 注意！',
                   }
 
 msg_multiple_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
@@ -107,6 +109,7 @@ msg_multiple_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث ت�
                          'no':u'bot: Konverterer tabellsyntaks – %d advarsler!',
                          'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżeń!',
                          'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
+                         'zh':u'機器人：表格語法更新 - 注意 %d',
                         }
 
 class TableXmlDumpPageGenerator:

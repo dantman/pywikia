@@ -46,6 +46,7 @@ copy_message = {
     'pl':u"Ten obraz został skopiowany z %s. Oryginalny opis to:\r\n\r\n%s",
     'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
     'sr':u"Ова слика је копирана са %s. Оригинални опис је:\r\n\r\n%s",
+    'zh':u"本圖像從 %s 複製，原始說明資料：\r\n\r\n%s",
 }
 
 nowCommonsTemplate = {
@@ -56,12 +57,14 @@ nowCommonsTemplate = {
     'he': u'{{גם בוויקישיתוף|%s}}',
     'ia': u'{{OraInCommons|Imagine:%s}}',
     'it': u'{{NowCommons unlink|%s}}',
+    'ja': u'{{NowCommons|Image:%s}}',
     'kk': u'{{NowCommons|Image:%s}}',
     'lt': u'{{NowCommons|Image:%s}}',
     'nl': u'{{NuCommons|Image:%s}}',
     'pl': u'{{NowCommons|%s}}',
     'pt': u'{{NowCommons|%s}}',
     'sr': u'{{NowCommons|%s}}',
+    'zh': u'{{NowCommons|Image:%s}}',
 }
 
 #nowCommonsThis = {
@@ -78,6 +81,7 @@ nowCommonsMessage = {
     'eo': u'Dosiero nun estas havebla en la Wikimedia-Komunejo.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
+    'ja': u'ファイルはウィキメディア・コモンズにあります',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
     'kk': u'Файлды енді Wikimedia Ортаққорынан қатынауға болады.',
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
@@ -85,6 +89,7 @@ nowCommonsMessage = {
     'pl': u'Plik jest teraz dostępny na Wikimedia Commons.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
+    'zh': u'檔案已存在於維基共享資源。',
 }
 
 #nowCommonsThisMessage = {

@@ -115,6 +115,20 @@ reason_broken={
     'zh-yue': u'機械人：跳轉目標唔存在',
 }
 
+#Summary message for put broken redirect to speedy delete
+sd_tagging_sum = {
+    'en': u'Robot: Tagging for speedy deletion',
+    'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
+    'zh':u'機器人: 將損壞的重定向提報快速刪除',
+}
+
+#put deletion template
+sd_template = {
+    'en':u'{{db-r1}}',
+    'ja':u'{{即時削除|壊れたリダイレクト}}',
+    'zh':u'{{delete|R1}}',
+}
+
 class RedirectGenerator:
     def __init__(self, xmlFilename=None, namespaces=[], offset=-1,
                  use_move_log=False):
@@ -343,7 +357,16 @@ class RedirectRobot:
                 except wikipedia.NoPage:
                     if self.prompt(u'Redirect target %s does not exist. Do you want to delete %s?'
                                    % (targetPage.aslink(), redir_page.aslink())):
-                        redir_page.delete(reason, prompt = False)
+                        try:
+                            redir_page.delete(reason, prompt = False)
+                        except wikipedia.NoUsername:
+                            if sd_template.has_key(targetPage.site().lang) and sd_tagging_sum.has_key(targetPage.site().lang):
+                                wikipedia.output("No sysop in user-config.py, put page to speedy deletion.")
+                                content = redir_page.get(get_redirect=True)
+                                content = wikipedia.translate(targetPage.site().lang,sd_template)+"\n"+content
+                                summary = wikipedia.translate(targetPage.site().lang,sd_tagging_sum)
+                                redir_page.put(content, summary)
+
                 except wikipedia.IsRedirectPage:
                     wikipedia.output(
             u'Redirect target %s is also a redirect! Won\'t delete anything.' % targetPage.aslink())
@@ -417,11 +440,13 @@ class RedirectRobot:
                               % targetPage.aslink())
 
                         content=targetPage.get(get_redirect=True)
-                        if wikipedia.Page(wikipedia.getSite(), u"Template:Db-r1").exists():
+                        if sd_template.has_key(targetPage.site().lang) and sd_tagging_sum.has_key(targetPage.site().lang):
                             wikipedia.output(u"Tagging redirect for deletion")
                             # Delete the two redirects
-                            targetPage.put("{{db-r1}}\n"+content, "Tagging for speedy deletion")
-                            redir.put("{{db-r1}}\n"+content, "Tagging for speedy deletion")
+                            content = wikipedia.translate(targetPage.site().lang,sd_template)+"\n"+content
+                            summary = wikipedia.translate(targetPage.site().lang,sd_tagging_sum)
+                            targetPage.put(content, summary)
+                            redir.put(content, summary)
                         else:
                             break # TODO Better implement loop redirect
                     else:
