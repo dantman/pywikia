@@ -217,6 +217,7 @@ class Family(family.Family):
             'he': u'ביאור',
             'hy': u'Ինդեքս',
             'it': u'Portale',
+            'la': u'Liber',
             'pt': u'Página',
             'sv': u'Författare',
         }
@@ -226,6 +227,7 @@ class Family(family.Family):
             'he': u'שיחת ביאור',
             'hy': u'Ինդեքսի քննարկում',
             'it': u'Discussioni portale',
+            'la': u'Disputatio Libri',
             'pt': u'Página Discussão',
             'sv': u'Författardiskussion',
         }

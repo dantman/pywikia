@@ -64,7 +64,7 @@ class Family(family.Family):
             'fi': u'Keskustelu Wikiuutisista',
             'fr': u'Discussion Wikinews',
             'he': u'שיחת ויקיחדשות',
-            'hu': u'Wikihírek vita',
+            'hu': u'Wikihírek-vita',
             'it': u'Discussioni Wikinotizie',
             'ja': u'ウィキニュース‐ノート',
             'nl': u'Overleg Wikinews',
