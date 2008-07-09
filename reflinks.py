@@ -67,7 +67,8 @@ comment = {'fr':u'Titre généré automatiquement',
            'hu':u'Robot generálta cím',
            'ko':u'봇이 따온 제목',
            'es':u'Título generado por un bot',
-           'en':u'Bot generated title'}
+           'en':u'Bot generated title',
+		   'ar':u'عنوان مولد بالبوت'}
 
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)
 # matches an URL at the index of a website

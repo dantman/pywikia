@@ -17,6 +17,7 @@ from copyright import mysplit, put, reports_cat
 import sys
 
 summary_msg = {
+    'ar': u'إزالة',
     'en': u'Removing',
     'it': u'Rimozione',
 }

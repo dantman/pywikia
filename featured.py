@@ -45,7 +45,7 @@ def BACK(site,name):
 
 msg = {
     'als': u'Bötli: [[%s:%s]] isch en bsunders glungener Artikel',
-    'ar': u'بوت: وصلة مقالة مختارة ل [[%s:%s]]',
+    'ar': u'بوت: [[%s:%s]] هي مقالة مختارة',
     'bat-smg': u'robots: Pavīzdėnė straipsnė nūruoda [[%s:%s]]',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'cs': u'Bot: Nejlepší článek: [[%s:%s]]',

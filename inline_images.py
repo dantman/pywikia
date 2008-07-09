@@ -35,6 +35,7 @@ docuReplacements = {
 
 msg = {
     'en': u'This image was inline linked from %s. No information on author, copyright status, or license is available.',
+	'ar': u'هذه الصورة كانت موصولة داخليا من %s. لا معلومات عن المؤلف، حالة حقوق النشر، أو الترخيص متوفرة.',
     'he': u'תמונה זו הייתה מקושרת מהדף %s. אין מידע זמין על המחבר, מצב זכויות היוצרים או הרישיון.',
     'pl': u'Obraz ten został dolinkowany z adresu %s. Brak jest informacji o autorze, prawach autorskich czy licencji.',
     'pt': u'Esta imagem foi inserida como linha de %s. Nenhum infomação sobre autor, direitos autorais ou licença foi listada.', 

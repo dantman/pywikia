@@ -69,6 +69,7 @@ class CaseChecker( object ):
     }
     msgLinkReplacement = {
         'en': u'Case Replacements',
+		'ar': u'استبدالات الحالة',
         'ru': u'[[ВП:КЛ]]',
     }
 

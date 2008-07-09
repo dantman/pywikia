@@ -77,6 +77,9 @@ class SpeedyRobot:
     # possible to find out the reason for deletion by the template used.
     # _default will be used if no such semantic template was used.
     deletion_messages = {
+	    'ar': {
+            u'_default': u'حذف مرشح للحذف السريع حسب [[ويكيبيديا:حذف سريع|معايير الحذف السريع]]',
+            },
         'de': {
             u'_default': u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
             },

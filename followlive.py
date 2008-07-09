@@ -31,6 +31,23 @@ What is it? """
 #   languages code contains list of templates to be used
 #       templates contains a message and its position 
 templates = {
+    'ar': {
+        '{{شطب}}' :{
+            'msg' : 'وسم مساعد بالبوت: هذا المقال ينبغي حذفه',
+            'pos': 'top'},
+        
+        '{{تنظيف}}' :{
+            'msg' : 'وسم مساعد بالبوت: هذا المقال يحتاج للتنظيف',
+            'pos': 'top'},
+
+        '{{بذرة}}':{
+            'msg' : 'وسم مساعد بالبوت: هذا المقال بذرة',
+            'pos': 'bottom'},
+
+        '{{ويكي}}' :{
+            'msg' : 'وسم مساعد بالبوت: هذا المقال يحتاج إلى التنسيق بضيغة الويكي حسب [[ويكيبيديا:دليل الأسلوب|دليل الأسلوب]]',
+            'pos' : 'top'},
+    },
     'en': {
         '{{db-reason}}' :{
             'msg' : 'Robot-assisted tagging: this article should be deleted',

@@ -84,6 +84,7 @@ fixes = {
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
                'en':u'Robot: Adding/sorting references.',
+			   'ar':u'روبوت: إضافة/ترتيب المراجع.',
                'he':u'בוט: מוסיף/מסדר הערות שוליים',
                'ia':u'Robot: Addition/assortimento de referentias',
                'pl':u'Robot dodaje/sortuje źródła',

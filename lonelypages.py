@@ -71,7 +71,7 @@ Template = {
 
 # Comment that the Bot will use to put the template
 commento = {
-            'ar':u'روبوت: إضافة قالب يتيمة',
+            'ar':u'بوت: صفحة يتيمة، إضافة قالب',
             'en':u'Bot: Orphan page, add template',
             'it':u'Bot: Voce orfana, aggiungo template {{O}}',
             'zh':u'機器人: 本頁的鏈入頁面太少',
@@ -80,7 +80,7 @@ commento = {
 # When you add a disambig to the list of disambig pages
 #(if you set disambigPage to None, you can put here nothing)
 commenttodisambig = {
-           'ar':u'روبوت: إضافة صفحة توضيح',
+           'ar':u'بوت: إضافة صفحة توضيح',
            'en':u'Bot: Adding a disambig page',
            'it':u'Bot: Aggiungo una disambigua',
            'zh':u'機器人: 增加消歧義頁面',

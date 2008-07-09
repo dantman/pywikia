@@ -152,7 +152,8 @@ commonscatTemplates = {
     'zh-yue' : u'同享類',
 }
 
-ignoreTemplates = {    
+ignoreTemplates = {   
+    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'], 
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],

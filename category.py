@@ -87,7 +87,7 @@ docuReplacements = {
 }
 # Summary messages
 msg_add={
-    'ar':u'إضافة [[تصنيف:%s]]',
+    'ar':u'روبوت: إضافة [[تصنيف:%s]]',
     'bat-smg':u'Robots: Pridedama [[Kateguorėjė:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
@@ -474,6 +474,7 @@ class CategoryListifyRobot:
     '''
     listify_msg={
         'en':u'Robot: Listifying from %s (%d entries)',
+		'ar':u'روبوت: عرض من %s (%d مدخلة)',
         'fi':u'Botti listasi luokan %s (%d jäsentä)',
         'he':u'בוט: יוצר רשימה מהקטגוריה %s (%d דפים)',
         'kk':u'Бот: %s дегеннен (%d буын) тізімдеді',
@@ -527,6 +528,7 @@ class CategoryRemoveRobot:
     Does not remove category tags pointing at subcategories.
     '''
     deletion_reason_remove = {
+	    'ar':u'روبوت: التصنيف تم الاستغناء عنه',
         'da':u'Robot: Kategorien blev opløst',
         'de':u'Bot: Kategorie wurde aufgelöst',
         'en':u'Robot: Category was disbanded',
@@ -799,6 +801,7 @@ class CategoryTreeRobot:
         # Translations to say that the current category is in more categories than
         # the one we're coming from
         also_in_cats = {
+		    'ar': u'(أيضا في %s)',
             'da': u'(også i %s)',
             'de': u'(auch in %s)',
             'en': u'(also in %s)',

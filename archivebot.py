@@ -56,6 +56,13 @@ messages = {
             'ArchiveSummary': u'Archiving %(count)d thread(s) from [[%(from)s]].',
             'OlderThanSummary': u'older than',
             },
+	    'ar': {
+            'ArchiveFull': u'(الأرشيف ممتلئ)',
+            'InitialArchiveHeader': u'{{أرشيف نقاش}}',
+            'PageSummary': u'أرشفة %(count)d قسم(أقسام) (%(why)s) إلى %(archives)s.',
+            'ArchiveSummary': u'أرشفة %(count)d قسم(أقسام) من [[%(from)s]].',
+            'OlderThanSummary': u'أقدم من',
+            },
         'pl': {
             'ArchiveFull': u'(ARCHIWUM PEŁNE)',
             'InitialArchiveHeader': u'{{archiwum}}',

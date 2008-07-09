@@ -93,6 +93,7 @@ locale.setlocale(locale.LC_ALL, '')
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
     'commons':u'\n{{subst:nld}}',
+	'ar'     :u'\n{{subst:لم}}',
     'de'     :u'{{Benutzer:ABF/D|~~~~}} {{Dateiüberprüfung/benachrichtigt (Kategorie)|{{subst:LOCALYEAR}}|{{subst:LOCALMONTH}}|{{subst:LOCALDAY}}}} {{Dateiüberprüfung/benachrichtigt (Text)|Lizenz|||||}} --This was added by ~~~~-- ',
     'en'     :u'\n{{subst:nld}}',
     'it'     :u'\n{{subst:unverdata}}',
@@ -134,6 +135,7 @@ comm = {
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
 empty = {
         'commons':u'{{subst:welcome}}\n~~~~\n',
+		'ar'     :u'{{ترحيب}}\n~~~~\n',
         'de'     :u'{{subst:willkommen}} ~~~~',
         'en'     :u'{{welcome}}\n~~~~\n',
         'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
@@ -160,6 +162,7 @@ comm2 = {
 # In reality, there aren't unknown extension, they are only not allowed...
 delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
+			'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
             'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
             'ja'     :u'{{db|知らないファイルフォーマット %s}}',
@@ -171,6 +174,7 @@ delete_immediately = {
 # The header of the Unknown extension's message.
 delete_immediately_head = {
             'commons':u"\n== Unknown extension! ==\n",
+			'ar'     :u"\n== امتداد غير معروف! ==\n",
             'en'     :u"\n== Unknown extension! ==\n",
             'it'     :u'\n\n== File non specificato ==\n',
             'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
@@ -218,6 +222,7 @@ nothing_head = {
 nothing_notification = {
                 'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:" + \
                 "__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~",
+				'ar'     :u"{{subst:مصدر الصورة|Image:%s}} --~~~~",
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|Image:%s}} --~~~~",
                 'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
@@ -279,6 +284,7 @@ timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
             'commons':u"\n*[[:Image:%s]] " + timeselected,
+			'ar':u"\n*[[:صورة:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:Image:%s]] " + timeselected,
             'it':u"\n*[[:Immagine:%s]] " + timeselected,
@@ -308,6 +314,7 @@ comm10 = {
 # Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
         'commons':[u'information'],
+		'ar':[u'معلومات'],
         'de':[u'information'],
         'en':[u'information'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
