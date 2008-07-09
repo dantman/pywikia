@@ -4051,6 +4051,8 @@ class Site(object):
             return 1
         else:
             return 0
+    def username(self, sysop = False):
+        return self._userName[self._userIndex(sysop = sysop)]
 
     def loggedInAs(self, sysop = False):
         """Return the current username if logged in, otherwise return None.
