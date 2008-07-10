@@ -85,7 +85,7 @@ msg = {
 }
 
 # ALL wikis use 'Link FA', and sometimes other localized templates.
-# We use _default + the localized ones
+# We use _default AND the localized ones
 template = {
     '_default': ['Link FA'],
     'als': ['LinkFA'],
@@ -100,6 +100,7 @@ template = {
     'es': ['Destacado'],
     'eu': ['NA lotura'],
     'fr': ['Lien AdQ'],
+    'fur': ['Leam VdC'],
     'ga': ['Nasc AR'],
     'hi': ['Lien AdQ'],
     'is': [u'Tengill ÚG'],
