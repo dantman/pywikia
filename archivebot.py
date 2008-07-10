@@ -70,6 +70,20 @@ messages = {
             'ArchiveSummary': u'Archiwizacja %(count)d wątków z [[%(from)s]].',
             'OlderThanSummary': u'starsze niż',
             },
+        'no': {
+            'ArchiveFull': u'(ARKIV FULLT)',
+            'InitialArchiveHeader': u'{{arkiv}}',
+            'PageSummary': u'Arkiverer %(count)d tråder (%(why)s) til %(archives)s.',
+            'ArchiveSummary': u'Arkiverer %(count)d tråder fra [[%(from)s]].',
+            'OlderThanSummary': u'eldre enn',
+            },
+        'nn': {
+            'ArchiveFull': u'(ARKIV FULLT)',
+            'InitialArchiveHeader': u'{{arkiv}}',
+            'PageSummary': u'Arkiverer %(count)d trådar (%(why)s) til %(archives)s.',
+            'ArchiveSummary': u'Arkiverer %(count)d trådar frå [[%(from)s]].',
+            'OlderThanSummary': u'eldre enn',
+            },
         # fix below
         'pt': {
             'ArchiveFull': u'(ARQUIVO COMPLETO)',
@@ -185,11 +199,24 @@ class DiscussionThread(object):
             return
         self.content += line + '\n'
         #Update timestamp
+# nnwiki:
+# 19:42, 25 mars 2008 (CET)
+# enwiki
+# 16:36, 30 March 2008 (UTC)
         TM = re.search(r'(\d\d):(\d\d), (\d\d?) (\w+) (\d\d\d\d) \(.*?\)', line)
         if not TM:
             TM = re.search(r'(\d\d):(\d\d), (\w+) (\d\d?), (\d\d\d\d) \(.*?\)', line)
+# 18. apr 2006 kl.18:39 (UTC)
+# 4. nov 2006 kl. 20:46 (CET)
+        if not TM:
+	        TM = re.search(r'(\d\d?)\. (\w+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
         if TM:
-            TIME = txt2timestamp(TM.group(0),"%H:%M, %d %B %Y (%Z)")
+#            wikipedia.output(TM)
+            TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl.%H:%M (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %d %B %Y (%Z)")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %d %b %Y (%Z)")
             if not TIME:
@@ -198,6 +225,9 @@ class DiscussionThread(object):
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (%Z)")
             if TIME:
                 self.timestamp = max(self.timestamp,time.mktime(TIME))
+#                wikipedia.output(u'Time to be parsed: %s' % TM.group(0))
+#                wikipedia.output(u'Parsed time: %s' % TIME)
+#                wikipedia.output(u'Newest timestamp in thread: %s' % TIME)
 
     def size(self):
         return len(self.title) + len(self.content) + 12
@@ -336,6 +366,7 @@ class PageArchiver(object):
 
     def loadConfig(self):
         hdrlines = self.Page.header.split('\n')
+#        wikipedia.output(u'Looking for: %s' % self.tpl)
         mode = 0
         for line in hdrlines:
             if mode == 0 and re.search('{{'+self.tpl,line):
