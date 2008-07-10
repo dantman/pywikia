@@ -1078,8 +1078,7 @@ def main():
     if source == None or len(commandline_replacements) not in [0, 2]:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')
-        wikipedia.stopme()
-        sys.exit()
+        return
     if (len(commandline_replacements) == 2):
         replacements[commandline_replacements[0]] = commandline_replacements[1]
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
@@ -1097,8 +1096,7 @@ def main():
             fix = fixes['ALTREFS']
         except KeyError:
             wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
-            wikipedia.stopme()
-            sys.exit()
+            return
         if fix.has_key('regex'):
             regex = fix['regex']
         if fix.has_key('msg'):

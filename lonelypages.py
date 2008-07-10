@@ -170,7 +170,7 @@ def main():
         # (useful when the bot is run on a server)
         if getenable != 'enable':
             wikipedia.output('The bot is disabled')
-            wikipedia.stopme()
+            return
     # DisambigPage part
     if disambigPage != None:
         disambigpage = wikipedia.Page(wikiSite, disambigPage)

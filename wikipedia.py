@@ -6341,7 +6341,11 @@ def stopme():
     if config.use_diskcache:
         for site in _sites.itervalues():
             if site._mediawiki_messages:
-                site._mediawiki_messages.delete()
+                try:
+                    site._mediawiki_messages.delete()
+                except OSError:
+                    # stopme has been called several times...
+                    pass
     get_throttle.drop()
 
 def _flush():

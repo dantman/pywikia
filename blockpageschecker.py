@@ -195,7 +195,7 @@ def main():
     global categoryToCheck; global comment; global project_inserted
     if config.mylang not in project_inserted:
         wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
-        wikipedia.stopme()
+        return
     # always, define a generator to understand if the user sets one, defining what's genFactory
     always = False; generator = False; debug = False
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()

@@ -1170,8 +1170,7 @@ def main():
             wikipedia.output(output)
 
     if not gen:
-        wikipedia.stopme()
-        sys.exit()
+        return
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = pageNumber)

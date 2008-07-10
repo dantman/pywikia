@@ -119,7 +119,6 @@ class SandboxBot:
                     wikipedia.output(u'*** Loading again because of edit conflict.\n')
             if self.no_repeat:
                 wikipedia.output(u'\nDone.')
-                wikipedia.stopme()
                 return
             else:
                 wikipedia.output(u'\nSleeping %s hours, now %s' % (self.hours, now))
@@ -134,7 +133,6 @@ def main():
             no_repeat = False
         else:
             wikipedia.showHelp('clean_sandbox')
-            wikipedia.stopme()
             return
 
     bot = SandboxBot(hours, no_repeat)

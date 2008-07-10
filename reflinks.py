@@ -307,8 +307,7 @@ class ReferencesRobot:
         except wikipedia.NoPage :
             wikipedia.output(u'The stop page %s does not exist' 
                                 % self.stopPage.aslink())
-            wikipedia.stopme()
-            sys.exit(1)
+            raise
 
         # Regex to grasp content-type meta HTML tag in HTML source
         self.META_CONTENT = re.compile(ur'(?i)<meta[^>]*content\-type[^>]*>')
@@ -671,8 +670,7 @@ def main():
     if not generator:
         # syntax error, show help text from the top of this file
         wikipedia.showHelp('reflinks')
-        wikipedia.stopme()
-        sys.exit()
+        return
     generator = pagegenerators.PreloadingGenerator(generator, pageNumber = 50)
     generator = pagegenerators.RedirectFilterPageGenerator(generator)
     bot = ReferencesRobot(generator, always, limit, ignorepdf)

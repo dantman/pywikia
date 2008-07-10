@@ -352,7 +352,6 @@ class CaseChecker( object ):
         except:
             if self.apfrom is not None:
                 wikipedia.output(u'Exception at Title = %s, Next = %s' % (title, self.apfrom))
-            wikipedia.stopme()
             raise
 
     def WikiLog(self, text):

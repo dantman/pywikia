@@ -1065,7 +1065,7 @@ def checkbot():
     # A little block-statement to ensure that the bot will not start with en-parameters
     if site.lang not in project_inserted:
         wikipedia.output(u"Your project is not supported by this script. You have to edit the script and add it!")
-        wikipedia.stopme()
+        return
     # Some formatting for delete immediately template
     di = '\n%s' % di
     dels = dels % di
@@ -1403,10 +1403,6 @@ def checkbot():
 # Here there is the main loop. I'll take all the (name of the) images and then i'll check them.
 if __name__ == "__main__":
     try:
-        #try:
         checkbot()
-        #except wikipedia.BadTitle:
-        #    wikipedia.output(u"Wikidown or server's problem, quit")
-        #    wikipedia.stopme()
     finally:
         wikipedia.stopme()

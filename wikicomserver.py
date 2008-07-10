@@ -78,7 +78,6 @@ class Wiki:
         return wrap(page)
         
     def __del__(self):
-        wikipedia.stopme()
         os.chdir(currDir)
         print "ChDir to original ", currDir
         
@@ -97,5 +96,7 @@ class WikiPage(wikipedia.Page):
         
 if __name__=='__main__':
     import win32com.server.register
-    win32com.server.register.UseCommandLine(Wiki)
-    wikipedia.stopme()
+    try:
+        win32com.server.register.UseCommandLine(Wiki)
+    finally:
+        wikipedia.stopme()

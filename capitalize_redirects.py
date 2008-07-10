@@ -162,9 +162,8 @@ def main():
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
     elif source == None or len(commandline_replacements) not in [0, 2]:
-        wikipedia.stopme()
         wikipedia.showHelp(u'capitalize_redirects')
-        sys.exit()
+        return
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)

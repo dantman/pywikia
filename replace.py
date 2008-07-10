@@ -606,8 +606,7 @@ u'Press Enter to use this default message, or enter a description of the\nchange
         except KeyError:
             wikipedia.output(u'Available predefined fixes are: %s'
                              % fixes.fixes.keys())
-            wikipedia.stopme()
-            sys.exit()
+            return
         if fix.has_key('regex'):
             regex = fix['regex']
         if fix.has_key('msg'):
@@ -675,8 +674,7 @@ LIMIT 200""" % (whereClause, exceptClause)
     if not gen:
         # syntax error, show help text from the top of this file
         wikipedia.showHelp('replace')
-        wikipedia.stopme()
-        sys.exit()
+        return
     if namespaces != []:
         gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     if xmlFilename:
