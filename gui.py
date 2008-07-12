@@ -416,6 +416,8 @@ if __name__=="__main__":
     import wikipedia
     try:
         root = Tk()
+        root.resizable(width=FALSE, height=FALSE)
+        root.title("Pywikipediabot GUI")
         page = wikipedia.Page(wikipedia.getSite(), u'Wiki')
         content = page.get()
         myapp = EditBoxWindow(root)
