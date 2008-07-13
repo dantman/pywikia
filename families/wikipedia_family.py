@@ -513,6 +513,8 @@ class Family(family.Family):
         }
 
         self.disambiguationTemplates = {
+            # set value to None, instead of a list, to retrieve names from
+            # the live wiki ([[MediaWiki:Disambiguationspage]]
             '_default': [u'Disambig'],
             'af':  [u'Dubbelsinnig', u'Disambig'],
             'als': [u'Begriffsklärung', u'Disambig'],
@@ -536,13 +538,7 @@ class Family(family.Family):
             'da':  [u'Flertydig'],
             'de':  [u'Begriffsklärung', u'BKS', u'Disambig'],
             'el':  [u'Disambig', u'Αποσαφ', u'Αποσαφήνιση'],
-            'en':  [u'Disambig', u'Disambiguation', u'Dab', u'Disamb',
-                    u'Disambig-cleanup', u'Diasmbig', u'Bio-dab',
-                    u'Geodis', u'Given name', u'Hndis', u'Hndisambig',
-                    u'Hndis-cleanup', u'Hospitaldis', u'Letter disambig',
-                    u'Mathdab', u'NA Broadcast List', u'Numberdis',
-                    u'POWdis', u'Roadis', u'Roaddis', u'Schooldis',
-                    u'Shipindex', u'SIA', u'Surname', u'TLA', u'Airport disambig' ],
+            'en':  None,
             'eo':  [u'Apartigilo', u'Disambig'],
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig', u'Disambig',u'Des'],
             'et':  [u'Täpsustuslehekülg', u'Täpsustus', u'Disambig'],
