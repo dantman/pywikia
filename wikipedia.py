@@ -5806,9 +5806,9 @@ def calledModuleName():
     args = sys.argv
     try:
         # clip off the '.py' filename extension
-        return args[0][:args[0].rindex('.')]
+        return os.path.basename(args[0][:args[0].rindex('.')])
     except ValueError:
-        return args[0]
+        return os.path.basename(args[0])
 
 def decodeArg(arg):
     if sys.platform=='win32':
@@ -6110,9 +6110,9 @@ def writeToCommandLogFile():
     logs/commands.log so that the user can look it up later to track errors
     or report bugs.
     """
+    modname = os.path.basename(sys.argv[0])
     # put quotation marks around all parameters
-    args = [decodeArg(sys.argv[0])
-            ] + [decodeArg('"%s"' % s) for s in sys.argv[1:]]
+    args = [decodeArg(modname)] + [decodeArg('"%s"' % s) for s in sys.argv[1:]]
     commandLogFilename = config.datafilepath('logs', 'commands.log')
     try:
         commandLogFile = codecs.open(commandLogFilename, 'a', 'utf-8')
