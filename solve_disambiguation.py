@@ -85,6 +85,7 @@ msg = {
     'fi': u'Täsmennystä botin avulla: %s korvattiin link(e)illä %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s - Modifications du (des) lien(s) pour %s',
     'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s',
+    'hu': u'Bottal támogatott egyértelműsítés: %s –> %s',
     'ia': u'Disambiguation assistite per robot: %s - Changed link(s) to %s',
     'it': u'Sistemazione automatica della disambigua: %s - Inversione di redirect %s',
     'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s - Pakeistos nuorodos į %s',
@@ -109,6 +110,7 @@ msg_unlink = {
     'fi': u'Täsmennystä botin avulla: %s - poistettiin linkkejä.',
     'fr': u'Homonymie résolue à l\'aide du robot: %s - Retrait du (des) lien(s)',
     'he': u'הסרת קישור לדף פירושונים באמצעות בוט: %s',
+    'hu': u'Bottal támogatott egyértelműsítés: %s – hivatkozások eltávolítása',
     'ia': u'Disambiguation assistite per robot: %s - Removed link(s).',
     'it': u'Sistemazione automatica della disambigua: %s - Collegamenti rimossi',
     'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s - Pašalintos nuorodos',
@@ -133,6 +135,7 @@ msg_redir = {
     'fi': u'Täsmennystä botin avulla: %s korvattiin link(e)illä %s',
     'fr': u'Correction de lien vers redirect: %s - Modifications du (des) lien(s) pour %s',
     'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s שונה ל%s',
+    'hu': u'Bottal támogatott egyértelműsítés: %s –> %s',
     'ia': u'Resolution de redirectiones assistite per robot: %s - Changed link(s) to %s',
     'it': u'Sistemazione automatica del redirect: %s - Inversione di redirect %s',
     'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s - Pakeistos nuorodos į %s',
@@ -157,6 +160,7 @@ msg_redir_unlink = {
     'fr': u'Correction de lien vers redirect: %s - Retrait du (des) lien(s)',
     'fi': u'Täsmennystä botin avulla: %s - poistettiin linkkejä',
     'he': u'הסרת קישור לדף פירושונים באמצעות בוט: %s',
+    'hu': u'Bottal támogatott egyértelműsítés: %s –> %s',
     'ia': u'Resolution de redirectiones assistite per robot: %s - Removed link(s).',
     'it': u'Sistemazione automatica del redirect: %s - Collegamenti rimossi',
     'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s - Pašalintos nuorodos',
@@ -175,6 +179,7 @@ msg_redir_unlink = {
 unknown_msg = {
     'en' : u'(unknown)',
     'fi' : u'(tuntematon)',
+    'hu' : u'(ismeretlen)',
     'pt' : u'(desconhecido)',
     }
 
@@ -186,6 +191,7 @@ primary_topic_format = {
     'de': u'%s_(Begriffsklärung)',
     'en': u'%s_(disambiguation)',
     'fi': u'%s_(täsmennyssivu)',
+    'hu': u'%s_(egyértelműsítő lap)',
     'ia': u'%s_(disambiguation)',
     'it': u'%s_(disambigua)',
     'lt': u'%s_(reikšmės)',
