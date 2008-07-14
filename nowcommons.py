@@ -57,12 +57,7 @@ __version__ = '$Id$'
 import sys, re, webbrowser
 import wikipedia, pagegenerators
 import welcome # for urlname
-import image<quisczicza> 'hu': [
-<quisczicza>         u'Azonnali-commons',
-<quisczicza>         u'NowCommons',
-<quisczicza>         u'Nowcommons',
-<quisczicza>         u'NC'
-<quisczicza>      ]
+import image
 # only for nowCommonsMessage
 from imagetransfer import nowCommonsMessage
 
@@ -115,12 +110,6 @@ nowCommons = {
     ],
     'he': [
         u'גם בוויקישיתוף'
-    ],
-    'hu': [
-        u'Azonnali-commons',
-        u'NowCommons',
-        u'Nowcommons',
-        u'NC'
     ],
     'ja':[
         u'NowCommons',
