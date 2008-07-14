@@ -111,6 +111,12 @@ nowCommons = {
     'he': [
         u'גם בוויקישיתוף'
     ],
+    'hu': [
+        u'Azonnali-commons',
+        u'NowCommons',
+        u'Nowcommons',
+        u'NC'
+    ],
     'ja':[
         u'NowCommons',
     ],
