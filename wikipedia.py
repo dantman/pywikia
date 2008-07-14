@@ -1737,13 +1737,30 @@ not supported by PyWikipediaBot!"""
         while marker2 in thistxt:
             marker2 += u'#'
 
+        # marker for math
+        marker3 = u'%%'
+        while marker2 in thistxt:
+            marker3 += u'%'
+
         result = []
         inside = {}
         count = 0
         Rtemplate = re.compile(ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
         Rlink = re.compile(ur'\[\[[^\]]+\]\]')
-        Rmarker = re.compile(u'%s(\\d+)%s' % (marker, marker))
-        Rmarker2 = re.compile(u'%s(\\d+)%s' % (marker2, marker2))
+        Rmath = re.compile(ur'<math>[^<]+</math>')
+        Rmarker = re.compile(ur'%s(\d+)%s' % (marker, marker))
+        Rmarker2 = re.compile(ur'%s(\d+)%s' % (marker2, marker2))
+        Rmarker3 = re.compile(ur'%s(\d+)%s' % (marker3, marker3))
+
+        # Replace math with markers
+        maths = {}
+        count = 0
+        for m in Rmath.finditer(thistxt):
+            count += 1
+            text = m.group()
+            thistxt = thistxt.replace(text, '%s%d%s' % (marker3, count, marker3))
+            maths[count] = text
+
         while Rtemplate.search(thistxt) is not None:
             for m in Rtemplate.finditer(thistxt):
                 # Make sure it is not detected again
@@ -1751,16 +1768,19 @@ not supported by PyWikipediaBot!"""
                 text = m.group()
                 thistxt = thistxt.replace(text,
                                           '%s%d%s' % (marker, count, marker))
+                # Make sure stored templates don't contain markers
                 for m2 in Rmarker.finditer(text):
-                    # Make sure stored templates don't contain markers
                     text = text.replace(m2.group(), inside[int(m2.group(1))])
+                for m2 in Rmarker3.finditer(text):
+                    text = text.replace(m2.group(), maths[int(m2.group(1))])
                 inside[count] = text
 
                 # Name
                 name = m.group('name')
-                m2 = Rmarker.search(name)
+                m2 = Rmarker.search(name) or Rmath.search(name)
                 if m2 is not None:
-                    # Doesn't detect templates whose name is changing
+                    # Doesn't detect templates whose name changes,
+                    # or templates whose name contains math tags
                     continue
                 if self.site().isInterwikiLink(name):
                     continue
@@ -1795,6 +1815,9 @@ not supported by PyWikipediaBot!"""
                         for m2 in Rmarker2.finditer(param):
                             param = param.replace(m2.group(),
                                                   links[int(m2.group(1))])
+                        for m2 in Rmarker3.finditer(param):
+                            param = param.replace(m2.group(),
+                                                  maths[int(m2.group(1))])
                         params.append(param)
 
                 # Add it to the result
