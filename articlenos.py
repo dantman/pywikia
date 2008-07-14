@@ -1,13 +1,15 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-A script that displays the ordinal number of the new articles being created as visible on the Recent Changes list.
+A script that displays the ordinal number of the new articles being created visible on the Recent Changes list.
 The script doesn't make any edits, no bot account needed.
+
+Note: the script requires the Python IRC library http://python-irclib.sourceforge.net/
 """
 
 # Author: Balasyum
 # http://hu.wikipedia.org/wiki/User:Balasyum
-# License : GFDL
+# License : LGPL
 
 from ircbot import SingleServerIRCBot
 from irclib import nm_to_n, nm_to_h, irc_lower, ip_numstr_to_quad, ip_quad_to_numstr
@@ -18,7 +20,7 @@ class ArtNoDisp(SingleServerIRCBot):
     def __init__(self, site, channel, nickname, server, port=6667):
         SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel
-	self.site = wikipedia.getSite()
+	self.site = site
 	self.other_ns = re.compile(u'14\[\[07(' + u'|'.join(site.namespaces()) + u')')
         self.api_url = self.site.api_address()
         self.api_url += 'action=query&meta=siteinfo&siprop=statistics&format=xml'
@@ -49,7 +51,7 @@ class ArtNoDisp(SingleServerIRCBot):
         name = msg[8:msg.find(u'14',9)]
         text = self.site.getUrl(self.api_url)
         entry = self.api_found.findall(text)
-        page = wikipedia.Page(site, name)
+        page = wikipedia.Page(self.site, name)
         try:
                 text = page.get()
         except wikipedia.NoPage:
