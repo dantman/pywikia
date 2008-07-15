@@ -11,13 +11,13 @@ from here: http://botwiki.sno.cc/wiki/Python:Welcome.py
 Ensure you have community support before running this bot!
 
 URLs to current implementations:
-* Arabic Wikipedia: http://ar.wikipedia.org/wiki/ويكيبيديا:سجل الترحيب
+* Arabic Wikipedia: http://ar.wikipedia.org/wiki/ويكيبيديا:سجل_الترحيب
 * Wikimedia Commons: http://commons.wikimedia.org/wiki/Commons:Welcome_log
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
 * English Wikiquote: http://en.wikiquote.org/wiki/Wikiquote:Welcome_log
-* Persian Wikipedia: http://fa.wikipedia.org/wiki/ویکی‌پدیا:سیاهه خوشامد
-* Korean Wikipedia: http://ko.wikipedia.org/wiki/위키백과:Welcome log
+* Persian Wikipedia: http://fa.wikipedia.org/wiki/ویکی‌پدیا:سیاهه_خوشامد
+* Korean Wikipedia: http://ko.wikipedia.org/wiki/위키백과:Welcome_log
 
 Everything that needs customisation to support additional projects is
 indicated by comments.
