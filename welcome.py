@@ -364,7 +364,7 @@ random_sign = {
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
 whitelist_pg = {
-    'ar':u'Project:سجل الترحيب/قائمةبيضاء',
+    'ar':u'Project:سجل الترحيب/قائمة بيضاء',
     'en':u'User:Filnik/whitelist',
     'it':u'Project:Benvenuto_Bot/Lista_Whitewords',
     'ru':u'LatitudeBot/Белый список',
