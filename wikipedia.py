@@ -1354,6 +1354,18 @@ not supported by PyWikipediaBot!"""
                 return None
             try:
                 response, data = self.site().postForm(address, predata, sysop)
+                if response.status == 503:
+                    if 'x-database-lag' in response.msg.keys():
+                        # server lag; Mediawiki recommends waiting 5 seconds
+                        # and retrying
+                        if verbose:
+                            output(data, newline=False)
+                        output(u"Pausing 5 seconds due to database server lag.")
+                        dblagged = True
+                        time.sleep(5)
+                        continue
+                    # Squid error 503
+                    raise ServerError(response)
             except httplib.BadStatusLine, line:
                 raise PageNotSaved('Bad status line: %s' % line.line)
             except ServerError:
@@ -1365,16 +1377,6 @@ not supported by PyWikipediaBot!"""
                 retry_delay *= 2
                 if retry_delay > 30:
                     retry_delay = 30
-                continue
-            if response.status == 503 \
-               and 'x-database-lag' in response.msg.keys():
-                # server lag; Mediawiki recommends waiting 5 seconds and
-                # retrying
-                if verbose:
-                    output(data, newline=False)
-                output(u"Pausing 5 seconds due to database server lag.")
-                dblagged = True
-                time.sleep(5)
                 continue
             # If it has gotten this far then we should reset dblagged
             dblagged = False
