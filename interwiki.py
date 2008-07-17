@@ -1083,7 +1083,7 @@ class Subject(object):
         for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', page.get()):
             try:
                 ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
-            except wikipedia.NoSuchSite:
+            except (wikipedia.NoSuchSite, wikipedia.InvalidTitle):
                 continue
 
             try:
