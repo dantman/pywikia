@@ -3542,8 +3542,8 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
                              ['nowiki', 'comment', 'math', 'pre', 'source'])
     else:
         text = replaceExcept(oldtext, categoryR,
-                             '[[Category:%s\\2'
-                                 % newcat.titleWithoutNamespace(),
+                             '[[%s:%s\\2' % (site.namespace(14),
+                                             newcat.titleWithoutNamespace()),
                              ['nowiki', 'comment', 'math', 'pre', 'source'])
     return text
 
