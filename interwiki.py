@@ -459,6 +459,7 @@ class Global(object):
     rememberno = False
     followinterwiki = True
     minsubjects = config.interwiki_min_subjects
+    namespacePairs = []
 
 class Subject(object):
     """
@@ -616,7 +617,20 @@ class Subject(object):
                     wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i because page %s in the correct namespace has already been found." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace(), preferredPage.aslink(True)))
                     return True
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No'], ['y', 'n'])
+                    if (self.originPage.site(), self.originPage.namespace(), linkedPage.site(), linkedPage.namespace()) in Global.namespacePairs\
+                    or (linkedPage.site(), linkedPage.namespace(),self.originPage.site(), self.originPage.namespace()) in Global.namespacePairs:
+                        wikipedia.output('NOTE: %s is in namespace %i, and %s is in namespace %i.'
+                                         % (self.originPage.aslink(True), self.originPage.namespace(),
+                                            linkedPage.aslink(True), linkedPage.namespace()))
+                        choice = 'y'
+                    else:
+                        choice = wikipedia.inputChoice(
+                            'WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?'
+                            % (self.originPage.aslink(True), self.originPage.namespace(),
+                               linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'All'], ['y', 'n', 'a'])
+                    if choice == 'a':
+                        pair = self.originPage.site(), self.originPage.namespace(), linkedPage.site(), linkedPage.namespace()
+                        Global.namespacePairs.append(pair)
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
                         self.foundIn[linkedPage] = [linkingPage]
