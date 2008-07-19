@@ -63,12 +63,13 @@ Additionaly, these arguments can be used to restrict the bot to certain pages:
 
     -bracket       only work on pages that have (in the home language) parenthesis
                    in their title. All other pages are skipped.
+                   (note: without ending colon)
 
     -skipfile:     used as -skipfile:filename, skip all links mentioned in
                    the given file. This does not work with -number!
 
-    -skipauto:     use to skip all pages that can be translated automatically,
-                   like dates, centuries, months, etc.
+    -skipauto      use to skip all pages that can be translated automatically,
+                   like dates, centuries, months, etc. (note: without ending colon)
 
 These arguments are useful to provide hints to the bot:
 
@@ -92,8 +93,9 @@ These arguments are useful to provide hints to the bot:
                    for the format, one can for example give "en:something" or
                    "20:" as hint.
 
-    -same:         looks over all 'serious' languages for the same title.
+    -same          looks over all 'serious' languages for the same title.
                    -same is equivalent to -hint:all:
+                   (note: without ending colon)
 
     -wiktionary:   similar to -same, but will ONLY accept names that are
                    identical to the original. Also, if the title is not
@@ -113,30 +115,34 @@ These arguments are useful to provide hints to the bot:
                    of the page always, rather than doing so only when being
                    asked for (by typing '?'). Only useful in combination
                    with a hint-asking option like -untranslated, -askhints
-                   or -untranslatedonly
+                   or -untranslatedonly. (note: without ending colon)
 
     -noauto:       Do not use the automatic translation feature for years and
                    dates, only use found links and hints.
 
 These arguments define how much user confirmation is required:
 
-    -autonomous:   run automatically, do not ask any questions. If a question
+    -autonomous    run automatically, do not ask any questions. If a question
                    to an operator is needed, write the name of the page
                    to autonomous_problems.dat and continue on the next page.
+                   (note: without ending colon)
 
-    -confirm:      ask for confirmation before any page is changed on the
+    -confirm       ask for confirmation before any page is changed on the
                    live wiki. Without this argument, additions and
                    unambiguous modifications are made without confirmation.
+                   (note: without ending colon)
 
-    -force:        do not ask permission to make "controversial" changes,
+    -force         do not ask permission to make "controversial" changes,
                    like removing a language because none of the found
                    alternatives actually exists.
+                   (note: without ending colon)
 
-    -select:       ask for each link whether it should be include before
+    -select        ask for each link whether it should be include before
                    changing any page. This is useful if you want to remove
                    invalid interwiki and if you do multiple hints of which
                    some might be correct and others incorrect. Combining
                    -select and -confirm is possible, but seems like overkill.
+                   (note: without ending colon)
 
 These arguments specify in which way the bot should follow interwiki links:
 
@@ -156,16 +162,17 @@ These arguments specify in which way the bot should follow interwiki links:
     -ignorefile:   similar to -ignore, except that the pages are taken from
                    the given file instead of the command line.
 
-    -localright:   do not follow interwiki from other pages than the starting
+    -localright    do not follow interwiki from other pages than the starting
                    page. (Warning! Should be used very sparingly, only when
                    you are sure you have first gotten the interwiki on the
-                   starting page exactly right)
+                   starting page exactly right).
+                   (note: without ending colon)
 
 The following arguments are only important for users who have accounts for
 multiple languages, and specify on which sites the bot should modify pages:
 
     -localonly     only work on the local wiki, not on other wikis in the family
-                   I have a login at
+                   I have a login at. (note: without ending colon)
 
     -limittwo      only update two pages - one in the local wiki (if loged-in),
                    and one in the top available one.
@@ -173,6 +180,7 @@ multiple languages, and specify on which sites the bot should modify pages:
                    this option will make sure that only local and de: (larger)
                    site is updated. This option is useful to quickly set two way
                    links without updating all of wiki's sites.
+                   (note: without ending colon)
 
     -whenneeded    works like limittwo, but other languages are changed in the
                    following cases:
@@ -183,7 +191,7 @@ multiple languages, and specify on which sites the bot should modify pages:
                    Optionally, -whenneeded can be given an additional number
                    (for example -whenneeded:3), in which case other languages
                    will be changed if there are that number or more links to
-                   change or add
+                   change or add. (note: without ending colon)
 
 The following arguments influence how many pages the bot works on at once:
     -array:        The number of pages the bot tries to be working on at once.
