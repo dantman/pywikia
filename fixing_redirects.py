@@ -168,12 +168,7 @@ def main():
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-start'):
-            if len(arg) == 6:
-                start = wikipedia.input(u'Which start where?')
-            else:
-                start = arg[7:]
-        elif arg == '-featured':
+        if arg == '-featured':
             featured = True
         elif arg.startswith('-page'):
             if len(arg) == 5:
