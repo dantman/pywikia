@@ -100,14 +100,20 @@ def create_user_fixes():
 #
 # This is only an example. Don't use it.
 #
+# Do you need change your 'replacements'.
+# 
+# To call this function, run:
+# replace.py -page:John -fix:example
 
 fixes['example'] = {
     'regex': True,
     'msg': {
-        '_default':u'no summary specified',
+        '_default': u'no summary specified',
+        'pt'      : u'nenhum comentário especificado',       
     },
     'replacements': [
         (ur'\bword\b', u'two words'),
+        (ur'una', u'uma'),
     ]
 }
 
