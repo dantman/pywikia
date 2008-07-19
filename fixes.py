@@ -21,7 +21,7 @@ fixes = {
     'HTML': {
         'regex': True,
         'msg': {
-		    'ar':u'روبوت: تحويل/تصليح HTML',
+            'ar':u'روبوت: تحويل/تصليح HTML',
             'en':u'Robot: converting/fixing HTML',
             'de':u'Bot: konvertiere/korrigiere HTML',
             'fr':u'Robot: convertit/fixe HTML',
@@ -154,7 +154,7 @@ fixes = {
     'syntax': {
         'regex': True,
         'msg': {
-		    'ar':u'بوت: تصليح تهيئة الويكي',
+            'ar':u'بوت: تصليح تهيئة الويكي',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'fr':u'Bot: Corrige wiki-syntaxe',
@@ -224,7 +224,7 @@ fixes = {
     'syntax-safe': {
         'regex': True,
         'msg': {
-		    'ar':u'بوت: تصليح تهيئة الويكي',
+            'ar':u'بوت: تصليح تهيئة الويكي',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'fr':u'Bot: Corrige wiki-syntaxe',
@@ -374,12 +374,13 @@ fixes = {
     'isbn': {
         'regex': True,
         'msg': {
-		    'ar': u'روبوت: تصليح صيغة ISBN',
+            'ar': u'روبوت: تصليح صيغة ISBN',
             'de': u'Bot: Korrigiere ISBN-Format',
             'en': u'Robot: Fixing ISBN format',
             'es': u'Arreglando formato ISBN',
             'he': u'בוט: מתקן פורמט ISBN',
             'ja': u'ロボットによる: ISBNフォーマット修正',
+            'pt': u'Bot: Corrigindo formato ISBN',
             'zh': u'機器人: 修正ISBN格式',
         },
         'replacements': [
@@ -511,9 +512,12 @@ fixes = {
 #
 # Load the user fixes file.
 
-import config
+import generate_user_files
+import os
 
-try:
-    execfile(config.datafilepath(config.base_dir, "user-fixes.py"))
-except IOError:
-    pass
+base_dir = '.'
+base_dir = os.path.normpath(os.path.join(os.getcwd(), base_dir))
+if not os.path.exists(os.path.join(base_dir, "user-fixes.py")):
+    generate_user_files.create_user_fixes()
+else:
+    print("user-fixes.py already exist.")
