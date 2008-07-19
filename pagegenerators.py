@@ -91,11 +91,11 @@ parameterHelp = """\
                   "-start:Template:!" will make the bot work on all pages
                   in the template namespace.
 
--prefixindex      Work on pages commencing with a common prefix.  Argument
-                  may also be given as "-prefixindex:namespace:pagename".
+-prefixindex      Work on pages commencing with a common prefix.  
 
--regex            Work on pages found by a regular expression.  Argument
-                  may also be given as "-prefixindex:regularexpression".
+-regex            Obsolete, use -titleregex
+
+-titleregex       Work on titles that match the given regular expression.
 
 -transcludes      Work on all pages that use a certain template.
                   Argument can also be given as "-transcludes:Template:Title".
@@ -953,7 +953,7 @@ class GeneratorFactory:
             gen = SearchPageGenerator(mediawikiQuery, namespaces = [])
         elif arg.startswith('-google'):
             gen = GoogleSearchPageGenerator(arg[8:])
-        elif arg.startswith('-regex'):
+        elif arg.startswith('-titleregex'):
             if len(arg) == 6:
                 regex = wikipedia.input(u'What page names are you looking for?')
             else:

@@ -18,7 +18,7 @@ These command line parameters can be used to specify which pages to work on:
 
 Furthermore, the following command line parameters are supported:
 
--useregex         Make replacements using regular expressions. If this argument
+-regex            Make replacements using regular expressions. If this argument
                   isn't given, the bot will make simple text replacements.
 
 -nocase           Use case insensitive regular expressions.
@@ -29,16 +29,16 @@ Furthermore, the following command line parameters are supported:
 
 -addcat:cat_name  Adds "cat_name" category to every altered page.
 
--excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -useregex
+-excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -regex
                   argument is given, XYZ will be regarded as a regular
                   expression.
 
--excepttext:XYZ   Skip pages which contain the text XYZ. If the -useregex
+-excepttext:XYZ   Skip pages which contain the text XYZ. If the -regex
                   argument is given, XYZ will be regarded as a regular
                   expression.
 
 -exceptinside:XYZ Skip occurences of the to-be-replaced text which lie
-                  within XYZ. If the -useregex argument is given, XYZ will be
+                  within XYZ. If the -regex argument is given, XYZ will be
                   regarded as a regular expression.
 
 -exceptinsidetag:XYZ Skip occurences of the to-be-replaced text which lie
@@ -57,7 +57,7 @@ Furthermore, the following command line parameters are supported:
 -fix:XYZ          Perform one of the predefined replacements tasks, which are
                   given in the dictionary 'fixes' defined inside the file
                   fixes.py.
-                  The -useregex and -nocase argument and given replacements will
+                  The -regex and -nocase argument and given replacements will
                   be ignored if you use -fix.
                   Currently available predefined fixes are:
 &fixes-help;
@@ -77,7 +77,7 @@ Furthermore, the following command line parameters are supported:
                   Be careful, this might lead to an infinite loop.
 
 other:            First argument is the old text, second argument is the new
-                  text. If the -useregex argument is given, the first argument
+                  text. If the -regex argument is given, the first argument
                   will be regarded as a regular expression, and the second
                   argument might contain expressions like \\1 or \g<name>.
 
@@ -87,7 +87,7 @@ If you want to change templates from the old syntax, e.g. {{msg:Stub}}, to the
 new syntax, e.g. {{Stub}}, download an XML dump file (pages-articles) from
 http://download.wikimedia.org, then use this command:
 
-    python replace.py -xml -useregex "{{msg:(.*?)}}" "{{\\1}}"
+    python replace.py -xml -regex "{{msg:(.*?)}}" "{{\\1}}"
 
 If you have a dump called foobar.xml and want to fix typos in articles, e.g.
 Errror -> Error, use this:
@@ -490,7 +490,7 @@ def main():
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
-        if arg == '-useregex':
+        if arg == '-regex':
             regex = True
         elif arg.startswith('-xmlstart'):
             if len(arg) == 9:
