@@ -17,6 +17,9 @@ def get_base_dir():
         user-config.py file, use this directory as the base
     4.  If all else fails, use the directory from which this module was
         loaded.
+    5.  If the user-config.py file is not found, another will be created
+        in the current directory, following in the footsteps of project,
+        language and bot username.
     
     """
     for arg in sys.argv[1:]:
