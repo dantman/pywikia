@@ -89,7 +89,7 @@ msg_one_warning = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئ�
                    'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
                    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
                    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
-		           'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
+                   'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
                    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżenie!',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
                    'zh':u'機器人：表格語法更新 - %d 注意！',
