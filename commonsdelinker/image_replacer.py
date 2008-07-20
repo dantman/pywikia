@@ -253,6 +253,8 @@ class Reporter(threadpool.Thread):
 		except wikipedia.NoPage:
 			output(u'Warning! Unable to report replacement to %s. Page does not exist!' % old_image)
 			return
+		except wikipedia.IsRedirectPage:
+			output(u'Warning! %s is a redirect; not reporting replacement!' % old_image)
 			
 		try:
 			page.put(u'%s\n%s' % (template, text), 
