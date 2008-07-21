@@ -40,6 +40,7 @@ class IWRCBot(SingleServerIRCBot):
         # Start 20 threads
         for i in range(20):
             t = threading.Thread(target=self.worker)
+            t.setDaemon(True)
             t.start()
 
     def worker(self):
