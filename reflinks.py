@@ -243,6 +243,9 @@ class DuplicateReferences:
 
         for match in self.REFS.finditer(text):
             content = match.group('content')
+            if not content.strip():
+                continue
+
             name = match.group('name')
             group = self.GROUPS.match(name)
             if not foundRefs.has_key(group):
