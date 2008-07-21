@@ -546,7 +546,12 @@ class Subject(object):
 
     def openSites(self):
         """Return a list of sites for all things we still need to do"""
-        return [page.site() for page in self.todo] # TODO: remove duplicates
+        distinctSites = {}
+
+        for page in self.todo: 
+            site = page.site()
+            distinctSites[site] = site
+        return distinctSites.values()
 
     def willWorkOn(self, site):
         """
@@ -557,7 +562,7 @@ class Subject(object):
         # Bug-check: Isn't there any work still in progress? We can't work on
         # different sites at a time!
         if self.pending != []:
-            raise 'BUG: Can\'t start to work on %s; still working on %s' % (repr(site), self.pending)
+            raise 'BUG: Can\'t start to work on %s; still working on %s' % (site, self.pending)
         # Prepare a list of suitable pages
         for page in self.todo:
             if page.site() == site:
@@ -741,8 +746,6 @@ class Subject(object):
 
             # Register this fact at the todo-counter.
             counter.minus(page.site())
-            # Assume it's not a redirect
-            isRedirect = False
             # Now check whether any interwiki links should be added to the
             # todo list.
             if page.section() and not page.isRedirectPage():
@@ -759,7 +762,6 @@ class Subject(object):
                             self.originPage = redirectTargetPage
                             self.pending.append(redirectTargetPage)
                             counter.plus(redirectTargetPage.site)
-                            pass
                         else:
                             # This is a redirect page to the origin. We don't need to
                             # follow the redirection.
@@ -767,7 +769,6 @@ class Subject(object):
                             for page2 in self.todo:
                                 counter.minus(page2.site())
                             self.todo = []
-                            pass
                     elif not globalvar.followredirect:
                         wikipedia.output(u"NOTE: not following redirects.")
                     else:
