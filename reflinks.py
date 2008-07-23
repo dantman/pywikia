@@ -229,7 +229,7 @@ class DuplicateReferences:
     """
     def __init__(self):
         # Match references
-        self.REFS = re.compile(u'(?i)<ref(?P<name>[^>]*)>(?P<content>.*?)</ref>')
+        self.REFS = re.compile(u'(?i)<ref(?P<name>[^>/]*)>(?P<content>.*?)</ref>')
         self.NAMES = re.compile(u'(?i).*name\s*=\s*(?P<quote>"?)\s*(?P<name>.*?)\s*(?P=quote).*')
         self.GROUPS = re.compile(u'(?i).*group\s*=\s*(?P<quote>"?)\s*(?P<group>.*?)\s*(?P=quote).*')
 
@@ -240,6 +240,8 @@ class DuplicateReferences:
         #   values are [name, [list of full ref matches]]
         foundRefs = {}
         foundRefNames = []
+        # Replace key by value
+        namedRepl = {}
 
         for match in self.REFS.finditer(text):
             content = match.group('content')
@@ -257,12 +259,14 @@ class DuplicateReferences:
                 v[1].append(match.group())
             else:
                 v = [None, [match.group()]]
-            if not v[0]:
-                n = self.NAMES.match(name)
-                if n:
-                    n = n.group('name')
+            n = self.NAMES.match(name)
+            if n:
+                n = n.group('name')
+                if v[0]:
+                    namedRepl[n] = v[0]
+                else:
                     v[0] = n
-                    foundRefNames.append(n)
+                foundRefNames.append(n)
             groupdict[content] = v
     
         id = 1
@@ -294,6 +298,10 @@ class DuplicateReferences:
                 for ref in v[1][1:]:
                     end = end.replace(ref, unnamed)
                 text = header + end 
+        
+        for (k,v) in namedRepl.iteritems():
+            # TODO : Support ref groups
+            text = re.sub(u'<ref name\s*=\s*(?P<quote>"?)\s*%s\s*(?P=quote)\s*/>' % k, u'<ref name="%s" />' % v, text)
         return text        
 
 class ReferencesRobot:
