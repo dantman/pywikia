@@ -48,12 +48,12 @@ stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'hu':'User:Damibot/EditThisPageToStopMe',
             'en':u'User:DumZiBoT/EditThisPageToStopMe'}
 
-msg = { 'fr':u'Bot: Correction des refs. mal formatées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
+msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en utilisant des références nommées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
-        'en':u'Bot: Converting bare references, see [[User:DumZiBoT/refLinks|FAQ]]'}
+        'en':u'Bot: Converting bare references, using ref names to avoid duplicates, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'de':u'',
@@ -319,9 +319,12 @@ class ReferencesRobot:
         self.site = wikipedia.getSite()
         self.stopPage = wikipedia.translate(self.site, stopPage)
 
-        self.titleBlackList = re.compile(
-                                '(' + globalbadtitles + '|' + wikipedia.translate(self.site, badtitles) + ')',
-                                 re.I | re.S | re.X)
+        local = wikipedia.translate(self.site, badtitles)
+        if local:
+            bad = '(' + globalbadtitles + '|' + local + ')'
+        else:
+            bad = globalbadtitles
+        self.titleBlackList = re.compile(bad, re.I | re.S | re.X)
         self.norefbot = noreferences.NoReferencesBot(None)
 
         self.deduplicator = DuplicateReferences()
