@@ -2077,9 +2077,11 @@ not supported by PyWikipediaBot!"""
         return users
 
     def move(self, newtitle, reason=None, movetalkpage=True, sysop=False,
-             throttle=True, deleteAndMove=False, safe=True):
+             throttle=True, deleteAndMove=False, safe=True, fixredirects=True):
         """Move this page to new title given by newtitle. If safe, don't try
-        to move and delete if not directly requested."""
+        to move and delete if not directly requested.
+        
+        * fixredirects has no effect in MW < 1.13"""
         # Login
         try:
             self.get()
@@ -2113,6 +2115,13 @@ not supported by PyWikipediaBot!"""
             predata['wpMovetalk'] = '1'
         else:
             predata['wpMovetalk'] = '0'
+        if self.versionnumber() > 12:
+            # introduced in MW 1.13 : 
+            # http://thread.gmane.org/gmane.science.linguistics.wikipedia.technical/39072
+            if fixredirects:
+                predata['wpFixRedirects'] = '1'
+            else:
+                predate['wpFixRedirects'] = '0'
         if token:
             predata['wpEditToken'] = token
         if self.site().hostname() in config.authenticate.keys():
