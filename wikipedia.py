@@ -6393,16 +6393,6 @@ def stopme():
        when it has stopped doing so. After a bot has run stopme() it will
        not slow down other bots any more.
     """
-    if config.use_diskcache:
-        for site in _sites.itervalues():
-            if site._mediawiki_messages:
-                try:
-                    while(_putthread.isAlive()):
-                        time.sleep(1)
-                    site._mediawiki_messages.delete()
-                except OSError:
-                    # stopme has been called several times...
-                    pass
     get_throttle.drop()
 
 def _flush():
@@ -6440,6 +6430,13 @@ Really exit?"""
         get_throttle.drop()
     except NameError:
         pass
+    if config.use_diskcache:
+        for site in _sites.itervalues():
+            if site._mediawiki_messages:
+                try:
+                    site._mediawiki_messages.delete()
+                except OSError:
+                    pass
 
 import atexit
 atexit.register(_flush)
