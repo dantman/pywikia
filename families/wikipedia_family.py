@@ -841,24 +841,27 @@ class Family(family.Family):
             '_default': {
                 'pt': [102], 
                 'als': [104], 
+                'en': [12],
                 'es': [104], 
                 'fr': [104], 
-                'lt': [104]
+                'lt': [104],
             }
         }
         self.crossnamespace[1] = {
             '_default': {
                 'pt': [103],
                 'als': [105], 
+                'en': [13],
                 'es': [105],
                 'fr': [105],
-                'lt': [105]
+                'lt': [105],
             }
         }
         self.crossnamespace[102] = {
             'pt': {
                 '_default': [0],
                 'als': [0, 104], 
+                'en': [0, 12],
                 'es': [0, 104], 
                 'fr': [0, 104], 
                 'lt': [0, 104]
@@ -869,12 +872,17 @@ class Family(family.Family):
                 '_default': [1],
                 'als': [1, 105],
                 'es': [1, 105],
+                'en': [1, 13],
                 'fr': [1, 105],
                 'lt': [1, 105]
             }
         }
         self.crossnamespace[104] = {
             'als': {
+                '_default': [0],
+                'pt': [0, 102]
+            },
+            'en': {
                 '_default': [0],
                 'pt': [0, 102]
             },
@@ -893,6 +901,10 @@ class Family(family.Family):
         }
         self.crossnamespace[105] = {
             'als': {
+                '_default': [1],
+                'pt': [0, 103]
+            },
+            'en': {
                 '_default': [1],
                 'pt': [0, 103]
             },
