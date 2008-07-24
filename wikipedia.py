@@ -6397,6 +6397,8 @@ def stopme():
         for site in _sites.itervalues():
             if site._mediawiki_messages:
                 try:
+                    while(_putthread.isAlive()):
+                        time.sleep(1)
                     site._mediawiki_messages.delete()
                 except OSError:
                     # stopme has been called several times...
