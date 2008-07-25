@@ -429,6 +429,8 @@ class PageArchiver(object):
         return set(whys)
 
     def run(self):
+        if not self.Page.Page.botMayEdit(Site.username):
+            return
         whys = self.analyzePage()
         if self.archivedThreads < int(self.get('minthreadstoarchive',2)):
             return #We might not want to archive a measly few threads (lowers edit frequency)
