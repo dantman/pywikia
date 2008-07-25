@@ -861,7 +861,6 @@ class Family(family.Family):
             'pt': {
                 '_default': [0],
                 'als': [0, 104], 
-                'en': [0, 12],
                 'es': [0, 104], 
                 'fr': [0, 104], 
                 'lt': [0, 104]
@@ -872,17 +871,12 @@ class Family(family.Family):
                 '_default': [1],
                 'als': [1, 105],
                 'es': [1, 105],
-                'en': [1, 13],
                 'fr': [1, 105],
                 'lt': [1, 105]
             }
         }
         self.crossnamespace[104] = {
             'als': {
-                '_default': [0],
-                'pt': [0, 102]
-            },
-            'en': {
                 '_default': [0],
                 'pt': [0, 102]
             },
@@ -904,10 +898,6 @@ class Family(family.Family):
                 '_default': [1],
                 'pt': [0, 103]
             },
-            'en': {
-                '_default': [1],
-                'pt': [0, 103]
-            },
             'es': {
                 '_default': [1],
                 'pt': [0, 103]
@@ -919,6 +909,16 @@ class Family(family.Family):
             'lt': {
                 '_default': [1],
                 'pt': [0, 103]
+            }
+        }
+        self.crossnamespace[12] = {
+            'en': {
+                '_default': [0],
+            }
+        }
+        self.crossnamespace[13] = {
+            'en': {
+                '_default': [0],
             }
         }
     def get_known_families(self, site):
