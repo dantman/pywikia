@@ -1234,7 +1234,7 @@ def checkbot():
             white_template_found = 0
             for l in hiddentemplate:
                 if tagged == False:
-                    res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?: \n|\||\n|\})' % l.lower(), g.lower())
+                    res = re.findall(r'\{\{(?:[Tt]emplate:|)%s[ \n]*?(?:\n|\||\})' % l.lower(), g.lower())
                     if res != []:
                         white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
