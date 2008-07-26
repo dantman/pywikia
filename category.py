@@ -608,10 +608,7 @@ class CategoryRemoveRobot:
                 reason = self.editSummary
             else:
                 reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
-            if self.batchMode:
-                self.cat.delete(reason, False)
-            else:
-                self.cat.delete(reason, True)
+            self.cat.delete(reason, not self.batchMode)
 
 class CategoryTidyRobot:
     """
