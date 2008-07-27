@@ -53,7 +53,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
     if 'titles' in params:
         titlecount = params['titles'].count('|')
         if encodeTitle:
-            data = urllib.urlencode({'titles' : params['titles']})
+            data = {'titles' : params['titles']}
             del params['titles']
     
     if useAPI:
