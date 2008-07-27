@@ -782,7 +782,13 @@ not supported by PyWikipediaBot!"""
         else:
             self._isWatched = False
         # Now process the contents of the textarea
-        m = self.site().redirectRegex().match(text[i1:i2])
+	# Unescape HTML characters, strip whitespace and postconvert
+	pagetext = text[i1:i2]
+	pagetext = unescape(pagetext)
+	pagetext = pagetext.strip()
+	pagetext = self.site().post_get_convert(pagetext)
+	
+        m = self.site().redirectRegex().match(pagetext)
         if m:
             # page text matches the redirect pattern
             if self.section() and not "#" in m.group(1):
@@ -801,13 +807,8 @@ not supported by PyWikipediaBot!"""
                     self._getexception
                 except AttributeError:
                     raise SectionError # Page has no section by this name
-        # TODO: Docu and rewrite also this as above.
-        x = text[i1:i2]
-        x = unescape(x)
-        while x and x[-1] in '\n ':
-            x = x[:-1]
 
-        return x
+        return pagetext
 
     def getOldVersion(self, oldid, force=False, get_redirect=False,
                       throttle=True, sysop=False, change_edit_time=True):
@@ -1277,6 +1278,7 @@ not supported by PyWikipediaBot!"""
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
+        newtext = self.site().pre_put_convert(newtext)
         return self._putPage(newtext, comment, watchArticle, minorEdit,
                              newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
@@ -3954,6 +3956,11 @@ class Site(object):
     linktrail: Return regex for trailing chars displayed as part of a link.
     disambcategory: Category in which disambiguation pages are listed.
 
+    post_get_convert: Converts text data from the site immediatly after get
+                      i.e. EsperantoX -> unicode
+    pre_put_convert:  Converts text data from the site immediatly before put
+                      i.e. unicode -> EsperantoX
+
     Methods that yield Page objects derived from a wiki's Special: pages
     (note, some methods yield other information in a tuple along with the
     Pages; see method docs for details) --
@@ -5739,6 +5746,12 @@ your connection is down. Retrying in %i minutes..."""
     def linktrail(self):
         """Return regex for trailing chars displayed as part of a link."""
         return self.family.linktrail(self.lang)
+    
+    def post_get_convert(self, getText):
+	return self.family.post_get_convert(self, getText)
+
+    def pre_put_convert(self, putText):
+	return self.family.pre_put_convert(self, putText)
 
     def language(self):
         """Return Site's language code."""

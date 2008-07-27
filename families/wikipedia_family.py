@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config
+import family, config, wikipedia
 
 __version__ = '$Id$'
 
@@ -954,3 +954,9 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    def post_get_convert(self, site, getText):
+      if site.lang == 'eo':
+	return wikipedia.decodeEsperantoX(getText)
+      else:
+	return getText
