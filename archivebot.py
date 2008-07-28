@@ -70,6 +70,13 @@ messages = {
             'ArchiveSummary': u'Archiwizacja %(count)d wątków z [[%(from)s]].',
             'OlderThanSummary': u'starsze niż',
             },
+        'hu': {
+            'ArchiveFull': u'(ARCHÍVUM BETELT)',
+            'InitialArchiveHeader': u'{{archív lap}}',
+            'PageSummary': u'%(count)d szakasz archiválása (%(why)s) a(z) %(archives)s lapra.',
+            'ArchiveSummary': u'%(count)d szakasz archiválása a(z) [[%(from)s]] lapról.',
+            'OlderThanSummary': u'régebbi, mint',
+        	},
         'no': {
             'ArchiveFull': u'(ARKIV FULLT)',
             'InitialArchiveHeader': u'{{arkiv}}',
