@@ -210,9 +210,13 @@ class DiscussionThread(object):
 # 19:42, 25 mars 2008 (CET)
 # enwiki
 # 16:36, 30 March 2008 (UTC)
+# huwiki
+# 2007. december 8., 13:42 (CET)
         TM = re.search(r'(\d\d):(\d\d), (\d\d?) (\w+) (\d\d\d\d) \(.*?\)', line)
         if not TM:
             TM = re.search(r'(\d\d):(\d\d), (\w+) (\d\d?), (\d\d\d\d) \(.*?\)', line)
+        if not TM:
+            TM = re.search(r'(\d{4})\. (\S+) (\d\d?)\., (\d\d:\d\d) \(.*?\)', line)
 # 18. apr 2006 kl.18:39 (UTC)
 # 4. nov 2006 kl. 20:46 (CET)
         if not TM:
@@ -220,6 +224,8 @@ class DiscussionThread(object):
         if TM:
 #            wikipedia.output(TM)
             TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(TM.group(0), "%Y. %B %d., %H:%M (%Z)")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl.%H:%M (%Z)")
             if not TIME:
