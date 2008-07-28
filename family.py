@@ -3187,7 +3187,7 @@ class Family:
     def post_get_convert(self, site, getText):
     	"""Does a conversion on the retrieved text from the wiki
 	    i.e. Esperanto X-conversion """
-	    return getText
+	return getText
 
     def pre_put_convert(self, site, putText):
 	    """Does a conversion on the text to insert on the wiki
