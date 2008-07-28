@@ -960,3 +960,9 @@ class Family(family.Family):
 	return wikipedia.decodeEsperantoX(getText)
       else:
 	return getText
+
+    def pre_put_convert(self, site, getText):
+      if site.lang == 'eo':
+	return wikipedia.encodeEsperantoX(getText)
+      else:
+	return getText
