@@ -313,11 +313,11 @@ comm10 = {
 # because they are already put in the regex).
 # Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
-        'commons':[u'information'],
+        'commons':[u'information'], # Put the other in the page on the project defined below
 		'ar':[u'معلومات'],
         'de':[u'information'],
         'en':[u'information'],
-        'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'],
+        'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'], # Put the other in the page on the project defined below
         'ja':[u'Information'],
         'hu':[u'információ', u'enwiki', u'azonnali'],
         'ta':[u'information'],
@@ -327,7 +327,7 @@ HiddenTemplate = {
 PageWithHiddenTemplates = {
     'commons': u'User:Filbot/White_templates#White_templates',
     'en':None,
-    'it':None,
+    'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
     }
  
 # Template added when the bot finds only an hidden template and nothing else.
@@ -471,6 +471,8 @@ class main:
         self.rep_page = wikipedia.translate(self.site, report_page)
         self.rep_text = wikipedia.translate(self.site, report_text)
         self.com = wikipedia.translate(self.site, comm10)
+        self.hiddentemplate = wikipedia.translate(self.site, HiddenTemplate)
+        self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
         # Adding the bot's nickname at the notification text if needed.
@@ -643,7 +645,7 @@ class main:
             if self.sendemailActive:
                 text_to_send = re.sub(r'__user-nickname__', '%s' % self.luser, emailText)
                 emailClass = EmailSender(self.site, self.luser)
-                emailClass.send(emailSubj, text_to_send)            
+                emailClass.send(emailSubj, text_to_send)
 			
     def untaggedGenerator(self, untaggedProject, limit):
         """ Generator that yield the images without license. It's based on a tool of the toolserver. """
@@ -681,6 +683,21 @@ class main:
                 done.append(image)
                 yield image
                 #continue
+
+    def loadHiddenTemplates(self):
+        # A template as {{en is not a license! Adding also them in the whitelist template...
+        for langK in wikipedia.Family('wikipedia').langs.keys():
+            self.hiddentemplate.append('%s' % langK)
+        # The template #if: and #switch: aren't something to care about
+        self.hiddentemplate.extend(['#if:', '#switch:'])
+        # Hidden template loading        
+        if self.pageHidden != None:
+            try:
+                pageHiddenText = wikipedia.Page(self.site, self.pageHidden).get()
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                pageHiddenText = ''
+            self.hiddentemplate.extend(self.load(pageHiddenText))
+        return self.hiddentemplate
 
     def returnOlderTime(self, listGiven, timeListGiven):
         """ Get some time and return the oldest of them """
@@ -910,7 +927,7 @@ class main:
         load_2 = True
         # I search with a regex how many user have not the talk page
         # and i put them in a list (i find it more easy and secure)
-        regl = r"(\"|\')(.*?)\1(?:, |\])"
+        regl = r"(\"|\')(.*?)\1(?:,\s+?|\])"
         pl = re.compile(regl, re.UNICODE)
         for xl in pl.finditer(raw):
             word = xl.group(2).replace('\\\\', '\\')
@@ -1120,22 +1137,10 @@ def checkbot():
         if tupla_written != None: wikipedia.output(u'\t   >> Loaded the real-time page... <<')
         # No settings found, No problem, continue.
         else: wikipedia.output(u'\t   >> No additional settings found! <<')
-        hiddentemplate = wikipedia.translate(site, HiddenTemplate)
-        # If there's an hidden template, change the used
+        # Load the white templates(hidden template is the same as white template, regarding the meaning)
+        hiddentemplate = mainClass.loadHiddenTemplates()
+        # Load the notification for only white templates images
         HiddenTN = wikipedia.translate(site, HiddenTemplateNotification)
-        # A template as {{en is not a license! Adding also them in the whitelist template...
-        for langK in wikipedia.Family('wikipedia').langs.keys():
-            hiddentemplate.append('%s' % langK)
-        # The template #if: isn't something to care about
-        hiddentemplate.append('#if:')
-        # Hidden template loading
-        pageHidden = wikipedia.translate(site, PageWithHiddenTemplates)
-        if pageHidden != None:
-            try:
-                pageHiddenText = wikipedia.Page(site, pageHidden).get()
-            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                pageHiddenText = ''
-            hiddentemplate.extend(mainClass.load(pageHiddenText))
         # Not the main, but the most important loop.
         #parsed = False
         for image in generator:            
