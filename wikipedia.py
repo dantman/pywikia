@@ -1708,10 +1708,10 @@ not supported by PyWikipediaBot!"""
         Template parameters are ignored.
         """
         if not hasattr(self, "_templates"):
-            self._templates = [template
-                               for (template, param)
-                               in self.templatesWithParams(
-                                       get_redirect=get_redirect)]
+            self._templates = list(set(template
+                                       for (template, param)
+                                       in self.templatesWithParams(
+                                               get_redirect=get_redirect)))
         return self._templates
 
     def templatesWithParams(self, thistxt=None, get_redirect=False):
@@ -1750,7 +1750,8 @@ not supported by PyWikipediaBot!"""
         result = []
         inside = {}
         count = 0
-        Rtemplate = re.compile(ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
+        Rtemplate = re.compile(
+                    ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
         Rlink = re.compile(ur'\[\[[^\]]+\]\]')
         Rmath = re.compile(ur'<math>[^<]+</math>')
         Rmarker = re.compile(ur'%s(\d+)%s' % (marker, marker))
@@ -1781,7 +1782,7 @@ not supported by PyWikipediaBot!"""
                 inside[count] = text
 
                 # Name
-                name = m.group('name')
+                name = m.group('name').strip()
                 m2 = Rmarker.search(name) or Rmath.search(name)
                 if m2 is not None:
                     # Doesn't detect templates whose name changes,
@@ -1792,7 +1793,7 @@ not supported by PyWikipediaBot!"""
                 try:
                     name = Page(self.site(), name).title()
                 except InvalidTitle:
-                    if name.strip():
+                    if name:
                         output(
                             u"Page %s contains invalid template name {{%s}}."
                            % (self.title(), name.strip()))
