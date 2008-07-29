@@ -707,7 +707,8 @@ not supported by PyWikipediaBot!"""
                 elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 # Bad title
-                elif text.find('var wgPageName = "Special:Badtitle";') != -1:
+                elif text.find('var wgPageName = "Special:Badtitle";') != -1 \
+                or text.find(self.site().mediawiki_message('badtitle')) != -1:
                     raise BadTitle('BadTitle: %s' % self)
                 # find out if the username or IP has been blocked
                 elif self.site().isBlocked():
