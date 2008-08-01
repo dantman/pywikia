@@ -26,15 +26,15 @@ This script understands the following command-line arguments:
 
     -sendemail          - Send an email after tagging.
 
-    -break	        - To break the bot after the first check (default: recursive)
+    -break            - To break the bot after the first check (default: recursive)
 
-    -time[:#]	        - Time in seconds between repeat runs (default: 30)
+    -time[:#]            - Time in seconds between repeat runs (default: 30)
 
     -wait[:#]           - Wait x second before check the images (default: 0)
 
-    -skip[:#]	        - The bot skip the first [:#] images (default: 0)
+    -skip[:#]            - The bot skip the first [:#] images (default: 0)
 
-    -start[:#]	        - Use allpages() as generator (it starts already form Image:[:#])
+    -start[:#]            - Use allpages() as generator (it starts already form Image:[:#])
 
     -cat[:#]            - Use a category as generator
 
@@ -42,7 +42,7 @@ This script understands the following command-line arguments:
 
     -page[:#]           - Define the name of the wikipage where are the images
 
-    -url[:#]	        - Define the url where are the images
+    -url[:#]            - Define the url where are the images
 
     -untagged[:#]       - Use daniel's tool as generator ( http://toolserver.org/~daniel/WikiSense/UntaggedImages.php )
 
@@ -93,12 +93,13 @@ locale.setlocale(locale.LC_ALL, '')
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
     'commons':u'\n{{subst:nld}}',
-	'ar'     :u'\n{{subst:لم}}',
+    'ar'     :u'\n{{subst:لم}}',
     'de'     :u'{{Benutzer:ABF/D|~~~~}} {{Dateiüberprüfung/benachrichtigt (Kategorie)|{{subst:LOCALYEAR}}|{{subst:LOCALMONTH}}|{{subst:LOCALDAY}}}} {{Dateiüberprüfung/benachrichtigt (Text)|Lizenz|||||}} --This was added by ~~~~-- ',
     'en'     :u'\n{{subst:nld}}',
+    'hu'     :u'\n{{nincslicenc|~~~~~}}',
     'it'     :u'\n{{subst:unverdata}}',
     'ja'     :u'{{subst:Nld}}',
-    'hu'     :u'\n{{nincslicenc|~~~~~}}',
+    'ko'     :u'\n{{subst:nld}}',
     'ta'     :u'\n{{subst:nld}}',
     'zh'     :u'{{subst:No license/auto}}',
 }
@@ -116,6 +117,7 @@ txt_find =  {
         'it':[u'{{unverdata', u'{{unverified'],
         'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
         'ta':[u'{{no source', u'{{nld', u'{{no license'],
+        'ko':[u'{{출처 없음', u'{{라이선스 없음',u'{{Unknown',],
         'zh':[u'{{no source', u'{{unknown', u'{{No license',],
         }
  
@@ -128,6 +130,7 @@ comm = {
         'hu'     :u'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
         'it'     :u"Bot: Aggiungo unverified",
         'ja'     :u'ロボットによる:著作権情報なしの画像をタグ',
+        'ko'     :u'로봇:라이선스 없음',
         'ta'     :u'தானியங்கி:காப்புரிமை வழங்கப்படா படிமத்தை சுட்டுதல்',
         'zh'     :u'機器人:標示新上傳且未包含必要資訊的檔案',
         }
@@ -135,12 +138,13 @@ comm = {
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
 empty = {
         'commons':u'{{subst:welcome}}\n~~~~\n',
-		'ar'     :u'{{ترحيب}}\n~~~~\n',
+    	'ar'     :u'{{ترحيب}}\n~~~~\n',
         'de'     :u'{{subst:willkommen}} ~~~~',
         'en'     :u'{{welcome}}\n~~~~\n',
+        'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
         'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
         'ja'     :u'{{subst:Welcome/intro}}\n{{subst:welcome|--~~~~}}\n',
-        'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
+        'ko'     :u'{{환영}}\n~~~~\n',
         'zh'     :u'{{subst:welcome|sign=~~~~}}',
         }
  
@@ -151,9 +155,11 @@ comm2 = {
         'de'     :u'Bot:Notify User',
         'en'     :u"Bot: Requesting source information." ,
         'it'     :u"Bot: Notifico l'unverified",
-        'ja'     :u"ロボットによる:著作権情報明記のお願い",
+        #FIXME: two hungarian messages ?
         'hu'     :u'Robot: Forrásinformáció kérése',
         'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
+        'ja'     :u"ロボットによる:著作権情報明記のお願い",
+        'ko'     :u'로봇:라이선스 정보 요청',
         'ta'     :u'தானியங்கி:மூலம் வழங்கப்படா படிமத்தை சுட்டுதல்',
         'zh'     :u'機器人：告知用戶',
         }
@@ -162,11 +168,12 @@ comm2 = {
 # In reality, there aren't unknown extension, they are only not allowed...
 delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
-			'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
+    		'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
+            'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
             'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
             'ja'     :u'{{db|知らないファイルフォーマット %s}}',
-            'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
+            'ko'     :u'{{delete|잘못된 파일 형식 (.%s)}}',
             'ta'     :u'{{delete|இந்தக் கோப்பு .%s என்றக் கோப்பு நீட்சியைக் கொண்டுள்ளது.}}',
             'zh'     :u'{{delete|未知檔案格式%s}}',
             }
@@ -174,10 +181,11 @@ delete_immediately = {
 # The header of the Unknown extension's message.
 delete_immediately_head = {
             'commons':u"\n== Unknown extension! ==\n",
-			'ar'     :u"\n== امتداد غير معروف! ==\n",
+    		'ar'     :u"\n== امتداد غير معروف! ==\n",
             'en'     :u"\n== Unknown extension! ==\n",
-            'it'     :u'\n\n== File non specificato ==\n',
             'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
+            'it'     :u'\n\n== File non specificato ==\n',
+            'ko'     :u'\n== 잘못된 파일 형식 ==\n',
             'ta'     :u'\n== இனங்காணப்படாத கோப்பு நீட்சி! ==\n',
             'zh'     :u'\n==您上載的檔案格式可能有誤==\n',
             }
@@ -187,8 +195,9 @@ delete_immediately_notification = {
                 'ar'     :u'الملف [[:Image:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',    
                 'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
-                'it'     :u'{{subst:Utente:Filbot/Ext|%s}} --~~~~',
                 'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
+                'it'     :u'{{subst:Utente:Filbot/Ext|%s}} --~~~~',
+                'ko'     :u'[[:그림:%s]]의 파일 형식이 잘못되었습니다. 확인 바랍니다.--~~~~',
                 'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
                 'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
                 }
@@ -197,9 +206,10 @@ del_comm = {
             'ar'     :u'بوت: إضافة %s',    
             'commons':u'Bot: Adding %s',
             'en'     :u'Bot: Adding %s',
+            'hu'     :u'Robot:"%s" hozzáadása',
             'it'     :u'Bot: Aggiungo %s',
             'ja'     :u'ロボットによる: 追加 %s',
-            'hu'     :u'Robot:"%s" hozzáadása',
+            'ko'     :u'로봇 : %s 추가',
             'ta'     :u'Bot: Adding %s',
             'zh'     :u'機器人: 正在新增 %s',
             }
@@ -211,9 +221,10 @@ nothing_head = {
                 'commons':u"",# Nothing, the template has already the header inside.
                 'de'     :u"\n== Bild ohne Lizenz ==\n",
                 'en'     :u"\n== Image without license ==\n",
-                'ja'     :u'',
-                'it'     :u"\n\n== Immagine senza licenza ==\n",
                 'hu'     :u"\n== Licenc nélküli kép ==\n",
+                'it'     :u"\n\n== Immagine senza licenza ==\n",
+                'ja'     :u'',
+                'ko'     :u'',
                 'ta'     :u'',
                 'zh'     :u'',
                 }
@@ -222,12 +233,13 @@ nothing_head = {
 nothing_notification = {
                 'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:" + \
                 "__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~",
-				'ar'     :u"{{subst:مصدر الصورة|Image:%s}} --~~~~",
+    			'ar'     :u"{{subst:مصدر الصورة|Image:%s}} --~~~~",
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|Image:%s}} --~~~~",
-                'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
-                'ja'	 :u"\n{{subst:Image copyright|Image:%s}}--~~~~",
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
+                'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
+                'ja'     :u"\n{{subst:Image copyright|Image:%s}}--~~~~",
+                'ko'     :u'\n{{subst:사용자:김우진1/BotRFL|%s}} --~~~~',
                 'ta'     :u'\n{{subst:Di-no license-notice|படிமம்:%s}} ~~~~ ',
                 'zh'     :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
                 }
@@ -240,6 +252,7 @@ bot_list = {
             'en'     :[u'OrphanBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
             'ja'     :[u'alexbot'],
+            'ko'     :[u'Kwjbot IV'],
             'ta'     :[u'TrengarasuBOT'],
             'zh'     :[u'alexbot'],
             }
@@ -249,8 +262,8 @@ second_message_without_license = {
                 'commons':None,
                 'de':None,
                 'en': None,
-                'it':u':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
                 'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
+                'it':u':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
                 'ja':None,
                 'ta':None,
                 'zh':None,
@@ -273,9 +286,10 @@ report_page = {
                 'commons':u'User:Filbot/Report',
                 'de'     :u'Benutzer:ABFbot/Report',
                 'en'     :u'User:Filnik/Report',
+                'hu'     :u'User:Bdamokos/Report',
                 'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
                 'ja'     :u'User:Alexbot/report',
-                'hu'     :u'User:Bdamokos/Report',
+                'ko'     :u'User:Kwjbot IV/Report',
                 'ta'     :u'Trengarasu/commonsimages',
                 'zh'     :u'User:Alexsh/checkimagereport',
                 }
@@ -284,12 +298,13 @@ timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
             'commons':u"\n*[[:Image:%s]] " + timeselected,
-			'ar':u"\n*[[:صورة:%s]] " + timeselected,
+    		'ar':u"\n*[[:صورة:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:Image:%s]] " + timeselected,
+            'hu':u"\n*[[:Kép:%s]] " + timeselected,
             'it':u"\n*[[:Immagine:%s]] " + timeselected,
             'ja':u"\n*[[:Immagine:%s]] " + timeselected,
-            'hu':u"\n*[[:Kép:%s]] " + timeselected,
+            'ko':u"\n*[[:그림:%s]] " + timeselected,
             'ta':u"\n*[[:படிமம்:%s]] " + timeselected,
             'zh':u"\n*[[:Image:%s]] " + timeselected,
             }
@@ -299,9 +314,10 @@ comm10 = {
         'ar'     :u'بوت: تحديث السجل',
         'de'     :u'Bot:schreibe Log',
         'en'     :u'Bot: Updating the log',
+        'hu'     :u'Robot: A napló frissítése',
         'it'     :u'Bot: Aggiorno il log',
         'ja'     :u'ロボットによる:更新',
-        'hu'     :u'Robot: A napló frissítése',
+        'ko'     :u'로봇:로그 업데이트',
         'ta'     :u'தானியங்கி:பட்டியலை இற்றைப்படுத்தல்',
         'zh'     :u'機器人:更新記錄',
         }
@@ -314,12 +330,13 @@ comm10 = {
 # Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
         'commons':[u'information'], # Put the other in the page on the project defined below
-		'ar':[u'معلومات'],
+    	'ar':[u'معلومات'],
         'de':[u'information'],
         'en':[u'information'],
+        'hu':[u'információ', u'enwiki', u'azonnali'],
         'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'], # Put the other in the page on the project defined below
         'ja':[u'Information'],
-        'hu':[u'információ', u'enwiki', u'azonnali'],
+        'ko':[u'그림 정보'],
         'ta':[u'information'],
         'zh':[u'information'],
         }
@@ -328,6 +345,7 @@ PageWithHiddenTemplates = {
     'commons': u'User:Filbot/White_templates#White_templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
+    'ko': u'User:Kwjbot_IV/whitetemplates/list',
     }
  
 # Template added when the bot finds only an hidden template and nothing else.
@@ -337,6 +355,7 @@ HiddenTemplateNotification = {
         'de': None,
         'en': None,
         'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
+        'ko': u"\n{{subst:User:김우진1/BotRFL|%s}} --~~~~",
         'ta': None,
         }
 # Stub - will make it better in future, work in progress.
@@ -344,6 +363,7 @@ duplicatesText = {
         'commons':u'\n{{Dupe|__image__}}',
         'en':None,
         'it':u'\n{{Cancella subito|Immagine doppia di [[:__image__]]}}',
+        'ko':'분류:그림 저작권 틀',
         }
 duplicate_user_talk_head = {
         'commons':None,
@@ -390,7 +410,7 @@ emailSubject = {
         }
 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = [u'ar', u'commons', u'de', u'en', u'ja', u'hu', u'it', u'ta', u'zh']
+project_inserted = [u'ar', u'commons', u'de', u'en', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
@@ -646,7 +666,7 @@ class main:
                 text_to_send = re.sub(r'__user-nickname__', '%s' % self.luser, emailText)
                 emailClass = EmailSender(self.site, self.luser)
                 emailClass.send(emailSubj, text_to_send)
-			
+    		
     def untaggedGenerator(self, untaggedProject, limit):
         """ Generator that yield the images without license. It's based on a tool of the toolserver. """
         lang = untaggedProject.split('.', 1)[0]
@@ -665,7 +685,7 @@ class main:
             for result in results:
                 wikiPage = wikipedia.Page(self.site, result)
                 yield wikiPage
-	
+    
     def regexGenerator(self, regexp, textrun):
         """ Generator used when an user use a regex parsing a page to yield the results """
         pos = 0
@@ -850,7 +870,7 @@ class main:
         if com == None: com = self.com
         if rep_text == None: rep_text = self.rep_text
         another_page = wikipedia.Page(self.site, rep_page)
-	if regex == None: regex = image_to_report
+    if regex == None: regex = image_to_report
         if another_page.exists():
             text_get = another_page.get()
         else:
@@ -873,7 +893,7 @@ class main:
             wikipedia.output(u"%s is already in the report page." % image_to_report)
             reported = False
         return reported
-	
+    
     def takesettings(self):
         """ Function to take the settings from the wiki. """
         if self.settings == None: lista = None
@@ -907,7 +927,7 @@ class main:
 
     def load_licenses(self):
         """ Load the list of the licenses """
-	catName = wikipedia.translate(self.site, category_with_licenses)
+    catName = wikipedia.translate(self.site, category_with_licenses)
         cat = catlib.Category(wikipedia.getSite(), catName)
         categories = [page.title() for page in pagegenerators.SubCategoriesPageGenerator(cat)]
         categories.append(catName)
@@ -1192,7 +1212,7 @@ def checkbot():
                     continue
                 else:
                     wikipedia.output('') # Print a blank line.
-                    skip = False					                                               
+                    skip = False    				                                               
             elif skip_list == []: # Skip must be false if we are here but
                        # the user has set 0 as images to skip
                 wikipedia.output(u'\t\t>> No images to skip...<<')
