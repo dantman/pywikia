@@ -5468,7 +5468,8 @@ your connection is down. Retrying in %i minutes..."""
 
     def get_address(self, s):
         """Return URL path to retrieve page titled 's'."""
-        return self.family.get_address(self.lang, s)
+        title = s.replace(' ', '_')
+        return self.family.get_address(self.lang, title)
 
     def nice_get_address(self, s):
         """Return shorter URL path to retrieve page titled 's'."""
