@@ -33,6 +33,10 @@ Furthermore, the following command line parameters are supported:
                   argument is given, XYZ will be regarded as a regular
                   expression.
 
+-requiretitle:XYZ Only do pages with titles that contain XYZ. If the -regex
+                  argument is given, XYZ will be regarded as a regular
+		  expression.
+
 -excepttext:XYZ   Skip pages which contain the text XYZ. If the -regex
                   argument is given, XYZ will be regarded as a regular
                   expression.
@@ -226,6 +230,11 @@ class XmlDumpReplacePageGenerator:
             for exc in self.exceptions['title']:
                 if exc.search(title):
                     return True
+        if self.exceptions.has_key('require-title'):
+            for req in self.exceptions['require-title']:
+                if not req.search(title): # if not all requirements are met:
+                    return True
+
         return False
 
     def isTextExcepted(self, text):
@@ -297,6 +306,10 @@ class ReplaceRobot:
         if self.exceptions.has_key('title'):
             for exc in self.exceptions['title']:
                 if exc.search(title):
+                    return True
+        if self.exceptions.has_key('require-title'):
+            for req in self.exceptions['require-title']:
+                if not req.search(title):
                     return True
         return False
 
@@ -454,7 +467,9 @@ def main():
         'text-contains': [],
         'inside':        [],
         'inside-tags':   [],
-    }
+        'require-title': [], # using a seperate requirements dict needs some
+    }                        # major refactoring of code.
+    
     # Should the elements of 'replacements' and 'exceptions' be interpreted
     # as regular expressions?
     regex = False
@@ -514,6 +529,8 @@ def main():
                 PageTitles.append(arg[6:])
         elif arg.startswith('-excepttitle:'):
             exceptions['title'].append(arg[13:])
+        elif arg.startswith('-requiretitle:'):
+            exceptions['require-title'].append(arg[14:])
         elif arg.startswith('-excepttext:'):
             exceptions['text-contains'].append(arg[12:])
         elif arg.startswith('-exceptinside:'):
@@ -627,7 +644,7 @@ u'Press Enter to use this default message, or enter a description of the\nchange
             oldR = re.compile(old, re.UNICODE)
         replacements[i] = oldR, new
 
-    for exceptionCategory in ['title', 'text-contains', 'inside']:
+    for exceptionCategory in ['title', 'require-title', 'text-contains', 'inside']:
         if exceptions.has_key(exceptionCategory):
             patterns = exceptions[exceptionCategory]
             if not regex:
