@@ -870,7 +870,7 @@ class main:
         if com == None: com = self.com
         if rep_text == None: rep_text = self.rep_text
         another_page = wikipedia.Page(self.site, rep_page)
-    if regex == None: regex = image_to_report
+        if regex == None: regex = image_to_report
         if another_page.exists():
             text_get = another_page.get()
         else:
@@ -927,7 +927,7 @@ class main:
 
     def load_licenses(self):
         """ Load the list of the licenses """
-    catName = wikipedia.translate(self.site, category_with_licenses)
+        catName = wikipedia.translate(self.site, category_with_licenses)
         cat = catlib.Category(wikipedia.getSite(), catName)
         categories = [page.title() for page in pagegenerators.SubCategoriesPageGenerator(cat)]
         categories.append(catName)
