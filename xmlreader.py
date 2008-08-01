@@ -254,8 +254,13 @@ Consider installing the python-celementtree package.''')
 
     def new_parse(self):
         """Generator using cElementTree iterparse function"""
-
-        context = iterparse(self.filename, events=("start", "end", "start-ns"))
+        if self.filename.endswith('.bz2'):
+            import bz2
+            source = bz2.BZ2File(self.filename)
+        else:
+            # assume it's an uncompressed XML file
+            source = open(self.filename)
+        context = iterparse(source, events=("start", "end", "start-ns"))
         root = None
 
         for event, elem in context:
