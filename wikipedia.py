@@ -786,7 +786,7 @@ not supported by PyWikipediaBot!"""
 	# Unescape HTML characters, strip whitespace and postconvert
 	pagetext = text[i1:i2]
 	pagetext = unescape(pagetext)
-	pagetext = pagetext.strip()
+	pagetext = pagetext.rstrip()
 	pagetext = self.site().post_get_convert(pagetext)
 	
         m = self.site().redirectRegex().match(pagetext)
