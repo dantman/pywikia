@@ -98,9 +98,10 @@ fixes = {
             (u'([a-zäöüß](\]\])?,)((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1 \3'),
             # Leerzeichen und Komma vertauscht
             (u'([a-zäöüß](\]\])?) ,((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1, \3'),
-            # Plenks (d. h. Leerzeichen auch vor dem Komma/Punkt/Semikolon/Doppelpunkt/Ausrufezeichen/Fragezeichen)
+            # Plenks (d. h. Leerzeichen auch vor dem Komma/Punkt/Semikolon/Ausrufezeichen/Fragezeichen)
             # Achtung bei Französisch: http://de.wikipedia.org/wiki/Plenk#Sonderfall_Franz.C3.B6sisch
-            (u'([a-zäöüß](\]\])?) ([,\.;:!\?]) ((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1\3 \4'),
+            # Leerzeichen vor Doppelpunkt kann korrekt sein, nach irgendeiner Norm für Zitationen.
+            (u'([a-zäöüß](\]\])?) ([,\.;!\?]) ((\[\[)?[a-zäöüA-ZÄÖÜ])',                                                                          r'\1\3 \4'),
             #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ],
         'exceptions': {
