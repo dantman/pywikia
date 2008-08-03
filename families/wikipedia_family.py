@@ -36,7 +36,7 @@ class Family(family.Family):
             'cr', 've', 'ss', 'rw', 'xh', 'kl', 'ik', 'bug', 'dz', 'ts',
             'kv', 'bi', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'ny', 'ab',
             'fj', 'tw', 'lbe', 'za', 'ff', 'tum', 'ha', 'sn', 'sg', 'lg',
-            'ki', 'rn', 'chy', 'aa', 'ng', 'ext', 'gan', 'hif', 'kaa', 'mdf',
+            'ki', 'rn', 'chy', 'ng', 'ext', 'gan', 'hif', 'kaa', 'mdf',
             'myv', 'sah', 'srn', 'szl',
         ]
 
@@ -810,6 +810,7 @@ class Family(family.Family):
         }
 
         self.obsolete = {
+            'aa': None,  # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Afar_Wikipedia
             'cho': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Choctaw_Wikipedia
             'dk': 'da',
             'ho': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Hiri_Motu_Wikipedia
