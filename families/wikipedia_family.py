@@ -957,12 +957,12 @@ class Family(family.Family):
 
     def post_get_convert(self, site, getText):
       if site.lang == 'eo':
-	return wikipedia.decodeEsperantoX(getText)
+        return wikipedia.decodeEsperantoX(getText)
       else:
-	return getText
+        return getText
 
     def pre_put_convert(self, site, getText):
       if site.lang == 'eo':
-	return wikipedia.encodeEsperantoX(getText)
+        return wikipedia.encodeEsperantoX(getText)
       else:
-	return getText
+        return getText
