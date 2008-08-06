@@ -2119,9 +2119,7 @@ not supported by PyWikipediaBot!"""
             predata['wpMovetalk'] = '1'
         else:
             predata['wpMovetalk'] = '0'
-        if self.versionnumber() > 12:
-            # introduced in MW 1.13 : 
-            # http://thread.gmane.org/gmane.science.linguistics.wikipedia.technical/39072
+        if self.site().versionnumber() >= 13:
             if fixredirects:
                 predata['wpFixRedirects'] = '1'
             else:
@@ -2153,13 +2151,13 @@ not supported by PyWikipediaBot!"""
                         # Try to delete and move
                         return self.move(newtitle = newtitle, reason = reason, movetalkpage = movetalkpage, throttle = throttle, deleteAndMove = True)
                     except NoUsername:
-                        #We dont have the user rights to delete
+                        # We dont have the user rights to delete
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
                         return False
             elif not self.exists():
                 raise NoPage(u'Page move failed: Source page [[%s]] does not exist.' % newtitle)
             elif Page(self.site(),newtitle).exists():
-                #XXX : This might be buggy : if the move was successful, the target pase *has* been created
+                # XXX : This might be buggy : if the move was successful, the target pase *has* been created
                 raise PageNotSaved(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
             else:
                 output(u'Page move failed for unknown reason.')
