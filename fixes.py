@@ -285,7 +285,7 @@ fixes = {
             (r'\beuropäische(n|) Parlament', r'Europäische\1 Parlament'),
             (r'\beuropäische(n|) Union', r'Europäische\1 Union'),
             (r'\berste(r|n|) Weltkrieg', r'Erste\1 Weltkrieg'),
-            (r'\bkalter(r|n|) Krieg', r'Kalte\1 Krieg'),
+            (r'\bkalte(r|n|) Krieg', r'Kalte\1 Krieg'),
             (r'\bpazifische(r|n|) Ozean', r'Pazifische\1 Ozean'),
             (r'Tag der deutschen Einheit', r'Tag der Deutschen Einheit'),
             (r'\bzweite(r|n|) Weltkrieg', r'Zweite\1 Weltkrieg'),
