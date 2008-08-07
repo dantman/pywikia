@@ -35,7 +35,7 @@ Furthermore, the following command line parameters are supported:
 
 -requiretitle:XYZ Only do pages with titles that contain XYZ. If the -regex
                   argument is given, XYZ will be regarded as a regular
-		  expression.
+                  expression.
 
 -excepttext:XYZ   Skip pages which contain the text XYZ. If the -regex
                   argument is given, XYZ will be regarded as a regular
@@ -212,8 +212,7 @@ class XmlDumpReplacePageGenerator:
                         and not self.isTextExcepted(entry.text):
                     new_text = entry.text
                     for old, new in self.replacements:
-                        new_text = wikipedia.replaceExcept(
-                                        new_text, old, new, self.excsInside)
+                        new_text = wikipedia.replaceExcept(new_text, old, new, self.excsInside, self.site)
                     if new_text != entry.text:
                         yield wikipedia.Page(self.site, entry.title)
         except KeyboardInterrupt:
@@ -251,7 +250,7 @@ class ReplaceRobot:
     """
     def __init__(self, generator, replacements, exceptions={},
                  acceptall=False, allowoverlap=False, recursive=False,
-                 addedCat=None, sleep=None, exceptinterwiki=False):
+                 addedCat=None, sleep=None):
         """
         Arguments:
             * generator    - A generator that yields Page objects.
@@ -292,7 +291,6 @@ class ReplaceRobot:
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
         self.recursive = recursive
-        self.exceptinterwiki = exceptinterwiki
         if addedCat:
             site = wikipedia.getSite()
             cat_ns = site.category_namespaces()[0]
@@ -339,13 +337,8 @@ class ReplaceRobot:
         for old, new in self.replacements:
             if self.sleep != None:
                 time.sleep(self.sleep)
-            if self.exceptinterwiki:
-              interwikis = wikipedia.getLanguageLinks(new_text)
-              new_text = wikipedia.removeLanguageLinks(new_text)
             new_text = wikipedia.replaceExcept(new_text, old, new, exceptions,
                                                allowoverlap=self.allowoverlap)
-            if self.exceptinterwiki:
-              new_text = wikipedia.replaceLanguageLinks(new_text,interwikis)
         return new_text
 
     def run(self):
@@ -498,8 +491,6 @@ def main():
     allowoverlap = False
     # Do not recurse replacement
     recursive = False
-    #add flag to ignore interwiki links
-    exceptinterwiki = False
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
@@ -551,8 +542,6 @@ def main():
             sleep = float(arg[7:])           
         elif arg == '-always':
             acceptall = True
-        elif arg == '-exceptinterwiki':
-            exceptinterwiki = True
         elif arg == '-recursive':
             recursive = True
         elif arg == '-nocase':
@@ -711,7 +700,7 @@ LIMIT 200""" % (whereClause, exceptClause)
                                             pageNumber=20, lookahead=100)
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=60)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep, exceptinterwiki)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep)
     bot.run()
 
 if __name__ == "__main__":

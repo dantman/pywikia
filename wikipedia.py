@@ -3143,7 +3143,7 @@ class Throttle(object):
 # All return the modified text as a unicode object
 
 def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
-                  allowoverlap=False, marker = ''):
+                  allowoverlap=False, marker = '', site = None):
     """
     Return text with 'old' replaced by 'new', ignoring specified types of text.
 
@@ -3168,6 +3168,9 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
     """
     # Hyperlink regex is defined in weblinkchecker.py
     import weblinkchecker
+
+    if site is None:
+        site = getSite()
 
     exceptionRegexes = {
         'comment':     re.compile(r'(?s)<!--.*?-->'),
@@ -3203,7 +3206,10 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         'gallery':     re.compile(r'(?is)<gallery.*?>.*?</gallery>'),
         # this matches internal wikilinks, but also interwiki, categories, and
         # images.
-        'link':        re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
+        'link':        re.compile(r'\[\[[^\]\|]*(\|[^\]]*)?\]\]'),
+        'interwiki':   re.compile(r'(?i)\[\[(%s)\s?:[^\]]*\]\][\s]*'
+                               % '|'.join(site.validLanguageLinks() + site.family.obsolete.keys())),
+
     }
 
     # if we got a string, compile it as a regular expression
