@@ -554,8 +554,10 @@ fixes = {
         },
         'replacements': [
             (u'Special:Allpages',        u'Special:Allpages'),
+            (u'Special:Blockip',         u'Special:BlockIP'),
             (u'Special:Blankpage',       u'Special:BlankPage'),
             (u'Special:Filepath',        u'Special:FilePath'),
+            (u'Special:Globalusers',     u'Special:GlobalUsers'),
             (u'Special:Imagelist',       u'Special:ImageList'),
             (u'Special:Ipblocklist',     u'Special:IPBlockList'),
             (u'Special:Listgrouprights', u'Special:ListGroupRights'),
