@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """ File containing all standard fixes """
 __version__ = '$Id$'
 
@@ -546,6 +546,29 @@ fixes = {
             (u' اسرائيليان ', u' إسرائيليان '),
             (u' اسرائيليتان ', u' إسرائيليتان '),
         ]
+    },
+    'specialpages': {
+        'regex': False,
+        'msg': {
+            'en': u'Robot: Fixing special page capitalisation',
+        },
+        'replacements': [
+            (u'Special:Allpages',        u'Special:Allpages'),
+            (u'Special:Blankpage',       u'Special:BlankPage'),
+            (u'Special:Filepath',        u'Special:FilePath'),
+            (u'Special:Imagelist',       u'Special:ImageList'),
+            (u'Special:Ipblocklist',     u'Special:IPBlockList'),
+            (u'Special:Listgrouprights', u'Special:ListGroupRights'),
+            (u'Special:Listusers',       u'Special:ListUsers'),
+            (u'Special:Newimages',       u'Special:NewImages'),
+            (u'Special:Protectedpages',  u'Special:ProtectedPages'),
+            (u'Special:Recentchanges',   u'Special:RecentChanges'),
+            (u'Special:Specialpages',    u'Special:SpecialPages'),
+            (u'Special:Unlockdb',        u'Special:UnlockDB'),
+            (u'Special:Userlogin',       u'Special:UserLogin'),
+            (u'Special:Userlogout',      u'Special:UserLogout'),
+            (u'Special:Whatlinkshere',   u'Special:WhatLinksHere'),
+        ],
     },
 }
 
