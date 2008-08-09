@@ -38,6 +38,7 @@ copy_message = {
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
     'fr':u"Cette image est copiée de %s. La description originale était:\r\n\r\n%s",
     'he':u"תמונה זו הועתקה מהאתר %s. תיאור הקובץ המקורי היה:\r\n\r\n%s",
+    'hu':u"Kép másolása innen: %s. Az eredeti leírás:\r\n\r\n%s",
     'ia':u"Iste imagine esseva copiate de %s. Le description original esseva:\r\n\r\n%s",
     'it':u"Questa immagine è stata copiata da %s. La descrizione originale era:\r\n\r\n%s",
     'kk':u"Бұл сурет %s дегеннен көшірілді. Түпнұсқа сипатттамасы былай болды:\r\n\r\n%s",
@@ -55,6 +56,7 @@ nowCommonsTemplate = {
     'fr': u'{{Désormais sur Commons|%s}}',
     'en': u'{{subst:ncd|Image:%s}}',
     'he': u'{{גם בוויקישיתוף|%s}}',
+    'hu': u'{{azonnali-commons|Kép:%s}}',
     'ia': u'{{OraInCommons|Imagine:%s}}',
     'it': u'{{NowCommons unlink|%s}}',
     'ja': u'{{NowCommons|Image:%s}}',
@@ -80,6 +82,7 @@ nowCommonsMessage = {
     'en': u'File is now available on Wikimedia Commons.',
     'eo': u'Dosiero nun estas havebla en la Wikimedia-Komunejo.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
+    'hu': u'A fájl most már elérhető a Wikimedia Commonson';
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'ja': u'ファイルはウィキメディア・コモンズにあります',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
@@ -122,6 +125,10 @@ licenseTemplates = {
         u'תמונה ישנה':              u'PD-Israel',
         u'ייחוס':                   u'Attribution',
         u'לוגו ויקימדיה':           u'Copyright by Wikimedia',
+    },
+    ('wikipedia:hu', 'commons:commons'): {
+        u'Közkincs':                 u'PD',
+        u'Közkincs-régi':            u'PD-old',
     },
     ('wikipedia:pt', 'commons:commons'): {
         u'Domínio público':          u'PD',
