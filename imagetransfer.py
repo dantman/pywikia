@@ -82,7 +82,7 @@ nowCommonsMessage = {
     'en': u'File is now available on Wikimedia Commons.',
     'eo': u'Dosiero nun estas havebla en la Wikimedia-Komunejo.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
-    'hu': u'A fájl most már elérhető a Wikimedia Commonson';
+    'hu': u'A fájl most már elérhető a Wikimedia Commonson',
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'ja': u'ファイルはウィキメディア・コモンズにあります',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
