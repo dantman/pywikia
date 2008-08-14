@@ -1333,6 +1333,7 @@ not supported by PyWikipediaBot!"""
             predata['masteredit'] = '1'
 
         retry_delay = 1
+        retry_attempt = 1
         dblagged = False
         while True:
             # Check whether we are not too quickly after the previous
@@ -1373,6 +1374,9 @@ not supported by PyWikipediaBot!"""
                 raise PageNotSaved('Bad status line: %s' % line.line)
             except ServerError:
                 output(u''.join(traceback.format_exception(*sys.exc_info())))
+                retry_attempt += 1
+                if retry_attempt > config.maxretries:
+                    raise
                 output(
             u'Got a server error when putting %s; will retry in %i minute%s.'
                        % (self.aslink(), retry_delay, retry_delay != 1 and "s" or ""))

@@ -263,6 +263,9 @@ noisysleep = 3.0
 # what you are doing and have a good reason for it!
 maxlag = 5
 
+# Number of retries before giving up when putting a page
+maxretries = 5
+
 # Maximum of pages which can be retrieved by special pages. Increase this if
 # you heavily use redirect.py with action "double", and especially if you're
 # running solve_disambiguation.py with the -primary argument.
