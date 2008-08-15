@@ -298,6 +298,9 @@ class Family(family.Family):
             'zh-classical': u'維基大典 talk',
         }
 
+        self.namespaces[8]['ko'] = u'미디어위키'
+        self.namespaces[9]['ko'] = u'미디어위키토론'
+
         self.namespaces[100] = {
             'als': u'Portal',
             'an': u'Portal',
@@ -339,6 +342,7 @@ class Family(family.Family):
             'nds': u'Portal',
             'new': u'दबू',
             'nl': u'Portaal',
+            'nn': u'Tema',
             'no': u'Portal',
             'oc': u'Portal',
             'pl': u'Portal',
@@ -408,6 +412,7 @@ class Family(family.Family):
             'nds': u'Portal Diskuschoon',
             'new': u'दबू खँलाबँला',
             'nl': u'Overleg portaal',
+            'nn': u'Temadiskusjon',
             'no': u'Portaldiskusjon',
             'oc': u'Discussion Portal',
             'pl': u'Dyskusja portalu',
