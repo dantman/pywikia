@@ -2859,6 +2859,7 @@ class Family:
         'jv': [u'alih'],
         'ka': [u'გადამისამართება'],
         'kk': [u'айдау'],
+        'ko': [u'넘겨주기'],
         'mzn': [u'تغییرمسیر'],
         'nn': [u'omdiriger'],
         'ru': [u'REDIRECT', u'перенаправление', u'перенапр'], # localised version is not so used, so put the default
