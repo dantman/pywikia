@@ -201,7 +201,7 @@ class putThread (threading.Thread):
                     
                 wikipedia.showDiff(self.imagepage.get(), self.newtext)
                 #Should change this for not autonomous operation.
-                #self.imagepage.put(self.newtext, u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]')
+                self.imagepage.put(self.newtext, u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]')
         return
     def removeUncat(self, oldtext = u''):
         result = u''
