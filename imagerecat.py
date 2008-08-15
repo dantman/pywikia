@@ -32,29 +32,29 @@ The program is far from finished. The framework is there, but still a lot has to
 # Distributed under the terms of the MIT license.
 #
 #
-
-from Tkinter import *
-from PIL import Image, ImageTk
 import os, sys, re, codecs
 import urllib, httplib, urllib2
-import catlib, thread, webbrowser
+import catlib, thread
 import time, threading
 import wikipedia, config
 import pagegenerators, add_text, Queue, StringIO      
 
-exitProgram = 0
+exitProgram = False
+#autonomous = False
+
+category_blacklist = [u'Hidden categories']
 
 class prefetchThread (threading.Thread):
     '''
     Class to fetch al the info for the user. This thread gets the imagepage, the commonshelper suggestions and the image.
     The thread puts this item in a queue. When there are no more pages left the thread puts a None object in the queue and exits.
     '''
-    def __init__ (self, generator, prefetchToUserQueue):
+    def __init__ (self, generator, prefetchToPutQueue):
         '''
         Get the thread ready
         '''
         self.generator = generator
-        self.prefetchToUserQueue = prefetchToUserQueue
+        self.prefetchToPutQueue = prefetchToPutQueue
         self.currentCats = []
         self.commonshelperCats = []
         self.image = None
@@ -63,19 +63,28 @@ class prefetchThread (threading.Thread):
         threading.Thread.__init__ ( self )
         
     def run(self):
-
-        global exitProgram        
+        global exitProgram
+        #global autonomous
         for page in self.pregenerator:
-            if exitProgram != 0:
+            if exitProgram:
                 break;            
             if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
                 self.imagepage = wikipedia.ImagePage(page.site(), page.title())
                 self.imagepage.get()
+                wikipedia.output(u'Working on ' + self.imagepage.title());
                 self.currentCats = self.getCurrentCats(self.imagepage)
-                self.commonshelperCats = self.filterCommonsHelperCats(self.currentCats, self.getCommonshelperCats(self.imagepage))
-                self.image = self.getImage(self.imagepage)
-                self.prefetchToUserQueue.put((self.imagepage, self.currentCats, self.commonshelperCats, self.image))
-        self.prefetchToUserQueue.put(None)
+                self.commonshelperCats = self.filterCats(self.currentCats, self.getCommonshelperCats(self.imagepage))
+                                    
+                #if not autonomous:
+                #    self.image = self.getImage(self.imagepage)
+                #self.prefetchToUserQueue.put((self.imagepage, self.currentCats, self.commonshelperCats, self.image))
+
+                if len(self.commonshelperCats) > 0:
+                    for cat in self.commonshelperCats:
+                        wikipedia.output(u' Found new cat: ' + cat);                       
+                    self.prefetchToPutQueue.put((self.imagepage, self.commonshelperCats))
+
+        self.prefetchToPutQueue.put(None)
         return
     
     def getCurrentCats(self, imagepage):
@@ -91,11 +100,20 @@ class prefetchThread (threading.Thread):
         '''
         Get category suggestions from commonshelper. Parse them and return a list of suggestions.        
         '''
-        parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace(), 'r' : 'on', 'go-clean' : 'Find+Categories'})        
-        commonsHelperPage = urllib.urlopen("http://toolserver.org/~daniel/WikiSense/CommonSense.php?%s" % parameters)        
-        
+        parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'cl' : 'li'})
         commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usage>(\d)+)\)(.*)#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)(.*)#EOF$', re.MULTILINE + re.DOTALL)
-        matches = commonsenseRe.search(commonsHelperPage.read())
+
+        gotInfo = False;
+
+        while(not gotInfo):
+            try:
+                commonsHelperPage = urllib.urlopen("http://toolserver.org/~daniel/WikiSense/CommonSense.php?%s" % parameters)
+                matches = commonsenseRe.search(commonsHelperPage.read().decode('utf-8'))
+                gotInfo = True;
+            except IOError:
+                wikipedia.output(u'Got an IOError, let\'s try again')
+            except socket.timeout:
+                wikipedia.output(u'Got a timeout, let\'s try again')                
 
         if matches:
             if(matches.group('catnum') > 0):
@@ -103,17 +121,40 @@ class prefetchThread (threading.Thread):
         else:            
             return []
         
-    def filterCommonsHelperCats(self, currentCats, commonshelperCats):
+    def filterCats(self, currentCats, commonshelperCats):
         '''
-        Remove the current categories from the suggestions.
+        Remove the current categories from the suggestions and remove blacklisted cats.
         '''
         result = []
-        currentCatsSet = set(currentCats)
+        toFilter = ""
+
+        for cat in currentCats:
+            cat = cat.replace('_',' ')
+            toFilter = toFilter + "[[Category:" + cat + "]]\n"
         for cat in commonshelperCats:
             cat = cat.replace('_',' ')
-            if cat not in currentCatsSet:
+            toFilter = toFilter + "[[Category:" + cat + "]]\n"
+        parameters = urllib.urlencode({'source' : toFilter.encode('utf-8'), 'bot' : '1'})
+        filterCategoriesPage = urllib.urlopen("http://toolserver.org/~multichill/filtercats.php?%s" % parameters)
+        #print filterCategoriesPage.read().decode('utf-8')
+        filterCategoriesRe = re.compile('\[\[Category:([^\]]*)\]\]')
+        result = filterCategoriesRe.findall(filterCategoriesPage.read().decode('utf-8'))
+        #print matches
+        '''
+            if matches:
+                print "Found matches"
+                if(matches.group('cats') > 0):
+                    print matches.group('cats').splitlines()
+                    '''
+        '''
+                
+        #currentCatsSet = set(currentCats)
+        for cat in commonshelperCats:
+            cat = cat.replace('_',' ')
+            if (cat not in currentCatsSet) and (cat not in category_blacklist):
                 result.append(cat)
-        return result
+        '''
+        return list(set(result))
     
     def getImage(self, imagepage):
         '''
@@ -132,36 +173,6 @@ class prefetchThread (threading.Thread):
         file.close()
      
         return image                           
-    
-class userThread (threading.Thread):    
-    def __init__ (self, prefetchToUserQueue, userToPutQueue):
-        self.prefetchToUserQueue = prefetchToUserQueue
-        self.userToPutQueue = userToPutQueue
-        self.item = None
-        self.imagepage = None
-        self.image = None
-        self.currentCats = []
-        self.commonshelperCats = []
-        self.newCats = []        
-        self.skip = 0
-        
-        threading.Thread.__init__ ( self )
-        
-    def run(self):
-        
-        global exitProgram
-        while exitProgram == 0:
-            self.item = self.prefetchToUserQueue.get()           
-            if self.item is None:                                
-                break
-            else:
-                (self.imagepage, self.currentCats, self.commonshelperCats, self.image) = self.item
-                (self.skip, exitProgram, self.newCats) = Tkdialog(self.imagepage.titleWithoutNamespace(), self.image, self.imagepage.get(), self.currentCats, self.commonshelperCats, self.imagepage.permalink()).run()                
-
-                if not self.skip:
-                    self.userToPutQueue.put((self.imagepage, self.newCats))
-        self.userToPutQueue.put(None)
-        return
 
 class putThread (threading.Thread):
     '''
@@ -169,139 +180,44 @@ class putThread (threading.Thread):
     '''
     def __init__ (self, userToPutQueue):        
         self.userToPutQueue = userToPutQueue
+        self.item = None
+        self.imagepage = None
+        self.newcats = []
+        self.newtext = u''
         threading.Thread.__init__ ( self )
         
     def run(self):        
-        item = None
-        imagepage = None
-        newtext = u''
+
         while True:
-            item = self.userToPutQueue.get()            
-            if item is None:                
+            self.item = self.userToPutQueue.get()            
+            if self.item is None:                
                 break
             else:
-                (imagepage, newtext)=item
-                #wikipedia.showDiff(imagepage.get(), newtext)
-                #imagepage.put(newtext, u'Recat by bot')
+                (self.imagepage, self.newcats)=self.item
+                self.newtext = wikipedia.removeCategoryLinks(self.imagepage.get(), self.imagepage.site())
+                self.newtext = self.removeUncat(self.newtext) + u'{{subst:chc}}\n'
+                for category in self.newcats:
+                    self.newtext = self.newtext + u'[[Category:' + category + u']]\n'
+                    
+                wikipedia.showDiff(self.imagepage.get(), self.newtext)
+                #Should change this for not autonomous operation.
+                #self.imagepage.put(self.newtext, u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]')
         return
-
-class Tkdialog:
-    '''
-    The Tk dialog presented to the user. The user can add and remove categories. View the images in a webbrowser, skip the image, apply the changes or exit.
-    '''
-    def __init__(self, image_title = u'', image = None, pagetext=u'', currentCats = [], commonsHelperCats = [], url= ''):
-        self.newCats = currentCats
-        self.url = url
-        self.skip = 0
-        self.exit = 0
-        self.root=Tk()
-        self.root.title(image_title)
-        w = 1600 #image1.width()
-        h = 900 #image1.height()
-        x = 50
-        y = 50
-        self.root.geometry("%dx%d+%d+%d" % (w, h, x, y))
-        self.root.rowconfigure( 0, weight = 1 )
-        self.root.columnconfigure( 0, weight = 1 )
-
-        image1 = self.getImage(image, 800, 600)                 
-               
-        panel1 = Label(self.root, image=image1)
-        panel1.grid(row=0, column=2, rowspan=11, columnspan=11)
-        panel1.image = image1                
-
-        self.cb = []
-        self.cbstate = []
-        self.entry = []
-        for i in range(0, 10):
-            self.cbstate.append(IntVar())
-            self.cb.append(Checkbutton (self.root, variable=self.cbstate[i]))
-            self.entry.append(Entry (self.root, width=50))            
-            self.cb[i].grid(row=i, column=0)
-            self.entry[i].grid(row=i, column=1)
-
-        catindex = 0
-
-        for cat in currentCats:
-            self.entry[catindex].delete(0, END)            
-            self.entry[catindex].insert(0, cat)
-            self.entry[catindex].config(background="green")
-            self.cb[catindex].select()
-            catindex = catindex + 1            
+    def removeUncat(self, oldtext = u''):
+        result = u''
+        result = re.sub(u'\{\{\s*([Uu]ncat(egori[sz]ed( image)?)?|[Nn]ocat|[Nn]eedscategory)[^}]*\}\}', u'', oldtext)        
+        result = re.sub(u'<!-- Remove this line once you have added categories -->', u'', result)
+        #wikipedia.showDiff(oldtext, result)
+        return result      
         
-        for cat in commonsHelperCats:
-            self.entry[catindex].delete(0, END)            
-            self.entry[catindex].insert(0, cat)
-            self.entry[catindex].config(background="yellow")
-            self.cb[catindex].deselect()
-            catindex = catindex + 1
-
-        textarea=Text(self.root)
-        scrollbar=Scrollbar(self.root, orient=VERTICAL)
-        textarea.insert(END, pagetext.encode('utf-8'))
-        textarea.config(state=DISABLED, height=12, width=80, padx=0, pady=0, wrap=WORD, yscrollcommand=scrollbar.set)
-
-        scrollbar.config(command=textarea.yview)
-
-        browserButton=Button(self.root, text='View in browser', command=self.openInBrowser)
-        skipButton=Button(self.root, text="Skip", command=self.skipFile)
-        okButton=Button(self.root, text="OK", command=self.okFile)
-        exitButton=Button(self.root, text="EXIT", command=self.exitProgram)      
-        
-        textarea.grid(row=12, column=4, columnspan=10)
-        scrollbar.grid(row=12, column=3)
-        
-        okButton.grid(row=20, column=0, rowspan=2)
-        skipButton.grid(row=20, column=1, rowspan=2)
-        browserButton.grid(row=20, column=2, rowspan=2)
-        exitButton.grid(row=20, column=3, rowspan=2)
-                
-    def getImage(self, image, width, height):        
-        output = StringIO.StringIO(image)
-        image2 = Image.open(output)
-        image2.thumbnail((width, height))
-        imageTk = ImageTk.PhotoImage(image2)
-        return imageTk
-
-    def okFile(self):
-        '''
-        The user pressed the OK button.
-        '''
-        #Read what the user has entered
-        self.root.destroy()
-        
-    def skipFile(self):
-        '''
-        The user pressed the Skip button.
-        '''
-        self.skip=1
-        self.root.destroy()
-        
-    def openInBrowser(self):
-        '''
-        The user pressed the View in browser button.
-        '''
-        webbrowser.open(self.url)
-
-    def exitProgram(self):
-        '''
-        Exit the program
-        '''
-        self.skip=1
-        self.exit=1
-        self.root.destroy()
-        
-    def run (self):
-        self.root.mainloop()
-        return (self.skip, self.exit, self.newCats)
-    
 def main(args):
     '''
     Main loop. Get a generator. Set up the 3 threads and the 2 queue's and fire everything up.
     '''
     generator = None;
+    
     genFactory = pagegenerators.GeneratorFactory()
-
+    #global autonomous
     site = wikipedia.getSite(u'commons', u'commons')
     wikipedia.setSite(site)
     for arg in wikipedia.handleArgs():
@@ -310,25 +226,25 @@ def main(args):
                 generator = [wikipedia.Page(site, wikipedia.input(u'What page do you want to use?'))]
             else:
                 generator = [wikipedia.Page(site, arg[6:])]
-        elif arg == '-always':
-            always = True
+        elif arg == '-autonomous':
+            autonomous = True
         else:
             generator = genFactory.handleArg(arg)
     if not generator:
         generator = pagegenerators.CategorizedPageGenerator(catlib.Category(site, u'Category:Media needing categories'))
         #raise add_text.NoEnoughData('You have to specify the generator you want to use for the script!')
 
-    prefetchToUserQueue=Queue.Queue()    
-    userToPutQueue=Queue.Queue()
+
+    prefetchToPutQueue=Queue.Queue()    
     
     # Start the prefetch thread
-    prefetchThread(generator, prefetchToUserQueue).start()
+    prefetchThread(generator, prefetchToPutQueue).start()
  
     # Start the user thread
-    userThread(prefetchToUserQueue, userToPutQueue).start()
+    # userThread(prefetchToUserQueue, userToPutQueue).start()
 
     # Start the put thread
-    putThread(userToPutQueue).start()
+    putThread(prefetchToPutQueue).start()
 
     # Wait for all threads to finish    
     for openthread in threading.enumerate():
