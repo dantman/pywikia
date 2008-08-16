@@ -37,7 +37,8 @@ import urllib, httplib, urllib2
 import catlib, thread
 import time, threading
 import wikipedia, config
-import pagegenerators, add_text, Queue, StringIO      
+import pagegenerators, add_text, Queue, StringIO
+import socket
 
 exitProgram = False
 #autonomous = False
