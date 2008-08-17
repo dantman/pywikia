@@ -1294,14 +1294,16 @@ not supported by PyWikipediaBot!"""
         host = self.site().hostname()
         # Get the address of the page on that host.
         address = self.site().put_address(self.urlname())
-        if not isinstance(comment, unicode):
-            raise ValueError("An unicode edit comment is expected as an argument")
         # Use the proper encoding for the comment
-        encodedComment = comment.encode(self.site().encoding())
-        if not isinstance(text, unicode):
-            raise ValueError("An unicode wikitext is expected as an argument")
+        try:
+            encodedComment = comment.encode(self.site().encoding())
+        except UnicodeDecodeError:
+            raise ValueError("An ascii string or unicode edit comment is expected as an argument")
         # Encode the text into the right encoding for the wiki
-        encodedText = text.encode(self.site().encoding())
+        try:
+            encodedText = text.encode(self.site().encoding())
+        except UnicodeDecodeError:
+            raise ValueError("An ascii string or unicode wikitext is expected as an argument")
         predata = {
             'wpSave': '1',
             'wpSummary': encodedComment,
