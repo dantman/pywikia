@@ -1396,6 +1396,9 @@ not supported by PyWikipediaBot!"""
             # A second text area means that an edit conflict has occured.
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
+
+            # remove the wpAntispam keyword before checking for Spamfilter
+            data = re.sub(u'(?s)<label for="wpAntispam">.*?</label>', '', data)
             if self.site().has_mediawiki_message("spamprotectiontitle")\
                     and self.site().mediawiki_message('spamprotectiontitle') in data:
                 try:
