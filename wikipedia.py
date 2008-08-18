@@ -1287,7 +1287,7 @@ not supported by PyWikipediaBot!"""
         """Encode an ascii string/Unicode string to the site's encoding"""
         try:
             if isinstance(arg, str):
-                arg.decode() # fails with UnicodeDecodeError if non-ascii
+                return arg.decode() # fails with UnicodeDecodeError if non-ascii
         except UnicodeDecodeError:
             raise PageNotSaved("An ascii string or unicode %s is expected" % msgForError)
         try:
@@ -1308,8 +1308,8 @@ not supported by PyWikipediaBot!"""
         address = self.site().put_address(self.urlname())
         predata = {
             'wpSave': '1',
-            'wpSummary': _encodeArg(comment, 'edit summary'),
-            'wpTextbox1': _encodeArg(text, 'wikitext'),
+            'wpSummary': self._encodeArg(comment, 'edit summary'),
+            'wpTextbox1': self._encodeArg(text, 'wikitext'),
         }
         if captchaId:
             predata["wpCaptchaId"] = captchaId
