@@ -1283,6 +1283,18 @@ not supported by PyWikipediaBot!"""
         return self._putPage(newtext, comment, watchArticle, minorEdit,
                              newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
+    def _encodeArg(self, arg, msgForError):
+        """Encode an ascii string/Unicode string to the site's encoding"""
+        try:
+            if isinstance(arg, str):
+                arg.decode() # fails with UnicodeDecodeError if non-ascii
+        except UnicodeDecodeError:
+            raise PageNotSaved("An ascii string or unicode %s is expected" % msgForError)
+        try:
+            return arg.encode(self.site().encoding())
+        except UnicodeDecodeError:
+            raise PageNotSaved("The %s could not be converted to the site's encoding (%s)" % (msgForError, self.site().encoding()))
+        
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
                 captchaId=None, captchaAnswer=None ):
@@ -1294,20 +1306,10 @@ not supported by PyWikipediaBot!"""
         host = self.site().hostname()
         # Get the address of the page on that host.
         address = self.site().put_address(self.urlname())
-        # Use the proper encoding for the comment
-        try:
-            encodedComment = comment.encode(self.site().encoding())
-        except UnicodeDecodeError:
-            raise ValueError("An ascii string or unicode edit comment is expected as an argument")
-        # Encode the text into the right encoding for the wiki
-        try:
-            encodedText = text.encode(self.site().encoding())
-        except UnicodeDecodeError:
-            raise ValueError("An ascii string or unicode wikitext is expected as an argument")
         predata = {
             'wpSave': '1',
-            'wpSummary': encodedComment,
-            'wpTextbox1': encodedText,
+            'wpSummary': _encodeArg(comment, 'edit summary'),
+            'wpTextbox1': _encodeArg(text, 'wikitext'),
         }
         if captchaId:
             predata["wpCaptchaId"] = captchaId
