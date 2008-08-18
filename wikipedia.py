@@ -1286,13 +1286,13 @@ not supported by PyWikipediaBot!"""
     def _encodeArg(self, arg, msgForError):
         """Encode an ascii string/Unicode string to the site's encoding"""
         try:
-            if isinstance(arg, str):
-                return arg.decode() # fails with UnicodeDecodeError if non-ascii
-        except UnicodeDecodeError:
-            raise PageNotSaved("An ascii string or unicode %s is expected" % msgForError)
-        try:
             return arg.encode(self.site().encoding())
         except UnicodeDecodeError:
+            # happens when arg is a non-ascii bytestring :
+            # when reencoding bytestrings, python decodes first to ascii
+            raise PageNotSaved("An ascii string or unicode %s is expected" % msgForError)
+        except UnicodeEncodeError:
+            # happens when arg is unicode
             raise PageNotSaved("The %s could not be converted to the site's encoding (%s)" % (msgForError, self.site().encoding()))
         
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
