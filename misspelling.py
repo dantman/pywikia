@@ -31,22 +31,29 @@ import wikipedia, solve_disambiguation, catlib, pagegenerators
 class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
 
     misspellingTemplate = {
+        'da': None,                     # uses simple redirects
         'de': u'Falschschreibung',
         #'en': u'Template:Misspelling', # rarely used on en:
-        'en': None,                     # en: uses simple redirects
+        'en': None,                     # uses simple redirects
+        'hu': None,                     # uses simple redirects
+        'nl': None,
         #'pt': u'Pseudo-redirect',      # replaced by another system on pt:
     }
 
     # Optional: if there is a category, one can use the -start
     # parameter.
     misspellingCategory = {
+        'da': u'Omdirigeringer af fejlstavninger', # only contains date redirects at the moment
         'de': u'Kategorie:Wikipedia:Falschschreibung',
         'en': u'Redirects from misspellings',
+        'hu': u'Átirányítások hibás névről',
+        'nl': u'Categorie:Wikipedia:Redirect voor spelfout',
         #'pt': u'Categoria:!Pseudo-redirects',
     }
 
     msg = {
 	    'ar': u'روبوت: إصلاح وصلة خاطئة إلى %s',
+        'da': u'Omdirigeringer af fejlstavninger',
         'de': u'Bot: korrigiere Link auf Falschschreibung: %s',
         'en': u'Robot: Fixing misspelled link to %s',
         'he': u'בוט: מתקן קישור עם שגיאה לדף %s',
