@@ -33,14 +33,16 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
     misspellingTemplate = {
         'de': u'Falschschreibung',
         #'en': u'Template:Misspelling', # rarely used on en:
-        'pt': u'Pseudo-redirect',
+        'en': None,                     # en: uses simple redirects
+        #'pt': u'Pseudo-redirect',      # replaced by another system on pt:
     }
 
     # Optional: if there is a category, one can use the -start
     # parameter.
     misspellingCategory = {
         'de': u'Kategorie:Wikipedia:Falschschreibung',
-        'pt': u'Categoria:!Pseudo-redirects',
+        'en': u'Redirects from misspellings',
+        #'pt': u'Categoria:!Pseudo-redirects',
     }
 
     msg = {
@@ -66,18 +68,22 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
             misspellingTemplate = wikipedia.Page(wikipedia.getSite(), misspellingTemplateName)
             generator = pagegenerators.ReferringPageGenerator(misspellingTemplate, onlyTemplateInclusion = True)
             if firstPageTitle:
-                wikipedia.output('-start parameter unsupported on this wiki because there is no category for misspellings.')
+                wikipedia.output(u'-start parameter unsupported on this wiki because there is no category for misspellings.')
         preloadingGen = pagegenerators.PreloadingGenerator(generator)
         return preloadingGen
 
     # Overrides the DisambiguationRobot method.
     def findAlternatives(self, disambPage):
-        for templateName, params in disambPage.templatesWithParams():
-            if templateName in self.misspellingTemplate[wikipedia.getSite().lang]:
-                # The correct spelling is in the last paramter.
-                # This works for de:, not tested with others.
-                self.alternatives.append(params[-1])
-                return True
+        if disambPage.isRedirectPage():
+            self.alternatives.append(disambPage.getRedirectTarget().title())
+            return True
+        elif self.misspellingTemplate[disambPage.site().lang] is not None:
+            for templateName, params in disambPage.templatesWithParams():
+                if templateName in self.misspellingTemplate[wikipedia.getSite().lang]:
+                    # The correct spelling is in the last paramter.
+                    # This works for de:, not tested with others.
+                    self.alternatives.append(params[-1])
+                    return True
 
     # Overrides the DisambiguationRobot method.
     def setSummaryMessage(self, disambPage, new_targets, unlink):
