@@ -474,7 +474,7 @@ class PrimaryIgnoreManager(object):
         
         self.ignorelist = []
         filename = wikipedia.config.datafilepath('disambiguations',
-                                          self.disambPage.urlname() + '.txt')
+                self.disambPage.titleForFilename() + '.txt')
         try:
             # The file is stored in the disambiguation/ subdir. Create if necessary.
             f = codecs.open(filename, 'r', 'utf-8')

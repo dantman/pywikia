@@ -505,6 +505,19 @@ not supported by PyWikipediaBot!"""
         else:
             return self.sectionFreeTitle(underscore=underscore).split(':', 1)[1]
 
+    def titleForFilename(self):
+        """
+        Return the title of the page in a form suitable for a filename on
+        the user's file system.
+        """
+        result = self.title()
+        # Replace characters that are not possible in file names on some
+        # systems.
+        # Spaces are possible on most systems, but are bad for URLs.
+        for forbiddenChar in ':*?/\\ ':
+            result = result.replace(forbiddenChar, '_')
+        return result
+
     def section(self, underscore = False, decode=False):
         """Return the name of the section this Page refers to.
 

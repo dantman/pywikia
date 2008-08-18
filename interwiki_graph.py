@@ -1,4 +1,4 @@
-﻿""" Module with the graphviz drawing calls """
+""" Module with the graphviz drawing calls """
 __version__ = '$Id$'
 import threading
 pydotfound = True
@@ -208,13 +208,11 @@ class SpeedyShareUploader:
 
 
 def getFilename(page, extension = None):
-    filename = '%s-%s-%s' % (page.site().family.name, page.site().language(), page.title())
+    filename = '%s-%s-%s' % (page.site().family.name,
+                             page.site().language(),
+                             page.titleForFilename())
     if extension:
         filename += '.%s' % extension
-    # Replace characters that are not possible in file names on some systems.
-    # Spaces are possible on most systems, but are bad for URLs.
-    for forbiddenChar in ':*?/\\ ':
-        filename = filename.replace(forbiddenChar, '_')
     return filename
 
 if __name__ == "__main__":
