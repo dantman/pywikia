@@ -88,8 +88,17 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
             for templateName, params in disambPage.templatesWithParams():
                 if templateName in self.misspellingTemplate[wikipedia.getSite().lang]:
                     # The correct spelling is in the last paramter.
-                    # This works for de:, not tested with others.
-                    self.alternatives.append(params[-1])
+                    correctSpelling = params[-1]
+                    # On de.wikipedia, there are some cases where the
+                    # misspelling is ambigous, see for example:
+                    # http://de.wikipedia.org/wiki/Buthan
+                    for match in self.linkR.finditer(correctSpelling):
+                        self.alternatives.append(match.group('title'))
+
+                    if not self.alternatives:
+                        # There were no links in the parameter, so there is
+                        # only one correct spelling.
+                        self.alternatives.append(correctSpelling)
                     return True
 
     # Overrides the DisambiguationRobot method.
