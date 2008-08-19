@@ -505,6 +505,19 @@ not supported by PyWikipediaBot!"""
         else:
             return self.sectionFreeTitle(underscore=underscore).split(':', 1)[1]
 
+    def titleForFilename(self):
+        """
+        Return the title of the page in a form suitable for a filename on
+        the user's file system.
+        """
+        result = self.title()
+        # Replace characters that are not possible in file names on some
+        # systems.
+        # Spaces are possible on most systems, but are bad for URLs.
+        for forbiddenChar in ':*?/\\ ':
+            result = result.replace(forbiddenChar, '_')
+        return result
+
     def section(self, underscore = False, decode=False):
         """Return the name of the section this Page refers to.
 
@@ -1283,6 +1296,18 @@ not supported by PyWikipediaBot!"""
         return self._putPage(newtext, comment, watchArticle, minorEdit,
                              newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
+    def _encodeArg(self, arg, msgForError):
+        """Encode an ascii string/Unicode string to the site's encoding"""
+        try:
+            return arg.encode(self.site().encoding())
+        except UnicodeDecodeError:
+            # happens when arg is a non-ascii bytestring :
+            # when reencoding bytestrings, python decodes first to ascii
+            raise PageNotSaved("An ascii string or unicode %s is expected" % msgForError)
+        except UnicodeEncodeError:
+            # happens when arg is unicode
+            raise PageNotSaved("The %s could not be converted to the site's encoding (%s)" % (msgForError, self.site().encoding()))
+        
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
                 captchaId=None, captchaAnswer=None ):
@@ -1294,14 +1319,10 @@ not supported by PyWikipediaBot!"""
         host = self.site().hostname()
         # Get the address of the page on that host.
         address = self.site().put_address(self.urlname())
-        # Use the proper encoding for the comment
-        encodedComment = comment.encode(self.site().encoding())
-        # Encode the text into the right encoding for the wiki
-        encodedText = text.encode(self.site().encoding())
         predata = {
             'wpSave': '1',
-            'wpSummary': encodedComment,
-            'wpTextbox1': encodedText,
+            'wpSummary': self._encodeArg(comment, 'edit summary'),
+            'wpTextbox1': self._encodeArg(text, 'wikitext'),
         }
         if captchaId:
             predata["wpCaptchaId"] = captchaId
@@ -1392,6 +1413,9 @@ not supported by PyWikipediaBot!"""
             # A second text area means that an edit conflict has occured.
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
+
+            # remove the wpAntispam keyword before checking for Spamfilter
+            data = re.sub(u'(?s)<label for="wpAntispam">.*?</label>', '', data)
             if self.site().has_mediawiki_message("spamprotectiontitle")\
                     and self.site().mediawiki_message('spamprotectiontitle') in data:
                 try:
