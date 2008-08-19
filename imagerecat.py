@@ -33,7 +33,7 @@ def categorizeImages(generator):
             commonshelperCats = getCommonshelperCats(imagepage)
             newcats = filterBlacklist(commonshelperCats+currentCats)
             newcats = filterDisambiguation(newcats)
-            newcats = filterRedirects(newcats)
+            newcats = followRedirects(newcats)
             #newcats = filterCountries(newcats)
             newcats = filterParents(newcats)
             if len(newcats) > 0:
@@ -96,7 +96,7 @@ def filterDisambiguation(categories):
             result.append(cat)
     return result
 
-def filterRedirects(categories):
+def followRedirects(categories):
     result = []
     for cat in categories:
         categoryPage = wikipedia.Page(wikipedia.getSite(), u'Category:' + cat)
@@ -150,7 +150,7 @@ def removeTemplates(oldtext = u''):
     result = u''
     result = re.sub(u'\{\{\s*([Uu]ncat(egori[sz]ed( image)?)?|[Nn]ocat|[Nn]eedscategory)[^}]*\}\}', u'', oldtext)        
     result = re.sub(u'<!-- Remove this line once you have added categories -->', u'', result)
-    result = re.sub(u'\{\{\s*[Cc]heck categories[^}]*\}\}', u'', oldtext)
+    result = re.sub(u'\{\{\s*[Cc]heck categories[^}]*\}\}', u'', result)
     return result         
 
 
