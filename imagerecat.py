@@ -20,7 +20,8 @@ import wikipedia, config
 import pagegenerators, StringIO
 import socket
 
-category_blacklist = [u'Hidden categories']
+category_blacklist = [u'Hidden categories',
+                      u'Stub pictures']
 
 def categorizeImages(generator):
     for page in generator:
@@ -31,8 +32,8 @@ def categorizeImages(generator):
             currentCats = getCurrentCats(imagepage)
             commonshelperCats = getCommonshelperCats(imagepage)
             newcats = filterBlacklist(commonshelperCats+currentCats)
-            #newcats = filterDisambiguation(newcats)
-            #newcats = filterRedirects(newcats)
+            newcats = filterDisambiguation(newcats)
+            newcats = filterRedirects(newcats)
             #newcats = filterCountries(newcats)
             newcats = filterParents(newcats)
             if len(newcats) > 0:
@@ -90,11 +91,21 @@ def filterBlacklist(categories):
 
 def filterDisambiguation(categories):
     result = []
+    for cat in categories:
+        if(not wikipedia.Page(wikipedia.getSite(), u'Category:' + cat).isDisambig()):
+            result.append(cat)
     return result
-
 
 def filterRedirects(categories):
     result = []
+    for cat in categories:
+        categoryPage = wikipedia.Page(wikipedia.getSite(), u'Category:' + cat)
+        if u'Category redirect' in categoryPage.templates() or u'Seecat' in categoryPage.templates():
+            for template in categoryPage.templatesWithParams():
+                if ((template[0]==u'Category redirect' or template[0]==u'Seecat') and (len(template[1]) > 0)):
+                    result.append(template[1][0])
+        else:
+            result.append(cat)
     return result
 
 
@@ -131,7 +142,7 @@ def saveImagePage(imagepage, newcats):
         newtext = newtext + u'[[Category:' + category + u']]\n'
         
     wikipedia.showDiff(imagepage.get(), newtext)
-    #imagepage.put(newtext, u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]')
+    imagepage.put(newtext, u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]')
     return
 
 
