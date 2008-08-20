@@ -2153,7 +2153,7 @@ not supported by PyWikipediaBot!"""
             if fixredirects:
                 predata['wpFixRedirects'] = '1'
             else:
-                predate['wpFixRedirects'] = '0'
+                predata['wpFixRedirects'] = '0'
         if token:
             predata['wpEditToken'] = token
         if self.site().hostname() in config.authenticate.keys():
