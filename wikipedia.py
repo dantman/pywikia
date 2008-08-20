@@ -5125,9 +5125,63 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
+
     def allpages(self, start='!', namespace=0, includeredirects=True,
                  throttle=True):
-        """Yield all Pages from Special:Allpages.
+        """
+        Yield all Pages in alphabetical order.
+
+        Parameters:
+        start   Start at this page. By default, it starts at '!', and yields
+                all pages.
+        namespace Yield all pages in this namespace; defaults to 0.
+                MediaWiki software will only return pages in one namespace
+                at a time.
+
+        If includeredirects is False, redirects will not be found.
+
+        It is advised not to use this directly, but to use the
+        AllpagesPageGenerator from pagegenerators.py instead.
+
+        """
+        try:
+            api_url = self.api_address()
+        except NotImplementedError:
+            for page in self._allpagesOld(start, namespace, includeredirects, throttle):
+                yield page
+
+        rEntry = re.compile('<p pageid="\d+" ns="\d+" title="(?P<title>.*?)" />')
+
+        while True:
+            startEncoded = urllib.quote(start.encode(self.encoding()))
+            api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, config.special_page_limit, namespace)
+            # TODO: support includeredirects="only" like in the old method
+            if not includeredirects:
+                api_url += '&apfilterredir=nonredirects'
+
+            if throttle:
+                get_throttle()
+            text = self.getUrl(api_url)
+
+            soup = BeautifulSoup(text,
+                                 convertEntities=BeautifulSoup.HTML_ENTITIES)
+
+            for p in soup.api.query.allpages:
+                yield Page(self, p['title'])
+
+            if soup.api.find('query-continue') is None:
+                # Last page reached.
+                break
+            start = soup.api.find('query-continue').allpages['apfrom']
+
+    def _allpagesOld(self, start='!', namespace=0, includeredirects=True,
+                 throttle=True):
+        """
+        Yield all Pages from Special:Allpages.
+
+        This method doesn't work with MediaWiki 1.14 because of a change to
+        Special:Allpages. It is only left here for compatibility with older
+        MediaWiki versions, which don't support the API.
 
         Parameters:
         start   Start at this page. By default, it starts at '!', and yields
