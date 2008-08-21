@@ -303,6 +303,7 @@ class Family(family.Family):
             'als': u'Portal',
             'an': u'Portal',
             'ar': u'بوابة',
+            'be-x-old': u'Партал',
             'bg': u'Портал',
             'bpy': u'হমিলদুৱার',
             'ca': u'Portal',
@@ -373,6 +374,7 @@ class Family(family.Family):
             'als': u'Portal Diskussion',
             'an': u'Descusión Portal',
             'ar': u'نقاش البوابة',
+            'be-x-old': u'Абмеркаваньне парталу'
             'bg': u'Портал беседа',
             'bpy': u'হমিলদুৱার য়্যারী',
             'ca': u'Portal Discussió',

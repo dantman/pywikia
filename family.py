@@ -1709,7 +1709,7 @@ class Family:
                 'ab': u'Обсуждение справки',
                 'af': u'Hulpbespreking',
                 'als': u'Hilfe Diskussion',
-                'am': u'እርዳታ_ውይይት',
+	        'am': u'እርዳታ ውይይት',
                 'an': u'Descusión aduya',
                 'ar': u'نقاش المساعدة',
                 'ast': u'Aida alderique',
