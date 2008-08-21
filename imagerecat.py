@@ -23,23 +23,41 @@ import socket
 category_blacklist = [u'Hidden categories',
                       u'Stub pictures']
 
-def categorizeImages(generator):
+countries = []
+
+def getCountries():
+    '''
+    Get the list of countries from Commons.
+    '''
+    result = []
+    countryPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Countries')    
+    for country in countryPage.linkedPages():
+        result.append(country.titleWithoutNamespace()) 
+    return result
+
+def categorizeImages(generator, onlyfilter):
+    '''
+    Loop over all images in generator and try to categorize them. Get category suggestions from CommonSense.
+    '''
     for page in generator:
         if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()):
             imagepage = wikipedia.ImagePage(page.site(), page.title())
             #imagepage.get()
             wikipedia.output(u'Working on ' + imagepage.title());
             currentCats = getCurrentCats(imagepage)
-            commonshelperCats = getCommonshelperCats(imagepage)
+            if(onlyfilter):
+                commonshelperCats = []
+            else:
+                commonshelperCats = getCommonshelperCats(imagepage)
             newcats = filterBlacklist(commonshelperCats+currentCats)
             newcats = filterDisambiguation(newcats)
             newcats = followRedirects(newcats)
-            #newcats = filterCountries(newcats)
+            newcats = filterCountries(newcats)
             newcats = filterParents(newcats)
-            if len(newcats) > 0:
+            if (len(newcats) > 0 and not(set(currentCats)==set(newcats))):
                 for cat in newcats:
                     wikipedia.output(u' Found new cat: ' + cat);
-                saveImagePage(imagepage, newcats)
+                saveImagePage(imagepage, newcats, onlyfilter)
 
 
 def getCurrentCats(imagepage):
@@ -54,7 +72,7 @@ def getCurrentCats(imagepage):
 
 def getCommonshelperCats(imagepage):
     '''
-    Get category suggestions from commonshelper. Parse them and return a list of suggestions.        
+    Get category suggestions from CommonSense. Parse them and return a list of suggestions.        
     '''
     result = []
     parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'cl' : 'li'})
@@ -82,6 +100,9 @@ def getCommonshelperCats(imagepage):
 
 
 def filterBlacklist(categories):
+    '''
+    Filter out categories which are on the blacklist.
+    '''
     result = []
     for cat in categories:
         if (cat not in category_blacklist):
@@ -90,6 +111,9 @@ def filterBlacklist(categories):
 
 
 def filterDisambiguation(categories):
+    '''
+    Filter out disambiguation categories.
+    '''
     result = []
     for cat in categories:
         if(not wikipedia.Page(wikipedia.getSite(), u'Category:' + cat).isDisambig()):
@@ -97,6 +121,9 @@ def filterDisambiguation(categories):
     return result
 
 def followRedirects(categories):
+    '''
+    If a category is a redirect, replace the category with the target.
+    '''
     result = []
     for cat in categories:
         categoryPage = wikipedia.Page(wikipedia.getSite(), u'Category:' + cat)
@@ -110,13 +137,40 @@ def followRedirects(categories):
 
 
 def filterCountries(categories):
-    result = []
-    return result
+    '''
+    Try to filter out ...by country categories.
+    First make a list of any ...by country categories and try to find some countries.
+    If a by country category has a subcategoy containing one of the countries found, add it.
+    The ...by country categories remain in the set and should be filtered out by filterParents.
+    '''
+    result = categories
+    listByCountry = []
+    listCountries = []
+    for cat in categories:
+        if (cat.endswith(u'by country')):
+            listByCountry.append(cat)
+        
+        #If cat contains 'by country' add it to the list
+        #If cat contains the name of a country add it to the list
+        else:
+            for country in countries:
+                if not(cat.find(country)==-1):
+                    listCountries.append(country)            
+            
+    if(len(listByCountry) > 0):
+        for bc in listByCountry:
+            category = catlib.Category(wikipedia.getSite(), u'Category:' + bc)
+            for subcategory in category.subcategories():
+                for country in listCountries:
+                    if (subcategory.titleWithoutNamespace().endswith(country)):
+                        result.append(subcategory.titleWithoutNamespace())
+              
+    return list(set(result))
 
 
 def filterParents(categories):
     '''
-    Remove the current categories from the suggestions and remove blacklisted cats.
+    Remove all parent categories from the set to prevent overcategorization.
     '''
     result = []
     toFilter = u''
@@ -135,18 +189,29 @@ def filterParents(categories):
     return result
 
 
-def saveImagePage(imagepage, newcats):
+def saveImagePage(imagepage, newcats, onlyfilter):
+    '''
+    Remove the old categories and add the new categories to the image.
+    '''
     newtext = wikipedia.removeCategoryLinks(imagepage.get(), imagepage.site())
     newtext = removeTemplates(newtext) + u'{{subst:chc}}\n'
     for category in newcats:
         newtext = newtext + u'[[Category:' + category + u']]\n'
+
+    if(onlyfilter):
+        comment = u'Filtering categories'
+    else:
+        comment = u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]'
         
     wikipedia.showDiff(imagepage.get(), newtext)
-    imagepage.put(newtext, u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]')
+    imagepage.put(newtext, comment)
     return
 
 
 def removeTemplates(oldtext = u''):
+    '''
+    Remove {{Uncategorized}} and {{Check categories}} templates
+    '''    
     result = u''
     result = re.sub(u'\{\{\s*([Uu]ncat(egori[sz]ed( image)?)?|[Nn]ocat|[Nn]eedscategory)[^}]*\}\}', u'', oldtext)        
     result = re.sub(u'<!-- Remove this line once you have added categories -->', u'', result)
@@ -158,8 +223,8 @@ def main(args):
     '''
     Main loop. Get a generator. Set up the 3 threads and the 2 queue's and fire everything up.
     '''
-    generator = None;
-    
+    generator = None
+    onlyfilter = False
     genFactory = pagegenerators.GeneratorFactory()
 
     site = wikipedia.getSite(u'commons', u'commons')
@@ -170,12 +235,15 @@ def main(args):
                 generator = [wikipedia.Page(site, wikipedia.input(u'What page do you want to use?'))]
             else:
                 generator = [wikipedia.Page(site, arg[6:])]
+        elif arg == '-onlyfilter':
+            onlyfilter = True
         else:
             generator = genFactory.handleArg(arg)
     if not generator:
         generator = pagegenerators.CategorizedPageGenerator(catlib.Category(site, u'Category:Media needing categories'), recurse=True)
-
-    categorizeImages(generator)
+    global countries
+    countries = getCountries()
+    categorizeImages(generator, onlyfilter)
         
     wikipedia.output(u'All done')    
 
