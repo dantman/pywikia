@@ -374,7 +374,7 @@ class Family(family.Family):
             'als': u'Portal Diskussion',
             'an': u'Descusión Portal',
             'ar': u'نقاش البوابة',
-            'be-x-old': u'Абмеркаваньне парталу'
+            'be-x-old': u'Абмеркаваньне парталу',
             'bg': u'Портал беседа',
             'bpy': u'হমিলদুৱার য়্যারী',
             'ca': u'Portal Discussió',
