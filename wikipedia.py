@@ -5150,9 +5150,8 @@ your connection is down. Retrying in %i minutes..."""
             for page in self._allpagesOld(start, namespace, includeredirects, throttle):
                 yield page
 
-        rEntry = re.compile('<p pageid="\d+" ns="\d+" title="(?P<title>.*?)" />')
-
         while True:
+            api_url = self.api_address()
             startEncoded = urllib.quote(start.encode(self.encoding()))
             api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, config.special_page_limit, namespace)
             # TODO: support includeredirects="only" like in the old method
