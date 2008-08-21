@@ -2651,13 +2651,14 @@ class Family:
         self.language_groups = {
             # languages that use chinese symbols
             'chinese': [
-                'ja', 'wuu', 'zh', 'zh-classical', 'zh-yue'
+                'ja', 'wuu', 'zh', 'zh-classical', 'zh-yue', 'gan'
             ],
             # languages that use the cyrillic alphabet
             'cyril': [
                 'ab', 'ba', 'be', 'be-x-old', 'bg', 'ce', 'cv', 'kk', 'kv', 'ky', 'mk',
                 'mn', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'
             ],
+            # Scandinavian languages
             'scand': [
                 'da', 'fo', 'is', 'no', 'sv'
             ],
