@@ -20,20 +20,24 @@ import wikipedia, config
 import pagegenerators, StringIO
 import socket
 
-category_blacklist = [u'Hidden categories',
-                      u'Stub pictures']
-
+category_blacklist = []
 countries = []
 
-def getCountries():
+def initLists():
     '''
-    Get the list of countries from Commons.
+    Get the list of countries & the blacklist from Commons.
     '''
-    result = []
+    global category_blacklist
+    global countries
+
+    blacklistPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Category_blacklist')    
+    for cat in blacklistPage.linkedPages():
+        category_blacklist.append(cat.titleWithoutNamespace())
+        
     countryPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Countries')    
     for country in countryPage.linkedPages():
-        result.append(country.titleWithoutNamespace()) 
-    return result
+        countries.append(country.titleWithoutNamespace())
+    return
 
 def categorizeImages(generator, onlyfilter):
     '''
@@ -241,8 +245,8 @@ def main(args):
             generator = genFactory.handleArg(arg)
     if not generator:
         generator = pagegenerators.CategorizedPageGenerator(catlib.Category(site, u'Category:Media needing categories'), recurse=True)
-    global countries
-    countries = getCountries()
+
+    initLists()
     categorizeImages(generator, onlyfilter)
         
     wikipedia.output(u'All done')    
