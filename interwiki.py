@@ -115,10 +115,12 @@ These arguments are useful to provide hints to the bot:
                    of the page always, rather than doing so only when being
                    asked for (by typing '?'). Only useful in combination
                    with a hint-asking option like -untranslated, -askhints
-                   or -untranslatedonly. (note: without ending colon)
+                   or -untranslatedonly.
+                   (note: without ending colon)
 
-    -noauto:       Do not use the automatic translation feature for years and
+    -noauto        Do not use the automatic translation feature for years and
                    dates, only use found links and hints.
+                   (note: without ending colon)
 
 These arguments define how much user confirmation is required:
 
@@ -146,10 +148,10 @@ These arguments define how much user confirmation is required:
 
 These arguments specify in which way the bot should follow interwiki links:
 
-    -noredirect    do not follow redirects (note: without ending columns).
+    -noredirect    do not follow redirects (note: without ending colon)
 
     -initialredirect  work on target if a redirect is entered on the command
-                   line (note: without ending columns).
+                   line (note: without ending colon)
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
