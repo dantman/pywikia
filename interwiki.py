@@ -386,6 +386,7 @@ msg = {
     'ml': (u'യന്ത്രം ', u'ചേര്‍ക്കുന്നു', u'നീക്കുന്നു', u'പുതുക്കുന്നു'),
     'mn': (u'робот ', u'Нэмж байна', u'Арилгаж байна', u'Өөрчилж байна'),
     'mr': (u'सांगकाम्याने ',  u'वाढविले', u'काढले', u'बदलले'),
+    'ms': (u'bot ', u'menambah', u'membuang', u'mengubah'),
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nah': (u'Tepozcuayollotl', u'Tlamahxiltilli', u'Tlaquixtilli', u'Tlapatlalli'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
