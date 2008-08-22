@@ -553,7 +553,7 @@ fixes = {
             'en': u'Robot: Fixing special page capitalisation',
         },
         'replacements': [
-            (u'Special:Allpages',        u'Special:Allpages'),
+            (u'Special:Allpages',        u'Special:AllPages'),
             (u'Special:Blockip',         u'Special:BlockIP'),
             (u'Special:Blankpage',       u'Special:BlankPage'),
             (u'Special:Filepath',        u'Special:FilePath'),
