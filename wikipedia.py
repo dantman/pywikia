@@ -5964,17 +5964,21 @@ def decodeArg(arg):
         # I don't know how non-Western Windows versions behave.
         return unicode(arg, config.console_encoding)
 
-def handleArgs():
+def handleArgs(*args):
     """Handle standard command line arguments, return the rest as a list.
 
     Takes the commandline arguments, converts them to Unicode, processes all
     global parameters such as -lang or -log. Returns a list of all arguments
     that are not global. This makes sure that global arguments are applied
     first, regardless of the order in which the arguments were given.
+
+    args may be passed as an argument, thereby overriding sys.argv
+
     """
     global default_code, default_family, verbose
     # get commandline arguments
-    args = sys.argv
+    if not args:
+        args = sys.argv
     # get the name of the module calling this function. This is
     # required because the -help option loads the module's docstring and because
     # the module name will be used for the filename of the log.
