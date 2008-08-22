@@ -4468,9 +4468,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                         # We assume that the server is down. Wait some time, then try again.
                         output(u"%s" % e)
                         output(u"""\
-WARNING: Could not open '%s://%s%s'. Maybe the server or
+WARNING: Could not open '%s'. Maybe the server or
 your connection is down. Retrying in %i minutes..."""
-                               % (self.protocol(), self.hostname(), path,
+                               % (url,
                                   retry_idle_time))
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
