@@ -1392,7 +1392,7 @@ not supported by PyWikipediaBot!"""
                         time.sleep(5)
                         continue
                     # Squid error 503
-                    raise ServerError(response)
+                    raise ServerError(response.status)
             except httplib.BadStatusLine, line:
                 raise PageNotSaved('Bad status line: %s' % line.line)
             except ServerError:
