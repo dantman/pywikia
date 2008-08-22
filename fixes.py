@@ -405,10 +405,7 @@ fixes = {
     },
 
     #Corrections for Arabic Wikipedia and any Arabic wiki.
-
-    # These spelling corrections are very important for the
-    #  Arabic Wikipedia. Please don't remove it. The file is
-    #  shared between all bot operators, so it is in the repository.
+	#python replace.py -always -start:! -fix:correct-ar
 
     'correct-ar': {
         'regex': False,
