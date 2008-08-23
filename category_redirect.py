@@ -86,6 +86,7 @@ class CategoryRedirectBot(object):
         self.cat_redirect_cat = {
             'wikipedia': {
                 'en': "Category:Wikipedia category redirects",
+				'ar': "تصنيف:تحويلات تصنيفات ويكيبيديا",
                 'no': "Kategori:Wikipedia omdirigertekategorier",
                 'simple': "Category:Category redirects",
             },
@@ -115,6 +116,9 @@ class CategoryRedirectBot(object):
                        "Emptycategory",
                        "Empty cat",
                        "Seecat",),
+				'ar': ("تحويل تصنيف",
+                       "Category redirect",
+                       "تحويلة تصنيف",),
                 'no': ("Kategoriomdirigering",),
                 'simple': ("Category redirect",
                            "Catredirect"),
@@ -134,6 +138,8 @@ class CategoryRedirectBot(object):
         self.move_comment = {
             '_default':
 u"Robot: moving pages out of redirected category",
+            'ar':
+u"روبوت: نقل الصفحات من تصنيف محول",
             'no':
 u"Robot: Flytter sider ut av omdirigeringskategori",
             'commons':
@@ -143,17 +149,21 @@ u'Robot: Changing category link (following [[Template:Category redirect|category
         self.redir_comment = {
             '_default':
 u"Robot: adding category redirect template for maintenance",
+            'ar':
+u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
             'no':
 u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         } 
 
         self.dbl_redir_comment = {
             '_default': u"Robot: fixing double-redirect",
+			'ar': u"روبوت: تصليح تحويلة مزدوجة",
             'no': u"Robot: Ordner doble omdirigeringer",
         }
 
         self.maint_comment = {
             '_default': u"Category redirect maintenance bot",
+			'ar': u"بوت صيانة تحويل التصنيف",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
         }
 
