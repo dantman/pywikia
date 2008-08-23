@@ -311,6 +311,7 @@ templates = {
 
 # Message used when blanking an article
 blanking = {
+    'ar': u'تم الإفراغ، المحتوى كان "%s"',
     'en': u'blanked, content was "%s"',
     'fr': u'blanchit, le contenu était "%s"',
     'he': u'רוקן, תוכן היה "%s"',

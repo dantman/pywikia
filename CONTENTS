@@ -50,7 +50,7 @@ followlive.py          : Periodically grab the list of new articles and analyze
                          them. If the article is too short, a menu will let you
                          easily add a template.
 get.py                 : Script to gets a page and writes its contents to standard output.
-login.py               : Log in to an account on your "home" wikipedia. 
+login.py               : Log in to an account on your "home" Wikipedia. 
 splitwarning.py        : split an interwiki.log file into warning files for each
                          separate language. suggestion: Zip the created files up, 
                          put them somewhere on the internet, and send an 
@@ -101,7 +101,7 @@ imagetransfer.py       : Given a Wikipedia page, check the interwiki links
 inline_images.py       : This bot looks for images that are linked inline (i.e., they 
                          are hosted from an external server and hotlinked).
 interwiki.py           : A robot to check interwiki links on all pages (or
-                         a range of pages) of a wikipedia.
+                         a range of pages) of a Wikipedia.
 interwiki_graph.py     : Possible create graph with interwiki.py.
 imageharvest.py        : Bot for getting multiple images from an external site.
 isbn.py                : Bot for converts all ISBN-10 codes to the ISBN-13 format.
@@ -150,7 +150,7 @@ upload.py              : upload an image to Wikipedia.
 us-states.py           : A robot to add redirects to cities for US state 
                          abbreviations.
 warnfile.py            : A robot that parses a warning file created by 
-                         interwiki.py on another wikipedia language,
+                         interwiki.py on another Wikipedia language,
                          and implements the suggested changes without
                          verifying them.
 weblinkchecker.py      : Check if external links are still working.

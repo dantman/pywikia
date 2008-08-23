@@ -47,11 +47,11 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
-    'en': u'Robot: Fixing double redirect',
     'ar': u'روبوت: تصليح تحويلة مزدوجة',
     'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
     'br': u'Kempennet adkas doubl gant robot',
     'de': u'Bot: Korrigiere doppelten Redirect',
+    'en': u'Robot: Fixing double redirect',
     'es': u'Robot: Arreglando doble redirección',
     'fa': u'ربات:اصلاح تغییر مسیر دوتایی',
     'fi': u'Botti korjasi kaksinkertaisen ohjauksen',
@@ -88,8 +88,8 @@ msg_double={
 # Reason for deleting broken redirects
 reason_broken={
     'ar': u'روبوت: هدف التحويلة غير موجود',
-    'en': u'Robot: Redirect target doesn\'t exist',
     'de': u'Bot: Weiterleitungsziel existiert nicht',
+    'en': u'Robot: Redirect target doesn\'t exist',
     'es': u'Robot: La página a la que redirige no existe',
     'fa': u'ربات:تغییرمسیر مقصد ندارد',
     'fi': u'Botti: Ohjauksen kohdesivua ei ole olemassa',
@@ -117,6 +117,7 @@ reason_broken={
 
 #Summary message for put broken redirect to speedy delete
 sd_tagging_sum = {
+    'ar': u'روبوت: وسم للحذف السريع',
     'en': u'Robot: Tagging for speedy deletion',
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
     'zh':u'機器人: 將損壞的重定向提報快速刪除',
@@ -124,6 +125,7 @@ sd_tagging_sum = {
 
 #put deletion template
 sd_template = {
+    'ar':u'{{شطب|تحويلة مكسورة}}',
     'en':u'{{db-r1}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
     'zh':u'{{delete|R1}}',

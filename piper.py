@@ -53,7 +53,7 @@ class PiperBot:
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
         'en': u'Robot: Piping the article text through %s',
-		'ar': u'روبوت: بيبنج نص المقال من خلال %s',
+		'ar': u'روبوت: استبدال نص المقال من خلال %s',
         'is': u'Vélmenni: Pípa texta síðunnar í gegnum %s'
     }
 

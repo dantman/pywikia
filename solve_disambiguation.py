@@ -177,6 +177,7 @@ msg_redir_unlink = {
 
 # Summary message to (unknown)
 unknown_msg = {
+    'ar' : u'(غير معروف)',
     'en' : u'(unknown)',
     'fi' : u'(tuntematon)',
     'hu' : u'(ismeretlen)',
