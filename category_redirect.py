@@ -22,6 +22,7 @@ import threading, Queue
 import time
 from datetime import datetime, timedelta
 
+
 class APIError(Exception):
     """The wiki API returned an error message."""
     def __init__(self, errordict):
@@ -175,6 +176,21 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
         }
 
+        self.talk_notification = {
+            '_default': u"""
+== Category link ==
+{{editprotected}}
+* This protected page has been detected in [[%(oldcat)s]], but that category \
+has been redirected to [[%(newcat)s]]. Please update the category link. \
+--~~~~
+""",
+        }
+
+        self.talk_notification_comment = {
+            '_default':
+                u"Robot: Category-redirect notification on protected page",
+        }
+
     def change_category(self, article, oldCat, newCat, comment=None,
                         sortKey=None):
         """Given an article in category oldCat, moves it to category newCat.
@@ -213,17 +229,17 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
                     talktext = u""
                 if not talk.isTalkPage():
                     return False
-                talktext = talktext + u"""
-== Category link ==
-{{editprotected}}
-* This protected page has been detected in [[%s]], but that category has \
-been redirected to [[%s]]. Please update the category link.  --~~~~
-""" % (oldCat.aslink(textlink=True), newCat.aslink(textlink=True))
-                # NEEDS LOCALIZATION
+                talktext = talktext + wikipedia.translate(
+                                       self.site.lang,
+                                       self.talk_notification) % {
+                                        'oldcat': oldCat.aslink(textlink=True),
+                                        'newcat': newCat.aslink(textlink=True)}
                 try:
                     talkpage.put(talktext,
-                u"Robot: Category-redirect notification on protected page",
-                        minorEdit=False) # NEEDS LOCALIZATION
+                                 wikipedia.translate(
+                                     self.site.lang,
+                                     self.talk_notification_comment),
+                                 minorEdit=False)
                     wikipedia.output(
                         u"Left protected page notification on %s"
                          % talkpage.aslink())
