@@ -22,7 +22,7 @@ Arguments:
 __version__='$Id$'
 #
 import sys,re,wikipedia,codecs
-wikipedia.stopme() # This bot does not contact the Wiki, so no need to get it on the list 
+wikipedia.stopme() # This bot does not contact the Wiki, so no need to get it on the list
 R = re.compile('/wiki/(.*?)" *')
 fn = []
 sorted = False

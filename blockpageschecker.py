@@ -88,7 +88,7 @@ templateSemiProtection = {
             }
 # Regex to get the total-protection template
 templateTotalProtection = {
-            'en': None, 
+            'en': None,
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisoblocco(?:|[ _]scad\|(?:.*?)|minaccia|cancellata)\}\}',
                   r'\{\{(?:[Tt]emplate:|)(?:[Cc][Tt]|[Cc]anc fatte|[Cc][Ee])\}\}', r'<div class="toccolours[ _]itwiki[ _]template[ _]avviso">(?:\s|\n)*?[Qq]uesta pagina'],
             'fr':[ur'\{\{(?:[Tt]emplate:|[Mm]odèle:|)[Pp]rotection(|[^\}]*)\}\}',
@@ -98,14 +98,14 @@ templateTotalProtection = {
             }
 # Regex to get the semi-protection move template
 templateSemiMoveProtection = {
-            'en': None, 
+            'en': None,
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisobloccospostamento(?:|[ _]scad\|.*?|\|.*?)\}\}'],
             'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)移動半保護(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[r'\{\{(?:[Tt]emplate:|)Protected|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Mini-protected|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)',r'\{\{(?:[Tt]emplate:|)Protected-logo|(?:MS|ms)(?:\|.+|)\}\}(\n+?|)'],
             }
-# Regex to get the total-protection move template 
+# Regex to get the total-protection move template
 templateTotalMoveProtection = {
-            'en': None, 
+            'en': None,
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisobloccospostamento(?:|[ _]scad\|.*?|\|.*?)\}\}'],
             'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)移動保護(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)'],
@@ -175,7 +175,7 @@ def debugQuest(site, page):
     pathWiki = site.family.nicepath(site.lang)
     url = 'http://%s%s%s?&redirect=no' % (wikipedia.getSite().hostname(), pathWiki, page.urlname())
     while 1:
-        if quest.lower() in ['b', 'B']:                    
+        if quest.lower() in ['b', 'B']:
             webbrowser.open(url)
             break
         elif quest.lower() in ['g', 'G']:
@@ -235,7 +235,7 @@ def main():
     TSMP = wikipedia.translate(site, templateSemiMoveProtection)
     TTMP = wikipedia.translate(site, templateTotalMoveProtection)
     TNR = wikipedia.translate(site, templateNoRegex)
-    
+
     category = wikipedia.translate(site, categoryToCheck)
     commentUsed = wikipedia.translate(site, comment)
     if not generator:
@@ -268,11 +268,11 @@ def main():
         """
         # This check does not work :
         # PreloadingGenerator cannot set correctly page.editRestriction
-        # (see bug #1949476 ) 
+        # (see bug #1949476 )
         if not page.canBeEdited():
             wikipedia.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
             continue
-        """        
+        """
         editRestr = restrictions['edit']
         if editRestr and editRestr[0] == 'sysop':
             try:
@@ -280,7 +280,7 @@ def main():
             except:
                 wikipedia.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
                 continue
-            
+
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
         TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
@@ -297,7 +297,7 @@ def main():
             wikipedia.output(u'The page is editable for all, deleting the template...')
 
         elif editRestr[0] == 'sysop':
-            # total edit protection         
+            # total edit protection
             if TemplateInThePage[0] == 'sysop-total' and TTP != None:
                 msg = 'The page is protected to the sysop'
                 if not moveBlockCheck:
@@ -309,7 +309,7 @@ def main():
 
         elif TSP != None:
             # implicitely editRestr[0] = 'autoconfirmed', edit-Semi-protection
-            if TemplateInThePage[0] == 'autoconfirmed-total':                    
+            if TemplateInThePage[0] == 'autoconfirmed-total':
                 msg = 'The page is editable only for the autoconfirmed users'
                 if not moveBlockCheck:
                     msg += ', skipping...'
@@ -321,7 +321,7 @@ def main():
         if changes == 0:
             # We tried to fix edit-protection templates, but it did not work.
             wikipedia.output('Warning : No edit-protection template could be found')
-        
+
         if moveBlockCheck:
             # checking move protection now
             moveRestr = restrictions['move']
@@ -371,7 +371,7 @@ def main():
                         break
                     except wikipedia.ServerError:
                         # Sometimes there is this error that's quite annoying because
-                        # can block the whole process for nothing. 
+                        # can block the whole process for nothing.
                         errorCount += 1
                         if errorCount < 5:
                             wikipedia.output(u'Server Error! Wait..')
@@ -393,7 +393,7 @@ def main():
                         # Break only if the errors are one after the other
                         errorCount = 0
                         break
-                    
+
 if __name__ == "__main__":
     try:
         main()

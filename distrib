@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id$
 dt=`date +"%Y%m%d"`
 /bin/rm -rf temp
 mkdir temp

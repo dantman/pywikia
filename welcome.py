@@ -59,8 +59,8 @@ This script understands the following command-line arguments:
     -limit[:#]     Use this parameter to define how may users should be
                    checked (default:50)
 
-    -offset[:TIME] Skip the latest new users (those newer than TIME) 
-                   to give interactive users a chance to welcome the 
+    -offset[:TIME] Skip the latest new users (those newer than TIME)
+                   to give interactive users a chance to welcome the
                    new users (default: now)
                    Timezone is the server timezone, GMT for Wikimedia
                    TIME format : yyyymmddhhmmss
@@ -220,7 +220,7 @@ logbook = {
 summary = {
     'commons':u'Welcome!',
     'ar':u'مرحبا!',
-    'da':u'Velkommen',    
+    'da':u'Velkommen',
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
     'fa':u'خوش آمدید!',
@@ -412,17 +412,17 @@ def parselog(wsite, raw, talk, number):
     """ The function to load the users (only users who have a certain number of edits) """
     someone_found = False
     autocreated = wsite.mediawiki_message('newuserlog-autocreate-entry')
-    
+
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure).
 
     # XXX: That's the regex, if there are problems, take a look here.
-      
-    reg =  u'\(<a href=\"' + re.escape(wsite.path()) 
+
+    reg =  u'\(<a href=\"' + re.escape(wsite.path())
     reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
     reg += u'.*?\) (?P<reason>.*?) . </li>'
     p = re.compile(reg, re.UNICODE)
-    
+
     for x in p.finditer(raw):
         someone_found = True
         username = x.group('user')
@@ -440,7 +440,7 @@ def parselog(wsite, raw, talk, number):
         #FIXME: It counts the first 50 edits
         # if number > 50, it won't work
         # (not *so* useful, it should be enough).
-        contribnum = contribs.count('<li>') 
+        contribnum = contribs.count('<li>')
 
         if contribnum >= number:
             wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
@@ -798,7 +798,7 @@ def main(settingsBot):
         whitelist = list_white + whitelist_default
 
         # think about non-wikimedia wikis. Use Site functions.
-        URL = wsite.log_address(limit, 'newusers') 
+        URL = wsite.log_address(limit, 'newusers')
         if timeoffset_variable != 0:
             now = wsite.server_time() - timedelta(minutes=timeoffset_variable)
             offset_variable = int(now.strftime("%Y%m%d%H%M%S"))
@@ -858,7 +858,7 @@ def main(settingsBot):
                     else:
                         final_rep = rep_text
                         break
-            # Checking in the whitelist...            
+            # Checking in the whitelist...
             for xy in whitelist:
                 if xy.lower() in lower_uname:
                     # Deleting the white word found and check

@@ -11,12 +11,12 @@ The following parameters are supported:
     -ask           Ask for confirmation before creating each page.
     -index:...     Name of the index page
     -djvu:...      Filename of the djvu file
-    -pages:<start>-<end> Page range to upload; <end> is optional 
+    -pages:<start>-<end> Page range to upload; <end> is optional
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 """
-__version__ = '$Id: basic.py 5227 2008-04-17 09:37:15Z mfarag $'
+__version__ = '$Id$'
 import wikipedia
 import os
 import config, codecs

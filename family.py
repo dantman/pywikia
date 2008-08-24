@@ -3200,11 +3200,11 @@ class Family:
         """Returns a datetime object representing server time"""
         # TODO : If the local computer time is wrong, result wll be wrong
         return datetime.utcnow() + self.servergmtoffset
-    
+
     def isPublic(self):
         """Does the wiki require logging in before viewing it ?"""
         return True
-    
+
     def post_get_convert(self, site, getText):
         """Does a conversion on the retrieved text from the wiki
         i.e. Esperanto X-conversion """

@@ -13,6 +13,7 @@ Params:
 -safe  Does not handle the same page more than once in a session
 
 """
+__version__ = '$Id$'
 
 # Authors: Kisbes
 # http://hu.wikipedia.org/wiki/User:Kisbes

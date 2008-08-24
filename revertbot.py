@@ -1,7 +1,7 @@
 import wikipedia
 import simplejson
 
-__version__ = '$Id:$'
+__version__ = '$Id$'
 
 """
     Copyright 2008 - Bryan Tong Minh
@@ -10,13 +10,13 @@ __version__ = '$Id:$'
 
 class BaseRevertBot(object):
     """ Base revert bot
-    
+
     Subclass this bot and override callback to get it to do something useful.
     """
     def __init__(self, site, comment = None):
         self.site = site
         self.comment = comment
-        
+
     def get_contributions(self, max = -1, ns = None):
         address = self.site.api_address()
         predata = {
@@ -28,7 +28,7 @@ class BaseRevertBot(object):
         }
         if ns is not None: predata['ucnamespace'] = ns
         if max < 500 and max != -1: predata['uclimit'] = str(max)
-            
+
         count = 0
         iterator = iter(xrange(0))
         never_continue = False
@@ -49,13 +49,13 @@ class BaseRevertBot(object):
             else:
                 count += 1
                 yield item
-    
+
     def revert_contribs(self, callback = None):
         self.site.forceLogin()
-        
+
         if callback is None:
             callback = self.callback
-        
+
         contribs = self.get_contributions()
         for item in contribs:
             try:
@@ -67,10 +67,10 @@ class BaseRevertBot(object):
                         self.log(u'Skipped %s' % item['title'])
             except StopIteration:
                 return
-    
+
     def callback(self, item):
         return 'top' in item
-    
+
     def revert(self, item):
         predata = {
             'action': 'query',
@@ -83,24 +83,24 @@ class BaseRevertBot(object):
         }
         response, data = self.site.postForm(self.site.api_address(), predata)
         data = simplejson.loads(data)
-        
+
         if 'error' in data:
             raise RuntimeError(data['error'])
-        
+
         pages = data['query'].get('pages', ())
         if not pages: return False
         page = pages.itervalues().next()
         if len(page.get('revisions', ())) != 2: return False
         rev = page['revisions'][1]
-        
-        comment = u'Reverted to revision %s by %s on %s' % (rev['revid'], 
+
+        comment = u'Reverted to revision %s by %s on %s' % (rev['revid'],
             rev['user'], rev['timestamp'])
         if self.comment: comment += ': ' + self.comment
-        
+
         page = wikipedia.Page(self.site, item['title'])
         page.put(rev['*'], comment)
         return comment
-        
+
     def log(self, msg):
         wikipedia.output(msg)
-        
+

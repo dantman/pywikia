@@ -5,6 +5,7 @@ A wiki-maintainer script that shares tasks between workers, requires no interven
 
 Note: the script requires the Python IRC library http://python-irclib.sourceforge.net/
 """
+__version__ = '$Id$'
 
 # Author: Balasyum
 # http://hu.wikipedia.org/wiki/User:Balasyum

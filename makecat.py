@@ -45,7 +45,7 @@ msg={
     'ar':u'إنشاء أو تحديث التصنيف:',
     'en':u'Creation or update of category:',
     'es':u'Creación o actualiza de la categoría:',
-    'fr':u'Création ou mise à jour de categorie:', 
+    'fr':u'Création ou mise à jour de categorie:',
     'he':u'יצירה או עדכון של קטגוריה:',
     'ia':u'Creation o actualisation de categoria:',
     'it':u'La creazione o laggiornamento di categoria:',
@@ -64,7 +64,7 @@ def rawtoclean(c):
 def isdate(s):
     """returns true iff s is a date or year
     """
-    dict,val = date.getAutoFormat( wikipedia.getSite().language(), s ) 
+    dict,val = date.getAutoFormat( wikipedia.getSite().language(), s )
     return dict is not None
 
 def needcheck(pl):
@@ -254,7 +254,7 @@ try:
             list = cat.articlesList()
             for page in list:
                 exclude(page.title(),real_exclude=False)
-                checked[page] = page   
+                checked[page] = page
     list = workingcat.articlesList()
     if list:
         for pl in list:

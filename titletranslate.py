@@ -14,7 +14,7 @@ import wikipedia, date, time
 def translate(page, hints = None, auto = True):
     """
     Please comment your source code! --Daniel
-    
+
     Does some magic stuff. Returns a list of pages.
     """
     result = []
@@ -29,7 +29,7 @@ def translate(page, hints = None, auto = True):
                 codes, newname = h.split(':', 1)
             if newname == '':
                 # if given as -hint:xy or -hint:xy:, assume that there should
-                # be a page in language xy with the same title as the page 
+                # be a page in language xy with the same title as the page
                 # we're currently working on
                 ns = page.namespace()
                 if ns:
@@ -81,18 +81,18 @@ bcDateErrors = [u'[[ko:%d년]]']
 def appendFormatedDates( result, dictName, value ):
     for code, func in date.formats[dictName].iteritems():
         result.append( u'[[%s:%s]]' % (code,func(value)) )
-    
+
 def getPoisonedLinks(pl):
     """Returns a list of known corrupted links that should be removed if seen
     """
     result = []
-    
+
     wikipedia.output( u'getting poisoned links for %s' % pl.title() )
 
     dictName, value = date.getAutoFormat( pl.site().language(), pl.title() )
     if dictName is not None:
         wikipedia.output( u'date found in %s' % dictName )
-        
+
         # errors in year BC
         if dictName in date.bcFormats:
             for fmt in bcDateErrors:
@@ -101,7 +101,7 @@ def getPoisonedLinks(pl):
         # i guess this is like friday the 13th for the years
         if value == 398 and dictName == 'yearsBC':
             appendFormatedDates( result, dictName, 399 )
-        
+
         if dictName == 'yearsBC':
             appendFormatedDates( result, 'decadesBC', value )
             appendFormatedDates( result, 'yearsAD', value )

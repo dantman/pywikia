@@ -29,13 +29,13 @@ What is it? """
 # templates that can be used followed by the message used as comment
 # templates contains list of languages code
 #   languages code contains list of templates to be used
-#       templates contains a message and its position 
+#       templates contains a message and its position
 templates = {
     'ar': {
         '{{شطب}}' :{
             'msg' : 'وسم مساعد بالبوت: هذا المقال ينبغي حذفه',
             'pos': 'top'},
-        
+
         '{{تنظيف}}' :{
             'msg' : 'وسم مساعد بالبوت: هذا المقال يحتاج للتنظيف',
             'pos': 'top'},
@@ -52,7 +52,7 @@ templates = {
         '{{db-reason}}' :{
             'msg' : 'Robot-assisted tagging: this article should be deleted',
             'pos': 'top'},
-        
+
         '{{cleanup}}' :{
             'msg' : 'Robot-assisted tagging: this article need cleanup',
             'pos': 'top'},
@@ -89,7 +89,7 @@ templates = {
         '{{Eliminar}}' :{
             'msg' : 'Assistite per robot: iste articulo debe esser eliminate',
             'pos': 'top'},
-        
+
         '{{Revision}}' :{
             'msg' : 'Assistite per robot: iste articulo require revision',
             'pos': 'top'},
@@ -198,7 +198,7 @@ templates = {
         u'{{wikificar}}' : {
             'msg': 'Assistida por bot: {{wikificar}}',
             'pos':'top'},
-        
+
         u'{{reciclar}}'  : {
             'msg': 'Assistida por bot: {{reciclar}}',
             'pos':'top'},
@@ -223,7 +223,7 @@ templates = {
         u'{{radera}}' :{
             'msg' : u'Robotkoll: Artikeln bör raderas',
             'pos': 'top'},
-        
+
         u'{{städa}}' :{
             'msg' : u'Robotkoll: Artikeln bör städas',
             'pos': 'top'},
@@ -256,7 +256,7 @@ templates = {
         u'{{Delete}}' :{
             'msg' : u'機器人掛上模板: 本文應被刪除。',
             'pos': 'top'},
-        
+
         u'{{subst:Cleanup/auto}}' :{
             'msg' : u'機器人掛上模板: 本文需清理',
             'pos': 'top'},
@@ -301,11 +301,11 @@ templates = {
             'pos': 'top'},
         u'{{subst:Translating/auto}}':{
             'msg' : u'機器人掛上模板: 本条目没有翻译完成',
-            'pos': 'top'}, 
+            'pos': 'top'},
         u'{{fansite}}':{
             'msg' : u'機器人掛上模板: 本条目內容類似愛好者網站',
-            'pos': 'top'}, 			
-         
+            'pos': 'top'},
+
     },
 }
 
@@ -358,7 +358,7 @@ class PageHandler:
         self.user = user
         self.comment = comment
 
-    # Display informations about an article    
+    # Display informations about an article
     def showpageinfo(self):
         wikipedia.output(u'[[%s]] %s ' % (self.page.title(), self.date))
         print 'Length: %i bytes' % self.length
@@ -463,7 +463,7 @@ class PageHandler:
                 print 'seems already gone'
         print '----- Current time:', datetime.datetime.now()
 
-                
+
 class CleaningBot:
     def __init__(self, site=None):
         if site is None:
@@ -478,7 +478,7 @@ class CleaningBot:
 # Generate the question text
 i = 0
 questions = '\n'
-questionlist = {} 
+questionlist = {}
 for t in wikipedia.translate(wikipedia.getSite(), templates):
     i+=1
     questions += ( u'%s) %s\n' % (i,t) )

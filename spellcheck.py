@@ -96,7 +96,7 @@ def distance(a,b):
             change = previous[j-1]
             if a[j-1] != b[i-1]:
                 change = change + 1
-            current[j] = min(add, delete, change)     
+            current[j] = min(add, delete, change)
     return current[n]
 
 def getalternatives(string):
@@ -343,7 +343,7 @@ class Word(object):
         if self.word.find(self.derive()) == -1:
             return wikipedia.input(u"Please give the result of replacing %s by %s in %s:"%(self.derive(),rep,self.word))
         return self.word.replace(self.derive(),rep)
-            
+
     def isCorrect(self,checkalternative = False):
         # If checkalternative is True, the word will only be found incorrect if
         # it is on the spelling list as a spelling error. Otherwise it will
@@ -506,7 +506,7 @@ try:
                 text = spellcheck(text, checknames = checknames,knownonly=knownonly)
                 if text != page.get():
                     page.put(text)
-    
+
     else:
         title = ' '.join(title)
         while title != '':

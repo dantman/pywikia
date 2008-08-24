@@ -2,11 +2,11 @@
 """
 This script can be used to protect and unprotect pages en masse.
 Of course, you will need an admin account on the relevant wiki.
- 
+
 Syntax: python protect.py OPTION...
- 
+
 Command line options:
- 
+
 -page:       Protect specified page
 -cat:        Protect all pages in the given category.
 -nosubcats:  Don't protect pages in the subcategories.
@@ -22,31 +22,31 @@ Command line options:
 
 ## Without support ##
 ## -create:PROTECTION_LEVEL Set move protection level to PROTECTION_LEVEL ##
- 
+
 Values for PROTECTION_LEVEL are: sysop, autoconfirmed, none.
 If an operation parameter (edit, move or create) is not specified, default
 protection level is 'sysop' (or 'none' if -unprotect).
- 
+
 Examples:
- 
+
 Protect everything in the category "To protect" prompting.
     python protect.py -cat:"To protect" -always
- 
+
 Unprotect all pages listed in text file "unprotect.txt" without prompting.
     python protect.py -file:unprotect.txt -unprotect
 """
- 
+
 # Written by http://it.wikisource.org/wiki/Utente:Qualc1
 # Created by modifying delete.py
-__version__ = '$Id: delete.py 4946 2008-01-29 14:58:25Z wikipedian $'
- 
+__version__ = '$Id$'
+
 #
 # Distributed under the terms of the MIT license.
 #
- 
+
 import wikipedia, catlib
 import pagegenerators
- 
+
 # Summary messages for protecting from a category.
 msg_simple_protect = {
     'en': u'Bot: Protecting a list of files.',
@@ -83,12 +83,12 @@ msg_protect_images = {
     'pt': u'Bot: Protegendo todas as imagens do artigo %s',
     'zh': u'機器人: 保護頁面 %s 中的所有圖條',
 }
- 
+
 class ProtectionRobot:
     """
     This robot allows protection of pages en masse.
     """
- 
+
     def __init__(self, generator, summary, always = False, unprotect=False,
                 edit='sysop', move='sysop', create='sysop'):
         """
@@ -104,7 +104,7 @@ class ProtectionRobot:
         self.unprotect = unprotect
         self.edit = edit
         self.move = move
- 
+
     def run(self):
         """
         Starts the robot's action.
@@ -115,22 +115,22 @@ class ProtectionRobot:
             print self.edit, self.move#, self.create
             page.protect(unprotect=self.unprotect, reason=self.summary, prompt=self.always,
                         edit=self.edit, move=self.move)
- 
+
 # Asks a valid protection level for "operation".
 # Returns the protection level chosen by user.
 def choiceProtectionLevel(operation, default):
     default = default[0]
     firstChar = map(lambda level: level[0], protectionLevels)
-    choiceChar = wikipedia.inputChoice('Choice a protection level to %s:' % operation, 
+    choiceChar = wikipedia.inputChoice('Choice a protection level to %s:' % operation,
                             protectionLevels, firstChar, default = default)
     for level in protectionLevels:
         if level.startswith(choiceChar):
             return level
- 
+
 def main():
     global protectionLevels
     protectionLevels = ['sysop', 'autoconfirmed', 'none']
- 
+
     pageName = ''
     summary = ''
     always = False
@@ -145,7 +145,7 @@ def main():
     edit = ''
     move = ''
     defaultProtection = 'sysop'
- 
+
     # read command line parameters
     for arg in wikipedia.handleArgs():
         if arg == '-always':
@@ -206,9 +206,9 @@ def main():
             create = arg[len('-create:'):]
             if create not in protectionLevels:
                 create = choiceProtectionLevel('create', defaultProtection)
- 
+
     mysite = wikipedia.getSite()
- 
+
     if doSinglePage:
         if not summary:
             summary = wikipedia.input(u'Enter a reason for the protection:')
@@ -238,7 +238,7 @@ def main():
         if not summary:
             summary = wikipedia.translate(mysite, msg_protect_images) % pageName
         gen = pagegenerators.ImagesPageGenerator(wikipedia.Page(mysite, pageName))
- 
+
     if gen:
         wikipedia.setAction(summary)
         # We are just protecting pages, so we have no need of using a preloading page generator
@@ -249,7 +249,7 @@ def main():
         bot.run()
     else:
         wikipedia.showHelp(u'protect')
- 
+
 if __name__ == "__main__":
     try:
         main()

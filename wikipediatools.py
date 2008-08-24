@@ -20,7 +20,7 @@ def get_base_dir():
     5.  If the user-config.py file is not found, another will be created
         in the current directory, following in the footsteps of project,
         language and bot username.
-    
+
     """
     for arg in sys.argv[1:]:
         if arg.startswith("-dir:"):

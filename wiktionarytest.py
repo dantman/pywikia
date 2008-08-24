@@ -205,7 +205,7 @@ The translations below need to be checked by native speakers and inserted into t
       [u'nut', None, u'nuts',
        [{'definition': u'A hard-shelled seed', 'concisedef': u'seed',
          'trans': {'nl': u"[[noot]] ''f''", 'fr': u"""''no generic translation exists''; [[noix]] ''f'' ''is often used, but this actually means "[[walnut]]"''""", 'de': u"[[Nuss]] ''f''", 'it': u"[[noce]] {{f}}", 'la': u"[[nux]]"}},
-        {'definition': u"A piece of metal, often [[hexagonal]], with a hole through it with internal threading intended to fit on to a bolt.", 'concisedef': u'that fits on a bolt', 
+        {'definition': u"A piece of metal, often [[hexagonal]], with a hole through it with internal threading intended to fit on to a bolt.", 'concisedef': u'that fits on a bolt',
          'trans': {'nl': u"[[moer]] ''f''", 'fr': u"[[Ã©crou]] ''m''", 'de': u"[[Mutter]] ''f''", 'it': u"[[dado]] {{m}}"}},
         {'definition': u"(''informal'') An insane person.", 'concisedef': u"'''informal: insane person'''",
          'syns': u"[[loony]], [[nutcase]], [[nutter]]",

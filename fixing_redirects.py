@@ -17,7 +17,7 @@ options -file, -ref, -links, ...
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id: disambredir.py 4407 2007-10-03 17:27:14Z leogregianin $'
+__version__='$Id$'
 #
 import wikipedia
 import pagegenerators
@@ -67,7 +67,7 @@ def treat(text, linkedPage, targetPage):
     """
     mysite = wikipedia.getSite()
     linktrail = mysite.linktrail()
-    
+
     # make a backup of the original text so we can show the changes later
     linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
     curpos = 0

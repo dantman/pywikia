@@ -110,7 +110,7 @@ class XmlDumpTemplatePageGenerator:
                               templates
             * xmlfilename   - The dump's path, either absolute or relative
         """
-        
+
         self.templates = templates
         self.xmlfilename = xmlfilename
 
@@ -189,7 +189,7 @@ class TemplateRobot:
         'ru':u'Робот: замена шаблонов: %s',
         'zh':u'機器人: 更改模板 %s',
     }
-    
+
     # Summary messages for removing templates
     msg_remove={
 	    'ar':u'روبوت: إزالة القالب: %s',

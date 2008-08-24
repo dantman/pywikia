@@ -2,9 +2,9 @@
 # -*- coding: utf-8  -*-
 """
 Loop over all pages in the home wiki, standardizing the interwiki links.
- 
+
 Parameters:
- 
+
 -start:     - Set from what page you want to start
 """
 #
@@ -15,11 +15,11 @@ Parameters:
 #
 __version__='$Id$'
 #
- 
+
 import os, sys
 import wikipedia, config
 import difflib
- 
+
 # The summary that the Bot will use.
 comment = {
     'ar':u'روبوت: توحيد قياسي للإنترويكي',
@@ -43,7 +43,7 @@ hints = {}
 debug = 0
 start = '!'
 nothing = False
- 
+
 # Load the default parameters and start
 for arg in wikipedia.handleArgs():
     if arg.startswith('-start'):

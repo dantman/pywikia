@@ -3,7 +3,7 @@
 """
 This is a script written to add the template "orphan" to the pages that aren't linked by other pages.
 It can give some strange Errors sometime, I hope that all of them are fixed in this version.
- 
+
 These command line parameters can be used to specify which pages to work on:
 
 &params;
@@ -35,7 +35,7 @@ improving our script archive and pywikipediabot's archive or you simply need hel
 you can find us here: http://botwiki.sno.cc
 
 --- Examples ---
-python lonelypages.py -enable:User:Bot/CheckBot -always 
+python lonelypages.py -enable:User:Bot/CheckBot -always
 """
 #
 # (C) Pietrodn, it.wiki 2006-2007
@@ -45,7 +45,7 @@ python lonelypages.py -enable:User:Bot/CheckBot -always
 #
 __version__ = '$Id: lonelypages.py,v 1.0 2007/12/28 19.16.00 filnik Exp$'
 #
- 
+
 import wikipedia, pagegenerators
 import re
 
@@ -97,7 +97,7 @@ exception = {
             }
 
 # ************* Modify only above! ************* #
- 
+
 def main():
     # Load the configurations in the function namespace
     global commento; global Template; global disambigPage; global commenttodisambig
@@ -121,7 +121,7 @@ def main():
             if len(arg) == 9:
                 disambigPage = wikipedia.input(u'In which page should the bot save the disambig pages?')
             else:
-                disambigPage = arg[10:]                
+                disambigPage = arg[10:]
         elif arg.startswith('-limit'):
             if len(arg) == 6:
                 limit = int(wikipedia.input(u'How many pages do you want to check?'))
@@ -140,7 +140,7 @@ def main():
             else:
                 generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         elif arg == '-always':
-            always = True       
+            always = True
         else:
             generator = genFactory.handleArg(arg)
     # Retrive the site

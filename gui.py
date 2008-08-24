@@ -226,7 +226,7 @@ class EditBoxWindow(Frame):
         self.editbox.pack(side=TOP)
         self.editbox.add_bindings()
         self.bind("<<open-config-dialog>>", self.config_dialog)
-        
+
         bottom = Frame(parent)
         # lower left subframe which will contain a textfield and a Search button
         bottom_left_frame = Frame(bottom)
@@ -253,7 +253,7 @@ class EditBoxWindow(Frame):
 
         # create a toplevel menu
         menubar = Menu(self.parent)
-        
+
         findmenu = Menu(menubar)
         findmenu.add_command(label="Find",
                              command=self.editbox.find_event,
@@ -304,7 +304,7 @@ class EditBoxWindow(Frame):
                             command=self.config_dialog,
                             underline=0)
         menubar.add_cascade(label="Options", menu=optmenu, underline=0)
-        
+
         # display the menu
         self.parent.config(menu=menubar)
         self.pack()
@@ -335,7 +335,7 @@ class EditBoxWindow(Frame):
             self.editbox.see('%d.%d' % (line, column))
         # wait for user to push a button which will destroy (close) the window
         self.parent.mainloop()
-        return self.text 
+        return self.text
 
     def find_all(self, target):
         self.textfield.insert(END, target)
@@ -356,7 +356,7 @@ class EditBoxWindow(Frame):
         self.text = self.editbox.get('1.0', END)
         # if the editbox contains ASCII characters only, get() will
         # return string, otherwise unicode (very annoying). We only want
-        # it to return unicode, so we work around this.  
+        # it to return unicode, so we work around this.
         if isinstance(self.text, str):
             self.text = unicode(self.text)
         self.parent.destroy()

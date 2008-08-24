@@ -6,7 +6,7 @@ This script only counts how many have featured articles all wikipedias.
 usage: featuredcount.py
 
 """
-__version__ = '$Id: featured.py 4811 2008-01-05 16:22:45Z leogregianin $'
+__version__ = '$Id$'
 
 #
 # Distributed under the terms of the MIT license.
@@ -28,7 +28,7 @@ def featuredArticles(site):
         elif p.namespace()==1:
             arts.append(wikipedia.Page(p.site(), p.titleWithoutNamespace()))
     wikipedia.output('\03{lightred}** wikipedia:%s has %i featured articles\03{default}' % (site.lang, len(arts)))
-    
+
 if __name__=="__main__":
     mysite = wikipedia.getSite()
     fromlang = featured_name.keys()

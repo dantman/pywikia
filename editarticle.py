@@ -92,9 +92,9 @@ class TextEditor:
         Calls the editor and thus allows the user to change the text.
         Returns the modified text. Halts the thread's operation until the editor
         is closed.
-        
+
         Returns None if the user didn't save the text file in his text editor.
-        
+
         Parameters:
             * text      - a Unicode string
             * jumpIndex - an integer: position at which to put the caret
@@ -159,7 +159,7 @@ class ArticleEditor:
         fp.write(new)
         fp.close()
         wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
-    
+
     def run(self):
         try:
             old = self.page.get(get_redirect = self.options.edit_redirect)

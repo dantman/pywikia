@@ -85,7 +85,7 @@ sandboxTitle = {
     'pl': u'Wikipedia:Brudnopis',
     'pt': u'Wikipedia:Página de testes',
     'commons': u'Commons:Sandbox',
-    'sr': u'Википедија:Песак', 
+    'sr': u'Википедија:Песак',
     'sv': u'Wikipedia:Sandlådan',
     'th': u'วิกิพีเดีย:ทดลองเขียน',
     'zh': u'wikipedia:沙盒',

@@ -10,7 +10,7 @@ TODO:
 
 Options:
 
-      -o:                Specifies the output-directory where to save the files   
+      -o:                Specifies the output-directory where to save the files
 
       -images:           Downlaod all images
       -overwrite:[I|A|B] Ignore existing Images|Article|Both and
@@ -91,7 +91,7 @@ def html2txt(str):
             "%29": ")",
             "%2C": ","
             }
-            
+
     for entry in dict:
         str = re.sub(entry, dict[entry], str)
     return str
@@ -130,7 +130,7 @@ def main():
     save_images = False
     overwrite_images = False
     overwrite_articles = False
-    
+
     for arg in wikipedia.handleArgs():
         if arg.startswith("-lang:"):
             lang = arg[6:]
@@ -139,7 +139,7 @@ def main():
             R=re.compile(r'.*\[\[([^\]]*)\]\].*')
             m = False
             for line in f.readlines():
-                m=R.match(line)            
+                m=R.match(line)
                 if m:
                     sa.append(string.replace(m.group(1), " ", "_"))
                 else:
@@ -161,7 +161,7 @@ def main():
         else:
             sa.append(arg.replace(" ", "_"))
 
-    headers = {"Content-type": "application/x-www-form-urlencoded", 
+    headers = {"Content-type": "application/x-www-form-urlencoded",
                "User-agent": wikipedia.useragent}
     print "opening connection to", mysite.hostname(),
     conn = httplib.HTTPConnection(mysite.hostname())
@@ -185,14 +185,14 @@ def main():
                 print ua + " failed. reading",
                 result = R.match(response.getheader("Location", ))
                 ua = result.group(1)
-                print ua            
+                print ua
 
         data = extractArticle(data)
         f = open (output_directory + filename + ".txt", 'w')
         f.write (data['article'] + '\n' + data['footer'])
         f.close()
         print "saved " + article
-        
+
         if save_images:
             images = extractImages(data['article'])
             for i in images:

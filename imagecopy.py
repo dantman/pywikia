@@ -76,7 +76,7 @@ Known issues/FIXMEs (no critical issues known):
 #
 # Another rewrite by:
 #  (C) Multichill 2008
-# 
+#
 # Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
@@ -149,7 +149,7 @@ nowCommonsTemplate = {
     'mn': u'{{NowCommons|Image:%s}}',
     'ms': u'{{NowCommons|%s}}',
     'nds-nl': u'{{NoenCommons|Image:%s}}',
-    'nl': u'{{NuCommons|%s}}',    
+    'nl': u'{{NuCommons|%s}}',
     'nn': u'{{No på Commons|Image:%s}}',
     'no': u'{{NowCommons|%s}}',
     'oc': u'{{NowCommons|Image:%s}}',
@@ -290,7 +290,7 @@ class imageTransfer (threading.Thread):
                 for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
                     imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
 
-            #add {{NowCommons}} 
+            #add {{NowCommons}}
             if nowCommonsTemplate.has_key(self.imagePage.site().language()):
                 addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname.decode('utf-8')
             else:
@@ -314,7 +314,7 @@ class imageTransfer (threading.Thread):
                 else:
                     moveSummary = imageMoveMessage['_default'] % (self.imagePage.titleWithoutNamespace(), self.newname.decode('utf-8'))
                 imagebot = ImageRobot(generator = self.preloadingGen, oldImage = self.imagePage.titleWithoutNamespace(), newImage = self.newname.decode('utf-8'), summary = moveSummary, always = True, loose = True)
-                imagebot.run()        
+                imagebot.run()
         return
 
 #-label ok skip view
@@ -389,25 +389,25 @@ class Tkdialog:
         '''
         self.changename=self.entry.get()
         self.root.destroy()
-        
+
     def skipFile(self):
         '''
         The user pressed the Skip button.
         '''
         self.skip=1
         self.root.destroy()
-        
+
     def openInBrowser(self):
         '''
         The user pressed the View in browser button.
         '''
         webbrowser.open(self.url)
-        
+
     def add2autoskip(self):
         '''
         The user pressed the Add to AutoSkip button.
         '''
-        templateid=int(self.templatelist.curselection()[0]) 
+        templateid=int(self.templatelist.curselection()[0])
         template=self.templatelist.get(templateid)
         toadd=codecs.open(archivo, 'a', 'utf-8')
         toadd.write('{{'+template)
@@ -459,24 +459,24 @@ def main(args):
 
     pregenerator = pagegenerators.PreloadingGenerator(generator)
 
-    for page in pregenerator:        
+    for page in pregenerator:
         if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
             imagepage = wikipedia.ImagePage(page.site(), page.title())
 
-            #First do autoskip.         
+            #First do autoskip.
             if doiskip(imagepage.get()):
                 wikipedia.output("Skipping " + page.title())
-                skip = True            
+                skip = True
             else:
                 # The first upload is last in the list.
                 try:
-                    username = imagepage.getLatestUploader()[0]             
+                    username = imagepage.getLatestUploader()[0]
                 except NotImplementedError:
                     #No API, using the page file instead
                     (datetime, username, resolution, size, comment) = imagepage.getFileVersionHistory().pop()
                 while True:
 
-                    # Do the Tkdialog to accept/reject and change te name        
+                    # Do the Tkdialog to accept/reject and change te name
                     (newname, skip)=Tkdialog(imagepage.titleWithoutNamespace(), imagepage.get(), username, imagepage.permalink(), imagepage.templates()).getnewname()
 
                     if skip:
@@ -484,7 +484,7 @@ def main(args):
                         break
 
                     # Did we enter a new name?
-                    if len(newname)==0:                
+                    if len(newname)==0:
                         #Take the old name
                         newname=imagepage.titleWithoutNamespace()
 
@@ -501,11 +501,11 @@ def main(args):
             if not skip:
                 imageTransfer(imagepage, newname).start()
 
-    wikipedia.output(u'Still ' + str(threading.activeCount()) + u' active threads, lets wait')    
+    wikipedia.output(u'Still ' + str(threading.activeCount()) + u' active threads, lets wait')
     for openthread in threading.enumerate():
         if openthread != threading.currentThread():
-            openthread.join()        
-    wikipedia.output(u'All threads are done')    
+            openthread.join()
+    wikipedia.output(u'All threads are done')
 
 if __name__ == "__main__":
     try:

@@ -431,9 +431,9 @@ class RedirectRobot:
                         u'Warning: redirect target (%s) is on a different site.'
                              % (targetPage.aslink()))
                         if self.always:
-                            break  # skip if automatic 
+                            break  # skip if automatic
                     # watch out for redirect loops
-                    if redirList.count(u'%s:%s' 
+                    if redirList.count(u'%s:%s'
                                        % (targetPage.site().lang,
                                           targetPage.sectionFreeTitle())
                                       ) > 0:

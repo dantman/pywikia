@@ -6,6 +6,7 @@ The program uses commonshelper for category suggestions.
 It takes the suggestions and the current categories. Put the categories through some filters and add the result
 
 """
+__version__ = '$Id$'
 #
 #  (C) Multichill 2008
 #  (tkinter part loosely based on imagecopy.py)
@@ -30,11 +31,11 @@ def initLists():
     global category_blacklist
     global countries
 
-    blacklistPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Category_blacklist')    
+    blacklistPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Category_blacklist')
     for cat in blacklistPage.linkedPages():
         category_blacklist.append(cat.titleWithoutNamespace())
-        
-    countryPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Countries')    
+
+    countryPage = wikipedia.Page(wikipedia.getSite(), u'User:Multichill/Countries')
     for country in countryPage.linkedPages():
         countries.append(country.titleWithoutNamespace())
     return
@@ -76,7 +77,7 @@ def getCurrentCats(imagepage):
 
 def getCommonshelperCats(imagepage):
     '''
-    Get category suggestions from CommonSense. Parse them and return a list of suggestions.        
+    Get category suggestions from CommonSense. Parse them and return a list of suggestions.
     '''
     result = []
     parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'cl' : 'li'})
@@ -92,14 +93,14 @@ def getCommonshelperCats(imagepage):
         except IOError:
             wikipedia.output(u'Got an IOError, let\'s try again')
         except socket.timeout:
-            wikipedia.output(u'Got a timeout, let\'s try again')                
+            wikipedia.output(u'Got a timeout, let\'s try again')
 
     if matches:
         if(matches.group('catnum') > 0):
             categories = matches.group('cats').splitlines()
             for cat in categories:
                 result.append(cat.replace('_',' '))
-            
+
     return list(set(result))
 
 
@@ -153,14 +154,14 @@ def filterCountries(categories):
     for cat in categories:
         if (cat.endswith(u'by country')):
             listByCountry.append(cat)
-        
+
         #If cat contains 'by country' add it to the list
         #If cat contains the name of a country add it to the list
         else:
             for country in countries:
                 if not(cat.find(country)==-1):
-                    listCountries.append(country)            
-            
+                    listCountries.append(country)
+
     if(len(listByCountry) > 0):
         for bc in listByCountry:
             category = catlib.Category(wikipedia.getSite(), u'Category:' + bc)
@@ -168,7 +169,7 @@ def filterCountries(categories):
                 for country in listCountries:
                     if (subcategory.titleWithoutNamespace().endswith(country)):
                         result.append(subcategory.titleWithoutNamespace())
-              
+
     return list(set(result))
 
 
@@ -189,7 +190,7 @@ def filterParents(categories):
     filterCategoriesRe = re.compile('\[\[Category:([^\]]*)\]\]')
     result = filterCategoriesRe.findall(filterCategoriesPage.read().decode('utf-8'))
     #except:
-    
+
     return result
 
 
@@ -206,7 +207,7 @@ def saveImagePage(imagepage, newcats, onlyfilter):
         comment = u'Filtering categories'
     else:
         comment = u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]'
-        
+
     wikipedia.showDiff(imagepage.get(), newtext)
     imagepage.put(newtext, comment)
     return
@@ -215,12 +216,12 @@ def saveImagePage(imagepage, newcats, onlyfilter):
 def removeTemplates(oldtext = u''):
     '''
     Remove {{Uncategorized}} and {{Check categories}} templates
-    '''    
+    '''
     result = u''
-    result = re.sub(u'\{\{\s*([Uu]ncat(egori[sz]ed( image)?)?|[Nn]ocat|[Nn]eedscategory)[^}]*\}\}', u'', oldtext)        
+    result = re.sub(u'\{\{\s*([Uu]ncat(egori[sz]ed( image)?)?|[Nn]ocat|[Nn]eedscategory)[^}]*\}\}', u'', oldtext)
     result = re.sub(u'<!-- Remove this line once you have added categories -->', u'', result)
     result = re.sub(u'\{\{\s*[Cc]heck categories[^}]*\}\}', u'', result)
-    return result         
+    return result
 
 
 def main(args):
@@ -248,8 +249,8 @@ def main(args):
 
     initLists()
     categorizeImages(generator, onlyfilter)
-        
-    wikipedia.output(u'All done')    
+
+    wikipedia.output(u'All done')
 
 if __name__ == "__main__":
     try:

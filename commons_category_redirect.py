@@ -12,6 +12,7 @@ Moves all images, pages and categories in redirect categories to the target cate
 #
 # Distributed under the terms of the MIT license.
 #
+__version__ = '$Id$'
 
 import wikipedia, config, catlib
 from category import *
@@ -36,7 +37,7 @@ def get_redirect_cat(category=None):
             if not destination.exists():
                 return None
     return destination
-    
+
 def readyToEdit(old_category):
     '''
     If the category is edited more recenty than cooldown, return false, otherwise true.
@@ -50,13 +51,13 @@ def readyToEdit(old_category):
 def main():
     '''
     Main loop. Loop over all categories of Category:Non-empty_category_redirects and move all content.
-    '''    
+    '''
 
     site = wikipedia.getSite(u'commons', u'commons')
     dirtycat = catlib.Category(site, u'Category:Non-empty category redirects')
     destination = None
     catbot = None
-    
+
     for old_category in dirtycat.subcategories():
         #We want to wait several days after the last edit before we start moving things around.
         #This it to prevent edit wars and vandals.
@@ -65,12 +66,12 @@ def main():
             if destination:
                 wikipedia.output(destination.title())
                 for page in old_category.articles():
-                    try:                                
+                    try:
                         catlib.change_category(page, old_category, destination, move_message % (old_category.title(), old_category.titleWithoutNamespace(), destination.title(), destination.titleWithoutNamespace()))
                     except wikipedia.IsRedirectPage:
                         wikipedia.output(page.title() + u' is a redirect!')
                 for cat in old_category.subcategories():
-                    try:                
+                    try:
                         catlib.change_category(cat, old_category, destination, move_message % (old_category.title(), old_category.titleWithoutNamespace(), destination.title(), destination.titleWithoutNamespace()))
                     except wikipedia.IsRedirectPage:
                         wikipedia.output(page.title() + u' is a redirect!')
@@ -78,7 +79,7 @@ def main():
             try:
                 old_category.put(old_category.get())
             except:
-                wikipedia.output(u'Dummy edit at ' + old_category.title() + u' failed')        
+                wikipedia.output(u'Dummy edit at ' + old_category.title() + u' failed')
 
 if __name__ == "__main__":
     try:

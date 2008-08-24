@@ -7,6 +7,7 @@
 # Currently only works on Dutch Wikipedia, I do intend to make it more generally
 # usable.
 # Permission has been asked to run this on the toolserver.
+__version__ = '$Id$'
 
 import cgi
 import cgitb

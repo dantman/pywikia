@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# $Id$
 
 # This Perl script takes a list of category moves or removes to make and uses category.py.
 # The input format is as follows:
@@ -10,7 +11,7 @@
 # If you want to use an edit summary, then pass it in as a parameter, i.e.,
 # perl catmove.pl "Emptying dead category" < catmoves.txt
 # Note that if your summary has multiple words in it then enclose it in quotes.
-# 
+#
 # To set edit summaries, you can also preface a line with a semicolon ;
 # That will be the edit summary for all subsequent executions ... unless you modify the
 # edit summary again with another semicolon.  In this way you can take care of many days

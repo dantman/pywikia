@@ -76,14 +76,14 @@ class CaseChecker( object ):
     # These words are always in one language, even though they could be typed in both
     alwaysInLocal = [ u'СССР', u'Как', u'как' ]
     alwaysInLatin = [ u'II', u'III' ]
-    
+
     localUpperLtr = u'ЁІЇЎАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯҐ'
     localLowerLtr = u'ёіїўабвгдежзийклмнопрстуфхцчшщъыьэюяґ'
     localLtr = localUpperLtr + localLowerLtr
-    
+
     localSuspects = u'АВЕКМНОРСТХІЁЇаеорсухіёї'
     latinSuspects = u'ABEKMHOPCTXIËÏaeopcyxiëï'
-    
+
     localKeyboard = u'йцукенгшщзфывапролдячсмить'   # possibly try to fix one character mistypes in an alternative keyboard layout
     latinKeyboard = u'qwertyuiopasdfghjklzxcvbnm'
 
@@ -94,7 +94,7 @@ class CaseChecker( object ):
     whitelists = {
         'ru': u'ВП:КЛ/Whitelist'
         }
-    
+
     latLtr = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     lclClrFnt = u'<font color=green>'
@@ -153,9 +153,9 @@ class CaseChecker( object ):
 
         self.params = { 'action'        : 'query',
                         'generator'     : 'allpages',
-                        'gaplimit'      : self.aplimit, 
+                        'gaplimit'      : self.aplimit,
                         'gapfilterredir': 'nonredirects'}
-                      
+
         if self.links:
             self.params['prop'] = 'links|categories'
 
@@ -194,7 +194,7 @@ class CaseChecker( object ):
 
         badPtrnStr = u'([%s][%s]|[%s][%s])' % (self.latLtr, self.localLtr, self.localLtr, self.latLtr)
         self.badWordPtrn = re.compile(u'[%s%s]*%s[%s%s]*' % (self.latLtr, self.localLtr, badPtrnStr, self.latLtr, self.localLtr) )
-        
+
         # Get whitelist
         if self.site.lang in self.whitelists:
             wlpage = self.whitelists[self.site.lang]

@@ -161,7 +161,7 @@ class ImageTransferBot:
                     new = '{{%s}}' % new
                     old = re.compile('{{%s}}' % old)
                     description = wikipedia.replaceExcept(description, old, new, ['comment', 'math', 'nowiki', 'pre'])
-           
+
             description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
             description += '\n\n' + sourceImagePage.getFileVersionHistoryTable()
             # add interwiki link
@@ -221,7 +221,7 @@ class ImageTransferBot:
                 break
 
         print "="*60
-   
+
     def run(self):
         for page in self.generator:
             if self.interwiki:
@@ -263,7 +263,7 @@ def main():
     interwiki = False
     targetLang = None
     targetFamily = None
-   
+
     for arg in wikipedia.handleArgs():
         if arg == '-interwiki':
             interwiki = True

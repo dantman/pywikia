@@ -15,7 +15,7 @@ Example:
 # (C) Rob W.W. Hooft, 2003
 #
 # Distributed under the terms of the MIT license.
-# 
+#
 __version__ = '$Id$'
 #
 import sys, os, re
@@ -57,7 +57,7 @@ class WarnfileReader:
                         print "DBG> Failed to add", line
         f.close()
         return hints, removeHints
-    
+
 class WarnfileRobot:
     def __init__(self, warnfileReader):
         self.warnfileReader = warnfileReader

@@ -32,6 +32,7 @@ TODO:
 #
 # Distributed under the terms of the MIT license.
 #
+__version__ = '$Id$'
 
 import wikipedia, config, pagegenerators, add_text
 
@@ -152,8 +153,8 @@ commonscatTemplates = {
     'zh-yue' : u'同享類',
 }
 
-ignoreTemplates = {   
-    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'], 
+ignoreTemplates = {
+    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'],
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],
@@ -183,8 +184,8 @@ def skipPage(page):
             else:
                 for (inPageTemplate, param) in templatesWithParams:
                     if inPageTemplate == template[0] and template[1] in param[0]:
-                        return True                
-    return False    
+                        return True
+    return False
 
 def updateInterwiki (wikipediaPage = None, commonsPage = None):
     '''
@@ -202,14 +203,14 @@ def updateInterwiki (wikipediaPage = None, commonsPage = None):
         interwikis[interwikiPage.site()]=interwikiPage
     oldtext = commonsPage.get()
     # The commonssite object doesnt work with interwiki's
-    newtext = wikipedia.replaceLanguageLinks(oldtext, interwikis, wikipedia.getSite(u'nl'))    
-    comment = u'Updating interwiki\'s from [[' + wikipediaPage.site().language()  + u':' + wikipediaPage.title() + u']]'    
+    newtext = wikipedia.replaceLanguageLinks(oldtext, interwikis, wikipedia.getSite(u'nl'))
+    comment = u'Updating interwiki\'s from [[' + wikipediaPage.site().language()  + u':' + wikipediaPage.title() + u']]'
 
     if newtext != oldtext:
         #This doesnt seem to work. Newtext has some trailing whitespace
         wikipedia.showDiff(oldtext, newtext)
         commonsPage.put(newtext=newtext, comment=comment)
-    
+
 
 def addCommonscat (page = None, summary = None, always = False):
     '''
@@ -219,7 +220,7 @@ def addCommonscat (page = None, summary = None, always = False):
     commonscat = ""
     commonscatpage = None
     commonscats = []
-    
+
     wikipedia.output("Working on " + page.title());
     if getTemplate(page.site().language()) in page.templates():
         wikipedia.output("Commonscat template is already on " + page.title());
@@ -230,7 +231,7 @@ def addCommonscat (page = None, summary = None, always = False):
         #            updateInterwiki (page, commonscatpage)
         #        #Should remove the template if something is wrong
     elif skipPage(page):
-        wikipedia.output("Found a template in the skip list. Skipping " + page.title());                
+        wikipedia.output("Found a template in the skip list. Skipping " + page.title());
     else:
         #Follow the interwiki's
         for ipage in page.interwiki():
@@ -251,7 +252,7 @@ def addCommonscat (page = None, summary = None, always = False):
             commonscatpage = commonscats.pop();
             commonscat = commonscatpage.titleWithoutNamespace()
             #We found one or more commonscat links, build the template and add it to our page
-            #TODO: We should check if we found more than one different link.            
+            #TODO: We should check if we found more than one different link.
             commonscat = "{{" + getTemplate(page.site().language()) + "|" + commonscat + "}}";
             (success, always) = add_text.add_text(page, commonscat, summary, None, None, always);
             #updateInterwiki(page, commonscatpage)
@@ -279,7 +280,7 @@ def getCommonscat (name = ""):
         #wikipedia.output("getCommonscat : The category is a category redirect");
         for template in result.templatesWithParams():
             if ((template[0]=="Category redirect") and (len(template[1]) > 0)):
-                return getCommonscat(template[1][0])                 
+                return getCommonscat(template[1][0])
     elif result.isDisambig():
         #wikipedia.output("getCommonscat : The category is disambigu");
         return None
@@ -315,8 +316,8 @@ def main():
 
     pregenerator = pagegenerators.PreloadingGenerator(generator)
 
-    for page in pregenerator:    
-        (status, always) = addCommonscat(page, summary, always)        
+    for page in pregenerator:
+        (status, always) = addCommonscat(page, summary, always)
 
 if __name__ == "__main__":
     try:

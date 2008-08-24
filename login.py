@@ -108,7 +108,7 @@ class LoginManager:
         """
         if config.use_api_login:
             predata = {
-                'action': 'login', 
+                'action': 'login',
                 'lgname': self.username.encode(self.site.encoding()),
                 'lgpassword': self.password,
                 'lgdomain': self.site.family.ldapDomain,
@@ -155,7 +155,7 @@ class LoginManager:
                     got_token = True
                 if 'User=' in Ldata or 'UserName=' in Ldata:
                     got_user = True
-            
+
             if got_token and got_user:
                 return "\n".join(L)
             elif not captchaAnswer:
@@ -269,7 +269,7 @@ def main():
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
                 try:
-                    site = wikipedia.getSite(code=lang, fam=familyName)                
+                    site = wikipedia.getSite(code=lang, fam=familyName)
                     if not forceLogin and site.loggedInAs(sysop = sysop) != None:
                         wikipedia.output(u'Already logged in on %s' % site)
                     else:
@@ -277,7 +277,7 @@ def main():
                         loginMan.login()
                 except wikipedia.NoSuchSite:
                     wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
-                    
+
     else:
         loginMan = LoginManager(password, sysop = sysop)
         loginMan.login()

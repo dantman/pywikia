@@ -42,7 +42,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
 
     if not useAPI:
         params['noprofile'] = ''
-    
+
     for k,v in params.iteritems():
         if type(v) == type(u''):
             params[k] = ToUtf8(v)
@@ -55,18 +55,18 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
         if encodeTitle:
             data = {'titles' : params['titles']}
             del params['titles']
-    
+
     if useAPI:
         path = site.api_address() + urllib.urlencode(params.items())
     else:
         path = site.query_address() + urllib.urlencode(params.items())
-    
+
     if verbose:
         if titlecount > 0:
             wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, site.lang, path))
         else:
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
-    
+
     lastError = None
     retry_idle_time = 5
     while retryCount >= 0:
@@ -77,7 +77,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
             return simplejson.loads( jsontext )
-            
+
         except ValueError, error:
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
@@ -92,7 +92,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
                 if retry_idle_time > 300:
                     retry_idle_time = 300
 
-    
+
     raise lastError
 
 def GetInterwikies(site, titles, extraParams = None ):
@@ -100,7 +100,7 @@ def GetInterwikies(site, titles, extraParams = None ):
     titles may be either ane title (as a string), or a list of strings
     extraParams if given must be a dict() as taken by GetData()
     """
-    
+
     params = {'titles':ListToParam(titles), 'what' : 'redirects|langlinks'}
     params = CombineParams( params, extraParams )
     return GetData(site, params )
@@ -119,12 +119,12 @@ def GetDisambigTemplates(site):
     The rest will be aquired from the Wikipedia:Disambiguation Templates page.
     Only links to templates will be used from that page.
     """
-    
+
     disambigs = set()
     disambigName = u"template:disambig"
     disListName = u"Wikipedia:Disambiguation Templates"
     disListId = 0
-    
+
     templateNames = GetLinks(site, [disListName, disambigName])
     for id, page in templateNames['pages'].iteritems():
         if page['title'] == disambigName:
@@ -138,7 +138,7 @@ def GetDisambigTemplates(site):
                     disListId = page['refid']
             else:
                 disListId = id
-    
+
     # Disambig page was found
     if disListId > 0:
         page = templateNames['pages'][disListId]
@@ -146,7 +146,7 @@ def GetDisambigTemplates(site):
             for l in page['links']:
                 if l['ns'] == 10:
                     disambigs.add(l['*'])
-    
+
     return disambigs
 #
 #
@@ -172,7 +172,7 @@ def CleanParams( params ):
         return dict( params )
     else:
         raise "Unknown param type %s" % pt
-    
+
 def CombineParams( params1, params2 ):
     """Merge two dictionaries. If they have the same keys, their values will
     be appended one after another separated by the '|' symbol.
@@ -182,7 +182,7 @@ def CombineParams( params1, params2 ):
     if params2 is None:
         return params1
     params2 = CleanParams( params2 )
-    
+
     for k, v2 in params2.iteritems():
         if k in params1:
             v1 = params1[k]
@@ -213,7 +213,7 @@ def ListToParam( list ):
     list = ConvToList( list )
     if len(list) == 0:
         return ''
-    
+
     encList = ''
     # items may not have one symbol - '|'
     for l in list:

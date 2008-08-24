@@ -94,7 +94,7 @@ def multi( value, tuplst ):
             if pred(value):
                 return func(value)
 
-    raise ValueError("could not find a matching function")     
+    raise ValueError("could not find a matching function")
 
 
 #
@@ -145,9 +145,9 @@ def dh_millenniumAD( value, pattern ):
     return dh_noConv( value, pattern, formatLimits['MillenniumAD'][0] )
 def dh_millenniumBC( value, pattern ):
     return dh_noConv( value, pattern, formatLimits['MillenniumBC'][0] )
-    
 
-    
+
+
 def decSinglVal( v ):
     return v[0]
 
@@ -178,7 +178,7 @@ def slh( value, lst ):
 
 def dh_singVal( value, match ):
     return dh_constVal( value, 0, match )
-    
+
 def dh_constVal( value, ind, match ):
     """This function helps with matching a single value to a constant.
             formats['CurrEvents']['en'](ind) => u'Current Events'
@@ -248,12 +248,12 @@ _romanNumbers = ['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX',
              'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX',
              'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXVIX',
              'XXX']
-             
+
 def intToRomanNum(i):
     if i >= len(_romanNumbers):
         raise IndexError(u'Roman value %i is not defined' % i)
     return _romanNumbers[i]
-    
+
 def romanNumToInt(v):
     return _romanNumbers.index(v)
 
@@ -268,13 +268,13 @@ _digitDecoders = {
     # %K is a number in KN::
     'K' : ( _knDigits, lambda v: intToLocalDigitsStr(v, _knDigitsToLocal), lambda v: localDigitsStrToInt(v, _knDigitsToLocal, _knLocalToDigits) ),
     # %F is a number in FA:
-    'F' : ( _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: localDigitsStrToInt(v, _faDigitsToLocal, _faLocalToDigits) ),    
+    'F' : ( _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: localDigitsStrToInt(v, _faDigitsToLocal, _faLocalToDigits) ),
     # %H is a number in HI:
-    'H' : ( _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),    
+    'H' : ( _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),
     # %B is a number in BN:
-    'B' : ( _bnDigits, lambda v: intToLocalDigitsStr(v, _bnDigitsToLocal), lambda v: localDigitsStrToInt(v, _bnDigitsToLocal, _bnLocalToDigits) ),    
+    'B' : ( _bnDigits, lambda v: intToLocalDigitsStr(v, _bnDigitsToLocal), lambda v: localDigitsStrToInt(v, _bnDigitsToLocal, _bnLocalToDigits) ),
     # %G is a number in GU:
-    'G' : ( _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),    
+    'G' : ( _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),
     # %T is a year in TH: -- all years are shifted: 2005 => 'พ.ศ. 2548'
     'T' : ( _decimalDigits, lambda v: unicode(v+543), lambda v: int(v)-543 ),
 }
@@ -321,7 +321,7 @@ def escapePattern2( pattern ):
             else:
                 newPattern += re.escape( s )
                 strPattern += s
-                
+
         newPattern += u'$' # end of the string
         compiledPattern = re.compile( newPattern )
         _escPtrnCache2[pattern] = (compiledPattern, strPattern, decoders)
@@ -343,7 +343,7 @@ def dh( value, pattern, encf, decf, filter = None ):
 
         decodingFunc:
             Converts a tuple/list of non-negative integers found in the original value string
-            into a normalized value. The normalized value can be passed right back into dh() 
+            into a normalized value. The normalized value can be passed right back into dh()
             to produce the original string. This function is a complement of encodingFunc.
             dh() interprets %d as a decimal and %s as a roman numeral number.
     """
@@ -359,7 +359,7 @@ def dh( value, pattern, encf, decf, filter = None ):
 
             if decValue in _stringTypes:
                 raise AssertionError("Decoder must not return a string!")
-                
+
             # recursive call to re-encode and see if we get the original (may through filter exception)
             if value == dh(decValue, pattern, encf, decf, filter):
                 return decValue
@@ -370,9 +370,9 @@ def dh( value, pattern, encf, decf, filter = None ):
         # This will be called from outside as well as recursivelly to verify parsed value
         if filter and not filter(value):
             raise ValueError("value %i is not allowed" % value)
-        
+
         params = encf(value)
-        
+
         if type(params) in _listTypes:
             if len(params) != len(decoders):
                 raise AssertionError("parameter count (%d) does not match decoder count (%d)" % (len(params), len(decoders)))
@@ -384,7 +384,7 @@ def dh( value, pattern, encf, decf, filter = None ):
                 raise AssertionError("A single parameter does not match %d decoders." % len(decoders))
             # convert integer parameter into its textual representation
             return strPattern % MakeParameter(decoders[0], params)
-            
+
 def MakeParameter( decoder, param ):
     newValue = decoder[1](param)
     if len(decoder) == 4 and len(newValue) < decoder[3]:
@@ -730,7 +730,7 @@ formats = {
         'eo' :      lambda v: dh_decAD( v, u'%d-aj jaroj' ),
         'es' :      lambda v: dh_decAD( v, u'Años %d' ),
         'et' :      lambda v: dh_decAD( v, u'%d. aastad' ),
-        
+
         # decades ending in 00 are spelled differently
         'fi' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosikymmen'),  lambda p: p == 0),
@@ -746,7 +746,7 @@ formats = {
             (lambda v: dh_decAD( v, u'%dth decade' ), alwaysTrue)]),        # ********** ERROR!!!
 
         'hi' :      lambda v: dh_decAD( v, u'%H का दशक' ),
-        
+
         #1970s => 1970-1979
         'hr' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'1-9'),                                                  lambda p: p == 1),
@@ -782,7 +782,7 @@ formats = {
             (lambda v: dh_constVal( v, 1, u'1-9'),                                              lambda p: p == 1),
             (lambda v: dh( v, u'%d-%d', lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),     alwaysTrue)]),
 
-        'nn' :      lambda v: dh_decAD( v, u'%d0-åra' ),	# FIXME: not sure of this one			
+        'nn' :      lambda v: dh_decAD( v, u'%d0-åra' ),	# FIXME: not sure of this one
         'no' :      lambda v: dh_decAD( v, u'%d-årene' ),
         'os' :      lambda v: dh_decAD( v, u'%d-тæ' ),
 
@@ -801,7 +801,7 @@ formats = {
         'ru' :      lambda v: dh_decAD( v, u'%d-е' ),
         'scn':      lambda v: dh_decAD( v, u'%dini' ),
         'simple' :  lambda v: dh_decAD( v, u'%ds' ),
-        
+
         # 1970 => '70. roky 20. storočia'
         'sk' :      lambda v: dh( v, u'%d. roky %d. storočia',
                         lambda i: (encDec0(i)%100, encDec0(i)/100+1),
@@ -963,7 +963,7 @@ formats = {
         'mi' :      lambda v: dh_centuryAD( v, u'Tua %d rau tau' ),
         'mk' :      lambda v: dh_centuryAD( v, u'%d век' ),
         'nds':      lambda v: dh_centuryAD( v, u'%d. Johrhunnert' ),
-        'nl' :      lambda v: dh_centuryAD( v, u'%de eeuw' ),        
+        'nl' :      lambda v: dh_centuryAD( v, u'%de eeuw' ),
         'nn' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'1. århundret'),                         lambda p: p == 1),
             (lambda v: dh( v, u'%d00-talet', lambda i: i-1, lambda ii: ii[0]+1 ),   alwaysTrue)]),
@@ -1024,7 +1024,7 @@ formats = {
             (lambda v: dh( v, u'%d00-luku eaa.', lambda i: i-1, lambda ii: ii[0]+1 ),    alwaysTrue)]),
         'fr' :      lambda m: multi( m, [
             (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),   					lambda p: p == 1),
-            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),    					alwaysTrue)]),        
+            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),    					alwaysTrue)]),
         'he' :      lambda v: dh_centuryBC( v, u'המאה ה־%d לפני הספירה' ),
         'hr' :      lambda v: dh_centuryBC( v, u'%d. stoljeće p.n.e.' ),
         'id' :      lambda v: dh_centuryBC( v, u'Abad ke-%d SM' ),
@@ -1064,12 +1064,12 @@ formats = {
         'da' :      lambda v: dh_centuryAD( v, u'%d. århundrede' ),
         'no' :      lambda v: dh( v, u'%d-tallet', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
     },
-    
+
     'CenturyBC_Cat':{
         'de' :      lambda v: dh_centuryBC( v, u'Jahr (%d. Jh. v. Chr.)' ),
         'no' :      lambda v: dh( v, u'%d-tallet f.Kr.', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
     },
-    
+
     'MillenniumAD': {
         'bg' :      lambda v: dh_millenniumAD( v, u'%d хилядолетие' ),
         'ca' :      lambda v: dh_millenniumAD( v, u'Mil·lenni %R' ),
@@ -1542,7 +1542,7 @@ def testMapEntry( formatName, showAll = True, value = None ):
         >>> date.testMapEntry( 'DecadeAD', 1992, 1990 )
         >>> date.testMapEntry( 'CenturyAD', 20, 20 )
     """
-    
+
     step = 1
     if formatName in decadeFormats: step = 10
     predicate,start,stop = formatLimits[formatName]
@@ -1550,7 +1550,7 @@ def testMapEntry( formatName, showAll = True, value = None ):
         start, stop = value, value+1
     if showAll:
         wikipedia.output(u"Processing %s with limits from %d to %d and step %d" % (formatName, start,stop-1,step))
-    
+
     for code, convFunc in formats[formatName].iteritems():
 #        import time
 #        startClock = time.clock()
@@ -1576,13 +1576,13 @@ def test(quick = False, showAll = False):
         >>> date.test()
     """
     for formatName in formats.keys():
-    
+
         if quick:
             testMapEntry( formatName, showAll, formatLimits[formatName][1] )     # Only test the first value in the test range
         else:
             testMapEntry( formatName, showAll )     # Extensive test!        # Test decade rounding
             wikipedia.output(u"'%s' complete." % formatName)
-    
+
     if quick:
         #wikipedia.output(u'Date module quick consistency test passed')
         pass

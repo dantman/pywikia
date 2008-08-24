@@ -218,7 +218,7 @@ interwiki_shownew:  should interwiki.py display every new link it discovers?
 interwiki_graph:    output a graph PNG file on conflicts? You need pydot for
                     this: http://dkbza.org/pydot.html
 
-interwiki_graph_format: the file format for interwiki graphs 
+interwiki_graph_format: the file format for interwiki graphs
 
 without_interwiki:  save file with local articles without interwikis
 
@@ -551,7 +551,7 @@ class Subject(object):
         """Return a list of sites for all things we still need to do"""
         distinctSites = {}
 
-        for page in self.todo: 
+        for page in self.todo:
             site = page.site()
             distinctSites[site] = site
         return distinctSites.values()
@@ -714,7 +714,7 @@ class Subject(object):
                 t = globalvar.showtextlink
                 if t:
                     wikipedia.output(self.originPage.get()[:t])
-                # loop 
+                # loop
                 while True:
                     newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
                     if newhint == '?':
@@ -949,9 +949,9 @@ class Subject(object):
                         wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
                         self.whereReport(page2, indent = 4)
                     while True:
-                        if acceptall: 
+                        if acceptall:
                             answer = 'a'
-                        else: 
+                        else:
                             answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'], 'a')
                         if answer == 'l': # accept all
                             acceptall = True
@@ -1058,7 +1058,7 @@ class Subject(object):
                     except GiveUpOnPage:
                         break
 
-        # disabled graph drawing for minor problems: it just takes too long 
+        # disabled graph drawing for minor problems: it just takes too long
         #if notUpdatedSites != [] and config.interwiki_graph:
         #    # at least one site was not updated, save a conflict graph
         #    self.createGraph()
@@ -1207,7 +1207,7 @@ class Subject(object):
                             raise SaveError
                         except wikipedia.EditConflict:
                             wikipedia.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
-                            raise SaveError                            
+                            raise SaveError
                         except (wikipedia.SpamfilterError), error:
                             wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % (error.url,))
                             raise SaveError
@@ -1291,7 +1291,7 @@ class InterwikiBot(object):
         # We count how many pages still need to be loaded per site.
         # This allows us to find out from which site to retrieve pages next
         # in a way that saves bandwidth.
-        # sites are keys, integers are values. 
+        # sites are keys, integers are values.
         # Modify this only via plus() and minus()!
         self.counts = {}
         self.pageGenerator = None
@@ -1413,7 +1413,7 @@ class InterwikiBot(object):
                     return wikipedia.getSite()
             except KeyError:
                 pass
-        # If getting the home language doesn't make sense, see how many 
+        # If getting the home language doesn't make sense, see how many
         # foreign page queries we can find.
         return self.maxOpenSite()
 
@@ -1516,7 +1516,7 @@ def compareLanguages(old, new, insite):
 
     if adding:
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(x) for x in adding]))
-    if removing: 
+    if removing:
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(x) for x in removing]))
     if modifying:
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(x) for x in modifying]))

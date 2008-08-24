@@ -102,7 +102,7 @@ class UnlinkBot:
                 new = match.group('label') or match.group('title')
                 new += match.group('linktrail')
                 return text[:match.start()] + new + text[match.end():], False
-    
+
     def treat(self, page):
         # Show the title of the page we're working on.
         # Highlight the title in purple.

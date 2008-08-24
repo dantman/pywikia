@@ -282,7 +282,7 @@ def main():
     # Main Loop
     for page in generator:
         (status, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
-    
+
 if __name__ == "__main__":
     try:
         main()

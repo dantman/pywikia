@@ -1,6 +1,6 @@
 # Helper script for delinker and image_replacer
 
-__version__ = '$Id: $'
+__version__ = '$Id$'
 
 import wikipedia, config
 

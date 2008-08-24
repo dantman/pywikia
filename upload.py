@@ -233,7 +233,7 @@ class UploadRobot:
                 formdata[key] = formdata[key].encode(self.targetSite.encoding())
             except (UnicodeEncodeError, UnicodeDecodeError):
                 formdata[key] = wikipedia.UnicodeToAsciiHtml(formdata[key]).encode(self.targetSite.encoding())
-    
+
         # don't upload if we're in debug mode
         if not debug:
             wikipedia.output(u'Uploading file to %s...' % self.targetSite)
@@ -255,7 +255,7 @@ class UploadRobot:
             # something went wrong.
             #if response.status in [200, 302]:
             #    wikipedia.output(u"Upload successful.")
-            
+
             elif response.status == 301:
                 wikipedia.output(u"Following redirect...")
                 address = response.getheader('Location')

@@ -468,7 +468,7 @@ def main():
         'inside-tags':   [],
         'require-title': [], # using a seperate requirements dict needs some
     }                        # major refactoring of code.
-    
+
     # Should the elements of 'replacements' and 'exceptions' be interpreted
     # as regular expressions?
     regex = False
@@ -539,7 +539,7 @@ def main():
         elif arg.startswith('-fix:'):
             fix = arg[5:]
         elif arg.startswith('-sleep:'):
-            sleep = float(arg[7:])           
+            sleep = float(arg[7:])
         elif arg == '-always':
             acceptall = True
         elif arg == '-recursive':

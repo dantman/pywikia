@@ -10,6 +10,7 @@ Note: the script requires the Python IRC library http://python-irclib.sourceforg
 # Author: Balasyum
 # http://hu.wikipedia.org/wiki/User:Balasyum
 # License : LGPL
+__version__ = '$Id$'
 
 from ircbot import SingleServerIRCBot
 from irclib import nm_to_n, nm_to_h, irc_lower, ip_numstr_to_quad, ip_quad_to_numstr

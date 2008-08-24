@@ -31,7 +31,7 @@ bandwidth. Instead, use the -xml parameter, or use another way to generate
 a list of affected articles
 """
 
-__version__='$Id: selflink.py 4187 2007-09-03 11:37:19Z wikipedian $'
+__version__='$Id$'
 
 import wikipedia, pagegenerators, catlib
 import editarticle
@@ -178,7 +178,7 @@ referencesSections = {
         u'出典',
         u'注釈',
     ],
-    'ko':[              # 
+    'ko':[              #
         u'주석',
         u'각주'
         u'주석 및 참고 자료'
@@ -476,4 +476,4 @@ if __name__ == "__main__":
         main()
     finally:
         wikipedia.stopme()
- 
+

@@ -27,17 +27,17 @@ finally:
 #
 # Distributed under the terms of the MIT license.
 #
- 
-__version__ = '$Id: pageimport.py 4336 2007-09-20 14:51:04Z wikipedian $'
- 
+
+__version__ = '$Id$'
+
 import urllib
 import wikipedia, login, config
- 
+
 class Importer(wikipedia.Page):
     def __init__(self, site):
         self.importsite = site
         wikipedia.Page.__init__(self, site, 'Special:Import', None, 0)
- 
+
     def Import(self, target, project = 'w', crono = '1', namespace = '', prompt = True):
         """Import the page from the wiki. Requires administrator status.
         If prompt is True, asks the user if he wants to delete the page.
@@ -61,7 +61,7 @@ class Importer(wikipedia.Page):
             crono = '0'
         # Fixing namespace's value.
         if namespace == '0':
-            namespace == ''        
+            namespace == ''
         answer = 'y'
         if prompt:
             answer = wikipedia.inputChoice(u'Do you want to import %s?' % target, ['Yes', 'No'], ['y', 'N'], 'N')
@@ -101,7 +101,7 @@ class Importer(wikipedia.Page):
                 else:
                     wikipedia.output(u'Import failed!')
                     return False
-                
+
 if __name__=='__main__':
     wikipedia.output(u'This is just a module! Read the documentation and write your own script!')
     wikipedia.stopme()

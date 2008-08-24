@@ -125,7 +125,7 @@ def main():
                 firstPageTitle = arg[7:]
         elif arg == '-main':
             main_only = True
-            
+
 
     bot = MisspellingRobot(always, firstPageTitle, main_only)
     bot.run()

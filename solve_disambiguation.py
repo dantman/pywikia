@@ -124,7 +124,7 @@ msg_unlink = {
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
     'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
     }
-    
+
 # Summary message when working on redirects
 msg_redir = {
     'ar': u'توضيح بمساعدة روبوت: %s - غير الوصلة أو الوصلات إلى %s',
@@ -252,7 +252,7 @@ ignore_title = {
             u'Wikipedia:Liste mathematischer Themen/BKS',
             u'Wikipedia:Liste mathematischer Themen/Redirects',
             u'Wikipedia:Löschkandidaten/.+',
-            u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
+            u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted
             u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
             u'Wikipedia:WikiProjekt Verwaiste Seiten/Begriffsklärungen',
         ],
@@ -442,7 +442,7 @@ class ReferringPageGeneratorWithIgnore:
         # if run with the -primary argument, enable the ignore manager
         self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                                          enabled=primary)
-        
+
     def __iter__(self):
         # TODO: start yielding before all referring pages have been found
         refs = [page for page in self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)]
@@ -472,7 +472,7 @@ class PrimaryIgnoreManager(object):
     def __init__(self, disambPage, enabled = False):
         self.disambPage = disambPage
         self.enabled = enabled
-        
+
         self.ignorelist = []
         filename = wikipedia.config.datafilepath('disambiguations',
                 self.disambPage.titleForFilename() + '.txt')
@@ -492,7 +492,7 @@ class PrimaryIgnoreManager(object):
 
     def isIgnored(self, refPage):
         return self.enabled and refPage.urlname() in self.ignorelist
-        
+
     def ignore(self, refPage):
         if self.enabled:
             # Skip this occurence next time.
@@ -525,7 +525,7 @@ class DisambiguationRobot(object):
               u'{{[Pp]rocessing}}',
             ),
     }
-    
+
     def __init__(self, always, alternatives, getAlternatives, generator, primary, main_only):
         self.always = always
         self.alternatives = alternatives
@@ -539,7 +539,7 @@ class DisambiguationRobot(object):
         self.comment = None
 
         self.setupRegexes()
-        
+
     def checkContents(self, text):
         '''
         For a given text, returns False if none of the regular
@@ -553,14 +553,14 @@ class DisambiguationRobot(object):
             if match:
                 return match.group()
         return None
-    
+
     def makeAlternativesUnique(self):
         # remove duplicate entries
         result={}
         for i in self.alternatives:
             result[i]=None
         self.alternatives = result.keys()
-    
+
     def listAlternatives(self):
         list = u'\n'
         for i in range(len(self.alternatives)):
@@ -583,7 +583,7 @@ class DisambiguationRobot(object):
         # group linktrail is the link trail, that's letters after ]] which are part of the word.
         # note that the definition of 'letter' varies from language to language.
         self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
-        
+
     def treat(self, refPage, disambPage):
         """
         Parameters:
@@ -660,7 +660,7 @@ class DisambiguationRobot(object):
                         continue
                     if linkPage != disambPage:
                         continue
-    
+
                 n += 1
                 # how many bytes should be displayed around the current link
                 context = 60
@@ -709,7 +709,7 @@ class DisambiguationRobot(object):
                         context *= 2
                     else:
                         break
-            
+
                 if choice in ['e', 'E']:
                     # user has edited the page and then pressed 'OK'
                     edited = True
@@ -731,12 +731,12 @@ class DisambiguationRobot(object):
                 elif choice in ['x', 'X'] and edited:
                     # Save the page as is
                     break
-    
+
                 # The link looks like this:
                 # [[page_title|link_text]]trailing_chars
                 page_title = m.group('title')
                 link_text = m.group('label')
-    
+
                 if not link_text:
                     # or like this: [[page_title]]trailing_chars
                     link_text = page_title
@@ -747,7 +747,7 @@ class DisambiguationRobot(object):
                 trailing_chars = m.group('linktrail')
                 if trailing_chars:
                     link_text += trailing_chars
-    
+
                 if choice in ['u', 'U']:
                     # unlink - we remove the section if there's any
                     text = text[:m.start()] + link_text + text[m.end():]
@@ -762,7 +762,7 @@ class DisambiguationRobot(object):
                         replaceit = True
                     else:
                         replaceit = False
-    
+
                     try:
                         choice=int(choice)
                     except ValueError:
@@ -814,7 +814,7 @@ class DisambiguationRobot(object):
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Page not saved: %s' % error.args)
         return True
-    
+
     def findAlternatives(self, disambPage):
         if disambPage.isRedirectPage() and not self.primary:
             try:
@@ -859,7 +859,7 @@ or press enter to quit:""")
                 return False
             self.alternatives += links
         return True
-    
+
     def setSummaryMessage(self, disambPage, new_targets = [], unlink = False):
         # make list of new targets
         targets = ''
@@ -867,10 +867,10 @@ or press enter to quit:""")
             targets += u'[[%s]], ' % page_title
         # remove last comma
         targets = targets[:-2]
-        
+
         if not targets:
             targets = wikipedia.translate(self.mysite, unknown_msg)
-        
+
         # first check whether user has customized the edit comment
         if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
             try:
@@ -895,7 +895,7 @@ or press enter to quit:""")
                 self.comment = wikipedia.translate(self.mysite, msg_unlink) % disambPage.title()
             else:
                 self.comment = wikipedia.translate(self.mysite, msg) % (disambPage.title(), targets)
-        
+
     def run(self):
         if self.main_only:
             if not ignore_title.has_key(self.mysite.family.name):
@@ -918,7 +918,7 @@ or press enter to quit:""")
             else:
                 self.alternatives.sort()
             self.listAlternatives()
-    
+
             gen = ReferringPageGeneratorWithIgnore(disambPage, self.primary)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
             for refPage in preloadingGen:
@@ -926,7 +926,7 @@ or press enter to quit:""")
                     # run until the user selected 'quit'
                     if not self.treat(refPage, disambPage):
                         break
-    
+
             # clear alternatives before working on next disambiguation page
             self.alternatives = []
 
@@ -995,7 +995,7 @@ def main():
             wikipedia.showHelp()
         else:
             pageTitle.append(arg)
-            
+
     # if the disambiguation page is given as a command line argument,
     # connect the title's parts with spaces
     if pageTitle != []:

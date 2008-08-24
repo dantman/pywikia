@@ -19,12 +19,12 @@ class GraphSavingThread(threading.Thread):
     """
     Rendering a graph can take extremely long. We use
     multithreading because of that.
-    
+
     TODO: Find out if several threads running in parallel
     can slow down the system too much. Consider adding a
     mechanism to kill a thread if it takes too long.
     """
-    
+
     def __init__(self, graph, originPage):
         threading.Thread.__init__(self)
         self.graph = graph
@@ -187,10 +187,10 @@ class SpeedyShareUploader:
         body = CRLF.join(L)
         content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
         return content_type, body
-    
+
     def get_content_type(self, filename):
         return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-    
+
     def upload(self, filename):
         token = self.getToken()
 
@@ -218,4 +218,3 @@ def getFilename(page, extension = None):
 if __name__ == "__main__":
     uploader = SpeedyShareUploader()
     uploader.upload('/home/daniel/projekte/pywikipedia/interwiki-graphs/wikipedia-de-CEE.svg')
-    

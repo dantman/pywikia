@@ -10,6 +10,7 @@ The following command-line options can be used with this bot:
                   has such a category defined)
 
 """
+__version__ = '$Id$'
 
 import wikipedia, catlib
 import pagegenerators
@@ -80,7 +81,7 @@ class CategoryRedirectBot(object):
     def __init__(self, often):
         self.cooldown = 6 # days
         self.often = often
-        
+
         # Localization:
 
         # Category that contains all redirected category pages
@@ -160,7 +161,7 @@ u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
 u"ロボットによる: 移行中のカテゴリとしてタグ付け",
             'no':
 u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
-        } 
+        }
 
         self.dbl_redir_comment = {
             '_default': u"Robot: fixing double-redirect",
@@ -561,7 +562,7 @@ ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
                         u"Robot: fixing category redirect parameter format")
                 self.log_text.append(
                     u"* Removed category prefix from parameter in %s"
-                     % cat.aslink(textlink=True))                                
+                     % cat.aslink(textlink=True))
 
         wikipedia.output(u"")
         wikipedia.output(u"Checking %s destination categories" % len(destmap))

@@ -191,7 +191,7 @@ ignorelist = [
     re.compile('.*[\./@]example\.org(/.*)?'),
 
     # Other special cases
-    re.compile('.*[\./@]gso\.gbv\.de(/.*)?'),  # bot somehow can't handle their redirects 
+    re.compile('.*[\./@]gso\.gbv\.de(/.*)?'),  # bot somehow can't handle their redirects
     re.compile('.*[\./@]berlinonline\.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
     re.compile('.*[\./@]bodo\.kommune\.no(/.*)?'), # bot can't handle their redirects
 ]
@@ -214,7 +214,7 @@ def compileLinkR(withoutBracketed = False, onlyBracketed = False):
     #       ''Please see http://www.example.org.''
     # .'' shouldn't be considered as part of the link.
     regex = r'(?P<url>http[s]?://[^' + notInside + ']*?[^' + notAtEnd + '](?=[' + notAtEnd+ ']*\'\')|http[s]?://[^' + notInside + ']*[^' + notAtEnd + '])'
-    
+
     if withoutBracketed:
         regex = r'(?<!\[)' + regex
     elif onlyBracketed:
@@ -272,10 +272,10 @@ class LinkChecker(object):
     '''
     Given a HTTP URL, tries to load the page from the Internet and checks if it
     is still online.
-    
+
     Returns a (boolean, string) tuple saying if the page is online and including
     a status reason.
-    
+
     Warning: Also returns false if your Internet connection isn't working
     correctly! (This will give a Socket Error)
     '''
@@ -360,7 +360,7 @@ class LinkChecker(object):
         '''
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
-        
+
         If useHEAD is true, uses the HTTP HEAD method, which saves bandwidth
         by not downloading the body. Otherwise, the HTTP GET method is used.
         '''
@@ -428,8 +428,8 @@ class LinkChecker(object):
             # http://docs.python.org/lib/module-socket.html :
             # socket.error :
             # The accompanying value is either a string telling what went
-            # wrong or a pair (errno, string) representing an error 
-            # returned by a system call, similar to the value 
+            # wrong or a pair (errno, string) representing an error
+            # returned by a system call, similar to the value
             # accompanying os.error
             if isinstance(error, basestring):
                 msg = error
@@ -499,7 +499,7 @@ class LinkCheckThread(threading.Thread):
         # identification for debugging purposes
         self.setName((u'%s - %s' % (page.title(), url)).encode('utf-8', 'replace'))
         self.HTTPignore = HTTPignore
-        
+
     def run(self):
         linkChecker = LinkChecker(self.url, HTTPignore = self.HTTPignore)
         try:
@@ -525,16 +525,16 @@ class History:
 
     We assume that the first element in the list represents the first time we
     found this dead link, and the last element represents the last time.
-    
+
     Example:
-            
+
     dict = {
         'http://www.example.org/page': [
             ('WikiPageTitle', DATE, '404: File not found'),
             ('WikiPageName2', DATE, '404: File not found'),
         ]
     '''
-   
+
     def __init__(self, reportThread):
         self.reportThread = reportThread
         site = wikipedia.getSite()
@@ -622,7 +622,7 @@ class History:
             return True
         else:
             return False
-        
+
     def save(self):
         """
         Saves the .dat file to disk.
@@ -643,7 +643,7 @@ class DeadLinkReportThread(threading.Thread):
         self.queue =  [];
         self.finishing = False
         self.killed = False
-    
+
     def report(self, url, errorReport, containingPage, archiveURL):
         """
         Tries to add an error report to the talk page belonging to the page containing the dead link.
@@ -654,11 +654,11 @@ class DeadLinkReportThread(threading.Thread):
 
     def shutdown(self):
         self.finishing = True
-    
+
     def kill(self):
         # TODO: remove if unneeded
         self.killed = True
-    
+
     def run(self):
         while not self.killed:
             if len(self.queue) == 0:

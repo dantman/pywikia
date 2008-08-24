@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-A small MySQL wrapper that catches dead MySQL connections, and tries to 
-reconnect them. 
+A small MySQL wrapper that catches dead MySQL connections, and tries to
+reconnect them.
 """
 #
 # (C) Bryan Tong Minh, 2007
@@ -28,27 +28,27 @@ class Connection(object):
 		2013, # Server lost
 		2014, # Commands out of sync
 		)
-	
+
 	def __init__(self, retry_timeout = 60, max_retries = -1,
 		callback = lambda *args: None, *conn_args, **conn_kwargs):
-		
+
 		self.retry_timeout = retry_timeout
 		self.max_retries = max_retries
 		self.current_retry = 0
 		self.callback = callback
-		
+
 		self.conn_args = conn_args
 		self.conn_kwargs = conn_kwargs
-		
+
 		self.connected = False
 		self.connect()
-		
+
 	def wait(self):
 		if self.current_retry > self.max_retries and self.max_retries != -1:
 			raise RuntimeError('Maximum retries exceeded')
 		if self.current_retry:
 			self.callback(self)
-		time.sleep(self.current_retry * self.retry_timeout)	
+		time.sleep(self.current_retry * self.retry_timeout)
 		self.current_retry += 1
 	def __call(self, (object, function_name), *args, **kwargs):
 		try:
@@ -60,11 +60,11 @@ class Connection(object):
 				return getattr(self, function_name)(*args, **kwargs)
 			else:
 				raise
-		
+
 	# Mimic database object
 	def connect(self):
 		self.close()
-			
+
 		while not self.connected:
 			self.wait()
 			try:
@@ -72,13 +72,13 @@ class Connection(object):
 			except MySQLdb.Error, e:
 				self.error = e
 		return True
-	
+
 	def _connect(self):
 		self.database = MySQLdb.connect(*self.conn_args, **self.conn_kwargs)
 		self.connected = True
 		self.current_retry = 0
 		self.__cursor = self.database.cursor()
-		
+
 	def close(self):
 		self.current_retry = 0
 		self.connected = False
@@ -91,7 +91,7 @@ class Connection(object):
 		if type(cursorclass) is not type(self.__cursor):
 			self.__cursor = self.database.cursor(cursorclass)
 		return self
-		
+
 	# Mimic cursor object
 	def __iter__(self):
 		return self.__cursor.__iter__()
@@ -104,34 +104,34 @@ class Connection(object):
 		if hasattr(attr, '__call__'):
 			return CallWrapper(self.__call, (obj, name))
 		return attr
-	
-	
+
+
 class CallWrapper(object):
 	def __init__(self, executor, function):
 		self.__executor = executor
 		self.__function = function
 	def __call__(self, *args, **kwargs):
-		return self.__executor(self.__function, 
+		return self.__executor(self.__function,
 			*args, **kwargs)
 	def __getattr__(self, name):
 		getattr(self.__function, name)
-		
-def connect(retry_timeout = 60, max_retries = -1, 
+
+def connect(retry_timeout = 60, max_retries = -1,
 	callback = lambda *args: None, *conn_args, **conn_kwargs):
-		
-	return Connection(retry_timeout = retry_timeout, 
-		max_retries = max_retries, 
-		callback = callback, 
+
+	return Connection(retry_timeout = retry_timeout,
+		max_retries = max_retries,
+		callback = callback,
 		*conn_args, **conn_kwargs)
-	
+
 if __name__ == '__main__':
 	def callback(conn):
 		print 'Waiting for', conn
-		
+
 	host = raw_input('Host: ')
 	username = raw_input('Username: ')
 	password = raw_input('Password: ')
-	
+
 	conn = connect(retry_timeout = 5, max_retries = 4, callback = callback,
 		host = host, user = username, passwd = password, charset = 'utf8')
 	cur = conn.cursor()
@@ -146,7 +146,7 @@ if __name__ == '__main__':
 	print 'Query ok!, please kill while connected...'
 	raw_input()
 	conn.execute('SELECT SLEEP(30), 1')
-	
+
 	print 'Now testing inserts...'
 	conn.execute('USE test')
 	conn.execute('CREATE TEMPORARY TABLE mysql_autoconnection (value INT)')
@@ -157,7 +157,6 @@ if __name__ == '__main__':
 	print conn.fetchall()
 	print 'Query ok!'
 	raw_input()
-	
-	
-			
-			
+
+
+

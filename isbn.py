@@ -1432,7 +1432,7 @@ class IsbnBot:
             else:
                 # Save the page in the background. No need to catch exceptions.
                 page.put_async(text)
-        
+
 
     def run(self):
         comment = wikipedia.translate(wikipedia.getSite(), msg)

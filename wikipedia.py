@@ -483,7 +483,7 @@ not supported by PyWikipediaBot!"""
 
         If underscore is True, replace all ' ' characters with '_'.
         If savetitle is True, encode any wiki syntax in the title.
-        If decode is True, decodes the section title 
+        If decode is True, decodes the section title
         """
         title = self._title
         if decode:
@@ -801,7 +801,7 @@ not supported by PyWikipediaBot!"""
 	pagetext = unescape(pagetext)
 	pagetext = pagetext.rstrip()
 	pagetext = self.site().post_get_convert(pagetext)
-	
+
         m = self.site().redirectRegex().match(pagetext)
         if m:
             # page text matches the redirect pattern
@@ -1309,7 +1309,7 @@ not supported by PyWikipediaBot!"""
             # happens when arg is unicode
             e.reason += ' (cannot convert %s to wiki encoding %s)' % (msgForError, self.site().encoding())
             raise e
-        
+
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
                 captchaId=None, captchaAnswer=None ):
@@ -2114,7 +2114,7 @@ not supported by PyWikipediaBot!"""
              throttle=True, deleteAndMove=False, safe=True, fixredirects=True):
         """Move this page to new title given by newtitle. If safe, don't try
         to move and delete if not directly requested.
-        
+
         * fixredirects has no effect in MW < 1.13"""
         # Login
         try:
@@ -2746,8 +2746,8 @@ class ImagePage(Page):
                 return hash_found
         else:
             output(u'Image deleted before getting the Hash. Skipping...')
-            return None 
-            
+            return None
+
     def getFileVersionHistoryTable(self):
         """Return the version history in the form of a wiki table."""
         lines = []
@@ -3888,7 +3888,7 @@ def html2unicode(text, ignore = []):
 
 # Warning! _familyCache does not necessarily have to be consistent between
 # two statements. Always ensure that a local reference is created when
-# accessing Family objects 
+# accessing Family objects
 _familyCache = weakref.WeakValueDictionary()
 def Family(fam = None, fatal = True, force = False):
     """
@@ -3899,11 +3899,11 @@ def Family(fam = None, fatal = True, force = False):
     """
     if fam == None:
         fam = config.family
-    
+
     family = _familyCache.get(fam)
     if family and not force:
         return family
-        
+
     try:
         # search for family module in the 'families' subdirectory
         sys.path.append(config.datafilepath('families'))
@@ -3919,7 +3919,7 @@ does not exist. Also check your configuration file."""
             sys.exit(1)
         else:
             raise ValueError("Family %s does not exist" % repr(fam))
-    
+
     family = myfamily.Family()
     _familyCache[fam] = family
     return family
@@ -4389,7 +4389,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         return response, data
 
-    def getUrl(self, path, retry = True, sysop = False, data = None, 
+    def getUrl(self, path, retry = True, sysop = False, data = None,
                compress = True, no_hostname = False, cookie_only=False):
         """
         Low-level routine to get a URL from the wiki.
@@ -5836,7 +5836,7 @@ your connection is down. Retrying in %i minutes..."""
     def linktrail(self):
         """Return regex for trailing chars displayed as part of a link."""
         return self.family.linktrail(self.lang)
-    
+
     def post_get_convert(self, getText):
 	return self.family.post_get_convert(self, getText)
 
@@ -5885,7 +5885,7 @@ your connection is down. Retrying in %i minutes..."""
     def getImagesFromAnHash(self, hash_found = None):
         """ Function that uses APIs to give the images that has the same hash. Useful
             to find duplicates or nowcommons.
-            
+
             NOTE: it returns also the image itself, if you don't want it, just
             filter the list returned.
 
@@ -6585,14 +6585,14 @@ def decompress_gzip(data):
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
-    
+
     def http_error_default(self, url, fp, errcode, errmsg, headers):
         if errcode == 401 or errcode == 404:
             raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
         else:
             return urllib.FancyURLopener.http_error_default(self, url, fp, errcode, errmsg, headers)
-        
-        
+
+
 
 # Special opener in case we are using a site with authentication
 if config.authenticate:

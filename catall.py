@@ -44,7 +44,7 @@ def choosecats(pagetext):
     print ("Empty line: if the first, don't change. Otherwise: Ready.")
     print ("-: I made a mistake, let me start over.")
     print ("?: Give the text of the page with GUI.")
-    print ("??: Give the text of the page in console.") 
+    print ("??: Give the text of the page in console.")
     print ("xx: if the first, remove all categories and add no new.")
     print ("q: quit.")
     while flag == False:
@@ -60,7 +60,7 @@ def choosecats(pagetext):
             newtext = editor.edit(pagetext)
         elif choice =="??":
             wikipedia.output(pagetext[0:length])
-            length = length+500 
+            length = length+500
         elif choice=="xx" and chosen==[]:
             chosen = None
             flag=True

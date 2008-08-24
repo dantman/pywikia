@@ -31,7 +31,7 @@ pywikipediaDir = "c:\\Projects\\Personal\\wiki\\pywikipedia"
 import sys, os
 from win32com.server.util import wrap, unwrap
 import win32com.client
- 
+
 # Although we are able to register our Parent object for debugging,
 # our Child object is not registered, so this won't work. To get
 # the debugging behavior for our wrapped objects, we must do it ourself.
@@ -70,17 +70,17 @@ class Wiki:
         site._public_attrs_ = ['objectVer', 'objectName']
         site._readonly_attrs_ = site._public_attrs_
         return wrap(site, useDispatcher=useDispatcher)
-        
+
     def getPage(self, site, title):
         os.chdir(pywikipediaDir)
         siteObj = unwrap(site)
         page = WikiPage(siteObj, title)
         return wrap(page)
-        
+
     def __del__(self):
         os.chdir(currDir)
         print "ChDir to original ", currDir
-        
+
 class WikiPage(wikipedia.Page):
     _reg_clsid_ = "{318CC152-D2A9-4C11-BA01-78B9B91DBDDE}"
     _reg_desc_ = "Mediawiki Wiki Page"
@@ -93,7 +93,7 @@ class WikiPage(wikipedia.Page):
         wikipedia.Page.__init__(self, site, title)
         self.objectVer = __version__
         self.objectName = "WikiPage"
-        
+
 if __name__=='__main__':
     import win32com.server.register
     try:

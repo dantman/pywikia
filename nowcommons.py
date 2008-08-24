@@ -125,7 +125,7 @@ nowCommons = {
     ],
     'it': [
         u'NowCommons',
-    ],    
+    ],
     'nl': [
         u'NuCommons',
         u'Nucommons',
@@ -192,7 +192,7 @@ class NowCommonsDeleteBot:
             found_something = False
             change_page = True
             for x in regex.finditer(HTML_text):
-                found_something = True                
+                found_something = True
                 image_local = x.group('imagelocal')
                 image_commons = x.group('imagecommons')
                 if image_local in images_processed:
@@ -216,7 +216,7 @@ class NowCommonsDeleteBot:
                     choice = wikipedia.inputChoice(u'The local and the commons images have the same name, continue?', ['Yes', 'No'], ['y', 'N'], 'N')
                 else:
                     choice = wikipedia.inputChoice(u'Are the two images equal?', ['Yes', 'No'], ['y', 'N'], 'N')
-                if choice.lower() in ['y', 'yes']:            
+                if choice.lower() in ['y', 'yes']:
                     yield [image_local, image_commons]
                 else:
                     continue
@@ -297,13 +297,13 @@ class NowCommonsDeleteBot:
                                     oImageRobot = image.ImageRobot(pagegenerators.FileLinksGenerator(localImagePage),
                                                     welcome.urlname(localImagePage.titleWithoutNamespace(), self.site), commonsImagePage.titleWithoutNamespace(),
                                                     '', replacealways, replaceloose)
-                                    oImageRobot.run()                                
+                                    oImageRobot.run()
                                 # refresh because we want the updated list
                                 usingPages = len(list(wikipedia.ImagePage(self.site, page.title()).usingPages()))
                                 if usingPages > 0 and use_hash:
                                     # just an enter
                                     wikipedia.input(u'There are still %s pages with this image, confirm the manual removal from them please.' % usingPages)
-                                    
+
                         else:
                             wikipedia.output(u'Please change them manually.')
                         continue

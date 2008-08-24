@@ -56,7 +56,7 @@ def get(site = None):
 def isWatched(pageName, site=None):
     watchlist = get(site)
     return pageName in watchlist
-    
+
 def refresh(site):
     # get watchlist special page's URL
     path = site.watchlist_address()

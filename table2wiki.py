@@ -126,7 +126,7 @@ class TableXmlDumpPageGenerator:
         for entry in self.xmldump.parse():
             if tableTagR.search(entry.text):
                 yield wikipedia.Page(wikipedia.getSite(), entry.title)
-              
+
 class Table2WikiRobot:
     def __init__(self, generator, debug = False, quietMode = False):
         self.generator = generator
@@ -155,11 +155,11 @@ class Table2WikiRobot:
         while num != 0:
             newTable, num = re.subn("([^\r\n]{1})(<[tT]{1}[dDhHrR]{1})",
                                    r"\1\r\n\2", newTable)
-            
+
         ##################
         # every open-tag gets a new line.
-    
-    
+
+
         ##################
         # Note that we added the ## characters in markActiveTables().
         # <table> tag with attributes, with more text on the same line
@@ -177,7 +177,7 @@ class Table2WikiRobot:
         # end </table>
         newTable = re.sub("(?i)[\s]*<\/##table##>",
                           "\r\n|}", newTable)
-        
+
         ##################
         # caption with attributes
         newTable = re.sub("(?i)<caption (?P<attr>[\w\W]*?)>(?P<caption>[\w\W]*?)<\/caption>",
@@ -185,7 +185,7 @@ class Table2WikiRobot:
         # caption without attributes
         newTable = re.sub("(?i)<caption>(?P<caption>[\w\W]*?)<\/caption>",
                          r"\r\n|+ \g<caption>", newTable)
-        
+
         ##################
         # <th> often people don't write them within <tr>, be warned!
         # <th> with attributes
@@ -204,7 +204,7 @@ class Table2WikiRobot:
         if n>0:
             warning_messages.append(u'WARNING: found <th> without </th>. (%d occurences)\n' % n)
             warnings += n
-    
+
         # <th> with attributes, without closing </th>
         newTable, n = re.subn("(?i)[\r\n]+<th(?P<attr> [^>]*?)>(?P<header>[\w\W]*?)[\r\n]+",
                              r"\n!\g<attr> | \g<header>\r\n", newTable)
@@ -212,26 +212,26 @@ class Table2WikiRobot:
             warning_messages.append(u'WARNING: found <th ...> without </th>. (%d occurences\n)' % n)
             warnings += n
 
-    
+
         ##################
         # <tr> with attributes
         newTable = re.sub("(?i)[\r\n]*<tr(?P<attr> [^>]*?)>[\r\n]*",
                          r"\r\n|-----\g<attr>\r\n", newTable)
-        
+
         # <tr> without attributes
         newTable = re.sub("(?i)[\r\n]*<tr>[\r\n]*",
                          r"\r\n|-----\r\n", newTable)
-        
+
         ##################
         # normal <td> without arguments
         newTable = re.sub("(?i)[\r\n]+<td>(?P<cell>[\w\W]*?)<\/td>",
                          r"\r\n| \g<cell>\r\n", newTable)
-    
+
         ##################
         # normal <td> with arguments
         newTable = re.sub("(?i)[\r\n]+<td(?P<attr> [^>]*?)>(?P<cell>[\w\W]*?)<\/td>",
                          r"\r\n|\g<attr> | \g<cell>", newTable)
-    
+
         # WARNING: this sub might eat cells of bad HTML, but most likely it
         # will correct errors
         # TODO: some more docu please
@@ -240,7 +240,7 @@ class Table2WikiRobot:
         if n>0:
             warning_messages.append(u'<td> used where </td> was expected. (%d occurences)\n' % n)
             warnings += n
-        
+
         # fail save, sometimes it's a <td><td></tr>
         #        newTable, n = re.subn("[\r\n]+<(td|TD)>([^<]*?)<(td|TD)><\/(tr|TR)>",
         #                             "\r\n| \\2\r\n", newTable)
@@ -255,27 +255,27 @@ class Table2WikiRobot:
                              r"\r\n|\2 | \3\r\n", newTable)
         if n>0:
             warning_messages.append(u'WARNING: (sorry, bot code unreadable (1). I don\'t know why this warning is given.) (%d occurences)\n' % n)
-        
+
         # fail save. sometimes people forget </td>
-        # <td> without arguments, with missing </td> 
+        # <td> without arguments, with missing </td>
         newTable, n = re.subn("(?i)<td>(?P<cell>[^<]*?)[\r\n]+",
                              r"\r\n| \g<cell>\r\n", newTable)
         if n>0:
             warning_messages.append(u'NOTE: Found <td> without </td>. This shouldn\'t cause problems.\n')
-    
-        # <td> with attributes, with missing </td> 
+
+        # <td> with attributes, with missing </td>
         newTable, n = re.subn("(?i)[\r\n]*<td(?P<attr> [^>]*?)>(?P<cell>[\w\W]*?)[\r\n]+",
                              r"\r\n|\g<attr> | \g<cell>\r\n", newTable)
         if n > 0:
             warning_messages.append(u'NOTE: Found <td> without </td>. This shouldn\'t cause problems.\n')
-    
-    
+
+
         ##################
         # Garbage collecting ;-)
         newTable = re.sub("(?i)<td>[\r\n]*<\/tr>", "", newTable)
         # delete closing tags
         newTable = re.sub("(?i)[\r\n]*<\/t[rdh]>", "", newTable)
-        
+
         ##################
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
@@ -286,14 +286,14 @@ class Table2WikiRobot:
         #        newTable, n = re.subn("([\r\n]+\!\ [^\r\n]*?[\r\n]+)(\|\ )",
         #                             "\\1|-----\r\n\\2", newTable)
         #        warnings = warnings + n
-        
-        
+
+
         ##################
         # most <th> come with '''title'''. Senseless in my eyes cuz
         # <th> should be bold anyways.
         newTable = re.sub("[\r\n]+\!([^'\n\r]*)'''([^'\r\n]*)'''",
                          r"\r\n!\1\2", newTable)
-        
+
         ##################
         # kills indention within tables. Be warned, it might seldom bring
         # bad results.
@@ -303,7 +303,7 @@ class Table2WikiRobot:
             while num != 0:
                 newTable, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
                                        r"\1\r\n\2", newTable)
-                
+
         ##################
         # kills additional spaces after | or ! or {|
         # This line was creating problems, so I commented it out --Daniel
@@ -314,9 +314,9 @@ class Table2WikiRobot:
         # kill extra new-lines
         newTable = re.sub("[\r\n]{4,}(\!|\|)",
                          r"\r\n\1", newTable);
-    
-    
-        ##################        
+
+
+        ##################
         # shortening if <table> had no arguments/parameters
         newTable = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\{| ", newTable)
         # shortening if <td> had no articles
@@ -325,7 +325,7 @@ class Table2WikiRobot:
         newTable = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newTable)
         # shortening of <caption> had no articles
         newTable = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newTable)
-        
+
         ##################
         # proper attributes. attribute values need to be in quotation marks.
         num = 1
@@ -349,7 +349,7 @@ class Table2WikiRobot:
             # group 3 are the remaining attribute key - value pairs.
             newTable, num = re.subn(r'([\r\n]+(?:!|\|)[^\r\n\|]+) *= *([^"\s>]+)([^\|\r\n]*)\|',
                                    r'\1="\2"\3|', newTable, 1)
-           
+
         ##################
         # merge two short <td>s
         num = 1
@@ -361,7 +361,7 @@ class Table2WikiRobot:
         # add a new line if first is * or #
         newTable = re.sub("[\r\n]+\| ([*#]{1})",
                          r"\r\n|\r\n\1", newTable)
-        
+
         ##################
         # strip <center> from <th>
         newTable = re.sub("([\r\n]+\![^\r\n]+?)<center>([\w\W]+?)<\/center>",
@@ -373,14 +373,14 @@ class Table2WikiRobot:
         # if there are other attributes, simply strip the align="center"
         newTable = re.sub("([\r\n]+\![^\r\n\|]+?)align\=\"center\"([^\n\r\|]+?\|)",
                          r"\1 \2", newTable)
-        
+
         ##################
         # kill additional spaces within arguments
         num = 1
         while num != 0:
             newTable, num = re.subn("[\r\n]+(\||\!)([^|\r\n]*?)[ \t]{2,}([^\r\n]+?)",
                                    r"\r\n\1\2 \3", newTable)
-            
+
         ##################
         # I hate those long lines because they make a wall of letters
         # Off by default, set 'splitLongParagraphs = True' in user-config.py
@@ -531,7 +531,7 @@ class Table2WikiRobot:
     def run(self):
         for page in self.generator:
             self.treat(page)
-            
+
 def main():
     quietMode = False # use -quiet to get less output
     # if the -file argument is used, page titles are stored in this array.

@@ -34,7 +34,7 @@ genFactory.handleArg() which means pagegenerators.py arguments are
 supported.
 
 """
-__version__ = '$Id: basic.py 4946 2008-01-29 14:58:25Z wikipedian $'
+__version__ = '$Id$'
 import wikipedia
 import pagegenerators
 
@@ -112,7 +112,7 @@ class PiperBot:
     #    file.write(text.encode("utf-8"))
     #    file.close()
     #    print "Wrote to %s" % saveName
-    
+
     def treat(self, page):
         """
         Loads the given page, does some changes, and saves it.

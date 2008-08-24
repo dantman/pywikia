@@ -88,7 +88,7 @@ class CapitalizeBot:
             else:
                 wikipedia.output(u'%s already exists, skipping...\n'
                                  % page_t.title())
-    
+
 def main():
     gen = None
     source = None
@@ -144,7 +144,7 @@ def main():
                 namespaces.append(arg[11:])
         else:
             commandline_replacements.append(arg)
-        
+
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
     elif source == 'category':

@@ -75,7 +75,7 @@ parameterHelp = """\
                   on the x newest pages.
 
 -imagelinks       Work on all images that are linked from a certain page.
-                  Argument can also be given as "-imagelinks:linkingpagetitle". 
+                  Argument can also be given as "-imagelinks:linkingpagetitle".
 
 -newimages        Work on the 100 newest images. If given as -newimages:x,
                   will work on the x newest images.
@@ -91,7 +91,7 @@ parameterHelp = """\
                   "-start:Template:!" will make the bot work on all pages
                   in the template namespace.
 
--prefixindex      Work on pages commencing with a common prefix.  
+-prefixindex      Work on pages commencing with a common prefix.
 
 -regex            Obsolete, use -titleregex
 
@@ -939,7 +939,7 @@ class GeneratorFactory:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
             else:
               gen = NewpagesPageGenerator(number = 60)
-        elif arg.startswith('-imagelinks'):            
+        elif arg.startswith('-imagelinks'):
             imagelinkstitle = arg[len('-imagelinks:'):]
             if not imagelinkstitle:
                 imagelinkstitle = wikipedia.input(u'Images on which page should be processed?')

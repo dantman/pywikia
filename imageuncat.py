@@ -4,6 +4,7 @@ Program to add uncat template to images without categories at commons.
 See imagerecat.py (still working on that one) to add these images to categories.
 
 """
+__version__ = '$Id$'
 #
 #  (C) Multichill 2008
 #
@@ -11,10 +12,10 @@ See imagerecat.py (still working on that one) to add these images to categories.
 #
 #
 
-import os, sys, re, codecs 
-import wikipedia, config, pagegenerators, query  
+import os, sys, re, codecs
+import wikipedia, config, pagegenerators, query
 from datetime import datetime
-from datetime import timedelta 
+from datetime import timedelta
 
 #Probably unneeded because these are hidden categories. Have to figure it out.
 ignoreCategories = [u'[[Category:CC-BY-SA-3.0]]',
@@ -49,7 +50,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'Agência Brasil',
                     u'AgenciaCamaraBr',
                     u'AgenciaSenadoBr',
-                    u'Ak',                    
+                    u'Ak',
                     u'AL2TB',
                     u'Alabordache',
                     u'Alexj2002C220PD',
@@ -1161,7 +1162,7 @@ def uploadedYesterday(site = None):
         'lelimit'   :'5000',
         'lestart'   :yesterday.strftime(dateformat),
         'leend'     :today.strftime(dateformat)
-        }    
+        }
 
     data = query.GetData(params, site, useAPI = True, encodeTitle = False)
     try:
@@ -1171,7 +1172,7 @@ def uploadedYesterday(site = None):
         raise NoPage(u'API Error, nothing found in the APIs')
     except KeyError:
         raise NoPage(u'API Error, nothing found in the APIs')
-        
+
     return pagegenerators.PagesFromTitlesGenerator(result, site)
 
 def isUncat(page):
@@ -1182,22 +1183,22 @@ def isUncat(page):
     If we found a template which is in the ignore list, skip the page.
     '''
     wikipedia.output(u'Working on '+ page.title())
-    
+
     for category in page.categories():
         if category not in ignoreCategories:
             wikipedia.output(u'Got category ' + category.title())
-            return False            
-             
+            return False
+
     for templateWithTrail in page.templates():
         #Strip of trailing garbage
-        template = templateWithTrail.rstrip('\n').rstrip()        
+        template = templateWithTrail.rstrip('\n').rstrip()
         if template in skipTemplates:
             # Already tagged with a template, skip it
             wikipedia.output(u'Already tagged, skip it')
             return False
         elif template in ignoreTemplates:
             # template not relevant for categorization
-            wikipedia.output(u'Ignore ' + template)            
+            wikipedia.output(u'Ignore ' + template)
         else:
             wikipedia.output(u'Not ignoring ' + template)
             return False
@@ -1206,9 +1207,9 @@ def isUncat(page):
 def addUncat(page):
     '''
     Add the uncat template to the page
-    '''    
+    '''
     newtext = page.get() + puttext
-    wikipedia.showDiff(page.get(), newtext)    
+    wikipedia.showDiff(page.get(), newtext)
     try:
         page.put(newtext, putcomment)
     except wikipedia.EditConflict:
@@ -1217,7 +1218,7 @@ def addUncat(page):
     except wikipedia.LockedPage:
         # Skip this page
         pass
-    return    
+    return
 
 def main(args):
     '''
@@ -1238,14 +1239,14 @@ def main(args):
             generator = uploadedYesterday(site)
         else:
             generator = genFactory.handleArg(arg)
-    if not generator:        
+    if not generator:
         wikipedia.output('You have to specify the generator you want to use for the program!')
-    else:    
+    else:
         pregenerator = pagegenerators.PreloadingGenerator(generator)
         for page in pregenerator:
             if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
                 if isUncat(page):
-                    addUncat(page)                        
+                    addUncat(page)
 
 if __name__ == "__main__":
     try:
