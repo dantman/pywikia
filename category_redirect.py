@@ -86,8 +86,9 @@ class CategoryRedirectBot(object):
         self.cat_redirect_cat = {
             'wikipedia': {
                 'en': "Category:Wikipedia category redirects",
-				'ar': "تصنيف:تحويلات تصنيفات ويكيبيديا",
+                'ar': "تصنيف:تحويلات تصنيفات ويكيبيديا",
                 'no': "Kategori:Wikipedia omdirigertekategorier",
+                'ja': "Category:移行中のカテゴリ",
                 'simple': "Category:Category redirects",
             },
             'commons': {
@@ -116,10 +117,11 @@ class CategoryRedirectBot(object):
                        "Emptycategory",
                        "Empty cat",
                        "Seecat",),
-				'ar': ("تحويل تصنيف",
+                'ar': ("تحويل تصنيف",
                        "Category redirect",
                        "تحويلة تصنيف",),
                 'no': ("Kategoriomdirigering",),
+                'ja': ("Category redirect",),
                 'simple': ("Category redirect",
                            "Catredirect"),
                 },
@@ -142,6 +144,8 @@ u"Robot: moving pages out of redirected category",
 u"روبوت: نقل الصفحات من تصنيف محول",
             'no':
 u"Robot: Flytter sider ut av omdirigeringskategori",
+            'ja':
+u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
             'commons':
 u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])'
         }
@@ -151,19 +155,23 @@ u'Robot: Changing category link (following [[Template:Category redirect|category
 u"Robot: adding category redirect template for maintenance",
             'ar':
 u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
+            'ja':
+u"ロボットによる: 移行中のカテゴリとしてタグ付け",
             'no':
 u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         } 
 
         self.dbl_redir_comment = {
             '_default': u"Robot: fixing double-redirect",
-			'ar': u"روبوت: تصليح تحويلة مزدوجة",
+            'ar': u"روبوت: تصليح تحويلة مزدوجة",
+            'ja': u"ロボットによる: 二重リダイレクト修正",
             'no': u"Robot: Ordner doble omdirigeringer",
         }
 
         self.maint_comment = {
             '_default': u"Category redirect maintenance bot",
-			'ar': u"بوت صيانة تحويل التصنيف",
+            'ar': u"بوت صيانة تحويل التصنيف",
+            'ja': u"移行中のカテゴリのメンテナンス・ボット",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
         }
 
