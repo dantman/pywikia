@@ -22,7 +22,6 @@ summary_msg = {
     'it': u'Rimozione',
 }
 
-#"(?m)^=== (?:<strike>)?(?:<s>)?(?:<del>)?\[\[(?::)?(.*?)(?:#.*?)?\]\]"
 headC = re.compile("(?m)^=== (?:<strike>)?(?:<s>)?(?:<del>)?\[\[(?::)?(.*?)\]\]")
 separatorC = re.compile('(?m)^== +')
 next_headC = re.compile("(?m)^=+.*?=+")
@@ -132,10 +131,10 @@ for page in gen:
     query_results_titles = list()
     query_results_revids = list()
 
-    # No more of 100 titles at a time using old Query API
-    for s in mysplit(query.ListToParam(titles), 100, "|"):
+    # No more of 50 titles at a time using API
+    for s in mysplit(query.ListToParam(titles), 50, "|"):
         query_results_titles.append(simplejson.loads(query_api(('titles', s))))
-    for s in mysplit(query.ListToParam(revids), 100, "|"):
+    for s in mysplit(query.ListToParam(revids), 50, "|"):
         query_results_revids.append(simplejson.loads(query_api(('revids', s))))
 
     comment_entry = list()
