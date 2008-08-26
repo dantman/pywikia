@@ -391,6 +391,7 @@ ignore_title = {
             u"Gebruiker:Zanaq/SG1",
             u'Gebruiker:Erwin.*',
             u'Gebruiker:Romaine/Dp.*',
+            u'Gebruiker:Romaine/Doorverwijspaginas/Frankrijkgemeentes',
             u'Gebruiker:JePe/Artikelen met een ISBN-link',
             u'Gebruiker:.+/.*[aA]rchief.*',
          ],
