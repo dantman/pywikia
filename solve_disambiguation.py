@@ -525,7 +525,12 @@ class DisambiguationRobot(object):
               u'{{[Pp]rocessing}}',
             ),
     }
-
+    
+    primary_redir_template = {
+        # Page.templates() format, first letter uppercase
+        'hu': u'Egyért-redir',
+    }
+    
     def __init__(self, always, alternatives, getAlternatives, generator, primary, main_only):
         self.always = always
         self.alternatives = alternatives
@@ -817,22 +822,38 @@ class DisambiguationRobot(object):
 
     def findAlternatives(self, disambPage):
         if disambPage.isRedirectPage() and not self.primary:
-            try:
-                target = disambPage.getRedirectTarget().title()
-                self.alternatives.append(target)
-            except wikipedia.NoPage:
-                wikipedia.output(u"The specified page was not found.")
-                user_input = wikipedia.input(u"""\
+            if self.primary_redir_template.has_key(disambPage.site().lang) and self.primary_redir_template[disambPage.site().lang] in disambPage.templates(get_redirect = True):
+                baseTerm = disambPage.title()
+                for template in disambPage.templatesWithParams(get_redirect = True):
+                    if template[0] == self.primary_redir_template[disambPage.site().lang] and len(template[1]) > 0:
+                        baseTerm = template[1][1]
+                disambTitle = primary_topic_format[self.mylang] % baseTerm
+                try:
+                    disambPage2 = wikipedia.Page(self.mysite, disambTitle)
+                    links = disambPage2.linkedPages()
+                    links = [correctcap(l,disambPage2.get()) for l in links]
+                except wikipedia.NoPage:
+                    wikipedia.output(u"No page at %s, using redirect target." % disambTitle)
+                    links = disambPage.linkedPages()[:1]
+                    links = [correctcap(l,disambPage.get(get_redirect = True)) for l in links]
+                self.alternatives += links
+            else:
+                try:
+                    target = disambPage.getRedirectTarget().title()
+                    self.alternatives.append(target)
+                except wikipedia.NoPage:
+                    wikipedia.output(u"The specified page was not found.")
+                    user_input = wikipedia.input(u"""\
 Please enter the name of the page where the redirect should have pointed at,
 or press enter to quit:""")
-                if user_input == "":
-                    sys.exit(1)
-                else:
-                    self.alternatives.append(user_input)
-            except wikipedia.IsNotRedirectPage:
-                wikipedia.output(
-                    u"The specified page is not a redirect. Skipping.")
-                return False
+                    if user_input == "":
+                        sys.exit(1)
+                    else:
+                        self.alternatives.append(user_input)
+                except wikipedia.IsNotRedirectPage:
+                    wikipedia.output(
+                        u"The specified page is not a redirect. Skipping.")
+                    return False
         elif self.getAlternatives:
             try:
                 if self.primary:
