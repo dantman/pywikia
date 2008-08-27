@@ -79,6 +79,7 @@ class CategoryRedirectBot(object):
         self.catprefix = self.site.namespace(14)+":"
         self.result_queue = Queue.Queue()
         self.log_text = []
+        self.edit_requests = []
 
         # Localization:
 
@@ -168,20 +169,20 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
         }
 
-        self.talk_notification = {
-            '_default': u"""
-== Category link ==
+        self.edit_request_text = {
+            '_default': u"""\
 {{editprotected}}
-* This protected page has been detected in [[%(oldcat)s]], but that category \
-has been redirected to [[%(newcat)s]]. Please update the category link. \
+The following protected pages have been detected as requiring updates to \
+category links:
+%s
 --~~~~
-""",
+"""
         }
 
-        self.talk_notification_comment = {
-            '_default':
-                u"Robot: Category-redirect notification on protected page",
+        self.edit_request_item = {
+            '_default': u"* %s is in %s, which is a redirect to %s"
         }
+
 
     def change_category(self, article, oldCat, newCat, comment=None,
                         sortKey=None):
@@ -208,34 +209,9 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
                 u'Skipping %s because of edit conflict' % article.aslink())
         except wikipedia.LockedPage:
             wikipedia.output(u'Skipping locked page %s' % article.aslink())
-            if not article.isTalkPage() and article.namespace() != 2:
-                # no messages on user pages or non-talk pages
-                talkpage = article.toggleTalkPage()
-                try:
-                    talktext = talkpage.get()
-                except wikipedia.IsRedirectPage:
-                    return False
-                except wikipedia.NoPage:
-                    talktext = u""
-                talktext = talktext + wikipedia.translate(
-                                       self.site.lang,
-                                       self.talk_notification) % {
-                                        'oldcat': oldCat.aslink(textlink=True),
-                                        'newcat': newCat.aslink(textlink=True)}
-                try:
-                    talkpage.put(talktext,
-                                 wikipedia.translate(
-                                     self.site.lang,
-                                     self.talk_notification_comment),
-                                 minorEdit=False)
-                    wikipedia.output(
-                        u"Left protected page notification on %s"
-                         % talkpage.aslink())
-                except wikipedia.PageNotSaved:
-                    wikipedia.output(
-                        u"Protected page notification on %s failed"
-                         % talkpage.aslink())
-
+            self.edit_requests.append((article.aslink(),
+                                       oldCat.aslink(textlink=True),
+                                       newCat.aslink(textlink=True)))
         except wikipedia.SpamfilterError, error:
             wikipedia.output(
                 u'Changing page %s blocked by spam filter (URL=%s)'
@@ -244,6 +220,9 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
             wikipedia.output(
                 u"Page %s not saved; sysop privileges required."
                              % article.aslink())
+            self.edit_requests.append((article.aslink(),
+                                       oldCat.aslink(textlink=True),
+                                       newCat.aslink(textlink=True)))
         except wikipedia.PageNotSaved, error:
             wikipedia.output(u"Saving page %s failed: %s"
                              % (article.aslink(), error.message))
@@ -379,17 +358,17 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
         other_words = self.site.redirect()
         if other_words:
             redirect_magicwords.extend(other_words)
-
         problems = []
 
-        problem_page = wikipedia.Page(self.site,
-                        u"User:%(user)s/category redirect problems" % locals())
         l = time.localtime()
         today = "%04d-%02d-%02d" % l[:3]
         log_page = wikipedia.Page(self.site,
                         u"User:%(user)s/category redirect logs/%(today)s"
                           % locals())
-
+        problem_page = wikipedia.Page(self.site,
+                        u"User:%(user)s/category redirect problems" % locals())
+        edit_request_page = wikipedia.Page(self.site,
+                        u"User:%(user)s/category edit requests" % locals())
         datafile = wikipedia.config.datafilepath(
                         "%s-catmovebot-data" % self.site.dbName())
         try:
@@ -631,6 +610,9 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
                                                 self.maint_comment))
         log_page.put("\n".join(self.log_text))
         problem_page.put("\n".join(problems))
+        editrequest_page.put(self.edit_request_text
+                             % "\n".join((self.edit_request_item % item)
+                                         for item in self.edit_requests))
 
 
 def main(*args):
