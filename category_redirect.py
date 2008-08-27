@@ -3,12 +3,6 @@
 
 Usage: category-redirect.py [options]
 
-The following command-line options can be used with this bot:
-
--often            Only scan those redirected categories that have been
-                  identified as often-populated (only useful if the site
-                  has such a category defined)
-
 """
 __version__ = '$Id$'
 
@@ -26,6 +20,7 @@ from datetime import datetime, timedelta
 
 class APIError(Exception):
     """The wiki API returned an error message."""
+
     def __init__(self, errordict):
         """Save error dict returned by MW API."""
         self.errors = errordict
@@ -78,9 +73,12 @@ class ThreadList(list):
 
 
 class CategoryRedirectBot(object):
-    def __init__(self, often):
-        self.cooldown = 6 # days
-        self.often = often
+    def __init__(self):
+        self.cooldown = 7 # days
+        self.site = wikipedia.getSite()
+        self.catprefix = self.site.namespace(14)+":"
+        self.result_queue = Queue.Queue()
+        self.log_text = []
 
         # Localization:
 
@@ -94,15 +92,8 @@ class CategoryRedirectBot(object):
                 'simple': "Category:Category redirects",
             },
             'commons': {
-                'commons': "Category:Non-empty category redirects"
+                'commons': "Category:Category redirects"
             }
-        }
-
-        # Category that contains frequently-used redirected category pages
-        self.often_redirect_cat = {
-            'wikipedia': {
-                'en': "Category:Often-populated Wikipedia category redirects",
-            },
         }
 
         # List of all templates that are used to mark category redirects
@@ -203,9 +194,7 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
         fixed due to protection.
 
         """
-        cats = article.categories(get_redirect=True)
-
-        oldtext = article.get(get_redirect=True)
+        oldtext = article.get(get_redirect=True, force=True)
         newtext = wikipedia.replaceCategoryInPlace(oldtext, oldCat, newCat)
         if newtext == oldtext:
             wikipedia.output(
@@ -219,7 +208,7 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
                 u'Skipping %s because of edit conflict' % article.aslink())
         except wikipedia.LockedPage:
             wikipedia.output(u'Skipping locked page %s' % article.aslink())
-            if not article.isTalkPage and article.namespace != 2:
+            if not article.isTalkPage() and article.namespace() != 2:
                 # no messages on user pages or non-talk pages
                 talkpage = article.toggleTalkPage()
                 try:
@@ -272,9 +261,9 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
                 # Move articles
                 found, moved = 0, 0
                 for result in self.query_results(list="categorymembers",
-                                                cmtitle=oldCat.title(),
-                                                cmprop="title|sortkey",
-                                                cmlimit="max"):
+                                                 cmtitle=oldCat.title(),
+                                                 cmprop="title|sortkey",
+                                                 cmlimit="max"):
                     found += len(result['categorymembers'])
                     for item in result['categorymembers']:
                         article = wikipedia.Page(self.site, item['title'])
@@ -301,12 +290,6 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
                 if found:
                     wikipedia.output(u"%s: %s found, %s moved"
                                      % (oldCat.title(), found, moved))
-                    #Dummy edit to refresh the page, shouldn't show up in any logs.
-                    try:
-                        oldCat.put(oldCat.get())
-                    except:
-                        self.log_text.append(u'* Dummy edit at %s failed'
-                                              % oldCat.aslink(textlink=True))
                 self.result_queue.put((oldCatTitle, found, moved))
                 return
             except wikipedia.ServerError:
@@ -391,11 +374,6 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
 
     def run(self):
         """Run the bot"""
-        self.site = wikipedia.getSite()
-        self.catprefix = self.site.namespace(14)+":"
-        self.result_queue = Queue.Queue()
-        self.log_text = []
-
         user = self.site.loggedInAs()
         redirect_magicwords = ["redirect"]
         other_words = self.site.redirect()
@@ -427,25 +405,22 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
         template_list = self.redir_templates[self.site.family.name
                                              ][self.site.lang]
         # regex to match soft category redirects
-        template_regexes = [
-                re.compile(
-ur"{{\s*(?:%(prefix)s\s*:\s*)?%(template)s\s*\|(\s*%(catns)s\s*:\s*)?([^}]+)}}"
-                           % {'prefix': self.site.namespace(10).lower(),
-                              'template': item.replace(" ", "[ _]+"),
-                              'catns': self.site.namespace(14)},
-                    re.I)
-                for item in template_list
-            ]
+        #  note that any templates containing optional "category:" are
+        #  incorrect and will be fixed by the bot
         template_regex = re.compile(
-ur"{{\s*(?:%(prefix)s\s*:\s*)?(?:%(template)s)\s*\|(\s*%(catns)s\s*:\s*)?([^}]+)}}"
-                           % {'prefix': self.site.namespace(10).lower(),
-                              'template': "|".join(item.replace(" ", "[ _]+")
-                                                   for item in template_list),
-                              'catns': self.site.namespace(14)},
-                    re.I)
+            ur"""{{\s*(?:%(prefix)s\s*:\s*)?  # optional "template:"
+                      (?:%(template)s)\s*\|   # catredir template name
+                      (\s*%(catns)s\s*:\s*)?  # optional "category:"
+                      ([^|}]+)                # redirect target cat
+                      (?:\|[^|}]*)*}}         # optional arguments 2+, ignored
+              """ % {'prefix': self.site.namespace(10).lower(),
+                     'template': "|".join(item.replace(" ", "[ _]+")
+                                          for item in template_list),
+                     'catns': self.site.namespace(14)},
+            re.I|re.X)
         # regex to match hard redirects to category pages
         catredir_regex = re.compile(
-ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
+            ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
                              % {'redir': "|".join(redirect_magicwords),
                                 'catns': self.site.namespace(14)},
                             re.I)
@@ -458,10 +433,10 @@ ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
         # with an appropriate template
         comment = wikipedia.translate(self.site.lang, self.redir_comment)
         for result in self.query_results(list='allpages',
-                                        apnamespace='14', # Category:
-                                        apfrom='!',
-                                        apfilterredir='redirects',
-                                        aplimit='max'):
+                                         apnamespace='14', # Category:
+                                         apfrom='!',
+                                         apfilterredir='redirects',
+                                         aplimit='max'):
             gen = (wikipedia.Page(self.site, page_item['title'])
                    for page_item in result['allpages'])
             for page in pagegenerators.PreloadingGenerator(gen, 120):
@@ -508,35 +483,32 @@ ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
             u'eilimit': 'max',
             u'format': 'json'
         }
-        counts = {}
-        destmap = {}
-        catmap = {}
-        catlist = []
-        catpages = []
-        if self.often:
-            target = self.often_redirect_cat[self.site.family.name
-                                             ][self.site.lang]
-        else:
-            target = self.cat_redirect_cat[self.site.family.name
-                                           ][self.site.lang]
+        counts, destmap, catmap = {}, {}, {}
+        catlist, catpages, nonemptypages = [], [], []
+        target = self.cat_redirect_cat[self.site.family.name][self.site.lang]
 
-        # get and preload all members of the category-redirect category
+        # get a list of all members of the category-redirect category
         for result in self.query_results(generator=u'categorymembers',
-                                        gcmtitle=target,
-                                        gcmnamespace=u'14', # CATEGORY
-                                        gcmlimit=u'max',
-                                        prop='info'):
+                                         gcmtitle=target,
+                                         gcmnamespace=u'14', # CATEGORY
+                                         gcmlimit=u'max',
+                                         prop='info|categoryinfo'):
             for catdata in result['pages'].values():
-                catpages.append(wikipedia.Page(self.site, catdata['title']))
+                thispage = wikipedia.Page(self.site, catdata['title'])
+                catpages.append(thispage)
+                if 'categoryinfo' in catdata \
+                        and catdata['categoryinfo']['size'] != "0":
+                    # save those categories that have contents
+                    nonemptypages.append(thispage)
 
+        # preload the category pages for redirected categories
         wikipedia.output(u"")
         wikipedia.output(u"Preloading %s category redirect pages"
                          % len(catpages))
-        thread_limit = int(math.log(len(catpages), 2))
         for cat in pagegenerators.PreloadingGenerator(catpages, 120):
             cat_title = cat.titleWithoutNamespace()
-            if "Wikipedia category redirect" in cat_title:
-#                self.log_text.append("* Ignoring %s%s" % (self.catprefix, cat_title))
+            if "category redirect" in cat_title:
+                self.log_text.append("* Ignoring %s%s" % (self.catprefix, cat_title))
                 continue
             try:
                 text = cat.get(get_redirect=True)
@@ -610,20 +582,28 @@ ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
                         except wikipedia.Error, e:
                             self.log_text.append("** Failed: %s" % str(e))
 
+        # only scan those pages that have contents (nonemptypages)
+        # and that haven't been removed from catlist as broken redirects
+        cats_to_empty = set(catlist) & set(nonemptypages)
         wikipedia.output(u"")
         wikipedia.output(u"Moving pages out of %s redirected categories."
-                         % len(catlist))
-        threadpool = ThreadList(limit=thread_limit)
+                         % len(cats_to_empty))
+        thread_limit = int(math.log(len(cats_to_empty), 8) + 1)
+        threadpool = ThreadList(limit=1) # temporarily disabling multi-threads
 
-        for cat in catlist:
+        for cat in cats_to_empty:
             cat_title = cat.titleWithoutNamespace()
             if not self.readyToEdit(cat):
                 counts[cat_title] = None
+                self.log_text.append(
+                    u"* Skipping %s; in cooldown period."
+                     % cat.aslink(textlink=True))
                 continue
-            threadpool.append(threading.Thread(target=self.move_contents,
-                                               args=(cat_title, catmap[cat]),
-                                               kwargs=dict(editSummary=comment)))
-        while len(counts) < len(catlist):
+            threadpool.append(
+                threading.Thread(target=self.move_contents,
+                                 args=(cat_title, catmap[cat]),
+                                 kwargs=dict(editSummary=comment)))
+        while len(counts) < len(cats_to_empty):
             title, found, moved = self.result_queue.get()
             if found is None:
                 self.log_text.append(
@@ -636,10 +616,9 @@ ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
                         % (self.catprefix, title, found, moved))
             counts[title] = found
 
-        if not self.often:
-            for cat in record.keys():
-                if cat not in counts.keys():
-                    del record[cat]
+        for cat in record.keys():
+            if cat not in counts.keys():
+                del record[cat]
         for cat in counts.keys():
             if counts[cat] is not None:
                 if counts[cat]:
@@ -657,17 +636,12 @@ ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
 def main(*args):
     try:
         a = wikipedia.handleArgs(*args)
-        if "-often" in a:
-            a.remove("-often")
-            often = True
-        else:
-            often = False
         if len(a) == 1:
             raise RuntimeError('Unrecognized argument "%s"' % a[0])
         elif a:
             raise RuntimeError('Unrecognized arguments: ' +
                                " ".join(('"%s"' % arg) for arg in a))
-        bot = CategoryRedirectBot(often)
+        bot = CategoryRedirectBot()
         bot.run()
     finally:
         wikipedia.stopme()
