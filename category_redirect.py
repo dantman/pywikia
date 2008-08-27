@@ -223,13 +223,11 @@ has been redirected to [[%(newcat)s]]. Please update the category link. \
                 # no messages on user pages or non-talk pages
                 talkpage = article.toggleTalkPage()
                 try:
-                    talktext = talk.get()
+                    talktext = talkpage.get()
                 except wikipedia.IsRedirectPage:
                     return False
                 except wikipedia.NoPage:
                     talktext = u""
-                if not talk.isTalkPage():
-                    return False
                 talktext = talktext + wikipedia.translate(
                                        self.site.lang,
                                        self.talk_notification) % {
