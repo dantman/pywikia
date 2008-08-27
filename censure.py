@@ -18,7 +18,7 @@ import thread
 # The page, where the bot logs to
 
 logPages = {
-    'hu': u'Wikipédia:Cenzúra',
+    'hu': u'Wikipédia:Potenciálisan vandalizmus áldozatául esett szócikkek',
     }
 
 # To add a new language, create or find the bad word page
