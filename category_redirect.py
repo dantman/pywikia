@@ -169,19 +169,19 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
         }
 
-        self.edit_request_text = {
-            '_default': u"""\
+        self.edit_request_text = wikipedia.translate(self.site.lang,
+            {'_default': u"""\
 {{editprotected}}
 The following protected pages have been detected as requiring updates to \
 category links:
 %s
 --~~~~
-"""
-        }
+""",
+            })
 
-        self.edit_request_item = {
-            '_default': u"* %s is in %s, which is a redirect to %s"
-        }
+        self.edit_request_item = wikipedia.translate(self.site.lang,
+            {'_default': u"* %s is in %s, which is a redirect to %s",
+            })
 
 
     def change_category(self, article, oldCat, newCat, comment=None,
@@ -610,9 +610,10 @@ category links:
                                                 self.maint_comment))
         log_page.put("\n".join(self.log_text))
         problem_page.put("\n".join(problems))
-        editrequest_page.put(self.edit_request_text
-                             % "\n".join((self.edit_request_item % item)
-                                         for item in self.edit_requests))
+        if self.edit_requests:
+            edit_request_page.put(self.edit_request_text
+                                 % "\n".join((self.edit_request_item % item)
+                                             for item in self.edit_requests))
 
 
 def main(*args):
