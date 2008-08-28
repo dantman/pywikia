@@ -15,25 +15,27 @@ import wikipedia
 import sys
 import thread
 
+# The indexes for projects are as: <language code>.<family>
+
 # The page, where the bot logs to
 
 logPages = {
-    'hu': u'Wikipédia:Potenciálisan vandalizmus áldozatául esett szócikkek',
+    'hu.wikipedia': u'Wikipédia:Potenciálisan vandalizmus áldozatául esett szócikkek',
     }
 
 # To add a new language, create or find the bad word page
-# similarly to the 'hu' one (one word per line, starting with <pre> and ending with </pre> lines),
+# similarly to the 'hu.wikipedia' one (one word per line, starting with <pre> and ending with </pre> lines),
 # and add to the badWordList lines below.
 
 badWordList = {
-    'hu': u'User:Cenzúrabot/lista',
+    'hu.wikipedia': u'User:Cenzúrabot/lista',
     }
 
 site = wikipedia.getSite()
-if not badWordList.has_key(site.language()) or not logPages.has_key(site.language()):
+if not badWordList.has_key(site.language() + '.' + site.family.name) or not logPages.has_key(site.language() + '.' + site.family.name):
     wikipedia.output('Error: your language isn\'t supported, see the source code for further details')
     sys.exit(1)
-ownWordPage = wikipedia.Page(site, badWordList[site.language()])
+ownWordPage = wikipedia.Page(site, badWordList[site.language() + '.' + site.family.name])
 try:
     ownWordList = ownWordPage.get(get_redirect = True)
 except wikipedia.NoPage:
@@ -64,7 +66,7 @@ def seekepos(str1, str2, bpos):
         return -1 
 
 def checkPage(title, onlyLastDiff = False):
-    if title == logPages[site.language()]:
+    if title == logPages[site.language() + '.' + site.family.name]:
         return
     wikipedia.output('Checking ' + title + ' for bad word list')
     page = wikipedia.Page(site, title)
@@ -91,7 +93,7 @@ def checkPage(title, onlyLastDiff = False):
             wordsIn.append(badWord)
             report = True
     if report:
-        logPage = wikipedia.Page(site, logPages[site.language()])
+        logPage = wikipedia.Page(site, logPages[site.language() + '.' + site.family.name])
         try:
             log = logPage.get()
         except:
