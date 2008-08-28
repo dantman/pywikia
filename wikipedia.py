@@ -228,6 +228,8 @@ Rwatch = re.compile(
 Rwatchlist = re.compile(r"<input tabindex='[\d]+' type='checkbox' "
                         r"name='wpWatchthis' checked='checked'")
 Rlink = re.compile(r'\[\[(?P<title>[^\]\|\[]*)(\|[^\]]*)?\]\]')
+resectiondecodeescapes = re.compile(r".(?=[0-9a-f]{2})",re.I)
+resectiondecodeleadingnonalpha = re.compile(r'^x(?=[^a-zA-Z])')
 
 
 class Page(object):
@@ -526,7 +528,8 @@ not supported by PyWikipediaBot!"""
         """
         section = self._section
         if section and decode:
-            section = section.replace('.', '%')
+            section = resectiondecodeleadingnonalpha.sub('',section)
+            section = resectiondecodeescapes.sub('%',section)
             section = url2unicode(section, self._site)
             if not underscore:
                 section = section.replace('_', ' ')
