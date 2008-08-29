@@ -5452,11 +5452,11 @@ your connection is down. Retrying in %i minutes..."""
 
         if self.versionnumber() > 12:
             # in MW 1.13 (at least) a redirect directive can follow whitespace
-            prefix = r'[\n ]*'
+            prefix = r'\s*'
         else:
-            prefix = r'\n*'
+            prefix = r'[\r\n]*'
         return re.compile(prefix + '#' + redirKeywordsR
-                                 + '.*?\[\[(.+?)(?:\|.*?)?\]\]',
+                                 + '\s*:?\s*\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
 
     # The following methods are for convenience, so that you can access
