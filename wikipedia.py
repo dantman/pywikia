@@ -228,7 +228,7 @@ Rwatch = re.compile(
 Rwatchlist = re.compile(r"<input tabindex='[\d]+' type='checkbox' "
                         r"name='wpWatchthis' checked='checked'")
 Rlink = re.compile(r'\[\[(?P<title>[^\]\|\[]*)(\|[^\]]*)?\]\]')
-resectiondecodeescapes = re.compile(r".(?=[0-9a-f]{2})",re.I)
+resectiondecodeescapes = re.compile(r"\.(?=[0-9a-f]{2})",re.I)
 resectiondecodeleadingnonalpha = re.compile(r'^x(?=[^a-zA-Z])')
 
 
