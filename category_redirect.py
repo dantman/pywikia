@@ -252,17 +252,17 @@ category links:
 
                 # pass 2: look for template doc pages
                 for result in self.query_results(list="categorymembers",
-                                                cmtitle=oldCat.title(),
-                                                cmprop="title|sortkey",
-                                                cmnamespace="10",
-                                                cmlimit="max"):
+                                                 cmtitle=oldCat.title(),
+                                                 cmprop="title|sortkey",
+                                                 cmnamespace="10",
+                                                 cmlimit="max"):
                     for item in result['categorymembers']:
                         doc = wikipedia.Page(self.site, item['title']+"/doc")
                         try:
                             old_text = doc.get()
                         except wikipedia.Error:
                             continue
-                        changed = self.change_category(article, oldCat, newCat,
+                        changed = self.change_category(doc, oldCat, newCat,
                                                        comment=editSummary)
                         if changed: moved += 1
 
