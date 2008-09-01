@@ -592,6 +592,7 @@ class Family(family.Family):
             'li':  [u'Verdudeliking', u'Verdudelikingpazjena', u'Vp'],
             'lmo': [u'Desambiguació'],
             'ln':  [u'Bokokani'],
+            'lt':  None,
             'mk':  [u'Појаснување'],
             'mo':  [u'Дезамбигуйзаре', u'Disambig'],
             'ms':  [u'Nyahkekaburan', u'Disambig'],
