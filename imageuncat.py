@@ -1170,7 +1170,7 @@ def uploadedYesterday(site = None):
     '''
     result = []
     dateformat ="%Y-%m-%dT00:00:00Z"
-    today = datetime.now()
+    today = datetime.utcnow()
     yesterday = today + timedelta(days=-1)
 
     params = {
@@ -1187,6 +1187,42 @@ def uploadedYesterday(site = None):
     data = query.GetData(params, site, useAPI = True, encodeTitle = False)
     try:
         for item in data['query']['logevents']:
+            result.append(item['title'])
+    except IndexError:
+        raise NoPage(u'API Error, nothing found in the APIs')
+    except KeyError:
+        raise NoPage(u'API Error, nothing found in the APIs')
+
+    return pagegenerators.PagesFromTitlesGenerator(result, site)
+
+def recentChanges(site = None, delay=60, block=70):
+    '''
+    Return a pagegenerator containing all the images edited in a certain timespan.
+    The delay is the amount of minutes to wait and the block is the timespan to return images in.
+    Should probably copied to somewhere else
+    '''
+    
+    result = []
+    dateformat ="%Y-%m-%dT%H:%M:%SZ"
+    rcstart = datetime.utcnow() + timedelta(minutes=-delay-block)
+    rcend = datetime.utcnow() + timedelta(minutes=-delay)
+
+    params = {
+        'action'    :'query',
+        'list'      :'recentchanges',
+        'rcstart'   :rcstart.strftime(dateformat),
+        'rcend'     :rcend.strftime(dateformat),
+        'rcdir'     :'newer',
+        'rcnamespace':'6',
+        'rcprop'    :'title',
+        'rcshow'    :'!bot',
+        'rclimit'   :'5000',
+        'rctype'    :'edit',
+        }
+
+    data = query.GetData(params, site, useAPI = True, encodeTitle = False)
+    try:
+        for item in data['query']['recentchanges']:
             result.append(item['title'])
     except IndexError:
         raise NoPage(u'API Error, nothing found in the APIs')
@@ -1257,6 +1293,8 @@ def main(args):
                 generator = [wikipedia.Page(site, arg[6:])]
         elif arg.startswith('-yesterday'):
             generator = uploadedYesterday(site)
+        elif arg.startswith('-recentchanges'):
+            generator = recentChanges(site)
         else:
             generator = genFactory.handleArg(arg)
     if not generator:
