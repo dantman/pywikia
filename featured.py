@@ -61,6 +61,7 @@ msg = {
     'hr': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'hsb': u'Bot: [[%s:%s]] je wuběrny nastawk',
     'hu': u'Bot: a(z) [[%s:%s]] kiemelt szócikk',
+    'ia': u'Robot: Ligamine verso articulo eminente [[%s:%s]]',
     'it': u'Bot: collegamento articolo in vetrina [[%s:%s]]',
     'ja': u'ロボットによる: 秀逸な項目へのリンク [[%s:%s]]',
     'ka': u'ბოტი: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
