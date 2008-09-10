@@ -665,7 +665,7 @@ class Family(family.Family):
             'da':  u'Flertdig',
             'de':  u'Begriffsklärung',
             'el':  u'Αποσαφήνιση',
-            'en':  u'Disambiguation',
+            'en':  u'All disambiguation pages',
             'eo':  u'Apartigiloj',
             'es':  u'Desambiguación',
             'et':  u'Täpsustusleheküljed',
