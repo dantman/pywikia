@@ -54,11 +54,8 @@ def categorizeImages(generator, onlyfilter):
                 commonshelperCats = []
             else:
                 commonshelperCats = getCommonshelperCats(imagepage)
-            newcats = filterBlacklist(commonshelperCats+currentCats)
-            newcats = filterDisambiguation(newcats)
-            newcats = followRedirects(newcats)
-            newcats = filterCountries(newcats)
-            newcats = filterParents(newcats)
+            newcats = applyAllFilters(commonshelperCats+currentCats)
+
             if (len(newcats) > 0 and not(set(currentCats)==set(newcats))):
                 for cat in newcats:
                     wikipedia.output(u' Found new cat: ' + cat);
@@ -102,6 +99,16 @@ def getCommonshelperCats(imagepage):
                 result.append(cat.replace('_',' '))
 
     return list(set(result))
+
+
+def applyAllFilters(categories):
+    result = []
+    result = filterBlacklist(categories)
+    result = filterDisambiguation(result)
+    result = followRedirects(result)
+    result = filterCountries(result)
+    result = filterParents(result)
+    return result
 
 
 def filterBlacklist(categories):
@@ -198,8 +205,11 @@ def saveImagePage(imagepage, newcats, onlyfilter):
     '''
     Remove the old categories and add the new categories to the image.
     '''
-    newtext = wikipedia.removeCategoryLinks(imagepage.get(), imagepage.site())
-    newtext = removeTemplates(newtext) + u'{{subst:chc}}\n'
+    newtext = wikipedia.removeCategoryLinks(imagepage.get(), imagepage.site())    
+
+    if not(onlyfilter):
+        newtext = removeTemplates(newtext)
+        newtext = newtext + u'{{subst:chc}}\n'
     for category in newcats:
         newtext = newtext + u'[[Category:' + category + u']]\n'
 
