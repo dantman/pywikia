@@ -5916,7 +5916,7 @@ your connection is down. Retrying in %i minutes..."""
 _sites = {}
 _namespaceCache = {}
 
-def getSite(code=None, fam=None, user=None, persistent_http=None):
+def getSite(code=None, fam=None, user=None, persistent_http=None, noLogin=False):
     if code == None:
         code = default_code
     if fam == None:
@@ -5926,7 +5926,7 @@ def getSite(code=None, fam=None, user=None, persistent_http=None):
         _sites[key] = Site(code=code, fam=fam, user=user,
                            persistent_http=persistent_http)
     ret =  _sites[key]
-    if not ret.family.isPublic():
+    if not ret.family.isPublic() and not noLogin:
         ret.forceLogin()
     return ret
 
@@ -6038,7 +6038,10 @@ default_code = config.mylang
 logfile = None
 # Check
 try:
-    getSite()
+    # if the default family+wiki is a non-public one,
+    # getSite will try login in. We don't want that, the module
+    # is not yet loaded.
+    getSite(noLogin=True)
 except KeyError:
     print(
 u"""Please create a file user-config.py, and put in there:\n
