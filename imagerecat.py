@@ -197,7 +197,9 @@ def filterParents(categories):
     filterCategoriesRe = re.compile('\[\[Category:([^\]]*)\]\]')
     result = filterCategoriesRe.findall(filterCategoriesPage.read().decode('utf-8'))
     #except:
-
+    if not result:
+        #Is empty, dont want to remove all categories
+        return categories
     return result
 
 
