@@ -87,7 +87,7 @@ import os, sys, re, codecs
 import urllib, httplib, urllib2
 import catlib, thread, webbrowser
 import time, threading
-import wikipedia, config
+import wikipedia, config, socket
 import pagegenerators, add_text
 from upload import *
 from image import *
@@ -117,7 +117,7 @@ nowCommonsTemplate = {
     'eo': u'{{Nun en komunejo|%s}}',
     'es': u'{{EnCommons|Image:%s}}',
     'et': u'{{NüüdCommonsis|Image:%s}}',
-    'fa': u'{{NowCommons|Image:%s}}',
+    'fa': u'{{NowCommons|%s}}',
     'fi': u'{{NowCommons|%s}}',
     'fo': u'{{NowCommons|Image:%s}}',
     'fr': u'{{Image sur Commons|%s}}',
@@ -203,7 +203,7 @@ nowCommonsMessage = {
 
 moveToCommonsTemplate = {
     'ar': [u'نقل إلى كومنز'],
-    'en': [u'Commons ok', u'Copy to Wikimedia Commons', u'Move to commons', u'Movetocommons', u'To commons'],
+    'en': [u'Commons ok', u'Copy to Wikimedia Commons', u'Move to commons', u'Movetocommons', u'To commons', u'Copy to Wikimedia Commons by BotMultichill'],
     'fi':[u'Commonsiin'],
     'fr':[u'Image pour Commons'],
     'hsb':[u'Kopěruj do Wikimedia Commons'],
@@ -226,28 +226,19 @@ imageMoveMessage = {
     'nl': u'[[:Image:%s|Afbeelding]] is verplaatst naar [[:commons:Image:%s|commons]].',
 }
 
-def pageTextPost(url,postinfo):
-    print url
-    m=re.search(ur'http://(.*?)(/.*)',url)
-    if m==None:
-            return
-    else:
-            domain=m.group(1)
-            path=m.group(2)
-
-    h = httplib.HTTP(domain)
-    h.putrequest('POST', path)
-    h.putheader('Host', domain)
-    h.putheader('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7')
-    h.putheader('Content-Type', 'application/x-www-form-urlencoded')
-    h.putheader('Content-Length', str(len(postinfo)))
-    h.endheaders()
-    h.send(postinfo)
-    errcode, errmsg, headers = h.getreply()
-    data = h.getfile().read() # Obtener el HTML en bruto/wiki?title=Special:Userlogin&action=submitlogin&type=signup HTTP/1.1
-
+def pageTextPost(url,parameters):
+    gotInfo = False;    
+    while(not gotInfo):
+        try:
+            commonsHelperPage = urllib.urlopen("http://toolserver.org/~magnus/commonshelper.php", parameters)
+            data = commonsHelperPage.read().decode('utf-8')
+            gotInfo = True;
+        except IOError:
+            wikipedia.output(u'Got an IOError, let\'s try again')
+        except socket.timeout:
+            wikipedia.output(u'Got a timeout, let\'s try again')
     return data
-
+    
 class imageTransfer (threading.Thread):
 
     def __init__ ( self, imagePage, newname):
@@ -256,23 +247,27 @@ class imageTransfer (threading.Thread):
         threading.Thread.__init__ ( self )
 
     def run(self):
-        tosend={'language':str(self.imagePage.site().language()),
+        tosend={'language':self.imagePage.site().language().encode('utf-8'),
                 'image':self.imagePage.titleWithoutNamespace().encode('utf-8'),
-                'newname':urllib.quote(self.newname.encode('utf-8')),
-                'project':str(self.imagePage.site().family.name),
+                'newname':self.newname.encode('utf-8'),
+                'project':self.imagePage.site().family.name.encode('utf-8'),
+                'username':'',
                 'commonsense':'1',
-                'doit':'Get+text'}
-        #for k in tosend.keys():
-        #    tosend[k]=tosend[k].encode('utf-8')
+                'remove_categories':'1',
+                'ignorewarnings':'1',
+                'doit':'Uitvoeren'
+                }
+      
         tosend=urllib.urlencode(tosend)
         print tosend
         CH=pageTextPost('http://www.toolserver.org/~magnus/commonshelper.php', tosend)
         print 'Got CH desc.'
-        wikipedia.output(CH);
+        
         tablock=CH.split('<textarea ')[1].split('>')[0]
         CH=CH.split('<textarea '+tablock+'>')[1].split('</textarea>')[0]
-        CH=CH.replace('&times;', '×')
-        CH=CH.decode('utf-8')
+        CH=CH.replace(u'&times;', u'×')
+        wikipedia.output(CH);
+        #CH=CH.decode('utf-8')
         ## if not '[[category:' in CH.lower():
         # I want every picture to be tagged with the bottemplate so i can check my contributions later.
         CH=u'\n\n{{BotMoveToCommons|'+ self.imagePage.site().language() + '.' + self.imagePage.site().family.name +'}}'+CH
