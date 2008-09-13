@@ -26,7 +26,7 @@ class Family(family.Family):
             'tg', 'dv', 'bn', 'ka', 'mg', 'ha', 'kw', 'ss', 'na', 'sa',
             'gv', 'ay', 'tpi', 'ne', 'jbo', 'jv', 'gn', 'uz', 'tn', 'mt',
             'iu', 'sh', 'lb', 'ks', 'tk', 'sg', 'fj', 'als', 'ik', 'si',
-            'ln', 'sm', 'za', 'roa-rup', 'dz', 'my', 'wa',
+            'om', 'ln', 'sm', 'za', 'roa-rup', 'dz', 'my', 'wa',
         ]
 
         for lang in self.languages_by_size:
@@ -373,7 +373,6 @@ class Family(family.Family):
             'mo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Moldovan_Wiktionary
             'minnan':'zh-min-nan',
             'nb': 'no',
-            'om': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Oromoo_Wiktionary
             'or': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Oriya_Wiktionary
             'pi': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Pali_Bhasa_Wiktionary
             'rm': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Rhaetian_Wiktionary
