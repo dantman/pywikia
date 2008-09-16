@@ -106,7 +106,16 @@ nowCommons = {
         u'NowCommons',
     ],
     'fr': [
-        u'Désormais sur Commons'
+        u'Image sur Commons',
+        u'DoublonCommons',
+        u'Déjà sur Commons',
+        u'Désormais sur Commons',
+        u'NC',
+        u'NowCommons',
+        u'Nowcommons',
+        u'Sharedupload',
+        u'Sur Commons',
+        u'Sur Commons2',
     ],
     'he': [
         u'גם בוויקישיתוף'
