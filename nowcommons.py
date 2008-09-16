@@ -288,9 +288,6 @@ class NowCommonsDeleteBot:
                 commonsImagePage = wikipedia.ImagePage(commons, 'Image:%s' % filenameOnCommons)
                 if localImagePage.titleWithoutNamespace() == commonsImagePage.titleWithoutNamespace() and use_hash:
                     wikipedia.output(u'The local and the commons images have the same name')
-                if len(localImagePage.getFileVersionHistory()) > 1 and not use_hash:
-                    wikipedia.output(u"This image has a version history. Please delete it manually after making sure that the old versions are not worth keeping.""")
-                    continue
                 if localImagePage.titleWithoutNamespace() != commonsImagePage.titleWithoutNamespace():
                     usingPages = list(localImagePage.usingPages())
                     if usingPages and usingPages != [localImagePage]:
@@ -322,6 +319,9 @@ class NowCommonsDeleteBot:
                 if replaceonly == False:
                     if md5 == commonsImagePage.getFileMd5Sum():
                         wikipedia.output(u'The image is identical to the one on Commons.')
+                        if len(localImagePage.getFileVersionHistory()) > 1 and not use_hash:
+                            wikipedia.output(u"This image has a version history. Please delete it manually after making sure that the old versions are not worth keeping.""")
+                            continue
                         if autonomous == False:
                             wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % page.title())
                             wikipedia.output(localImagePage.get())
