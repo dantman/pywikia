@@ -127,7 +127,8 @@ class CategoryRedirectBot(object):
                             u'Catredirect',
                             u'Cat redirect',
                             u'CatRed',
-                            u'Catredir',),
+                            u'Catredir',
+                            u'Redirect category',),
                 }
             }
 
