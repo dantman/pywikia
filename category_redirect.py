@@ -488,18 +488,22 @@ category links:
         for cat in pagegenerators.PreloadingGenerator(catpages, 120):
             cat_title = cat.titleWithoutNamespace()
             if "category redirect" in cat_title:
-                self.log_text.append("* Ignoring %s%s" % (self.catprefix, cat_title))
+                self.log_text.append(u"* Ignoring %s%s"
+                                      % (self.catprefix, cat_title))
                 continue
             try:
                 text = cat.get(get_redirect=True)
             except wikipedia.Error:
                 self.log_text.append(u"* Could not load %s%s; ignoring"
-                                 % (self.catprefix, cat_title))
+                                      % (self.catprefix, cat_title))
                 continue
             match = template_regex.search(text)
             if match is None:
                 self.log_text.append(u"* False positive: %s" % cat_title)
                 continue
+            if cat_title not in record:
+                # make sure every redirect has a record entry
+                record[cat_title] = {today: None}
             catlist.append(cat)
             destination = match.group(2)
             target = catlib.Category(self.site, self.catprefix+destination)
@@ -513,6 +517,12 @@ category links:
                 self.log_text.append(
                     u"* Removed category prefix from parameter in %s"
                      % cat.aslink(textlink=True))
+
+        # delete record entries for non-existent categories
+        for cat_name in list(record.keys()):
+            if catlib.Category(self.site,
+                               self.catprefix+cat_name) not in catmap:
+                del record[cat_name]
 
         wikipedia.output(u"")
         wikipedia.output(u"Checking %s destination categories" % len(destmap))
@@ -568,8 +578,8 @@ category links:
         wikipedia.output(u"")
         wikipedia.output(u"Moving pages out of %s redirected categories."
                          % len(cats_to_empty))
-        thread_limit = int(math.log(len(cats_to_empty), 8) + 1)
-        threadpool = ThreadList(limit=1) # temporarily disabling multi-threads
+#        thread_limit = int(math.log(len(cats_to_empty), 8) + 1)
+        threadpool = ThreadList(limit=1)    # disabling multi-threads
 
         for cat in cats_to_empty:
             cat_title = cat.titleWithoutNamespace()
@@ -595,16 +605,8 @@ category links:
                         u"* [[:%s%s]]: %d found, %d moved"
                         % (self.catprefix, title, found, moved))
             counts[title] = found
+            record[title][today] = found
 
-        for cat in record.keys():
-            if cat not in counts.keys():
-                del record[cat]
-        for cat in counts.keys():
-            if counts[cat] is not None:
-                if counts[cat]:
-                    record.setdefault(cat, {})[today] = counts[cat]
-                else:
-                    record.setdefault(cat, {})
         cPickle.dump(record, open(datafile, "wb"))
 
         wikipedia.setAction(wikipedia.translate(self.site.lang,
