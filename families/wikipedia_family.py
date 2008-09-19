@@ -69,7 +69,7 @@ class Family(family.Family):
             'crh': u'Vikipediya',
             'cs': u'Wikipedie',
             'csb': u'Wiki',
-            'cu': [u'Википедї', u'Википє́дїꙗ']
+            'cu': [u'Википедї', u'Википє́дїꙗ'],
             # 'cu': u'Википє́дїꙗ'
             'cv': u'Википеди',
             'cy': u'Wicipedia',
@@ -167,7 +167,7 @@ class Family(family.Family):
             'crh': [u'Vikipediya muzakeresi', u'Vikipediya музакереси'],
             'cs': u'Wikipedie diskuse',
             'csb': u'Diskùsëjô Wiki',
-            'cu': [u'Википедїѩ бєсѣ́да', u'Википє́дїѩ_бєсѣ́да']
+            'cu': [u'Википедїѩ бєсѣ́да', u'Википє́дїѩ_бєсѣ́да'],
             # 'cu': u'Википє́дїѩ_бєсѣ́да'
             'cv': u'Википеди сӳтсе явмалли',
             'cy': u'Sgwrs Wicipedia',
