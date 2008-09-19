@@ -109,6 +109,7 @@ nowCommons = {
         u'Image sur Commons',
         u'DoublonCommons',
         u'Déjà sur Commons',
+        u'Maintenant sur commons',
         u'Désormais sur Commons',
         u'NC',
         u'NowCommons',
