@@ -124,10 +124,11 @@ class ImageRobot:
             old = self.oldImage
 
         old = re.sub('[_ ]', '[_ ]', old)
+        escaped = re.escape(old)
         if not self.loose or not self.newImage:
-            ImageRegex = re.compile(r'\[\[ *(?:' + '|'.join(site.namespace(6, all = True)) + ')\s*:\s*' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
+            ImageRegex = re.compile(r'\[\[ *(?:' + '|'.join(site.namespace(6, all = True)) + ')\s*:\s*' + escaped + ' *(?P<parameters>\|[^\n]+|) *\]\]')
         else:
-            ImageRegex = re.compile(r'' + old)
+            ImageRegex = re.compile(r'' + escaped)
 
         if self.newImage:
             if not self.loose:
