@@ -191,6 +191,7 @@ class Family(family.Family):
             'te': u'Wiktionary చర్చ',
             'tg': u'Баҳси Wiktionary',
             'th': u'คุยเรื่องWiktionary',
+            'tl': u'Usapang Wiktionary',
             'tr': u'Vikisözlük tartışma',
             'tt': u'Wiktionary bäxäse',
             'uk': u'Обговорення Вікісловника',

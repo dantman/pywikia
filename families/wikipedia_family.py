@@ -281,6 +281,7 @@ class Family(family.Family):
             'tet': u'Diskusaun Wikipedia',
             'tg': u'Баҳси Википедиа',
             'th': u'คุยเรื่องวิกิพีเดีย',
+            'tl': u'Usapang Wikipedia',
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
             'ty': u'Discussion Wikipedia',
