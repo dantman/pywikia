@@ -165,6 +165,7 @@ class Family(family.Family):
             'mr': u'Wiktionary चर्चा',
             'ms': u'Perbincangan Wiktionary',
             'nah': u'Wiktionary tēixnāmiquiliztli',
+            'nap': [u'Wiktionary chiàcchiera', u'Discussioni Wiktionary'],
             'nds': u'Wiktionary Diskuschoon',
             'nl': u'Overleg WikiWoordenboek',
             'nn': u'Wiktionary-diskusjon',

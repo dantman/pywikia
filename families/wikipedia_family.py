@@ -242,7 +242,7 @@ class Family(family.Family):
             'myv': u'Википедиясь talk',
             'mzn': u'بحث Wikipedia',
             'nah': [u'Wikipedia tēixnāmiquiliztli', u'Wikipedia Discusión'],
-            'nap': u'Discussioni Wikipedia',
+            'nap': [u'Wikipedia chiàcchiera', u'Discussioni Wikipedia'],
             'nds': u'Wikipedia Diskuschoon',
             'nds-nl': u'Overleg Wikipedie',
             'new': u'विकिपिडिया खँलाबँला',
