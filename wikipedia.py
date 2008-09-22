@@ -799,12 +799,12 @@ not supported by PyWikipediaBot!"""
         else:
             self._isWatched = False
         # Now process the contents of the textarea
-	# Unescape HTML characters, strip whitespace and postconvert
-	pagetext = text[i1:i2]
-	pagetext = unescape(pagetext)
-	pagetext = pagetext.rstrip()
-	pagetext = self.site().post_get_convert(pagetext)
-
+        # Unescape HTML characters, strip whitespace
+        pagetext = text[i1:i2]
+        pagetext = unescape(pagetext)
+        pagetext = pagetext.rstrip()
+        if self.site().lang == 'eo':
+            pagetext = decodeEsperantoX(pagetext)
         m = self.site().redirectRegex().match(pagetext)
         if m:
             # page text matches the redirect pattern
@@ -1295,7 +1295,12 @@ not supported by PyWikipediaBot!"""
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
-        newtext = self.site().pre_put_convert(newtext)
+        # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
+        # of Bordeaux
+        if self.site().lang == 'eo':
+            newtext = encodeEsperantoX(newtext)
+            comment = encodeEsperantoX(comment)
+
         return self._putPage(newtext, comment, watchArticle, minorEdit,
                              newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
@@ -2237,7 +2242,7 @@ not supported by PyWikipediaBot!"""
             reason = input(u'Please enter a reason for the deletion:')
         answer = 'y'
         if prompt and not hasattr(self.site(), '_noDeletePrompt'):
-            answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No', 'All'], ['Y', 'N', 'A'], 'N')
+            answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['yes', 'no', 'all'], ['y', 'N', 'a'], 'N')
             if answer == 'a':
                 answer = 'y'
                 self.site()._noDeletePrompt = True
@@ -2939,6 +2944,9 @@ class _GetAll(object):
     def getData(self):
         address = self.site.export_address()
         pagenames = [page.sectionFreeTitle() for page in self.pages]
+        # We need to use X convention for requested page titles.
+        if self.site.lang == 'eo':
+            pagenames = [encodeEsperantoX(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) is not unicode:
             output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
@@ -3994,11 +4002,6 @@ class Site(object):
 
     linktrail: Return regex for trailing chars displayed as part of a link.
     disambcategory: Category in which disambiguation pages are listed.
-
-    post_get_convert: Converts text data from the site immediatly after get
-                      i.e. EsperantoX -> unicode
-    pre_put_convert:  Converts text data from the site immediatly before put
-                      i.e. unicode -> EsperantoX
 
     Methods that yield Page objects derived from a wiki's Special: pages
     (note, some methods yield other information in a tuple along with the
@@ -5839,12 +5842,6 @@ your connection is down. Retrying in %i minutes..."""
     def linktrail(self):
         """Return regex for trailing chars displayed as part of a link."""
         return self.family.linktrail(self.lang)
-
-    def post_get_convert(self, getText):
-	return self.family.post_get_convert(self, getText)
-
-    def pre_put_convert(self, putText):
-	return self.family.pre_put_convert(self, putText)
 
     def language(self):
         """Return Site's language code."""

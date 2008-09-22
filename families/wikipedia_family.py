@@ -967,15 +967,3 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
-
-    def post_get_convert(self, site, getText):
-      if site.lang == 'eo':
-        return wikipedia.decodeEsperantoX(getText)
-      else:
-        return getText
-
-    def pre_put_convert(self, site, getText):
-      if site.lang == 'eo':
-        return wikipedia.encodeEsperantoX(getText)
-      else:
-        return getText
