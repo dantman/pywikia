@@ -498,6 +498,7 @@ class main:
         # Adding the bot's nickname at the notification text if needed.
         botolist = wikipedia.translate(self.site, bot_list)
         project = wikipedia.getSite().family.name
+        self.project = project
         bot = config.usernames[project]
         botnick = bot[self.site.lang]
         self.botnick = botnick
@@ -789,6 +790,9 @@ class main:
     def checkImageDuplicated(self):
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
+        # Skip the stub images
+        if 'stub' in self.image.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
+            return True # Skip the stub, ok
         dupText = wikipedia.translate(self.site, duplicatesText)
         dupRegex = wikipedia.translate(self.site, duplicatesRegex)
         dupTalkHead = wikipedia.translate(self.site, duplicate_user_talk_head)
