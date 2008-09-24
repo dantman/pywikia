@@ -276,7 +276,7 @@ class imageTransfer (threading.Thread):
         bot.run()
 
         #Should check if the image actually was uploaded
-        if wikipedia.Page(wikipedia.getSite('commons', 'commons'), u'Image:' + self.newname.decode('utf-8')).exists():
+        if wikipedia.Page(wikipedia.getSite('commons', 'commons'), u'Image:' + self.newname).exists():
             #Get a fresh copy, force to get the page so we dont run into edit conflicts
             imtxt=self.imagePage.get(force=True)
 
@@ -287,9 +287,9 @@ class imageTransfer (threading.Thread):
 
             #add {{NowCommons}}
             if nowCommonsTemplate.has_key(self.imagePage.site().language()):
-                addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname.decode('utf-8')
+                addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname
             else:
-                addTemplate = nowCommonsTemplate['_default'] % self.newname.decode('utf-8')
+                addTemplate = nowCommonsTemplate['_default'] % self.newname
 
             if nowCommonsMessage.has_key(self.imagePage.site().language()):
                 commentText = nowCommonsMessage[self.imagePage.site().language()]
@@ -303,12 +303,12 @@ class imageTransfer (threading.Thread):
             self.preloadingGen = pagegenerators.PreloadingGenerator(self.gen)
 
             #If the image is uploaded under a different name, replace all instances
-            if self.imagePage.titleWithoutNamespace() != self.newname.decode('utf-8'):
+            if self.imagePage.titleWithoutNamespace() != self.newname:
                 if imageMoveMessage.has_key(self.imagePage.site().language()):
-                    moveSummary = imageMoveMessage[self.imagePage.site().language()] % (self.imagePage.titleWithoutNamespace(), self.newname.decode('utf-8'))
+                    moveSummary = imageMoveMessage[self.imagePage.site().language()] % (self.imagePage.titleWithoutNamespace(), self.newname)
                 else:
-                    moveSummary = imageMoveMessage['_default'] % (self.imagePage.titleWithoutNamespace(), self.newname.decode('utf-8'))
-                imagebot = ImageRobot(generator = self.preloadingGen, oldImage = self.imagePage.titleWithoutNamespace(), newImage = self.newname.decode('utf-8'), summary = moveSummary, always = True, loose = True)
+                    moveSummary = imageMoveMessage['_default'] % (self.imagePage.titleWithoutNamespace(), self.newname)
+                imagebot = ImageRobot(generator = self.preloadingGen, oldImage = self.imagePage.titleWithoutNamespace(), newImage = self.newname, summary = moveSummary, always = True, loose = True)
                 imagebot.run()
         return
 
@@ -482,7 +482,9 @@ def main(args):
                     if len(newname)==0:
                         #Take the old name
                         newname=imagepage.titleWithoutNamespace()
-
+                    else:
+                        newname = newname.decode('utf-8')
+                        
                     # Check if the image already exists
                     CommonsPage=wikipedia.Page(
                                    wikipedia.getSite('commons', 'commons'),
