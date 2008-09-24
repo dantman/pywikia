@@ -34,7 +34,7 @@ TODO:
 #
 __version__ = '$Id$'
 
-import wikipedia, config, pagegenerators, add_text
+import wikipedia, config, pagegenerators, add_text, re
 
 commonscatTemplates = {
     '_default': u'Commonscat',
@@ -158,6 +158,7 @@ ignoreTemplates = {
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],
+    'la' : [u'Categoria Nati', u'Categoria Mortui'],
     'nl' : [u'Commons'],
 }
 
@@ -217,82 +218,111 @@ def addCommonscat (page = None, summary = None, always = False):
     Take a page. Go to all the interwiki page looking for a commonscat template.
     When all the interwiki's links are checked and a proper category is found add it to the page.
     '''
-    commonscat = ""
-    commonscatpage = None
-    commonscats = []
 
-    wikipedia.output("Working on " + page.title());
+    wikipedia.output(u'Working on ' + page.title());
     if getTemplate(page.site().language()) in page.templates():
-        wikipedia.output("Commonscat template is already on " + page.title());
-        #for template in page.templatesWithParams():
-        #    if ((template[0]==getTemplate(page.site().language())) and (len(template[1]) > 0)):
-        #       commonscatpage = getCommonscat(template[1][0])
-        #       if commonscatpage != None:
-        #            updateInterwiki (page, commonscatpage)
-        #        #Should remove the template if something is wrong
+        wikipedia.output(u'Commonscat template is already on ' + page.title());
+        currentCommonscat = getCommonscatLink (page)
+        checkedCommonscat = checkCommonscatLink(currentCommonscat)
+        if (currentCommonscat==checkedCommonscat):
+            #The current commonscat link is good
+            wikipedia.output(u'Commonscat link at ' + page.title() + u' to Category:' + currentCommonscat + u' is ok');
+            return (True, always)
+        elif checkedCommonscat!=u'':
+            #We have a new Commonscat link, replace the old one
+            changeCommonscat (page, currentCommonscat, checkedCommonscat)
+            return (True, always)
+        else:
+            #Commonscat link is wrong
+            commonscatLink = findCommonscatLink(page)
+            if (commonscatLink!=u''):
+                changeCommonscat (page, currentCommonscat, commonscatLink)
+            #else
+            #Should i remove the commonscat link?            
+            
     elif skipPage(page):
         wikipedia.output("Found a template in the skip list. Skipping " + page.title());
     else:
-        #Follow the interwiki's
-        for ipage in page.interwiki():
-            #See if commonscat is present
-            if getTemplate(ipage.site().language()) in ipage.templates():
-                #Go through all the templates at the page
-                for template in ipage.templatesWithParams():
-                   #We found the template and it has the parameter set.
-                   if ((template[0]==getTemplate(ipage.site().language())) and (len(template[1]) > 0)):
-                        commonscatpage = getCommonscat(template[1][0])
-                        if commonscatpage != None:
-                            commonscats.append(commonscatpage);
-                            wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + commonscatpage.title() + ".");
-                            commonscatpage = None
-            if len(commonscats) > 0:
-                break
-        if len(commonscats) > 0:
-            commonscatpage = commonscats.pop();
-            commonscat = commonscatpage.titleWithoutNamespace()
-            #We found one or more commonscat links, build the template and add it to our page
-            #TODO: We should check if we found more than one different link.
-            commonscat = "{{" + getTemplate(page.site().language()) + "|" + commonscat + "}}";
-            (success, always) = add_text.add_text(page, commonscat, summary, None, None, always);
-            #updateInterwiki(page, commonscatpage)
+        commonscatLink = findCommonscatLink(page)
+        if (commonscatLink!=u''):
+            textToAdd = u'{{' + getTemplate(page.site().language()) + u'|' + commonscatLink + u'}}'
+            (success, always) = add_text.add_text(page, textToAdd, summary, None, None, always);
+            return (True, always);
+                               
     return (True, always);
 
-def getCommonscat (name = ""):
+def changeCommonscat (page = None, oldcat = u'', newcat = u''):
+    #newtext = page.get()
+    #print u'{{' +  + u'|' + oldcat + u'}}'
+    #print u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}'
+    #newtext = newtext.replace(u'{{' + getTemplate(page.site().language()) + u'|' + oldcat + u'}}',
+    #                u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}')   
+    newtext = re.sub(u'(?i)\{\{' + getTemplate(page.site().language()) + u'\|?[^}]*\}\}',  u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}', page.get())
+    comment = u'Changing commonscat link from [[:Commons:Category:' + oldcat + u'|' + oldcat + u']] to [[:Commons:Category:' + newcat + u'|' + newcat + u']]'
+    wikipedia.showDiff(page.get(), newtext)
+    page.put(newtext, comment)
+
+def findCommonscatLink (page=None):
+    for ipage in page.interwiki():
+        possibleCommonscat = getCommonscatLink (ipage)
+        if (possibleCommonscat!= u''):
+            checkedCommonscat = checkCommonscatLink(possibleCommonscat)
+            if (checkedCommonscat!= u''):
+                wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + checkedCommonscat + ".")
+                return checkedCommonscat
+    return u''
+    
+
+def getCommonscatLink (wikipediaPage=None):
+    #See if commonscat is present
+    if getTemplate(wikipediaPage.site().language()) in wikipediaPage.templates():
+        #Go through all the templates at the page
+        for template in wikipediaPage.templatesWithParams():
+            #We found the template and it has the parameter set.
+            if ((template[0]==getTemplate(wikipediaPage.site().language())) and (len(template[1]) > 0)):
+                return template[1][0]
+        #The template is on the page, but without parameters.
+        return wikipediaPage.titleWithoutNamespace()
+
+    return u''
+
+def checkCommonscatLink (name = ""):
     '''
     This function will retun a page object of the commons page
     If the page is a redirect this function tries to follow it.
     If the page doesnt exists the function will return None
     '''
     #wikipedia.output("getCommonscat: " + name );
-    result = wikipedia.Page(wikipedia.getSite("commons", "commons"), "Category:" + name);
+    commonsPage = wikipedia.Page(wikipedia.getSite("commons", "commons"), "Category:" + name);
     #This can throw a wikipedia.BadTitle, maybe convert this to catch
     #wikipedia.BadTitle
     #wikipedia.NoPage
     #wikipedia.IsRedirectPage
-    if not result.exists():
+    if not commonsPage.exists():
         #wikipedia.output("getCommonscat : The category doesnt exist.");
-        return None
-    elif result.isRedirectPage():
+        return u''
+    elif commonsPage.isRedirectPage():
         #wikipedia.output("getCommonscat : The category is a redirect");
-        return result.getRedirectTarget();
-    elif "Category redirect" in result.templates():
+        return checkCommonscatLink(commonsPage.getRedirectTarget().titleWithoutNamespace());
+    elif "Category redirect" in commonsPage.templates():
         #wikipedia.output("getCommonscat : The category is a category redirect");
-        for template in result.templatesWithParams():
+        for template in commonsPage.templatesWithParams():
             if ((template[0]=="Category redirect") and (len(template[1]) > 0)):
-                return getCommonscat(template[1][0])
-    elif result.isDisambig():
+                return checkCommonscatLink(template[1][0])
+    elif commonsPage.isDisambig():
         #wikipedia.output("getCommonscat : The category is disambigu");
-        return None
+        return u''
     else:
-        return result
+        return commonsPage.titleWithoutNamespace()
 
 def main():
     '''
     Parse the command line arguments and get a pagegenerator to work on.
     Iterate through all the pages.
     '''
-    summary = None; generator = None; always = False
+    summary = None; generator = None; checkcurrent = False; always = False
+    ns = []
+    ns.append(14)
     # Load a lot of default generators
     genFactory = pagegenerators.GeneratorFactory()
 
@@ -307,6 +337,10 @@ def main():
                 generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
             else:
                 generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
+        elif arg.startswith('-checkcurrent'):
+            checkcurrent = True
+            generator = pagegenerators.NamespaceFilterPageGenerator(pagegenerators.ReferringPageGenerator(wikipedia.Page(wikipedia.getSite(), u'Template:' + getTemplate(wikipedia.getSite().language())), onlyTemplateInclusion=True), ns)
+            
         elif arg == '-always':
             always = True
         else:
