@@ -75,11 +75,11 @@ def main():
                         catlib.change_category(cat, old_category, destination, move_message % (old_category.title(), old_category.titleWithoutNamespace(), destination.title(), destination.titleWithoutNamespace()))
                     except wikipedia.IsRedirectPage:
                         wikipedia.output(page.title() + u' is a redirect!')
-            #Dummy edit to refresh the page, shouldnt show up in any logs.
-            try:
-                old_category.put(old_category.get())
-            except:
-                wikipedia.output(u'Dummy edit at ' + old_category.title() + u' failed')
+        #Dummy edit to refresh the page, shouldnt show up in any logs.
+        try:
+            old_category.put(old_category.get())
+        except:
+            wikipedia.output(u'Dummy edit at ' + old_category.title() + u' failed')
 
 if __name__ == "__main__":
     try:
