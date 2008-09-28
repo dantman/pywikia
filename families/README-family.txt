@@ -143,7 +143,7 @@ class Family(family.Family):          # REQUIRED
         #  http://www.mediawiki.org/wiki/Extension:LDAP_Authentication.
         # then uncomment this line and define the user's domain required
         # at login.
-        #self.name = 'domain here'
+        #self.ldapDomain = 'domain here'
 
     def protocol(self, code):
         """
