@@ -85,6 +85,8 @@ This script understands the following command-line arguments:
     -savedata      This feature saves the random signature index to allow to
                    continue to welcome with the last signature used.
 
+    -sul           Welcome the auto-created users (default: False)
+
 ********************************* GUIDE ***********************************
 
 Report, Bad and white list guide:
@@ -408,7 +410,7 @@ def load_word_function(wsite, raw):
         wikipedia.output(u'\nReal-time list loaded.')
     return list_loaded
 
-def parselog(wsite, raw, talk, number):
+def parselog(wsite, raw, talk, number, sul):
     """ The function to load the users (only users who have a certain number of edits) """
     someone_found = False
     autocreated = wsite.mediawiki_message('newuserlog-autocreate-entry')
@@ -427,7 +429,7 @@ def parselog(wsite, raw, talk, number):
         someone_found = True
         username = x.group('user')
         #skip autocreated users (SUL)
-        if autocreated in x.group('reason'):
+        if autocreated in x.group('reason') and not sul:
             wikipedia.output(u'%s has been created automatically, skipping...' % username)
             continue
         userpage = wikipedia.Page(wsite, username)
@@ -585,6 +587,7 @@ def mainSettings():
     time_variable = 3600        # how much time (sec.) the bot sleeps before restart
     log_variable = True         # create the welcome log or not
     ask = False                 # should bot ask to add username to bad-username list
+    sul = False                 # should bot welcome auto-created users
     filter_wp = False           # check if the username is ok or not
     sign = ' --~~~~'            # default signature
     random = False              # should signature be random or not
@@ -636,6 +639,8 @@ def mainSettings():
             savedata = True
         elif arg == '-random':
             random = True
+        elif arg == '-sul':
+            sul = True
         elif arg.startswith('-limit'):
             if len(arg) == 6:
                 limit = int(wikipedia.input(u'How many of the latest new users would you like to load?'))
@@ -653,7 +658,7 @@ def mainSettings():
         wikipedia.output('WARING: both -offset and -timeoffset were provided, ignoring -offset')
         offset_variable = 0
     return (None, ask, filename, fileOption, fileSignName, filter_wp, limit, log_variable, number, numberlog, offset_variable, random, recursive,
-            savedata, sign, time_variable, timeoffset_variable)
+            savedata, sign, time_variable, timeoffset_variable, sul)
 
 def main(settingsBot):
     # Taking the messages inside the function namespace.
@@ -683,6 +688,7 @@ def main(settingsBot):
     sign = settingsBot[14]
     time_variable = settingsBot[15]
     timeoffset_variable = settingsBot[16]
+    sul = settingsBot[17]
 
     # The site
     wsite = wikipedia.getSite()
@@ -814,7 +820,7 @@ def main(settingsBot):
             except wikipedia.NoPage:
                 wikipedia.output(u'The list with signatures is not available... Using default signature...')
                 random = False
-        for found_result in parselog(wsite, log, talk, number):
+        for found_result in parselog(wsite, log, talk, number, sul):
             # Compiling the signature to be used.
             if random:
                 if number_user + 1 > len(signList):
