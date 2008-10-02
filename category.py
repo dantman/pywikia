@@ -31,9 +31,10 @@ and option can be one of these:
  * -summary:   - Pick a custom edit summary for the bot.
  * -inplace    - Use this flag to change categories in place rather than
                  rearranging them.
- * -delsum     - An option for remove, this specifies to use the custom edit
-                 summary as the deletion reason (rather than a canned
-                 deletion reason)
+ * -nodelsum   - An option for remove, this specifies not to use the custom
+                 edit summary as the deletion reason.  Instead, it uses the
+                 default deletion reason for the language, which is "Category
+                 was disbanded" in English.
  * -overwrite  - An option for listify, this overwrites the current page with
                  the list even if something is already there.
  * -showimages - An option for listify, this displays images rather than
@@ -575,7 +576,7 @@ class CategoryRemoveRobot:
         'zh':u'機器人:移除目錄%s',
     }
 
-    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False, titleRegex = None, inPlace = False):
+    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = True, titleRegex = None, inPlace = False):
         self.editSummary = editSummary
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
@@ -603,12 +604,16 @@ class CategoryRemoveRobot:
         else:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.cat, None, inPlace = self.inPlace)
+        # Deletes the category page
         if self.cat.exists() and self.cat.isEmpty():
-            if self.useSummaryForDeletion:
+            if self.useSummaryForDeletion and self.editSummary:
                 reason = self.editSummary
             else:
                 reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
+            talkPage = self.cat.toggleTalkPage()
             self.cat.delete(reason, not self.batchMode)
+            if (talkPage.exists()):
+                talkPage.delete(reason=reason, prompt=not self.batchMode)
 
 class CategoryTidyRobot:
     """
@@ -889,7 +894,7 @@ if __name__ == "__main__":
 
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
-    useSummaryForDeletion = False
+    useSummaryForDeletion = True
     try:
         catDB = CategoryDatabase()
         action = None
@@ -923,7 +928,10 @@ if __name__ == "__main__":
             elif arg == '-inplace':
                 inPlace = True
             elif arg == '-delsum':
-                useSummaryForDeletion = True
+                # This parameter is kept for historical reasons, as it was not previously the default option.
+                pass
+            elif arg == '-nodelsum':
+                useSummaryForDeletion = False
             elif arg == '-overwrite':
                 overwrite = True
             elif arg == '-showimages':
