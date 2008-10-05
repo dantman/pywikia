@@ -941,7 +941,6 @@ class main:
             gen = pagegenerators.CategorizedPageGenerator(cat)
             pages = [page for page in gen]
             list_licenses.extend(pages)
-        print list_licenses
         return list_licenses
 
     def smartDetection(self, image_text):
