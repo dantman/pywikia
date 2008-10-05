@@ -5132,7 +5132,7 @@ your connection is down. Retrying in %i minutes..."""
                 break
 
 
-    def allpages(self, start='!', namespace=0, includeredirects=True,
+    def allpages(self, start='!', namespace=None, includeredirects=True,
                  throttle=True):
         """
         Yield all Pages in alphabetical order.
@@ -5150,6 +5150,10 @@ your connection is down. Retrying in %i minutes..."""
         AllpagesPageGenerator from pagegenerators.py instead.
 
         """
+        if namespace is None:
+            page = Page(self, start)
+            namespace = page.namespace()
+            start = page.titleWithoutNamespace()        
         try:
             api_url = self.api_address()
         except NotImplementedError:
