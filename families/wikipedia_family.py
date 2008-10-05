@@ -143,7 +143,7 @@ class Family(family.Family):
             'am': u'Wikipedia ውይይት',
             'an': u'Descusión Wikipedia',
             'ar': u'نقاش ويكيبيديا',
-            'as': u'Wikipedia वार्ता',
+            'as': u'Wikipedia বার্তা',
             'ast': u'Uiquipedia alderique',
             'av': u'Обсуждение Wikipedia',
             'ay': u'Wikipedia Discusión',
@@ -297,6 +297,7 @@ class Family(family.Family):
             'wo': u'Discussion Wikipedia',
             'xal': u'Wikipedia тускар ухалвр',
             'yi': [u'װיקיפּעדיע רעדן', u'וויקיפעדיע רעדן'],
+            'yo': u'Ọ̀rọ̀ Wikipedia',
             'zea': u'Overleg Wikipedia',
             'zh-classical': u'維基大典 talk',
         }
