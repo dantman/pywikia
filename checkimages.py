@@ -506,6 +506,7 @@ class main:
         self.duplicatesReport = duplicatesReport
         image_n = self.site.image_namespace()
         self.image_namespace = "%s:" % image_n # Example: "User_talk:"
+        self.list_licenses = self.load_licenses()
     def setParameters(self, image):
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
         self.image = image
@@ -940,7 +941,35 @@ class main:
             gen = pagegenerators.CategorizedPageGenerator(cat)
             pages = [page for page in gen]
             list_licenses.extend(pages)
+        print list_licenses
         return list_licenses
+
+    def smartDetection(self, image_text):
+        seems_ok = False
+        license_found = None
+        regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n].*?|)\}\}', re.DOTALL)
+        licenses_found = regex_find_licenses.findall(image_text)
+        if licenses_found != []:
+            for license_selected in licenses_found:
+                #print template.exists()
+                template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
+                try:
+                    if template.isRedirectPage():
+                        template = template.getRedirectTarget()
+                except wikipedia.BadTitle:
+                    seems_ok = False # Template with wrong name
+                    return (seems_ok, license_found)
+                else:
+                    if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
+                        seems_ok = True
+                license_found = license_selected
+        if not seems_ok:
+            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.image, license_found)
+            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (self.image, license_found)
+            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.image, license_found))
+            self.report_image(self.image, rep_text = rep_text_license_fake,
+                                   addings = False, regex = regexFakeLicense)
+        return (seems_ok, license_found)
 
     def load(self, raw):
         """ Load a list of object from a string using regex. """
@@ -1019,7 +1048,7 @@ def checkbot():
                 firstPageTitle = str(wikipedia.input(u'From witch page do you want to start?'))
             elif len(arg) > 6:
                 firstPageTitle = str(arg[7:])
-            generator = wikipedia.getSite().allpages(start='Image:%s' % firstPageTitle)
+            generator = wikipedia.getSite().allpages(start=firstPageTitle ,namespace=6)
             repeat = False
         elif arg.startswith('-page'):
             if len(arg) == 5:
@@ -1149,9 +1178,6 @@ def checkbot():
             wikipedia.output(u'Problems with loading the settigs, run without them.')
             tupla_written = None
             some_problem = False
-        # Load the list of licenses allowed for our project
-        if smartdetection:
-            list_licenses = mainClass.load_licenses()
         # Ensure that if the list given is empty it will be converted to "None"
         # (but it should be already done in the takesettings() function)
         if tupla_written == []: tupla_written = None
@@ -1359,28 +1385,7 @@ def checkbot():
                     seems_ok = False
                     license_found = None
                     if smartdetection:
-                        regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n].*?|)\}\}', re.DOTALL)
-                        licenses_found = regex_find_licenses.findall(g)
-                        if licenses_found != []:
-                            for license_selected in licenses_found:
-                                #print template.exists()
-                                template = wikipedia.Page(site, 'Template:%s' % license_selected)
-                                try:
-                                    if template.isRedirectPage():
-                                        template = template.getRedirectTarget()
-                                except wikipedia.BadTitle:
-                                    seems_ok = False # Template with wrong name
-                                else:
-                                    if template in list_licenses:
-                                        seems_ok = True
-                                        break
-                                license_found = license_selected
-                        if not seems_ok:
-                            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (imageName, license_found)
-                            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (imageName, license_found)
-                            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (imageName, license_found))
-                            mainClass.report_image(imageName, rep_text = rep_text_license_fake,
-                                                   addings = False, regex = regexFakeLicense)
+                        (seems_ok, license_found) = mainClass.smartDetection(g)
                     else:
                         seems_ok = True
                     if seems_ok:
