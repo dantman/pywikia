@@ -155,9 +155,7 @@ comm2 = {
         'de'     :u'Bot:Notify User',
         'en'     :u"Bot: Requesting source information." ,
         'it'     :u"Bot: Notifico l'unverified",
-        #FIXME: two hungarian messages ?
         'hu'     :u'Robot: Forrásinformáció kérése',
-        'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
         'ja'     :u"ロボットによる:著作権情報明記のお願い",
         'ko'     :u'로봇:라이선스 정보 요청',
         'ta'     :u'தானியங்கி:மூலம் வழங்கப்படா படிமத்தை சுட்டுதல்',
