@@ -653,7 +653,8 @@ def mainSettings():
                 numberlog = int(arg[11:])
     # TODO: Maybe it's better change the tuple with a dictionary..
     wsite = wikipedia.getSite()
-    filename = 'welcome-%s-%s.data' % (wsite.family.name, wsite.lang)  # file where is stored the random signature index
+    # Filename and pywikipedia path
+    filename = wikipedia.config.datafilepath('welcome-%s-%s.data' % (wsite.family.name, wsite.lang))  # file where is stored the random signature index
     if offset_variable and timeoffset_variable:
         wikipedia.output('WARING: both -offset and -timeoffset were provided, ignoring -offset')
         offset_variable = 0
@@ -722,8 +723,7 @@ def main(settingsBot):
         welcomer = u'{{subst:Benvenuto}} %s'
 
     welcomed_users = list()
-    if savedata and os.path.exists(
-                                wikipedia.config.datafilepath(filename)):
+    if savedata and os.path.exists(filename):
         f = file(filename)
         number_user = cPickle.load(f)
         yield number_user
@@ -971,6 +971,7 @@ if __name__ == "__main__":
         # If recursive, just wait some error or something to get the number
         # and save it, otherwise just save the first one.
         for number_user in main(settingsBot):
+            #print number_user
             pass # number_user get with the for cicle the value
         #except wikipedia.BadTitle:
             # If the server is down, pywikipediabot raise that error.
