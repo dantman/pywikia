@@ -764,32 +764,36 @@ class main:
         regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\]$" % self.image
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
         hash_found = imagePage.getHash()
-        commons_image_with_this_hash = commons_site.getImagesFromAnHash(hash_found)
-        if commons_image_with_this_hash != []:
-            wikipedia.output(u'%s is on commons!' % self.image)
-            imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
-            on_commons_text = imagePage.getImagePageHtml()
-            if "<div class='sharedUploadNotice'>" in on_commons_text:
-                wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
-                # Problems? Yes! We have to skip the check part for that image!
-                # Because it's on commons but someone has added something on your project.
-                return False
-            elif 'stemma' in self.image.lower() and self.site.lang == 'it':
-                wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.image)
-                return True # Problems? No, it's only not on commons but the image needs a check
+        if hash_found == None:
+            return False # Problems? Yes! Image deleted, no hash found. Skip the image.
+        else:
+            commons_image_with_this_hash = commons_site.getImagesFromAnHash(hash_found)
+            if commons_image_with_this_hash != []:
+                wikipedia.output(u'%s is on commons!' % self.image)
+                imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+                on_commons_text = imagePage.getImagePageHtml()
+                if "<div class='sharedUploadNotice'>" in on_commons_text:
+                    wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
+                    # Problems? Yes! We have to skip the check part for that image!
+                    # Because it's on commons but someone has added something on your project.
+                    return False
+                elif 'stemma' in self.image.lower() and self.site.lang == 'it':
+                    wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.image)
+                    return True # Problems? No, it's only not on commons but the image needs a check
+                else:
+                    repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
+                    self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
+                    # Problems? No, return True
+                    return True
             else:
-                repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
-                self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
                 # Problems? No, return True
                 return True
-        else:
-            # Problems? No, return True
-            return True
 
     def checkImageDuplicated(self):
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
         # Skip the stub images
+        # FIXME: Fix this part, this can be really improved
         if 'stub' in self.image.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
             return True # Skip the stub, ok
         dupText = wikipedia.translate(self.site, duplicatesText)
@@ -803,7 +807,7 @@ class main:
         hash_found = imagePage.getHash()
         duplicates = self.site.getImagesFromAnHash(hash_found)
         if duplicates == None:
-            return False # Error, we need to skip the page.
+            return False # Error, image deleted, no hash found. Skip the image.
         if len(duplicates) > 1:
             if len(duplicates) == 2:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
