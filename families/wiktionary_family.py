@@ -99,6 +99,7 @@ class Family(family.Family):
             'ab': u'Обсуждение Wiktionary',
             'af': u'Wiktionarybespreking',
             'als': u'Wiktionary Diskussion',
+            'am': u'Wiktionary ውይይት',
             'an': u'Descusión Wiktionary',
             'ar': u'نقاش ويكاموس',
             'ast': u'Uiccionariu alderique',
