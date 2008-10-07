@@ -35,7 +35,7 @@ Basic pagegenerators commands, -page, etc...
 # (C) 2008 - Nicolas Dumazet ( en:User:NicDumZ )
 #
 # Distributed under the terms of the GPL
-"""
+
 __version__ = '$Id$'
 
 from BeautifulSoup import UnicodeDammit
