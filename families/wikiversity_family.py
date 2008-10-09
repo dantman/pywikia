@@ -51,12 +51,14 @@ class Family(family.Family):
             'en': u'School',
             'it': u'Facoltà',
             'ja': u'School',
+	    'cs': u'Fórum',
         }
         self.namespaces[101] = {
             'el': u'Συζήτηση Σχολής',
             'en': u'School talk',
             'it': u'Discussioni facoltà',
             'ja': u'School‐ノート',
+	    'cs': u'Fórum diskuse',
         }
         self.namespaces[102] = {
             'el': u'Τμήμα',
