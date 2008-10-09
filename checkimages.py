@@ -145,6 +145,7 @@ empty = {
         'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
         'ja'     :u'{{subst:Welcome/intro}}\n{{subst:welcome|--~~~~}}\n',
         'ko'     :u'{{환영}}\n~~~~\n',
+        'ta'     :u'{{welcome}}\n~~~~\n',
         'zh'     :u'{{subst:welcome|sign=~~~~}}',
         }
 
@@ -288,7 +289,7 @@ report_page = {
                 'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
                 'ja'     :u'User:Alexbot/report',
                 'ko'     :u'User:Kwjbot IV/Report',
-                'ta'     :u'Trengarasu/commonsimages',
+                'ta'     :u'User:Trengarasu/commonsimages',
                 'zh'     :u'User:Alexsh/checkimagereport',
                 }
 # Adding the date after the signature.
