@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Script to check recently uploaded files. This script checks if a file
-description is present and if there is only a {{PD}} tag in the description.
-It will tag a file "no source" in the former case, and request the uploader
-to choose a more specific license in the latter case.
+description is present and if there are other problems in the image's description.
 
 This script will have to be configured for each language. Please submit
 translations as addition to the pywikipediabot framework.
@@ -18,7 +16,9 @@ This script understands the following command-line arguments:
     -commons            - The Bot will check if an image on Commons has the same name
                         and if true it report the image.
 
-    -duplicates         - Checking if the image has duplicates.
+    -duplicates[:#]     - Checking if the image has duplicates (if arg, set how many rollback
+                          wait before reporting the image in the report instead of tag the image)
+                          default: 1 rollback.
 
     -duplicatesreport   - Report the duplicates in a log *AND* put the template in the images.
 
@@ -357,10 +357,11 @@ HiddenTemplateNotification = {
         'ta': None,
         }
 # Stub - will make it better in future, work in progress.
+# put __image__ if you want only one image, __images__ if you want the whole list
 duplicatesText = {
         'commons':u'\n{{Dupe|__image__}}',
         'en':None,
-        'it':u'\n{{Cancella subito|Immagine doppia di [[:__image__]]}}',
+        'it':u'\n{{Progetto:Coordinamento/Immagini/Bot/Template duplicati|__images__}}',
         'ko':'분류:그림 저작권 틀',
         }
 duplicate_user_talk_head = {
@@ -386,7 +387,7 @@ duplicates_comment_image = {
 duplicatesRegex = {
         'commons':r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
         'en':None,
-        'it':r'\{\{(?:[Tt]emplate:|)[Cc]ancella[ _]subito[|}]',
+        'it':r'\{\{(?:[Tt]emplate:|)[Pp]rogetto:[Cc]oordinamento/Immagini/Bot/Template duplicati[|}]',
         }
 
 category_with_licenses = {
@@ -481,7 +482,8 @@ class EmailSender(wikipedia.Page):
 
 # Here there is the main class.
 class main:
-    def __init__(self, site, logFulNumber = 25000, sendemailActive = False, duplicatesReport = False):
+    def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
+                 duplicatesReport = False, smartdetection = False):
         """ Constructor, define some global variable """
         self.site = site
         self.logFulNumber = logFulNumber
@@ -506,7 +508,10 @@ class main:
         self.duplicatesReport = duplicatesReport
         image_n = self.site.image_namespace()
         self.image_namespace = "%s:" % image_n # Example: "User_talk:"
-        self.list_licenses = self.load_licenses()
+        # Load the licenses only once, so do it once
+        self.smartdetection = smartdetection
+        if self.smartdetection:
+            self.list_licenses = self.load_licenses()
     def setParameters(self, image):
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
         self.image = image
@@ -757,6 +762,20 @@ class main:
         encodedTitle = title.encode(self.site.encoding())
         return urllib.quote(encodedTitle)
 
+    def countEdits(self, pagename, userlist):
+        # self.botolist
+        if type(userlist) == type(''):
+            userlist = [userlist]
+        page = wikipedia.Page(self.site, pagename)
+        history = page.getVersionHistory()
+        user_list = list()
+        for data in history:
+            user_list.append(data[2])
+        number_edits = 0
+        for username in userlist:
+            number_edits += user_list.count(username)
+        return number_edits
+
     def checkImageOnCommons(self):
         """ Checking if the image is on commons """
         wikipedia.output(u'Checking if %s is on commons...' % self.image)
@@ -789,13 +808,12 @@ class main:
                 # Problems? No, return True
                 return True
 
-    def checkImageDuplicated(self):
+    def checkImageDuplicated(self, duplicates_rollback):
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
         # Skip the stub images
-        # FIXME: Fix this part, this can be really improved
-        if 'stub' in self.image.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
-            return True # Skip the stub, ok
+        #if 'stub' in self.image.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
+        #    return True # Skip the stub, ok
         dupText = wikipedia.translate(self.site, duplicatesText)
         dupRegex = wikipedia.translate(self.site, duplicatesRegex)
         dupTalkHead = wikipedia.translate(self.site, duplicate_user_talk_head)
@@ -813,15 +831,6 @@ class main:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
             else:
                 wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.image, len(duplicates) - 1))
-            if self.duplicatesReport:
-                repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
-                for duplicate in duplicates:
-                    if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
-                        continue # the image itself, not report also this as duplicate
-                    repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)
-                result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
-                if not result:
-                    return True # If Errors, exit (but continue the check)
             if not dupText == None and not dupRegex == None:
                 time_image_list = list()
                 time_list = list()
@@ -859,16 +868,50 @@ class main:
                         wikipedia.output(u"Already put the dupe-template in the image's page or in the dupe's page. Skip.")
                         return True # Ok - No problem. Let's continue the checking phase
                 older_image_ns = '%s%s' % (self.image_namespace, older_image) # adding the namespace
+                only_report = False # true if the image are not to be tagged as dupes
+
+                # put only one image or the whole list according to the request
+                if '__images__' in dupText:
+                    text_for_the_report = re.sub(r'__images__', r'\n%s*[[:%s]]\n' % (string, older_image_ns), dupText)
+                else:
+                    text_for_the_report = re.sub(r'__image__', r'%s' % older_image_ns, dupText)
+                # Two iteration: report the "problem" to the user only once (the last)
                 if len(images_to_tag_list) > 1:
                     for image_to_tag in images_to_tag_list[:-1]:
-                        self.report(re.sub(r'__image__', r'%s' % older_image_ns, dupText), image_to_tag,
+                        already_reported_in_past = self.countEdits('Image:%s' % image_to_tag, self.botolist)
+                        # if you want only one edit, the edit found should be more than 0 -> num - 1
+                        if already_reported_in_past > duplicates_rollback - 1:
+                            only_report = True
+                            break
+                        # Delete the image in the list where we're write on
+                        text_for_the_report = re.sub(r'\n\*\[\[:%s\]\]' % (self.image_namespace + image_to_tag), '', text_for_the_report)
+                        self.report(text_for_the_report, image_to_tag,
                                     commImage = dupComment_image, unver = True)
-                if len(images_to_tag_list) != 0:
-                    self.report(re.sub(r'__image__', r'%s' % older_image_ns, dupText), images_to_tag_list[-1],
-                        dupTalkText % (older_image_ns, string), dupTalkHead, commTalk = dupComment_talk,
-                            commImage = dupComment_image, unver = True)
+                if len(images_to_tag_list) != 0 and not only_report:
+                    already_reported_in_past = self.countEdits('Image:%s' % images_to_tag_list[-1], self.botolist)
+                    # Delete the image in the list where we're write on
+                    text_for_the_report = re.sub(r'\n\*\[\[:%s\]\]' % (self.image_namespace + images_to_tag_list[-1]), '', text_for_the_report)
+                    # if you want only one edit, the edit found should be more than 0 -> num - 1
+                    if already_reported_in_past > duplicates_rollback - 1:
+                        only_report = True
+                    else:
+                        self.report(text_for_the_report, images_to_tag_list[-1],
+                            dupTalkText % (older_image_ns, string), dupTalkHead, commTalk = dupComment_talk,
+                                commImage = dupComment_image, unver = True)
+            if self.duplicatesReport or only_report:
+                if only_report:
+                    repme = "\n*[[:Image:%s]] has the following duplicates ('''forced mode'''):" % self.convert_to_url(self.image)
+                else:
+                    repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
+                for duplicate in duplicates:
+                    if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
+                        continue # the image itself, not report also this as duplicate
+                    repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)
+                result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
+                if not result:
+                    return True # If Errors, exit (but continue the check)                
             if older_image != self.image:
-                return False # The image is a duplicate, it will be deleted.
+                return False # The image is a duplicate, it will be deleted. So skip the check-part, useless
         return True # Ok - No problem. Let's continue the checking phase
 
     def report_image(self, image_to_report, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
@@ -939,7 +982,7 @@ class main:
         categories = [page.title() for page in pagegenerators.SubCategoriesPageGenerator(cat)]
         categories.append(catName)
         list_licenses = list()
-        wikipedia.output(u'\n\t...Loading the names of the licenses allowed...\n')
+        wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
         for catName in categories:
             cat = catlib.Category(wikipedia.getSite(), catName)
             gen = pagegenerators.CategorizedPageGenerator(cat)
@@ -1024,8 +1067,12 @@ def checkbot():
             repeat = False
         elif arg == '-commons':
             commonsActive = True
-        elif arg == '-duplicates':
+        elif arg.startswith('-duplicates'):
             duplicatesActive = True
+            if len(arg) == 11:
+                duplicates_rollback = 1
+            elif len(arg) > 11:
+                duplicates_rollback = int(arg[12:])
         elif arg == '-duplicatereport':
             duplicatesReport = True
         elif arg == '-sendemail':
@@ -1150,7 +1197,7 @@ def checkbot():
     # Main Loop
     while 1:
         # Defing the Main Class.
-        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport)
+        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport, smartdetection = smartdetection)
         # Untagged is True? Let's take that generator
         if untagged == True:
             generator =  mainClass.untaggedGenerator(projectUntagged, limit)
@@ -1270,7 +1317,7 @@ def checkbot():
                     continue
             # Check if there are duplicates of the image on the project selected
             if duplicatesActive == True:
-                response2 = mainClass.checkImageDuplicated()
+                response2 = mainClass.checkImageDuplicated(duplicates_rollback)
                 if response2 == False:
                     continue
             # Is the image already tagged? If yes, no need to double-check, skip
