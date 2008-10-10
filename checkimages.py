@@ -342,11 +342,19 @@ HiddenTemplate = {
         'ta':[u'information'],
         'zh':[u'information'],
         }
-
+# A page where there's a list of template to skip.
 PageWithHiddenTemplates = {
     'commons': u'User:Filbot/White_templates#White_templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
+    'ko': u'User:Kwjbot_IV/whitetemplates/list',
+    }
+
+# A page where there's a list of template to consider as licenses.
+PageWithAllowedTemplates = {
+    'commons': u'User:Filbot/Allowed templates',
+    'en':None,
+    'it':u'Progetto:Coordinamento/Immagini/Bot/AllowedTemplates',
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
     }
 
@@ -497,6 +505,7 @@ class main:
         self.com = wikipedia.translate(self.site, comm10)
         self.hiddentemplate = wikipedia.translate(self.site, HiddenTemplate)
         self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)
+        self.pageAllowed = wikipedia.translate(self.site, PageWithAllowedTemplates)        
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
         # Adding the bot's nickname at the notification text if needed.
@@ -992,6 +1001,20 @@ class main:
             gen = pagegenerators.CategorizedPageGenerator(cat)
             pages = [page for page in gen]
             list_licenses.extend(pages)
+
+        # Add the licenses set in the default page as licenses
+        # to check
+        if self.pageAllowed != None:
+            try:
+                pageAllowedText = wikipedia.Page(self.site, self.pageAllowed).get()
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                pageAllowedText = ''
+            for nameLicense in self.load(pageAllowedText):
+                if not 'template:' in nameLicense.lower():
+                    nameLicense = 'Template:%s' % nameLicense
+                pageLicense = wikipedia.Page(self.site, nameLicense)
+                if pageLicense not in list_licenses:
+                    list_licenses.append(pageLicense) # the list has wiki-pages
         return list_licenses
 
     def smartDetection(self, image_text):
@@ -1000,6 +1023,7 @@ class main:
         regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n].*?|)\}\}', re.DOTALL)
         licenses_found = regex_find_licenses.findall(image_text)
         second_round = False
+
         exit_cicle = False # howTo exit from both the for and the while cicle
         while 1:
             if exit_cicle: # howTo exit from the while
@@ -1033,6 +1057,8 @@ class main:
                         seems_ok = False # Empty template (maybe deleted while the script's running)
                         exit_cicle = True
                         break
+                    regex_noinclude = re.compile(r'<noinclude>(.*?)</noinclude>', re.DOTALL)
+                    template_text = regex_noinclude.sub('', template_text)
                     if second_round == False:
                         licenses_found = regex_find_licenses.findall(template_text)
                         second_round = True
