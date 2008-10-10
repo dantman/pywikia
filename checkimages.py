@@ -1017,6 +1017,17 @@ class main:
                     list_licenses.append(pageLicense) # the list has wiki-pages
         return list_licenses
 
+    def giveMeTheTemplate(self, license_selected):
+        #print template.exists()
+        template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
+        if not template.exists():
+            template = wikipedia.Page(self.site, license_selected)
+            if not template.exists():
+                return None # break and exit
+        if template.isRedirectPage():
+            template = template.getRedirectTarget()
+        return template
+
     def smartDetection(self, image_text):
         seems_ok = False
         license_found = None
@@ -1030,16 +1041,13 @@ class main:
                 break
             if licenses_found != []:
                 for license_selected in licenses_found:
-                    #print template.exists()
-                    template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
-                    if not template.exists():
-                        template = wikipedia.Page(self.site, license_selected)
-                        if not template.exists():
-                            exit_cicle = True
-                            break # break and report
+                    # put the first, if there is problem, this will be reported in the log
+                    if license_found == None:
+                        license_found = license_selected
                     try:
-                        if template.isRedirectPage():
-                            template = template.getRedirectTarget()
+                        template = self.giveMeTheTemplate(license_selected)
+                        if template == None:
+                            continue
                     except wikipedia.BadTitle:
                         # Template with wrong name, no need to report, simply skip
                         continue
@@ -1047,16 +1055,21 @@ class main:
                         if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
                             seems_ok = True
                             exit_cicle = True
+                            license_found = license_selected # let the last "fake" license normally detected
                             break
-                license_found = license_selected # let the last "fake" license normally detected
                 # previous block was unsuccessful? Try with the next one
                 for license_selected in licenses_found:
                     try:
+                        template = self.giveMeTheTemplate(license_selected)
+                    except wikipedia.BadTitle:
+                        # Template with wrong name, no need to report, simply skip
+                        continue                          
+                    try:
                         template_text = template.get()
+                        if template == None:
+                            continue # ok, this template it's not ok, continue..               
                     except wikipedia.NoPage:
-                        seems_ok = False # Empty template (maybe deleted while the script's running)
-                        exit_cicle = True
-                        break
+                        continue # ok, this template it's not ok, continue..
                     regex_noinclude = re.compile(r'<noinclude>(.*?)</noinclude>', re.DOTALL)
                     template_text = regex_noinclude.sub('', template_text)
                     if second_round == False:
@@ -1065,7 +1078,6 @@ class main:
                         break # only exit from the for, not from the while
                     else:
                         exit_cicle = True
-                        license_found = license_selected # A good license? Ok, let's use it instead
                         break
         if not seems_ok:
             rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.image, license_found)
