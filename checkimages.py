@@ -90,6 +90,9 @@ locale.setlocale(locale.LC_ALL, '')
 # <------------------------------------------- Change only below! ----------------------------------------------------->#
 #########################################################################################################################
 
+# NOTE: in the messages used by the Bot if you put __botnick__ in the text, it will automatically replaced
+# with the bot's nickname.
+
 # That's what you want that will be added. (i.e. the {{no source}} with the right day/month/year )
 n_txt = {
     'commons':u'\n{{subst:nld}}',
@@ -195,7 +198,7 @@ delete_immediately_notification = {
                 'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
-                'it'     :u'{{subst:Utente:Filbot/Ext|%s}} --~~~~',
+                'it'     :u'{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Ext|%s|__botnick__}} --~~~~',
                 'ko'     :u'[[:그림:%s]]의 파일 형식이 잘못되었습니다. 확인 바랍니다.--~~~~',
                 'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
                 'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
@@ -236,7 +239,7 @@ nothing_notification = {
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|Image:%s}} --~~~~",
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
-                'it'     :u"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
+                'it'     :u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza|%s|__botnick__}} --~~~~",
                 'ja'     :u"\n{{subst:Image copyright|Image:%s}}--~~~~",
                 'ko'     :u'\n{{subst:사용자:김우진1/BotRFL|%s}} --~~~~',
                 'ta'     :u'\n{{subst:Di-no license-notice|படிமம்:%s}} ~~~~ ',
@@ -262,7 +265,7 @@ second_message_without_license = {
                 'de':None,
                 'en': None,
                 'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
-                'it':u':{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
+                'it':u':{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza2|%s|__botnick__}} --~~~~',
                 'ja':None,
                 'ta':None,
                 'zh':None,
@@ -353,7 +356,7 @@ HiddenTemplateNotification = {
         'commons': u"""\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
         'de': None,
         'en': None,
-        'it': u"{{subst:Utente:Filbot/Template_insufficiente|%s}} --~~~~",
+        'it': u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
         'ko': u"\n{{subst:User:김우진1/BotRFL|%s}} --~~~~",
         'ta': None,
         }
@@ -372,7 +375,7 @@ duplicate_user_talk_head = {
 duplicates_user_talk_text = {
         'commons':u'{{subst:User:Filnik/duplicates|Image:%s|Image:%s}}',
         'en':None,
-        'it':u"{{subst:Utente:Filbot/duplicati|%s|%s}} --~~~~",
+        'it':u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
         }
 
 duplicates_comment_talk = {
