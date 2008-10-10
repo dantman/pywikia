@@ -999,27 +999,55 @@ class main:
         license_found = None
         regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n].*?|)\}\}', re.DOTALL)
         licenses_found = regex_find_licenses.findall(image_text)
-        if licenses_found != []:
-            for license_selected in licenses_found:
-                #print template.exists()
-                template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
-                try:
-                    if template.isRedirectPage():
-                        template = template.getRedirectTarget()
-                except wikipedia.BadTitle:
-                    seems_ok = False # Template with wrong name
-                    return (seems_ok, license_found)
-                else:
-                    if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
-                        seems_ok = True
-                license_found = license_selected
+        second_round = False
+        exit_cicle = False # howTo exit from both the for and the while cicle
+        while 1:
+            if exit_cicle: # howTo exit from the while
+                break
+            if licenses_found != []:
+                for license_selected in licenses_found:
+                    #print template.exists()
+                    template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
+                    if not template.exists():
+                        template = wikipedia.Page(self.site, license_selected)
+                        if not template.exists():
+                            exit_cicle = True
+                            break # break and report
+                    try:
+                        if template.isRedirectPage():
+                            template = template.getRedirectTarget()
+                    except wikipedia.BadTitle:
+                        # Template with wrong name, no need to report, simply skip
+                        continue
+                    else:
+                        if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
+                            seems_ok = True
+                            exit_cicle = True
+                            break
+                        else:
+                            try:
+                                template_text = template.get()
+                            except wikipedia.NoPage:
+                                seems_ok = False # Empty template (maybe deleted while the script's running)
+                                exit_cicle = True
+                                break
+                            if second_round == False:
+                                licenses_found = regex_find_licenses.findall(template_text)
+                                second_round = True
+                                break # only exit from the for, not from the while
+                            else:
+                                exit_cicle = True
+                                break
+        license_found = license_selected
         if not seems_ok:
             rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.image, license_found)
             regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (self.image, license_found)
             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.image, license_found))
             self.report_image(self.image, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
-        return (seems_ok, license_found)
+        else:
+            printWithTimeZone(u"%s seems ok, license found: %s..." % (self.image, license_found))
+        return license_found
 
     def load(self, raw):
         """ Load a list of object from a string using regex. """
@@ -1439,14 +1467,9 @@ def checkbot():
                     seems_ok = False
                     license_found = None
                     if smartdetection:
-                        (seems_ok, license_found) = mainClass.smartDetection(g)
+                        license_found = mainClass.smartDetection(g)
                     else:
-                        seems_ok = True
-                    if seems_ok:
-                        if license_found != None:
-                            printWithTimeZone(u"%s seems ok, license found: %s..." % (imageName, license_found))
-                        else:
-                            printWithTimeZone(u"%s seems ok..." % imageName)
+                        printWithTimeZone(u"%s seems ok..." % imageName)
                     # It works also without this... but i want only to be sure ^^
                     parentesi = False
                     continue
