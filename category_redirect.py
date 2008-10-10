@@ -13,7 +13,6 @@ import cPickle
 import math
 import re
 import sys, traceback
-import threading, Queue
 import time
 from datetime import datetime, timedelta
 
@@ -29,55 +28,11 @@ class APIError(Exception):
         return "%(code)s: %(info)s" % self.errors
 
 
-class ThreadList(list):
-    """A simple threadpool class to limit the number of simultaneous threads.
-
-    Any threading.Thread object can be added to the pool using the append()
-    method.  If the maximum number of simultaneous threads has not been
-    reached, the Thread object will be started immediately; if not, the
-    append() call will block until the thread is able to start.
-
-    >>> pool = ThreadList(limit=10)
-    >>> def work():
-    ...     time.sleep(1)
-    ...
-    >>> for x in xrange(20):
-    ...     pool.append(threading.Thread(target=work))
-    ...
-
-    """
-    def __init__(self, limit=sys.maxint, *args):
-        self.limit = limit
-        list.__init__(self, *args)
-        for item in list(self):
-            if not isinstance(threading.Thread, item):
-                raise TypeError("Cannot add '%s' to ThreadList" % type(item))
-
-    def active_count(self):
-        """Return the number of alive threads, and delete all non-alive ones."""
-        count = 0
-        for item in list(self):
-            if item.isAlive():
-                count += 1
-            else:
-                self.remove(item)
-        return count
-
-    def append(self, thd):
-        if not isinstance(thd, threading.Thread):
-            raise TypeError("Cannot append '%s' to ThreadList" % type(thd))
-        while self.active_count() >= self.limit:
-            time.sleep(2)
-        list.append(self, thd)
-        thd.start()
-
-
 class CategoryRedirectBot(object):
     def __init__(self):
         self.cooldown = 7 # days
         self.site = wikipedia.getSite()
         self.catprefix = self.site.namespace(14)+":"
-        self.result_queue = Queue.Queue()
         self.log_text = []
         self.edit_requests = []
 
@@ -270,15 +225,13 @@ category links:
                 if found:
                     wikipedia.output(u"%s: %s found, %s moved"
                                      % (oldCat.title(), found, moved))
-                self.result_queue.put((oldCatTitle, found, moved))
-                return
+                return (found, moved)
             except wikipedia.ServerError:
                 wikipedia.output(u"Server error: retrying in 5 seconds...")
                 time.sleep(5)
                 continue
             except:
-                self.result_queue.put((oldCatTitle, None, None))
-                raise
+                return (None, None)
 
     def readyToEdit(self, cat):
         """Return True if cat not edited during cooldown period, else False."""
@@ -364,8 +317,7 @@ category links:
         l = time.localtime()
         today = "%04d-%02d-%02d" % l[:3]
         log_page = wikipedia.Page(self.site,
-                        u"User:%(user)s/category redirect logs/%(today)s"
-                          % locals())
+                        u"User:%(user)s/category redirect log" % locals())
         problem_page = wikipedia.Page(self.site,
                         u"User:%(user)s/category redirect problems" % locals())
         edit_request_page = wikipedia.Page(self.site,
@@ -579,7 +531,7 @@ category links:
         wikipedia.output(u"Moving pages out of %s redirected categories."
                          % len(cats_to_empty))
 #        thread_limit = int(math.log(len(cats_to_empty), 8) + 1)
-        threadpool = ThreadList(limit=1)    # disabling multi-threads
+#        threadpool = ThreadList(limit=1)    # disabling multi-threads
 
         for cat in cats_to_empty:
             cat_title = cat.titleWithoutNamespace()
@@ -589,33 +541,32 @@ category links:
                     u"* Skipping %s; in cooldown period."
                      % cat.aslink(textlink=True))
                 continue
-            threadpool.append(
-                threading.Thread(target=self.move_contents,
-                                 args=(cat_title, catmap[cat]),
-                                 kwargs=dict(editSummary=comment)))
-        while len(counts) < len(cats_to_empty):
-            title, found, moved = self.result_queue.get()
+            found, moved = self.move_contents(cat_title, catmap[cat],
+                                              editSummary=comment)
             if found is None:
                 self.log_text.append(
-                    u"* [[:%s%s]]: error in move_contents thread"
-                    % (self.catprefix, title))
-            else:
-                if found:
-                    self.log_text.append(
-                        u"* [[:%s%s]]: %d found, %d moved"
-                        % (self.catprefix, title, found, moved))
-            counts[title] = found
-            record[title][today] = found
+                    u"* [[:%s%s]]: error in move_contents"
+                    % (self.catprefix, cat_title))
+            elif found:
+                record[cat_title][today] = found
+                self.log_text.append(
+                    u"* [[:%s%s]]: %d found, %d moved"
+                    % (self.catprefix, cat_title, found, moved))
+            counts[cat_title] = found
 
         cPickle.dump(record, open(datafile, "wb"))
 
         wikipedia.setAction(wikipedia.translate(self.site.lang,
                                                 self.maint_comment))
-        log_page.put("\n".join(self.log_text))
+        try:
+            log_text = log_page.get()
+        except wikipedia.NoPage:
+            log_text = u""
+        log_page.put(log_text + u"\n==~~~~~==\n"+ u"\n".join(self.log_text))
         problem_page.put("\n".join(problems))
         if self.edit_requests:
             edit_request_page.put(self.edit_request_text
-                                 % "\n".join((self.edit_request_item % item)
+                                 % u"\n".join((self.edit_request_item % item)
                                              for item in self.edit_requests))
 
 
