@@ -1068,9 +1068,9 @@ class main:
                         # Template with wrong name, no need to report, simply skip
                         continue                          
                     try:
-                        template_text = template.get()
                         if template == None:
-                            continue # ok, this template it's not ok, continue..               
+                            continue # ok, this template it's not ok, continue..                           
+                        template_text = template.get()            
                     except wikipedia.NoPage:
                         continue # ok, this template it's not ok, continue..
                     regex_noinclude = re.compile(r'<noinclude>(.*?)</noinclude>', re.DOTALL)
