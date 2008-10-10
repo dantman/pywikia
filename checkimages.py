@@ -1054,22 +1054,21 @@ class main:
                     except wikipedia.BadTitle:
                         # Template with wrong name, no need to report, simply skip
                         continue
-                    else:
-                        if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
-                            seems_ok = True
-                            exit_cicle = True
-                            license_found = license_selected # let the last "fake" license normally detected
-                            break
+                    if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
+                        seems_ok = True
+                        exit_cicle = True
+                        license_found = license_selected # let the last "fake" license normally detected
+                        break
                 # previous block was unsuccessful? Try with the next one
                 for license_selected in licenses_found:
                     try:
                         template = self.giveMeTheTemplate(license_selected)
+                        if template == None:
+                            continue # ok, this template it's not ok, continue..                          
                     except wikipedia.BadTitle:
                         # Template with wrong name, no need to report, simply skip
                         continue                          
-                    try:
-                        if template == None:
-                            continue # ok, this template it's not ok, continue..                           
+                    try:                         
                         template_text = template.get()            
                     except wikipedia.NoPage:
                         continue # ok, this template it's not ok, continue..
