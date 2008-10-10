@@ -1024,21 +1024,23 @@ class main:
                             seems_ok = True
                             exit_cicle = True
                             break
-                        else:
-                            try:
-                                template_text = template.get()
-                            except wikipedia.NoPage:
-                                seems_ok = False # Empty template (maybe deleted while the script's running)
-                                exit_cicle = True
-                                break
-                            if second_round == False:
-                                licenses_found = regex_find_licenses.findall(template_text)
-                                second_round = True
-                                break # only exit from the for, not from the while
-                            else:
-                                exit_cicle = True
-                                break
-        license_found = license_selected
+                license_found = license_selected # let the last "fake" license normally detected
+                # previous block was unsuccessful? Try with the next one
+                for license_selected in licenses_found:
+                    try:
+                        template_text = template.get()
+                    except wikipedia.NoPage:
+                        seems_ok = False # Empty template (maybe deleted while the script's running)
+                        exit_cicle = True
+                        break
+                    if second_round == False:
+                        licenses_found = regex_find_licenses.findall(template_text)
+                        second_round = True
+                        break # only exit from the for, not from the while
+                    else:
+                        exit_cicle = True
+                        license_found = license_selected # A good license? Ok, let's use it instead
+                        break
         if not seems_ok:
             rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.image, license_found)
             regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (self.image, license_found)
