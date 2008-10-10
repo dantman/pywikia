@@ -2800,8 +2800,11 @@ class Family:
                 if value in v: return v[0]
             else:
                 if value == v: return v
-            if value == self.namespace('_default', ns):
-                return self.namespace(code, ns)
+            try:
+                if value == self.namespace('_default', ns):
+                    return self.namespace(code, ns)
+            except KeyError:
+                pass
         return value
 
     def getNamespaceIndex(self, lang, namespace):

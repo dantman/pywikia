@@ -5812,8 +5812,10 @@ your connection is down. Retrying in %i minutes..."""
         If no match, return 'value' unmodified.
 
         """
-        if not self.nocapitalize and value[0].islower():
-            value = value[0].upper() + value[1:]
+        if not self.nocapitalize:
+            # make sure first letter gets normalized; there is at least
+            # one case ("İ") in which s.lower().upper() != s
+            value = value[0].lower().upper() + value[1:]
         return self.family.normalizeNamespace(self.lang, value)
 
     def namespaces(self):
