@@ -793,7 +793,7 @@ class main:
         """ Checking if the image is on commons """
         wikipedia.output(u'Checking if %s is on commons...' % self.image)
         commons_site = wikipedia.getSite('commons', 'commons')
-        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\]$" % self.image
+        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\](?: \(same name\)|)$" % self.image
         imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
         hash_found = imagePage.getHash()
         if hash_found == None:
@@ -809,11 +809,14 @@ class main:
                     # Problems? Yes! We have to skip the check part for that image!
                     # Because it's on commons but someone has added something on your project.
                     return False
-                elif 'stemma' in self.image.lower() and self.site.lang == 'it':
+                elif re.findall(r'\bstemma\b', self.image.lower()) != [] and self.site.lang == 'it':
                     wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.image)
                     return True # Problems? No, it's only not on commons but the image needs a check
                 else:
-                    repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
+                    if self.image == commons_image_with_this_hash[0]:
+                        repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]] (same name)" % (self.image, commons_image_with_this_hash[0])
+                    else:
+                        repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
                     self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
                     # Problems? No, return True
                     return True
