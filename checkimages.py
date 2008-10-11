@@ -1412,7 +1412,7 @@ def checkbot():
             for l in hiddentemplate:
                 if tagged == False:
                     # why creator? Because on commons there's a template such as {{creator:name}} that.. works
-                    res = re.findall(r'\{\{(?:[Tt]emplate:|)(?:%s(?:[ \n]*?(?:\n|\||\}|<)|creator:)' % l.lower(), g.lower())
+                    res = re.findall(r'\{\{(?:[Tt]emplate:|)(?:%s[ \n]*?(?:\n|\||\}|<)|creator:)' % l.lower(), g.lower())
                     if res != []:
                         white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
