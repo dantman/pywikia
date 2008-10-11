@@ -1034,7 +1034,7 @@ class main:
     def smartDetection(self, image_text):
         seems_ok = False
         license_found = None
-        regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n].*?|)\}\}', re.DOTALL)
+        regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n<].*?|)\}\}', re.DOTALL)
         licenses_found = regex_find_licenses.findall(image_text)
         second_round = False
 
@@ -1399,7 +1399,7 @@ def checkbot():
                 # If there are {{ use regex, otherwise no (if there's not the {{ may not be a template
                 # and the regex will be wrong)
                 if '{{' in i:
-                    regexP = re.compile('\{\{(?:template|)%s ?(?:\||\n|\}) ?' % i.split('{{')[1].replace(' ', '[ _]'), re.I)
+                    regexP = re.compile('\{\{(?:template|)%s ?(?:\||\n|\}|<) ?' % i.split('{{')[1].replace(' ', '[ _]'), re.I)
                     result = regexP.findall(g)
                     if result != []:
                         tagged = True
@@ -1412,7 +1412,7 @@ def checkbot():
             for l in hiddentemplate:
                 if tagged == False:
                     # why creator? Because on commons there's a template such as {{creator:name}} that.. works
-                    res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?:[ \n]*?(?:\n|\||\}|creator:))' % l.lower(), g.lower())
+                    res = re.findall(r'\{\{(?:[Tt]emplate:|)(?:%s(?:[ \n]*?(?:\n|\||\}|<)|creator:)' % l.lower(), g.lower())
                     if res != []:
                         white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
