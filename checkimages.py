@@ -1411,12 +1411,13 @@ def checkbot():
             white_template_found = 0
             for l in hiddentemplate:
                 if tagged == False:
-                    res = re.findall(r'\{\{(?:[Tt]emplate:|)%s[ \n]*?(?:\n|\||\})' % l.lower(), g.lower())
+                    # why creator? Because on commons there's a template such as {{creator:name}} that.. works
+                    res = re.findall(r'\{\{(?:[Tt]emplate:|)%s(?:[ \n]*?(?:\n|\||\}|creator:))' % l.lower(), g.lower())
                     if res != []:
                         white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
                             # Deleting! (replace the template with nothing)
-                            regex_white_template = re.compile(r'\{\{(?:template:|)%s' % l, re.IGNORECASE)
+                            regex_white_template = re.compile(r'\{\{(?:template:|)(?:%s|creator)' % l, re.IGNORECASE)
                             g = regex_white_template.sub(r'', g)
                             hiddenTemplateFound = True
             if white_template_found == 1:
