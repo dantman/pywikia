@@ -906,8 +906,14 @@ class main:
                                     commImage = dupComment_image, unver = True)
                 if len(images_to_tag_list) != 0 and not only_report:
                     already_reported_in_past = self.countEdits('Image:%s' % images_to_tag_list[-1], self.botolist)
+                    # It's a regex, we need to fix the name in order to make it regex-compatible.
+                    replaces_to_perform = [[' ', '_'], ['(', '\('], [')', '\)'], ['.', '\.'], ['[', '\['], [']', '\]']
+                                           ['{', '\{'], ['}', '\}']]
+                    for replace_to_perform in replaces_to_perform:
+                        image_to_resub = images_to_tag_list[-1].replace(replace_to_perform[0], replace_to_perform[1])
+                    from_regex = r'\n\*\[\[:%s\]\]' % (self.image_namespace + image_to_resub)
                     # Delete the image in the list where we're write on
-                    text_for_the_report = re.sub(r'\n\*\[\[:%s\]\]' % (self.image_namespace + images_to_tag_list[-1]), '', text_for_the_report)
+                    text_for_the_report = re.sub(from_regex, '', text_for_the_report)
                     # if you want only one edit, the edit found should be more than 0 -> num - 1
                     if already_reported_in_past > duplicates_rollback - 1:
                         only_report = True
