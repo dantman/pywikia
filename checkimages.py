@@ -813,7 +813,8 @@ class main:
                     wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.image)
                     return True # Problems? No, it's only not on commons but the image needs a check
                 else:
-                    if self.image == commons_image_with_this_hash[0]:
+                    # the second usually is a url or something like that. Compare the two in equal way, both url.
+                    if self.convert_to_url(self.image) == self.convert_to_url(commons_image_with_this_hash[0]):
                         repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]] (same name)" % (self.image, commons_image_with_this_hash[0])
                     else:
                         repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
