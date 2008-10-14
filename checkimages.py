@@ -907,7 +907,7 @@ class main:
                 if len(images_to_tag_list) != 0 and not only_report:
                     already_reported_in_past = self.countEdits('Image:%s' % images_to_tag_list[-1], self.botolist)
                     # It's a regex, we need to fix the name in order to make it regex-compatible.
-                    replaces_to_perform = [[' ', '_'], ['(', '\('], [')', '\)'], ['.', '\.'], ['[', '\['], [']', '\]']
+                    replaces_to_perform = [[' ', '_'], ['(', '\('], [')', '\)'], ['.', '\.'], ['[', '\['], [']', '\]'],
                                            ['{', '\{'], ['}', '\}']]
                     for replace_to_perform in replaces_to_perform:
                         image_to_resub = images_to_tag_list[-1].replace(replace_to_perform[0], replace_to_perform[1])
