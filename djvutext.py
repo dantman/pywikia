@@ -100,8 +100,36 @@ class DjVuTextBot:
         self.username = config.usernames[site.family.name][site.lang]
 
         for pageno in gen:
-	    print "Processing page %d" % pageno
+	    wikipedia.output("Processing page %d" % pageno)
             self.treat(pageno)
+
+    def has_text(self):
+        cmd = "djvudump \"%s\" > \"%s\".out" % (self.djvu, self.djvu)
+        os.system ( cmd )
+
+        f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
+
+        s = f.read()
+        f.close()
+
+        import string
+        blah = string.find(s, 'TXTz') # text layers are described with this value
+
+        if string.find(s, 'TXTz') >= 0:
+            return True
+        else:
+            return False
+       
+    def get_page(self, pageno):
+        wikipedia.output("fetching page %d" % (pageno))
+        cmd = "djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
+        os.system ( cmd )
+
+        f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
+
+        djvu_text = f.read()
+        f.close()
+        return djvu_text
 
     def treat(self, pageno):
         """
@@ -112,19 +140,7 @@ class DjVuTextBot:
 	page = wikipedia.Page(site, '%s:%s/%d' % (page_namespace, self.prefix, pageno) )
 	exists = page.exists()
 
-        ################################################################
-        # NOTE: Here you can modify the text in whatever way you want. #
-        ################################################################
-
-        print "fetching page %d" % (pageno)
-	cmd = "djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
-        os.system ( cmd )
-
-        f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
-
-	djvutxt = f.read()
-
-	f.close()
+        djvutxt = self.get_page(pageno)
 
         if not djvutxt:
 	    djvutxt = wikipedia.translate(wikipedia.getSite(), self.blank)
@@ -210,6 +226,9 @@ def main():
         wikipedia.output("uploading text from %s to %s" % (djvu, index_page) )
 
         bot = DjVuTextBot(djvu, index, pages)
+	if not bot.has_text():
+            raise ValueError("No text layer in djvu file")
+
         bot.ask = ask
         bot.run()
     else:
