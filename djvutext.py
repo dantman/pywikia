@@ -209,11 +209,12 @@ def main():
             print "Unknown argument %s" % arg
 
     # Check the djvu file exists
-    os.stat(djvu)
+    if djvu:
+        os.stat(djvu)
 
-    if not index:
-        import os.path
-        index = os.path.basename(djvu)
+        if not index:
+            import os.path
+            index = os.path.basename(djvu)
 
     if djvu and index:
         site = wikipedia.getSite()
