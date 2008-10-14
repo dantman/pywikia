@@ -161,6 +161,7 @@ class DjVuTextBot:
 
 
 def main():
+    import os
     index = None
     djvu = None
     pages = None
@@ -183,16 +184,33 @@ def main():
         else:
             print "Unknown argument %s" % arg
 
-    if djvu and index:
-	index_page = wikipedia.Page(wikipedia.getSite(), index)
-	if not index_page.exists():
-	     wikipedia.output("%s does not exist" % index)
-	     raise Exception
+    # Check the djvu file exists
+    os.stat(djvu)
 
-        wikipedia.output("uploading text from %s to %s" % (djvu, index) )
+    if not index:
+        import os.path
+        index = os.path.basename(djvu)
+
+    if djvu and index:
+        site = wikipedia.getSite()
+        index_page = wikipedia.Page(site, index)
+
+        if site.family.name != 'wikisource':
+	    raise wikipedia.PageNotFound("Found family '%s'; Wikisource required.")
+
+        if not index_page.exists() and index_page.namespace() == 0:
+            index_namespace = wikipedia.Page(site, 'MediaWiki:Proofreadpage index namespace').get()
+
+            index_page = wikipedia.Page(wikipedia.getSite(),
+                                        u"%s:%s" % (index_namespace, index))
+
+        if not index_page.exists():
+            raise wikipedia.NoPage("Page '%s' does not exist" % index)
+
+        wikipedia.output("uploading text from %s to %s" % (djvu, index_page) )
 
         bot = DjVuTextBot(djvu, index, pages)
-	bot.ask = ask
+        bot.ask = ask
         bot.run()
     else:
         wikipedia.showHelp()
