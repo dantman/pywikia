@@ -8,7 +8,8 @@ The following parameters are supported:
 
     -debug         If given, doesn't do any real changes, but only shows
                    what would have been changed.
-    -ask           Ask for confirmation before creating each page.
+    -ask           Ask for confirmation before uploading each page.
+                   (Default: ask when overwriting pages)
     -index:...     Name of the index page
     -djvu:...      Filename of the djvu file
     -pages:<start>-<end> Page range to upload; <end> is optional
@@ -151,18 +152,25 @@ class DjVuTextBot:
 	text = text.replace('', "\n")
 
         # only save if something was changed
-        if (not exists and text) or text != page.get():
+        # automatically ask if overwriting an existing page
+        old_text = ''
+        ask = self.ask
+        if exists:
+            ask = 'y'
+            old_text = page.get()
+
+        if not exists or text != old_text:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             # show what was changed
 	    if exists:
-                wikipedia.showDiff(page.get(), text)
+                wikipedia.showDiff(old_text, text)
             else:
 	        wikipedia.output(text)
             if not self.debug:
 	        choice = 'y'
-		if self.ask:
+		if ask:
                     choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
                 if choice == 'y':
                     try:
