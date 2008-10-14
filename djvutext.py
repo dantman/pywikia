@@ -10,8 +10,9 @@ The following parameters are supported:
                    what would have been changed.
     -ask           Ask for confirmation before uploading each page.
                    (Default: ask when overwriting pages)
-    -index:...     Name of the index page
     -djvu:...      Filename of the djvu file
+    -index:...     Name of the index page
+                   (Default: the djvu filename)
     -pages:<start>-<end> Page range to upload; <end> is optional
 
 All other parameters will be regarded as part of the title of a single page,
@@ -122,7 +123,7 @@ class DjVuTextBot:
             return False
        
     def get_page(self, pageno):
-        wikipedia.output("fetching page %d" % (pageno))
+        wikipedia.output(unicode("fetching page %d" % (pageno)))
         cmd = "djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
         os.system ( cmd )
 
