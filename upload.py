@@ -175,7 +175,7 @@ class UploadRobot:
             ok = False
             # FIXME: these 2 belong somewhere else, presumably in family
             forbidden = '/' # to be extended
-            allowed_formats = (u'gif', u'jpg', u'jpeg', u'mid', u'midi', u'ogg', u'png', u'svg', u'xcf')
+            allowed_formats = (u'gif', u'jpg', u'jpeg', u'mid', u'midi', u'ogg', u'png', u'svg', u'xcf', u'djvu')
             while not ok:
                 ok = True
                 newfn = wikipedia.input(u'Enter a better name, or press enter to accept:')
