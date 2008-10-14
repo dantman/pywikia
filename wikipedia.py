@@ -119,7 +119,11 @@ import httplib, socket, urllib
 import traceback
 import time, threading, Queue
 import math
-import re, md5, codecs, difflib, locale
+import re, codecs, difflib, locale
+try:
+    from hashlib import md5
+except ImportError:             # Python 2.4 compatibility
+    from md5 import new as md5
 import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
@@ -2678,7 +2682,7 @@ class ImagePage(Page):
         """Return image file's MD5 checksum."""
         uo = MyURLopener()
         f = uo.open(self.fileUrl())
-        md5Checksum = md5.new(f.read()).hexdigest()
+        md5Checksum = md5(f.read()).hexdigest()
         return md5Checksum
 
     def getFileVersionHistory(self):
