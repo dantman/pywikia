@@ -169,6 +169,10 @@ These arguments specify in which way the bot should follow interwiki links:
                    you are sure you have first gotten the interwiki on the
                    starting page exactly right).
                    (note: without ending colon)
+                   
+    -back          only work on pages that have no backlink from any other
+                   language; if a backlink is found, all work on the page
+                   will be halted.
 
 The following arguments are only important for users who have accounts for
 multiple languages, and specify on which sites the bot should modify pages:
@@ -462,6 +466,7 @@ class Global(object):
     rememberno = False
     followinterwiki = True
     minsubjects = config.interwiki_min_subjects
+    nobackonly = False
 
 class Subject(object):
     """
@@ -493,6 +498,7 @@ class Subject(object):
         self.problemfound = False
         self.untranslated = None
         self.hintsAsked = False
+        self.forcedStop = False
 
     def getFoundDisambig(self, site):
         """
@@ -575,6 +581,15 @@ class Subject(object):
         # If there are any, return them. Otherwise, nothing is in progress.
         return self.pending
 
+    def makeForcedStop(self,counter):
+        """
+        Ends work on the page before the normal end.
+        """
+        for page in self.todo:
+            counter.minus(page.site())
+        self.todo = []
+        self.forcedStop = True
+
     def addIfNew(self, page, counter, linkingPage):
         """
         Adds the pagelink given to the todo list, but only if we didn't know
@@ -585,6 +600,13 @@ class Subject(object):
 
         Returns True iff the page is new.
         """
+        if self.forcedStop:
+            return False
+        if globalvar.nobackonly:
+            if page == self.originPage:
+                wikipedia.output("%s has a backlink from %s."%(page,linkingPage))
+                self.makeForcedStop(counter)
+                return False
         if self.foundIn.has_key(page):
             # not new
             self.foundIn[page].append(linkingPage)
@@ -809,6 +831,11 @@ class Subject(object):
                         if globalvar.untranslatedonly:
                             # Ignore the interwiki links.
                             iw = ()
+                    elif globalvar.autonomous and page.site() in [p.site() for p in self.done if p != page and p.exists() and not p.isRedirectPage()]:
+                        otherpage = [p for p in self.done if p.site() == page.site() and p != page and p.exists() and not p.isRedirectPage()][0]
+                        wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
+                        self.makeForcedStop(counter)
+                        iw = ()
                     elif page.isEmpty() and not page.isCategory():
                         wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                         # Ignore the interwiki links
@@ -979,6 +1006,9 @@ class Subject(object):
            be told to make another get request first."""
         if not self.isDone():
             raise "Bugcheck: finish called before done"
+        if self.forcedStop:
+            wikipedia.output("Stopping work on %s."%self.originPage)
+            return
         if self.originPage.isRedirectPage():
             return
         if not self.untranslated and globalvar.untranslatedonly:
@@ -1677,6 +1707,8 @@ if __name__ == "__main__":
                 globalvar.minsubjects = int(arg[7:])
             elif arg.startswith('-query:'):
                 globalvar.maxquerysize = int(arg[7:])
+            elif arg == '-back':
+                globalvar.nobackonly = True
             else:
                 generator = genFactory.handleArg(arg)
                 if generator:
