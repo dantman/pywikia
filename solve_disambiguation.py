@@ -53,6 +53,9 @@ Command line options:
                that is defined (to the bot) as the category containing disambiguation
                pages, starting at XY. If only '-start' or '-start:' is given, it starts
                at the beginning.
+               
+   -min:XX     (XX being a number) only work on disambiguation pages for which
+               at least XX are to be worked on.
 
 To complete a move of a page, one can use:
 
@@ -395,12 +398,13 @@ def correctcap(link, text):
         return linkupper
 
 class ReferringPageGeneratorWithIgnore:
-    def __init__(self, disambPage, primary=False):
+    def __init__(self, disambPage, primary=False, minimum = 0):
         self.disambPage = disambPage
         # if run with the -primary argument, enable the ignore manager
         self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                                          enabled=primary)
-
+        self.minimum = minimum
+        
     def __iter__(self):
         # TODO: start yielding before all referring pages have been found
         refs = [page for page in self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)]
@@ -417,6 +421,9 @@ class ReferringPageGeneratorWithIgnore:
                     elif self.primaryIgnoreManager.isIgnored(refs[i]):
                         #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].title())
                         del refs[i]
+        if len(refs) < self.minimum:
+            wikipedia.output(u"Found only %d pages to work on; skipping." % len(refs))
+            return
         wikipedia.output(u"Will work on %d pages." % len(refs))
         for ref in refs:
             yield ref
@@ -489,13 +496,14 @@ class DisambiguationRobot(object):
         'hu': u'Egyért-redir',
     }
     
-    def __init__(self, always, alternatives, getAlternatives, generator, primary, main_only):
+    def __init__(self, always, alternatives, getAlternatives, generator, primary, main_only, minimum = 0):
         self.always = always
         self.alternatives = alternatives
         self.getAlternatives = getAlternatives
         self.generator = generator
         self.primary = primary
         self.main_only = main_only
+        self.minimum = minimum
 
         self.mysite = wikipedia.getSite()
         self.mylang = self.mysite.language()
@@ -898,7 +906,7 @@ or press enter to quit:""")
                 self.alternatives.sort()
             self.listAlternatives()
 
-            gen = ReferringPageGeneratorWithIgnore(disambPage, self.primary)
+            gen = ReferringPageGeneratorWithIgnore(disambPage, self.primary, minimum = self.minimum)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
             for refPage in preloadingGen:
                 if not self.primaryIgnoreManager.isIgnored(refPage):
@@ -926,6 +934,7 @@ def main():
 
     # For sorting the linked pages, case can be ignored
     ignoreCase = False
+    minimum = 0
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-primary:'):
@@ -958,6 +967,8 @@ def main():
             getAlternatives = False
         elif arg == '-main':
             main_only = True
+        elif arg.startswith('-min:'):
+            minimum = int(arg[5:])
         elif arg.startswith('-start'):
             try:
                 if len(arg) <= len('-start:'):
@@ -989,7 +1000,7 @@ def main():
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         generator = iter([page])
 
-    bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
+    bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only, minimum = minimum)
     bot.run()
 
 
