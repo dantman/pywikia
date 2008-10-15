@@ -1105,7 +1105,7 @@ class main:
         load_2 = True
         # I search with a regex how many user have not the talk page
         # and i put them in a list (i find it more easy and secure)
-        regl = r"(\"|\')(.*?)\1(?:,\s+?|\])"
+        regl = r"(\"|\')(.*?)\1(?:,|\])"
         pl = re.compile(regl, re.UNICODE)
         for xl in pl.finditer(raw):
             word = xl.group(2).replace('\\\\', '\\')
