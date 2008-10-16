@@ -149,10 +149,10 @@ These arguments define how much user confirmation is required:
 
 These arguments specify in which way the bot should follow interwiki links:
 
-    -noredirect    do not follow redirects (note: without ending colon)
+    -noredirect    do not follow redirects. (note: without ending colon)
 
     -initialredirect  work on target if a redirect is entered on the command
-                   line (note: without ending colon)
+                   line. (note: without ending colon)
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
@@ -173,7 +173,7 @@ These arguments specify in which way the bot should follow interwiki links:
                    
     -back          only work on pages that have no backlink from any other
                    language; if a backlink is found, all work on the page
-                   will be halted.
+                   will be halted.  (note: without ending colon)
 
 The following arguments are only important for users who have accounts for
 multiple languages, and specify on which sites the bot should modify pages:
