@@ -641,10 +641,6 @@ class main:
             latest_edit = history[0]
             latest_user = latest_edit[2]
             wikipedia.output(u'The latest user that has written something is: %s' % latest_user)
-        else:
-            wikipedia.output(u'The user page is blank')
-
-        if self.talk_page.exists():
             try:
                 testoattuale = self.talk_page.get() # Actual text
             except wikipedia.IsRedirectPage:
@@ -663,6 +659,7 @@ class main:
                     if latest_edit == history[-1]:
                         second_text = False
         else:
+            wikipedia.output(u'The user page is blank')
             second_text = False
             ti_es_ti = wikipedia.translate(self.site, empty)
             testoattuale = ti_es_ti
@@ -944,10 +941,12 @@ class main:
         if rep_text == None: rep_text = self.rep_text
         another_page = wikipedia.Page(self.site, rep_page)
         if regex == None: regex = image_to_report
-        if another_page.exists():
+        try:
             text_get = another_page.get()
-        else:
+        except wikipedia.NoPage:
             text_get = str()
+        except wikipedia.IsRedirectPage:            
+            text_get = another_page.getRedirectTarget().get()
         if len(text_get) >= self.logFulNumber:
             raise LogIsFull("The log page (%s) is full! Please delete the old images reported." % another_page.title())
         pos = 0
@@ -1030,11 +1029,15 @@ class main:
     def giveMeTheTemplate(self, license_selected):
         #print template.exists()
         template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
-        if not template.exists():
-            template = wikipedia.Page(self.site, license_selected)
-            if not template.exists():
+        try:
+            template.get()
+        except wikipedia.NoPage:
+            try:
+                template = wikipedia.Page(self.site, license_selected)
+                template.get()
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 return None # break and exit
-        if template.isRedirectPage():
+        except wikipedia.IsRedirectPage:
             template = template.getRedirectTarget()
         return template
 
@@ -1493,68 +1496,69 @@ def checkbot():
                                 continue
             # If the image exists (maybe it has been deleting during the oder
             # checking parts or something, who knows? ;-))
-            if p.exists():
-                # Here begins the check block.
-                if tagged == True:
-                    # Tagged? Yes, skip.
-                    printWithTimeZone(u'%s is already tagged...' % imageName)
+            #if p.exists(): <-- improve the bot, better to make as
+            #                   less call to the server as possible
+            # Here begins the check block.
+            if tagged == True:
+                # Tagged? Yes, skip.
+                printWithTimeZone(u'%s is already tagged...' % imageName)
+                continue
+            if some_problem == True:
+                if mex_used in g:
+                    wikipedia.output(u'Image already fixed. Skip.')
                     continue
-                if some_problem == True:
-                    if mex_used in g:
-                        wikipedia.output(u'Image already fixed. Skip.')
-                        continue
-                    wikipedia.output(u"The image description for %s contains %s..." % (imageName, name_used))
-                    if mex_used.lower() == 'default':
-                        mex_used = unvertext
-                    if imagestatus_used == False:
-                        reported = mainClass.report_image(imageName)
-                    else:
-                        reported = True
-                    if reported == True:
-                        #if imagestatus_used == True:
-                        mainClass.report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
-                    else:
-                        wikipedia.output(u"Skipping the image...")
-                    some_problem = False
-                    continue
-                elif parentesi == True:
-                    seems_ok = False
-                    license_found = None
-                    if smartdetection:
-                        license_found = mainClass.smartDetection(g)
-                    else:
-                        printWithTimeZone(u"%s seems ok..." % imageName)
-                    # It works also without this... but i want only to be sure ^^
-                    parentesi = False
-                    continue
-                elif delete == True:
-                    wikipedia.output(u"%s is not a file!" % imageName)
-                    # Modify summary text
-                    wikipedia.setAction(dels)
-                    canctext = di % extension
-                    notification = din % imageName
-                    head = dih
-                    mainClass.report(canctext, imageName, notification, head)
-                    delete = False
-                    continue
-                elif g in nothing:
-                    wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
-                    if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
-                        notification = HiddenTN % imageName
-                    else:
-                        notification = nn % imageName
-                    head = nh
-                    mainClass.report(unvertext, imageName, notification, head, smwl)
-                    continue
+                wikipedia.output(u"The image description for %s contains %s..." % (imageName, name_used))
+                if mex_used.lower() == 'default':
+                    mex_used = unvertext
+                if imagestatus_used == False:
+                    reported = mainClass.report_image(imageName)
                 else:
-                    wikipedia.output(u"%s has only text and not the specific license..." % imageName)
-                    if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
-                        notification = HiddenTN % imageName
-                    else:
-                        notification = nn % imageName
-                    head = nh
-                    mainClass.report(unvertext, imageName, notification, head, smwl)
-                    continue
+                    reported = True
+                if reported == True:
+                    #if imagestatus_used == True:
+                    mainClass.report(mex_used, imageName, text_used, "\n%s\n" % head_used, None, imagestatus_used, summary_used)
+                else:
+                    wikipedia.output(u"Skipping the image...")
+                some_problem = False
+                continue
+            elif parentesi == True:
+                seems_ok = False
+                license_found = None
+                if smartdetection:
+                    license_found = mainClass.smartDetection(g)
+                else:
+                    printWithTimeZone(u"%s seems ok..." % imageName)
+                # It works also without this... but i want only to be sure ^^
+                parentesi = False
+                continue
+            elif delete == True:
+                wikipedia.output(u"%s is not a file!" % imageName)
+                # Modify summary text
+                wikipedia.setAction(dels)
+                canctext = di % extension
+                notification = din % imageName
+                head = dih
+                mainClass.report(canctext, imageName, notification, head)
+                delete = False
+                continue
+            elif g in nothing:
+                wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
+                if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
+                    notification = HiddenTN % imageName
+                else:
+                    notification = nn % imageName
+                head = nh
+                mainClass.report(unvertext, imageName, notification, head, smwl)
+                continue
+            else:
+                wikipedia.output(u"%s has only text and not the specific license..." % imageName)
+                if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
+                    notification = HiddenTN % imageName
+                else:
+                    notification = nn % imageName
+                head = nh
+                mainClass.report(unvertext, imageName, notification, head, smwl)
+                continue
     # A little block to perform the repeat or to break.
         if repeat == True:
             printWithTimeZone(u"Waiting for %s seconds," % time_sleep)
