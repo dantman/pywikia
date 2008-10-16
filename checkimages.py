@@ -633,7 +633,8 @@ class main:
         # Getting the talk page's history, to check if there is another advise...
         # The try block is used to prevent error if you use an old wikipedia.py's version.
         edit_to_load = 10
-        if self.talk_page.exists():
+        try:
+            testoattuale = self.talk_page.get()
             try:
                 history = self.talk_page.getVersionHistory(False, False, False, edit_to_load)
             except TypeError:
@@ -641,24 +642,22 @@ class main:
             latest_edit = history[0]
             latest_user = latest_edit[2]
             wikipedia.output(u'The latest user that has written something is: %s' % latest_user)
-            try:
-                testoattuale = self.talk_page.get() # Actual text
-            except wikipedia.IsRedirectPage:
-                wikipedia.output(u'The user talk is a redirect, trying to get the right talk...')
-                try:
-                    self.talk_page = self.talk_page.getRedirectTarget()
-                    testoattuale = self.talk_page.get()
-                except wikipedia.NoPage:
-                    second_text = False
-                    ti_es_ti = wikipedia.translate(self.site, empty)
-                    testoattuale = ti_es_ti
             for i in self.botolist:
                 if latest_user == i:
                     second_text = True
                     # A block to prevent the second message if the bot also welcomed users...
                     if latest_edit == history[-1]:
                         second_text = False
-        else:
+        except wikipedia.IsRedirectPage:
+            wikipedia.output(u'The user talk is a redirect, trying to get the right talk...')
+            try:
+                self.talk_page = self.talk_page.getRedirectTarget()
+                testoattuale = self.talk_page.get()
+            except wikipedia.NoPage:
+                second_text = False
+                ti_es_ti = wikipedia.translate(self.site, empty)
+                testoattuale = ti_es_ti                        
+        except wikipedia.NoPage:
             wikipedia.output(u'The user page is blank')
             second_text = False
             ti_es_ti = wikipedia.translate(self.site, empty)
@@ -944,7 +943,7 @@ class main:
         try:
             text_get = another_page.get()
         except wikipedia.NoPage:
-            text_get = str()
+            text_get = ''
         except wikipedia.IsRedirectPage:            
             text_get = another_page.getRedirectTarget().get()
         if len(text_get) >= self.logFulNumber:
@@ -1030,11 +1029,11 @@ class main:
         #print template.exists()
         template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
         try:
-            template.get()
+            template.pageAPInfo()
         except wikipedia.NoPage:
             try:
                 template = wikipedia.Page(self.site, license_selected)
-                template.get()
+                template.pageAPInfo()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 return None # break and exit
         except wikipedia.IsRedirectPage:
