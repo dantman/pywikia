@@ -885,6 +885,33 @@ not supported by PyWikipediaBot!"""
             return False
         return True
 
+    def pageAPInfo(self):
+        """Return True if page exists on the wiki,
+           Raise IsRedirectPage if it's a redirect
+           Raise NoPage if the page doesn't exist
+
+        Using the API should be a lot faster.
+        Function done in order to improve the scripts performance.
+
+        """
+        params = {
+            'action'    :'query',
+            'prop'      :'info',
+            'titles'    :self.title(),
+            }
+        data = query.GetData(params,
+                        useAPI = True, encodeTitle = False)        
+        pageid = data['query']['pages'].keys()[0]
+        if data['query']['pages'][pageid].keys()[0] == 'lastrevid':
+            return True
+        elif data['query']['pages'][pageid].keys()[0] == 'redirect':
+            raise IsRedirectPage        
+        else:
+            # should not exists, OR we have problems.
+            # better double check in this situations
+            x = self.get()                
+            return True # if we reach this point, we had no problems.
+
     def isRedirectPage(self):
         """Return True if this is a redirect, False if not or not existing."""
         try:
