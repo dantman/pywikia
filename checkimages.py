@@ -1391,6 +1391,10 @@ def checkbot():
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u"The file description for %s is a redirect?!" % imageName)
                 continue
+            # Delete the fields where the templates cannot be loaded
+            regex_nowiki = re.compile(r'<nowiki>(.*?)</nowiki>', re.DOTALL)
+            regex_pre = re.compile(r'<pre>(.*?)</pre>', re.DOTALL)
+            g = regex_nowiki.sub('', g); g = regex_pre.sub('', g)
             # Check on commons if there's already an image with the same name
             if commonsActive == True:
                 response = mainClass.checkImageOnCommons()
