@@ -54,7 +54,8 @@ def translate(page, hints = None, auto = True):
                         if x not in result:
                             result.append(x)
                 else:
-                    wikipedia.output(u"Ignoring unknown language code %s"%newcode)
+                    if wikipedia.verbose:
+                        wikipedia.output(u"Ignoring unknown language code %s"%newcode)
 
     # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:

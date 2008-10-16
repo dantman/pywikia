@@ -87,6 +87,7 @@ These arguments are useful to provide hints to the bot:
                                   number.
                        * cyril:   All languages that use the Cyrillic alphabet.
                        * chinese: All Chinese dialects.
+                       * latin:   All languages using the Latin script.
                        * scand:   All Scandinavian languages.
 
     -askhints:     for each page one or more hints are asked. See hint: above
