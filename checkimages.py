@@ -518,16 +518,19 @@ class main:
         botolist.append(botnick)
         self.botolist = botolist
         self.sendemailActive = sendemailActive
+        self.skip_list = list() # Inizialize the skip list used below
         self.duplicatesReport = duplicatesReport
         image_n = self.site.image_namespace()
-        self.image_namespace = "%s:" % image_n # Example: "User_talk:"
+        self.image_namespace = "%s:" % image_n # Example: "Image:"
         # Load the licenses only once, so do it once
         self.smartdetection = smartdetection
         if self.smartdetection:
             self.list_licenses = self.load_licenses()
-    def setParameters(self, image):
+    def setParameters(self, imageName):
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
-        self.image = image
+        self.imageName = imageName
+        # Defing the image's Page Object
+        self.image = wikipedia.ImagePage(self.site, '%s%s' % (self.image_namespace, self.imageName))
     def report(self, newtext, image_to_report, notification = None, head = None,
                notification2 = None, unver = True, commTalk = None, commImage = None):
         """ Function to make the reports easier (or I hope so). """
@@ -590,23 +593,22 @@ class main:
     def tag_image(self, put = True):
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the image. """
-        # Defing the image's Page Object
-        p = wikipedia.ImagePage(self.site, 'Image:%s' % self.image_to_report)
         # Get the image's description
+        reportPageObject = wikipedia.ImagePage(self.site, self.image_namespace + self.image_to_report)
         try:
-            testoa = p.get()
+            reportPageText = reportPageObject.get()
         except wikipedia.NoPage:
-            wikipedia.output(u'%s has been deleted...' % p.title())
+            wikipedia.output(u'%s has been deleted...' % self.imageName)
             # We have a problem! Report and exit!
             return False
         # You can use this function also to find only the user that
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
-            p.put(testoa + self.newtext, comment = self.commImage, minorEdit = True)
+            reportPageObject.put(reportPageText + self.newtext, comment = self.commImage, minorEdit = True)
         # paginetta it's the image page object.
-        paginetta = wikipedia.ImagePage(self.site, self.image_namespace + self.image_to_report)
+        
         try:
-            nick = paginetta.getLatestUploader()[0]
+            nick = reportPageObject.getLatestUploader()[0]
         except wikipedia.NoPage:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image_to_report)
             repme = "\n*[[:Image:%s]] problems '''with the APIs'''"
@@ -614,9 +616,7 @@ class main:
             self.report_image(self.image_to_report, self.rep_page, self.com, repme)
             return False
         luser = wikipedia.url2link(nick, self.site, self.site)
-        pagina_discussione = "%s:%s" % (self.site.namespace(3), luser)
-        # Defing the talk page (pagina_discussione = talk_page ^__^ )
-        talk_page = wikipedia.Page(self.site, pagina_discussione)
+        talk_page = wikipedia.Page(self.site, "%s:%s" % (self.site.namespace(3), luser))
         self.talk_page = talk_page
         self.luser = luser
         return True
@@ -787,34 +787,34 @@ class main:
 
     def checkImageOnCommons(self):
         """ Checking if the image is on commons """
-        wikipedia.output(u'Checking if %s is on commons...' % self.image)
+        wikipedia.output(u'Checking if %s is on commons...' % self.imageName)
         commons_site = wikipedia.getSite('commons', 'commons')
-        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\](?: \(same name\)|)$" % self.image
-        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\](?: \(same name\)|)$" % self.imageName
+        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.imageName)
         hash_found = imagePage.getHash()
         if hash_found == None:
             return False # Problems? Yes! Image deleted, no hash found. Skip the image.
         else:
             commons_image_with_this_hash = commons_site.getImagesFromAnHash(hash_found)
             if commons_image_with_this_hash != []:
-                wikipedia.output(u'%s is on commons!' % self.image)
-                imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+                wikipedia.output(u'%s is on commons!' % self.imageName)
+                imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.imageName)
                 on_commons_text = imagePage.getImagePageHtml()
                 if "<div class='sharedUploadNotice'>" in on_commons_text:
                     wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
                     # Problems? Yes! We have to skip the check part for that image!
                     # Because it's on commons but someone has added something on your project.
                     return False
-                elif re.findall(r'\bstemma\b', self.image.lower()) != [] and self.site.lang == 'it':
-                    wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.image)
+                elif re.findall(r'\bstemma\b', self.imageName.lower()) != [] and self.site.lang == 'it':
+                    wikipedia.output(u'%s has "stemma" inside, means that it\'s ok.' % self.imageName)
                     return True # Problems? No, it's only not on commons but the image needs a check
                 else:
                     # the second usually is a url or something like that. Compare the two in equal way, both url.
-                    if self.convert_to_url(self.image) == self.convert_to_url(commons_image_with_this_hash[0]):
-                        repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]] (same name)" % (self.image, commons_image_with_this_hash[0])
+                    if self.convert_to_url(self.imageName) == self.convert_to_url(commons_image_with_this_hash[0]):
+                        repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]] (same name)" % (self.imageName, commons_image_with_this_hash[0])
                     else:
-                        repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.image, commons_image_with_this_hash[0])
-                    self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
+                        repme = "\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.imageName, commons_image_with_this_hash[0])
+                    self.report_image(self.imageName, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
                     # Problems? No, return True
                     return True
             else:
@@ -825,7 +825,7 @@ class main:
         """ Function to check the duplicated images. """
         # {{Dupe|Image:Blanche_Montel.jpg}}
         # Skip the stub images
-        #if 'stub' in self.image.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
+        #if 'stub' in self.imageName.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
         #    return True # Skip the stub, ok
         dupText = wikipedia.translate(self.site, duplicatesText)
         dupRegex = wikipedia.translate(self.site, duplicatesRegex)
@@ -833,17 +833,17 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-        duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.image), self.convert_to_url(self.image))
-        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.image)
+        duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.imageName), self.convert_to_url(self.imageName))
+        imagePage = wikipedia.ImagePage(self.site, 'Image:%s' % self.imageName)
         hash_found = imagePage.getHash()
         duplicates = self.site.getImagesFromAnHash(hash_found)
         if duplicates == None:
             return False # Error, image deleted, no hash found. Skip the image.
         if len(duplicates) > 1:
             if len(duplicates) == 2:
-                wikipedia.output(u'%s has a duplicate! Reporting it...' % self.image)
+                wikipedia.output(u'%s has a duplicate! Reporting it...' % self.imageName)
             else:
-                wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.image, len(duplicates) - 1))
+                wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.imageName, len(duplicates) - 1))
             if not dupText == None and not dupRegex == None:
                 time_image_list = list()
                 time_list = list()
@@ -919,17 +919,17 @@ class main:
                                 commImage = dupComment_image, unver = True)
             if self.duplicatesReport or only_report:
                 if only_report:
-                    repme = "\n*[[:Image:%s]] has the following duplicates ('''forced mode'''):" % self.convert_to_url(self.image)
+                    repme = "\n*[[:Image:%s]] has the following duplicates ('''forced mode'''):" % self.convert_to_url(self.imageName)
                 else:
-                    repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.image)
+                    repme = "\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.imageName)
                 for duplicate in duplicates:
-                    if self.convert_to_url(duplicate) == self.convert_to_url(self.image):
+                    if self.convert_to_url(duplicate) == self.convert_to_url(self.imageName):
                         continue # the image itself, not report also this as duplicate
                     repme += "\n**[[:Image:%s]]" % self.convert_to_url(duplicate)
-                result = self.report_image(self.image, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
+                result = self.report_image(self.imageName, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
                 if not result:
                     return True # If Errors, exit (but continue the check)                
-            if older_image != self.image:
+            if older_image != self.imageName:
                 return False # The image is a duplicate, it will be deleted. So skip the check-part, useless
         return True # Ok - No problem. Let's continue the checking phase
 
@@ -1091,13 +1091,13 @@ class main:
                         exit_cicle = True
                         break
         if not seems_ok:
-            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.image, license_found)
-            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (self.image, license_found)
-            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.image, license_found))
-            self.report_image(self.image, rep_text = rep_text_license_fake,
+            rep_text_license_fake = "\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.imageName, license_found)
+            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (self.imageName, license_found)
+            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, license_found))
+            self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
         else:
-            printWithTimeZone(u"%s seems ok, license found: %s..." % (self.image, license_found))
+            printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, license_found))
         return license_found
 
     def load(self, raw):
@@ -1115,6 +1115,29 @@ class main:
                 list_loaded.append(word)
         return list_loaded
 
+    def skipImages(self, skip_number, limit):
+        # If the images to skip are more the images to check, make them the same number
+        if skip_number == 0:
+            wikipedia.output(u'\t\t>> No images to skip...<<')
+            return False
+        if skip_number > limit: skip_number = limit
+        # Print a starting message only if no images has been skipped
+        if self.skip_list == []:
+            if skip_number == 1:
+                wikipedia.output(u'Skipping the first image:\n')
+            else:
+                wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
+        # If we still have pages to skip:
+        if len(self.skip_list) < skip_number:
+            wikipedia.output(u'Skipping %s...' % self.imageName)
+            self.skip_list.append(self.imageName)
+            if skip_number == 1:
+                wikipedia.output('')
+            return True
+        else:
+            wikipedia.output('') # Print a blank line.
+            return False
+
 def checkbot():
     """ Main function """
     # Command line configurable parameters
@@ -1127,8 +1150,7 @@ def checkbot():
     normal = False # Check the new images or use another generator?
     urlUsed = False # Use the url-related function instead of the new-pages generator
     regexGen = False # Use the regex generator
-    untagged = False # Use the untagged generator
-    skip_list = list() # Inizialize the skip list used below
+    untagged = False # Use the untagged generator   
     duplicatesActive = False # Use the duplicate option
     duplicatesReport = False # Use the duplicate-report option
     sendemailActive = False # Use the send-email
@@ -1181,7 +1203,7 @@ def checkbot():
                 firstPageTitle = str(wikipedia.input(u'From witch page do you want to start?'))
             elif len(arg) > 6:
                 firstPageTitle = str(arg[7:])
-            generator = wikipedia.getSite().allpages(start=firstPageTitle ,namespace=6)
+            generator = wikipedia.getSite().allpages(start=firstPageTitle, namespace=6)
             repeat = False
         elif arg.startswith('-page'):
             if len(arg) == 5:
@@ -1355,38 +1377,21 @@ def checkbot():
             mainClass.setParameters(imageName) # Setting the image for the main class
             # Skip block
             if skip == True:
-                # If the images to skip are more the images to check, make them the same number
-                if skip_number > limit: skip_number = limit
-                # Print a starting message only if no images has been skipped
-                if skip_list == []:
-                    if skip_number == 1:
-                        wikipedia.output(u'Skipping the first image:\n')
-                    else:
-                        wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
-                # If we still have pages to skip:
-                if len(skip_list) < skip_number:
-                    wikipedia.output(u'Skipping %s...' % imageName)
-                    skip_list.append(imageName)
-                    if skip_number == 1:
-                        wikipedia.output('')
-                        skip = False
-                    continue
-                else:
-                    wikipedia.output('') # Print a blank line.
-                    skip = False
-            elif skip_list == []: # Skip must be false if we are here but
-                       # the user has set 0 as images to skip
-                wikipedia.output(u'\t\t>> No images to skip...<<')
-                skip_list.append('skip = Off') # Only to print it once
+                skip = mainClass.skipImages(skip_number, limit)
+                if skip == True:
+                    continue             
             parentesi = False # parentesi are these in italian: { ( ) } []
             delete = False
             tagged = False
             extension = imageName.split('.')[-1] # get the extension from the image's name
             # Page => ImagePage
             p = wikipedia.ImagePage(site, image.title())
-            # Get the text in the image (called g)
+            # Get the text in the image (called imageCheckText)
             try:
-                g = p.get()
+                # the checkText will be modified in order to make the check phase easier
+                # the imageFullText will be used when the full text is needed without changes
+                imageCheckText = p.get()
+                imageFullText = imageCheckText
             except wikipedia.NoPage:
                 wikipedia.output(u"Skipping %s because it has been deleted." % imageName)
                 continue
@@ -1396,7 +1401,7 @@ def checkbot():
             # Delete the fields where the templates cannot be loaded
             regex_nowiki = re.compile(r'<nowiki>(.*?)</nowiki>', re.DOTALL)
             regex_pre = re.compile(r'<pre>(.*?)</pre>', re.DOTALL)
-            g = regex_nowiki.sub('', g); g = regex_pre.sub('', g)
+            imageCheckText = regex_nowiki.sub('', imageCheckText); imageCheckText = regex_pre.sub('', imageCheckText)
             # Check on commons if there's already an image with the same name
             if commonsActive == True:
                 response = mainClass.checkImageOnCommons()
@@ -1413,10 +1418,10 @@ def checkbot():
                 # and the regex will be wrong)
                 if '{{' in i:
                     regexP = re.compile('\{\{(?:template|)%s ?(?:\||\n|\}|<) ?' % i.split('{{')[1].replace(' ', '[ _]'), re.I)
-                    result = regexP.findall(g)
+                    result = regexP.findall(imageCheckText)
                     if result != []:
                         tagged = True
-                elif i.lower() in g:
+                elif i.lower() in imageCheckText:
                     tagged = True
             # Deleting the useless template from the description (before adding something
             # in the image the original text will be reloaded, don't worry).
@@ -1425,13 +1430,13 @@ def checkbot():
             for l in hiddentemplate:
                 if tagged == False:
                     # why creator? Because on commons there's a template such as {{creator:name}} that.. works
-                    res = re.findall(r'\{\{(?:[Tt]emplate:|)(?:%s[ \n]*?(?:\n|\||\}|<)|creator:)' % l.lower(), g.lower())
+                    res = re.findall(r'\{\{(?:[Tt]emplate:|)(?:%s[ \n]*?(?:\n|\||\}|<)|creator:)' % l.lower(), imageCheckText.lower())
                     if res != []:
                         white_template_found += 1
                         if l != '' and l != ' ': # Check that l is not nothing or a space
                             # Deleting! (replace the template with nothing)
                             regex_white_template = re.compile(r'\{\{(?:template:|)(?:%s|creator)' % l, re.IGNORECASE)
-                            g = regex_white_template.sub(r'', g)
+                            imageCheckText = regex_white_template.sub(r'', imageCheckText)
                             hiddenTemplateFound = True
             if white_template_found == 1:
                 wikipedia.output(u'A white template found, skipping the template...')
@@ -1440,7 +1445,7 @@ def checkbot():
             else:
                 wikipedia.output(u'White templates found: %s; skipping those templates...' % white_template_found)
             for a_word in something: # something is the array with {{, MIT License and so on.
-                if a_word in g:
+                if a_word in imageCheckText:
                     # There's a template, probably a license (or I hope so)
                     parentesi = True
             # Is the extension allowed? (is it an image or f.e. a .xls file?)
@@ -1474,7 +1479,7 @@ def checkbot():
                     wikipedia.setAction(summary)
                     for k in find_list:
                         if find_tipe.lower() == 'findonly':
-                            if k.lower() == g.lower():
+                            if k.lower() == imageCheckText.lower():
                                 some_problem = True
                                 text_used = text
                                 head_used = head_2
@@ -1484,7 +1489,7 @@ def checkbot():
                                 mex_used = mexCatched
                                 break
                         elif find_tipe.lower() == 'find':
-                            if k.lower() in g.lower():
+                            if k.lower() in imageCheckText.lower():
                                 some_problem = True
                                 text_used = text
                                 head_used = head_2
@@ -1503,7 +1508,7 @@ def checkbot():
                 printWithTimeZone(u'%s is already tagged...' % imageName)
                 continue
             if some_problem == True:
-                if mex_used in g:
+                if mex_used in imageCheckText:
                     wikipedia.output(u'Image already fixed. Skip.')
                     continue
                 wikipedia.output(u"The image description for %s contains %s..." % (imageName, name_used))
@@ -1524,7 +1529,7 @@ def checkbot():
                 seems_ok = False
                 license_found = None
                 if smartdetection:
-                    license_found = mainClass.smartDetection(g)
+                    license_found = mainClass.smartDetection(imageCheckText)
                 else:
                     printWithTimeZone(u"%s seems ok..." % imageName)
                 # It works also without this... but i want only to be sure ^^
@@ -1540,7 +1545,7 @@ def checkbot():
                 mainClass.report(canctext, imageName, notification, head)
                 delete = False
                 continue
-            elif g in nothing:
+            elif imageCheckText in nothing:
                 wikipedia.output(u"The image description for %s does not contain a license template!" % imageName)
                 if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
                     notification = HiddenTN % imageName
