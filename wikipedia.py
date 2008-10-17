@@ -886,7 +886,7 @@ not supported by PyWikipediaBot!"""
         return True
 
     def pageAPInfo(self):
-        """Return True if page exists on the wiki,
+        """Return the last revid if page exists on the wiki,
            Raise IsRedirectPage if it's a redirect
            Raise NoPage if the page doesn't exist
 
@@ -903,7 +903,8 @@ not supported by PyWikipediaBot!"""
                         useAPI = True, encodeTitle = False)        
         pageid = data['query']['pages'].keys()[0]
         if data['query']['pages'][pageid].keys()[0] == 'lastrevid':
-            return True
+            return data['query']['pages'][pageid]['lastrevid'] # if ok,
+                                                               # return the last revid
         elif data['query']['pages'][pageid].keys()[0] == 'redirect':
             raise IsRedirectPage        
         else:
