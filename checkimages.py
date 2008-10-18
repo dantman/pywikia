@@ -83,6 +83,7 @@ __version__ = '$Id$'
 
 import re, time, urllib, urllib2, os, locale, sys
 import wikipedia, config, pagegenerators, catlib, query
+from datetime import datetime
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -1164,13 +1165,11 @@ class main:
             first x seconds.
         """
         imagedata = self.image.getLatestUploader()[1]
-        os.environ['TZ'] = 'EST+01EDT,M4.1.0,M10.5.0'
-        time.tzset()
         # '2008-06-18T08:04:29Z'
-        data = time.strptime(imagedata, u"%Y-%m-%dT%H:%M:%SZ")
-        data_seconds = time.mktime(data)
-        current_time = time.time()
-        secs_of_diff = current_time - data_seconds
+        img_time = datetime.strptime(imagedata, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
+        now = datetime.utcnow() #timezones are UTC
+        delta = now - img_time
+        secs_of_diff = delta.seconds
         if waitTime > secs_of_diff:
             wikipedia.output(u'Skipping %s, uploaded %s seconds ago..' % (self.imageName, int(secs_of_diff)))
             return True # Still wait
