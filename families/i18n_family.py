@@ -7,14 +7,14 @@ import family
 # The Wikimedia i18n family (should be called Betawiki, but already exists)
 
 class Family(family.Family):
-    
+
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'i18n'
         self.langs = {
             'i18n': 'translatewiki.net',
         }
-        
+
         self.namespaces[4] = {
             '_default': [u'Betawiki'],
         }
@@ -63,23 +63,11 @@ class Family(family.Family):
         self.namespaces[1207] = {
             '_default': [u'Deprecated2 talk'],
         }
-        self.namespaces[1208] = {
-            '_default': [u'Zabbix'],
-        }
-        self.namespaces[1209] = {
-            '_default': [u'Zabbix talk'],
-        }
         self.namespaces[1210] = {
             '_default': [u'Mantis'],
         }
         self.namespaces[1211] = {
             '_default': [u'Mantis talk'],
-        }
-        self.namespaces[9900] = {
-            '_default': [u'Translations'],
-        }
-        self.namespaces[9901] = {
-            '_default': [u'Translations talk'],
         }
 
     def version(self, code):
