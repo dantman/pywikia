@@ -1352,7 +1352,7 @@ not supported by PyWikipediaBot!"""
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
-                captchaId=None, captchaAnswer=None ):
+                captcha=None):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1365,10 +1365,13 @@ not supported by PyWikipediaBot!"""
             'wpSave': '1',
             'wpSummary': self._encodeArg(comment, 'edit summary'),
             'wpTextbox1': self._encodeArg(text, 'wikitext'),
+            # As of October 2008, MW HEAD requires wpSection to be set.
+            # We will need to fill this more smartly if we ever decide to edit by section
+            'wpSection': '', 
         }
-        if captchaId:
-            predata["wpCaptchaId"] = captchaId
-            predata["wpCaptchaWord"] = captchaAnswer
+        if captcha:
+            predata["wpCaptchaId"] = captcha['id']
+            predata["wpCaptchaWord"] = captcha['answer']
         # Add server lag parameter (see config.py for details)
         if config.maxlag:
             predata['maxlag'] = str(config.maxlag)
@@ -1560,15 +1563,9 @@ not supported by PyWikipediaBot!"""
 
             # We might have been prompted for a captcha if the
             # account is not autoconfirmed, checking....
-            captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
-            match = captchaR.search(data)
-            if match:
-                id = match.group('id')
-                if not config.solve_captcha:
-                    raise wikipedia.CaptchaError(id)
-                url = self.site().protocol() + '://' + self.site().hostname() + self.site().captcha_image_address(id)
-                answer = ui.askForCaptcha(url)
-                return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captchaId=id, captchaAnswer = answer)
+            solve = self.site().solveCaptcha(data)
+            if solve:
+                return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
             if data.strip() != u"":
@@ -4337,6 +4334,23 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if wpEditToken != None:
             l.append('wpEditToken=' + wpEditToken)
         return '&'.join(l)
+
+    def solveCaptcha(self, data):
+        captchaW = re.compile('<label for="wpCaptchaWord">(?P<question>[^<]*)</label>')
+        captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
+        match = captchaR.search(data)
+        if match:
+            id = match.group('id')
+            match = captchaW.search(data)
+            if match:
+                answer = input('What is the answer to the captcha "%s" ?' % match.group('question'))
+            else:
+                if not config.solve_captcha:
+                    raise wikipedia.CaptchaError(id)
+                url = self.protocol() + '://' + self.hostname() + self.captcha_image_address(id)
+                answer = ui.askForCaptcha(url)
+            return {'id':id, 'answer':answer}
+        return None
 
     def postForm(self, address, predata, sysop=False, cookies = None):
         """Post http form data to the given address at this site.

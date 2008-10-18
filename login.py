@@ -96,13 +96,12 @@ class LoginManager:
             # No bot policies on other
             return True
 
-    def getCookie(self, remember=True, captchaId = None, captchaAnswer = None):
+    def getCookie(self, remember=True, captcha = None):
         """
         Login to the site.
 
         remember    Remember login (default: True)
-        captchaId   The id number of the captcha, if any
-        captcha     The word displayed in the captcha, if any
+        captchaId   A dictionary containing the captcha id and answer, if any
 
         Returns cookie data if succesful, None otherwise.
         """
@@ -123,9 +122,9 @@ class LoginManager:
                 "wpRemember": str(int(bool(remember))),
                 "wpSkipCookieCheck": '1'
             }
-            if captchaId:
-                predata["wpCaptchaId"] = captchaId
-                predata["wpCaptchaWord"] = captchaAnswer
+            if captcha:
+                predata["wpCaptchaId"] = captcha['id']
+                predata["wpCaptchaWord"] = captcha['answer']
             login_address = self.site.login_address()
             address = login_address + '&action=submit'
 
@@ -158,17 +157,10 @@ class LoginManager:
 
             if got_token and got_user:
                 return "\n".join(L)
-            elif not captchaAnswer:
-                captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
-                match = captchaR.search(data)
-                if match:
-                    id = match.group('id')
-                    if not config.solve_captcha:
-                        raise wikipedia.CaptchaError(id)
-                    url = self.site.protocol() + '://' + self.site.hostname() + self.site.captcha_image_address(id)
-                    answer = wikipedia.ui.askForCaptcha(url)
-                    return self.getCookie(remember = remember, captchaId = id, captchaAnswer = answer)
-
+            elif not captcha:
+                solve = self.site.solveCaptcha(data)
+                if solve:
+                    return self.getCookie(remember = remember, captcha = solve)
             return None
 
     def storecookiedata(self, data):
