@@ -1138,6 +1138,21 @@ class main:
             wikipedia.output('') # Print a blank line.
             return False
 
+    def wait(self, waitTime):
+        imagedata = self.image.getLatestUploader()[1]
+        os.environ['TZ'] = 'EST+01EDT,M4.1.0,M10.5.0'
+        time.tzset()
+        # '2008-06-18T08:04:29Z'
+        data = time.strptime(imagedata, "%Y-%m-%dT%H:%M:%SZ")
+        data_seconds = time.mktime(data)
+        current_time = time.time()
+        secs_of_diff = current_time - data_seconds
+        if waitTime > secs_of_diff:
+            wikipedia.output(u'Skipping %s, time difference: %s seconds' % (self.imageName, int(secs_of_diff)))
+            return True # Still wait
+        else:
+            return False # No ok, continue
+
 def checkbot():
     """ Main function """
     # Command line configurable parameters
@@ -1346,6 +1361,8 @@ def checkbot():
         HiddenTN = wikipedia.translate(site, HiddenTemplateNotification)
         # Not the main, but the most important loop.
         #parsed = False
+        if wait:
+            printWithTimeZone(u'Skipping the images uploaded less than %s seconds ago..' % wait_number)
         for image in generator:
             # When you've a lot of image to skip before working use this workaround, otherwise
             # let this commented, thanks. [ decoment also parsed = False if you want to use it
@@ -1355,14 +1372,6 @@ def checkbot():
             #    continue
             #else:
             #    parsed = True
-
-            # If I don't inizialize the generator, wait part and skip part are useless
-            if wait:
-                printWithTimeZone(u'Waiting %s seconds before checking the images,' % wait_number)
-                # Let's sleep...
-                time.sleep(wait_number)
-                # Never sleep again (we are in a loop)
-                wait = False
             # If the generator returns something that is not an image, simply skip it.
             if normal == False and regexGen == False:
                 if image_namespace.lower() not in image.title().lower() and \
@@ -1375,6 +1384,13 @@ def checkbot():
                 wikipedia.output(u"%s is not an image, skipping..." % image.title())
                 continue
             mainClass.setParameters(imageName) # Setting the image for the main class
+            # If I don't inizialize the generator, wait part and skip part are useless
+            if wait:
+                # Let's sleep...
+                wait = mainClass.wait(wait_number)
+                if wait:
+                    continue
+           
             # Skip block
             if skip == True:
                 skip = mainClass.skipImages(skip_number, limit)
