@@ -533,7 +533,7 @@ class main:
         self.image = wikipedia.ImagePage(self.site, '%s%s' % (self.image_namespace, self.imageName))
     def report(self, newtext, image_to_report, notification = None, head = None,
                notification2 = None, unver = True, commTalk = None, commImage = None):
-        """ Function to make the reports easier (or I hope so). """
+        """ Function to make the reports easier. """
         # Defining some useful variable for next...
         self.image_to_report = image_to_report
         self.newtext = newtext
@@ -719,6 +719,7 @@ class main:
                 #continue
 
     def loadHiddenTemplates(self):
+        """ Function to load the white templates """
         # A template as {{en is not a license! Adding also them in the whitelist template...
         for langK in wikipedia.Family('wikipedia').langs.keys():
             self.hiddentemplate.append('%s' % langK)
@@ -772,6 +773,7 @@ class main:
         return urllib.quote(encodedTitle)
 
     def countEdits(self, pagename, userlist):
+        """ Function to count the edit of a user or a list of users in a page. """
         # self.botolist
         if type(userlist) == type(''):
             userlist = [userlist]
@@ -1026,6 +1028,10 @@ class main:
         return list_licenses
 
     def giveMeTheTemplate(self, license_selected):
+        """ From the name of a template see if it's template:something or just
+            an inclusion of another namespace != template. If it's a redirect
+            gets the real page, if there's a NoPage, return None.
+        """
         #print template.exists()
         template = wikipedia.Page(self.site, 'Template:%s' % license_selected)
         try:
@@ -1041,6 +1047,10 @@ class main:
         return template
 
     def smartDetection(self, image_text):
+        """ The bot instead of checking if there's a simple template in the
+            image's description, checks also if that template is a license or
+            something else. In this sense this type of check is smart.
+            """
         seems_ok = False
         license_found = None
         regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n<].*?|)\}\}', re.DOTALL)
@@ -1116,6 +1126,7 @@ class main:
         return list_loaded
 
     def skipImages(self, skip_number, limit):
+        """ Given a number of images, skip the first -number- images. """
         # If the images to skip are more the images to check, make them the same number
         if skip_number == 0:
             wikipedia.output(u'\t\t>> No images to skip...<<')
@@ -1139,6 +1150,10 @@ class main:
             return False
 
     def wait(self, waitTime):
+        """ Skip the images uploaded before x seconds to let
+            the users to fix the image's problem alone in the
+            first x seconds.
+        """
         imagedata = self.image.getLatestUploader()[1]
         os.environ['TZ'] = 'EST+01EDT,M4.1.0,M10.5.0'
         time.tzset()
@@ -1148,7 +1163,7 @@ class main:
         current_time = time.time()
         secs_of_diff = current_time - data_seconds
         if waitTime > secs_of_diff:
-            wikipedia.output(u'Skipping %s, time difference: %s seconds' % (self.imageName, int(secs_of_diff)))
+            wikipedia.output(u'Skipping %s, uploaded %s seconds ago..' % (self.imageName, int(secs_of_diff)))
             return True # Still wait
         else:
             return False # No ok, continue
