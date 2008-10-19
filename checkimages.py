@@ -1255,7 +1255,6 @@ class main:
                     searchResults = re.findall(r'%s' % k.lower(), self.imageCheckText.lower())
                     if searchResults != []:
                         if searchResults[0] == self.imageCheckText.lower():
-                            print searchResults[0]
                             self.some_problem = True
                             self.text_used = text
                             self.head_used = head_2
@@ -1264,7 +1263,7 @@ class main:
                             self.summary_used = summary
                             self.mex_used = mexCatched
                             break
-                elif find_tipe.lower() == 'find':                
+                elif find_tipe.lower() == 'find':
                     if re.findall(r'%s' % k.lower(), self.imageCheckText.lower()) != []:
                         print re.findall(r'%s' % k.lower(), self.imageCheckText.lower())
                         self.some_problem = True
