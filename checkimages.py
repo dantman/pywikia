@@ -1252,17 +1252,21 @@ class main:
             mexCatched = tupla[8]
             for k in find_list:
                 if find_tipe.lower() == 'findonly':
-                    if k.lower() == self.imageCheckText.lower():
-                        self.some_problem = True
-                        self.text_used = text
-                        self.head_used = head_2
-                        self.imagestatus_used = imagestatus
-                        self.name_used = name
-                        self.summary_used = summary
-                        self.mex_used = mexCatched
-                        break
-                elif find_tipe.lower() == 'find':
-                    if k.lower() in self.imageCheckText.lower():
+                    searchResults = re.findall(r'%s' % k.lower(), self.imageCheckText.lower())
+                    if searchResults != []:
+                        if searchResults[0] == self.imageCheckText.lower():
+                            print searchResults[0]
+                            self.some_problem = True
+                            self.text_used = text
+                            self.head_used = head_2
+                            self.imagestatus_used = imagestatus
+                            self.name_used = name
+                            self.summary_used = summary
+                            self.mex_used = mexCatched
+                            break
+                elif find_tipe.lower() == 'find':                
+                    if re.findall(r'%s' % k.lower(), self.imageCheckText.lower()) != []:
+                        print re.findall(r'%s' % k.lower(), self.imageCheckText.lower())
                         self.some_problem = True
                         self.text_used = text
                         self.head_used = head_2
