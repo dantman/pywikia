@@ -535,11 +535,13 @@ class main:
         self.smartdetection = smartdetection
         if self.smartdetection:
             self.list_licenses = self.load_licenses()
-    def setParameters(self, imageName):
+    def setParameters(self, imageName, timestamp, uploader):
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
         self.imageName = imageName
         # Defing the image's Page Object
         self.image = wikipedia.ImagePage(self.site, u'%s%s' % (self.image_namespace, self.imageName))
+        self.timestamp = timestamp
+        self.uploader = uploader
     def report(self, newtext, image_to_report, notification = None, head = None,
                notification2 = None, unver = True, commTalk = None, commImage = None):
         """ Function to make the reports easier. """
@@ -614,10 +616,12 @@ class main:
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
             reportPageObject.put(reportPageText + self.newtext, comment = self.commImage, minorEdit = True)
-        # paginetta it's the image page object.
-        
+        # paginetta it's the image page object.        
         try:
-            nick = reportPageObject.getLatestUploader()[0]
+            if reportPageObject == self.image and self.uploader != None:
+                nick = self.uploader
+            else:
+                nick = reportPageObject.getLatestUploader()[0]
         except wikipedia.NoPage:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image_to_report)
             repme = u"\n*[[:Image:%s]] problems '''with the APIs'''"
@@ -860,7 +864,10 @@ class main:
                 time_list = list()
                 for duplicate in duplicates:
                     DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
-                    imagedata = DupePage.getLatestUploader()[1]
+                    if DupePage == self.image and self.timestamp != None:
+                        imagedata = self.timestamp
+                    else:
+                        imagedata = DupePage.getLatestUploader()[1]
                     # '2008-06-18T08:04:29Z'
                     data = time.strptime(imagedata, u"%Y-%m-%dT%H:%M:%SZ")
                     data_seconds = time.mktime(data)
@@ -1176,7 +1183,7 @@ class main:
             first x seconds.
         """
         #http://pytz.sourceforge.net/ <- maybe useful?
-        imagedata = self.image.getLatestUploader()[1]
+        imagedata = self.timestamp
         # '2008-06-18T08:04:29Z'
         img_time = datetime.datetime.strptime(imagedata, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
         now = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
@@ -1283,7 +1290,7 @@ class main:
         something = ['{{'] # Don't put "}}" here, please. Useless and can give problems.
         # Unused file extensions. Does not contain PDF.
         notallowed = ("xcf", "xls", "sxw", "sxi", "sxc", "sxd")        
-        parentesi = False # parentesi are these in italian: { ( ) } []
+        brackets = False 
         delete = False
         extension = self.imageName.split('.')[-1] # get the extension from the image's name
         # Load the notification messages
@@ -1309,10 +1316,10 @@ class main:
             self.imageCheckText = self.image.get()
             self.imageFullText = self.imageCheckText
         except wikipedia.NoPage:
-            wikipedia.output(u"Skipping %s because it has been deleted." % imageName)
+            wikipedia.output(u"Skipping %s because it has been deleted." % self.imageName)
             return True
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u"The file description for %s is a redirect?!" % imageName)
+            wikipedia.output(u"The file description for %s is a redirect?!" % self.imageName)
             return True
         # Delete the fields where the templates cannot be loaded
         regex_nowiki = re.compile(r'<nowiki>(.*?)</nowiki>', re.DOTALL)
@@ -1329,7 +1336,7 @@ class main:
         for a_word in something: # something is the array with {{, MIT License and so on.
             if a_word in self.imageCheckText:
                 # There's a template, probably a license (or I hope so)
-                parentesi = True
+                brackets = True
         # Is the extension allowed? (is it an image or f.e. a .xls file?)
         for parl in notallowed:
             if parl.lower() in extension.lower():
@@ -1366,7 +1373,7 @@ class main:
                 wikipedia.output(u"Skipping the image...")
             self.some_problem = False
             return True
-        elif parentesi == True:
+        elif brackets == True:
             seems_ok = False
             license_found = None
             if smartdetection:
@@ -1374,7 +1381,7 @@ class main:
             else:
                 printWithTimeZone(u"%s seems ok..." % self.imageName)
             # It works also without this... but i want only to be sure ^^
-            parentesi = False
+            brackets = False
             return True
         elif delete == True:
             wikipedia.output(u"%s is not a file!" % self.imageName)
@@ -1556,7 +1563,7 @@ def checkbot():
             normal = False # Ensure that normal is False
         # Normal True? Take the default generator
         if normal == True:
-            generator = pagegenerators.NewimagesPageGenerator(number = limit, site = site)
+            generator = site.newimages(number = limit)
         # if urlUsed and regexGen, get the source for the generator
         if urlUsed == True and regexGen == True:
             textRegex = site.getUrl(regexPageUrl, no_hostname = True)
@@ -1593,12 +1600,22 @@ def checkbot():
                 'image:' not in image.title().lower():
                     wikipedia.output(u'%s seems not an image, skip it...' % image.title())
                     continue
+            if normal:
+                imageData = image
+                image = imageData[0]
+                timestamp = imageData[1]
+                uploader = imageData[2]
+                comment = imageData[3] # useless, in reality..
+            else:
+                timestamp = None
+                uploader = None
+                comment = None # useless, also this, let it here for further developments
             try:
                 imageName = image.title().split(image_namespace)[1] # Deleting the namespace (useless here)
             except IndexError:# Namespace image not found, that's not an image! Let's skip...
                 wikipedia.output(u"%s is not an image, skipping..." % image.title())
                 continue
-            mainClass.setParameters(imageName) # Setting the image for the main class
+            mainClass.setParameters(imageName, timestamp, uploader) # Setting the image for the main class
             # If I don't inizialize the generator, wait part and skip part are useless
             if wait:
                 # Let's sleep...
