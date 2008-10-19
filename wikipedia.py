@@ -5048,29 +5048,51 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def newimages(self, number = 10, repeat = False):
-        """Yield ImagePages from Special:Log&type=upload"""
+    def newimages(self, number = 100, lestart = None, leend = None, leuser = None, letitle = None, repeat = False):
+        """
+        Yield ImagePages from APIs, call: action=query&list=logevents&letype=upload&lelimit=500
 
-        seen = set()
-        regexp = re.compile(r'(?:<li[^>]*>|<div class="mw-log-entry">)(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a>\s+\(.+?</a>\).*?<a href=".*?"(?P<new> class="new")? title=".*?"\s*>(?P<image>.+?)</a>(?:.*?<span class="comment">\((?P<comment>.*?)\)</span>)?', re.UNICODE)
+        Options directly from APIs:
+        ---
+        Parameters:
+                           Default: ids|title|type|user|timestamp|comment|details
+          lestart        - The timestamp to start enumerating from.
+          leend          - The timestamp to end enumerating.
+          ledir          - In which direction to enumerate.
+                           One value: newer, older
+                           Default: older
+          leuser         - Filter entries to those made by the given user.
+          letitle        - Filter entries to those related to a page.
+          lelimit        - How many total event entries to return.
+                           No more than 500 (5000 for bots) allowed.
+                           Default: 10
+        """
+        params = {
+            'action'    :'query',
+            'list'      :'logevents',
+            'letype'    :'upload',
+            'lelimit'   :int(number),
+            }
+        if lestart != None: params['lestart'] = lestart
+        if leend != None: params['leend'] = leend
+        if leend != None: params['leuser'] = leuser
+        if leend != None: params['letitle'] = letitle
+        
+        data = query.GetData(params,
+                        useAPI = True, encodeTitle = False)
+        imagesData = data['query']['logevents']
         while True:
-            path = self.log_address(number, mode = 'upload')
-            get_throttle()
-            html = self.getUrl(path)
-            for m in regexp.finditer(html):
-                image = m.group('image')
-
-                if image not in seen:
-                    seen.add(image)
-
-                    if m.group('new'):
-                        output(u"Image \'%s\' has been deleted." % image)
-                        continue
-
-                    date = m.group('date')
-                    user = m.group('user')
-                    comment = m.group('comment') or ''
-                    yield ImagePage(self, image), date, user, comment
+            for imageData in imagesData:
+                try:
+                    comment = imageData['comment']
+                except KeyError:
+                    comment = ''
+                pageid = imageData['pageid']
+                title = imageData['title']
+                timestamp = imageData['timestamp']
+                logid = imageData['logid']
+                user = imageData['user']
+                yield ImagePage(self, title), timestamp, user, comment
             if not repeat:
                 break
 
