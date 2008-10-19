@@ -1265,7 +1265,6 @@ class main:
                             break
                 elif find_tipe.lower() == 'find':
                     if re.findall(r'%s' % k.lower(), self.imageCheckText.lower()) != []:
-                        print re.findall(r'%s' % k.lower(), self.imageCheckText.lower())
                         self.some_problem = True
                         self.text_used = text
                         self.head_used = head_2
