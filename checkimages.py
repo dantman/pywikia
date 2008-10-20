@@ -113,7 +113,7 @@ n_txt = {
 # '{{nld' --> '\{\{(?:template:|)no[ _]license ?(?:\||\n|\}) ?' (case insensitive).
 # If there's not a {{ it will work as usual (if x in Text)
 txt_find =  {
-        'commons':[u'{{no license', u'{{nld', u'{{no permission since'],
+        'commons':[u'{{no license', u'{{no license/en', u'{{nld', u'{{no permission since'],
         'de':[u'{{DÜP', u'{{Dateiüberprüfung'],
         'en':[u'{{nld', u'{{no license'],
         'hu':[u'{{nincsforrás',u'{{nincslicenc'],
@@ -1129,8 +1129,8 @@ class main:
                         exit_cicle = True
                         break
         if not seems_ok:
-            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have a ''fake license'', license detected: {{tl|%s}}." % (self.imageName, license_found)
-            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: \{\{tl\|%s\}\}\.$" % (self.imageName, license_found)
+            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>" % (self.imageName, license_found)
+            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (self.imageName, license_found)
             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, license_found))
             self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
