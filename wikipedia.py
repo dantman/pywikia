@@ -5227,6 +5227,7 @@ your connection is down. Retrying in %i minutes..."""
         except NotImplementedError:
             for page in self._allpagesOld(start, namespace, includeredirects, throttle):
                 yield page
+            return
 
         while True:
             api_url = self.api_address()
