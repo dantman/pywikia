@@ -119,12 +119,13 @@ class ImageRobot:
         site = wikipedia.getSite()
 
         if not site.nocapitalize:
-            old = '[' + self.oldImage[0].upper() + self.oldImage[0].lower() + ']' + self.oldImage[1:]
+            case = re.escape( self.oldImage[0].upper() + self.oldImage[0].lower() )
+            escaped = '[' + case + ']' + re.escape(self.oldImage[1:])
         else:
-            old = self.oldImage
+            escaped = re.escape( self.oldImage )
 
-        old = re.sub('[_ ]', '[_ ]', old)
-        escaped = re.escape(old)
+        # Be careful, spaces and _ have been converted to '\ ' and '\_'
+        escaped = re.sub('\\\\[_ ]', '[_ ]', escaped)
         if not self.loose or not self.newImage:
             ImageRegex = re.compile(r'\[\[ *(?:' + '|'.join(site.namespace(6, all = True)) + ')\s*:\s*' + escaped + ' *(?P<parameters>\|[^\n]+|) *\]\]')
         else:
