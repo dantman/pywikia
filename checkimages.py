@@ -1177,27 +1177,65 @@ class main:
             wikipedia.output('') # Print a blank line.
             return False
         
-    def wait(self, waitTime):
+    def wait(self, waitTime, generator, normal, limit):
         """ Skip the images uploaded before x seconds to let
             the users to fix the image's problem alone in the
             first x seconds.
         """
-        #http://pytz.sourceforge.net/ <- maybe useful?
-        imagedata = self.timestamp
-        # '2008-06-18T08:04:29Z'
-        img_time = datetime.datetime.strptime(imagedata, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
-        now = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
-        # + seconds to be sure that now > img_time
-        while now < img_time:
-            now = (now + datetime.timedelta(seconds=1))
-        delta = now - img_time
-        secs_of_diff = delta.seconds
-        if waitTime > secs_of_diff:
-            wikipedia.output(u'Skipping %s, uploaded %s seconds ago..' % (self.imageName, int(secs_of_diff)))
-            return True # Still wait
-        else:
-            return False # No ok, continue
-
+        imagesToSkip = 0
+        while 1:            
+            loadOtherImages = True # ensure that all the images loaded aren't to skip!
+            for image in generator:
+                if normal:
+                    imageData = image
+                    image = imageData[0]
+                    timestamp = imageData[1]
+                else:
+                    timestamp = image.getLatestUploader()[1]
+                #http://pytz.sourceforge.net/ <- maybe useful?
+                # '2008-06-18T08:04:29Z'
+                img_time = datetime.datetime.strptime(timestamp, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
+                now = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
+                # + seconds to be sure that now > img_time
+                while now < img_time:
+                    now = (now + datetime.timedelta(seconds=1))
+                delta = now - img_time
+                secs_of_diff = delta.seconds
+                if waitTime > secs_of_diff:
+                    wikipedia.output(u'Skipping %s, uploaded %s seconds ago..' % (image.title(), int(secs_of_diff)))
+                    imagesToSkip += 1
+                    continue # Still wait
+                else:
+                    loadOtherImages = False
+                    break # No ok, continue
+            # if yes, we have skipped all the images given!
+            if loadOtherImages:
+                generator = self.site.newimages(number = limit, lestart = timestamp)
+                imagesToSkip = 0
+                # continue to load images! continue
+                continue
+            else:
+                break # ok some other images, go below
+        # if normal, we can take as many images as "limit" has told us, otherwise, sorry, nope.
+        if normal:
+            newGen = list()
+            imagesToSkip += 1 # some calcs, better add 1
+            # Add new images, instead of the images skipped
+            newImages = self.site.newimages(number = imagesToSkip, lestart = timestamp)
+            for imageData in generator:
+                if normal:
+                    image = imageData[0]
+                    timestamp = imageData[1]
+                    uploader = imageData[2]
+                    comment = imageData[3]
+                    newGen.append([image, timestamp, uploader, comment])
+                else:
+                    image = imageData
+                    newGen.append(image)
+            num = 0
+            for imageData in newImages:
+                newGen.append(imageData)
+        return newGen
      
     def isTagged(self):
         """ Understand if an image is already tagged or not. """
@@ -1220,15 +1258,17 @@ class main:
         # Load the white templates(hidden template is the same as white template, regarding the meaning)
         white_templates_found = 0
         hiddentemplate = self.loadHiddenTemplates()
-        for l in hiddentemplate:
+        for regexWhiteLicense in hiddentemplate:
+            fullRegexWL = r'\{\{(?:template:|)(?:%s[ \n]*?(?:\n|\||\}|<)|creator:)' % regexWhiteLicense.lower()
             if self.tagged == False:
                 # why creator? Because on commons there's a template such as {{creator:name}} that.. works
-                res = re.findall(r'\{\{(?:[Tt]emplate:|)(?:%s[ \n]*?(?:\n|\||\}|<)|creator:)' % l.lower(), self.imageCheckText.lower())
+                res = re.findall(fullRegexWL, self.imageCheckText.lower())
                 if res != []:
-                    white_templates_found += 1
-                    if l != '' and l != ' ': # Check that l is not nothing or a space
+                    for element in res: # if a regex gives more than 1 results, are more than 1 template found.
+                        white_templates_found += 1
+                    if regexWhiteLicense != '' and regexWhiteLicense != ' ': # Check that regexWhiteLicense is not nothing or a space
                         # Deleting! (replace the template with nothing)
-                        regex_white_template = re.compile(r'\{\{(?:template:|)(?:%s|creator)' % l, re.IGNORECASE)
+                        regex_white_template = re.compile(fullRegexWL, re.IGNORECASE)
                         self.imageCheckText = regex_white_template.sub(r'', self.imageCheckText)
         if white_templates_found == 1:
             wikipedia.output(u'A white template found, skipping the template...')
@@ -1348,7 +1388,7 @@ class main:
             self.findAdditionalProblems()
         # If the image exists (maybe it has been deleting during the oder
         # checking parts or something, who knows? ;-))
-        #if p.exists(): <-- improve the bot, better to make as
+        #if p.exists(): <-- improve thebot, better to make as
         #                   less call to the server as possible
         # Here begins the check block.
         if self.tagged == True:
@@ -1585,6 +1625,8 @@ def checkbot():
         #parsed = False
         if wait:
             printWithTimeZone(u'Skipping the images uploaded less than %s seconds ago..' % wait_number)
+            # Let's sleep...
+            generator = mainClass.wait(wait_number, generator, normal, limit)
         for image in generator:
             # When you've a lot of image to skip before working use this workaround, otherwise
             # let this commented, thanks. [ decoment also parsed = False if you want to use it
@@ -1615,13 +1657,7 @@ def checkbot():
             except IndexError:# Namespace image not found, that's not an image! Let's skip...
                 wikipedia.output(u"%s is not an image, skipping..." % image.title())
                 continue
-            mainClass.setParameters(imageName, timestamp, uploader) # Setting the image for the main class
-            # If I don't inizialize the generator, wait part and skip part are useless
-            if wait:
-                # Let's sleep...
-                wait = mainClass.wait(wait_number)
-                if wait:
-                    continue          
+            mainClass.setParameters(imageName, timestamp, uploader) # Setting the image for the main class         
             # Skip block
             if skip == True:
                 skip = mainClass.skipImages(skip_number, limit)
