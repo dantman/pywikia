@@ -262,8 +262,14 @@ class InternetArchiveConsulter:
             return None
         except UnicodeEncodeError:
             return None
-        text = f.read()
-        if text.find("Search Results for ") != -1:
+        data = f.read()
+        if f.headers.get('content-encoding', None) == 'gzip':
+            # Since 2008, the Internet Archive returns pages in GZIPed
+            # compression format. Unfortunatelly urllib2 doesn't handle
+            # the decompression for us, so we have to do it ourselves.
+            import gzip, StringIO
+            data = gzip.GzipFile(fileobj=StringIO.StringIO(data)).read()
+        if data.find("Search Results for ") != -1:
             return archiveURL
         else:
             return None
