@@ -147,7 +147,7 @@ empty = {
         'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
         'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
         'ja'     :u'{{subst:Welcome/intro}}\n{{subst:welcome|--~~~~}}\n',
-        'ko'     :u'{{환영}}\n~~~~\n',
+        'ko'     :u'{{환영}}--~~~~\n',
         'ta'     :u'{{welcome}}\n~~~~\n',
         'zh'     :u'{{subst:welcome|sign=~~~~}}',
         }
@@ -241,7 +241,7 @@ nothing_notification = {
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
                 'it'     :u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza|%s|__botnick__}} --~~~~",
                 'ja'     :u"\n{{subst:Image copyright|Image:%s}}--~~~~",
-                'ko'     :u'\n{{subst:사용자:김우진1/BotRFL|%s}} --~~~~',
+                'ko'     :u'\n{{subst:User:Kwjbot IV/untagged|%s}} --~~~~', 
                 'ta'     :u'\n{{subst:Di-no license-notice|படிமம்:%s}} ~~~~ ',
                 'zh'     :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
                 }
@@ -355,7 +355,7 @@ PageWithAllowedTemplates = {
     'commons': u'User:Filbot/Allowed templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/AllowedTemplates',
-    'ko': u'User:Kwjbot_IV/whitetemplates/list',
+    'ko':u'User:Kwjbot_IV/whitetemplates/list',
     }
 
 # Template added when the bot finds only an hidden template and nothing else.
@@ -365,7 +365,7 @@ HiddenTemplateNotification = {
         'de'     : None,
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
-        'ko'     : u"\n{{subst:User:김우진1/BotRFL|%s}} --~~~~",
+        'ko'     : u"\n{{subst:User:Kwj2772/whitetemplates|%s}} --~~~~", 
         'ta'     : None,
         }
 
@@ -414,6 +414,7 @@ category_with_licenses = {
         'commons': 'Category:License tags',
         'en'     : None,
         'it'     : 'Categoria:Template Licenze copyright',
+        'ko'     : '분류:그림 저작권 틀',
         }
 
 ## Put None if you don't use this option or simply add nothing if en
@@ -1686,7 +1687,12 @@ def checkbot():
 
 # Here there is the main loop. I'll take all the (name of the) images and then i'll check them.
 if __name__ == "__main__":
+    old = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
     try:
         checkbot()
     finally:
+        final = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
+        delta = final - old
+        secs_of_diff = delta.seconds
+        print "seconds: %s" % secs_of_diff
         wikipedia.stopme()
