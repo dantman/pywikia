@@ -554,13 +554,16 @@ class Subject(object):
             self.todo.append(page)
             self.foundIn[page] = [None]
 
-    def openSites(self):
+    def openSites(self, allowdoubles = False):
         """Return a list of sites for all things we still need to do"""
         distinctSites = {}
 
         for page in self.todo:
             site = page.site()
-            distinctSites[site] = site
+            if allowdoubles:
+                distinctSites[page] = site
+            else:
+                distinctSites[site] = site
         return distinctSites.values()
 
     def willWorkOn(self, site):
@@ -1332,7 +1335,7 @@ class InterwikiBot(object):
         """Add a single subject to the list"""
         subj = Subject(page, hints = hints)
         self.subjects.append(subj)
-        for site in subj.openSites():
+        for site in subj.openSites(allowdoubles = True):
             # Keep correct counters
             self.plus(site)
 
