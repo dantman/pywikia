@@ -135,7 +135,7 @@ class Delinker(threadpool.Thread):
 							try:
 								result = self.replace_image(image, site, title, summary, replacement)
 							except wikipedia.UserBlocked, e:
-								output(u'Warning! Blocked on %s by %s.' % (e[0], e[1]))
+								output(u'Warning! Blocked %s.' % tuple(e))
 							except wikipedia.CaptchaError, e:
 								output(u'%s Warning! Captcha encountered at %s.' % (self, site))
 								if (lang, family) not in skipped_images:
