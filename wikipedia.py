@@ -5080,7 +5080,10 @@ your connection is down. Retrying in %i minutes..."""
         
         data = query.GetData(params,
                         useAPI = True, encodeTitle = False)
-        imagesData = data['query']['logevents']
+        try:
+            imagesData = data['query']['logevents']
+        except KeyError:
+            raise ServerError("The APIs don't return the data, the site may be down")
         while True:
             for imageData in imagesData:
                 try:
