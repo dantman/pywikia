@@ -1375,14 +1375,11 @@ not supported by PyWikipediaBot!"""
         # Add server lag parameter (see config.py for details)
         if config.maxlag:
             predata['maxlag'] = str(config.maxlag)
-        # Except if the page is new, we need to supply the time of the
-        # previous version to the wiki to prevent edit collisions
-        if newPage:
-            predata['wpEdittime'] = ''
-            predata['wpStarttime'] = ''
-        else:
-            predata['wpEdittime'] = self._editTime
-            predata['wpStarttime'] = self._startTime
+        # <s>Except if the page is new, we need to supply the time of the
+        # previous version to the wiki to prevent edit collisions</s>
+        # As of Oct 2008, these must be filled also for new pages
+        predata['wpEdittime'] = self._editTime
+        predata['wpStarttime'] = self._startTime
         if self._revisionId:
             predata['baseRevId'] = self._revisionId
         # Pass the minorEdit and watchArticle arguments to the Wiki.
