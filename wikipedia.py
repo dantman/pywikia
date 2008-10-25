@@ -921,11 +921,15 @@ not supported by PyWikipediaBot!"""
         It works through the APIs.
 
         If no templates found, returns None.
+
+        Note: It returns "only" the first 5000 templates, if there
+        are more, they won't be returned, sorry.
         """
         params = {
             'action'    :'query',
             'prop'      :'templates',
             'titles'    :self.title(),
+            'tllimit'   :5000
             }
 
         data = query.GetData(params,
