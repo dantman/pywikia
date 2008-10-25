@@ -913,6 +913,34 @@ not supported by PyWikipediaBot!"""
             x = self.get()                
             return True # if we reach this point, we had no problems.
 
+    def getTemplates(self):
+        #action=query&prop=templates&titles=Main Page
+        """
+        Returns the templates that are used in the page given.
+
+        It works through the APIs.
+
+        If no templates found, returns None.
+        """
+        params = {
+            'action'    :'query',
+            'prop'      :'templates',
+            'titles'    :self.title(),
+            }
+
+        data = query.GetData(params,
+                        useAPI = True, encodeTitle = False)
+        pageid = data['query']['pages'].keys()[0]
+        try:
+            templates = data['query']['pages'][pageid]['templates']
+        except KeyError:
+            return None
+        templatesFound = list()
+        for template in templates:
+            templateName = template['title']
+            templatesFound.append(Page(self.site(), templateName))
+        return templatesFound
+
     def isRedirectPage(self):
         """Return True if this is a redirect, False if not or not existing."""
         try:
