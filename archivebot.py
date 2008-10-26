@@ -430,6 +430,7 @@ class PageArchiver(object):
                         'month' : TStuple[1],
                         'monthname' : int2month(TStuple[1]),
                         'monthnameshort' : int2month_short(TStuple[1]),
+                        'week' : int(time.strftime('%W',TStuple)),
                         }
                 archive = archive % vars
                 if self.feedArchive(archive,t,maxArchSize,vars):
