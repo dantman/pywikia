@@ -938,7 +938,7 @@ not supported by PyWikipediaBot!"""
         try:
             templates = data['query']['pages'][pageid]['templates']
         except KeyError:
-            return None
+            return list()
         templatesFound = list()
         for template in templates:
             templateName = template['title']
