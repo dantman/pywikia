@@ -421,7 +421,7 @@ def parselog(wsite, raw, talk, number, sul):
     # XXX: That's the regex, if there are problems, take a look here.
 
     reg =  u'\(<a href=\"' + re.escape(wsite.path())
-    reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % talk
+    reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % re.escape(talk)
     reg += u'.*?\) (?P<reason>.*?) . </li>'
     p = re.compile(reg, re.UNICODE)
 
@@ -473,7 +473,7 @@ def report(wsite, rep_page, username, com, rep):
     pos = 0
     # The talk page includes "_" between the two names, in this way i replace them to " ".
     username = wikipedia.url2link(username, wsite, wsite)
-    regex = username
+    regex = re.escape(username)
     n = re.compile(regex, re.UNICODE)
     y = n.search(text_get, pos)
     if y == None:
@@ -489,7 +489,8 @@ def blocked(wsite, username):
     """ The function to understand if the user is blocked or not. """
     pathWiki = wsite.family.nicepath(wsite.lang)
     #A little function to check if the user has already been blocked (to skip him).
-    reg = r"""<li>\d\d:\d\d, \d(\d)? (.*?) \d\d\d\d <a href=\"""" + pathWiki + r"""(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"""" + pathWiki + r"""(.*?)\" title=\"(.*?)\">(.*?)</a>"""
+    reg = r"""<li>\d\d:\d\d, \d(\d)? (.*?) \d\d\d\d <a href=\"""" + re.escape(pathWiki) + \
+          r"""(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"""" + re.escape(pathWiki) + r"""(.*?)\" title=\"(.*?)\">(.*?)</a>"""
     block_text = wsite.getUrl(wsite.path() + '?title=Special:Log/block&page=User:' + username)
     numblock = re.findall(reg, block_text)
     # If the bot doesn't find block-line (that means the user isn't blocked), it will return False otherwise True.
