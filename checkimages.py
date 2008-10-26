@@ -375,7 +375,6 @@ duplicatesText = {
         'commons': u'\n{{Dupe|__image__}}',
         'en'     : None,
         'it'     : u'\n{{Progetto:Coordinamento/Immagini/Bot/Template duplicati|__images__}}',
-        'ko'     :'분류:그림 저작권 틀',
         }
 # Head of the message given to the author
 duplicate_user_talk_head = {
@@ -1098,6 +1097,8 @@ class main:
             list_licenses.extend(pages)
         """
         catName = wikipedia.translate(self.site, category_with_licenses)
+        if catName == None:
+            raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
         list_licenses = categoryAllPageObjects(catName)
 
@@ -1127,6 +1128,8 @@ class main:
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]*?)[|\n<}]', re.DOTALL)
         templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
         allLicenses = list()
+        if self.list_licenses == []:
+            raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         # Found the templates ONLY in the image's description
         for template_selected in templatesInTheImageRaw:
             for templateReal in self.licenses_found:
