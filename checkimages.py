@@ -22,8 +22,6 @@ This script understands the following command-line arguments:
 
     -duplicatesreport   - Report the duplicates in a log *AND* put the template in the images.
 
-    -smartdetection     - Check in a category if the license found exist in realit or not.
-
     -sendemail          - Send an email after tagging.
 
     -break            - To break the bot after the first check (default: recursive)
@@ -336,7 +334,7 @@ HiddenTemplate = {
         'de':[u'information'],
         'en':[u'information'],
         'hu':[u'információ', u'enwiki', u'azonnali'],
-        'it':[u'edp', u'informazioni[ _]file', u'information', u'trademark', u'permissionotrs'], # Put the other in the page on the project defined below
+        'it':[u'edp', u'informazioni file', u'information', u'trademark', u'permissionotrs'], # Put the other in the page on the project defined below
         'ja':[u'Information'],
         'ko':[u'그림 정보'],
         'ta':[u'information'],
@@ -344,7 +342,7 @@ HiddenTemplate = {
         }
 # A page where there's a list of template to skip.
 PageWithHiddenTemplates = {
-    'commons': u'User:Filbot/White_templates#White_templates',
+    'commons': u'User:Filbot/White_templates2#White_templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
@@ -387,7 +385,7 @@ duplicate_user_talk_head = {
         }
 # Message to put in the talk
 duplicates_user_talk_text = {
-        'commons': u'{{subst:User:Filnik/duplicates|Image:%s|Image:%s}}',
+        'commons': u'{{subst:User:Filnik/duplicates|Image:%s|Image:%s}}', # FIXME: it doesn't exist
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
         }
@@ -502,10 +500,69 @@ class EmailSender(wikipedia.Page):
             wikipedia.output(u'No data found.')
             return False
 
+def categoryElementsNumber(CatName):
+    #action=query&prop=categoryinfo&titles=Category:License_tags
+    """
+    """
+    params = {
+        'action'    :'query',
+        'prop'      :'categoryinfo',
+        'titles'    :CatName,
+        }
+
+    data = query.GetData(params,
+                    useAPI = True, encodeTitle = False)
+    pageid = data['query']['pages'].keys()[0]
+    elements = data['query']['pages'][pageid]['categoryinfo']['size']
+    return elements
+
+def categoryAllElements(CatName):
+    #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
+    """
+    """
+    wikipedia.output("Loading %s..." % CatName)
+    elements = int(categoryElementsNumber(CatName))
+    elements += 20 # better to be sure that all the elements are loaded
+    if (elements - 20) > 5000:
+        raise wikipedia.Error(u'The category selected as more than 5.000 elements, limit reached')
+    elif elements > 5000: # if they are less then 5000, but for few elements
+        elements = 5000
+    params = {
+        'action'    :'query',
+        'list'      :'categorymembers',
+        'cmlimit'   :str(elements),
+        'cmtitle'   :CatName,
+        }
+
+    data = query.GetData(params,
+                    useAPI = True, encodeTitle = False)
+    
+    members = data['query']['categorymembers']
+    allmembers = members
+    results = list()
+    for subcat in members:
+        ns = subcat['ns']
+        pageid = subcat['pageid']
+        title = subcat['title']
+        if ns == 14:
+            allmembers.extend(categoryAllElements(title))
+            members.remove(subcat)
+    for member in allmembers:
+        ns = member['ns']
+        pageid = member['pageid']
+        title = member['title']
+        results.append(member)
+    return results
+def categoryAllPageObjects(CatName):
+    final = list()
+    for element in categoryAllElements(CatName):
+        final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
+    return final
+
 # Here there is the main class.
 class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
-                 duplicatesReport = False, smartdetection = False):
+                 duplicatesReport = False):
         """ Constructor, define some global variable """
         self.site = site
         self.logFulNumber = logFulNumber
@@ -513,7 +570,7 @@ class main:
         self.rep_page = wikipedia.translate(self.site, report_page)
         self.rep_text = wikipedia.translate(self.site, report_text)
         self.com = wikipedia.translate(self.site, comm10)
-        self.hiddentemplate = wikipedia.translate(self.site, HiddenTemplate)
+        self.hiddentemplates = wikipedia.translate(self.site, HiddenTemplate)
         self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)
         self.pageAllowed = wikipedia.translate(self.site, PageWithAllowedTemplates)        
         # Commento = Summary in italian
@@ -533,9 +590,7 @@ class main:
         image_n = self.site.image_namespace()
         self.image_namespace = u"%s:" % image_n # Example: "Image:"
         # Load the licenses only once, so do it once
-        self.smartdetection = smartdetection
-        if self.smartdetection:
-            self.list_licenses = self.load_licenses()
+        self.list_licenses = self.load_licenses()
     def setParameters(self, imageName, timestamp, uploader):
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
         self.imageName = imageName
@@ -736,17 +791,18 @@ class main:
         """ Function to load the white templates """
         # A template as {{en is not a license! Adding also them in the whitelist template...
         for langK in wikipedia.Family(u'wikipedia').langs.keys():
-            self.hiddentemplate.append(u'%s' % langK)
+            self.hiddentemplates.append(wikipedia.Page(self.site, u'Template:%s' % langK))
         # The template #if: and #switch: aren't something to care about
-        self.hiddentemplate.extend([u'#if:', u'#switch:'])
+        #self.hiddentemplates.extend([u'#if:', u'#switch:']) FIXME
         # Hidden template loading
         if self.pageHidden != None:
             try:
                 pageHiddenText = wikipedia.Page(self.site, self.pageHidden).get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 pageHiddenText = ''
-            self.hiddentemplate.extend(self.load(pageHiddenText))
-        return self.hiddentemplate
+            for element in self.load(pageHiddenText):
+                self.hiddentemplates.append(wikipedia.Page(self.site, element))
+        return self.hiddentemplates
 
     def returnOlderTime(self, listGiven, timeListGiven):
         """ Get some time and return the oldest of them """
@@ -1029,6 +1085,7 @@ class main:
 
     def load_licenses(self):
         """ Load the list of the licenses """
+        """
         catName = wikipedia.translate(self.site, category_with_licenses)
         cat = catlib.Category(wikipedia.getSite(), catName)
         categories = [page.title() for page in pagegenerators.SubCategoriesPageGenerator(cat)]
@@ -1040,6 +1097,10 @@ class main:
             gen = pagegenerators.CategorizedPageGenerator(cat)
             pages = [page for page in gen]
             list_licenses.extend(pages)
+        """
+        catName = wikipedia.translate(self.site, category_with_licenses)
+        wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
+        list_licenses = categoryAllPageObjects(catName)
 
         # Add the licenses set in the default page as licenses
         # to check
@@ -1049,95 +1110,57 @@ class main:
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 pageAllowedText = ''
             for nameLicense in self.load(pageAllowedText):
-                if not 'template:' in nameLicense.lower():
-                    nameLicense = u'Template:%s' % nameLicense
                 pageLicense = wikipedia.Page(self.site, nameLicense)
                 if pageLicense not in list_licenses:
                     list_licenses.append(pageLicense) # the list has wiki-pages
         return list_licenses
 
-    def giveMeTheTemplate(self, license_selected):
-        """ From the name of a template see if it's template:something or just
-            an inclusion of another namespace != template. If it's a redirect
-            gets the real page, if there's a NoPage, return None.
-        """
-        #print template.exists()
-        template = wikipedia.Page(self.site, u'Template:%s' % license_selected)
-        try:
-            template.pageAPInfo()
-        except wikipedia.NoPage:
-            try:
-                template = wikipedia.Page(self.site, license_selected)
-                template.pageAPInfo()
-            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                return None # break and exit
-        except wikipedia.IsRedirectPage:
-            template = template.getRedirectTarget()
-        return template
-
-    def smartDetection(self, image_text):
+    def smartDetection(self):
         """ The bot instead of checking if there's a simple template in the
             image's description, checks also if that template is a license or
             something else. In this sense this type of check is smart.
             """
         seems_ok = False
         license_found = None
-        regex_find_licenses = re.compile(r'\{\{(?:[Tt]emplate:|)(.*?)(?:[|\n<].*?|)\}\}', re.DOTALL)
-        licenses_found = regex_find_licenses.findall(image_text)
-        second_round = False
-
-        exit_cicle = False # howTo exit from both the for and the while cicle
-        while 1:
-            if exit_cicle: # howTo exit from the while
-                break
-            if licenses_found != []:
-                for license_selected in licenses_found:
-                    # put the first, if there is problem, this will be reported in the log
-                    if license_found == None:
-                        license_found = license_selected
+        self.hiddentemplates = self.loadHiddenTemplates()      
+        self.licenses_found = self.image.getTemplates()
+        whiteTemplatesFound = False
+        regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]*?)[|\n<}]', re.DOTALL)
+        templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
+        allLicenses = list()
+        # Found the templates ONLY in the image's description
+        for template_selected in templatesInTheImageRaw:
+            for templateReal in self.licenses_found:
+                if self.convert_to_url(template_selected).lower().replace('template:', '') == \
+                       self.convert_to_url(templateReal.title().lower().replace('template:', '')):
+                    allLicenses.append(templateReal)
+        if self.licenses_found != []:
+            for template in self.licenses_found:
+                license_selected = template.title().replace('Template:', '')
+                if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
+                    seems_ok = True
+                    license_found = license_selected # let the last "fake" license normally detected
+                    break
+                if template in self.hiddentemplates:
+                    # if the whitetemplate is not in the images description, we don't care
                     try:
-                        template = self.giveMeTheTemplate(license_selected)
-                        if template == None:
-                            continue
-                    except wikipedia.BadTitle:
-                        # Template with wrong name, no need to report, simply skip
+                        allLicenses.remove(template)
+                    except ValueError:
                         continue
-                    if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
-                        seems_ok = True
-                        exit_cicle = True
-                        license_found = license_selected # let the last "fake" license normally detected
-                        break
-                # previous block was unsuccessful? Try with the next one
-                for license_selected in licenses_found:
-                    try:
-                        template = self.giveMeTheTemplate(license_selected)
-                        if template == None:
-                            continue # ok, this template it's not ok, continue..                          
-                    except wikipedia.BadTitle:
-                        # Template with wrong name, no need to report, simply skip
-                        continue                          
-                    try:                         
-                        template_text = template.get()            
-                    except wikipedia.NoPage:
-                        continue # ok, this template it's not ok, continue..
-                    regex_noinclude = re.compile(r'<noinclude>(.*?)</noinclude>', re.DOTALL)
-                    template_text = regex_noinclude.sub('', template_text)
-                    if second_round == False:
-                        licenses_found = regex_find_licenses.findall(template_text)
-                        second_round = True
-                        break # only exit from the for, not from the while
                     else:
-                        exit_cicle = True
-                        break
-        if not seems_ok:
+                        whiteTemplatesFound = True
+                        continue
+            if license_found == None and allLicenses != list():
+                license_found = license_selected
+        if not seems_ok and license_found != None:
             rep_text_license_fake = u"\n*[[:Image:%s]] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>" % (self.imageName, license_found)
             regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (self.imageName, license_found)
             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, license_found))
             self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
-        else:
+        elif license_found != None:
             printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, license_found))
-        return license_found
+        return (license_found, whiteTemplatesFound)
 
     def load(self, raw):
         """ Load a list of object from a string using regex. """
@@ -1252,30 +1275,7 @@ class main:
                     return True
             elif i.lower() in self.imageCheckText:
                 return True
-        return False # Nothing Found? Ok: False
-
-    def whiteTemplateEraser(self):
-        """ Erase the white template from the checking text and return how many have been found. """
-        # Load the white templates(hidden template is the same as white template, regarding the meaning)
-        white_templates_found = 0
-        hiddentemplate = self.loadHiddenTemplates()
-        for regexWhiteLicense in hiddentemplate:
-            fullRegexWL = r'\{\{(?:template:|)(?:%s[ \n]*?(?:\n|\||\}|<)|creator:)' % regexWhiteLicense.lower()
-            if self.tagged == False:
-                # why creator? Because on commons there's a template such as {{creator:name}} that.. works
-                res = re.findall(fullRegexWL, self.imageCheckText.lower())
-                if res != []:
-                    for element in res: # if a regex gives more than 1 results, are more than 1 template found.
-                        white_templates_found += 1
-                    if regexWhiteLicense != '' and regexWhiteLicense != ' ': # Check that regexWhiteLicense is not nothing or a space
-                        # Deleting! (replace the template with nothing)
-                        regex_white_template = re.compile(fullRegexWL, re.IGNORECASE)
-                        self.imageCheckText = regex_white_template.sub(r'', self.imageCheckText)
-        if white_templates_found == 1:
-            wikipedia.output(u'A white template found, skipping the template...')
-        elif white_templates_found > 1:
-            wikipedia.output(u'White templates found: %s; skipping those templates...' % white_templates_found)
-        return white_templates_found        
+        return False # Nothing Found? Ok: False      
 
     def findAdditionalProblems(self):
         # In every tupla there's a setting configuration
@@ -1322,7 +1322,7 @@ class main:
                         self.mex_used = mexCatched
                         continue
 
-    def checkStep(self, smartdetection):
+    def checkStep(self):
         # nothing = Defining an empty image description
         nothing = ['', ' ', '  ', '   ', '\n', '\n ', '\n  ', '\n\n', '\n \n', ' \n', ' \n ', ' \n \n']
         # something = Minimal requirements for an image description.
@@ -1369,11 +1369,10 @@ class main:
         # Deleting the useless template from the description (before adding something
         # in the image the original text will be reloaded, don't worry).
         self.tagged = self.isTagged()
-        white_templates_found = self.whiteTemplateEraser()
-        if white_templates_found != 0:
-            hiddenTemplateFound = True
-        else:
-            hiddenTemplateFound = False
+        if self.tagged == True:
+            # Tagged? Yes, skip.
+            printWithTimeZone(u'%s is already tagged...' % self.imageName)
+            return True        
         for a_word in something: # something is the array with {{, MIT License and so on.
             if a_word in self.imageCheckText:
                 # There's a template, probably a license (or I hope so)
@@ -1382,6 +1381,7 @@ class main:
         for parl in notallowed:
             if parl.lower() in extension.lower():
                 delete = True
+        (license_found, hiddenTemplateFound) = self.smartDetection()
         self.some_problem = False # If it has "some_problem" it must check
                   # the additional settings.
         # if self.settingsData, use addictional settings
@@ -1392,10 +1392,6 @@ class main:
         #if p.exists(): <-- improve thebot, better to make as
         #                   less call to the server as possible
         # Here begins the check block.
-        if self.tagged == True:
-            # Tagged? Yes, skip.
-            printWithTimeZone(u'%s is already tagged...' % self.imageName)
-            return True
         if self.some_problem == True:
             if self.mex_used in self.imageCheckText:
                 wikipedia.output(u'Image already fixed. Skip.')
@@ -1414,13 +1410,8 @@ class main:
                 wikipedia.output(u"Skipping the image...")
             self.some_problem = False
             return True
-        elif brackets == True:
+        elif brackets == True and license_found != None:
             seems_ok = False
-            license_found = None
-            if smartdetection:
-                license_found = self.smartDetection(self.imageCheckText)
-            else:
-                printWithTimeZone(u"%s seems ok..." % self.imageName)
             # It works also without this... but i want only to be sure ^^
             brackets = False
             return True
@@ -1469,7 +1460,6 @@ def checkbot():
     duplicatesActive = False # Use the duplicate option
     duplicatesReport = False # Use the duplicate-report option
     sendemailActive = False # Use the send-email
-    smartdetection = False # Enable the smart detection
 
     # Here below there are the parameters.
     for arg in wikipedia.handleArgs():
@@ -1497,8 +1487,6 @@ def checkbot():
             duplicatesReport = True
         elif arg == '-sendemail':
             sendemailActive = True
-        elif arg == '-smartdetection':
-            smartdetection = True
         elif arg.startswith('-skip'):
             if len(arg) == 5:
                 skip = True
@@ -1597,7 +1585,7 @@ def checkbot():
     # Main Loop
     while 1:
         # Defing the Main Class.
-        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport, smartdetection = smartdetection)
+        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport)
         # Untagged is True? Let's take that generator
         if untagged == True:
             generator =  mainClass.untaggedGenerator(projectUntagged, limit)
@@ -1674,7 +1662,7 @@ def checkbot():
                 response2 = mainClass.checkImageDuplicated(duplicates_rollback)
                 if response2 == False:
                     continue
-            resultCheck = mainClass.checkStep(smartdetection)
+            resultCheck = mainClass.checkStep()
             if resultCheck:
                 continue
     # A little block to perform the repeat or to break.
@@ -1694,5 +1682,5 @@ if __name__ == "__main__":
         final = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
         delta = final - old
         secs_of_diff = delta.seconds
-        print "seconds: %s" % secs_of_diff
+        wikipedia.output("Execution time: %s" % secs_of_diff)
         wikipedia.stopme()
