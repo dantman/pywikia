@@ -544,9 +544,8 @@ def categoryAllElements(CatName):
         ns = subcat['ns']
         pageid = subcat['pageid']
         title = subcat['title']
-        if ns == 14:
+        if ns == 14:     
             allmembers.extend(categoryAllElements(title))
-            members.remove(subcat)
     for member in allmembers:
         ns = member['ns']
         pageid = member['pageid']
