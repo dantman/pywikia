@@ -342,7 +342,7 @@ HiddenTemplate = {
         }
 # A page where there's a list of template to skip.
 PageWithHiddenTemplates = {
-    'commons': u'User:Filbot/White_templates2#White_templates',
+    'commons': u'User:Filbot/White_templates#White_templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
