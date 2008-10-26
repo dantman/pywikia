@@ -972,7 +972,7 @@ class main:
                             only_report = True
                             break
                         # Delete the image in the list where we're write on
-                        text_for_the_report = re.sub(r'\n\*\[\[:%s\]\]' % (self.image_namespace + image_to_tag), '', text_for_the_report)
+                        text_for_the_report = re.sub(r'\n\*\[\[:%s\]\]' % re.escape(self.image_namespace + image_to_tag), '', text_for_the_report)
                         self.report(text_for_the_report, image_to_tag,
                                     commImage = dupComment_image, unver = True)
                 if len(images_to_tag_list) != 0 and not only_report:
@@ -1154,7 +1154,7 @@ class main:
                 license_found = license_selected
         if not seems_ok and license_found != None:
             rep_text_license_fake = u"\n*[[:Image:%s]] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>" % (self.imageName, license_found)
-            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (self.imageName, license_found)
+            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.imageName), license_found)
             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, license_found))
             self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
@@ -1503,9 +1503,9 @@ def checkbot():
                 wait_number = int(arg[6:])
         elif arg.startswith('-start'):
             if len(arg) == 6:
-                firstPageTitle = str(wikipedia.input(u'From witch page do you want to start?'))
+                firstPageTitle = wikipedia.input(u'From witch page do you want to start?')
             elif len(arg) > 6:
-                firstPageTitle = str(arg[7:])
+                firstPageTitle = arg[7:]
             generator = wikipedia.getSite().allpages(start=firstPageTitle, namespace=6)
             repeat = False
         elif arg.startswith('-page'):
