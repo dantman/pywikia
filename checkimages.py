@@ -60,12 +60,9 @@ while Findonly= search only if the exactly text that you give is in the image's 
 
 ---- Known issues/FIXMEs: ----
 * Clean the code, some passages are pretty difficult to understand if you're not the coder.
-* Fix the "real-time" regex and function
 * Add the "catch the language" function for commons.
 * Fix and reorganise the new documentation
 * Add a report for the image tagged.
-* Duplicates: check the usage, find out which image is most usued and "delete" the other ones.
-* -> if the other ones are used, advise it in the message!
 
 """
 
@@ -329,16 +326,16 @@ comm10 = {
 # because they are already put in the regex).
 # Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
-        'commons':[u'information'], # Put the other in the page on the project defined below
-    	'ar':[u'معلومات'],
-        'de':[u'information'],
-        'en':[u'information'],
-        'hu':[u'információ', u'enwiki', u'azonnali'],
-        'it':[u'edp', u'informazioni file', u'information', u'trademark', u'permissionotrs'], # Put the other in the page on the project defined below
-        'ja':[u'Information'],
-        'ko':[u'그림 정보'],
-        'ta':[u'information'],
-        'zh':[u'information'],
+        'commons':[u'Template:Information'], # Put the other in the page on the project defined below
+    	'ar':[u'Template:معلومات'],
+        'de':[u'Template:Information'],
+        'en':[u'Template:Information'],
+        'hu':[u'Template:Információ', u'Template:Enwiki', u'Template:Azonnali'],
+        'it':[u'Template:EDP', u'Template:Informazioni file', u'Template:Information', u'Template:Trademark', u'Template:Permissionotrs'], # Put the other in the page on the project defined below
+        'ja':[u'Template:Information'],
+        'ko':[u'Template:그림 정보'],
+        'ta':[u'Template:Information'],
+        'zh':[u'Template:Information'],
         }
 # A page where there's a list of template to skip.
 PageWithHiddenTemplates = {
