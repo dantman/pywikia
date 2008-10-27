@@ -496,37 +496,16 @@ class EmailSender(wikipedia.Page):
             wikipedia.output(u'No data found.')
             return False
 
-def categoryElementsNumber(CatName):
-    #action=query&prop=categoryinfo&titles=Category:License_tags
-    """
-    """
-    params = {
-        'action'    :'query',
-        'prop'      :'categoryinfo',
-        'titles'    :CatName,
-        }
-
-    data = query.GetData(params,
-                    useAPI = True, encodeTitle = False)
-    pageid = data['query']['pages'].keys()[0]
-    elements = data['query']['pages'][pageid]['categoryinfo']['size']
-    return elements
-
 def categoryAllElements(CatName):
     #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
     """
+    Category to load all the elements in a category. Limit: 5000 elements.
     """
     wikipedia.output("Loading %s..." % CatName)
-    elements = int(categoryElementsNumber(CatName))
-    elements += 20 # better to be sure that all the elements are loaded
-    if (elements - 20) > 5000:
-        raise wikipedia.Error(u'The category selected as more than 5.000 elements, limit reached')
-    elif elements > 5000: # if they are less then 5000, but for few elements
-        elements = 5000
     params = {
         'action'    :'query',
         'list'      :'categorymembers',
-        'cmlimit'   :str(elements),
+        'cmlimit'   :'5000',
         'cmtitle'   :CatName,
         }
 
@@ -534,6 +513,8 @@ def categoryAllElements(CatName):
                     useAPI = True, encodeTitle = False)
     
     members = data['query']['categorymembers']
+    if len(members) == 5000:
+        raise wikipedia.Error(u'The category selected as >= 5.000 elements, limit reached.')
     allmembers = members
     results = list()
     for subcat in members:
@@ -549,6 +530,9 @@ def categoryAllElements(CatName):
         results.append(member)
     return results
 def categoryAllPageObjects(CatName):
+    """
+    From a list of dictionaries, return a list of page objects.
+    """
     final = list()
     for element in categoryAllElements(CatName):
         final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
@@ -1132,7 +1116,8 @@ class main:
             for templateReal in self.licenses_found:
                 if self.convert_to_url(template_selected).lower().replace('template:', '') == \
                        self.convert_to_url(templateReal.title().lower().replace('template:', '')):
-                    allLicenses.append(templateReal)
+                    if templateReal not in allLicenses: # don't put the same template, twice.
+                        allLicenses.append(templateReal)
         if self.licenses_found != []:
             for template in self.licenses_found:
                 license_selected = template.title().replace('Template:', '')
