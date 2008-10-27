@@ -170,7 +170,7 @@ These arguments specify in which way the bot should follow interwiki links:
                    you are sure you have first gotten the interwiki on the
                    starting page exactly right).
                    (note: without ending colon)
-                   
+
     -back          only work on pages that have no backlink from any other
                    language; if a backlink is found, all work on the page
                    will be halted.  (note: without ending colon)
@@ -359,6 +359,7 @@ msg = {
     'fa': (u'ربات ', u'افزودن', u'حذف', u'اصلاح'),
     'fi': (u'Botti ', u'lisäsi', u'poisti', u'muokkasi'),
     'fiu-vro': (u'robot ', u'manopandminõ', u'ärqvõtminõ', u'tävvendämine'),
+    'fo': (u'bottur ', u'leggur aftrat', u'strikar', u'broytur'),
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'frp': (u'robot ', u'Apond', u'Retire', u'Modifie'),
     'fur': (u'Robot: ', u'o zonti', u'o cambii', u'o gjavi'),
