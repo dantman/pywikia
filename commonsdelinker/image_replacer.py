@@ -43,7 +43,7 @@ class Replacer(object):
 		self.config.update(getattr(config, 'Replacer', ()))
 		self.template = re.compile(r'\{\{%s\|([^|]*?)\|([^|]*?)(?:(?:\|reason\=(.*?))?)\}\}' % \
 				self.config['replace_template'])
-		self.disallowed_replacements = [(re.compile(i[0]), re.compile(i[1])) 
+		self.disallowed_replacements = [(re.compile(i[0], re.I), re.compile(i[1], re.I)) 
 			for i in self.config.get('disallowed_replacements', ())]
 				
 		self.site = wikipedia.getSite(persistent_http = True)
