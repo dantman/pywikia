@@ -93,7 +93,7 @@ class Category(wikipedia.Page):
         else:
             return '[[%s]]' % titleWithSortKey
 
-    def _getContents(self, recurse=False, purge=False, startFrom=None, cache=None):
+    def _getAndCacheContents(self, recurse=False, purge=False, startFrom=None, cache=None):
         """
         Cache results of _parseCategory for a second call.
 
@@ -129,7 +129,7 @@ class Category(wikipedia.Page):
                         # contents of subcategory are cached by calling
                         # this method recursively; therefore, do not cache
                         # them again
-                        for item in subcat._getContents(newrecurse, purge, cache=cache):
+                        for item in subcat._getAndCacheContents(newrecurse, purge, cache=cache):
                             yield item
         else:
             for tag, page in self._parseCategory(purge, startFrom):
@@ -147,10 +147,21 @@ class Category(wikipedia.Page):
                             # contents of subcategory are cached by calling
                             # this method recursively; therefore, do not cache
                             # them again
-                            for item in page._getContents(newrecurse, purge, cache=cache):
+                            for item in page._getAndCacheContents(newrecurse, purge, cache=cache):
                                 yield item
             if not startFrom:
                 self.completelyCached = True
+
+    def _getContentsNaive(self, recurse=False, startFrom=None):
+        """
+        Simple category content yielder. Naive, do not attempts to
+        cache anything
+        """
+        for tag, page in self._parseCategory(startFrom=startFrom):
+            yield tag, page
+            if tag == SUBCATEGORY and recurse:
+                for item in page._getContentsNaive(recurse=True):
+                    yield item
 
     def _parseCategory(self, purge=False, startFrom=None):
         """
@@ -259,7 +270,7 @@ class Category(wikipedia.Page):
             else:
                 break
 
-    def subcategories(self, recurse=False, startFrom=None):
+    def subcategories(self, recurse=False, startFrom=None, cacheResults=False):
         """
         Yields all subcategories of the current category.
 
@@ -269,9 +280,18 @@ class Category(wikipedia.Page):
         equivalent to recurse = False, recurse = 1 gives first-level
         subcategories of subcategories but no deeper, etcetera).
 
+        cacheResults - cache the category contents: useful if you need to 
+        do several passes on the category members list. The simple cache
+        system is *not* meant to be memory or cpu efficient for large
+        categories
+
         Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
-        for tag, subcat in self._getContents(recurse, startFrom=startFrom):
+        if cacheResults:
+            gen = self._getAndCacheContents
+        else:
+            gen = self._getContentsNaive
+        for tag, subcat in gen(recurse=recurse, startFrom=startFrom):
             if tag == SUBCATEGORY:
                 yield subcat
 
@@ -289,7 +309,7 @@ class Category(wikipedia.Page):
             subcats.append(cat)
         return unique(subcats)
 
-    def articles(self, recurse=False, startFrom=None):
+    def articles(self, recurse=False, startFrom=None, cacheResults=False):
         """
         Yields all articles of the current category.
 
@@ -297,10 +317,19 @@ class Category(wikipedia.Page):
         Recurse can be a number to restrict the depth at which subcategories
         are included.
 
+        cacheResults - cache the category contents: useful if you need to 
+        do several passes on the category members list. The simple cache
+        system is *not* meant to be memory or cpu efficient for large
+        categories
+
         Results are unsorted (except as sorted by MediaWiki), and need not
         be unique.
         """
-        for tag, page in self._getContents(recurse, startFrom=startFrom):
+        if cacheResults:
+            gen = self._getAndCacheContents
+        else:
+            gen = self._getContentsNaive
+        for tag, page in gen(recurse=recurse, startFrom=startFrom):
             if tag == ARTICLE:
                 yield page
 
@@ -342,7 +371,7 @@ class Category(wikipedia.Page):
 
     def isEmpty(self):
         # TODO: rename; naming conflict with Page.isEmpty
-        for tag, title in self._getContents(purge = True):
+        for tag, title in self._parseCategory():
             return False
         return True
 
