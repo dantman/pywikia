@@ -549,7 +549,10 @@ class main:
         self.rep_page = wikipedia.translate(self.site, report_page)
         self.rep_text = wikipedia.translate(self.site, report_text)
         self.com = wikipedia.translate(self.site, comm10)
-        self.hiddentemplates = wikipedia.translate(self.site, HiddenTemplate)
+        hiddentemplatesRaw = wikipedia.translate(self.site, HiddenTemplate)
+        self.hiddentemplates = list()
+        for template in hiddentemplatesRaw:
+            self.hiddentemplates.append(wikipedia.Page(self.site, template))
         self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)
         self.pageAllowed = wikipedia.translate(self.site, PageWithAllowedTemplates)        
         # Commento = Summary in italian
@@ -1082,6 +1085,7 @@ class main:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
         list_licenses = categoryAllPageObjects(catName)
+        wikipedia.output('') # blank line
 
         # Add the licenses set in the default page as licenses
         # to check
@@ -1120,6 +1124,12 @@ class main:
                         allLicenses.append(templateReal)
         if self.licenses_found != []:
             for template in self.licenses_found:
+                try:
+                    template.pageAPInfo()
+                except wikipedia.IsRedirectPage:
+                    template = template.getRedirectTarget()
+                except wikipedia.NoPage:
+                    continue
                 license_selected = template.title().replace('Template:', '')
                 if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
                     seems_ok = True
