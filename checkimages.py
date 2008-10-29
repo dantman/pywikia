@@ -1100,19 +1100,62 @@ class main:
                     list_licenses.append(pageLicense) # the list has wiki-pages
         return list_licenses
 
+    def miniTemplateCheck(self, template):
+        """
+        Is the template given in the licenses allowed or in the licenses to skip?
+        This function check this.
+        """
+        if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
+            self.seems_ok = True
+            self.license_found = self.license_selected # let the last "fake" license normally detected
+            return True
+        if template in self.hiddentemplates:
+            # if the whitetemplate is not in the images description, we don't care
+            try:
+                self.allLicenses.remove(template)
+            except ValueError:
+                return False
+            else:
+                self.whiteTemplatesFound = True
+                return False  
+
+    def templateInList(self):
+        """
+        The problem is the calls to the Mediawiki system because they can be pretty slow.
+        While searching in a list of objects is really fast, so first of all let's see if
+        we can find something in the info that we already have, then make a deeper check.
+        """
+        for template in self.licenses_found:
+            self.license_selected = template.title().replace('Template:', '')
+            result = self.miniTemplateCheck(template)
+            if result:
+                break
+        if self.license_found == None:
+            for template in self.licenses_found:
+                try:
+                    template.pageAPInfo()
+                except wikipedia.IsRedirectPage:
+                    template = template.getRedirectTarget()
+                except wikipedia.NoPage:
+                    continue  
+                self.license_selected = template.title().replace('Template:', '')
+                result = self.miniTemplateCheck(template)
+                if result:
+                    break            
+                
     def smartDetection(self):
         """ The bot instead of checking if there's a simple template in the
             image's description, checks also if that template is a license or
             something else. In this sense this type of check is smart.
             """
-        seems_ok = False
-        license_found = None
+        self.seems_ok = False
+        self.license_found = None
         self.hiddentemplates = self.loadHiddenTemplates()      
         self.licenses_found = self.image.getTemplates()
-        whiteTemplatesFound = False
+        self.whiteTemplatesFound = False
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]*?)[|\n<}]', re.DOTALL)
         templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
-        allLicenses = list()
+        self.allLicenses = list()
         if self.list_licenses == []:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         # Found the templates ONLY in the image's description
@@ -1120,41 +1163,23 @@ class main:
             for templateReal in self.licenses_found:
                 if self.convert_to_url(template_selected).lower().replace('template:', '') == \
                        self.convert_to_url(templateReal.title().lower().replace('template:', '')):
-                    if templateReal not in allLicenses: # don't put the same template, twice.
-                        allLicenses.append(templateReal)
+                    if templateReal not in self.allLicenses: # don't put the same template, twice.
+                        self.allLicenses.append(templateReal)
         if self.licenses_found != []:
-            for template in self.licenses_found:
-                try:
-                    template.pageAPInfo()
-                except wikipedia.IsRedirectPage:
-                    template = template.getRedirectTarget()
-                except wikipedia.NoPage:
-                    continue
-                license_selected = template.title().replace('Template:', '')
-                if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
-                    seems_ok = True
-                    license_found = license_selected # let the last "fake" license normally detected
-                    break
-                if template in self.hiddentemplates:
-                    # if the whitetemplate is not in the images description, we don't care
-                    try:
-                        allLicenses.remove(template)
-                    except ValueError:
-                        continue
-                    else:
-                        whiteTemplatesFound = True
-                        continue
-            if license_found == None and allLicenses != list():
-                license_found = license_selected
-        if not seems_ok and license_found != None:
-            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>" % (self.imageName, license_found)
-            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.imageName), license_found)
-            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, license_found))
+            self.templateInList()
+            if self.license_found == None and self.allLicenses != list():
+                self.license_found = self.license_selected
+        if not self.seems_ok and self.license_found != None:
+            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have " + \
+                    "a ''fake license'', license detected: <nowiki>%s</nowiki>" % (self.imageName, self.license_found)
+            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have " + \
+                    "a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.imageName), self.license_found)
+            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
             self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
-        elif license_found != None:
-            printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, license_found))
-        return (license_found, whiteTemplatesFound)
+        elif self.license_found != None:
+            printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, self.license_found))
+        return (self.license_found, self.whiteTemplatesFound)
 
     def load(self, raw):
         """ Load a list of object from a string using regex. """
@@ -1405,7 +1430,6 @@ class main:
             self.some_problem = False
             return True
         elif brackets == True and license_found != None:
-            seems_ok = False
             # It works also without this... but i want only to be sure ^^
             brackets = False
             return True
