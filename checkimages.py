@@ -1170,10 +1170,10 @@ class main:
             if self.license_found == None and self.allLicenses != list():
                 self.license_found = self.license_selected
         if not self.seems_ok and self.license_found != None:
-            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have " + \
-                    "a ''fake license'', license detected: <nowiki>%s</nowiki>" % (self.imageName, self.license_found)
-            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have " + \
-                    "a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.imageName), self.license_found)
+            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have " % self.imageName + \
+                    "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
+            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have " % (re.escape(self.imageName)) + \
+                    "a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.license_found))
             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
             self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                    addings = False, regex = regexFakeLicense)
