@@ -35,6 +35,9 @@ class CategoryRedirectBot(object):
         self.catprefix = self.site.namespace(14)+":"
         self.log_text = []
         self.edit_requests = []
+        self.log_page = wikipedia.Page(self.site,
+                        u"User:%(user)s/category redirect log" %
+                            {'user': self.site.loggedInAs()})
 
         # Localization:
 
@@ -139,6 +142,28 @@ category links:
             {'_default': u"* %s is in %s, which is a redirect to %s",
             })
 
+        # the site's ~~~~ date-time format in time.strftime format
+        self.date_format = {
+            'wikipedia': {
+                'en': "%H:%M, %d %B %Y (UTC)",
+                'no': "%d. %b %Y kl. %H:%M (CEST)",
+                'simple': "%H:%M, %d %B %Y (UTC)",
+            },
+            'commons': {
+                'commons': "%H:%M, %d %B %Y (UTC)",
+            }
+        }
+
+        # the language used for the site's ~~~~ date-time stamps,
+        # if not the same as its language code
+        self.date_locale = {
+            'wikipedia': {
+                'simple': "en",
+            },
+            'commons': {
+                'commons': "en",
+            }
+        }
 
     def change_category(self, article, oldCat, newCat, comment=None,
                         sortKey=None):
@@ -305,6 +330,51 @@ category links:
             else:
                 return
 
+    def get_log_text(self):
+        """Rotate log text and return the most recent text."""
+        LOG_SIZE = 7  # Number of items to keep in active log
+        try:
+            log_text = self.log_page.get()
+        except wikipedia.NoPage:
+            log_text = u""
+        log_items = {}
+        header = None
+        for line in log_text.splitlines():
+            import locale
+            try:
+                lang = self.date_locale[self.site.family.name][self.site.lang]
+            except KeyError:
+                lang = self.site.lang
+            locale.setlocale(locale.LC_TIME, lang)
+            if line.startswith("==") and line.endswith("=="):
+                header = datetime.strptime(
+                             line[2:-2].strip(),
+                             self.date_format[self.site.family.name]
+                                             [self.site.lang]
+                         )
+            if header is not None:
+                log_items.setdefault(header, [])
+                log_items[header].append(line)
+        if len(log_items) < LOG_SIZE:
+            return log_text
+        # sort by keys and keep the first (LOG_SIZE-1) values
+        keep = [text for (key, text)
+                     in sorted(log_items.items(), reverse=True)[ : LOG_SIZE-1]]
+        log_text = "\n".join("\n".join(line for line in text) for text in keep)
+        # get permalink to older logs
+        history = self.log_page.getVersionHistory(revCount=LOG_SIZE)
+        # get the id of the newest log being archived
+        rotate_revid = history[-1][0]
+        # append permalink
+        log_text = log_text + (
+            "\n\n'''[%s://%s%s/index.php?title=%s&oldid=%s Older logs]'''"
+                % (self.site.protocol(),
+                   self.site.hostname(),
+                   self.site.scriptpath(),
+                   self.log_page.urlname(),
+                   rotate_revid))
+        return log_text
+
     def run(self):
         """Run the bot"""
         user = self.site.loggedInAs()
@@ -316,14 +386,12 @@ category links:
 
         l = time.localtime()
         today = "%04d-%02d-%02d" % l[:3]
-        log_page = wikipedia.Page(self.site,
-                        u"User:%(user)s/category redirect log" % locals())
         problem_page = wikipedia.Page(self.site,
-                        u"User:%(user)s/category redirect problems" % locals())
+                       u"User:%(user)s/category redirect problems" % locals())
         edit_request_page = wikipedia.Page(self.site,
-                        u"User:%(user)s/category edit requests" % locals())
+                            u"User:%(user)s/category edit requests" % locals())
         datafile = wikipedia.config.datafilepath(
-                        "%s-catmovebot-data" % self.site.dbName())
+                   "%s-catmovebot-data" % self.site.dbName())
         try:
             inp = open(datafile, "rb")
             record = cPickle.load(inp)
@@ -558,11 +626,8 @@ category links:
 
         wikipedia.setAction(wikipedia.translate(self.site.lang,
                                                 self.maint_comment))
-        try:
-            log_text = log_page.get()
-        except wikipedia.NoPage:
-            log_text = u""
-        log_page.put(log_text + u"\n==~~~~~==\n"+ u"\n".join(self.log_text))
+        log_page.put(u"\n==~~~~~==\n" + u"\n".join(self.log_text) + "\n"
+                     + self.get_log_text())
         problem_page.put("\n".join(problems))
         if self.edit_requests:
             edit_request_page.put(self.edit_request_text
