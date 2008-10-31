@@ -626,7 +626,7 @@ category links:
 
         wikipedia.setAction(wikipedia.translate(self.site.lang,
                                                 self.maint_comment))
-        log_page.put(u"\n==~~~~~==\n" + u"\n".join(self.log_text) + "\n"
+        self.log_page.put(u"\n==~~~~~==\n" + u"\n".join(self.log_text) + "\n"
                      + self.get_log_text())
         problem_page.put("\n".join(problems))
         if self.edit_requests:
