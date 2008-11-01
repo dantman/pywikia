@@ -2933,6 +2933,7 @@ class Family:
         'kk': [u'айдау'],
         'ko': [u'넘겨주기'],
         'mzn': [u'تغییرمسیر'],
+        'nl': [u'DOORVERWIJZING'],
         'nn': [u'omdiriger'],
         'ru': [u'REDIRECT', u'перенаправление', u'перенапр'], # localised version is not
                                                               # so usual, so put the default
