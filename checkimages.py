@@ -1153,7 +1153,7 @@ class main:
         self.hiddentemplates = self.loadHiddenTemplates()      
         self.licenses_found = self.image.getTemplates()
         self.whiteTemplatesFound = False
-        regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]*?)[|\n<}]', re.DOTALL)
+        regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)[|\n<}]', re.DOTALL)
         templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
         self.allLicenses = list()
         if self.list_licenses == []:
@@ -1168,7 +1168,16 @@ class main:
         if self.licenses_found != []:
             self.templateInList()
             if self.license_found == None and self.allLicenses != list():
-                self.license_found = self.license_selected
+                iterLicenses = self.allLicenses
+                for template in iterLicenses:
+                    try:
+                        template.pageAPInfo()
+                    except wikipedia.IsRedirectPage:
+                        template = template.getRedirectTarget()
+                    except wikipedia.NoPage:
+                        self.allLicenses.remove(template)
+                if self.allLicenses != list():      
+                    self.license_found = self.allLicenses[0].title()
         if not self.seems_ok and self.license_found != None:
             rep_text_license_fake = u"\n*[[:Image:%s]] seems to have " % self.imageName + \
                     "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
