@@ -85,6 +85,7 @@ class CategoryRedirectBot(object):
                             u'Catredirect',
                             u'Cat redirect',
                             u'CatRed',
+                            u'Cat-red',
                             u'Catredir',
                             u'Redirect category',),
                 }
@@ -508,18 +509,19 @@ category links:
         for cat in pagegenerators.PreloadingGenerator(catpages, 120):
             cat_title = cat.titleWithoutNamespace()
             if "category redirect" in cat_title:
-                self.log_text.append(u"* Ignoring %s%s"
+                self.log_text.append(u"* Ignoring [[:%s%s]]"
                                       % (self.catprefix, cat_title))
                 continue
             try:
                 text = cat.get(get_redirect=True)
             except wikipedia.Error:
-                self.log_text.append(u"* Could not load %s%s; ignoring"
+                self.log_text.append(u"* Could not load [[:%s%s]]; ignoring"
                                       % (self.catprefix, cat_title))
                 continue
             match = template_regex.search(text)
             if match is None:
-                self.log_text.append(u"* False positive: %s" % cat_title)
+                self.log_text.append(u"* False positive: [[:%s:%s]]"
+                                      % (self.catprefix, cat_title))
                 continue
             if cat_title not in record:
                 # make sure every redirect has a record entry
