@@ -371,6 +371,7 @@ class Family(family.Family):
             'yi': u'פארטאל',
             'zh': u'Portal',
             'zh-classical': u'門',
+            'zh-min-nan': u'Portal',
             'zh-yue': u'Portal',
         }
 
@@ -443,6 +444,7 @@ class Family(family.Family):
             'yi': u'פארטאל רעדן',
             'zh': u'Portal talk',
             'zh-classical': u'議',
+            'zh-min-nam': u'Portal talk',
             'zh-yue': u'Portal talk',
         }
 
