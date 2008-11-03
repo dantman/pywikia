@@ -840,6 +840,20 @@ class Subject(object):
                         otherpage = [p for p in self.done if p.site() == page.site() and p != page and p.exists() and not p.isRedirectPage()][0]
                         wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
                         self.makeForcedStop(counter)
+                        try:
+                            f = codecs.open(
+                                    wikipedia.config.datafilepath('autonomous_problems.dat'),
+                                    'a', 'utf-8')
+                            f.write("* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
+                            if config.interwiki_graph and config.interwiki_graph_url:
+                                filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
+                                f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
+                            f.write("\n")
+                            f.close()
+                        except:
+                           #raise
+                           wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
+                           sys.exit()
                         iw = ()
                     elif page.isEmpty() and not page.isCategory():
                         wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
@@ -881,21 +895,6 @@ class Subject(object):
         self.confirm = True
         if createneed:
             self.problemfound = True
-        if globalvar.autonomous:
-            try:
-                f = codecs.open(
-                        wikipedia.config.datafilepath('autonomous_problem.dat'),
-                        'a', 'utf-8')
-                f.write("* %s {%s}" % (self.originPage.aslink(True), txt))
-                if config.interwiki_graph and config.interwiki_graph_url:
-                    filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
-                    f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
-                f.write("\n")
-                f.close()
-            except:
-               #raise
-               wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
-               sys.exit()
 
     def whereReport(self, page, indent=4):
         for page2 in sorted(self.foundIn[page]):
@@ -1012,7 +1011,7 @@ class Subject(object):
         if not self.isDone():
             raise "Bugcheck: finish called before done"
         if self.forcedStop:
-            wikipedia.output("Stopping work on %s."%self.originPage)
+            wikipedia.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
         if self.originPage.isRedirectPage():
             return
@@ -1197,16 +1196,8 @@ class Subject(object):
                 # Determine whether we need permission to submit
                 ask = False
                 if removing and removing != [page]:   # Allow for special case of a self-pointing interwiki link
-                    ##########
-                    # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
-                    # where useless bot-created articles were mass-deleted. See for example:
-                    # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
-                    if len(removing) == 1 and removing[0].site() == wikipedia.getSite('lmo', 'wikipedia'):
-                        wikipedia.output('Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % removing[0].aslink())
-                    else:
-                    ##########
-                        self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
-                        ask = True
+                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
+                    ask = True
                 if globalvar.force:
                     ask = False
                 if globalvar.confirm:
