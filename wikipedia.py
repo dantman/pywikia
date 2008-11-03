@@ -792,7 +792,7 @@ not supported by PyWikipediaBot!"""
             # another form
             RversionTab = re.compile(self.site().family.RversionTab(self.site().language()))
         else:
-            RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>')
+            RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>', re.DOTALL)
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
             raise NoPage(self.site(), self.aslink(forceInterwiki = True))
@@ -5264,13 +5264,18 @@ your connection is down. Retrying in %i minutes..."""
         while True:
             api_url = self.api_address()
             startEncoded = urllib.quote(start.encode(self.encoding()))
-            api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, config.special_page_limit, namespace)
+            api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, 10, namespace)
+            #api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, config.special_page_limit, namespace)
             # TODO: support includeredirects="only" like in the old method
             if not includeredirects:
                 api_url += '&apfilterredir=nonredirects'
 
             if throttle:
                 get_throttle()
+            f = codecs.open('url.txt', 'w', 'utf-8')
+            f.write(api_url)
+            f.close()
+            output(api_url)
             text = self.getUrl(api_url)
 
             soup = BeautifulSoup(text,
