@@ -843,7 +843,7 @@ class main:
         """ Checking if the image is on commons """
         wikipedia.output(u'Checking if %s is on commons...' % self.imageName)
         commons_site = wikipedia.getSite('commons', 'commons')
-        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\](?: \(same name\)|)$" % self.imageName
+        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\](?: \(same name\)|)$" % re.escape(self.imageName)
         imagePage = wikipedia.ImagePage(self.site, u'Image:%s' % self.imageName)
         hash_found = imagePage.getHash()
         if hash_found == None:
