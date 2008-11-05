@@ -9,9 +9,9 @@ class Family(family.Family):
         self.name = 'anarchopedia'
 
         langs = [
-            'ara', 'bos', 'chi', 'dan', 'deu', 'dut', 'ell', 'eng', 'epo', 'fra',
-            'ind', 'ita', 'jpn', 'lit', 'nno', 'nsh', 'nor', 'pol', 'por', 'rum',
-            'rus', 'spa', 'srp', 'swe',
+            'ara', 'bos', 'dan', 'deu', 'dut', 'ell', 'eng', 'epo', 'fra',
+            'hye', 'ind', 'ita', 'jpn', 'kor', 'lit', 'nsh', 'nor', 'pol', 
+            'por', 'rum', 'rus', 'spa', 'sqi', 'srp', 'swe', 'tur', 'zho',
         ]
         for lang in langs:
             self.langs[lang] = '%s.anarchopedia.org' % lang
@@ -19,7 +19,6 @@ class Family(family.Family):
         interface_lang = {
             'ara': 'ar',
             'bos': 'sr',
-            'chi': 'zh',
             'dan': 'da',
             'deu': 'de',
             'dut': 'nl',
@@ -28,11 +27,12 @@ class Family(family.Family):
             'epo': 'en',
             'fra': 'fr',
             'hrv': 'sr',
+            'hye': 'hy',
             'ind': 'id',
             'ita': 'it',
             'jpn': 'ja',
+            'kor': 'ko',
             'lit': 'lit',
-            'nno': 'nn',
             'nor': 'no',
             'nsh': 'sr',
             'pol': 'pl',
@@ -40,8 +40,11 @@ class Family(family.Family):
             'rum': 'ro',
             'rus': 'ru',
             'spa': 'es',
+            'sqi': 'sq',
             'srp': 'sr',
             'swe': 'sv',
+            'tur': 'tr',
+            'zho': 'zh',
         }
         copy = [-2, -1, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         for code, interface in interface_lang.items():
@@ -52,16 +55,24 @@ class Family(family.Family):
         self.namespaces[4] = {
             '_default': [u'Anarchopedia', self.namespaces[4]['_default']],
             'ara': u'أنارشوبيديا',
-            'chi': u'安那其百科',
             'ell': u'Αναρχοπαίδεια',
             'jpn': u'アナーキォペディア',
             'rum': u'Anarhopedia',
+            'zho': u'安那其百科',
+            'kor': u'아나코백과',
+            'srp': u'Anarhopedija-Анархопедија',
+            'epo': u'Anarĥopedio',
+            'rus': u'Анархопедия',
+            'hye': u'Անարխոպեդիա',
+            'ita': u'Anarcopedia',
+            'por': u'Anarcopédia ',
+            'tur': u'Anarşipedi ',
         }
         self.namespaces[5] = {
             '_default': [u'Anarchopedia talk', self.namespaces[5]['_default']],
             'ara': u'نقاش أنارشوبيديا',
             'bos': u'Разговор о Anarchopedia',
-            'chi': u'安那其百科 talk',
+            'zho': u'安那其百科 talk',
             'dan': u'Anarchopedia-diskussion',
             'deu': u'Anarchopedia Diskussion',
             'dut': u'Overleg Anarchopedia',
@@ -70,7 +81,6 @@ class Family(family.Family):
             'ind': u'Pembicaraan Anarchopedia',
             'ita': u'Discussioni Anarchopedia',
             'jpn': u'アナーキォペディア‐ノート',
-            'nno': u'Anarchopedia-diskusjon',
             'nsh': u'Разговор о Anarchopedia',
             'nor': u'Anarchopedia-diskusjon',
             'pol': u'Dyskusja Anarchopedia',
@@ -87,10 +97,10 @@ class Family(family.Family):
         self.obsolete = {
             'ar': 'ara',
             'bs': 'bos',
-            'zh': 'chi',
+            'zh': 'zho',
             'da': 'dan',
             'de': 'deu',
-            'ger': 'deu',
+            'deu': 'deu',
             'nl': 'dut',
             'el': 'ell',
             'gre': 'ell',
@@ -102,7 +112,6 @@ class Family(family.Family):
             'ja': 'jpn',
             'lt': 'lit',
             'no': 'nor',
-            'nn': 'nno',
             'sh': 'nsh',
             'pl': 'pol',
             'pt': 'por',
@@ -113,10 +122,20 @@ class Family(family.Family):
             'hrv': 'srp',
             'hr': 'srp',
             'sv': 'swe',
+            'nno': None,
+            'nob': None,
+            'ko': 'kor',
+            'sq': 'sqi',
+            'hy': 'hye',
+            'tr': 'tur'
         }
 
     def version(self, code):
-        return "1.12alpha"
+        return "1.14alpha"
 
     def scriptpath(self, code):
         return ''
+
+    def api_address(self, code):
+        raise NotImplementedError('Anarchopedia has not activated the API')
+        
