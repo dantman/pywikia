@@ -289,7 +289,7 @@ def getCheckCategoriesTemplate(usage, galleries):
     
     galleryCounter = 1
     for gallery in galleries:
-        result = result + u'|gallery' + str(galleryCounter) + u'=' + gallery + u'\n'
+        result = result + u'|gallery' + str(galleryCounter) + u'=' + gallery.replace('_', ' ') + u'\n'
         galleryCounter = galleryCounter + 1
 
     result = result + u'}}\n'
