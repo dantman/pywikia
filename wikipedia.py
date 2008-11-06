@@ -4379,6 +4379,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 url = self.protocol() + '://' + self.hostname() + self.captcha_image_address(id)
                 answer = ui.askForCaptcha(url)
             return {'id':id, 'answer':answer}
+        Recaptcha = re.compile('<script type="text/javascript" src="http://api\.recaptcha\.net/[^"]*"></script>')
+        if Recaptcha.search(data):
+            raise wikipedia.CaptchaError('We have been prompted for a ReCaptcha, but pywikipedia does not yet support ReCaptchas')
         return None
 
     def postForm(self, address, predata, sysop=False, cookies = None):
