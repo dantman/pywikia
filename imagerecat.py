@@ -53,13 +53,13 @@ def categorizeImages(generator, onlyfilter):
             if(onlyfilter):
                 commonshelperCats = []
             else:
-                commonshelperCats = getCommonshelperCats(imagepage)
+                (commonshelperCats, usage, galleries) = getCommonshelperCats(imagepage)
             newcats = applyAllFilters(commonshelperCats+currentCats)
 
             if (len(newcats) > 0 and not(set(currentCats)==set(newcats))):
                 for cat in newcats:
                     wikipedia.output(u' Found new cat: ' + cat);
-                saveImagePage(imagepage, newcats, onlyfilter)
+                saveImagePage(imagepage, newcats, usage, galleries, onlyfilter)
 
 
 def getCurrentCats(imagepage):
@@ -76,9 +76,12 @@ def getCommonshelperCats(imagepage):
     '''
     Get category suggestions from CommonSense. Parse them and return a list of suggestions.
     '''
-    result = []
+    commonshelperCats = []
+    usage = []
+    galleries = []
+    
     parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'cl' : 'li'})
-    commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usage>(\d)+)\)(.*)#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)(.*)#EOF$', re.MULTILINE + re.DOTALL)
+    commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usagenum>(\d)+)\)\s(?P<usage>(.*))\s#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)\s(?P<gals>(.*))\s(.*)#EOF$', re.MULTILINE + re.DOTALL)
 
     gotInfo = False;
 
@@ -93,13 +96,51 @@ def getCommonshelperCats(imagepage):
             wikipedia.output(u'Got a timeout, let\'s try again')
 
     if matches:
+        if(matches.group('usagenum') > 0):
+            used = matches.group('usage').splitlines()
+            for use in used:
+                usage= usage + getUsage(use)
+                #wikipedia.output(use)
         if(matches.group('catnum') > 0):
-            categories = matches.group('cats').splitlines()
-            for cat in categories:
-                result.append(cat.replace('_',' '))
+            cats = matches.group('cats').splitlines()
+            for cat in cats:
+                commonshelperCats.append(cat.replace('_',' '))
+                wikipedia.output(u'category : ' + cat)
+        if(matches.group('galnum') > 0):
+            gals = matches.group('gals').splitlines()
+            for gal in gals:
+                galleries.append(gal.replace('_',' '))
+                wikipedia.output(u'gallery : ' + gal)
+    commonshelperCats = list(set(commonshelperCats))
+    galleries = list(set(galleries))
+    for (lang, project, article) in usage:
+        wikipedia.output(lang + project + article)
+        
+    return (commonshelperCats, usage, galleries)
 
-    return list(set(result))
+def getUsage(use):
+    result = []
+    lang = ''
+    project = ''
+    article = ''
+    usageRe = re.compile('^(?P<lang>([\w]+))\.(?P<project>([\w]+))\.org:(?P<articles>\s(.*))')
+    matches = usageRe.search(use)
+    if matches:
+        if(matches.group('lang')):
+            lang = matches.group('lang')
+            #wikipedia.output(lang)
+        if(matches.group('project')):
+            project = matches.group('project')
+            #wikipedia.output(project)
+        if(matches.group('articles')):
+            articles = matches.group('articles')
+            #wikipedia.output(articles)
+    for article in articles.split():
+        result.append((lang, project, article))
 
+    return result
+    
+                         
 
 def applyAllFilters(categories):
     result = []
@@ -203,7 +244,7 @@ def filterParents(categories):
     return result
 
 
-def saveImagePage(imagepage, newcats, onlyfilter):
+def saveImagePage(imagepage, newcats, usage, galleries, onlyfilter):
     '''
     Remove the old categories and add the new categories to the image.
     '''
@@ -211,7 +252,7 @@ def saveImagePage(imagepage, newcats, onlyfilter):
 
     if not(onlyfilter):
         newtext = removeTemplates(newtext)
-        newtext = newtext + u'{{subst:chc}}\n'
+        newtext = newtext + getCheckCategoriesTemplate(usage, galleries)
     for category in newcats:
         newtext = newtext + u'[[Category:' + category + u']]\n'
 
@@ -234,6 +275,25 @@ def removeTemplates(oldtext = u''):
     result = re.sub(u'<!-- Remove this line once you have added categories -->', u'', result)
     result = re.sub(u'\{\{\s*[Cc]heck categories[^}]*\}\}', u'', result)
     return result
+
+def getCheckCategoriesTemplate(usage, galleries):
+    result = u'{{Check categories|year={{subst:CURRENTYEAR}}|month={{subst:CURRENTMONTHNAME}}|day={{subst:CURRENTDAY}}\n'
+
+    usageCounter = 1
+    for (lang, project, article) in usage:
+        result = result + u'|lang' + str(usageCounter) + u'=' + lang
+        result = result + u'|wiki' + str(usageCounter) + u'=' + project
+        result = result + u'|article' + str(usageCounter) + u'=' + article
+        result = result + u'\n'
+        usageCounter = usageCounter + 1
+    
+    galleryCounter = 1
+    for gallery in galleries:
+        result = result + u'|gallery' + str(galleryCounter) + u'=' + gallery + u'\n'
+        galleryCounter = galleryCounter + 1
+
+    result = result + u'}}\n'
+    return result    
 
 
 def main(args):
