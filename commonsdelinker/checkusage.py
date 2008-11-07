@@ -351,7 +351,11 @@ class CheckUsage(object):
 			
 		usages = res['query'].get('imageusage')
 		if not usages: return
-			
+		
+		# Apparently this someday changed from dict to list?
+		if type(usages) is dict:
+			uages = usages.values()
+		
 		for usage in usages.itervalues():
 			title = usage['title'].replace(' ', '_')
 			namespace = usage['ns']
