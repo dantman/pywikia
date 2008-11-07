@@ -351,10 +351,10 @@ class Delinker(threadpool.Thread):
 		if replacement:
 			tlp = tlp.replace('$2', replacement)
 			tlp = tlp.replace('$3', unicode(admin))
-			tlp = tlp.replace('$4', unicode(reason).replace('[[', '[[w:commons:'))
+			tlp = tlp.replace('$4', unicode(reason).replace('[[', '[[commons:'))
 		else:
 			tlp = tlp.replace('$2', unicode(admin))
-			tlp = tlp.replace('$3', reason.replace('[[', '[[w:commons:'))
+			tlp = tlp.replace('$3', reason.replace('[[', '[[commons:'))
 		
 		return tlp
 		
