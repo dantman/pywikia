@@ -354,9 +354,9 @@ class CheckUsage(object):
 		
 		# Apparently this someday changed from dict to list?
 		if type(usages) is dict:
-			uages = usages.values()
+			usages = usages.values()
 		
-		for usage in usages.itervalues():
+		for usage in usages:
 			title = usage['title'].replace(' ', '_')
 			namespace = usage['ns']
 			if namespace != 0:
