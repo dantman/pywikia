@@ -247,6 +247,19 @@ class Delinker(threadpool.Thread):
 						# Found the end of the image
 						break
 				
+				# Check whether this image is the first one on the line
+				if image_start == 0:
+					prev = ''
+				else:
+					prev = new_text[image_start - 1]
+				if prev in ('', '\r', '\n') and replacement is None:
+					# Kill all spaces after end
+					while (end + 1) < len(new_text):
+						if new_text[end + 1] in (' ', '\t'):
+							end += 1
+						else:
+							break
+				
 				# Add the replacement to the todo list. Doing the
 				# replacement right know would alter the indices.
 				replacements.append((new_text[image_start:end],
