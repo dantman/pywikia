@@ -496,25 +496,32 @@ class EmailSender(wikipedia.Page):
             wikipedia.output(u'No data found.')
             return False
 
-def categoryAllElements(CatName):
+def categoryAllElements(CatName, cmlimit = 5000):
     #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
     """
     Category to load all the elements in a category. Limit: 5000 elements.
     """
     wikipedia.output("Loading %s..." % CatName)
+    
     params = {
         'action'    :'query',
         'list'      :'categorymembers',
-        'cmlimit'   :'5000',
+        'cmlimit'   :cmlimit,
         'cmtitle'   :CatName,
         }
 
     data = query.GetData(params,
                     useAPI = True, encodeTitle = False)
-    
-    members = data['query']['categorymembers']
-    if len(members) == 5000:
-        raise wikipedia.Error(u'The category selected as >= 5.000 elements, limit reached.')
+    try:
+        members = data['query']['categorymembers']
+    except KeyError:
+        if int(cmlimit) != 500:
+            wikipedia.output(u'An Error occured, trying to reload the category.')
+            return categoryAllElements(CatName, cmlimit = 500)
+        else:
+            raise wikipedia.Error(data)
+    if len(members) == int(cmlimit):
+        raise wikipedia.Error(u'The category selected as >= %s elements, limit reached.' % cmlimit)
     allmembers = members
     results = list()
     for subcat in members:
@@ -562,7 +569,10 @@ class main:
         project = wikipedia.getSite().family.name
         self.project = project
         bot = config.usernames[project]
-        botnick = bot[self.site.lang]
+        try:
+            botnick = bot[self.site.lang]
+        except KeyError:
+            raise wikipedia.NoUsername(u"You have to specify an username for your bot in this project in the user-config.py file.")
         self.botnick = botnick
         botolist.append(botnick)
         self.botolist = botolist
