@@ -913,7 +913,7 @@ not supported by PyWikipediaBot!"""
             x = self.get()                
             return True # if we reach this point, we had no problems.
 
-    def getTemplates(self):
+    def getTemplates(self, tllimit = 5000):
         #action=query&prop=templates&titles=Main Page
         """
         Returns the templates that are used in the page given.
@@ -929,12 +929,18 @@ not supported by PyWikipediaBot!"""
             'action'    :'query',
             'prop'      :'templates',
             'titles'    :self.title(),
-            'tllimit'   :5000
+            'tllimit'   :tllimit,
             }
 
         data = query.GetData(params,
                         useAPI = True, encodeTitle = False)
-        pageid = data['query']['pages'].keys()[0]
+        try:
+            pageid = data['query']['pages'].keys()[0]
+        except KeyError:
+            if tllimit != 500:
+                return self.getTemplates(500)
+            else:
+                raise Error(data)
         try:
             templates = data['query']['pages'][pageid]['templates']
         except KeyError:
