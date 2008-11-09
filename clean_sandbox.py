@@ -28,11 +28,11 @@ content = {
     'ar': u'{{من فضلك اترك هذا السطر ولا تعدله (عنوان ساحة التجربة)}}\n<!-- مرحبا! خذ راحتك في تجربة مهارتك في التنسيق والتحرير أسفل هذا السطر. هذه الصفحة لتجارب التعديل ، سيتم تفريغ هذه الصفحة كل 6 ساعات. -->',
     'da': u'{{subst:Sandkasse tekst}}',
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
-    'en': u'{{Please leave this line alone (sandbox heading)}}\n <!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
+    'en': u'{{Please leave this line alone (sandbox heading)}}\n<!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
     'fi': u'{{subst:Hiekka}}',
     'he': u'{{ארגז חול}}\n<!-- נא לערוך מתחת לשורה זו בלבד, תודה. -->',
     'id': u'{{Bakpasir}}\n<!-- Uji coba dilakukan di baris di bawah ini -->',
-    'it': u'{{sandbox}}  <!-- Scrivi SOTTO questa riga senza cancellarla. Grazie. -->',
+    'it': u'{{sandbox}}<!-- Scrivi SOTTO questa riga senza cancellarla. Grazie. -->',
     'ja': u'{{subst:サンドボックス}}',
     'ko': u'{{연습장 안내문}}',
     'nl': u'{{subst:Wikipedia:Zandbak/schoon zand}}',
@@ -43,7 +43,7 @@ content = {
     'commons': u'{{Sandbox}}\n<!-- Please edit only below this line. -->',
     'sr': u'{{песак}}\n<!-- Молимо, испробавајте испод ове линије. Хвала. -->',
     'sv': u'{{subst:Sandlådan}}',
-    'th': u'{{กระบะทราย}} \n<!-- กรุณาอย่าแก้ไขบรรทัดนี้ ขอบคุณครับ/ค่ะ -- Please leave this line as they are. Thank you! -->',
+    'th': u'{{กระบะทราย}}\n<!-- กรุณาอย่าแก้ไขบรรทัดนี้ ขอบคุณครับ/ค่ะ -- Please leave this line as they are. Thank you! -->',
     'zh': u'{{subst:User:Sz-iwbot/sandbox}}\r\n',
     }
 
