@@ -2183,7 +2183,7 @@ not supported by PyWikipediaBot!"""
         return users
 
     def move(self, newtitle, reason=None, movetalkpage=True, sysop=False,
-             throttle=True, deleteAndMove=False, safe=True, fixredirects=True):
+             throttle=True, deleteAndMove=False, safe=True, fixredirects=True, leaveRedirect=True):
         """Move this page to new title given by newtitle. If safe, don't try
         to move and delete if not directly requested.
 
@@ -2226,6 +2226,10 @@ not supported by PyWikipediaBot!"""
                 predata['wpFixRedirects'] = '1'
             else:
                 predata['wpFixRedirects'] = '0'
+        if leaveRedirect:
+            predata['wpLeaveRedirect'] = '1'
+        else:
+            predata['wpLeaveRedirect'] = '0'
         if token:
             predata['wpEditToken'] = token
         if self.site().hostname() in config.authenticate.keys():
