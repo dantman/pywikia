@@ -461,8 +461,7 @@ not supported by PyWikipediaBot!"""
             self._permalink = None
             self._userName = None
             self._ipedit = None
-            self._editTime = '0'
-            self._startTime = '0'
+            self._editTime = None
             # For the Flagged Revisions MediaWiki extension
             self._revisionId = None
             self._deletedRevs = None
