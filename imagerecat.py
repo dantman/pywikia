@@ -234,11 +234,14 @@ def filterParents(categories):
         toFilter = toFilter + "[[Category:" + cat + "]]\n"
     #try:
     parameters = urllib.urlencode({'source' : toFilter.encode('utf-8'), 'bot' : '1'})
-    filterCategoriesPage = urllib.urlopen("http://toolserver.org/~multichill/filtercats.php?%s" % parameters)
-    #print filterCategoriesPage.read().decode('utf-8')
     filterCategoriesRe = re.compile('\[\[Category:([^\]]*)\]\]')
-    result = filterCategoriesRe.findall(filterCategoriesPage.read().decode('utf-8'))
-    #except:
+    try:
+        filterCategoriesPage = urllib.urlopen("http://toolserver.org/~multichill/filtercats.php?%s" % parameters)
+        result = filterCategoriesRe.findall(filterCategoriesPage.read().decode('utf-8'))
+    except IOError:
+        #Something is wrong, forget about this filter and just return the input
+        return categories
+        
     if not result:
         #Is empty, dont want to remove all categories
         return categories
