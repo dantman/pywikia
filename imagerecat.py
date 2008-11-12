@@ -158,6 +158,7 @@ def filterBlacklist(categories):
     '''
     result = []
     for cat in categories:
+        cat = cat.replace('_', ' ')
         if (cat not in category_blacklist):
             result.append(cat)
     return list(set(result))
