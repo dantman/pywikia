@@ -222,7 +222,7 @@ def main():
         index_page = wikipedia.Page(site, index)
 
         if site.family.name != 'wikisource':
-	    raise wikipedia.PageNotFound("Found family '%s'; Wikisource required.")
+	    raise wikipedia.PageNotFound(u"Found family '%s'; Wikisource required." % site.family.name)
 
         if not index_page.exists() and index_page.namespace() == 0:
             index_namespace = wikipedia.Page(site, 'MediaWiki:Proofreadpage index namespace').get()
@@ -233,7 +233,7 @@ def main():
         if not index_page.exists():
             raise wikipedia.NoPage("Page '%s' does not exist" % index)
 
-        wikipedia.output("uploading text from %s to %s" % (djvu, index_page) )
+        wikipedia.output(u"uploading text from %s to %s" % (djvu, index_page) )
 
         bot = DjVuTextBot(djvu, index, pages)
 	if not bot.has_text():
