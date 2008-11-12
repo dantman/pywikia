@@ -461,7 +461,8 @@ not supported by PyWikipediaBot!"""
             self._permalink = None
             self._userName = None
             self._ipedit = None
-            self._editTime = None
+            self._editTime = '0'
+            self._startTime = '0'
             # For the Flagged Revisions MediaWiki extension
             self._revisionId = None
             self._deletedRevs = None
@@ -1416,8 +1417,14 @@ not supported by PyWikipediaBot!"""
         # <s>Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions</s>
         # As of Oct 2008, these must be filled also for new pages
-        predata['wpEdittime'] = self._editTime
-        predata['wpStarttime'] = self._startTime
+        if self._editTime:
+            predata['wpEdittime'] = self._editTime
+        else:
+            predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+        if self._startTime:
+            predata['wpStarttime'] = self._startTime  
+        else:
+            predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
         if self._revisionId:
             predata['baseRevId'] = self._revisionId
         # Pass the minorEdit and watchArticle arguments to the Wiki.
@@ -1527,8 +1534,14 @@ not supported by PyWikipediaBot!"""
                 # without any reason!
                 # raise EditConflict(u'Someone deleted the page.')
                 # No raise, simply define these variables and retry:
-                predata['wpEdittime'] = self._editTime
-                predata['wpStarttime'] = self._startTime
+                if self._editTime:
+                    predata['wpEdittime'] = self._editTime
+                else:
+                    predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                if self._startTime:
+                    predata['wpStarttime'] = self._startTime  
+                else:
+                    predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
                 continue
             if self.site().has_mediawiki_message("viewsource")\
                     and self.site().mediawiki_message('viewsource') in data:
