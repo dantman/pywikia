@@ -20,7 +20,7 @@ and the bot will only work on that single page.
 """
 __version__ = '$Id$'
 import wikipedia
-import os
+import os, sys
 import config, codecs
 
 # This is required for the text that is shown when you run this script
@@ -89,8 +89,8 @@ class DjVuTextBot:
         self.prefix = linkingPage.titleWithoutNamespace()
         if self.prefix[0:6] == 'Liber:':
             self.prefix = self.prefix[6:]
-            wikipedia.output(u"Using prefix %s" % self.prefix)
-            gen = self.PagesGenerator()
+        wikipedia.output(u"Using prefix %s" % self.prefix)
+        gen = self.PagesGenerator()
     
         site = wikipedia.getSite()
         self.username = config.usernames[site.family.name][site.lang]
@@ -100,8 +100,8 @@ class DjVuTextBot:
             self.treat(pageno)
 
     def has_text(self):
-        cmd = "djvudump \"%s\" > \"%s\".out" % (self.djvu, self.djvu)
-        os.system ( cmd )
+        cmd = u"djvudump \"%s\" > \"%s\".out" % (self.djvu, self.djvu)
+        os.system ( cmd.encode(sys.stdout.encoding) )
 
         f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
 
@@ -112,7 +112,7 @@ class DjVuTextBot:
     def get_page(self, pageno):
         wikipedia.output(unicode("fetching page %d" % (pageno)))
         cmd = "djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
-        os.system ( cmd )
+        os.system ( cmd.encode(sys.stdout.encoding) )
 
         f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
 
