@@ -59,8 +59,8 @@ class DjVuTextBot:
         self.ask = ask
 
     def NoOfImages(self):
-        cmd = "djvused -e 'n' \"%s\"" % (self.djvu)
-        count = os.popen( cmd ).readline().rstrip()
+        cmd = u"djvused -e 'n' \"%s\"" % (self.djvu)
+        count = os.popen( cmd.encode(sys.stdout.encoding) ).readline().rstrip()
         count = int(count)
         wikipedia.output("page count = %d" % count)
         return count
@@ -103,7 +103,7 @@ class DjVuTextBot:
         cmd = u"djvudump \"%s\" > \"%s\".out" % (self.djvu, self.djvu)
         os.system ( cmd.encode(sys.stdout.encoding) )
 
-        f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
+        f = codecs.open(u"%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
 
         s = f.read()
         f.close()
@@ -111,10 +111,10 @@ class DjVuTextBot:
        
     def get_page(self, pageno):
         wikipedia.output(unicode("fetching page %d" % (pageno)))
-        cmd = "djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
+        cmd = u"djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
         os.system ( cmd.encode(sys.stdout.encoding) )
 
-        f = codecs.open("%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
+        f = codecs.open(u"%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
 
         djvu_text = f.read()
         f.close()
