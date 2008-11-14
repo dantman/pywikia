@@ -645,7 +645,7 @@ class Family(family.Family):
             'th':  [u'แก้กำกวม', u'Disambig'],
             'tl':  [u'Paglilinaw', u'Disambig'],
             'tr':  [u'Anlam ayrım', u'Disambig', u'Anlam ayrımı'],
-            'uk':  [u'Неоднозначність',u'DisambigG', u'Disambig'],
+            'uk':  [u'Неоднозначність',u'DisambigG', u'Disambig', u'DisambigN'],
             'vec': [u'Disambigua'],
             'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig', u'Hndis'],
             'vls': [u'Db', u'Dp', u'Dpintro'],
