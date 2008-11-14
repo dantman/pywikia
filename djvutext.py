@@ -33,59 +33,53 @@ class DjVuTextBot:
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
         'en': u'Robot: creating page with text extracted from DjVu',
-		'ar': u'روبوت: إنشاء صفحة بنص مستخرج من DjVu',
-	    'fr': u'Bot: creating page with texte extracted from DjVu',
+        'ar': u'روبوت: إنشاء صفحة بنص مستخرج من DjVu',
+        'fr': u'Bot: creating page with texte extracted from DjVu',
         'pt': u'Bot: criando página com texto extraído do DjVu',
     }
     # On English Wikisource, {{blank page}} is used to track blank pages.
     # It may be omitted by adding an empty string like has been done for 'fr'.
     blank = {
         'en': u'{{blank page}}',
-	    'fr': u'',
+        'fr': u'',
         'pt': u'',
     }
 
-    def __init__(self, djvu, index, pages):
+    def __init__(self, djvu, index, pages, ask=False, debug=False):
         """
         Constructor. Parameters:
-	   djvu : filename
-	   index : page name
-	   pages : page range
+       djvu : filename
+       index : page name
+       pages : page range
         """
         self.djvu = djvu
         self.index = index
-	self.pages = pages
-	self.debug = False
-	self.ask = False
+        self.pages = pages
+        self.debug = debug
+        self.ask = ask
 
     def NoOfImages(self):
-	cmd = "djvused -e 'n' \"%s\"" % (self.djvu)
+        cmd = "djvused -e 'n' \"%s\"" % (self.djvu)
         count = os.popen( cmd ).readline().rstrip()
-	#count = count[:-1]
-	print "page count = %s" % count
-	count = int(count)
-	print "page count = %d" % count
-	return int(count)
+        count = int(count)
+        wikipedia.output("page count = %d" % count)
+        return count
 
     def PagesGenerator(self):
         start = 1
-	end = self.NoOfImages()
+        end = self.NoOfImages()
 
-	if self.pages:
-	    pos = self.pages.find('-')
-	    if pos != -1:
-	        start = self.pages[:pos]
-		if pos < len(self.pages)-1:
-		    end = self.pages[pos+1:]
-		    end = int(end)
-	    else:
-	        start = self.pages
-		end = int(start)
-	i = int(start)
-	print "processing pages %d-%d" % (i, end)
-	while i <= end:
-	   yield i
-	   i=i+1
+        if self.pages:
+            pos = self.pages.find('-')
+            if pos != -1:
+                start = int(self.pages[:pos])
+                if pos < len(self.pages)-1:
+                    end = int(self.pages[pos+1:])
+            else:
+                start = int(self.pages)
+                end = start
+        wikipedia.output(u"Processing pages %d-%d" % (start, end))
+        return range(start, end+1)
 
     def run(self):
         # Set the edit summary message
@@ -93,16 +87,16 @@ class DjVuTextBot:
 
         linkingPage = wikipedia.Page(wikipedia.getSite(), self.index)
         self.prefix = linkingPage.titleWithoutNamespace()
-	if self.prefix[0:6] == 'Liber:':
-	    self.prefix = self.prefix[6:]
-	    wikipedia.output("Using prefix %s" % self.prefix)
-        gen = self.PagesGenerator()
-
-	site = wikipedia.getSite()
+        if self.prefix[0:6] == 'Liber:':
+            self.prefix = self.prefix[6:]
+            wikipedia.output(u"Using prefix %s" % self.prefix)
+            gen = self.PagesGenerator()
+    
+        site = wikipedia.getSite()
         self.username = config.usernames[site.family.name][site.lang]
 
         for pageno in gen:
-	    wikipedia.output("Processing page %d" % pageno)
+            wikipedia.output("Processing page %d" % pageno)
             self.treat(pageno)
 
     def has_text(self):
@@ -113,14 +107,7 @@ class DjVuTextBot:
 
         s = f.read()
         f.close()
-
-        import string
-        blah = string.find(s, 'TXTz') # text layers are described with this value
-
-        if string.find(s, 'TXTz') >= 0:
-            return True
-        else:
-            return False
+        return s.find('TXTz') >= 0
        
     def get_page(self, pageno):
         wikipedia.output(unicode("fetching page %d" % (pageno)))
@@ -137,52 +124,55 @@ class DjVuTextBot:
         """
         Loads the given page, does some changes, and saves it.
         """
-	site = wikipedia.getSite()
-	page_namespace = site.family.namespaces[104][site.lang]
-	page = wikipedia.Page(site, '%s:%s/%d' % (page_namespace, self.prefix, pageno) )
-	exists = page.exists()
+        site = wikipedia.getSite()
+        page_namespace = site.family.namespaces[104][site.lang]
+        page = wikipedia.Page(site, u'%s:%s/%d' % (page_namespace, self.prefix, pageno) )
+        exists = page.exists()
 
         djvutxt = self.get_page(pageno)
 
         if not djvutxt:
-	    djvutxt = wikipedia.translate(wikipedia.getSite(), self.blank)
-	text = '<noinclude>{{PageQuality|1|%s}}<div class="pagetext">%s</noinclude>%s<noinclude><references/></div></noinclude>' % (self.username,"\n\n\n",djvutxt)
+            djvutxt = wikipedia.translate(wikipedia.getSite(), self.blank)
+        text = u'<noinclude>{{PageQuality|1|%s}}<div class="pagetext">\n\n\n</noinclude>%s<noinclude><references/></div></noinclude>' % (self.username,djvutxt)
 
         # convert to wikisyntax
         #   this adds a second line feed, which makes a new paragraph
-	text = text.replace('', "\n")
+        text = text.replace('', "\n")
 
         # only save if something was changed
         # automatically ask if overwriting an existing page
-        old_text = ''
+        
         ask = self.ask
         if exists:
-            ask = 'y'
+            ask = True
             old_text = page.get()
+            if old_text == text:
+                wikipedia.output(u"No changes were needed on %s" % page.aslink())
+                return
+        else:
+            old_text = ''
 
-        if not exists or text != old_text:
-            # Show the title of the page we're working on.
-            # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-            # show what was changed
-	    if exists:
-                wikipedia.showDiff(old_text, text)
-            else:
-	        wikipedia.output(text)
-            if not self.debug:
-	        choice = 'y'
-		if ask:
-                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
-                if choice == 'y':
-                    try:
-                        # Save the page
-                        page.put_async(text)
-                    except wikipedia.LockedPage:
-                        wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
-                    except wikipedia.EditConflict:
-                        wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                    except wikipedia.SpamfilterError, error:
-                        wikipedia.output(u'Cannot change %s because of spam blacklist entry %s' % (page.title(), error.url))
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+        wikipedia.showDiff(old_text, text)
+
+        if self.debug:
+            wikipedia.inputChoice(u'Debug mode... Press enter to continue', [], [], 'dummy')
+            return
+
+        if ask:
+            choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
+        else:
+            choice = 'y'
+        if choice == 'y':
+            try:
+                # Save the page
+                page.put_async(text)
+            except wikipedia.LockedPage:
+                wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
+            except wikipedia.EditConflict:
+                wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+            except wikipedia.SpamfilterError, error:
+                wikipedia.output(u'Cannot change %s because of spam blacklist entry %s' % (page.title(), error.url))
 
 
 def main():
@@ -199,15 +189,15 @@ def main():
         if arg.startswith("-debug"):
             debug = True
         elif arg.startswith("-ask"):
-	    ask = True
+            ask = True
         elif arg.startswith("-djvu:"):
-	    djvu = arg[6:]
-	elif arg.startswith("-index:"):
-	    index = arg[7:]
+            djvu = arg[6:]
+        elif arg.startswith("-index:"):
+            index = arg[7:]
         elif arg.startswith("-pages:"):
-	    pages = arg[7:]
+            pages = arg[7:]
         else:
-            print "Unknown argument %s" % arg
+            wikipedia.output(u"Unknown argument %s" % arg)
 
     # Check the djvu file exists
     if djvu:
@@ -222,7 +212,7 @@ def main():
         index_page = wikipedia.Page(site, index)
 
         if site.family.name != 'wikisource':
-	    raise wikipedia.PageNotFound(u"Found family '%s'; Wikisource required." % site.family.name)
+            raise wikipedia.PageNotFound(u"Found family '%s'; Wikisource required." % site.family.name)
 
         if not index_page.exists() and index_page.namespace() == 0:
             index_namespace = wikipedia.Page(site, 'MediaWiki:Proofreadpage index namespace').get()
@@ -231,15 +221,14 @@ def main():
                                         u"%s:%s" % (index_namespace, index))
 
         if not index_page.exists():
-            raise wikipedia.NoPage("Page '%s' does not exist" % index)
+            raise wikipedia.NoPage(u"Page '%s' does not exist" % index)
 
-        wikipedia.output(u"uploading text from %s to %s" % (djvu, index_page) )
+        wikipedia.output(u"uploading text from %s to %s" % (djvu, index_page.aslink()) )
 
-        bot = DjVuTextBot(djvu, index, pages)
-	if not bot.has_text():
+        bot = DjVuTextBot(djvu, index, pages, ask, debug)
+        if not bot.has_text():
             raise ValueError("No text layer in djvu file")
 
-        bot.ask = ask
         bot.run()
     else:
         wikipedia.showHelp()
