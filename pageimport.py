@@ -95,7 +95,7 @@ class Importer(wikipedia.Page):
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
                 wikipedia.output(u'Page imported, checking...')
-                if wikipedia.Page(self.importsite, target.decode('utf-8')).exists():
+                if wikipedia.Page(self.importsite, target).exists():
                     wikipedia.output(u'Import success!')
                     return True
                 else:
