@@ -419,10 +419,10 @@ def parselog(wsite, raw, talk, number, sul):
     # and i put them in a list (i find it more easy and secure).
 
     # XXX: That's the regex, if there are problems, take a look here.
-
     reg =  u'\(<a href=\"' + re.escape(wsite.path())
     reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % re.escape(talk)
-    reg += u'.*?\) (?P<reason>.*?) . </li>'
+    reg += u'.*?</span> (?P<reason>.*?) *?</li>'
+
     p = re.compile(reg, re.UNICODE)
 
     for x in p.finditer(raw):
