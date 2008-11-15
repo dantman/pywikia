@@ -276,11 +276,8 @@ class RedirectGenerator:
     # /w/index.php
     index = re.escape(wikipedia.getSite().path())
     move_regex = re.compile(
-        r'<li>.*?<a href="' + wiki + r'User:.*?>.*?</a> '
-        r'\(<a href="' + wiki + r'User_talk:.*?>Talk</a> \| '
-        r'<a href="' + wiki + r'Special:Contributions/.*?>contribs</a>\) '
-        r'moved <a href="' + index + r'?title=.*?>(.*?)</a> to '
-        r'<a href="' + index + r'.*?>.*?</a>.*?</li>' )
+        r'moved <a href.*?>(.*?)</a> to <a href=.*?>.*?</a>.*?</li>'
+        )
 
     def get_moved_pages_redirects(self):
         '''generate redirects to recently-moved pages'''
@@ -494,7 +491,7 @@ u"Unexpected error occurred trying to save [[%s]]: %s"
         elif self.action == 'broken':
             self.delete_broken_redirects()
 
-def main():
+def main(*args):
     # read command line parameters
     # what the bot should do (either resolve double redirs, or delete broken
     # redirs)
@@ -511,7 +508,7 @@ def main():
     offset = -1
     moved_pages = False
     always = False
-    for arg in wikipedia.handleArgs():
+    for arg in wikipedia.handleArgs(*args):
         if arg == 'double':
             action = 'double'
         elif arg == 'broken':
