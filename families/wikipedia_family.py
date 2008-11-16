@@ -542,7 +542,7 @@ class Family(family.Family):
             'be-x-old':  [u'Неадназначнасць', u'Неадназначнасьць', u'Disambig'],
             'bg':  [u'Пояснение', u'Disambig'],
             'bn':  [u'দ্ব্যর্থতা নিরসন', u'Disambig'],
-            'br':  [u'Hvlstumm', u'Digejañ'],
+            'br':  [u'Hvlstumm', u'Digejañ', u'Digejañ anvioù-badez'],
             'bs':  [u'Čvor'],
             'ca':  [u'Desambiguació', u'Disambig', u'Desambigua'],
             'ceb': [u'Giklaro'],
@@ -559,7 +559,7 @@ class Family(family.Family):
             'et':  [u'Täpsustuslehekülg', u'Täpsustus', u'Disambig'],
             'eu':  [u'Argipen', u'Disambig'],
             'ext': [u'Desambiguáncia'],
-            'fa':  [u'ابهام‌زدایی'],
+            'fa':  [u'ابهام‌زدایی',u'ابهام زدایی'],
             'fi':  [u'Täsmennyssivu', u'Disambig'],
             'fo':  [u'Fleiri týdningar'],
             # See http://fr.wikipedia.org/wiki/MediaWiki:Disambiguationspage
