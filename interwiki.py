@@ -671,7 +671,7 @@ class Subject(object):
                 return True
         return False
 
-    def disambigMismatch(self, page):
+    def disambigMismatch(self, page, counter):
         """
         Checks whether or not the given page has the another disambiguation
         status than the origin page.
@@ -699,19 +699,22 @@ class Subject(object):
                     wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), self.getFoundDisambig(page.site()).aslink(True)))
                     return (True, None)
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative'], ['y', 'n', 'a'])
+                    choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             elif not self.originPage.isDisambig() and page.isDisambig():
                 if self.getFoundNonDisambig(page.site()):
                     wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), self.getFoundNonDisambig(page.site()).aslink(True)))
                     return (True, None)
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative'], ['y', 'n', 'a'])
+                    choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             if choice == 'n':
                 return (True, None)
             elif choice == 'a':
                 newHint = wikipedia.input(u'Give the alternative for language %s, not using a language code:' % page.site().language())
                 alternativePage = wikipedia.Page(page.site(), newHint)
                 return (True, alternativePage)
+            elif choice == 'g':
+                self.makeForcedStop(counter)
+                return (True, None)
         # We can follow the page.
         return (False, None)
 
@@ -821,7 +824,7 @@ class Subject(object):
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % page.aslink())
                 else:
-                    (skip, alternativePage) = self.disambigMismatch(page)
+                    (skip, alternativePage) = self.disambigMismatch(page, counter)
                     if skip:
                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
                         if page in self.done: #XXX: Ugly bugfix - the following line has reportedly thrown "ValueError: list.remove(x): x not in list"
