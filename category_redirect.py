@@ -346,7 +346,7 @@ category links:
                 lang = self.date_locale[self.site.family.name][self.site.lang]
             except KeyError:
                 lang = self.site.lang
-            locale.setlocale(locale.LC_TIME, lang)
+            locale.setlocale(locale.LC_TIME, str(lang))
             if line.startswith("==") and line.endswith("=="):
                 header = datetime.strptime(
                              line[2:-2].strip(),
