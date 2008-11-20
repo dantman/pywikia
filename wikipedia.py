@@ -4478,7 +4478,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             # Blub.
             conn.close()
             conn.connect()
-            return self.postData(address, data, contentType, sysop, compress, cookie)
+            return self.postData(address, data, contentType, sysop, compress, cookies)
 
         data = response.read()
 
