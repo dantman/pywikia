@@ -120,6 +120,7 @@ sd_tagging_sum = {
     'ar': u'روبوت: وسم للحذف السريع',
     'en': u'Robot: Tagging for speedy deletion',
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
+    'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
     'zh':u'機器人: 將損壞的重定向提報快速刪除',
 }
 
@@ -128,6 +129,7 @@ sd_template = {
     'ar':u'{{شطب|تحويلة مكسورة}}',
     'en':u'{{db-r1}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
+    'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~',
     'zh':u'{{delete|R1}}',
 }
 
@@ -246,7 +248,7 @@ class RedirectGenerator:
             mysite = wikipedia.getSite()
             # retrieve information from the live wiki's maintenance page
             # double redirect maintenance page's URL
-            wikipedia.config.special_page_limit = 1000
+            # wikipedia.config.special_page_limit = 1000
             path = mysite.double_redirects_address(default_limit = False)
             wikipedia.output(u'Retrieving special page...')
             maintenance_txt = mysite.getUrl(path)
