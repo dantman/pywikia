@@ -603,7 +603,7 @@ class Subject(object):
         Also remembers where we found the page, regardless of whether it had
         already been found before or not.
 
-        Returns True iff the page is new.
+        Returns True if the page is new.
         """
         if self.forcedStop:
             return False
@@ -622,12 +622,12 @@ class Subject(object):
             counter.plus(page.site())
             return True
 
-    def namespaceMismatch(self, linkingPage, linkedPage):
+    def namespaceMismatch(self, linkingPage, linkedPage, counter):
         """
         Checks whether or not the given page has another namespace
-        as the origin page.
+        than the origin page.
 
-        Returns True iff the namespaces are different and the user
+        Returns True if the namespaces are different and the user
         has selected not to follow the linked page.
         """
         if self.foundIn.has_key(linkedPage):
@@ -651,11 +651,14 @@ class Subject(object):
                     wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i because page %s in the correct namespace has already been found." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace(), preferredPage.aslink(True)))
                     return True
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No'], ['y', 'n'])
+                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'give up'], ['y', 'n', 'g'])
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
                         self.foundIn[linkedPage] = [linkingPage]
-                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
+                        if choice == 'g':
+                            self.makeForcedStop(counter)
+                        else:
+                            wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
                         return True
         else:
             # same namespaces, no problem
@@ -678,7 +681,7 @@ class Subject(object):
 
         Returns a tuple (skip, alternativePage).
 
-        skip is True iff the pages have mismatching statuses and the bot
+        skip is True if the pages have mismatching statuses and the bot
         is either in autonomous mode, or the user chose not to use the
         given page.
 
@@ -805,7 +808,7 @@ class Subject(object):
                     elif not globalvar.followredirect:
                         wikipedia.output(u"NOTE: not following redirects.")
                     else:
-                        if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
+                        if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage, counter) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
                             if self.addIfNew(redirectTargetPage, counter, page):
                                 if config.interwiki_shownew:
                                     wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
@@ -865,7 +868,7 @@ class Subject(object):
                             self.done.remove(page)
                         iw = ()
                     for linkedPage in iw:
-                        if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage) or self.wiktionaryMismatch(linkedPage)):
+                        if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage, counter) or self.wiktionaryMismatch(linkedPage)):
                             if globalvar.followinterwiki or page == self.originPage:
                                 if self.addIfNew(linkedPage, counter, page):
                                     # It is new. Also verify whether it is the second on the
