@@ -47,7 +47,10 @@ import checkusage
 
 import wikipedia
 import config
-	
+
+# FIXME: They should be defined *somewhere* in the Python library, not?
+WHITESPACE = u' \t\u200e\u200f\u202a\u202a\u202b\u202c\u202d\u202e'
+
 def wait_callback(object):
 	output(u'%s Connection has been lost in %s. Attempting reconnection.' % (threading.currentThread(), repr(object)), False)
 	if hasattr(object, 'error'):
@@ -255,7 +258,7 @@ class Delinker(threadpool.Thread):
 				if prev in ('', '\r', '\n') and replacement is None:
 					# Kill all spaces after end
 					while (end + 1) < len(new_text):
-						if new_text[end + 1] in (' ', '\t'):
+						if new_text[end + 1] in WHITESPACE:
 							end += 1
 						else:
 							break
