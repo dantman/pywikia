@@ -2920,6 +2920,7 @@ class Family:
         'bs': [u'preusmjeri'],
         'cy': [u'ail-cyfeirio'],
         'el': [u'ΑΝΑΚΑΤΕΥΘΥΝΣΗ'],
+        'eo': [u'ALIDIREKTU'],
         'et': [u'suuna'],
         'fa': [u'تغییرمسیر'],
         'fi': [u'ohjaus', u'uudelleenohjaus'],
