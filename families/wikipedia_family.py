@@ -37,7 +37,7 @@ class Family(family.Family):
             'kv', 'bi', 'xal', 'st', 'tn', 'ch', 'ak', 'bxr', 'ny', 'ab',
             'fj', 'tw', 'lbe', 'za', 'ff', 'tum', 'ha', 'sn', 'sg', 'lg',
             'ki', 'rn', 'chy', 'ng', 'ext', 'gan', 'hif', 'kaa', 'mdf',
-            'myv', 'sah', 'srn', 'szl',
+            'myv', 'sah', 'srn', 'szl', 'arz',
         ]
 
         for lang in self.languages_by_size:
@@ -56,6 +56,7 @@ class Family(family.Family):
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
             'ar': u'ويكيبيديا',
+            'arz': u'ويكيبيديا',
             'ast': u'Uiquipedia',
             'az': u'Vikipediya',
             'bat-smg': u'Vikipedėjė',
@@ -143,6 +144,7 @@ class Family(family.Family):
             'am': u'Wikipedia ውይይት',
             'an': u'Descusión Wikipedia',
             'ar': u'نقاش ويكيبيديا',
+            'arz': u'نقاش ويكيبيديا',
             'as': u'Wikipedia বার্তা',
             'ast': u'Uiquipedia alderique',
             'av': u'Обсуждение Wikipedia',
@@ -306,6 +308,7 @@ class Family(family.Family):
             'als': u'Portal',
             'an': u'Portal',
             'ar': u'بوابة',
+            'arz': u'بوابة',
             'be-x-old': u'Партал',
             'bg': u'Портал',
             'bpy': u'হমিলদুৱার',
@@ -379,6 +382,7 @@ class Family(family.Family):
             'als': u'Portal Diskussion',
             'an': u'Descusión Portal',
             'ar': u'نقاش البوابة',
+            'arz': u'نقاش البوابة',
             'be-x-old': u'Абмеркаваньне парталу',
             'bg': u'Портал беседа',
             'bpy': u'হমিলদুৱার য়্যারী',
