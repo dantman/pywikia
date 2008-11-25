@@ -490,7 +490,7 @@ def blocked(wsite, username):
     pathWiki = wsite.family.nicepath(wsite.lang)
     #A little function to check if the user has already been blocked (to skip him).
     reg = r"""<li>\d\d:\d\d, \d(\d)? (.*?) \d\d\d\d <a href=\"""" + re.escape(pathWiki) + \
-          r"""(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"""" + re.escape(pathWiki) + r"""(.*?)\" title=\"(.*?)\">(.*?)</a>"""
+          r"""(.*?)\" title=\"(.*?)\">(.*?)</a> <span class=\"mw-usertoollinks\">"""
     block_text = wsite.getUrl(wsite.path() + '?title=Special:Log/block&page=User:' + username)
     numblock = re.findall(reg, block_text)
     # If the bot doesn't find block-line (that means the user isn't blocked), it will return False otherwise True.
