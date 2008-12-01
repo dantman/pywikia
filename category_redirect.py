@@ -143,29 +143,6 @@ category links:
             {'_default': u"* %s is in %s, which is a redirect to %s",
             })
 
-        # the site's ~~~~ date-time format in time.strftime format
-        self.date_format = {
-            'wikipedia': {
-                'en': "%H:%M, %d %B %Y (UTC)",
-                'no': "%d. %b %Y kl. %H:%M (CEST)",
-                'simple': "%H:%M, %d %B %Y (UTC)",
-            },
-            'commons': {
-                'commons': "%H:%M, %d %B %Y (UTC)",
-            }
-        }
-
-        # the language used for the site's ~~~~ date-time stamps,
-        # if not the same as its language code
-        self.date_locale = {
-            'wikipedia': {
-                'simple': "en",
-            },
-            'commons': {
-                'commons': "en",
-            }
-        }
-
     def change_category(self, article, oldCat, newCat, comment=None,
                         sortKey=None):
         """Given an article in category oldCat, moves it to category newCat.
@@ -202,7 +179,7 @@ category links:
             wikipedia.output(
                 u"Page %s not saved; sysop privileges required."
                              % article.aslink())
-            self.edit_requests.append((article.aslink(),
+            self.edit_requests.append((article.aslink(textlink=True),
                                        oldCat.aslink(textlink=True),
                                        newCat.aslink(textlink=True)))
         except wikipedia.PageNotSaved, error:
@@ -341,18 +318,8 @@ category links:
         log_items = {}
         header = None
         for line in log_text.splitlines():
-            import locale
-            try:
-                lang = self.date_locale[self.site.family.name][self.site.lang]
-            except KeyError:
-                lang = self.site.lang
-            locale.setlocale(locale.LC_TIME, str(lang))
             if line.startswith("==") and line.endswith("=="):
-                header = datetime.strptime(
-                             line[2:-2].strip(),
-                             self.date_format[self.site.family.name]
-                                             [self.site.lang]
-                         )
+                header = line[2:-2].strip()
             if header is not None:
                 log_items.setdefault(header, [])
                 log_items[header].append(line)
@@ -387,8 +354,6 @@ category links:
 
         l = time.localtime()
         today = "%04d-%02d-%02d" % l[:3]
-        problem_page = wikipedia.Page(self.site,
-                       u"User:%(user)s/category redirect problems" % locals())
         edit_request_page = wikipedia.Page(self.site,
                             u"User:%(user)s/category edit requests" % locals())
         datafile = wikipedia.config.datafilepath(
@@ -628,9 +593,11 @@ category links:
 
         wikipedia.setAction(wikipedia.translate(self.site.lang,
                                                 self.maint_comment))
-        self.log_page.put(u"\n==~~~~~==\n" + u"\n".join(self.log_text) + "\n"
-                     + self.get_log_text())
-        problem_page.put("\n".join(problems))
+        self.log_page.put(u"\n==%i-%02i-%02iT%02i:%02i:%02iZ==\n"
+                            % time.gmtime()[:6]
+                          + u"\n".join(self.log_text)
+                          + "\n" + "\n".join(problems)
+                          + "\n" + self.get_log_text())
         if self.edit_requests:
             edit_request_page.put(self.edit_request_text
                                  % u"\n".join((self.edit_request_item % item)
@@ -638,6 +605,7 @@ category links:
 
 
 def main(*args):
+    global bot
     try:
         a = wikipedia.handleArgs(*args)
         if len(a) == 1:
