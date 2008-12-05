@@ -1270,7 +1270,7 @@ def recentChanges(site = None, delay=60, block=70):
         'rcprop'    :'title',
         'rcshow'    :'!bot',
         'rclimit'   :'5000',
-        'rctype'    :'edit',
+        'rctype'    :'edit|log',
         }
 
     data = query.GetData(params, site, useAPI = True, encodeTitle = False)
