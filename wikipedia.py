@@ -585,7 +585,7 @@ not supported by PyWikipediaBot!"""
                 return u'[[%s:%s]]' % (self.site().lang,
                                        self.title(savetitle=True,decode=True))
         elif textlink and (self.isImage() or self.isCategory()):
-                return u'[[:%s]]' % self.title(savetitle=True,decode=True)
+                return u'[[:%s]]' % self.title(savetitle=True, decode=True)
         else:
             return u'[[%s]]' % self.title(savetitle=True, decode=True)
 
@@ -1450,9 +1450,9 @@ not supported by PyWikipediaBot!"""
                 put_throttle()
             # Which web-site host are we submitting to?
             if newPage:
-                output(u'Creating page %s' % self.aslink(forceInterwiki=True))
+                output(u'Creating page %s' % self.aslink())
             else:
-                output(u'Changing page %s' % self.aslink(forceInterwiki=True))
+                output(u'Changing page %s' % self.aslink())
             # Submit the prepared information
             if self.site().hostname() in config.authenticate.keys():
                 predata["Content-type"] = "application/x-www-form-urlencoded"
@@ -1775,7 +1775,12 @@ not supported by PyWikipediaBot!"""
             if not self.site().isInterwikiLink(title):
                 try:
                     page = Page(self.site(), title)
-                except InvalidTitle:
+                    try:
+                        hash(str(page))
+                    except Exception:
+                        raise Error(u"Page %s contains invalid link to [[%s]]."
+                                    % (self.title(), title))
+                except Error:
                     if verbose:
                         output(u"Page %s contains invalid link to [[%s]]."
                                % (self.title(), title))
