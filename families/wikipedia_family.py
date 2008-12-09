@@ -553,6 +553,7 @@ class Family(family.Family):
             'cdo': [u'Gì-ngiê'],
             'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení',
                     u'Rozcestník - místopisné jméno', u'Disambig', u'Rozcestník - příjmení',],
+            'cu':  [u'Мъногосъмыслиѥ', u'Disambig'],
             'cy':  [u'Anamrwysedd', u'Disambig', u'Gwahaniaethu'],
             'da':  [u'Flertydig'],
             'de':  [u'Begriffsklärung', u'BKS', u'Disambig'],
