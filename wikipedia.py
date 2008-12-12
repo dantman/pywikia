@@ -6020,7 +6020,7 @@ your connection is down. Retrying in %i minutes..."""
         else:
             return False
 
-    def getImagesFromAnHash(self, hash_found = None):
+    def getFilesFromAnHash(self, hash_found = None):
         """ Function that uses APIs to give the images that has the same hash. Useful
             to find duplicates or nowcommons.
 
@@ -6043,7 +6043,7 @@ your connection is down. Retrying in %i minutes..."""
         allimages = data['query']['allimages']
         duplicates = list()
         for imagedata in allimages:
-            image = imagedata[u'descriptionurl'].split('/wiki/%s' % image_namespace)[1]
+            image = imagedata[u'name']
             duplicates.append(image)
         return duplicates
 
