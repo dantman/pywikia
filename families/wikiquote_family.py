@@ -67,6 +67,7 @@ class Family(family.Family):
             '_default': [u'Wikiquote talk', self.namespaces[5]['_default']],
             'af': u'Wikiquotebespreking',
             'als': u'Wikiquote Diskussion',
+            'am': u'Wikiquote ውይይት',
             'ar': u'نقاش ويكي الاقتباس',
             'ast': u'Wikiquote alderique',
             'az': u'Wikiquote müzakirəsi',
@@ -86,10 +87,11 @@ class Family(family.Family):
             'et': u'Wikiquote arutelu',
             'eu': u'Wikiquote eztabaida',
             'fa': u'بحث ویکی‌گفتاورد',
-            'fi': u'Keskustelu Wikisitaatitista',
+            'fi': u'Keskustelu Wikisitaateista',
             'fr': u'Discussion Wikiquote',
             'ga': u'Plé Vicísliocht',
             'gl': u'Conversa Wikiquote',
+            'gu': u'Wikiquote ચર્ચા',
             'he': u'שיחת ויקיציטוט',
             'hi': u'Wikiquote वार्ता',
             'hr': u'Razgovor Wikicitat',
@@ -135,7 +137,7 @@ class Family(family.Family):
             'uz': u'Vikiiqtibos munozarasi',
             'vi': u'Thảo luận Wikiquote',
             'vo': u'Bespik dö Wikiquote',
-            'wo': u'Discussion Wikiquote',
+            'wo': u'Wikiquote waxtaan',
         }
 
         self.namespaces[100] = {

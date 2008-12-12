@@ -73,6 +73,7 @@ class Family(family.Family):
             'pt': u'Wikinotícias Discussão',
             'ro': u'Discuţie Wikiştiri',
             'ru': u'Обсуждение Викиновостей',
+            'sd': u'Wikinews بحث',
             'sr': u'Разговор о Викивестима',
             'sv': u'Wikinewsdiskussion',
             'ta': u'Wikinews பேச்சு',
@@ -116,16 +117,20 @@ class Family(family.Family):
 
         self.namespaces[102] = {
             'ar': u'تعليقات',
+            'de': u'Meinungen',
             'en': u'Comments',
             'fr': u'Transwiki',
+            'hu': u'Portál',
             'pt': u'Efeméride',
             'ru': u'Комментарии',
         }
 
         self.namespaces[103] = {
             'ar': u'نقاش التعليقات',
+            'de': u'Meinungen Diskussion',
             'en': u'Comments talk',
             'fr': u'Discussion Transwiki',
+            'hu': u'Portálvita',
             'pt': u'Efeméride Discussão',
             'ru': u'Обсуждение комментариев',
         }
@@ -140,10 +145,12 @@ class Family(family.Family):
 
         self.namespaces[106] = {
             'fr': u'Dossier',
+            'no': u'Portal',
         }
 
         self.namespaces[107] = {
             'fr': u'Discussion Dossier',
+            'no': u'Portal-diskusjon',
         }
 
         self.namespaces[108] = {

@@ -75,7 +75,7 @@ class Family(family.Family):
             'ar': u'نقاش ويكي مصدر',
             'az': u'VikiMənbə müzakirəsi',
             'bg': u'Уикиизточник беседа',
-            'bn': u'উইকিসংকলন আলাপ',
+            'bn': u'উইকিসংকলন আলোচনা',
             'bs': u'Razgovor s Wikizvor',
             'ca': u'Viquitexts Discussió',
             'cs': u'Wikisource diskuse',
@@ -87,7 +87,7 @@ class Family(family.Family):
             'et': u'Vikitekstid arutelu',
             'fa': u'بحث ویکی‌نبشته',
             'fi': u'Keskustelu Wikiaineistosta',
-            'fo': u'Wikiheimild kjak',
+            'fo': u'Wikiheimild-kjak',
             'fr': u'Discussion Wikisource',
             'gl': u'Conversa Wikisource',
             'he': u'שיחת ויקיטקסט',
@@ -128,6 +128,8 @@ class Family(family.Family):
         self.namespaces[100] = {
             'bg': u'Автор',
             'bn': u'লেখক',
+            'cs': u'Autor',
+            'el': u'Σελίδα',
             'en': u'Portal',
             'fa': [u'درگاه', u'Portal'],
             'fr': u'Transwiki',
@@ -142,6 +144,8 @@ class Family(family.Family):
         self.namespaces[101] = {
             'bg': u'Автор беседа',
             'bn': u'লেখক আলাপ',
+            'cs': u'Autor diskuse',
+            'el': u'Συζήτηση σελίδας',
             'en': u'Portal talk',
             'fa': [u'بحث درگاه', u'Portal talk'],
             'fr': u'Discussion Transwiki',
@@ -155,9 +159,12 @@ class Family(family.Family):
         }
         self.namespaces[102] = {
             'ar': u'مؤلف',
+            'ca': u'Pàgina',
             'da': [u'Forfatter', u'Author'],
             'de': u'Seite',
+            'el': u'Βιβλίο',
             'en': u'Author',
+            'es': u'Página',
             'fa': [u'مؤلف', u'Author'],
             'hy': u'Պորտալ',
             'it': u'Autore',
@@ -168,9 +175,12 @@ class Family(family.Family):
         }
         self.namespaces[103] = {
             'ar': u'نقاش المؤلف',
+            'ca': u'Pàgina Discussió',
             'da': [u'Forfatterdiskussion', u'Author talk'],
             'de': u'Seite Diskussion',
+            'el': u'Συζήτηση βιβλίου',
             'en': u'Author talk',
+            'es': u'Página Discusión',
             'fa': [u'بحث مؤلف', u'Author talk'],
             'hy': u'Պորտալի քննարկում',
             'it': u'Discussioni autore',
@@ -182,8 +192,10 @@ class Family(family.Family):
 
         self.namespaces[104] = {
             'ar': u'صفحة',
+            'ca': u'Llibre',
             'de': u'Index',
             'en': u'Page',
+            'es': u'Índice',
             'fa': [u'برگه', u'Page'],
             'fr': u'Page',
             'he': u'עמוד',
@@ -198,8 +210,10 @@ class Family(family.Family):
 
         self.namespaces[105] = {
             'ar': u'نقاش الصفحة',
+            'ca': u'Llibre Discussió',
             'de': u'Index Diskussion',
             'en': u'Page talk',
+            'es': u'Índice Discusión',
             'fa': [u'بحث برگه', u'Page talk'],
             'fr': u'Discussion Page',
             'he': u'שיחת עמוד',
@@ -219,6 +233,7 @@ class Family(family.Family):
             'it': u'Portale',
             'la': u'Liber',
             'pt': u'Página',
+            'ru': u'Индекс',
             'sv': u'Författare',
         }
 
@@ -229,6 +244,7 @@ class Family(family.Family):
             'it': u'Discussioni portale',
             'la': u'Disputatio Libri',
             'pt': u'Página Discussão',
+            'ru': u'Обсуждение индекса',
             'sv': u'Författardiskussion',
         }
 
