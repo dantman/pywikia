@@ -1500,7 +1500,7 @@ class Family:
                 'glk': u'بحث الگو',
                 'gv': u'Resooney clowan',
                 'gn': u'Tembiecharã myangekõi',
-                'gu': u'ઢાંચાની ચર્ચા'
+                'gu': u'ઢાંચાની ચર્ચા',
                 'he': u'שיחת תבנית',
                 'hi': u'साँचा वार्ता',
                 'hr': u'Razgovor o predlošku',
