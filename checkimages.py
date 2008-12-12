@@ -32,7 +32,7 @@ This script understands the following command-line arguments:
 
     -skip[:#]            - The bot skip the first [:#] images (default: 0)
 
-    -start[:#]            - Use allpages() as generator (it starts already form Image:[:#])
+    -start[:#]            - Use allpages() as generator (it starts already form File:[:#])
 
     -cat[:#]            - Use a category as generator
 
@@ -189,14 +189,14 @@ delete_immediately_head = {
 
 # Text that will be add if the bot find a unknown extension.
 delete_immediately_notification = {
-                'ar'     :u'الملف [[:Image:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
-                'commons':u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
-                'en'     :u'The [[:Image:%s]] file seems to have a wrong extension, please check. ~~~~',
+                'ar'     :u'الملف [[:File:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
+                'commons':u'The [[:File:%s]] file seems to have a wrong extension, please check. ~~~~',
+                'en'     :u'The [[:File:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
                 'it'     :u'{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Ext|%s|__botnick__}} --~~~~',
                 'ko'     :u'[[:그림:%s]]의 파일 형식이 잘못되었습니다. 확인 바랍니다.--~~~~',
                 'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
-                'zh'    :u'您好，你上傳的[[:Image:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
+                'zh'    :u'您好，你上傳的[[:File:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
                 }
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
@@ -228,17 +228,17 @@ nothing_head = {
 # That's the text that the bot will add if it doesn't find the license.
 # Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 nothing_notification = {
-                'commons':u"\n{{subst:User:Filnik/untagged|Image:%s}}\n\n''This message was '''added automatically by [[User:" + \
+                'commons':u"\n{{subst:User:Filnik/untagged|File:%s}}\n\n''This message was '''added automatically by [[User:" + \
                 "__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~",
-    			'ar'     :u"{{subst:مصدر الصورة|Image:%s}} --~~~~",
+    			'ar'     :u"{{subst:مصدر الصورة|File:%s}} --~~~~",
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
-                'en'     :u"{{subst:image source|Image:%s}} --~~~~",
+                'en'     :u"{{subst:image source|File:%s}} --~~~~",
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
                 'it'     :u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza|%s|__botnick__}} --~~~~",
-                'ja'     :u"\n{{subst:Image copyright|Image:%s}}--~~~~",
+                'ja'     :u"\n{{subst:Image copyright|File:%s}}--~~~~",
                 'ko'     :u'\n{{subst:User:Kwjbot IV/untagged|%s}} --~~~~', 
                 'ta'     :u'\n{{subst:Di-no license-notice|படிமம்:%s}} ~~~~ ',
-                'zh'     :u'\n{{subst:Uploadvionotice|Image:%s}} ~~~~ ',
+                'zh'     :u'\n{{subst:Uploadvionotice|File:%s}} ~~~~ ',
                 }
 
 # This is a list of what bots used this script in your project.
@@ -294,16 +294,16 @@ report_page = {
 timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
-            'commons':u"\n*[[:Image:%s]] " + timeselected,
+            'commons':u"\n*[[:File:%s]] " + timeselected,
     		'ar':u"\n*[[:صورة:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
-            'en':u"\n*[[:Image:%s]] " + timeselected,
+            'en':u"\n*[[:File:%s]] " + timeselected,
             'hu':u"\n*[[:Kép:%s]] " + timeselected,
             'it':u"\n*[[:Immagine:%s]] " + timeselected,
             'ja':u"\n*[[:Immagine:%s]] " + timeselected,
             'ko':u"\n*[[:그림:%s]] " + timeselected,
             'ta':u"\n*[[:படிமம்:%s]] " + timeselected,
-            'zh':u"\n*[[:Image:%s]] " + timeselected,
+            'zh':u"\n*[[:File:%s]] " + timeselected,
             }
 # The summary of the report
 comm10 = {
@@ -356,7 +356,7 @@ PageWithAllowedTemplates = {
 # Template added when the bot finds only an hidden template and nothing else.
 # Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 HiddenTemplateNotification = {
-        'commons': u"""\n{{subst:User:Filnik/whitetemplate|Image:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
+        'commons': u"""\n{{subst:User:Filnik/whitetemplate|File:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
         'de'     : None,
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
@@ -381,7 +381,7 @@ duplicate_user_talk_head = {
         }
 # Message to put in the talk
 duplicates_user_talk_text = {
-        'commons': u'{{subst:User:Filnik/duplicates|Image:%s|Image:%s}}', # FIXME: it doesn't exist
+        'commons': u'{{subst:User:Filnik/duplicates|File:%s|File:%s}}', # FIXME: it doesn't exist
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
         }
@@ -579,8 +579,7 @@ class main:
         self.sendemailActive = sendemailActive
         self.skip_list = list() # Inizialize the skip list used below
         self.duplicatesReport = duplicatesReport
-        image_n = self.site.image_namespace()
-        self.image_namespace = u"%s:" % image_n # Example: "Image:"
+        self.image_namespace = u"File:"
         # Load the licenses only once, so do it once
         self.list_licenses = self.load_licenses()
     def setParameters(self, imageName, timestamp, uploader):
@@ -672,7 +671,7 @@ class main:
                 nick = reportPageObject.getLatestUploader()[0]
         except wikipedia.NoPage:
             wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image_to_report)
-            repme = u"\n*[[:Image:%s]] problems '''with the APIs'''"
+            repme = u"\n*[[:File:%s]] problems '''with the APIs'''"
             # We have a problem! Report and exit!
             self.report_image(self.image_to_report, self.rep_page, self.com, repme)
             return False
@@ -808,7 +807,7 @@ class main:
         max_usage = 0
         for element in listGiven:
             imageName = element[1]
-            imagePage = wikipedia.ImagePage(self.site, u'Image:%s' % imageName)
+            imagePage = wikipedia.ImagePage(self.site, u'File:%s' % imageName)
             imageUsage = [page for page in imagePage.usingPages()]
             if len(imageUsage) > 0 and len(imageUsage) > max_usage:
                 max_usage = len(imageUsage)
@@ -853,16 +852,16 @@ class main:
         """ Checking if the image is on commons """
         wikipedia.output(u'Checking if %s is on commons...' % self.imageName)
         commons_site = wikipedia.getSite('commons', 'commons')
-        regexOnCommons = r"\n\*\[\[:Image:%s\]\] is also on '''Commons''': \[\[commons:Image:.*?\]\](?: \(same name\)|)$" % re.escape(self.imageName)
-        imagePage = wikipedia.ImagePage(self.site, u'Image:%s' % self.imageName)
+        regexOnCommons = r"\n\*\[\[:File:%s\]\] is also on '''Commons''': \[\[commons:File:.*?\]\](?: \(same name\)|)$" % re.escape(self.imageName)
+        imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
         hash_found = imagePage.getHash()
         if hash_found == None:
             return False # Problems? Yes! Image deleted, no hash found. Skip the image.
         else:
-            commons_image_with_this_hash = commons_site.getImagesFromAnHash(hash_found)
+            commons_image_with_this_hash = commons_site.getFilesFromAnHash(hash_found)
             if commons_image_with_this_hash != []:
                 wikipedia.output(u'%s is on commons!' % self.imageName)
-                imagePage = wikipedia.ImagePage(self.site, u'Image:%s' % self.imageName)
+                imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
                 on_commons_text = imagePage.getImagePageHtml()
                 if u"<div class='sharedUploadNotice'>" in on_commons_text:
                     wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
@@ -875,9 +874,9 @@ class main:
                 else:
                     # the second usually is a url or something like that. Compare the two in equal way, both url.
                     if self.convert_to_url(self.imageName) == self.convert_to_url(commons_image_with_this_hash[0]):
-                        repme = u"\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]] (same name)" % (self.imageName, commons_image_with_this_hash[0])
+                        repme = u"\n*[[:File:%s]] is also on '''Commons''': [[commons:File:%s]] (same name)" % (self.imageName, commons_image_with_this_hash[0])
                     else:
-                        repme = u"\n*[[:Image:%s]] is also on '''Commons''': [[commons:Image:%s]]" % (self.imageName, commons_image_with_this_hash[0])
+                        repme = u"\n*[[:File:%s]] is also on '''Commons''': [[commons:File:%s]]" % (self.imageName, commons_image_with_this_hash[0])
                     self.report_image(self.imageName, self.rep_page, self.com, repme, addings = False, regex = regexOnCommons)
                     # Problems? No, return True
                     return True
@@ -887,7 +886,7 @@ class main:
 
     def checkImageDuplicated(self, duplicates_rollback):
         """ Function to check the duplicated images. """
-        # {{Dupe|Image:Blanche_Montel.jpg}}
+        # {{Dupe|File:Blanche_Montel.jpg}}
         # Skip the stub images
         #if 'stub' in self.imageName.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
         #    return True # Skip the stub, ok
@@ -897,10 +896,10 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-        duplicateRegex = r'\n\*(?:\[\[:Image:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:Image:%s\]\])$' % (self.convert_to_url(self.imageName), self.convert_to_url(self.imageName))
-        imagePage = wikipedia.ImagePage(self.site, u'Image:%s' % self.imageName)
+        duplicateRegex = r'\n\*(?:\[\[:File:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:File:%s\]\])$' % (self.convert_to_url(self.imageName), self.convert_to_url(self.imageName))
+        imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
         hash_found = imagePage.getHash()
-        duplicates = self.site.getImagesFromAnHash(hash_found)
+        duplicates = self.site.getFilesFromAnHash(hash_found)
         if duplicates == None:
             return False # Error, image deleted, no hash found. Skip the image.
         if len(duplicates) > 1:
@@ -912,8 +911,8 @@ class main:
                 time_image_list = list()
                 time_list = list()
                 for duplicate in duplicates:
-                    DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
-                    if DupePage == self.image and self.timestamp != None:
+                    DupePage = wikipedia.ImagePage(self.site, u'File:%s' % duplicate)
+                    if DupePage.urlname() == self.image.urlname() and self.timestamp != None:
                         imagedata = self.timestamp
                     else:
                         imagedata = DupePage.getLatestUploader()[1]
@@ -924,14 +923,14 @@ class main:
                     time_list.append(data_seconds)
                 older_image = self.returnOlderTime(time_image_list, time_list)
                 # And if the images are more than two?
-                Page_oder_image = wikipedia.ImagePage(self.site, u'Image:%s' % older_image)
+                Page_oder_image = wikipedia.ImagePage(self.site, u'File:%s' % older_image)
                 string = ''
                 images_to_tag_list = []
                 for duplicate in duplicates:
                     if wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, duplicate)) == \
                        wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, older_image)):
                         continue # the older image, not report also this as duplicate
-                    DupePage = wikipedia.ImagePage(self.site, u'Image:%s' % duplicate)
+                    DupePage = wikipedia.ImagePage(self.site, u'File:%s' % duplicate)
                     try:
                         DupPageText = DupePage.get()
                         older_page_text = Page_oder_image.get()
@@ -958,7 +957,7 @@ class main:
                 # Two iteration: report the "problem" to the user only once (the last)
                 if len(images_to_tag_list) > 1:
                     for image_to_tag in images_to_tag_list[:-1]:
-                        already_reported_in_past = self.countEdits(u'Image:%s' % image_to_tag, self.botolist)
+                        already_reported_in_past = self.countEdits(u'File:%s' % image_to_tag, self.botolist)
                         # if you want only one edit, the edit found should be more than 0 -> num - 1
                         if already_reported_in_past > duplicates_rollback - 1:
                             only_report = True
@@ -968,7 +967,7 @@ class main:
                         self.report(text_for_the_report, image_to_tag,
                                     commImage = dupComment_image, unver = True)
                 if len(images_to_tag_list) != 0 and not only_report:
-                    already_reported_in_past = self.countEdits(u'Image:%s' % images_to_tag_list[-1], self.botolist)
+                    already_reported_in_past = self.countEdits(u'File:%s' % images_to_tag_list[-1], self.botolist)
                     image_to_resub = images_to_tag_list[-1]
                     from_regex = r'\n\*\[\[:%s\]\]' % re.escape(self.image_namespace + image_to_resub)
                     # Delete the image in the list where we're write on
@@ -982,13 +981,13 @@ class main:
                                 commImage = dupComment_image, unver = True)
             if self.duplicatesReport or only_report:
                 if only_report:
-                    repme = u"\n*[[:Image:%s]] has the following duplicates ('''forced mode'''):" % self.convert_to_url(self.imageName)
+                    repme = u"\n*[[:File:%s]] has the following duplicates ('''forced mode'''):" % self.image.urlname()
                 else:
-                    repme = u"\n*[[:Image:%s]] has the following duplicates:" % self.convert_to_url(self.imageName)
+                    repme = u"\n*[[:File:%s]] has the following duplicates:" % self.convert_to_url(self.imageName)
                 for duplicate in duplicates:
                     if self.convert_to_url(duplicate) == self.convert_to_url(self.imageName):
                         continue # the image itself, not report also this as duplicate
-                    repme += u"\n**[[:Image:%s]]" % self.convert_to_url(duplicate)
+                    repme += u"\n**[[:File:%s]]" % self.convert_to_url(duplicate)
                 result = self.report_image(self.imageName, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
                 if not result:
                     return True # If Errors, exit (but continue the check)                
@@ -1185,9 +1184,9 @@ class main:
                 if self.allLicenses != list():      
                     self.license_found = self.allLicenses[0].title()
         if not self.seems_ok and self.license_found != None:
-            rep_text_license_fake = u"\n*[[:Image:%s]] seems to have " % self.imageName + \
+            rep_text_license_fake = u"\n*[[:File:%s]] seems to have " % self.imageName + \
                     "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
-            regexFakeLicense = r"\* ?\[\[:Image:%s\]\] seems to have " % (re.escape(self.imageName)) + \
+            regexFakeLicense = r"\* ?\[\[:File:%s\]\] seems to have " % (re.escape(self.imageName)) + \
                     "a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.license_found))
             printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
             self.report_image(self.imageName, rep_text = rep_text_license_fake,
@@ -1221,9 +1220,9 @@ class main:
         # Print a starting message only if no images has been skipped
         if self.skip_list == []:
             if skip_number == 1:
-                wikipedia.output(u'Skipping the first image:\n')
+                wikipedia.output(u'Skipping the first file:\n')
             else:
-                wikipedia.output(u'Skipping the first %s images:\n' % skip_number)
+                wikipedia.output(u'Skipping the first %s files:\n' % skip_number)
         # If we still have pages to skip:
         if len(self.skip_list) < skip_number:
             wikipedia.output(u'Skipping %s...' % self.imageName)
@@ -1595,8 +1594,7 @@ def checkbot():
     site = wikipedia.getSite()
 
     # Block of text to translate the parameters set above.
-    image_n = site.image_namespace()
-    image_namespace = u"%s:" % image_n # Example: "User_talk:"
+    image_namespace = u"File:"
 
     # If the images to skip are 0, set the skip variable to False (the same for the wait time)
     if skip_number == 0:
@@ -1661,7 +1659,7 @@ def checkbot():
             # If the generator returns something that is not an image, simply skip it.
             if normal == False and regexGen == False:
                 if image_namespace.lower() not in image.title().lower() and \
-                'image:' not in image.title().lower():
+                'file:' not in image.title().lower():
                     wikipedia.output(u'%s seems not an image, skip it...' % image.title())
                     continue
             if normal:
