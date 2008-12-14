@@ -1243,10 +1243,10 @@ class main:
         # if normal, we can take as many images as "limit" has told us, otherwise, sorry, nope.
         if normal:
             printWithTimeZone(u'Skipping the files uploaded less than %s seconds ago..' % waitTime)
+            imagesToSkip = 0
             while 1:            
                 loadOtherImages = True # ensure that all the images loaded aren't to skip!
                 for image in generator:
-                    image = wikipedia.ImagePage(self.site, image.title())
                     if normal:
                         imageData = image
                         image = imageData[0]
@@ -1277,24 +1277,24 @@ class main:
                     continue
                 else:
                     break # ok some other images, go below
-                newGen = list()
-                imagesToSkip += 1 # some calcs, better add 1
-                # Add new images, instead of the images skipped
-                newImages = self.site.newimages(number = imagesToSkip, lestart = timestamp)
-                for imageData in generator:
-                    if normal:
-                        image = imageData[0]
-                        timestamp = imageData[1]
-                        uploader = imageData[2]
-                        comment = imageData[3]
-                        newGen.append([image, timestamp, uploader, comment])
-                    else:
-                        image = imageData
-                        newGen.append(image)
-                num = 0
-                for imageData in newImages:
-                    newGen.append(imageData)
-            return newGen
+            newGen = list()
+            imagesToSkip += 1 # some calcs, better add 1
+            # Add new images, instead of the images skipped
+            newImages = self.site.newimages(number = imagesToSkip, lestart = timestamp)
+            for imageData in generator:
+                if normal:
+                    image = imageData[0]
+                    timestamp = imageData[1]
+                    uploader = imageData[2]
+                    comment = imageData[3]
+                    newGen.append([image, timestamp, uploader, comment])
+                else:
+                    image = imageData
+                    newGen.append(image)
+            num = 0
+            for imageData in newImages:
+                newGen.append(imageData)
+            return newGen                
         else:
             wikipedia.output(u"The wait option is available only with the standard generator.")
             return generator
@@ -1693,7 +1693,7 @@ def checkbot():
                 if skip == True:
                     continue             
             # Check on commons if there's already an image with the same name
-            if commonsActive == True:
+            if commonsActive == True and site.family.name != "commons":                
                 response = mainClass.checkImageOnCommons()
                 if response == False:
                     continue
