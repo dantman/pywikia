@@ -387,15 +387,15 @@ duplicates_user_talk_text = {
         }
 # Comment used by the bot while it reports the problem in the uploader's talk
 duplicates_comment_talk = {
-        'commons': u'Bot: Dupe image found',
+        'commons': u'Bot: Dupe file found',
         'en'     : None,
-        'it'     : u"Bot: Notifico l'immagine doppia trovata",
+        'it'     : u"Bot: Notifico il file doppio trovato",
         }
 # Comment used by the bot while it reports the problem in the image
 duplicates_comment_image = {
-        'commons': u'Bot: Tagging dupe image',
+        'commons': u'Bot: Tagging dupe file',
         'en'     : None,
-        'it'     : u'Bot: Immagine doppia, da cancellare',
+        'it'     : u'Bot: File doppio, da cancellare',
         }
 # Regex to detect the template put in the image's decription to find the dupe
 duplicatesRegex = {
@@ -650,7 +650,7 @@ class main:
 
     def tag_image(self, put = True):
         """ Function to add the template in the image and to find out
-        who's the user that has uploaded the image. """
+        who's the user that has uploaded the file. """
         # Get the image's description
         reportPageObject = wikipedia.ImagePage(self.site, self.image_namespace + self.image_to_report)
         try:
@@ -670,7 +670,7 @@ class main:
             else:
                 nick = reportPageObject.getLatestUploader()[0]
         except wikipedia.NoPage:
-            wikipedia.output(u"Seems that %s hasn't the image at all, but there is something in the description..." % self.image_to_report)
+            wikipedia.output(u"Seems that %s has only the description and not the file..." % self.image_to_report)
             repme = u"\n*[[:File:%s]] problems '''with the APIs'''"
             # We have a problem! Report and exit!
             self.report_image(self.image_to_report, self.rep_page, self.com, repme)
@@ -742,7 +742,7 @@ class main:
                 emailClass.send(emailSubj, text_to_send)
 
     def untaggedGenerator(self, untaggedProject, limit):
-        """ Generator that yield the images without license. It's based on a tool of the toolserver. """
+        """ Generator that yield the files without license. It's based on a tool of the toolserver. """
         lang = untaggedProject.split('.', 1)[0]
         project = '.%s' % untaggedProject.split('.', 1)[1]
         if lang == 'commons':
@@ -849,7 +849,7 @@ class main:
         return number_edits
 
     def checkImageOnCommons(self):
-        """ Checking if the image is on commons """
+        """ Checking if the file is on commons """
         wikipedia.output(u'Checking if %s is on commons...' % self.imageName)
         commons_site = wikipedia.getSite('commons', 'commons')
         regexOnCommons = r"\n\*\[\[:File:%s\]\] is also on '''Commons''': \[\[commons:File:.*?\]\](?: \(same name\)|)$" % re.escape(self.imageName)
@@ -864,7 +864,7 @@ class main:
                 imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
                 on_commons_text = imagePage.getImagePageHtml()
                 if u"<div class='sharedUploadNotice'>" in on_commons_text:
-                    wikipedia.output(u"But, the image doesn't exist on your project! Skip...")
+                    wikipedia.output(u"But, the file doesn't exist on your project! Skip...")
                     # Problems? Yes! We have to skip the check part for that image!
                     # Because it's on commons but someone has added something on your project.
                     return False
@@ -885,7 +885,7 @@ class main:
                 return True
 
     def checkImageDuplicated(self, duplicates_rollback):
-        """ Function to check the duplicated images. """
+        """ Function to check the duplicated files. """
         # {{Dupe|File:Blanche_Montel.jpg}}
         # Skip the stub images
         #if 'stub' in self.imageName.lower() and self.project == 'wikipedia' and self.site.lang == 'it':
@@ -944,7 +944,7 @@ class main:
                         #else:
                         #    string += "*[[:%s%s]]" % (self.image_namespace, duplicate)
                     else:
-                        wikipedia.output(u"Already put the dupe-template in the image's page or in the dupe's page. Skip.")
+                        wikipedia.output(u"Already put the dupe-template in the files's page or in the dupe's page. Skip.")
                         return True # Ok - No problem. Let's continue the checking phase
                 older_image_ns = u'%s%s' % (self.image_namespace, older_image) # adding the namespace
                 only_report = False # true if the image are not to be tagged as dupes
@@ -996,7 +996,7 @@ class main:
         return True # Ok - No problem. Let's continue the checking phase
 
     def report_image(self, image_to_report, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
-        """ Function to report the images in the report page when needed. """
+        """ Function to report the files in the report page when needed. """
         if rep_page == None: rep_page = self.rep_page
         if com == None: com = self.com
         if rep_text == None: rep_text = self.rep_text
@@ -1009,7 +1009,7 @@ class main:
         except wikipedia.IsRedirectPage:            
             text_get = another_page.getRedirectTarget().get()
         if len(text_get) >= self.logFulNumber:
-            raise LogIsFull(u"The log page (%s) is full! Please delete the old images reported." % another_page.title())
+            raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
         pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.M)
@@ -1211,10 +1211,10 @@ class main:
         return list_loaded
 
     def skipImages(self, skip_number, limit):
-        """ Given a number of images, skip the first -number- images. """
+        """ Given a number of files, skip the first -number- files. """
         # If the images to skip are more the images to check, make them the same number
         if skip_number == 0:
-            wikipedia.output(u'\t\t>> No images to skip...<<')
+            wikipedia.output(u'\t\t>> No files to skip...<<')
             return False
         if skip_number > limit: skip_number = limit
         # Print a starting message only if no images has been skipped
@@ -1240,62 +1240,67 @@ class main:
             first x seconds.
         """
         imagesToSkip = 0
-        while 1:            
-            loadOtherImages = True # ensure that all the images loaded aren't to skip!
-            for image in generator:
-                if normal:
-                    imageData = image
-                    image = imageData[0]
-                    timestamp = imageData[1]
-                else:
-                    timestamp = image.getLatestUploader()[1]
-                #http://pytz.sourceforge.net/ <- maybe useful?
-                # '2008-06-18T08:04:29Z'
-                img_time = datetime.datetime.strptime(timestamp, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
-                now = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
-                # + seconds to be sure that now > img_time
-                while now < img_time:
-                    now = (now + datetime.timedelta(seconds=1))
-                delta = now - img_time
-                secs_of_diff = delta.seconds
-                if waitTime > secs_of_diff:
-                    wikipedia.output(u'Skipping %s, uploaded %s seconds ago..' % (image.title(), int(secs_of_diff)))
-                    imagesToSkip += 1
-                    continue # Still wait
-                else:
-                    loadOtherImages = False
-                    break # No ok, continue
-            # if yes, we have skipped all the images given!
-            if loadOtherImages:
-                generator = self.site.newimages(number = limit, lestart = timestamp)
-                imagesToSkip = 0
-                # continue to load images! continue
-                continue
-            else:
-                break # ok some other images, go below
         # if normal, we can take as many images as "limit" has told us, otherwise, sorry, nope.
         if normal:
-            newGen = list()
-            imagesToSkip += 1 # some calcs, better add 1
-            # Add new images, instead of the images skipped
-            newImages = self.site.newimages(number = imagesToSkip, lestart = timestamp)
-            for imageData in generator:
-                if normal:
-                    image = imageData[0]
-                    timestamp = imageData[1]
-                    uploader = imageData[2]
-                    comment = imageData[3]
-                    newGen.append([image, timestamp, uploader, comment])
+            printWithTimeZone(u'Skipping the files uploaded less than %s seconds ago..' % waitTime)
+            while 1:            
+                loadOtherImages = True # ensure that all the images loaded aren't to skip!
+                for image in generator:
+                    image = wikipedia.ImagePage(self.site, image.title())
+                    if normal:
+                        imageData = image
+                        image = imageData[0]
+                        timestamp = imageData[1]
+                    else:
+                        timestamp = image.getLatestUploader()[1]
+                    #http://pytz.sourceforge.net/ <- maybe useful?
+                    # '2008-06-18T08:04:29Z'
+                    img_time = datetime.datetime.strptime(timestamp, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
+                    now = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
+                    # + seconds to be sure that now > img_time
+                    while now < img_time:
+                        now = (now + datetime.timedelta(seconds=1))
+                    delta = now - img_time
+                    secs_of_diff = delta.seconds
+                    if waitTime > secs_of_diff:
+                        wikipedia.output(u'Skipping %s, uploaded %s seconds ago..' % (image.title(), int(secs_of_diff)))
+                        imagesToSkip += 1
+                        continue # Still wait
+                    else:
+                        loadOtherImages = False
+                        break # No ok, continue
+                # if yes, we have skipped all the images given!
+                if loadOtherImages:
+                    generator = self.site.newimages(number = limit, lestart = timestamp)
+                    imagesToSkip = 0
+                    # continue to load images! continue
+                    continue
                 else:
-                    image = imageData
-                    newGen.append(image)
-            num = 0
-            for imageData in newImages:
-                newGen.append(imageData)
-        return newGen
+                    break # ok some other images, go below
+                newGen = list()
+                imagesToSkip += 1 # some calcs, better add 1
+                # Add new images, instead of the images skipped
+                newImages = self.site.newimages(number = imagesToSkip, lestart = timestamp)
+                for imageData in generator:
+                    if normal:
+                        image = imageData[0]
+                        timestamp = imageData[1]
+                        uploader = imageData[2]
+                        comment = imageData[3]
+                        newGen.append([image, timestamp, uploader, comment])
+                    else:
+                        image = imageData
+                        newGen.append(image)
+                num = 0
+                for imageData in newImages:
+                    newGen.append(imageData)
+            return newGen
+        else:
+            wikipedia.output(u"The wait option is available only with the standard generator.")
+            return generator
      
     def isTagged(self):
-        """ Understand if an image is already tagged or not. """
+        """ Understand if a file is already tagged or not. """
         TextFind = wikipedia.translate(self.site, txt_find)
         # Is the image already tagged? If yes, no need to double-check, skip
         for i in TextFind:
@@ -1427,9 +1432,9 @@ class main:
         # Here begins the check block.
         if self.some_problem == True:
             if self.mex_used in self.imageCheckText:
-                wikipedia.output(u'Image already fixed. Skip.')
+                wikipedia.output(u'File already fixed. Skip.')
                 return True
-            wikipedia.output(u"The image description for %s contains %s..." % (self.imageName, self.name_used))
+            wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
             if self.mex_used.lower() == 'default':
                 self.mex_used = unvertext
             if self.imagestatus_used == False:
@@ -1440,7 +1445,7 @@ class main:
                 #if self.imagestatus_used == True:
                 self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
             else:
-                wikipedia.output(u"Skipping the image...")
+                wikipedia.output(u"Skipping the file...")
             self.some_problem = False
             return True
         elif brackets == True and license_found != None:
@@ -1458,7 +1463,7 @@ class main:
             delete = False
             return True
         elif self.imageCheckText in nothing:
-            wikipedia.output(u"The image description for %s does not contain a license template!" % self.imageName)
+            wikipedia.output(u"The file's description for %s does not contain a license template!" % self.imageName)
             if hiddenTemplateFound and HiddenTN != None and HiddenTN != '' and HiddenTN != ' ':
                 notification = HiddenTN % self.imageName
             else:
@@ -1483,7 +1488,7 @@ def checkbot():
     limit = 80 # How many images check?
     time_sleep = 30 # How many time sleep after the check?
     skip_number = 0 # How many images to skip before checking?
-    wait_number = 0 # How many time sleep before the check?
+    waitTime = 0 # How many time sleep before the check?
     commonsActive = False # Check if on commons there's an image with the same name?
     normal = False # Check the new images or use another generator?
     urlUsed = False # Use the url-related function instead of the new-pages generator
@@ -1497,7 +1502,7 @@ def checkbot():
     for arg in wikipedia.handleArgs():
         if arg.startswith('-limit'):
             if len(arg) == 7:
-                limit = int(wikipedia.input(u'How many images do you want to check?'))
+                limit = int(wikipedia.input(u'How many files do you want to check?'))
             else:
                 limit = int(arg[7:])
         if arg.startswith('-time'):
@@ -1522,22 +1527,23 @@ def checkbot():
         elif arg.startswith('-skip'):
             if len(arg) == 5:
                 skip = True
-                skip_number = int(wikipedia.input(u'How many images do you want to skip?'))
+                skip_number = int(wikipedia.input(u'How many files do you want to skip?'))
             elif len(arg) > 5:
                 skip = True
                 skip_number = int(arg[6:])
         elif arg.startswith('-wait'):
             if len(arg) == 5:
                 wait = True
-                wait_number = int(wikipedia.input(u'How many time do you want to wait before checking the images?'))
+                waitTime = int(wikipedia.input(u'How many time do you want to wait before checking the files?'))
             elif len(arg) > 5:
                 wait = True
-                wait_number = int(arg[6:])
+                waitTime = int(arg[6:])
         elif arg.startswith('-start'):
             if len(arg) == 6:
                 firstPageTitle = wikipedia.input(u'From witch page do you want to start?')
             elif len(arg) > 6:
                 firstPageTitle = arg[7:]
+            firstPageTitle = firstPageTitle.replace("File:", '').replace("file:", "")
             generator = wikipedia.getSite().allpages(start=firstPageTitle, namespace=6)
             repeat = False
         elif arg.startswith('-page'):
@@ -1594,12 +1600,13 @@ def checkbot():
     site = wikipedia.getSite()
 
     # Block of text to translate the parameters set above.
+    image_old_namespace = u"%s:" % site.image_namespace()
     image_namespace = u"File:"
 
     # If the images to skip are 0, set the skip variable to False (the same for the wait time)
     if skip_number == 0:
         skip = False
-    if wait_number == 0:
+    if waitTime == 0:
         wait = False
 
     # A little block-statement to ensure that the bot will not start with en-parameters
@@ -1644,9 +1651,8 @@ def checkbot():
         # Not the main, but the most important loop.
         #parsed = False
         if wait:
-            printWithTimeZone(u'Skipping the images uploaded less than %s seconds ago..' % wait_number)
             # Let's sleep...
-            generator = mainClass.wait(wait_number, generator, normal, limit)
+            generator = mainClass.wait(waitTime, generator, normal, limit)
         for image in generator:
             # When you've a lot of image to skip before working use this workaround, otherwise
             # let this commented, thanks. [ decoment also parsed = False if you want to use it
@@ -1659,8 +1665,8 @@ def checkbot():
             # If the generator returns something that is not an image, simply skip it.
             if normal == False and regexGen == False:
                 if image_namespace.lower() not in image.title().lower() and \
-                'file:' not in image.title().lower():
-                    wikipedia.output(u'%s seems not an image, skip it...' % image.title())
+                image_old_namespace.lower() not in image.title().lower() and 'file:' not in image.title().lower():
+                    wikipedia.output(u'%s seems not an file, skip it...' % image.title())
                     continue
             if normal:
                 imageData = image
@@ -1675,8 +1681,11 @@ def checkbot():
             try:
                 imageName = image.title().split(image_namespace)[1] # Deleting the namespace (useless here)
             except IndexError:# Namespace image not found, that's not an image! Let's skip...
-                wikipedia.output(u"%s is not an image, skipping..." % image.title())
-                continue
+                try:
+                    imageName = image.title().split(image_old_namespace)[1]
+                except IndexError:
+                    wikipedia.output(u"%s is not a file, skipping..." % image.title())
+                    continue
             mainClass.setParameters(imageName, timestamp, uploader) # Setting the image for the main class         
             # Skip block
             if skip == True:
