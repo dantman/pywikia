@@ -77,7 +77,8 @@ These arguments are useful to provide hints to the bot:
                    where to start looking for translations. This is only
                    useful if you specify a single page to work on. If no
                    text is given after the second ':', the name of the page
-                   itself is used as the title for the hint.
+                   itself is used as the title for the hint, unless the
+                   -hintnobracket command line option (see there) is also selected.
 
                    There are some special hints, trying a number of languages
                    at once:
@@ -122,6 +123,12 @@ These arguments are useful to provide hints to the bot:
     -noauto        Do not use the automatic translation feature for years and
                    dates, only use found links and hints.
                    (note: without ending colon)
+
+    -hintnobracket used to make the robot strip everything in brackets,
+                   and surrounding spaces from the page name, before it is
+                   used in a -hint:xy: where the page name has been left out,
+                   or -hint:all:, -hint:10:, etc. without a name, or
+                   an -askhint reply, where only a language is given.
 
 These arguments define how much user confirmation is required:
 
@@ -456,6 +463,7 @@ class Global(object):
     untranslatedonly = False
     askhints = False
     auto = True
+    hintnobracket = False
     neverlink = []
     showtextlink = 0
     showtextlinkadd = 300
@@ -546,11 +554,14 @@ class Subject(object):
         """Add the given translation hints to the todo list"""
         if globalvar.same:
             if hints:
-                pages = titletranslate.translate(self.originPage, hints = hints + ['all:'], auto = globalvar.auto)
+                pages = titletranslate.translate(self.originPage, hints = hints + ['all:'], auto = globalvar.auto, removebrackets
+= globalvar.hintnobracket)
             else:
-                pages = titletranslate.translate(self.originPage, hints = ['all:'], auto = globalvar.auto)
+                pages = titletranslate.translate(self.originPage, hints = ['all:'], auto = globalvar.auto, removebrackets
+= globalvar.hintnobracket)
         else:
-            pages = titletranslate.translate(self.originPage, hints = hints, auto = globalvar.auto)
+            pages = titletranslate.translate(self.originPage, hints = hints, auto = globalvar.auto, removebrackets
+= globalvar.hintnobracket)
         for page in pages:
             self.todo.append(page)
             self.foundIn[page] = [None]
@@ -758,7 +769,8 @@ class Subject(object):
                     elif not newhint:
                         break
                     else:
-                        pages = titletranslate.translate(self.originPage, hints = [newhint], auto = globalvar.auto)
+                        pages = titletranslate.translate(self.originPage, hints = [newhint], auto = globalvar.auto, removebrackets
+= globalvar.hintnobracket)
                         for page in pages:
                             self.addIfNew(page, counter, None)
 
@@ -1617,6 +1629,8 @@ if __name__ == "__main__":
                 globalvar.askhints = True
             elif arg == '-noauto':
                 pass
+            elif arg == '-hintnobracket':
+                globalvar.hintnobracket = True
             elif arg.startswith('-warnfile:'):
                 warnfile = arg[10:]
             elif arg == '-confirm':

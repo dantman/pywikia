@@ -11,7 +11,7 @@ import re
 
 import wikipedia, date, time
 
-def translate(page, hints = None, auto = True):
+def translate(page, hints = None, auto = True, removebrackets = False):
     """
     Please comment your source code! --Daniel
 
@@ -30,13 +30,16 @@ def translate(page, hints = None, auto = True):
             if newname == '':
                 # if given as -hint:xy or -hint:xy:, assume that there should
                 # be a page in language xy with the same title as the page
-                # we're currently working on
+                # we're currently working on ...
                 ns = page.namespace()
                 if ns:
                     newname = u'%s:%s' % (site.family.namespace('_default', ns), page.titleWithoutNamespace())
                 else:
                     # article in the main namespace
                     newname = page.title()
+                # ... unless we do want brackets
+                if removebrackets:
+                    newname = re.sub(re.compile(ur"\W*?\(.*?\)\W*?", re.UNICODE), u" ", newname)
             try:
                 number = int(codes)
                 codes = site.family.languages_by_size[:number]
