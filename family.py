@@ -785,7 +785,7 @@ class Family:
                 'am': u'ስዕል',
                 'ar': [u'ملف', u'صورة'],
                 'arz': [u'ملف', u'صورة'],
-                'as': [u'িত্র,', u'चित्र'],
+                'as': [u'চিত্র', u'चित्र'],
                 'ast': [u'Archivu', u'Imaxe'],
                 'av': [u'Файл', u'Изображение'],
                 'ay': [u'Archivo', u'Imagen'],
