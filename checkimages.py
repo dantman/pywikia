@@ -219,7 +219,7 @@ nothing_head = {
                 'de'     :u"\n== Bild ohne Lizenz ==\n",
                 'en'     :u"\n== Image without license ==\n",
                 'hu'     :u"\n== Licenc nélküli kép ==\n",
-                'it'     :u"\n\n== Immagine senza licenza ==\n",
+                'it'     :u"\n\n== File senza licenza ==\n",
                 'ja'     :u'',
                 'ko'     :u'',
                 'ta'     :u'',
@@ -299,8 +299,8 @@ report_text = {
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:File:%s]] " + timeselected,
             'hu':u"\n*[[:Kép:%s]] " + timeselected,
-            'it':u"\n*[[:Immagine:%s]] " + timeselected,
-            'ja':u"\n*[[:Immagine:%s]] " + timeselected,
+            'it':u"\n*[[:File:%s]] " + timeselected,
+            'ja':u"\n*[[:File:%s]] " + timeselected,
             'ko':u"\n*[[:그림:%s]] " + timeselected,
             'ta':u"\n*[[:படிமம்:%s]] " + timeselected,
             'zh':u"\n*[[:File:%s]] " + timeselected,
@@ -377,7 +377,7 @@ duplicatesText = {
 duplicate_user_talk_head = {
         'commons': None,
         'en'     : None, 
-        'it'     : u'\n\n== Immagine doppia ==\n',
+        'it'     : u'\n\n== File doppio ==\n',
         }
 # Message to put in the talk
 duplicates_user_talk_text = {
@@ -1657,7 +1657,7 @@ def checkbot():
             # When you've a lot of image to skip before working use this workaround, otherwise
             # let this commented, thanks. [ decoment also parsed = False if you want to use it
             #
-            #if image.title() != u'Immagine:Nytlogo379x64.gif' and not parsed:
+            #if image.title() != u'File:Nytlogo379x64.gif' and not parsed:
             #    wikipedia.output(u"%s already parsed." % image.title())
             #    continue
             #else:
