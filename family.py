@@ -1010,7 +1010,7 @@ class Family:
                 'fur': u'Discussion figure',
                 'fy': u'Ofbyld oerlis',
                 'ga': u'Plé íomhá',
-                'gl': [u'Conversa ficheiro', [u'Conversa imaxe', u'Conversa Imaxe'],
+                'gl': [u'Conversa ficheiro', u'Conversa imaxe', u'Conversa Imaxe'],
                 'glk': u'بحث تصویر',
                 'gn': u"Ta'ãnga myangekõi",
                 'gu': u'ચિત્રની ચર્ચા',
