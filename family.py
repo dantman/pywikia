@@ -1065,7 +1065,7 @@ class Family:
                 'lbe': u'Суратраясса ихтилат',
                 'li': u'Euverlèk plaetje',
                 'lij': [u'Discûscioîn immaggine', u'Discussioni immagine'],
-                'lmo': [u'inika amin'ny sokajy', u'Discussioni immagine'],
+                'lmo': [u'Discussioni file', u'Discussioni immagine'],
                 'ln': [u'Discussion Fichier', u'Discussion Image'],
                 'lo': u'ສົນທະນາກ່ຽວກັບຮູບ',
                 'lt': u'Vaizdo aptarimas',
