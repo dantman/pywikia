@@ -1744,6 +1744,7 @@ class Family:
                 'lbe': u'Кумаг',
                 'lij': u'Aiuto',
                 'lij': [u'Agiûtto', u'Aiuto'],
+                'lmo': u'Aiuto',
                 'ln': u'Aide',
                 'lo': u'ຊ່ວຍເຫຼືອ',
                 'lt': u'Pagalba',
