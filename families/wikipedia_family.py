@@ -166,7 +166,7 @@ class Family(family.Family):
             'ca': u'Viquipèdia Discussió',
             'cbk-zam': u'Wikipedia Discusión',
             'ce': u'Википедийа Дийца',
-            'ceb': u'Hisgot saWikipedia',
+            'ceb': [u'Hisgot sa Wikipedia', u'Hisgot saWikipedia'],
             'ch': u'Kombetsasion nu Wikipedia',
             'crh': [u'Vikipediya muzakeresi', u'Vikipediya музакереси'],
             'cs': u'Wikipedie diskuse',
