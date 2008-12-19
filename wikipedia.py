@@ -3724,7 +3724,7 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
             newtext = s + separator + s2
         else:
             # calculate what was after the categories links on the page
-            firstafter = s2.find(marker)
+            firstafter = s2.find(marker) + len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
                 newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
