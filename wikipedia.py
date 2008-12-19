@@ -3554,14 +3554,13 @@ def replaceLanguageLinks(oldtext, new, site = None):
             firstafter = s2.find(marker) + len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
-                newtext = s2[:firstafter] + s + s2[firstafter:]
+                newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 cats = getCategoryLinks(s2, site = site)
                 s2 = removeCategoryLinks(s2.replace(marker,'').strip(), site) + separator + s
                 newtext = replaceCategoryLinks(s2, cats, site=site)
             else:
                 newtext = s2.replace(marker,'').strip() + separator + s
-            newtext = newtext.replace(marker,'')
     else:
         newtext = s2.replace(marker,'')
     return newtext
@@ -3728,14 +3727,13 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
             firstafter = s2.find(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
-                newtext = s2[:firstafter] + s + s2[firstafter:]
+                newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 newtext = s2.replace(marker,'').strip() + separator + s
             else:
                 interwiki = getLanguageLinks(s2)
                 s2 = removeLanguageLinks(s2.replace(marker,''), site) + separator + s
                 newtext = replaceLanguageLinks(s2, interwiki, site)
-        newtext = newtext.replace(marker,'')
     else:
         s2 = s2.replace(marker,'')
         return s2
