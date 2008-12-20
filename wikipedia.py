@@ -3530,7 +3530,7 @@ def removeLanguageLinks(text, site = None, marker = ''):
                          ['nowiki', 'comment', 'math', 'pre', 'source'], marker=marker)
     return text.strip()
 
-def replaceLanguageLinks(oldtext, new, site = None):
+def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
     """Replace interlanguage links in the text with a new set of links.
 
     'new' should be a dict with the Site objects as keys, and Page objects
@@ -3543,15 +3543,22 @@ def replaceLanguageLinks(oldtext, new, site = None):
         marker += '@'
     if site == None:
         site = getSite()
+    separator = site.family.interwiki_text_separator
     s = interwikiFormat(new, insite = site)
-    s2 = removeLanguageLinks(oldtext, site = site, marker = marker)
+    if addOnly:
+        s2 = oldtext
+    else:
+        s2 = removeLanguageLinks(oldtext, site = site, marker = marker)
     if s:
-        separator = site.family.interwiki_text_separator
         if site.language() in site.family.interwiki_attop:
             newtext = s + separator + s2.replace(marker,'').strip()
         else:
             # calculate what was after the language links on the page
-            firstafter = s2.find(marker) + len(marker)
+            firstafter = s2.find(marker)
+            if firstafter < 0:
+                firstafter = len(s2)
+            else:
+                firstafter += len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
                 newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
@@ -3712,6 +3719,7 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
     if site.sitename() == 'wikipedia:de' and "{{Personendaten" in oldtext:
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia on pages that contain the person data template because of the non-standard placement of that template. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22')
 
+    separator = site.family.category_text_separator
     s = categoryFormat(new, insite = site)
     if addOnly:
         s2 = oldtext
@@ -3719,12 +3727,14 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
         s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
 
     if s:
-        separator = site.family.category_text_separator
         if site.language() in site.family.category_attop:
             newtext = s + separator + s2
         else:
             # calculate what was after the categories links on the page
-            firstafter = s2.find(marker) + len(marker)
+            if firstafter < 0:
+                firstafter = len(s2)
+            else:
+                firstafter += len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
                 newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
@@ -3735,8 +3745,7 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
                 s2 = removeLanguageLinks(s2.replace(marker,''), site) + separator + s
                 newtext = replaceLanguageLinks(s2, interwiki, site)
     else:
-        s2 = s2.replace(marker,'')
-        return s2
+        newtext = s2.replace(marker,'')
     return newtext.strip()
 
 def categoryFormat(categories, insite = None):
