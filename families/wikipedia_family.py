@@ -245,7 +245,7 @@ class Family(family.Family):
             'mn': u'Wikipedia-н хэлэлцүүлэг',
             'mr': u'विकिपीडिया चर्चा',
             'ms': u'Perbincangan Wikipedia',
-            'mt': u'Wikipedija diskuti',
+            'mt': [u'Wikipedija diskussjoni', u'Wikipedija diskuti'],
             'myv': u'Википедиясь кортамось',
             'mzn': u'بحث Wikipedia',
             'nah': [u'Wikipedia tēixnāmiquiliztli', u'Wikipedia Discusión'],
