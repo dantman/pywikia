@@ -1534,14 +1534,8 @@ not supported by PyWikipediaBot!"""
                 # without any reason!
                 # raise EditConflict(u'Someone deleted the page.')
                 # No raise, simply define these variables and retry:
-                if self._editTime:
-                    predata['wpEdittime'] = self._editTime
-                else:
-                    predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-                if self._startTime:
-                    predata['wpStarttime'] = self._startTime  
-                else:
-                    predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
+                predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
                 continue
             if self.site().has_mediawiki_message("viewsource")\
                     and self.site().mediawiki_message('viewsource') in data:
