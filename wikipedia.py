@@ -2314,7 +2314,9 @@ not supported by PyWikipediaBot!"""
              if mark and self.exists():
                  text = self.get(get_redirect = True)
                  output(u'Cannot delete page %s - marking the page for deletion instead:' % self.aslink())
-                 self.put(u'{{delete|%s}}\n%s ~~~~\n----\n\n%s' % (reason, reason, text), comment = reason)
+                 # Note: Parameters to {{delete}}, and their meanings, vary from one Wikipedia to another.
+                 # If you want or need to use them, you must be careful not to brake others. Else don't.
+                 self.put(u'{{delete}}\n%s ~~~~\n----\n\n%s' % (reason, text), comment = reason)
                  return
              else:
                  raise
