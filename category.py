@@ -918,10 +918,10 @@ if __name__ == "__main__":
             elif arg == '-rebuild':
                 catDB.rebuild()
             elif arg.startswith('-from:'):
-                oldCatTitle = arg[len('-from:'):]
+                oldCatTitle = arg[len('-from:'):].replace('_', ' ')
                 fromGiven = True
             elif arg.startswith('-to:'):
-                newCatTitle = arg[len('-to:'):]
+                newCatTitle = arg[len('-to:'):].replace('_', ' ')
                 toGiven = True
             elif arg == '-batch':
                 batchMode = True
