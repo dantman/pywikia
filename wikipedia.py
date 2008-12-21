@@ -67,12 +67,18 @@ of the text unless otherwise noted --
     decodeEsperantoX: decode Esperanto text using the x convention.
     encodeEsperantoX: convert wikitext to the Esperanto x-encoding.
     sectionencode: encode text for use as a section title in wiki-links.
+    findmarker(text, startwith, append): return a string which is not part
+        of text
+    expandmarker(text, marker, separator): return marker string expanded
+        backwards to include separator occurrences plus whitespace
 
 Wikitext manipulation functions for interlanguage links:
 
     getLanguageLinks(text,xx): extract interlanguage links from text and
         return in a dict
     removeLanguageLinks(text): remove all interlanguage links from text
+    removeLanguageLinksAndSeparator(text, site, marker, separator = ''):
+        remove language links, whitespace, preceeding separators from text
     replaceLanguageLinks(oldtext, new): remove the language links and
         replace them with links from a dict like the one returned by
         getLanguageLinks
@@ -87,6 +93,8 @@ Wikitext manipulation functions for category links:
     getCategoryLinks(text): return list of Category objects corresponding
         to links in text
     removeCategoryLinks(text): remove all category links from text
+    replaceCategoryLinksAndSeparator(text, site, marker, separator = ''):
+        remove language links, whitespace, preceeding separators from text
     replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
         those in a list of Category objects
     replaceCategoryInPlace(text,oldcat,newtitle): replace a single link to
@@ -1853,19 +1861,13 @@ not supported by PyWikipediaBot!"""
         thistxt  = removeDisabledParts(thistxt)
 
         # marker for inside templates or parameters
-        marker = u'@@'
-        while marker in thistxt:
-            marker += u'@'
+        marker = findmarker(thistxt,  u'@@', u'@')
 
         # marker for links
-        marker2 = u'##'
-        while marker2 in thistxt:
-            marker2 += u'#'
+        marker2 = findmarker(thistxt,  u'##', u'#')
 
         # marker for math
-        marker3 = u'%%'
-        while marker2 in thistxt:
-            marker3 += u'%'
+        marker3 = findmarker(thistxt,  u'%%', u'%')
 
         result = []
         inside = {}
@@ -3452,12 +3454,39 @@ def isDisabled(text, index, tags = ['*']):
     For the tags parameter, see removeDisabledParts() above.
     """
     # Find a marker that is not already in the text.
-    marker = '@@'
-    while marker in text:
-        marker += '@'
+    marker = findmarker(text, '@@', '@')
     text = text[:index] + marker + text[index:]
     text = removeDisabledParts(text, tags)
     return (marker not in text)
+
+def findmarker(text, startwith = u'@', append = u'@'):
+    # find a string which is not part of text
+    if len(append) <= 0:
+        append = u'@'
+    mymarker = startwith
+    while mymarker in text:
+        mymarker += append
+    return mymarker
+
+def expandmarker(text, marker = '', separator = ''):
+    # set to remove any number of separator occurrences plus arbitrary
+    # whitespace before, after, and between them,
+    # by allowing to include them into marker.
+    if separator:
+        firstinmarker = text.find(marker)
+        firstinseparator = firstinmarker
+        lenseparator = len(separator)
+        striploopcontinue = True
+        while firstinseparator > 0 and striploopcontinue:
+            striploopcontinue = False
+            if (firstinseparator >= lenseparator) and (separator == text[firstinseparator-lenseparator:firstinseparator]):
+                firstinseparator -= lenseparator
+                striploopcontinue = True
+            elif text[firstinseparator-1] < ' ':
+                firstinseparator -= 1
+                striploopcontinue = True
+        marker = text[firstinseparator:firstinmarker] + marker
+    return marker
 
 # Part of library dealing with interwiki language links
 
@@ -3532,6 +3561,24 @@ def removeLanguageLinks(text, site = None, marker = ''):
                          ['nowiki', 'comment', 'math', 'pre', 'source'], marker=marker)
     return text.strip()
 
+def removeLanguageLinksAndSeparator(text, site = None, marker = '', separator = ''):
+    """Return text with all interlanguage links, plus any preceeding whitespace
+       and separateor occurrences removed.
+
+    If a link to an unknown language is encountered, a warning is printed.
+    If a marker is defined, that string is placed at the location of the
+    last occurence of an interwiki link (at the end if there are no
+    interwiki links).
+
+    """
+    if separator:
+        mymarker = findmarker(text, u'@L@')
+        newtext = removeLanguageLinks(text, site, mymarker)
+        mymarker = expandmarker(newtext, mymarker, separator)
+        return newtext.replace(mymarker, marker)
+    else:
+        return removeLanguageLinks(text, site, marker)
+
 def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
     """Replace interlanguage links in the text with a new set of links.
 
@@ -3540,17 +3587,18 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
     function).
     """
     # Find a marker that is not already in the text.
-    marker = '@@'
-    while marker in oldtext:
-        marker += '@'
+    marker = findmarker( oldtext, u'@@')
     if site == None:
         site = getSite()
     separator = site.family.interwiki_text_separator
-    s = interwikiFormat(new, insite = site)
+    cseparator = site.family.category_text_separator
+    separatorstripped = separator.strip()
+    cseparatorstripped = cseparator.strip()
     if addOnly:
         s2 = oldtext
     else:
-        s2 = removeLanguageLinks(oldtext, site = site, marker = marker)
+        s2 = removeLanguageLinksAndSeparator(oldtext, site = site, marker = marker, separator = separatorstripped)
+    s = interwikiFormat(new, insite = site)
     if s:
         if site.language() in site.family.interwiki_attop:
             newtext = s + separator + s2.replace(marker,'').strip()
@@ -3563,11 +3611,13 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
                 firstafter += len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
+                if separatorstripped:
+                    s = separator + s
                 newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 cats = getCategoryLinks(s2, site = site)
-                s2 = removeCategoryLinks(s2.replace(marker,'').strip(), site) + separator + s
-                newtext = replaceCategoryLinks(s2, cats, site=site)
+                s2 = removeCategoryLinksAndSeparator(s2.replace(marker,'',cseparatorstripped).strip(), site) + separator + s
+                newtext = replaceCategoryLinks(s2, cats, site=site, addOnly=True)
             else:
                 newtext = s2.replace(marker,'').strip() + separator + s
     else:
@@ -3654,7 +3704,7 @@ def removeCategoryLinks(text, site, marker = ''):
     """Return text with all category links removed.
 
     Put the string marker after the last replacement (at the end of the text
-    if  there is no replacement).
+    if there is no replacement).
 
     """
     # This regular expression will find every link that is possibly an
@@ -3668,6 +3718,22 @@ def removeCategoryLinks(text, site, marker = ''):
         #avoid having multiple linefeeds at the end of the text
         text = re.sub('\s*%s' % re.escape(marker), '\r\n' + marker, text.strip())
     return text.strip()
+
+def removeCategoryLinksAndSeparator(text, site = None, marker = '', separator = ''):
+    """Return text with all category links, plus any preceeding whitespace
+       and separateor occurrences removed.
+
+    Put the string marker after the last replacement (at the end of the text
+    if there is no replacement).
+
+    """
+    if separator:
+        mymarker = findmarker(text, u'@C@')
+        newtext = removeCategoryLinks(text, site, mymarker)
+        mymarker = expandmarker(newtext, mymarker, separator)
+        return newtext.replace(mymarker, marker)
+    else:
+        return removeCategoryLinks(text, site, marker)
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
     """Replace the category oldcat with the category newcat and return
@@ -3712,40 +3778,41 @@ def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
     """
 
     # Find a marker that is not already in the text.
-    marker = '@@'
-    while marker in oldtext:
-        marker += '@'
-
+    marker = findmarker( oldtext, u'@@')
     if site is None:
         site = getSite()
     if site.sitename() == 'wikipedia:de' and "{{Personendaten" in oldtext:
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia on pages that contain the person data template because of the non-standard placement of that template. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22')
-
     separator = site.family.category_text_separator
-    s = categoryFormat(new, insite = site)
+    iseparator = site.family.interwiki_text_separator
+    separatorstripped = separator.strip()
+    iseparatorstripped = iseparator.strip()
     if addOnly:
         s2 = oldtext
     else:
-        s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
-
+        s2 = removeCategoryLinksAndSeparator(oldtext, site = site, marker = marker, separator = separatorstripped)
+    s = categoryFormat(new, insite = site)
     if s:
         if site.language() in site.family.category_attop:
             newtext = s + separator + s2
         else:
             # calculate what was after the categories links on the page
+            firstafter = s2.find(marker)
             if firstafter < 0:
                 firstafter = len(s2)
             else:
                 firstafter += len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:]:
+                if separatorstripped:
+                    s = separator + s
                 newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 newtext = s2.replace(marker,'').strip() + separator + s
             else:
                 interwiki = getLanguageLinks(s2)
-                s2 = removeLanguageLinks(s2.replace(marker,''), site) + separator + s
-                newtext = replaceLanguageLinks(s2, interwiki, site)
+                s2 = removeLanguageLinksAndSeparator(s2.replace(marker,''), site, '', iseparatorstripped) + separator + s
+                newtext = replaceLanguageLinks(s2, interwiki, site = site, addOnly = True)
     else:
         newtext = s2.replace(marker,'')
     return newtext.strip()
