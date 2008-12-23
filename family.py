@@ -995,7 +995,7 @@ class Family:
                 'ay': [u'Archivo Discusión', u'Imagen Discusión'],
                 'az': u'Şəkil müzakirəsi',
                 'ba': u'Рәсем б-са фекер алышыу',
-                'bar': u'Bild Diskussion',
+                'bar': [u'Datei Diskussion', u'Bild Diskussion'],
                 'bat-smg':u'Abruozdielė aptarėms',
                 'bcl': u'Olay sa ladawan',
                 'be': u'Размовы пра выяву',
