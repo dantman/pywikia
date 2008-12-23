@@ -1041,7 +1041,7 @@ class Family:
                 'gn': u"Ta'ãnga myangekõi",
                 'gu': u'ચિત્રની ચર્ચા',
                 'gv': u'Resooney coadan',
-                'he': u'שיחת תמונה',
+                'he': [u'שיחת קובץ', u'שיחת תמונה'],
                 'hi': u'चित्र वार्ता',
                 'hr': [u'Razgovor o datoteci', u'Razgovor o slici'],
                 'hsb': [u'Diskusija k dataji', u'Diskusija k wobrazej'],
