@@ -2280,7 +2280,7 @@ class Family:
                 'lt': u'Kategorijos aptarimas',
                 'lv': u'Kategorijas diskusija',
                 'map-bms': u'Dhiskusi Kategori',
-                'mdf: u'Категорие корхнема',
+                'mdf': u'Категорие корхнема',
                 'mg': [u'Dinika amini\'ny sokajy', u'Discussion Catégorie'],
                 'mk': u'Разговор за категорија',
                 'ml': u'വിഭാഗത്തിന്റെ സംവാദം',
