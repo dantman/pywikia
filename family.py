@@ -677,7 +677,7 @@ class Family:
                 'cbk-zam': u'Usuario Discusión',
                 'ce': u'Юзери дийца',
                 'ceb': u'Hisgot sa Gumagamit',
-                'ch': u'Kombetsasion ni muna'sesetbi',
+                'ch': u'Kombetsasion ni muna\'sesetbi',
                 'crh': [u'Qullanıcı muzakeresi', u'Къулланыджы музакереси'],
                 'cs': u'Uživatel diskuse',
                 'csb': u'Diskùsëjô brëkòwnika',
