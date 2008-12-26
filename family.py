@@ -204,7 +204,7 @@ class Family:
                 'et': u'Eri',
                 'eu':[u'Berezi', u'Aparteko'],
                 'fa': u'ویژه',
-                'ff: u'Spécial',
+                'ff': u'Spécial',
                 'fi': u'Toiminnot',
                 'fiu-vro': u'Tallituslehekülg',
                 'fo': [u'Serstakt', u'Serstakur'],
