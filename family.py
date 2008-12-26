@@ -510,7 +510,7 @@ class Family:
                 'cbk-zam': u'Usuario',
                 'ce': u'Юзер',
                 'ceb': u'Gumagamit',
-                'ch': u'Muna'sesetbi',
+                'ch': u'Muna\'sesetbi',
                 'crh': [u'Qullanıcı', u'Къулланыджы'],
                 'cs': u'Uživatel',
                 'csb': u'Brëkòwnik',
