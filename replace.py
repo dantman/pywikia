@@ -16,6 +16,10 @@ These command line parameters can be used to specify which pages to work on:
                   Argument can also be given as "-page:pagetitle". You can
                   give this parameter multiple times to edit multiple pages.
 
+-category         Works on all of the pages in a specific category.  Specify
+                  this argument multiple times to work on multiple categories
+                  simultaneously.
+
 Furthermore, the following command line parameters are supported:
 
 -regex            Make replacements using regular expressions. If this argument
@@ -501,6 +505,8 @@ def main():
     # Between a regex and another (using -fix) sleep some time (not to waste
     # too much CPU
     sleep = None
+    # A list of categories whose pages we should process.
+    categories = []
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
@@ -520,6 +526,8 @@ def main():
                 xmlFilename = arg[5:]
         elif arg =='-sql':
             useSql = True
+        elif arg.startswith('-category'):
+            categories.append(arg[len('-category:'):])
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 PageTitles.append(wikipedia.input(
@@ -547,14 +555,14 @@ def main():
         elif arg == '-nocase':
             caseInsensitive = True
         elif arg.startswith('-addcat:'):
-            add_cat = arg[8:]
+            add_cat = arg[len('addcat:'):]
         elif arg.startswith('-namespace:'):
             try:
                 namespaces.append(int(arg[11:]))
             except ValueError:
                 namespaces.append(arg[11:])
         elif arg.startswith('-summary:'):
-            wikipedia.setAction(arg[9:])
+            wikipedia.setAction(arg[len('-summary:'):])
             summary_commandline = True
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
@@ -632,7 +640,7 @@ u'Press Enter to use this default message, or enter a description of the\nchange
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
-    # already compile all regular expressions here to save time later
+    # Pre-compile all regular expressions here to save time later
     for i in range(len(replacements)):
         old, new = replacements[i]
         if not regex:
@@ -681,7 +689,9 @@ JOIN text ON (page_id = old_id)
 %s
 LIMIT 200""" % (whereClause, exceptClause)
         gen = pagegenerators.MySQLPageGenerator(query)
-
+    elif categories:
+        gens = [pagegenerators.CategorizedPageGenerator(catlib.Category(wikipedia.getSite(), 'Category:' + t)) for t in categories]
+        gen = pagegenerators.DuplicateFilterPageGenerator(pagegenerators.CombinedPageGenerator(gens))
     elif PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle)
                  for PageTitle in PageTitles]
