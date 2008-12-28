@@ -23,7 +23,7 @@ def mw_timestamp(ts):
 DB_TS = re.compile('[^0-9]')
 def db_timestamp(ts):
 	return DB_TS.sub('', ts)
-IMG_NS = re.compile(r'(?i)^\s*Image\:')
+IMG_NS = re.compile(r'(?i)^\s*File\:')
 def strip_image(img):
 	img = IMG_NS.sub('', img)
 	img = img.replace(' ', '_')
