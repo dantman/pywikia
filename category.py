@@ -90,6 +90,7 @@ docuReplacements = {
 msg_add={
     'ar':u'روبوت: إضافة [[تصنيف:%s]]',
     'bat-smg':u'Robots: Pridedama [[Kateguorėjė:%s]]',
+    'ca':u'Robot: Afegint [[Categoria:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
@@ -122,6 +123,7 @@ msg_add={
 
 msg_change={
     'ar':u'روبوت: تغيير %s',
+    'ca':u'Robot: Canviant %s',
     'da':u'Robot: Ændrer %s',
     'de':u'Bot: Ändere %s',
     'en':u'Robot: Changing %s',
@@ -154,6 +156,7 @@ msg_change={
 deletion_reason_move = {
     'ar':u'روبوت: التصنيف نقل إلى [[:تصنيف:%s|%s]]',
     'bat-smg':u'Robots: Kateguorėjė bova parvadėnta i [[:Kateguorėjė:%s|%s]]',
+    'ca':u'Robot: La categoria s\'ha mogut a [[:Categoria:%s|%s]]',
     'da':u'Robot: Kategori flyttet til [[:Category:%s|%s]]',
     'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
@@ -475,6 +478,7 @@ class CategoryListifyRobot:
     '''
     listify_msg={
         'ar':u'روبوت: عرض من %s (%d مدخلة)',
+        'ca':u'Robot: Llistant de %s (%d entrades)',
         'en':u'Robot: Listifying from %s (%d entries)',
         'fi':u'Botti listasi luokan %s (%d jäsentä)',
         'he':u'בוט: יוצר רשימה מהקטגוריה %s (%d דפים)',
@@ -530,6 +534,7 @@ class CategoryRemoveRobot:
     '''
     deletion_reason_remove = {
         'ar':u'روبوت: التصنيف تم الاستغناء عنه',
+        'ca':u'Robot: La categoria s\'ha eliminat',
         'da':u'Robot: Kategorien blev opløst',
         'de':u'Bot: Kategorie wurde aufgelöst',
         'en':u'Robot: Category was disbanded',
@@ -553,6 +558,7 @@ class CategoryRemoveRobot:
     msg_remove={
         'ar':u'روبوت: إزالة من %s',
         'bat-smg':u'Robots: Trėnama ėš  %s',
+        'ca':u'Robot: Eliminant de %s',
         'da':u'Robot: Fjerner fra %s',
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
@@ -804,6 +810,7 @@ class CategoryTreeRobot:
         # the one we're coming from
         also_in_cats = {
             'ar': u'(أيضا في %s)',
+            'ca': u'(també a %s)',
             'da': u'(også i %s)',
             'de': u'(auch in %s)',
             'en': u'(also in %s)',
@@ -823,7 +830,7 @@ class CategoryTreeRobot:
             'sv': u'(också i %s)',
             'ср': u'(такође у %s)',
             'zh': u'(也在 %s)',
-            }
+        }
 
         result = u'#' * currentDepth
         result += '[[:%s|%s]]' % (cat.title(), cat.title().split(':', 1)[1])
