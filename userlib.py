@@ -97,7 +97,7 @@ class User:
             else:
                 break
 
-    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False, emailBan=False):
+    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
         """
         Block the user.
 
@@ -109,6 +109,8 @@ class User:
         noSignup - does the block disable account creation?
         enableAutoblock - is autoblock enabled on the block?
         emailBan - prevent user from sending e-mail?
+        watchUser - watch the user's user and talk pages?
+        allowUsertalk - allow this user to edit own talk page?
 
         The default values for block options are set to as most unrestrictive
         """
@@ -136,6 +138,8 @@ class User:
             'wpCreateAccount': boolStr[noSignup],
             'wpEnableAutoblock': boolStr[enableAutoblock],
             'wpEmailBan': boolStr[emailBan],
+            'wpWatchUser': boolStr[watchUser],
+            'wpAllowUsertalk': boolStr[allowUsertalk],
             'wpBlock': 'Block this user',
             'wpEditToken': token
         }
@@ -173,7 +177,7 @@ class User:
         data = self.site.getUrl(address)
         bIDre = re.search(r'action=unblock&amp;id=(\d+)', data)
         if not bIDre:
-            print data
+            wikipedia.output(data)
             raise BlockIDError
 
         return bIDre.group(1)
@@ -207,8 +211,8 @@ if __name__ == '__main__':
     try:
         Site = wikipedia.getSite()
         exampleUser = User(Site, 'Example')
-        print exampleUser.getUserPage().get()
-        print exampleUser.getUserPage('Lipsum').get()
-        print exampleUser.getUserTalkPage().get()
+        wikipedia.output(exampleUser.getUserPage().get())
+        wikipedia.output(exampleUser.getUserPage('Lipsum').get())
+        wikipedia.output(exampleUser.getUserTalkPage().get())
     finally:
         wikipedia.stopme()
