@@ -65,6 +65,7 @@ class CategoryRedirectBot(object):
                        "Empty category",
                        "CR",
                        "Catredirect",
+                       "Cat redirect",
                        "Emptycat",
                        "Emptycategory",
                        "Empty cat",
@@ -485,7 +486,7 @@ category links:
                 continue
             match = template_regex.search(text)
             if match is None:
-                self.log_text.append(u"* False positive: [[:%s:%s]]"
+                self.log_text.append(u"* False positive: [[:%s%s]]"
                                       % (self.catprefix, cat_title))
                 continue
             if cat_title not in record:
