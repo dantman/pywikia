@@ -883,7 +883,7 @@ class Family(family.Family):
                 'fr': [104],
                 'hr': [102],
                 'lt': [104],
-            }
+            },
         }
         self.crossnamespace[1] = {
             '_default': {
@@ -894,7 +894,7 @@ class Family(family.Family):
                 'fr': [105],
                 'hr': [103],
                 'lt': [105],
-            }
+            },
         }
         self.crossnamespace[102] = {
             'pt': {
@@ -910,7 +910,7 @@ class Family(family.Family):
                 'es': [0, 104], 
                 'fr': [0, 104], 
                 'lt': [0, 104]
-            }
+            },
         }
         self.crossnamespace[103] = {
             'pt': {
@@ -919,68 +919,68 @@ class Family(family.Family):
                 'es': [1, 105],
                 'fr': [1, 105],
                 'lt': [1, 105]
-            }
+            },
             'hr': {
                 '_default': [1],
                 'als': [1, 105],
                 'es': [1, 105],
                 'fr': [1, 105],
                 'lt': [1, 105]
-            }
+            },
         }
         self.crossnamespace[104] = {
             'als': {
                 '_default': [0],
-                'pt': [0, 102]
-                'hr': [0, 102]
+                'pt': [0, 102],
+                'hr': [0, 102],
             },
             'es': { 
                 '_default': [0],
-                'pt': [0, 102]
-                'hr': [0, 102]
+                'pt': [0, 102],
+                'hr': [0, 102],
             },
             'fr': {
                 '_default': [0],
-                'pt': [0, 102]
-                'hr': [0, 102]
+                'pt': [0, 102],
+                'hr': [0, 102],
             },
             'lt': { 
                 '_default': [0],
-                'pt': [0, 102]
-                'hr': [0, 102]
-            }
+                'pt': [0, 102],
+                'hr': [0, 102],
+            },
         }
         self.crossnamespace[105] = {
             'als': {
                 '_default': [1],
-                'pt': [0, 103]
-                'hr': [0, 103]
+                'pt': [0, 103],
+                'hr': [0, 103],
             },
             'es': {
                 '_default': [1],
-                'pt': [0, 103]
-                'hr': [0, 103]
+                'pt': [0, 103],
+                'hr': [0, 103],
             },
             'fr': {
                 '_default': [1],
-                'pt': [0, 103]
-                'hr': [0, 103]
+                'pt': [0, 103],
+                'hr': [0, 103],
             },
             'lt': {
                 '_default': [1],
-                'pt': [0, 103]
-                'hr': [0, 103]
-            }
+                'pt': [0, 103],
+                'hr': [0, 103],
+            },
         }
         self.crossnamespace[12] = {
             'en': {
                 '_default': [0],
-            }
+            },
         }
         self.crossnamespace[13] = {
             'en': {
                 '_default': [0],
-            }
+            },
         }
     def get_known_families(self, site):
         # In Swedish Wikipedia 's:' is part of page title not a family
