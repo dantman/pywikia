@@ -585,7 +585,7 @@ class Family(family.Family):
                     u'Homonymie de comtés', u'Internationalisation',
                     u'Isomérie', u'Homonymie de nom romain',
                     u'Paronymie', u'Patronyme', u'Personnes homonymes',
-                    u'Unités homonymes', u'Villes homonymes'],
+                    u'Unités homonymes', u'Villes homonymes', u'Homonymie bateau'],
             'frp': [u'Homonimos'],
             'fy':  [u'Tfs', u'Neibetsjuttings'],
             'ga':  [u'Idirdhealú', u'Disambig'],
@@ -618,7 +618,7 @@ class Family(family.Family):
             'lmo': [u'Desambiguació'],
             'ln':  [u'Bokokani'],
             'lt':  None,
-            'mk':  [u'Појаснување', u'Disambig'],
+            'mk':  [u'Појаснување', u'Disambig', u'Geodis'],
             'mo':  [u'Дезамбигуйзаре', u'Disambig'],
             'ms':  [u'Nyahkekaburan', u'Disambig'],
             'mt':  [u'Diżambigwazzjoni'],
@@ -662,7 +662,7 @@ class Family(family.Family):
             'ta':  [u'பக்கவழி நெறிப்படுத்தல்'],
             'te':  [u'అయోమయ నివృత్తి', u'వివరమైన అయోమయ నివృత్తి'],
             'tg':  [u'Ибҳомзудоӣ', u'Disambig', u'Рафъи ибҳом', u'Disambiguation'],
-            'th':  [u'แก้กำกวม', u'Disambig'],
+            'th':  [u'แก้กำกวม', u'Disambig', u'คำกำกวม'],
             'tl':  [u'Paglilinaw', u'Disambig'],
             'tr':  [u'Anlam ayrım', u'Disambig', u'Anlam ayrımı'],
             'uk':  [u'Неоднозначність',u'DisambigG', u'Disambig', u'DisambigN',
@@ -880,7 +880,8 @@ class Family(family.Family):
                 'als': [104], 
                 'en': [12],
                 'es': [104], 
-                'fr': [104], 
+                'fr': [104],
+                'hr': [102],
                 'lt': [104],
             }
         }
@@ -891,11 +892,19 @@ class Family(family.Family):
                 'en': [13],
                 'es': [105],
                 'fr': [105],
+                'hr': [103],
                 'lt': [105],
             }
         }
         self.crossnamespace[102] = {
             'pt': {
+                '_default': [0],
+                'als': [0, 104], 
+                'es': [0, 104], 
+                'fr': [0, 104], 
+                'lt': [0, 104]
+            },
+            'hr': {
                 '_default': [0],
                 'als': [0, 104], 
                 'es': [0, 104], 
@@ -911,41 +920,56 @@ class Family(family.Family):
                 'fr': [1, 105],
                 'lt': [1, 105]
             }
+            'hr': {
+                '_default': [1],
+                'als': [1, 105],
+                'es': [1, 105],
+                'fr': [1, 105],
+                'lt': [1, 105]
+            }
         }
         self.crossnamespace[104] = {
             'als': {
                 '_default': [0],
                 'pt': [0, 102]
+                'hr': [0, 102]
             },
             'es': { 
                 '_default': [0],
                 'pt': [0, 102]
+                'hr': [0, 102]
             },
             'fr': {
                 '_default': [0],
                 'pt': [0, 102]
+                'hr': [0, 102]
             },
             'lt': { 
                 '_default': [0],
                 'pt': [0, 102]
+                'hr': [0, 102]
             }
         }
         self.crossnamespace[105] = {
             'als': {
                 '_default': [1],
                 'pt': [0, 103]
+                'hr': [0, 103]
             },
             'es': {
                 '_default': [1],
                 'pt': [0, 103]
+                'hr': [0, 103]
             },
             'fr': {
                 '_default': [1],
                 'pt': [0, 103]
+                'hr': [0, 103]
             },
             'lt': {
                 '_default': [1],
                 'pt': [0, 103]
+                'hr': [0, 103]
             }
         }
         self.crossnamespace[12] = {
