@@ -71,9 +71,12 @@ class XmlDumpSelflinkPageGenerator:
         mysite = wikipedia.getSite()
         dump = xmlreader.XmlDump(self.xmlFilename)
         for entry in dump.parse():
-            title = re.escape(entry.title)
-            if not mysite.nocapitalize:
-                title = '[%s%s]%s' % (title[0].lower(), title[0].upper(), title[1:])
+            if mysite.nocapitalize:
+                title = re.escape(entry.title)
+            else:
+                title = '[%s%s]%s' % (re.escape(entry.title[0].lower()),
+                                      re.escape(entry.title[0].upper()),
+                                      re.escape(entry.title[1:]))
             selflinkR = re.compile(r'\[\[' + title + '(\|[^\]]*)?\]\]')
             if selflinkR.search(entry.text):
                 yield wikipedia.Page(mysite, entry.title)
