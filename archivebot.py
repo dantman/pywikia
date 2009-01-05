@@ -402,6 +402,9 @@ class PageArchiver(object):
         if mode == 0 or not self.get('algo',''):
             raise MissingConfigError
 
+        #Last minute fix:
+        self.set('archive', self.get('archive').replace('_',' '), True)
+
     def feedArchive(self, archive, thread, maxArchiveSize, vars=None):
         """Feed the thread to one of the archives.
         If it doesn't exist yet, create it.
