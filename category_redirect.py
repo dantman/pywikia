@@ -150,9 +150,8 @@ category links:
         Moves subcategories of oldCat as well. oldCat and newCat should be
         Category objects. If newCat is None, the category will be removed.
 
-        This is a copy of portions of catlib.change_category() with the
-        added capability to post a talk page message on pages that cannot be
-        fixed due to protection.
+        This is a copy of portions of catlib.change_category(), with some
+        changes.
 
         """
         oldtext = article.get(get_redirect=True, force=True)
@@ -160,7 +159,8 @@ category links:
         if newtext == oldtext:
             wikipedia.output(
                 u'No changes in made in page %s.' % article.aslink())
-            return False
+            # even if no changes, still save the page, in case it needs
+            # an update due to changes in a transcluded template
         try:
             article.put(newtext, comment)
             return True
