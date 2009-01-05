@@ -37,7 +37,7 @@ __version__ = '$Id$'
 import wikipedia, pagegenerators
 Site = wikipedia.getSite()
 
-import re, time, locale, traceback, string
+import os, re, time, locale, traceback, string
 
 try: #Get a constructor for the MD5 hash object
     import hashlib
@@ -178,9 +178,14 @@ def int2month_short(num):
 def txt2timestamp(txt, format):
     """Attempts to convert the timestamp 'txt' according to given 'format'.
     On success, returns the time tuple; on failure, returns None."""
+    #print txt, format
     try:
         return time.strptime(txt,format)
     except ValueError:
+        try:
+            return time.strptime(txt.encode('utf8'),format)
+        except:
+            pass
         return None
 
 
@@ -212,15 +217,15 @@ class DiscussionThread(object):
 # 16:36, 30 March 2008 (UTC)
 # huwiki
 # 2007. december 8., 13:42 (CET)
-        TM = re.search(r'(\d\d):(\d\d), (\d\d?) (\w+) (\d\d\d\d) \(.*?\)', line)
+        TM = re.search(r'(\d\d):(\d\d), (\d\d?) (\S+) (\d\d\d\d) \(.*?\)', line)
         if not TM:
-            TM = re.search(r'(\d\d):(\d\d), (\w+) (\d\d?), (\d\d\d\d) \(.*?\)', line)
+            TM = re.search(r'(\d\d):(\d\d), (\S+) (\d\d?), (\d\d\d\d) \(.*?\)', line)
         if not TM:
             TM = re.search(r'(\d{4})\. (\S+) (\d\d?)\., (\d\d:\d\d) \(.*?\)', line)
 # 18. apr 2006 kl.18:39 (UTC)
 # 4. nov 2006 kl. 20:46 (CET)
         if not TM:
-	        TM = re.search(r'(\d\d?)\. (\w+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
+	        TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
         if TM:
 #            wikipedia.output(TM)
             TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")
@@ -232,6 +237,8 @@ class DiscussionThread(object):
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %d %B %Y (%Z)")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %d %b %Y (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(re.sub(' *\([^ ]+\) *','',TM.group(0)),"%H:%M, %d %b %Y")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d %Y (%Z)")
             if not TIME:
