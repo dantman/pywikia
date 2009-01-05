@@ -156,13 +156,14 @@ category links:
         """
         oldtext = article.get(get_redirect=True, force=True)
         newtext = wikipedia.replaceCategoryInPlace(oldtext, oldCat, newCat)
-        if newtext == oldtext:
-            wikipedia.output(
-                u'No changes in made in page %s.' % article.aslink())
+        try:
             # even if no changes, still save the page, in case it needs
             # an update due to changes in a transcluded template
-        try:
             article.put(newtext, comment)
+            if newtext == oldtext:
+                wikipedia.output(
+                    u'No changes in made in page %s.' % article.aslink())
+                return False
             return True
         except wikipedia.EditConflict:
             wikipedia.output(
