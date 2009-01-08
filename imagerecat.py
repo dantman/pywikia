@@ -52,6 +52,8 @@ def categorizeImages(generator, onlyfilter):
             currentCats = getCurrentCats(imagepage)
             if(onlyfilter):
                 commonshelperCats = []
+                usage = []
+                galleries = []
             else:
                 (commonshelperCats, usage, galleries) = getCommonshelperCats(imagepage)
             newcats = applyAllFilters(commonshelperCats+currentCats)
