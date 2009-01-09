@@ -501,10 +501,8 @@ class CategoryListifyRobot:
         listOfArticles = self.cat.articlesList(recurse = self.recurse)
         if self.subCats:
             listOfArticles += self.cat.subcategoriesList()
-        if self.editSummary:
-            wikipedia.setAction(self.editSummary)
-        else:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.listify_msg) % (self.cat.title(), len(listOfArticles)))
+        if not self.editSummary:
+            self.editSummary = wikipedia.translate(wikipedia.getSite(), self.listify_msg) % (self.cat.title(), len(listOfArticles))
 
         listString = ""
         for article in listOfArticles:
@@ -521,7 +519,7 @@ class CategoryListifyRobot:
         if self.list.exists() and not self.overwrite:
             wikipedia.output(u'Page %s already exists, aborting.' % self.list.title())
         else:
-            self.list.put(listString)
+            self.list.put(listString, comment=self.editSummary)
 
 class CategoryRemoveRobot:
     '''
@@ -587,10 +585,8 @@ class CategoryRemoveRobot:
         self.batchMode = batchMode
         self.titleRegex = titleRegex
         self.inPlace = inPlace
-        if self.editSummary:
-            wikipedia.setAction(self.editSummary)
-        else:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
+        if not self.editSummary:
+            self.editSummary = wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title()
 
     def run(self):
         articles = self.cat.articlesList(recurse = 0)
@@ -599,14 +595,14 @@ class CategoryRemoveRobot:
         else:
             for article in articles:
                 if not self.titleRegex or re.search(self.titleRegex,article.title()):
-                    catlib.change_category(article, self.cat, None, inPlace = self.inPlace)
+                    catlib.change_category(article, self.cat, None, comment = self.editSummary, inPlace = self.inPlace)
         # Also removes the category tag from subcategories' pages
         subcategories = self.cat.subcategoriesList(recurse = 0)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.cat, None, inPlace = self.inPlace)
+                catlib.change_category(subcategory, self.cat, None, comment = self.editSummary, inPlace = self.inPlace)
         # Deletes the category page
         if self.cat.exists() and self.cat.isEmpty():
             if self.useSummaryForDeletion and self.editSummary:
