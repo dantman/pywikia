@@ -27,6 +27,11 @@ Furthermore, the following command line parameters are supported:
 
 -nocase           Use case insensitive regular expressions.
 
+-dotall           Make the dot match any character at all, including a newline.
+                  Without this flag, '.' will match anything except a newline.
+
+-multiline        '^' and '$' will now match begin and end of each line.
+
 -xmlstart         (Only works with -xml) Skip all articles in the XML dump
                   before the one specified (may also be given as
                   -xmlstart:Article).
@@ -489,6 +494,10 @@ def main():
     acceptall = False
     # Will become True if the user inputs the commandline parameter -nocase
     caseInsensitive = False
+    # Will become True if the user inputs the commandline parameter -dotall
+    dotall = False
+    # Will become True if the user inputs the commandline parameter -multiline
+    multiline = False
     # Which namespaces should be processed?
     # default to [] which means all namespaces will be processed
     namespaces = []
@@ -555,6 +564,10 @@ def main():
             recursive = True
         elif arg == '-nocase':
             caseInsensitive = True
+        elif arg == '-dotall':
+            dotall = True
+        elif arg == '-multiline':
+            multiline = True
         elif arg.startswith('-addcat:'):
             add_cat = arg[len('addcat:'):]
         elif arg.startswith('-namespace:'):
@@ -641,15 +654,21 @@ u'Press Enter to use this default message, or enter a description of the\nchange
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
+    #Set the regular expression flags
+    flags = re.UNICODE
+    if caseInsensitive:
+        flags = flags | re.IGNORECASE
+    if dotall:
+        flags = flags | re.DOTALL
+    if multiline:
+        flags = flags | re.MULTILINE
+
     # Pre-compile all regular expressions here to save time later
     for i in range(len(replacements)):
         old, new = replacements[i]
         if not regex:
             old = re.escape(old)
-        if caseInsensitive:
-            oldR = re.compile(old, re.UNICODE | re.IGNORECASE)
-        else:
-            oldR = re.compile(old, re.UNICODE)
+        oldR = re.compile(old, flags)
         replacements[i] = oldR, new
 
     for exceptionCategory in ['title', 'require-title', 'text-contains', 'inside']:
@@ -657,12 +676,7 @@ u'Press Enter to use this default message, or enter a description of the\nchange
             patterns = exceptions[exceptionCategory]
             if not regex:
                 patterns = [re.escape(pattern) for pattern in patterns]
-            if caseInsensitive:
-                patterns = [re.compile(pattern, re.UNICODE | re.IGNORECASE)
-                            for pattern in patterns]
-            else:
-                patterns = [re.compile(pattern, re.UNICODE)
-                            for pattern in patterns]
+            patterns = [re.compile(pattern, flags) for pattern in patterns]
             exceptions[exceptionCategory] = patterns
 
     if xmlFilename:
