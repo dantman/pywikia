@@ -327,7 +327,7 @@ def add_category(sort_by_last_name = False):
             newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
 
         # set edit summary message
-        wikipedia.setAction(wikipedia.translate(site, msg_add) % newcatTitle)
+        editSummary = wikipedia.translate(site, msg_add) % newcatTitle
 
         cat_namespace = site.category_namespaces()[0]
 
@@ -382,7 +382,7 @@ Are you sure? [y/n]:""")
                         text = page.get()
                         text = wikipedia.replaceCategoryLinks(text, cats)
                         try:
-                            page.put(text)
+                            page.put(text, comment = editSummary)
                         except wikipedia.EditConflict:
                             wikipedia.output(
                                 u'Skipping %s because of edit conflict'
@@ -641,6 +641,7 @@ class CategoryTidyRobot:
     def __init__(self, catTitle, catDB):
         self.catTitle = catTitle
         self.catDB = catDB
+        self.editSummary = wikipedia.translate(wikipedia.getSite(), msg_change) % cat.title()
 
     def move_to_category(self, article, original_cat, current_cat):
         '''
@@ -707,7 +708,7 @@ class CategoryTidyRobot:
                 if current_cat == original_cat:
                     print 'No changes necessary.'
                 else:
-                    catlib.change_category(article, original_cat, current_cat)
+                    catlib.change_category(article, original_cat, current_cat, comment = self.editSummary)
                 flag = True
             elif choice in ['j', 'J']:
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
@@ -717,7 +718,7 @@ class CategoryTidyRobot:
                 flag = True
             elif choice in ['r', 'R']:
                 # remove the category tag
-                catlib.change_category(article, original_cat, None)
+                catlib.change_category(article, original_cat, None, comment = self.editSummary)
                 flag = True
             elif choice == '?':
                 contextLength += 500
@@ -752,9 +753,6 @@ class CategoryTidyRobot:
 
     def run(self):
         cat = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
-
-        # get edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % cat.title())
 
         articles = cat.articlesList(recurse = False)
         if len(articles) == 0:
