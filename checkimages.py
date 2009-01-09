@@ -896,7 +896,7 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-        duplicateRegex = r'\n\*(?:\[\[:File:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:File:%s\]\])$' % (self.convert_to_url(self.imageName), self.convert_to_url(self.imageName))
+        duplicateRegex = r'\n\*(?:\[\[:File:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:File:%s\]\])$' % (re.escape(self.convert_to_url(self.imageName)), re.escape(self.convert_to_url(self.imageName)))
         imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
         hash_found = imagePage.getHash()
         duplicates = self.site.getFilesFromAnHash(hash_found)
