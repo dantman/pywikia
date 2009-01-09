@@ -159,7 +159,7 @@ However, there is a dinamic-wikipage to load that badwords of your project or yo
 add them directly in the source code that you are using without adding or deleting.
 
 Some words, like "Administrator" or "Dio" (God in italian) or "Jimbo" aren't badword at all
-but can be used to some bad-nickname.
+but can be used for some bad-nickname.
 """
 #
 # (C) Alfio, 2005
