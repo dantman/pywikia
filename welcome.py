@@ -147,7 +147,7 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
 
 * The regex to load the user might be slightly different from project to project.
   (in this case, write to Filnik for help...)
-* Understand if it's the case to use a class to group toghether the functions used.
+* Use a class to group toghether the functions used.
 
 ******************************** Badwords ***********************************
 
@@ -173,7 +173,7 @@ but can be used to some bad-nickname.
 __version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 #
 
-import wikipedia, config, string, locale
+import wikipedia, config, string, locale, query
 import time, re, cPickle, os, urllib
 import codecs, sys
 from datetime import timedelta
@@ -485,21 +485,27 @@ def report(wsite, rep_page, username, com, rep):
         pos = y.end()
         wikipedia.output(u'%s is already in the report page.' % username)
 
-def blocked(wsite, username):
-    """ The function to understand if the user is blocked or not. """
-    pathWiki = wsite.family.nicepath(wsite.lang)
-    #A little function to check if the user has already been blocked (to skip him).
-    reg = r"""<li>\d\d:\d\d, \d(\d)? (.*?) \d\d\d\d <a href=\"""" + re.escape(pathWiki) + \
-          r"""(.*?)\" title=\"(.*?)\">(.*?)</a> <span class=\"mw-usertoollinks\">"""
-    block_text = wsite.getUrl(wsite.path() + '?title=Special:Log/block&page=User:' + username)
-    numblock = re.findall(reg, block_text)
-    # If the bot doesn't find block-line (that means the user isn't blocked), it will return False otherwise True.
-    if len(numblock) == 0:
-        # No problem.
-        return False
-    else:
-        # User Blocked.
-        return True
+def blocked(username):
+    #action=query&list=users&ususers=Filnik&usprop=blockinfo
+    """
+    Function that detects if a user is currently blocked or not.
+    """
+  
+    params = {
+        'action'    :'query',
+        'list'      :'users',
+        'ususers'   :username,
+        'usprop'    :'blockinfo',
+        }
+
+    data = query.GetData(params,
+                    useAPI = True, encodeTitle = False)
+     # If there's not the blockedby parameter (that means the user isn't blocked), it will return False otherwise True.
+    try:
+        blockedBy = data['query']['users'][0]['blockedby']
+    except KeyError:
+        return False # No he's not
+    return True # Yes is blocked
 
 def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
     """ Function to load the random signatures. """
@@ -844,7 +850,7 @@ def main(settingsBot):
                 # OK, no problem
                 pass
             # Check if the user has been already blocked.
-            ki = blocked(wsite,username)
+            ki = blocked(username)
             if ki == True:
                 wikipedia.output(u'%s has been blocked! Skipping...' % usertalkpage.titleWithoutNamespace())
                 continue
@@ -882,7 +888,7 @@ def main(settingsBot):
                     if answer.lower() in ['yes', 'y']:
                         if not usertalkpage.exists():
                             # Check if the user has been already blocked (second check).
-                            if blocked(wsite, username):
+                            if blocked(username):
                                 wikipedia.output(u'%s has been blocked! Skipping him...' % usertalkpage.titleWithoutNamespace())
                             report(wsite, rep_page, username, com, final_rep)
                             continue
