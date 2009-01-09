@@ -67,6 +67,8 @@ msg = {
     'zh': u'機器人: 正在新增 %s',
     }
 
+nn_iw_msg = u'<!--interwiki (no, sv, da first; then other languages alphabetically by name)-->'
+
 class NoEnoughData(wikipedia.Error):
     """ Error class for when the user doesn't specified all the data needed """
 
@@ -164,10 +166,16 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         interwikiInside = wikipedia.getLanguageLinks(newtext, site)
         # Removing the interwiki
         newtext = wikipedia.removeLanguageLinks(newtext, site)
+        #nn got a message between the categories and the iw's and they want to keep it there, first remove it
+        if (site.language()==u'nn'):
+            newtext = newtext.replace(nn_iw_msg, '')
         # Adding the text
         newtext += u"\n%s" % addText
         # Reputting the categories
         newtext = wikipedia.replaceCategoryLinks(newtext, categoriesInside, site, True)
+        #Put the nn iw message back
+        if (site.language()==u'nn'):
+            newtext = newtext + u'\n' + nn_iw_msg       
         # Dealing the stars' issue
         starsListInPage = list()
         for star in starsList:
