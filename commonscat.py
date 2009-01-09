@@ -156,6 +156,7 @@ commonscatTemplates = {
 ignoreTemplates = {
     'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'],
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
+    'fr' : [u'Commons', u'Commons cat'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],
     'la' : [u'Categoria Nati', u'Categoria Mortui'],
