@@ -403,11 +403,8 @@ class CategoryMoveRobot:
         self.deleteEmptySourceCat = deleteEmptySourceCat
         self.titleRegex = titleRegex
         # set edit summary message
-        if self.editSummary:
-            wikipedia.setAction(self.editSummary)
-        else:
-            wikipedia.setAction(wikipedia.translate(site, msg_change)
-                                % self.oldCat.title())
+        if not self.editSummary:
+            self.editSummary = wikipedia.translate(site, msg_change)% self.oldCat.title()
 
     def run(self):
         site = wikipedia.getSite()
@@ -446,7 +443,7 @@ class CategoryMoveRobot:
             if not self.titleRegex or re.search(self.titleRegex,
                                                 article.title()):
                 catlib.change_category(article, self.oldCat, newCat,
-                                       inPlace=self.inPlace)
+                                       comment=self.editSummary, inPlace=self.inPlace)
 
         # Move subcategories
         gen = pagegenerators.SubCategoriesPageGenerator(self.oldCat,
@@ -456,7 +453,7 @@ class CategoryMoveRobot:
             if not self.titleRegex or re.search(self.titleRegex,
                                                 subcategory.title()):
                 catlib.change_category(subcategory, self.oldCat, newCat,
-                                       inPlace=self.inPlace)
+                                       comment=self.editSummary, inPlace=self.inPlace)
 
         # Delete the old category and its moved talk page
         if copied and self.deleteEmptySourceCat == True:
