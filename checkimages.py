@@ -981,7 +981,7 @@ class main:
                                 commImage = dupComment_image, unver = True)
             if self.duplicatesReport or only_report:
                 if only_report:
-                    repme = u"\n*[[:File:%s]] has the following duplicates ('''forced mode'''):" % self.image.urlname()
+                    repme = u"\n*[[:File:%s]] has the following duplicates ('''forced mode'''):" % self.convert_to_url(self.imageName)
                 else:
                     repme = u"\n*[[:File:%s]] has the following duplicates:" % self.convert_to_url(self.imageName)
                 for duplicate in duplicates:
