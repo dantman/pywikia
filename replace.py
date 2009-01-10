@@ -171,7 +171,7 @@ msg = {
     'no': u'robot: automatisk teksterstatning: %s',
     'pl': u'Robot automatycznie zamienia tekst %s',
     'pt': u'Bot: Mudança automática %s',
-    'ru': u'Робот: Автоматизированная замена текста',
+    'ru': u'Робот: Автоматизированная замена текста %s',
     'sr': u'Бот: Аутоматска замена текста %s',
     'sv': u'Bot: Automatisk textersättning: %s',
     'zh': u'機器人:執行文字代換作業 %s',
@@ -460,7 +460,7 @@ def prepareRegexForMySQL(pattern):
     return pattern
 
 
-def main():
+def main(*args):
     add_cat = None
     gen = None
     # summary message
@@ -519,7 +519,7 @@ def main():
     categories = []
 
     # Read commandline parameters.
-    for arg in wikipedia.handleArgs():
+    for arg in wikipedia.handleArgs(*args):
         if arg == '-regex':
             regex = True
         elif arg.startswith('-xmlstart'):
