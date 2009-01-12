@@ -586,12 +586,13 @@ not supported by PyWikipediaBot!"""
         if not noInterwiki and (forceInterwiki or self.site() != getSite()):
             if self.site().family != getSite().family \
                     and self.site().family.name != self.site().lang:
-                return u'[[%s:%s:%s]]' % (self.site().family.name,
-                                          self.site().lang,
-                                          self.title(savetitle=True,decode=True))
+                return u'[[:%s:%s:%s]]' % (self.site().family.name,
+                                           self.site().lang,
+                                           self.title(savetitle=True,
+                                                      decode=True))
             else:
-                return u'[[%s:%s]]' % (self.site().lang,
-                                       self.title(savetitle=True,decode=True))
+                return u'[[:%s:%s]]' % (self.site().lang,
+                                        self.title(savetitle=True, decode=True))
         elif textlink and (self.isImage() or self.isCategory()):
                 return u'[[:%s]]' % self.title(savetitle=True, decode=True)
         else:
@@ -6194,14 +6195,14 @@ def handleArgs(*args):
     global default_code, default_family, verbose
     # get commandline arguments
     if not args:
-        args = sys.argv
+        args = sys.argv[1:]
     # get the name of the module calling this function. This is
     # required because the -help option loads the module's docstring and because
     # the module name will be used for the filename of the log.
     # TODO: check if the following line is platform-independent
     moduleName = calledModuleName()
     nonGlobalArgs = []
-    for arg in args[1:]:
+    for arg in args:
         arg = decodeArg(arg)
         if arg == '-help':
             showHelp(moduleName)
