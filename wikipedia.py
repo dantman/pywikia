@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -3643,7 +3643,7 @@ def interwikiFormat(links, insite = None):
     s = []
     for site in ar:
         try:
-            link = links[site].aslink(forceInterwiki=True)
+            link = links[site].aslink(forceInterwiki=True).replace('[[:', '[[')
             s.append(link)
         except AttributeError:
             s.append(getSite(site).linkto(links[site], othersite=insite))
