@@ -501,11 +501,16 @@ category links:
             if match.group(1):
                 # category redirect target starts with "Category:" - fix it
                 text = text[ :match.start(1)] + text[match.end(1): ]
-                cat.put(text,
-                        u"Robot: fixing category redirect parameter format")
-                self.log_text.append(
-                    u"* Removed category prefix from parameter in %s"
-                     % cat.aslink(textlink=True))
+                try:
+                    cat.put(text,
+                            u"Robot: fixing category redirect parameter format")
+                    self.log_text.append(
+                        u"* Removed category prefix from parameter in %s"
+                         % cat.aslink(textlink=True))
+                except wikipedia.Error:
+                    self.log_text.append(
+                        u"* Unable to save changes to %s"
+                         % cat.aslink(textlink=True))
 
         # delete record entries for non-existent categories
         for cat_name in list(record.keys()):
@@ -595,6 +600,7 @@ category links:
 
         wikipedia.setAction(wikipedia.translate(self.site.lang,
                                                 self.maint_comment))
+        self.log_text.sort()
         self.log_page.put(u"\n==%i-%02i-%02iT%02i:%02i:%02iZ==\n"
                             % time.gmtime()[:6]
                           + u"\n".join(self.log_text)
