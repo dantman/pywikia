@@ -578,21 +578,25 @@ not supported by PyWikipediaBot!"""
         points to the home wiki. If False, return an interwiki link only if
         needed.
 
-        If textlink is True, always return a link in text form (that
-        is, links to the Category: and Image: namespaces will be preceded by
-        a : character). (Not needed if forceInterwiki is True.)
+        If textlink is True, always return a link in text form (that is,
+        interwiki links and internal links to the Category: and Image:
+        namespaces will be preceded by a : character).
 
         """
         if not noInterwiki and (forceInterwiki or self.site() != getSite()):
+            if textlink:
+                left = "[[:"
+            else:
+                left = "[["
             if self.site().family != getSite().family \
                     and self.site().family.name != self.site().lang:
-                return u'[[:%s:%s:%s]]' % (self.site().family.name,
-                                           self.site().lang,
-                                           self.title(savetitle=True,
-                                                      decode=True))
+                return u'%s%s:%s:%s]]' % (left, self.site().family.name,
+                                          self.site().lang,
+                                          self.title(savetitle=True,
+                                                     decode=True))
             else:
-                return u'[[:%s:%s]]' % (self.site().lang,
-                                        self.title(savetitle=True, decode=True))
+                return u'%s%s:%s]]' % (left, self.site().lang,
+                                       self.title(savetitle=True, decode=True))
         elif textlink and (self.isImage() or self.isCategory()):
                 return u'[[:%s]]' % self.title(savetitle=True, decode=True)
         else:
