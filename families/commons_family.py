@@ -28,10 +28,16 @@ class Family(family.Family):
         }
 
         self.interwiki_forward = 'wikipedia'
+
+        self.category_redirect_templates = {
+            'commons': ('Category redirect',),
+        }
+        
         self.disambiguationTemplates = {
             'commons': [u'Disambig', u'Disambiguation', u'Razločitev',
                         u'Begriffsklärung']
         }
+        
         self.disambcatname = {
             'commons':  u'Disambiguation'
         }

@@ -540,6 +540,48 @@ class Family(family.Family):
             'als': u'Nochricht Diskussion',
         }
 
+        self.category_redirect_templates = {
+            '_default': (),
+            'ar': (u"تحويل تصنيف",),
+            'arz': (u'تحويل تصنيف',),
+            'cs': (u'Zastaralá kategorie',),
+            'da': (u'Kategoriomdirigering',),
+            'de': (u'Kategorieweiterleitung',),
+            'en': (u"Category redirect",
+                   u"Category redirect3",
+                  ),
+            'es': (u'Categoría redirigida',),
+            'eu': (u'Kategoria redirect',),
+            'fa': (u'رده بهتر',
+                   u'انتقال رده',
+                   u'فیلم‌های امریکایی'),
+            'fr': (u'Redirection de catégorie',),
+            'hi': (u'श्रेणीअनुप्रेषित',),
+            'id': (u'Alih kategori',),
+            # 'it' has removed its template
+            # 'ja' is discussing to remove this template
+            'ja': (u"Category redirect",),
+            'ko': (u'분류 넘겨주기',),
+            'mk': (u'Премести категорија',),
+            'ms': (u'Pengalihan kategori',),
+            'mt': (u'Redirect kategorija',),
+            # 'nl' has removed its template
+            'no': (u"Kategoriomdirigering",),
+            'pl': (u'Przekierowanie kategorii',),
+            'pt': (u'Redirecionamento de categoria',),
+            'ro': (u'Redirect categorie',),
+            'ru': (u'Переименованная категория',),
+            'simple': (u"Category redirect",),
+            'sq': (u'Kategori e zhvendosur',),
+            'tl': (u'Category redirect',),
+            'tr': (u'Kategori yönlendirme',),
+            'uk': (u'Categoryredirect',),
+            'vi': (u'Đổi hướng thể loại',),
+            'yi': (u'קאטעגאריע אריבערפירן',),
+            'zh': (u'分类重定向',),
+            'zh-yue': (u'分類彈去',),
+        }
+        
         self.disambiguationTemplates = {
             # set value to None, instead of a list, to retrieve names from
             # the live wiki ([[MediaWiki:Disambiguationspage]]

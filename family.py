@@ -2851,6 +2851,12 @@ class Family:
             'zzz wiki':         'zzz wiki',
         }
 
+        # A list of category redirect template names in different languages
+        # Note: It is *not* necessary to list template redirects here
+        self.category_redirect_templates = {
+            '_default': []
+        }
+
         # A list of disambiguation template names in different languages
         self.disambiguationTemplates = {
             '_default': []
@@ -3122,6 +3128,16 @@ class Family:
         else:
             # give up
             return None
+
+    def category_redirects(self, code, fallback="_default"):
+        if code in self.category_redirect_templates:
+            return self.category_redirect_templates[code]
+        elif fallback:
+            return self.category_redirect_templates[fallback]
+        else:
+            raise KeyError(
+"ERROR: title for category redirect template in language '%s' unknown"
+                % code)
 
     def disambig(self, code, fallback = '_default'):
         if self.disambiguationTemplates.has_key(code):
