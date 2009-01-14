@@ -119,8 +119,12 @@ def main():
 # per-day subheadings on the working page.
 def findDay(pageTitle, oldDay):
     page = wikipedia.Page(wikipedia.getSite(), "Category:" + pageTitle)
-    pageSrc = page.get()
-    m = findday.search(pageSrc)
+    try:
+        pageSrc = page.get()
+        m = findday.search(pageSrc)
+    except wikipedia.NoPage:
+        m = None
+
     if (m != None):
         return "[[" + m.group(1) + "]]"
     else:
