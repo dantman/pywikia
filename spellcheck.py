@@ -152,17 +152,20 @@ def askAlternative(word,context=None):
         if word[0].isupper():
             wikipedia.output(u"c: Add '%s' as correct"%(uncap(word)))
         wikipedia.output(u"i: Ignore once")
+        wikipedia.output(u"p: Ignore on this page")
         wikipedia.output(u"r: Replace text")
         wikipedia.output(u"s: Replace text, but do not save as alternative")
         wikipedia.output(u"g: Guess (give me a list of similar words)")
         wikipedia.output(u"*: Edit by hand")
         wikipedia.output(u"x: Do not check the rest of this page")
         answer = wikipedia.input(u":")
-        if answer in "aAiI":
+        if answer in "aAiIpP":
             correct = word
-            if not answer in "iI":
+            if answer in "aA":
                 knownwords[word] = word
                 newwords.append(word)
+            elif answer in "pP":
+                pageskip.append(word)
         elif answer in "rRsS":
             correct = wikipedia.input(u"What should I replace it by?")
             if answer in "rR":
@@ -247,6 +250,7 @@ def removeHTML(page):
     return result
 
 def spellcheck(page, checknames = True, knownonly = False):
+    pageskip = []
     text = page
     if correct_html_codes:
         text = removeHTML(text)
@@ -282,6 +286,7 @@ def spellcheck(page, checknames = True, knownonly = False):
             loc += len(match.group(2))
     if correct_html_codes:
         text = removeHTML(text)
+    pageskip = []
     return text
 
 class Word(object):
@@ -350,6 +355,8 @@ class Word(object):
         # be found incorrect if it is not on the list as a correctly spelled word.
         if self.word == "":
             return True
+        if self.word in pageskip:
+            return True
         try:
             if knownwords[self.word] == self.word:
                 return True
@@ -400,6 +407,7 @@ class Word(object):
         return self.alternatives
 
 try:
+    pageskip = []
     edit = SpecialTerm("edit")
     endpage = SpecialTerm("end page")
     title = []
