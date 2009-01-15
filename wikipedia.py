@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -834,10 +834,6 @@ not supported by PyWikipediaBot!"""
                 self._redirarg = redirtarget
             else:
                 raise IsRedirectPage(redirtarget)
-        elif self.is_category_redirect(pagetext): # sets _redirarg
-            if not get_redirect:
-                self._getexception = IsRedirectPage
-                raise IsRedirectPage(self._redirarg)
         if self.section():
             # TODO: What the hell is this? Docu please.
             m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
@@ -980,41 +976,6 @@ not supported by PyWikipediaBot!"""
         except SectionError:
             return False
         return False
-
-    def is_category_redirect(self, text=None):
-        """Return True if this is a category redirect.
-
-        Category redirects are identified by the presence of any of the
-        templates found in self.site().category_redirects(), including
-        redirects to any of those templates, in the page text.
-
-        """
-        if not self.isCategory():
-            return False
-        if not hasattr(self, "_catredirect"):
-            redir_list = [Page(self.site(), name, defaultNamespace=10)
-                          for name in self.site().category_redirects()]
-            try:
-                templates_and_params = self.templatesWithParams(
-                                                    thistxt=text,
-                                                    get_redirect=True)
-            except Error:  # couldn't retrieve templates
-                self._catredirect = False
-            else:
-                for item in templates_and_params:
-                    tempname = item[0]
-                    template = Page(self.site(), tempname, defaultNamespace=10)
-                    while template.isRedirectPage():
-                        template = template.getRedirectTarget()
-                    if template in redir_list:
-                        self._catredirect = True
-                        self._redirarg = Page(self.site(), item[1][0],
-                                              defaultNamespace=14).title()
-                        # treat first template arg as name of target category
-                        break
-                else:
-                    self._catredirect = False
-        return self._catredirect
 
     def isEmpty(self):
         """Return True if the page text has less than 4 characters.
@@ -3001,8 +2962,6 @@ class _GetAll(object):
                     page2._revisionId = revisionId
                     page2._editTime = timestamp
                     section = page2.section()
-                    # Store the content
-                    page2._contents = text
                     m = self.site.redirectRegex().match(text)
                     if m:
                         ## output(u"%s is a redirect" % page2.aslink())
@@ -3011,36 +2970,26 @@ class _GetAll(object):
                             redirectto = redirectto+"#"+section
                         page2._getexception = IsRedirectPage
                         page2._redirarg = redirectto
-                    elif page2.is_category_redirect():
-                        page2._getexception = IsRedirectPage
-                        
                     # This is used for checking deletion conflict.
                     # Use the data loading time.
-                    page2._startTime = time.strftime('%Y%m%d%H%M%S',
-                                                     time.gmtime())
+                    page2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                     if section:
-						# WHAT IS THIS?
-                        m = re.search(
-    "\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D"
-                                        % re.escape(section),
-                                sectionencode(text, page2.site().encoding()))
+                        m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
                         if not m:
                             try:
                                 page2._getexception
-                                output(u"WARNING: Section not found: %s"
-                                       % page2.aslink(forceInterwiki = True))
+                                output(u"WARNING: Section not found: %s" % page2.aslink(forceInterwiki = True))
                             except AttributeError:
                                 # There is no exception yet
                                 page2._getexception = SectionError
+                    # Store the content
+                    page2._contents = text
                 successful = True
                 # Note that there is no break here. The reason is that there
                 # might be duplicates in the pages list.
         if not successful:
-            output(u"BUG>> title %s (%s) not found in list"
-                   % (title, page.aslink(forceInterwiki=True)))
-            output(u'Expected one of: %s'
-                   % u','.join([page2.aslink(forceInterwiki=True)
-                                for page2 in self.pages]))
+            output(u"BUG>> title %s (%s) not found in list" % (title, page.aslink(forceInterwiki=True)))
+            output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
             raise PageNotFound
 
     def headerDone(self, header):
@@ -6135,9 +6084,6 @@ your connection is down. Retrying in %i minutes..."""
         """Return list of language codes that can be used in interwiki links."""
         return self._validlanguages
 
-    def category_redirects(self):
-        return self.family.category_redirects(self.lang, fallback="_default")
-    
     def disambcategory(self):
         """Return Category in which disambig pages are listed."""
         import catlib
@@ -6861,7 +6807,6 @@ def decompress_gzip(data):
             raise
     return data
 
-
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
 
@@ -6870,6 +6815,7 @@ class MyURLopener(urllib.FancyURLopener):
             raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
         else:
             return urllib.FancyURLopener.http_error_default(self, url, fp, errcode, errmsg, headers)
+
 
 
 # Special opener in case we are using a site with authentication
