@@ -1011,8 +1011,9 @@ not supported by PyWikipediaBot!"""
                         self._redirarg = Page(self.site(), item[1][0],
                                               defaultNamespace=14).title()
                         # treat first template arg as name of target category
-                    else:
-                        self._catredirect = False
+                        break
+                else:
+                    self._catredirect = False
         return self._catredirect
 
     def isEmpty(self):
