@@ -20,6 +20,7 @@ For each unknown word, you get a couple of options:
     a: This word is correct; add it to the list of known words
     c: The uncapitalized form of this word is correct; add it
     i: Do not edit this word, but do also not add it to the list
+    p: Do not edit this word, and consider it correct for this page only
     r: Replace the word, and add the replacement as a known alternative
     s: Replace the word, but do not add the replacement
     *: Edit the page using the gui
@@ -151,7 +152,7 @@ def askAlternative(word,context=None):
         wikipedia.output(u"a: Add '%s' as correct"%word)
         if word[0].isupper():
             wikipedia.output(u"c: Add '%s' as correct"%(uncap(word)))
-        wikipedia.output(u"i: Ignore once")
+        wikipedia.output(u"i: Ignore once (default)")
         wikipedia.output(u"p: Ignore on this page")
         wikipedia.output(u"r: Replace text")
         wikipedia.output(u"s: Replace text, but do not save as alternative")
@@ -159,6 +160,7 @@ def askAlternative(word,context=None):
         wikipedia.output(u"*: Edit by hand")
         wikipedia.output(u"x: Do not check the rest of this page")
         answer = wikipedia.input(u":")
+        if answer == "": answer = "i"
         if answer in "aAiIpP":
             correct = word
             if answer in "aA":
