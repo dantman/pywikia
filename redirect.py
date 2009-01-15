@@ -68,6 +68,7 @@ msg_double={
     'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
     'lb': u'Bot: Duebel Viruleedung gefléckt',
     'lt': u'robotas: Taisomas dvigubas peradresavimas',
+    'nds':u'Bot: Dubbelte Wiederleiden rutmakt',
     'nl': u'Robot: Dubbele doorverwijzing gecorrigeerd',
     'nn': u'robot: retta dobbel omdirigering',
     'no': u'bot: Retter dobbel omdirigering',
@@ -102,6 +103,7 @@ reason_broken={
     'kk': u'Бот: Айдату нысанасы жоқ болды',
     'ksh':u'Bot: Dė Ömlëijdong jingk ennet Liiere',
     'lt': u'robotas: Peradresavimas į niekur',
+    'nds':u'Bot: Kaputte Wiederleiden rutmakt',
     'nl': u'Robot: Doel doorverwijzing bestaat niet',
     'nn': u'robot: målet for omdirigeringa eksisterer ikkje',
     'no': u'robot: målet for omdirigeringen eksisterer ikke',
@@ -115,21 +117,23 @@ reason_broken={
     'zh-yue': u'機械人：跳轉目標唔存在',
 }
 
-#Summary message for put broken redirect to speedy delete
+# Summary message for putting broken redirect to speedy delete
 sd_tagging_sum = {
     'ar': u'روبوت: وسم للحذف السريع',
     'en': u'Robot: Tagging for speedy deletion',
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
     'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
+    'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
     'zh':u'機器人: 將損壞的重定向提報快速刪除',
 }
 
-#put deletion template
+# Insert deletion template into page with a broken redirect
 sd_template = {
     'ar':u'{{شطب|تحويلة مكسورة}}',
     'en':u'{{db-r1}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
     'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~',
+    'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~',
     'zh':u'{{delete|R1}}',
 }
 
