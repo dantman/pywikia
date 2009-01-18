@@ -2852,7 +2852,7 @@ class Family:
         }
 
         # A list of category redirect template names in different languages
-        # Note: It is *not* necessary to list template redirects here
+        # Note: It *is* necessary to list template redirects here
         self.category_redirect_templates = {
             '_default': []
         }

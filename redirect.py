@@ -252,7 +252,7 @@ class RedirectGenerator:
             mysite = wikipedia.getSite()
             # retrieve information from the live wiki's maintenance page
             # double redirect maintenance page's URL
-            # wikipedia.config.special_page_limit = 1000
+            wikipedia.config.special_page_limit = 1000
             path = mysite.double_redirects_address(default_limit = False)
             wikipedia.output(u'Retrieving special page...')
             maintenance_txt = mysite.getUrl(path)

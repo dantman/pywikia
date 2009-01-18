@@ -3415,7 +3415,13 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
                         break
                     groupID = groupMatch.group('name') or int(groupMatch.group('number'))
                     replacement = replacement[:groupMatch.start()] + match.group(groupID) + replacement[groupMatch.end():]
-            text = text[:match.start()] + replacement + text[match.end():]
+            try:
+                text = text[:match.start()] + replacement + text[match.end():]
+            except:
+                print text
+                print match.start(), match.end()
+                print replacement
+                raise
 
             # continue the search on the remaining text
             if allowoverlap:

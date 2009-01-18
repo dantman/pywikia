@@ -30,7 +30,16 @@ class Family(family.Family):
         self.interwiki_forward = 'wikipedia'
 
         self.category_redirect_templates = {
-            'commons': ('Category redirect',),
+            'commons': (u'Category redirect',
+                        u'Categoryredirect',
+                        u'See cat',
+                        u'Seecat',
+                        u'Catredirect',
+                        u'Cat redirect',
+                        u'CatRed',
+                        u'Cat-red',
+                        u'Catredir',
+                        u'Redirect category'),
         }
         
         self.disambiguationTemplates = {
