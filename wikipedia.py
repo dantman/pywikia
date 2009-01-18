@@ -834,6 +834,10 @@ not supported by PyWikipediaBot!"""
                 self._redirarg = redirtarget
             else:
                 raise IsRedirectPage(redirtarget)
+        elif self.isCategoryRedirect(): # sets _redirarg
+            if not get_redirect:
+                self._getexception = IsRedirectPage
+                raise IsRedirectPage, self._redirarg
         if self.section():
             # TODO: What the hell is this? Docu please.
             m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
@@ -1081,6 +1085,23 @@ not supported by PyWikipediaBot!"""
     def isImage(self):
         """Return True if this is an image description page, False otherwise."""
         return self.namespace() == 6
+
+    def isCategoryRedirect(self):
+        """Return True if this is a category redirect page."""
+
+        if not self.isCategory():
+            return False
+        if not hasattr(self, "_catredirect"):
+            catredirs = self.site().category_redirects()
+            for (t, args) in self.templatesWithParams():
+                if t in catredirs:
+                    self._catredirect = True
+                    # Get target (first template argument)
+                    self._redirarg = self.site().namespace(14) + ":" + args[0]
+                    break
+            else:
+                self._catredirect = False
+        return self._catredirect
 
     def isDisambig(self):
         """Return True if this is a disambiguation page, False otherwise.
