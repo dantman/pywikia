@@ -61,6 +61,10 @@ parameterHelp = """\
                   config.py for instructions.
                   Argument can also be given as "-google:searchstring".
 
+-namespace        Filters the page generator to only yield pages in the
+                  specified namespaces.  Separate multiple namespace
+                  numbers with commas.
+
 -interwiki        Work on the given page and all equivalent pages in other
                   languages. This can, for example, be used to fight
                   multi-site spamming.
@@ -799,6 +803,7 @@ class GeneratorFactory:
     """
     def __init__(self):
         self.gens = []
+        self.namespaces = []
 
     """
     This function returns the combination of all accumulated generators
@@ -808,10 +813,14 @@ class GeneratorFactory:
     def getCombinedGenerator(self):
         if (len(self.gens) == 0):
             return None
-        elif (len(self.gens) == 1):
-            return DuplicateFilterPageGenerator(self.gens[0])
+        if (len(self.gens) == 1):
+            gensList = self.gens[0]
         else:
-            return DuplicateFilterPageGenerator(CombinedPageGenerator(self.gens))
+            gensList = CombinedPageGenerator(self.gens)
+        genToReturn = DuplicateFilterPageGenerator(gensList)
+        if (self.namespaces):
+            genToReturn = NamespaceFilterPageGenerator(genToReturn, map(int, self.namespaces))
+        return genToReturn
 
     def getCategoryGen(self, arg, length, recurse = False):
         if len(arg) == length:
@@ -899,12 +908,18 @@ class GeneratorFactory:
                 textfilename = wikipedia.input(
                     u'Please enter the local file name:')
             gen = TextfilePageGenerator(textfilename)
+        elif arg.startswith('-namespace'):
+            if len(arg) == len('-namespace'):
+                self.namespaces.append(wikipedia.input(u'What namespace are you filtering on?'))
+            else:
+                self.namespaces.extend(arg[len('-namespace:'):].split(","))
+            return True
         elif arg.startswith('-catr'):
             gen = self.getCategoryGen(arg, len('-catr'), recurse = True)
-        elif arg.startswith('-cat'):
-            gen = self.getCategoryGen(arg, len('-cat'))
         elif arg.startswith('-category'):
             gen = self.getCategoryGen(arg, len('-category'))
+        elif arg.startswith('-cat'):
+            gen = self.getCategoryGen(arg, len('-cat'))
         elif arg.startswith('-subcatsr'):
             gen = self.setSubCategoriesGen(arg, 9, recurse = True)
         elif arg.startswith('-subcats'):
