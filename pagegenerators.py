@@ -763,6 +763,8 @@ class PreloadingGenerator(object):
                 # preload remaining pages
                 for loaded_page in self.preload(somePages):
                     yield loaded_page
+        except GeneratorExit:
+            pass
         except Exception, e:
             traceback.print_exc()
             wikipedia.output(unicode(e))
@@ -823,8 +825,10 @@ class GeneratorFactory:
             startfrom = categoryname[ind + 1:]
             categoryname = categoryname[:ind]
 
-        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-        return CategorizedPageGenerator(cat, start = startfrom, recurse = recurse)
+        cat = catlib.Category(wikipedia.getSite(), categoryname)
+        # Category constructor automatically prepends localized namespace
+        # if not included in user's input
+        return CategorizedPageGenerator(cat, start=startfrom, recurse=recurse)
 
     def setSubCategoriesGen(self, arg, length, recurse = False):
         if len(arg) == length:
@@ -839,24 +843,27 @@ class GeneratorFactory:
         else:
             startfrom = None
 
-        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-        return SubCategoriesPageGenerator(cat, start = startfrom, recurse = recurse)
+        cat = catlib.Category(wikipedia.getSite(), categoryname)
+        return SubCategoriesPageGenerator(cat, start=startfrom, recurse=recurse)
 
-    """
-    This function parses one argument at a time.  If it is recognized as an
-    argument that specifies a generator, a generator is created and added
-    to the accumulation list, and the function returns true.  Otherwise, it
-    returns false, so that callee can try parsing the argument.
-    Call getCombinedGenerator() after all arguments have been parsed to get
-    the final output generator.
-    """
     def handleArg(self, arg):
+        """Parse one argument at a time.
+
+        If it is recognized as an argument that specifies a generator, a
+        generator is created and added to the accumulation list, and the
+        function returns true.  Otherwise, it returns false, so that caller
+        can try parsing the argument. Call getCombinedGenerator() after all
+        arguments have been parsed to get the final output generator.
+        
+        """
         gen = None
         if arg.startswith('-filelinks'):
             fileLinksPageTitle = arg[11:]
             if not fileLinksPageTitle:
-                fileLinksPageTitle = wikipedia.input(u'Links to which image page should be processed?')
-            if fileLinksPageTitle.startswith(wikipedia.getSite().namespace(6) + ":"):
+                fileLinksPageTitle = wikipedia.input(
+                    u'Links to which image page should be processed?')
+            if fileLinksPageTitle.startswith(wikipedia.getSite().namespace(6)
+                                             + ":"):
                 fileLinksPage = wikipedia.ImagePage(wikipedia.getSite(),
                                                     fileLinksPageTitle)
             else:
@@ -889,10 +896,11 @@ class GeneratorFactory:
         elif arg.startswith('-file'):
             textfilename = arg[6:]
             if not textfilename:
-                textfilename = wikipedia.input(u'Please enter the local file name:')
+                textfilename = wikipedia.input(
+                    u'Please enter the local file name:')
             gen = TextfilePageGenerator(textfilename)
         elif arg.startswith('-catr'):
-            gen = self.getCategoryGen(arg, 5, recurse = True)
+            gen = self.getCategoryGen(arg, len('-catr'), recurse = True)
         elif arg.startswith('-cat'):
             gen = self.getCategoryGen(arg, len('-cat'))
         elif arg.startswith('-category'):
@@ -906,7 +914,9 @@ class GeneratorFactory:
             gen = self.getCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-page'):
             if len(arg) == len('-page'):
-                gen = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
+                gen = [wikipedia.Page(wikipedia.getSite(),
+                                      wikipedia.input(
+                                          u'What page do you want to use?'))]
             else:
                 gen = [wikipedia.Page(wikipedia.getSite(), arg[len('-page:'):])]
         elif arg.startswith('-uncatfiles'):
@@ -918,44 +928,58 @@ class GeneratorFactory:
         elif arg.startswith('-ref'):
             referredPageTitle = arg[5:]
             if not referredPageTitle:
-                referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
-            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
+                referredPageTitle = wikipedia.input(
+                    u'Links to which page should be processed?')
+            referredPage = wikipedia.Page(wikipedia.getSite(),
+                                          referredPageTitle)
             gen = ReferringPageGenerator(referredPage)
         elif arg.startswith('-links'):
             linkingPageTitle = arg[7:]
             if not linkingPageTitle:
-                linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
+                linkingPageTitle = wikipedia.input(
+                    u'Links from which page should be processed?')
             linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
             gen = LinkedPageGenerator(linkingPage)
         elif arg.startswith('-weblink'):
             url = arg[9:]
             if not url:
-                url = wikipedia.input(u'Pages with which weblink should be processed?')
+                url = wikipedia.input(
+                    u'Pages with which weblink should be processed?')
             gen = LinksearchPageGenerator(url)
         elif arg.startswith('-transcludes'):
             transclusionPageTitle = arg[len('-transcludes:'):]
             if not transclusionPageTitle:
-                transclusionPageTitle = wikipedia.input(u'Pages that transclude which page should be processed?')
-            transclusionPage = wikipedia.Page(wikipedia.getSite(), 'Template:%s' % transclusionPageTitle)
-            gen = ReferringPageGenerator(transclusionPage, onlyTemplateInclusion = True)
+                transclusionPageTitle = wikipedia.input(
+                    u'Pages that transclude which page should be processed?')
+            transclusionPage = wikipedia.Page(wikipedia.getSite(),
+                                              transclusionPageTitle,
+                                              defaultNamespace=10)
+            gen = ReferringPageGenerator(transclusionPage,
+                                         onlyTemplateInclusion=True)
         elif arg.startswith('-start'):
             if arg.startswith('-startxml'):
                 wikipedia.output(u'-startxml : wrong parameter')
                 sys.exit()
             firstPageTitle = arg[7:]
             if not firstPageTitle:
-                firstPageTitle = wikipedia.input(u'At which page do you want to start?')
-            namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
-            gen = AllpagesPageGenerator(firstPageTitle, namespace, includeredirects = False)
+                firstPageTitle = wikipedia.input(
+                    u'At which page do you want to start?')
+            namespace = wikipedia.Page(wikipedia.getSite(),
+                                       firstPageTitle).namespace()
+            firstPageTitle = wikipedia.Page(wikipedia.getSite(),
+                                        firstPageTitle).titleWithoutNamespace()
+            gen = AllpagesPageGenerator(firstPageTitle, namespace,
+                                        includeredirects=False)
         elif arg.startswith('-prefixindex'):
             prefix = arg[13:]
             namespace = None
             if not prefix:
-                prefix = wikipedia.input(u'What page names are you looking for?')
+                prefix = wikipedia.input(
+                    u'What page names are you looking for?')
             gen = PrefixingPageGenerator(prefix = prefix)
         elif arg.startswith('-newimages'):
-            limit = arg[11:] or wikipedia.input(u'How many images do you want to load?')
+            limit = arg[11:] or wikipedia.input(
+                u'How many images do you want to load?')
             gen = NewimagesPageGenerator(number = int(limit))
         elif arg.startswith('-new'):
             if len(arg) >=5:
@@ -965,13 +989,16 @@ class GeneratorFactory:
         elif arg.startswith('-imagelinks'):
             imagelinkstitle = arg[len('-imagelinks:'):]
             if not imagelinkstitle:
-                imagelinkstitle = wikipedia.input(u'Images on which page should be processed?')
-            imagelinksPage = wikipedia.Page(wikipedia.getSite(), imagelinkstitle)
+                imagelinkstitle = wikipedia.input(
+                    u'Images on which page should be processed?')
+            imagelinksPage = wikipedia.Page(wikipedia.getSite(),
+                                            imagelinkstitle)
             gen = ImagesPageGenerator(imagelinksPage)
         elif arg.startswith('-search'):
             mediawikiQuery = arg[8:]
             if not mediawikiQuery:
-                mediawikiQuery = wikipedia.input(u'What do you want to search for?')
+                mediawikiQuery = wikipedia.input(
+                    u'What do you want to search for?')
             # In order to be useful, all namespaces are required
             gen = SearchPageGenerator(mediawikiQuery, namespaces = [])
         elif arg.startswith('-google'):
@@ -981,7 +1008,8 @@ class GeneratorFactory:
                 regex = wikipedia.input(u'What page names are you looking for?')
             else:
                 regex = arg[7:]
-            gen = RegexFilterPageGenerator(wikipedia.getSite().allpages(), regex)
+            gen = RegexFilterPageGenerator(wikipedia.getSite().allpages(),
+                                           regex)
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
         else:
