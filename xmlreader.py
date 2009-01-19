@@ -160,8 +160,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             # Remove trailing newlines and spaces
             while text and text[-1] in '\n ':
                 text = text[:-1]
-##            # Replace newline by cr/nl
-##            text = u'\r\n'.join(text.split('\n'))
+            # Replace newline by cr/nl
+            text = u'\r\n'.join(text.split('\n'))
             # Decode the timestamp
             timestamp = (self.timestamp[0:4]+
                          self.timestamp[5:7]+
