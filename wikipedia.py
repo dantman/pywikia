@@ -834,10 +834,10 @@ not supported by PyWikipediaBot!"""
                 self._redirarg = redirtarget
             else:
                 raise IsRedirectPage(redirtarget)
-        elif self.isCategoryRedirect(): # sets _redirarg
-            if not get_redirect:
-                self._getexception = IsRedirectPage
-                raise IsRedirectPage, self._redirarg
+##        elif self.isCategoryRedirect(): # sets _redirarg
+##            if not get_redirect:
+##                self._getexception = IsRedirectPage
+##                raise IsRedirectPage, self._redirarg
         if self.section():
             # TODO: What the hell is this? Docu please.
             m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
@@ -5720,6 +5720,9 @@ your connection is down. Retrying in %i minutes..."""
     def category_namespaces(self):
         """Return a list of all valid names for the Category namespace."""
         return self.family.category_namespaces(self.lang)
+
+    def category_redirects(self):
+        return self.family.category_redirects(self.lang)
 
     def image_namespace(self, fallback = '_default'):
         """Return the canonical name of the Image namespace on this site."""
