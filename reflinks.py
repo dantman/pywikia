@@ -678,9 +678,7 @@ def main():
     namespaces = []
     generator = None
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-page:'):
-            PageTitles.append(arg[6:])
-        elif arg.startswith('-namespace:'):
+        if arg.startswith('-namespace:'):
             try:
                 namespaces.append(int(arg[11:]))
             except ValueError:
@@ -706,7 +704,7 @@ def main():
             else:
                 xmlFilename = arg[5:]
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
 
     if xmlFilename:
         try:
@@ -714,9 +712,8 @@ def main():
         except NameError:
             xmlStart = None
         generator = XmlDumpPageGenerator(xmlFilename, xmlStart, namespaces)
-    elif PageTitles:
-        pages= [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
-        generator = iter(pages)
+    if not generator:
+        generator = genFactory.getCombinedGenerator()
     if not generator:
         # syntax error, show help text from the top of this file
         wikipedia.showHelp('reflinks')

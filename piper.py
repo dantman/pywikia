@@ -188,10 +188,7 @@ def main():
         else:
             # check if a standard argument like
             # -start:XYZ or -ref:Asdf was given.
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-            else:
+            if not genFactory.handleArg(arg):
                 pageTitleParts.append(arg)
 
     if pageTitleParts != []:
@@ -200,6 +197,8 @@ def main():
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         gen = iter([page])
 
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if gen:
         # The preloading generator is responsible for downloading multiple
         # pages from the wiki simultaneously.

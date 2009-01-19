@@ -796,20 +796,32 @@ class GeneratorFactory:
     to work on.
     """
     def __init__(self):
-        pass
+        self.gens = []
 
-    def setCategoryGen(self, arg, length, recurse = False):
+    """
+    This function returns the combination of all accumulated generators
+    that have been created in the process of handling arguments.
+    Only call it after all arguments have been parsed.
+    """
+    def getCombinedGenerator(self):
+        if (len(self.gens) == 0):
+            return None
+        elif (len(self.gens) == 1):
+            return DuplicateFilterPageGenerator(self.gens[0])
+        else:
+            return DuplicateFilterPageGenerator(CombinedPageGenerator(self.gens))
+
+    def getCategoryGen(self, arg, length, recurse = False):
         if len(arg) == length:
             categoryname = wikipedia.input(u'Please enter the category name:')
         else:
             categoryname = arg[length + 1:]
 
         ind = categoryname.find('|')
+        startfrom = None
         if ind > 0:
             startfrom = categoryname[ind + 1:]
             categoryname = categoryname[:ind]
-        else:
-            startfrom = None
 
         cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
         return CategorizedPageGenerator(cat, start = startfrom, recurse = recurse)
@@ -830,6 +842,14 @@ class GeneratorFactory:
         cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
         return SubCategoriesPageGenerator(cat, start = startfrom, recurse = recurse)
 
+    """
+    This function parses one argument at a time.  If it is recognized as an
+    argument that specifies a generator, a generator is created and added
+    to the accumulation list, and the function returns true.  Otherwise, it
+    returns false, so that callee can try parsing the argument.
+    Call getCombinedGenerator() after all arguments have been parsed to get
+    the final output generator.
+    """
     def handleArg(self, arg):
         gen = None
         if arg.startswith('-filelinks'):
@@ -872,16 +892,23 @@ class GeneratorFactory:
                 textfilename = wikipedia.input(u'Please enter the local file name:')
             gen = TextfilePageGenerator(textfilename)
         elif arg.startswith('-catr'):
-            gen = self.setCategoryGen(arg, 5, recurse = True)
+            gen = self.getCategoryGen(arg, 5, recurse = True)
         elif arg.startswith('-cat'):
-            gen = self.setCategoryGen(arg, 4)
+            gen = self.getCategoryGen(arg, len('-cat'))
+        elif arg.startswith('-category'):
+            gen = self.getCategoryGen(arg, len('-category'))
         elif arg.startswith('-subcatsr'):
             gen = self.setSubCategoriesGen(arg, 9, recurse = True)
         elif arg.startswith('-subcats'):
             gen = self.setSubCategoriesGen(arg, 8)
         # This parameter is deprecated, catr should be used instead.
         elif arg.startswith('-subcat'):
-            gen = self.setCategoryGen(arg, 7, recurse = True)
+            gen = self.getCategoryGen(arg, 7, recurse = True)
+        elif arg.startswith('-page'):
+            if len(arg) == len('-page'):
+                gen = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
+            else:
+                gen = [wikipedia.Page(wikipedia.getSite(), arg[len('-page:'):])]
         elif arg.startswith('-uncatfiles'):
             gen = UnCategorizedImageGenerator()
         elif arg.startswith('-uncatcat'):
@@ -958,10 +985,12 @@ class GeneratorFactory:
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
         else:
-            return None
-        # make sure all yielded pages are unique
-        gen = DuplicateFilterPageGenerator(gen)
-        return gen
+            pass
+        if gen:
+            self.gens.append(gen)
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
     try:

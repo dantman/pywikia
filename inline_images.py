@@ -88,16 +88,15 @@ def main():
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
-        generator = genFactory.handleArg(arg)
-        if generator:
-            gen = generator
-        else:
+        if not genFactory.handleArg(arg):
             pageTitle.append(arg)
 
     if pageTitle:
         # work on a single page
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if not gen:
         wikipedia.showHelp('inline_images')
     else:

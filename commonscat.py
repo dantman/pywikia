@@ -345,7 +345,10 @@ def main():
         elif arg == '-always':
             always = True
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
+
+    if not generator:
+        generator = genFactory.getCombinedGenerator()
     if not generator:
         raise add_text.NoEnoughData('You have to specify the generator you want to use for the script!')
 

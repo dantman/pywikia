@@ -313,15 +313,12 @@ def main(args):
     site = wikipedia.getSite(u'commons', u'commons')
     wikipedia.setSite(site)
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-page'):
-            if len(arg) == 5:
-                generator = [wikipedia.Page(site, wikipedia.input(u'What page do you want to use?'))]
-            else:
-                generator = [wikipedia.Page(site, arg[6:])]
-        elif arg == '-onlyfilter':
+        if arg == '-onlyfilter':
             onlyfilter = True
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
+
+    gen = genFactory.getCombinedGenerator()
     if not generator:
         generator = pagegenerators.CategorizedPageGenerator(catlib.Category(site, u'Category:Media needing categories'), recurse=True)
 

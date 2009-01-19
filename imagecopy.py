@@ -440,15 +440,12 @@ def main(args):
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-page'):
-            if len(arg) == 5:
-                generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
-            else:
-                generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
-        elif arg == '-always':
+        if arg == '-always':
             always = True
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
+    
+    generator = genFactory.getCombinedGenerator()
     if not generator:
         raise add_text.NoEnoughData('You have to specify the generator you want to use for the script!')
 

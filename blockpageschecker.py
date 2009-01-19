@@ -228,7 +228,7 @@ def main():
             else:
                 generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
     # Take the right templates to use, the category and the comment
     TSP = wikipedia.translate(site, templateSemiProtection)
     TTP = wikipedia.translate(site, templateTotalProtection)
@@ -238,6 +238,8 @@ def main():
 
     category = wikipedia.translate(site, categoryToCheck)
     commentUsed = wikipedia.translate(site, comment)
+    if not generator:
+        gen = genFactory.getCombinedGenerator()
     if not generator:
         generator = list()
         wikipedia.output(u'Loading categories...')

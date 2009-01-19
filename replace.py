@@ -16,10 +16,6 @@ These command line parameters can be used to specify which pages to work on:
                   Argument can also be given as "-page:pagetitle". You can
                   give this parameter multiple times to edit multiple pages.
 
--category         Works on all of the pages in a specific category.  Specify
-                  this argument multiple times to work on multiple categories
-                  simultaneously.
-
 Furthermore, the following command line parameters are supported:
 
 -regex            Make replacements using regular expressions. If this argument
@@ -515,8 +511,6 @@ def main(*args):
     # Between a regex and another (using -fix) sleep some time (not to waste
     # too much CPU
     sleep = None
-    # A list of categories whose pages we should process.
-    categories = []
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs(*args):
@@ -536,8 +530,6 @@ def main(*args):
                 xmlFilename = arg[5:]
         elif arg =='-sql':
             useSql = True
-        elif arg.startswith('-category'):
-            categories.append(arg[len('-category:'):])
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 PageTitles.append(wikipedia.input(
@@ -581,10 +573,7 @@ def main(*args):
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-            else:
+            if not genFactory.handleArg(arg):
                 commandline_replacements.append(arg)
 
     if (len(commandline_replacements) % 2):
@@ -704,14 +693,13 @@ JOIN text ON (page_id = old_id)
 %s
 LIMIT 200""" % (whereClause, exceptClause)
         gen = pagegenerators.MySQLPageGenerator(query)
-    elif categories:
-        gens = [pagegenerators.CategorizedPageGenerator(catlib.Category(wikipedia.getSite(), 'Category:' + t)) for t in categories]
-        gen = pagegenerators.DuplicateFilterPageGenerator(pagegenerators.CombinedPageGenerator(gens))
     elif PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle)
                  for PageTitle in PageTitles]
         gen = iter(pages)
 
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if not gen:
         # syntax error, show help text from the top of this file
         wikipedia.showHelp('replace')

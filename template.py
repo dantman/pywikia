@@ -29,10 +29,6 @@ Command line options:
 
 -always      Don't bother asking to confirm any of the changes, Just Do It.
 
--page:       Only edit a specific page.  You can use this argument multiple times to work
-             on multiple pages.  If the page title has spaces in it, enclose the entire
-             page name in quotes.
-
 -category:   Appends the given category to every page that is edited.  This is useful when
              a category is being broken out from a template parameter or when templates are
              being upmerged but more information must be preserved.
@@ -359,7 +355,7 @@ def main():
     editSummary = ''
     addedCat = ''
     acceptAll = False
-    pageTitles = []
+    genFactory = pagegenerators.GeneratorFactory()
     # If xmlfilename is None, references will be loaded from the live wiki.
     xmlfilename = None
     # read command line parameters
@@ -384,13 +380,9 @@ def main():
             editSummary = arg[len('-summary:'):]
         elif arg.startswith('-always'):
             acceptAll = True
-        elif arg.startswith('-page'):
-            if len(arg) == len('-page'):
-                pageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
-            else:
-                pageTitles.append(arg[len('-page:'):])
         else:
-            templateNames.append(arg)
+            if not genFactory.handleArg(arg):
+                templateNames.append(arg)
 
     if subst or remove:
         for templateName in templateNames:
@@ -411,10 +403,9 @@ def main():
 
     if xmlfilename:
         gen = XmlDumpTemplatePageGenerator(oldTemplates, xmlfilename)
-    elif pageTitles:
-        pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
-        gen = iter(pages)
     else:
+        gen = genFactory.getCombinedGenerator()
+    if not gen:
         gens = []
         gens = [pagegenerators.ReferringPageGenerator(t, onlyTemplateInclusion = True) for t in oldTemplates]
         gen = pagegenerators.CombinedPageGenerator(gens)

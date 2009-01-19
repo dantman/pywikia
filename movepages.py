@@ -269,9 +269,7 @@ def main():
             else:
                 summary = arg[9:]
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
+            genFactory.handleArg(arg)
 
     if oldName:
         wikipedia.output(u'WARNING: -from:%s without -to:' % oldName)
@@ -279,6 +277,9 @@ def main():
         page = wikipedia.Page(wikipedia.getSite(), pair[0])
         bot = MovePagesBot(None, prefix, delete, always, skipredirects, summary)
         bot.moveOne(page, pair[1])
+
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects, summary)

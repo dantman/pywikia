@@ -1339,17 +1339,15 @@ def main(args):
     site = wikipedia.getSite(u'commons', u'commons')
     wikipedia.setSite(site)
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-page'):
-            if len(arg) == 5:
-                generator = [wikipedia.Page(site, wikipedia.input(u'What page do you want to use?'))]
-            else:
-                generator = [wikipedia.Page(site, arg[6:])]
-        elif arg.startswith('-yesterday'):
+        if arg.startswith('-yesterday'):
             generator = uploadedYesterday(site)
         elif arg.startswith('-recentchanges'):
             generator = recentChanges(site)
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
+
+    if not generator:
+        generator = genFactory.getCombinedGenerator()
     if not generator:
         wikipedia.output('You have to specify the generator you want to use for the program!')
     else:

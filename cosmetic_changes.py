@@ -393,10 +393,7 @@ def main():
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
-        generator = genFactory.handleArg(arg)
-        if generator:
-            gen = generator
-        else:
+        if not genFactory.handleArg(arg):
             pageTitle.append(arg)
 
     # Disabled this check. Although the point is still valid, there
@@ -411,6 +408,8 @@ def main():
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if not gen:
         wikipedia.showHelp()
     elif wikipedia.inputChoice(warning + '\nDo you really want to continue?', ['yes', 'no'], ['y', 'N'], 'N') == 'y':

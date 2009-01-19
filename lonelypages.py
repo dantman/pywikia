@@ -134,19 +134,18 @@ def main():
                 nwlimit = int(arg[10:])
             generator = wikipedia.getSite().newpages(number = nwlimit)
             nwpages = True
-        elif arg.startswith('-page'):
-            if len(arg) == 5:
-                generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'How many pages do you want to check?'))]
-            else:
-                generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         elif arg == '-always':
             always = True
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
     # Retrive the site
     wikiSite = wikipedia.getSite()
+
+    if not generator:
+        generator = genFactory.getCombinedGenerator()
+
     # If the generator is not given, use the default one
-    if generator == None:
+    if not generator:
         generator = wikiSite.lonelypages(repeat = True, number = limit)
     # Take the configurations according to our project
     comment = wikipedia.translate(wikiSite, commento)

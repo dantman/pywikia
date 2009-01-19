@@ -1145,9 +1145,7 @@ def main():
             if number < pageNumber:
                 pageNumber = number
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
+            genFactory.handleArg(arg)
 
     if PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
@@ -1160,6 +1158,8 @@ def main():
     if ids:
         checks_by_ids(ids)
 
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if not gen and not ids and not text:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')

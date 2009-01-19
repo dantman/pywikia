@@ -584,10 +584,7 @@ LIMIT 200"""
         elif arg.startswith('-debug'):
             debug = True
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-            else:
+            if not genFactory.handleArg(arg):
                 page_title.append(arg)
 
     # if the page is given as a command line argument,
@@ -596,6 +593,9 @@ LIMIT 200"""
         page_title = ' '.join(page_title)
         page = wikipedia.Page(wikipedia.getSite(), page_title)
         gen = iter([page])
+
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if not gen:
         # show help
         wikipedia.showHelp('table2wiki')

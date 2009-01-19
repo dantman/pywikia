@@ -799,10 +799,7 @@ def main():
         elif arg.startswith('-ignore:'):
             HTTPignore.append(int(arg[8:]))
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-            else:
+            if not genFactory.handleArg(arg):
                 singlePageTitle.append(arg)
 
     if singlePageTitle:
@@ -810,6 +807,8 @@ def main():
         page = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
         gen = iter([page])
 
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if gen:
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)

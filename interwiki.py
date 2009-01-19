@@ -1726,11 +1726,9 @@ if __name__ == "__main__":
             elif arg == '-back':
                 globalvar.nobackonly = True
             else:
-                generator = genFactory.handleArg(arg)
-                if generator:
-                    hintlessPageGen = generator
-                else:
+                if not genFactory.handleArg(arg):
                     singlePageTitle.append(arg)
+
 
         # ensure that we don't try to change main page
         try:
@@ -1764,6 +1762,8 @@ if __name__ == "__main__":
 
         bot = InterwikiBot()
 
+        if not hintlessPageGen:
+            hintlessPageGen = genFactory.getCombinedGenerator()
         if hintlessPageGen:
             if len(namespaces) > 0:
                 hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)

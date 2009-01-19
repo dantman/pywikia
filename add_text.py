@@ -283,7 +283,10 @@ def main():
         elif arg == '-always':
             always = True
         else:
-            generator = genFactory.handleArg(arg)
+            genFactory.handleArg(arg)
+
+    if not generator:
+        generator = genFactory.getCombinedGenerator()
     # Check if there are the minimal settings
     if not generator:
         raise NoEnoughData('You have to specify the generator you want to use for the script!')

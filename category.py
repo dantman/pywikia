@@ -946,14 +946,19 @@ if __name__ == "__main__":
             elif arg == '-recurse':
                 recurse = True
             else:
-                gen = genFactory.handleArg(arg)
+                genFactory.handleArg(arg)
 
         if action == 'add':
+            # Note that the add functionality is the only bot that actually uses the
+            # the generator factory.  Every other bot creates its own generator exclusively
+            # from the command-line arguments that category.py understands.
             if not gen:
-			    gen = genFactory.handleArg('-links') #default for backwords compatibility
-			# The preloading generator is responsible for downloading multiple
-			# pages from the wiki simultaneously.
-            gen = pagegenerators.PreloadingGenerator(gen)
+                gen = genFactory.getCombinedGenerator()
+            if not gen:
+                genFactory.handleArg('-links') #default for backwords compatibility
+                # The preloading generator is responsible for downloading multiple
+                # pages from the wiki simultaneously.
+            gen = pagegenerators.PreloadingGenerator(genFactory.getCombinedGenerator())
             add_category(sort_by_last_name)
         elif action == 'remove':
             if (fromGiven == False):

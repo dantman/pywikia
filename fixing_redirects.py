@@ -181,9 +181,9 @@ def main():
             else:
                 namespace = int(arg[11:])
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
+            genFactory.handleArg(arg)
+
+    gen = genFactory.getCombinedGenerator()
 
     mysite = wikipedia.getSite()
     if mysite.sitename() == 'wikipedia:nl':

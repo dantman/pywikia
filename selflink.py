@@ -224,15 +224,14 @@ LIMIT 100"""
             except ValueError:
                 namespaces.append(arg[11:])
         else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-            else:
+            if not genFactory.handleArg(arg):
                 pageTitle.append(arg)
 
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
+    if not gen:
+        gen = genFactory.getCombinedGenerator()
     if not gen:
         wikipedia.showHelp('selflink')
     else:
