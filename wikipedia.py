@@ -1092,15 +1092,18 @@ not supported by PyWikipediaBot!"""
         if not self.isCategory():
             return False
         if not hasattr(self, "_catredirect"):
-            catredirs = self.site().category_redirects()
-            for (t, args) in self.templatesWithParams():
-                if t in catredirs:
-                    self._catredirect = True
-                    # Get target (first template argument)
-                    self._redirarg = self.site().namespace(14) + ":" + args[0]
-                    break
-            else:
+            if not hasattr( self.site(), "category_redirects"):
                 self._catredirect = False
+            else:
+                catredirs = self.site().category_redirects()
+                for (t, args) in self.templatesWithParams():
+                    if t in catredirs:
+                        self._catredirect = True
+                        # Get target (first template argument)
+                        self._redirarg = self.site().namespace(14) + ":" + args[0]
+                        break
+                else:
+                    self._catredirect = False
         return self._catredirect
 
     def isDisambig(self):
