@@ -16,6 +16,8 @@ try:
 except ImportError:
     ctypes_found = False
 
+transliterator = transliteration.transliterator()
+
 def getDefaultTextColorInWindows():
     """
     This method determines the default text color and saves its color
@@ -195,9 +197,9 @@ class UI:
                 # original question marks.
                 if codecedText[i] == '?' and text[i] != u'?':
                     try:
-                        transliterated = transliteration.trans(text[i], default = '?', prev = prev, next = text[i+1])
+                        transliterated = transliterator.transliterate(text[i], default = '?', prev = prev, next = text[i+1])
                     except IndexError:
-                        transliterated = transliteration.trans(text[i], default = '?', prev = prev, next = ' ')
+                        transliterated = transliterator.transliterate(text[i], default = '?', prev = prev, next = ' ')
                     # transliteration was successful. The replacement
                     # could consist of multiple letters.
                     # mark the transliterated letters in yellow.
