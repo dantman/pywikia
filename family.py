@@ -3085,22 +3085,25 @@ class Family:
         way to write the same namespace - choose the first one in the list.
         If nothing can be normalized, return the original value.
         """
-        for ns, items in self.namespaces.iteritems():
-            if items.has_key(code):
-                v = items[code]
-            elif items.has_key('_default'):
-                v = items['_default']
+        for ns, localized_ns in self.namespaces.iteritems():
+            if code in localized_ns:
+                valid = localized_ns[code]
+                if isinstance(valid, basestring):
+                    valid = [valid]
+                else:
+                    valid = valid[:]
             else:
+                valid = []
+            if '_default' in localized_ns:
+                default = localized_ns['_default']
+                if isinstance(default, basestring):
+                    default = [default]
+                if default:
+                    valid.extend(default)
+            if not valid:
                 continue
-            if type(v) is list:
-                if value in v: return v[0]
-            else:
-                if value == v: return v
-            try:
-                if value == self.namespace('_default', ns):
-                    return self.namespace(code, ns)
-            except KeyError:
-                pass
+            if value in valid:
+                return self.namespace(code, ns)
         return value
 
     def getNamespaceIndex(self, lang, namespace):
@@ -3113,7 +3116,7 @@ class Family:
         for n in self.namespaces.keys():
             try:
                 nslist = self.namespaces[n][lang]
-                if type(nslist) != type([]):
+                if type(nslist) is not list:
                     nslist = [nslist]
                 for ns in nslist:
                     if ns.lower() == namespace:
