@@ -823,6 +823,7 @@ class GeneratorFactory:
         return genToReturn
 
     def getCategoryGen(self, arg, length, recurse = False):
+        site = wikipedia.getSite()
         if len(arg) == length:
             categoryname = wikipedia.input(u'Please enter the category name:')
         else:
@@ -834,12 +835,12 @@ class GeneratorFactory:
             startfrom = categoryname[ind + 1:]
             categoryname = categoryname[:ind]
 
-        cat = catlib.Category(wikipedia.getSite(), categoryname)
-        # Category constructor automatically prepends localized namespace
-        # if not included in user's input
+        cat = catlib.Category(site,
+                              "%s:%s" % (site.namespace(14), categoryname))
         return CategorizedPageGenerator(cat, start=startfrom, recurse=recurse)
 
     def setSubCategoriesGen(self, arg, length, recurse = False):
+        site = wikipedia.getSite()
         if len(arg) == length:
             categoryname = wikipedia.input(u'Please enter the category name:')
         else:
@@ -852,7 +853,8 @@ class GeneratorFactory:
         else:
             startfrom = None
 
-        cat = catlib.Category(wikipedia.getSite(), categoryname)
+        cat = catlib.Category(site,
+                              "%s:%s" % (site.namespace(14), categoryname))
         return SubCategoriesPageGenerator(cat, start=startfrom, recurse=recurse)
 
     def handleArg(self, arg):
@@ -865,18 +867,19 @@ class GeneratorFactory:
         arguments have been parsed to get the final output generator.
         
         """
+        site = wikipedia.getSite()
         gen = None
         if arg.startswith('-filelinks'):
             fileLinksPageTitle = arg[11:]
             if not fileLinksPageTitle:
                 fileLinksPageTitle = wikipedia.input(
                     u'Links to which image page should be processed?')
-            if fileLinksPageTitle.startswith(wikipedia.getSite().namespace(6)
+            if fileLinksPageTitle.startswith(site.namespace(6)
                                              + ":"):
-                fileLinksPage = wikipedia.ImagePage(wikipedia.getSite(),
+                fileLinksPage = wikipedia.ImagePage(site,
                                                     fileLinksPageTitle)
             else:
-                fileLinksPage = wikipedia.ImagePage(wikipedia.getSite(),
+                fileLinksPage = wikipedia.ImagePage(site,
                                                 'Image:' + fileLinksPageTitle)
             gen = FileLinksGenerator(fileLinksPage)
         elif arg.startswith('-unusedfiles'):
@@ -900,7 +903,7 @@ class GeneratorFactory:
             title = arg[11:]
             if not title:
                 title = wikipedia.input(u'Which page should be processed?')
-            page = wikipedia.Page(wikipedia.getSite(), title)
+            page = wikipedia.Page(site, title)
             gen = InterwikiPageGenerator(page)
         elif arg.startswith('-file'):
             textfilename = arg[6:]
@@ -929,11 +932,11 @@ class GeneratorFactory:
             gen = self.getCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-page'):
             if len(arg) == len('-page'):
-                gen = [wikipedia.Page(wikipedia.getSite(),
+                gen = [wikipedia.Page(site,
                                       wikipedia.input(
                                           u'What page do you want to use?'))]
             else:
-                gen = [wikipedia.Page(wikipedia.getSite(), arg[len('-page:'):])]
+                gen = [wikipedia.Page(site, arg[len('-page:'):])]
         elif arg.startswith('-uncatfiles'):
             gen = UnCategorizedImageGenerator()
         elif arg.startswith('-uncatcat'):
@@ -945,15 +948,14 @@ class GeneratorFactory:
             if not referredPageTitle:
                 referredPageTitle = wikipedia.input(
                     u'Links to which page should be processed?')
-            referredPage = wikipedia.Page(wikipedia.getSite(),
-                                          referredPageTitle)
+            referredPage = wikipedia.Page(site, referredPageTitle)
             gen = ReferringPageGenerator(referredPage)
         elif arg.startswith('-links'):
             linkingPageTitle = arg[7:]
             if not linkingPageTitle:
                 linkingPageTitle = wikipedia.input(
                     u'Links from which page should be processed?')
-            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
+            linkingPage = wikipedia.Page(site, linkingPageTitle)
             gen = LinkedPageGenerator(linkingPage)
         elif arg.startswith('-weblink'):
             url = arg[9:]
@@ -966,9 +968,9 @@ class GeneratorFactory:
             if not transclusionPageTitle:
                 transclusionPageTitle = wikipedia.input(
                     u'Pages that transclude which page should be processed?')
-            transclusionPage = wikipedia.Page(wikipedia.getSite(),
-                                              transclusionPageTitle,
-                                              defaultNamespace=10)
+            transclusionPage = wikipedia.Page(site,
+                                   "%s:%s" % (site.namespace(10),
+                                              transclusionPageTitle))
             gen = ReferringPageGenerator(transclusionPage,
                                          onlyTemplateInclusion=True)
         elif arg.startswith('-start'):
@@ -979,10 +981,9 @@ class GeneratorFactory:
             if not firstPageTitle:
                 firstPageTitle = wikipedia.input(
                     u'At which page do you want to start?')
-            namespace = wikipedia.Page(wikipedia.getSite(),
-                                       firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(wikipedia.getSite(),
-                                        firstPageTitle).titleWithoutNamespace()
+            namespace = wikipedia.Page(site, firstPageTitle).namespace()
+            firstPageTitle = wikipedia.Page(site,
+                                 firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
                                         includeredirects=False)
         elif arg.startswith('-prefixindex'):
@@ -1006,8 +1007,7 @@ class GeneratorFactory:
             if not imagelinkstitle:
                 imagelinkstitle = wikipedia.input(
                     u'Images on which page should be processed?')
-            imagelinksPage = wikipedia.Page(wikipedia.getSite(),
-                                            imagelinkstitle)
+            imagelinksPage = wikipedia.Page(site, imagelinkstitle)
             gen = ImagesPageGenerator(imagelinksPage)
         elif arg.startswith('-search'):
             mediawikiQuery = arg[8:]
@@ -1023,8 +1023,7 @@ class GeneratorFactory:
                 regex = wikipedia.input(u'What page names are you looking for?')
             else:
                 regex = arg[7:]
-            gen = RegexFilterPageGenerator(wikipedia.getSite().allpages(),
-                                           regex)
+            gen = RegexFilterPageGenerator(site.allpages(), regex)
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
         else:
