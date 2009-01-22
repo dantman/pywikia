@@ -258,7 +258,7 @@ def saveImagePage(imagepage, newcats, usage, galleries, onlyfilter):
 
     if not(onlyfilter):
         newtext = removeTemplates(newtext)
-        newtext = newtext + getCheckCategoriesTemplate(usage, galleries)
+        newtext = newtext + getCheckCategoriesTemplate(usage, galleries, len(newcats))
     for category in newcats:
         newtext = newtext + u'[[Category:' + category + u']]\n'
 
@@ -282,7 +282,7 @@ def removeTemplates(oldtext = u''):
     result = re.sub(u'\{\{\s*[Cc]heck categories[^}]*\}\}', u'', result)
     return result
 
-def getCheckCategoriesTemplate(usage, galleries):
+def getCheckCategoriesTemplate(usage, galleries, ncats):
     result = u'{{Check categories|year={{subst:CURRENTYEAR}}|month={{subst:CURRENTMONTHNAME}}|day={{subst:CURRENTDAY}}\n'
 
     usageCounter = 1
@@ -297,7 +297,8 @@ def getCheckCategoriesTemplate(usage, galleries):
     for gallery in galleries:
         result = result + u'|gallery' + str(galleryCounter) + u'=' + gallery.replace('_', ' ') + u'\n'
         galleryCounter = galleryCounter + 1
-
+    
+    result = result + u'ncats='+ str(ncats) + u'\n'
     result = result + u'}}\n'
     return result    
 
@@ -318,7 +319,7 @@ def main(args):
         else:
             genFactory.handleArg(arg)
 
-    gen = genFactory.getCombinedGenerator()
+    generator = genFactory.getCombinedGenerator()
     if not generator:
         generator = pagegenerators.CategorizedPageGenerator(catlib.Category(site, u'Category:Media needing categories'), recurse=True)
 
