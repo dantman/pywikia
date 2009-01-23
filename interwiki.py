@@ -1616,10 +1616,10 @@ if __name__ == "__main__":
             elif arg.startswith('-hint:'):
                 hints.append(arg[6:])
             elif arg.startswith('-hintfile:'):
-                hintfile = arg[10:]
-                if filename is None:
-                    filename = wikipedia.input(u'Please enter the hint filename:')
-                f = codecs.open(filename, 'r', config.textfile_encoding)
+                hintfilename = arg[10:]
+                if hintfilename is None:
+                    hintfilename = wikipedia.input(u'Please enter the hint filename:')
+                f = codecs.open(hintfilename, 'r', config.textfile_encoding)
                 R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
                 for pageTitle in R.findall(f.read()):
                     hints.append(pageTitle)
