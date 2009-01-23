@@ -1617,10 +1617,13 @@ if __name__ == "__main__":
                 hints.append(arg[6:])
             elif arg.startswith('-hintfile:'):
                 hintfile = arg[10:]
-                hintPageGen = pagegenerators.TextfilePageGenerator(hintfile)
-                for page in hintPageGen:
-                    hints.append(page.title())
-                del hintPageGen
+                if filename is None:
+                    filename = wikipedia.input(u'Please enter the hint filename:')
+                f = codecs.open(filename, 'r', config.textfile_encoding)
+                R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
+                for pageTitle in R.findall(f.read()):
+                    hints.append(pageTitle)
+                f.close()
             elif arg == '-force':
                 globalvar.force = True
             elif arg == '-same':
