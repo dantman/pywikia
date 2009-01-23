@@ -37,6 +37,7 @@ msg = {
           'he':u'בוט: מסיר קישורים לדף "%s"',
           'nn':u'robot: fjerna lenkje til "%s"',
           'no':u'robot: fjerner lenke til "%s"',
+          'nl':u'Bot: verwijzing naar "%s" verwijderd',
           'pt':u'Bot: Retirando link para "%s"',
        }
 

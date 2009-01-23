@@ -53,8 +53,9 @@ class PiperBot:
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
         'en': u'Robot: Piping the article text through %s',
-		'ar': u'روبوت: استبدال نص المقال من خلال %s',
-        'is': u'Vélmenni: Pípa texta síðunnar í gegnum %s'
+        'ar': u'روبوت: استبدال نص المقال من خلال %s',
+        'is': u'Vélmenni: Pípa texta síðunnar í gegnum %s',
+        'nl': u'Bot: paginatekst door %s geleid'
     }
 
     def __init__(self, generator, debug, filters, always):

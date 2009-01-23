@@ -50,14 +50,14 @@ docuReplacements = {
 
 summary={
     'ar': u'روبوت: نقل الصفحة',
-    'en': u'Robot: moved page',
+    'en': u'Robot: Moved page',
     'de': u'Bot: Seite verschoben',
     'el': u'Μετακίνηση σελίδων με bot',
     'fi': u'Botti siirsi sivun',
     'fr': u'Bot: Page renommée',
     'ja': u'ロボットによる: ページの移動',
     'he': u'בוט: מעביר דף',
-    'nl': u'Bot: paginatitel gewijzigd',
+    'nl': u'Bot: paginanaam gewijzigd',
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Bot: Página movida',
     'ru': u'Переименование страницы при помощи робота',
@@ -73,13 +73,12 @@ deletesummary={
     'fr': u'Page de redirection supprimée après renommage',
     'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
     'ja': u'ロボットによる: ページの移動後のリダイレクトページの削除',
-    'nl': u'Redirect verwijderd na verplaatsen van pagina ',
+    'nl': u'Bot: doorverwijzing verwijderd na hernoemen van pagina',
     'pt': u'Bot: Página apagada depois de movida',
     'ru': u'Робот: удаление перенаправления после переименования страницы',
     'zh': u'機器人:刪除頁面移動後的重定向',
     # These are too unspecific:
     #'pl': u'Usunięcie artykułu przez robota',
-
 }
 
 class MovePagesBot:

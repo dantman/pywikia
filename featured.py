@@ -69,7 +69,7 @@ msg = {
     'ksh': u'bot: [[%s:%s]] ess_enen ußjezëijshneten Atikkel',
     'lb': u'Bot: Exzellenten Arikel Link op [[%s:%s]]',
     'lt': u'Bot: Pavyzdinis straipsnis [[%s:%s]]',
-    'nl': u'Bot: Etalage-artikel link voor [[%s:%s]]',
+    'nl': u'Bot: verwijzing naar etalage-artikel voor [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en utmerka artikkel',
     'nn': u'bot: [[%s:%s]] er ein god artikkel',
     'mk': u'Бот: Интервики за избрани статии за [[%s:%s]]',

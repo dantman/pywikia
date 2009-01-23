@@ -34,7 +34,8 @@ class DjVuTextBot:
     msg = {
         'en': u'Robot: creating page with text extracted from DjVu',
         'ar': u'روبوت: إنشاء صفحة بنص مستخرج من DjVu',
-        'fr': u'Bot: creating page with texte extracted from DjVu',
+        'fr': u'Bot: Creating page with texte extracted from DjVu',
+        'nl': u'Bot: pagina aangemaakt met tekst geëxtraheerd uit DjVu-bestand',
         'pt': u'Bot: criando página com texto extraído do DjVu',
     }
     # On English Wikisource, {{blank page}} is used to track blank pages.

@@ -61,7 +61,7 @@ msg_delete_links = {
     'fr': u'Bot: Supprime toutes pages liées depuis %s',
     'he': u'בוט: מוחק את כל הדפים המקושרים מהדף %s.',
     'lt': u'robotas: Trinami visi puslapiai į kuriuos yra nuoroda iš %s',
-    'nl': u'Bot: verwijdert alle pagina\'s met een link op %s',
+    'nl': u'Bot: verwijdert alle pagina\'s met een verwijzing naar %s',
     'pl': u'Robot usuwa wszystkie artykuły zlinkowane z %s',
     'pt': u'Bot: Apagando todas as páginas ligadas a %s',
     'sv': u'Bot: Tar bort alla sidor länkade från %s',

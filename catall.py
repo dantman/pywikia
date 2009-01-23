@@ -28,7 +28,7 @@ msg={
     'it':u'Bot: Cambio categorie',
     'ja':u'ロボットによる: カテゴリ変更',
     'lt':u'robotas: Keičiamos kategorijos',
-    'nl':u'Bot: Verandering van categorieen',
+    'nl':u'Bot: wijziging van categorieën',
     'pl':u'Bot: Zmiana kategorii',
     'pt':u'Bot: Categorizando',
     'sr':u'Bot: Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',

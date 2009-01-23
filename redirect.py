@@ -69,7 +69,7 @@ msg_double={
     'lb': u'Bot: Duebel Viruleedung gefléckt',
     'lt': u'robotas: Taisomas dvigubas peradresavimas',
     'nds':u'Bot: Dubbelte Wiederleiden rutmakt',
-    'nl': u'Robot: Dubbele doorverwijzing gecorrigeerd',
+    'nl': u'Bot: dubbele doorverwijzing gecorrigeerd',
     'nn': u'robot: retta dobbel omdirigering',
     'no': u'bot: Retter dobbel omdirigering',
     'pl': u'Robot naprawia podwójne przekierowanie',
@@ -104,7 +104,7 @@ reason_broken={
     'ksh':u'Bot: Dė Ömlëijdong jingk ennet Liiere',
     'lt': u'robotas: Peradresavimas į niekur',
     'nds':u'Bot: Kaputte Wiederleiden rutmakt',
-    'nl': u'Robot: Doel doorverwijzing bestaat niet',
+    'nl': u'Bot: doelpagina doorverwijzing bestaat niet',
     'nn': u'robot: målet for omdirigeringa eksisterer ikkje',
     'no': u'robot: målet for omdirigeringen eksisterer ikke',
     'pl': u'Robot: cel przekierowania nie istnieje',
@@ -124,6 +124,7 @@ sd_tagging_sum = {
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
     'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
     'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
+    'nl': u'Bot: gemarkeerd voor snelle verwijdering',
     'zh':u'機器人: 將損壞的重定向提報快速刪除',
 }
 

@@ -53,7 +53,7 @@ msg = {
     'ja':u'ロボットによる: <references /> タグを追加。',
     'ko':u'봇: 이전에 없던 <references /> 추가',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
-    'nl':u'Robot: Toevoeging ontbrekende <references /> tag',
+    'nl':u'Bot: toevoeging ontbrekende <references /> tag',
     'pt':u'Bot: Adicionando a tag <references />',
     'zh':u'機器人: 增加遺失的 <references /> 標籤',
     'fr':u'Robot: Ajout de la balise <references /> manquante',
@@ -122,8 +122,8 @@ placeBeforeSections = {
     'nl': [              # no explicit policy on where to put the references
         u'Literatuur',
         u'Zie ook',
-        u'Externe links',
-        u'Externe link',
+        u'Externe verwijzingen',
+        u'Externe verwijzing',
     ],
     'pt': [
         u'Ligações externas',

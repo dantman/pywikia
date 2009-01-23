@@ -22,7 +22,7 @@ fixes = {
         'regex': True,
         'msg': {
             'ar':u'روبوت: تحويل/تصليح HTML',
-            'en':u'Robot: converting/fixing HTML',
+            'en':u'Robot: Converting/fixing HTML',
             'de':u'Bot: konvertiere/korrigiere HTML',
             'fr':u'Robot: convertit/fixe HTML',
             'he':u'בוט: ממיר/מתקן HTML',

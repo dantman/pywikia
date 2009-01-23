@@ -71,6 +71,7 @@ msg = {
        'hu':u'Robot: Automatikus szövegcsere %s',
        'ia':u'Robot: Reimplaciamento automatic de texto %s',
        'is':u'Vélmenni: breyti texta %s',
+       'nl':u'Bot: geautomatiseerde verwerking van referenties %s',
        'pl':u'Robot automatycznie przetwarza źródła %s',
        'pt':u'Bot: Mudança automática %s',
        }
@@ -84,9 +85,10 @@ fixes = {
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
                'en':u'Robot: Adding/sorting references.',
-			   'ar':u'روبوت: إضافة/ترتيب المراجع.',
+               'ar':u'روبوت: إضافة/ترتيب المراجع.',
                'he':u'בוט: מוסיף/מסדר הערות שוליים',
                'ia':u'Robot: Addition/assortimento de referentias',
+               'nl':u'Bot: referenties toegevoegd/gesorteerd',
                'pl':u'Robot dodaje/sortuje źródła',
               },
         'replacements': [

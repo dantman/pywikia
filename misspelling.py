@@ -58,6 +58,7 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
         'en': u'Robot: Fixing misspelled link to %s',
         'he': u'בוט: מתקן קישור עם שגיאה לדף %s',
         'nds': u'Bot: rut mit verkehrt schreven Lenk op %s',
+        'nl': u'Bot: verkeerd gespelde verwijzing naar %s gecorrigeerd',
         'pl': u'Robot poprawia literówkę w linku do %s',
         'pt': u'Bot: Corrigindo link com erro ortográfico para %s'
     }

@@ -41,6 +41,7 @@ comment1 = {
     'en':u'Robot: Include commons template',
     'he':u'בוט: מוסיף תבנית Commons',
     'ja':u'ロボットによる: テンプレcommons追加',
+    'nl':u'Bot: sjabloon commons toegevoegd',
     'zh':u'機器人: 增加commons模板',
     }
 comment2 = {
@@ -48,6 +49,7 @@ comment2 = {
     'en':u'Robot: Include commonscat template',
     'he':u'בוט: מוסיף תבנית Commonscat',
     'ja':u'ロボットによる: テンプレcommonscat追加',
+    'nl':u'Bot: sjabloon commonscat toegevoegd',
     'zh':u'機器人: 增加commonscat模板',
     }
 

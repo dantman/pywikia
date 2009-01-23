@@ -52,7 +52,7 @@ msg_standalone = {
     'ja': u'ロボットによる: 細部の編集',
     'ko': u'로봇: 예쁘게 바꿈',
     'lt': u'robotas: smulkūs taisymai',
-    'nl': u'Bot: Cosmetische veranderingen',
+    'nl': u'Bot: cosmetische wijzigingen',
     'no': u'Bot: Kosmetiske endringer',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
@@ -400,9 +400,9 @@ def main():
     # is now a warning and a prompt (see below).
     #if wikipedia.getSite() == wikipedia.getSite('nl','wikipedia'):
         #print "Deze bot is op WikipediaNL niet gewenst."
-        #print "Het toevoegen van cosmetic changes bij andere veranderingen is toegestaan,"
+        #print "Het toevoegen van cosmetic changes bij andere wijzigingen is toegestaan,"
         #print "maar cosmetic_changes als stand-alone bot niet."
-        #print "Vind a.u.b. een nuttig gebruik voor uw bot."
+        #print "Zoek alstublieft een nuttig gebruik voor uw bot."
         #sys.exit()
 
     if pageTitle:

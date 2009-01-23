@@ -52,6 +52,7 @@ msg = {
     'en': 'Robot: Formatting ISBN',
     'he': u'בוט: מעצב ISBN',
     'ja': u'ロボットによる ISBN の書式化',
+    'nl': 'Bot: ISBN opgemaakt',
     'pt': u'Bot: Formatando ISBN',
     'zh': u'機器人：ISBN格式化',
 }

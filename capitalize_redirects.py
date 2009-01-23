@@ -45,6 +45,7 @@ msg = {
      'fr': u'robot: créez redirect à [[%s]]',
      'he': u'בוט: יוצר הפניה לדף [[%s]]',
      'ja': u'ロボットによる: リダイレクト作成 [[%s]]',
+     'nl': u'Bot: doorverwijzing gemaakt naar [[%s]]',
      'pt': u'Bot: Criando redirecionamento para [[%s]]',
      'sv': u'Bot: Omdirigerar till [[%s]]',
      'zh': u'機器人: 建立重定向至[[%s]]',

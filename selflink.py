@@ -44,7 +44,7 @@ msg = {
     'en':u'Robot: Removing selflinks',
     'fr':u'Bot: Enlève autoliens',
     'he':u'בוט: מסיר קישורים של הדף לעצמו',
-    'nl':u'Bot: links naar pagina zelf verwijderd',
+    'nl':u'Bot: verwijzingen naar pagina zelf verwijderd',
     'nn':u'robot: fjerna sjølvlenkjer',
     'no':u'robot: fjerner selvlenker',
     'pl':u'Robot automatycznie usuwa linki zwrotne',

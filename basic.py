@@ -31,8 +31,9 @@ class BasicBot:
     msg = {
         'ar': u'روبوت: تغيير ...',
         'de': u'Bot: Ändere ...',
-        'en': u'Robot: changing ...',
+        'en': u'Robot: Changing ...',
         'ja':u'ロボットによる：編集',
+        'nl': u'Bot: wijziging ...',
         'pt': u'Bot: alterando...',
         'sv': u'Bot: Ändrar ...',
         'zh': u'機器人：編輯.....',

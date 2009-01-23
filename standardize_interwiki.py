@@ -24,11 +24,12 @@ import difflib
 comment = {
     'ar':u'روبوت: توحيد قياسي للإنترويكي',
     'de':u'Bot: Interwikilinks standardisieren',
-    'en':u'Robot: interwiki standardization',
+    'en':u'Robot: Interwiki standardization',
     'fr':u'Bot : Standardisation des interwikis',
     'he':u'בוט: מסדר את האינטרוויקי',
     'it':u'Bot: Standardizzo interwiki',
     'ja':u'ロボットによる: 言語間リンクを標準化',
+    'nl':u'Bot: standaardisatie interwikiverwijzingen',
     'no':u'bot: Språklenkestandardisering',
     'ksh':u'Bot: Engerwiki Lengks opprüühme',
     'nds':u'Bot: Links twüschen Wikis standardisseern',
