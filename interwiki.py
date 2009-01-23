@@ -1617,7 +1617,7 @@ if __name__ == "__main__":
                 hints.append(arg[6:])
             elif arg.startswith('-hintfile:'):
                 hintfilename = arg[10:]
-                if hintfilename is None:
+                if (hintfilename is None) or (hintfilenname == ''):
                     hintfilename = wikipedia.input(u'Please enter the hint filename:')
                 f = codecs.open(hintfilename, 'r', config.textfile_encoding)
                 R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
