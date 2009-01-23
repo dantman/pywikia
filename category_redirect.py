@@ -3,6 +3,14 @@
 
 Usage: category-redirect.py [options]
 
+The bot will look for categories that are marked with a category redirect
+template, take the first parameter of the template as the target of the
+redirect, and move all pages and subcategories of the category there. It
+also changes hard redirects into soft redirects, and fixes double redirects.
+A log is written under <userpage>/category_redirect_log. Only category pages
+that haven't been edited for a certain cooldown period (currently 7 days)
+are taken into account.
+
 """
 __version__ = '$Id$'
 
@@ -46,8 +54,9 @@ class CategoryRedirectBot(object):
             'wikipedia': {
                 'en': "Category:Wikipedia category redirects",
                 'ar': "تصنيف:تحويلات تصنيفات ويكيبيديا",
-                'no': "Kategori:Wikipedia omdirigertekategorier",
+                'hu': "Kategória:Kategóriaátirányítások",
                 'ja': "Category:移行中のカテゴリ",
+                'no': "Kategori:Wikipedia omdirigertekategorier",
                 'simple': "Category:Category redirects",
             },
             'commons': {
@@ -73,8 +82,10 @@ class CategoryRedirectBot(object):
                 'ar': ("تحويل تصنيف",
                        "Category redirect",
                        "تحويلة تصنيف",),
-                'no': ("Kategoriomdirigering",),
+                'hu': ("Kat-redir",
+                       "Katredir",),
                 'ja': ("Category redirect",),
+                'no': ("Kategoriomdirigering",),
                 'simple': ("Category redirect",
                            "Catredirect"),
                 },
@@ -97,10 +108,12 @@ class CategoryRedirectBot(object):
 u"Robot: moving pages out of redirected category",
             'ar':
 u"روبوت: نقل الصفحات من تصنيف محول",
-            'no':
-u"Robot: Flytter sider ut av omdirigeringskategori",
+            'hu':
+u"Bot: Lapok automatikus áthelyezése átirányított kategóriából",
             'ja':
 u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
+            'no':
+u"Robot: Flytter sider ut av omdirigeringskategori",
             'commons':
 u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])'
         }
@@ -110,6 +123,8 @@ u'Robot: Changing category link (following [[Template:Category redirect|category
 u"Robot: adding category redirect template for maintenance",
             'ar':
 u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
+            'hu':
+u"Bot: kategóriaátirányítás sablon hozzáadása",
             'ja':
 u"ロボットによる: 移行中のカテゴリとしてタグ付け",
             'no':
@@ -119,6 +134,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         self.dbl_redir_comment = {
             '_default': u"Robot: fixing double-redirect",
             'ar': u"روبوت: تصليح تحويلة مزدوجة",
+            'hu': u"Bot: Kettős átirányítás javítása",
             'ja': u"ロボットによる: 二重リダイレクト修正",
             'no': u"Robot: Ordner doble omdirigeringer",
         }
@@ -126,6 +142,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         self.maint_comment = {
             '_default': u"Category redirect maintenance bot",
             'ar': u"بوت صيانة تحويل التصنيف",
+            'hu': u"Kategóriaátirányítás-karbantartó bot",
             'ja': u"移行中のカテゴリのメンテナンス・ボット",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
         }
@@ -235,6 +252,8 @@ category links:
                 wikipedia.output(u"Server error: retrying in 5 seconds...")
                 time.sleep(5)
                 continue
+            except KeyboardInterrupt:
+                raise
             except:
                 return (None, None)
 
@@ -555,8 +574,9 @@ category links:
                         # remove the old redirect from the old text,
                         # leaving behind any non-redirect text
                         oldtext = template_regex.sub("", oldtext)
-                        newtext = (u"{{category redirect|%(ncat)s}}"
-                                    % {'ncat': newcat.titleWithoutNamespace()})
+                        newtext = (u"{{%(redirtemp)s|%(ncat)s}}"
+                                    % {'redirtemp': template_list[0],
+                                       'ncat': newcat.titleWithoutNamespace()})
                         newtext = newtext + oldtext.strip()
                         try:
                             d.put(newtext,
