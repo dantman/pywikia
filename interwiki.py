@@ -1619,7 +1619,7 @@ if __name__ == "__main__":
                 hintfile = arg[10:]
                 hintPageGen = pagegenerators.TextfilePageGenerator(hintfile)
                 for page in hintPageGen:
-                    hints.append(page)
+                    hints.append(page.title())
                 del hintPageGen
             elif arg == '-force':
                 globalvar.force = True
