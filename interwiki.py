@@ -91,6 +91,9 @@ These arguments are useful to provide hints to the bot:
                        * latin:   All languages using the Latin script.
                        * scand:   All Scandinavian languages.
 
+    -hintfile:     similar to -hint, except that the hints are taken from
+                   the given file, one per line, instead of the command line.
+
     -askhints:     for each page one or more hints are asked. See hint: above
                    for the format, one can for example give "en:something" or
                    "20:" as hint.
@@ -1612,6 +1615,12 @@ if __name__ == "__main__":
                 globalvar.auto = False
             elif arg.startswith('-hint:'):
                 hints.append(arg[6:])
+            elif arg.startswith('-hintfile:'):
+                hintfile = arg[10:]
+                hintPageGen = pagegenerators.TextfilePageGenerator(hintfile)
+                for page in hintPageGen:
+                    hints.append(page)
+                del hintPageGen
             elif arg == '-force':
                 globalvar.force = True
             elif arg == '-same':
@@ -1687,6 +1696,7 @@ if __name__ == "__main__":
                 skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
                 for page in skipPageGen:
                     globalvar.skip.add(page)
+                del skipPageGen
             elif arg == '-skipauto':
                 globalvar.skipauto = True
             elif arg == '-restore':
@@ -1710,6 +1720,7 @@ if __name__ == "__main__":
                 ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
                 for page in ignorePageGen:
                     globalvar.ignore.append(page)
+                del ignorePageGen
             elif arg == '-showpage':
                 globalvar.showtextlink += globalvar.showtextlinkadd
             elif arg == '-graph':
