@@ -298,7 +298,7 @@ def getCheckCategoriesTemplate(usage, galleries, ncats):
         result = result + u'|gallery' + str(galleryCounter) + u'=' + gallery.replace('_', ' ') + u'\n'
         galleryCounter = galleryCounter + 1
     
-    result = result + u'ncats='+ str(ncats) + u'\n'
+    result = result + u'|ncats='+ str(ncats) + u'\n'
     result = result + u'}}\n'
     return result    
 
