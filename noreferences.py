@@ -53,6 +53,7 @@ msg = {
     'ja':u'ロボットによる: <references /> タグを追加。',
     'ko':u'봇: 이전에 없던 <references /> 추가',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
+    'nl':u'Robot: Toevoeging ontbrekende <references /> tag',
     'pt':u'Bot: Adicionando a tag <references />',
     'zh':u'機器人: 增加遺失的 <references /> 標籤',
     'fr':u'Robot: Ajout de la balise <references /> manquante',
@@ -98,7 +99,7 @@ placeBeforeSections = {
         u'Voir aussi',
         u'Notes'
     ],
-   'hu': [
+    'hu': [
         u'Külső hivatkozások',
         u'Lásd még',
     ],
@@ -117,6 +118,12 @@ placeBeforeSections = {
     ],
     'lt': [              # no explicit policy on where to put the references
         u'Nuorodos'
+    ],
+    'nl': [              # no explicit policy on where to put the references
+        u'Literatuur',
+        u'Zie ook',
+        u'Externe links',
+        u'Externe link',
     ],
     'pt': [
         u'Ligações externas',
@@ -164,7 +171,7 @@ referencesSections = {
     'he': [
         u'הערות שוליים',
     ],
-   'hu': [
+    'hu': [
         u'Források és jegyzetek',
         u'Források',
         u'Jegyzetek',
@@ -188,6 +195,13 @@ referencesSections = {
     'lt': [             # not sure about which ones are preferred.
         u'Šaltiniai',
         u'Literatūra',
+    ],
+    'nl': [             # not sure about which ones are preferred.
+        u'Voetnoten',
+        u'Voetnoot',
+        u'Referenties',
+        u'Noten',
+        u'Bronvermelding',
     ],
     'pt': [
         u'Ligações externas',
@@ -222,6 +236,9 @@ referencesTemplates = {
         'ja': [u'Reflist'],
         'ko': [u'주석', u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
+        'nl': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
+               u'Ref-list',u'Reference list',u'References-small',u'Reflink',u'Referenties',u'Bron',u'Bronnen/noten/referenties',u'Bron2',u'Bron3',u'ref',
+               u'Noot',u'FootnotesSmall'],
         'zh': [u'Reflist'],
     },
 }
