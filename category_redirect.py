@@ -104,7 +104,7 @@ class CategoryRedirectBot(object):
             }
 
         self.move_comment = {
-            '_default':
+            'en':
 u"Robot: moving pages out of redirected category",
             'ar':
 u"روبوت: نقل الصفحات من تصنيف محول",
@@ -119,7 +119,7 @@ u'Robot: Changing category link (following [[Template:Category redirect|category
         }
 
         self.redir_comment = {
-            '_default':
+            'en':
 u"Robot: adding category redirect template for maintenance",
             'ar':
 u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
@@ -132,7 +132,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         }
 
         self.dbl_redir_comment = {
-            '_default': u"Robot: fixing double-redirect",
+            'en': u"Robot: fixing double-redirect",
             'ar': u"روبوت: تصليح تحويلة مزدوجة",
             'hu': u"Bot: Kettős átirányítás javítása",
             'ja': u"ロボットによる: 二重リダイレクト修正",
@@ -140,7 +140,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         }
 
         self.maint_comment = {
-            '_default': u"Category redirect maintenance bot",
+            'en': u"Category redirect maintenance bot",
             'ar': u"بوت صيانة تحويل التصنيف",
             'hu': u"Kategóriaátirányítás-karbantartó bot",
             'ja': u"移行中のカテゴリのメンテナンス・ボット",
@@ -148,7 +148,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         }
 
         self.edit_request_text = wikipedia.translate(self.site.lang,
-            {'_default': u"""\
+            {'en': u"""\
 {{editprotected}}
 The following protected pages have been detected as requiring updates to \
 category links:
@@ -158,7 +158,7 @@ category links:
             })
 
         self.edit_request_item = wikipedia.translate(self.site.lang,
-            {'_default': u"* %s is in %s, which is a redirect to %s",
+            {'en': u"* %s is in %s, which is a redirect to %s",
             })
 
     def change_category(self, article, oldCat, newCat, comment=None,
@@ -419,6 +419,7 @@ category links:
         # check for hard-redirected categories that are not already marked
         # with an appropriate template
         comment = wikipedia.translate(self.site.lang, self.redir_comment)
+        print comment
         for result in self.query_results(list='allpages',
                                          apnamespace='14', # Category:
                                          apfrom='!',
