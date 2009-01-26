@@ -865,7 +865,7 @@ class GeneratorFactory:
         function returns true.  Otherwise, it returns false, so that caller
         can try parsing the argument. Call getCombinedGenerator() after all
         arguments have been parsed to get the final output generator.
-        
+
         """
         site = wikipedia.getSite()
         gen = None
@@ -1036,16 +1036,17 @@ class GeneratorFactory:
 
 if __name__ == "__main__":
     try:
-        gen = None
         genFactory = GeneratorFactory()
         for arg in wikipedia.handleArgs():
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-        if gen:
-            for page in gen:
-                wikipedia.output(page.title(), toStdout = True)
+            if not genFactory.handleArg(arg):
+                wikipedia.showHelp('pagegenerators')
+                break
         else:
-            wikipedia.showHelp('pagegenerators')
+            gen = genFactory.getCombinedGenerator()
+            if gen:
+                for page in gen:
+                    wikipedia.output(page.title(), toStdout = True)
+            else:
+                wikipedia.showHelp('pagegenerators')
     finally:
         wikipedia.stopme()
