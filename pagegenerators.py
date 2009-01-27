@@ -806,11 +806,15 @@ class GeneratorFactory:
         self.namespaces = []
 
     """
-    This function returns the combination of all accumulated generators
-    that have been created in the process of handling arguments.
-    Only call it after all arguments have been parsed.
+    This method returns the combination the given generator and all
+    accumulated generators that have been created in the process of handling
+    arguments.
+
+    Only call this method after all arguments have been parsed.
     """
-    def getCombinedGenerator(self):
+    def getCombinedGenerator(self, gen = None):
+        if gen:
+            self.gens.insert(0, gen)
         if (len(self.gens) == 0):
             return None
         if (len(self.gens) == 1):

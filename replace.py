@@ -684,8 +684,7 @@ LIMIT 200""" % (whereClause, exceptClause)
                  for PageTitle in PageTitles]
         gen = iter(pages)
 
-    if not gen:
-        gen = genFactory.getCombinedGenerator()
+    gen = genFactory.getCombinedGenerator(gen)
     if not gen:
         # syntax error, show help text from the top of this file
         wikipedia.showHelp('replace')
