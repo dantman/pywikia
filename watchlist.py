@@ -66,10 +66,11 @@ def refresh(site):
 
     print 'Parsing watchlist'
     watchlist = []
-    itemR = re.compile(r'<li><input type="checkbox" name="id\[\]" value="(.+?)" />')
-    for m in itemR.finditer(watchlistHTML):
-        pageName = m.group(1)
-        watchlist.append(pageName)
+    for itemR in [re.compile(r'<li><input type="checkbox" name="id\[\]" value="(.+?)" />'), re.compile(r'<li><input name="titles\[\]" type="checkbox" value="(.+?)" />')]:
+        for m in itemR.finditer(watchlistHTML):
+            pageName = m.group(1)
+            watchlist.append(pageName)
+
     # Save the watchlist to disk
     # The file is stored in the watchlists subdir. Create if necessary.
     f = open(wikipedia.config.datafilepath('watchlists',
