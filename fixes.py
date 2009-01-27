@@ -388,12 +388,12 @@ fixes = {
             (r'ISBN: (\d+)', r'ISBN \1'),
             # superfluous word "number"
             (r'ISBN( number| no\.?| No\.?|-Nummer|-Nr\.):? (\d+)', r'ISBN \2'),
-            # Spaces, dashes, or dots instead of hyphens as separators,
-            # or spaces between digits and separators.
+            # Space, minus, dot,  hypen, en dash, em dash, etc. instead of
+            # hyphen-minus as separator, or spaces between digits and separators.
             # Note that these regular expressions also match valid ISBNs, but
             # these won't be changed.
-            (r'ISBN (978|979) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d)(?!\d)', r'ISBN \1-\2-\3-\4-\5'), # ISBN-13
-            (r'ISBN (\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d|X|x)(?!\d)', r'ISBN \1-\2-\3-\4'), # ISBN-10
+            (ur'ISBN (978|979) *[\- −\.‐-―] *(\d+) *[\- −\.‐-―] *(\d+) *[\- −\.‐-―] *(\d+) *[\- −\.‐-―] *(\d)(?!\d)', r'ISBN \1-\2-\3-\4-\5'), # ISBN-13
+            (ur'ISBN (\d+) *[\- −\.‐-―] *(\d+) *[\- −\.‐-―] *(\d+) *[\- −\.‐-―] *(\d|X|x)(?!\d)', r'ISBN \1-\2-\3-\4'), # ISBN-10
             # missing space before ISBN-10 or before ISBN-13,
             # or non-breaking space.
             (r'ISBN(|&nbsp;| )((\d(-?)){12}\d|(\d(-?)){9}[\dXx])', r'ISBN \2'),
