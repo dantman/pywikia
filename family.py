@@ -3224,7 +3224,7 @@ class Family:
         'nl': [u'DOORVERWIJZING'],
         'nn': [u'omdiriger'],
         'oc': [u'REDIRECCION'],
-        'pl': [u'TAM', u'PRZEKIERUJ'],
+        'pl': [u'REDIRECT', u'TAM', u'PRZEKIERUJ'],
         'ru': [u'REDIRECT', u'перенаправление', u'перенапр'],
         'sk': [u'presmeruj'],
         'sr': [u'преусмери',u'Преусмери'], # Using lowercase only doesn't work?
