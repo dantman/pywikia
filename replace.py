@@ -371,7 +371,7 @@ class ReplaceRobot:
                         % page.aslink())
                     break
                 new_text = self.doReplacements(new_text)
-                if new_text == original_text:
+                if new_text.strip().replace('\r\n', '\n') == original_text.strip().replace('\r\n', '\n'):
                     wikipedia.output('No changes were necessary in %s'
                                      % page.aslink())
                     break
