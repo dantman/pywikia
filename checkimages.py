@@ -350,7 +350,7 @@ PageWithAllowedTemplates = {
     'commons': u'User:Filbot/Allowed templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/AllowedTemplates',
-    'ko':u'User:Kwjbot_IV/whitetemplates/list',
+    'ko':u'User:Kwjbot_IV/AllowedTemplates',
     }
 
 # Template added when the bot finds only an hidden template and nothing else.
