@@ -49,6 +49,7 @@ msg = {
     'bat-smg': u'robots: Pavīzdėnė straipsnė nūruoda [[%s:%s]]',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'cs': u'Bot: Nejlepší článek: [[%s:%s]]',
+    'cy': u'Robot: Mae [[%s:%s]] yn erthygl ddethol',
     'de': u'Bot: [[%s:%s]] ist ein ausgezeichneter Artikel',
     'dsb': u'Bot: [[%s:%s]] jo wuběrny nastawk',
     'en': u'Bot: [[%s:%s]] is a featured article',
@@ -103,7 +104,7 @@ template = {
     'fr': ['Lien AdQ'],
     'fur': ['Leam VdC'],
     'ga': ['Nasc AR'],
-    'hi': ['Lien AdQ'],
+    'hi': ['Link FA', 'Lien AdQ'],
     'is': [u'Tengill ÚG'],
     'it': ['Link AdQ'],
     'no': ['Link UA'],
@@ -131,10 +132,10 @@ featured_name = {
     'bn': (BACK, u"নির্বাচিত নিবন্ধ"),
     'br': (CAT, u"Pennadoù eus an dibab"),
     'bs': (CAT, u"Odabrani članci"),
-    'ca': (CAT, u"Viquipèdia:Articles de qualitat"),
+    'ca': (CAT, u"Llista d'articles de qualitat"),
     'ceb': (CAT, u"Mga napiling artikulo"),
     'cs': (CAT, u"Nejlepší články"),
-   #'cy': (CAT, u"Erthyglau dethol"),
+    'cy': (CAT, u"Erthyglau dethol"),
     'da': (CAT, u"Fremragende artikler"),
     'de': (CAT, u"Wikipedia:Exzellent"),
     'dsb': (CAT, u"Ekscelentny"),
@@ -165,7 +166,7 @@ featured_name = {
     'ka': (CAT, u"რჩეული სტატიები"),
     'km': (BACK, u"អត្ថបទពិសេស"),
     'kn': (BACK, u"ವಿಶೇಷ ಲೇಖನ"),
-    'ko': (BACK, u"알찬 글 딱지"),
+    'ko': (CAT, u"알찬 글"),
     'ksh': (CAT, u"Exzälenter Aatikkel"),
     'la': (CAT, u"Paginae mensis"),
     'lmo': (CAT, u"Articol ben faa"),
@@ -173,7 +174,7 @@ featured_name = {
     'lt': (CAT, u"Vikipedijos pavyzdiniai straipsniai"),
     'lv': (CAT, u"Vērtīgi raksti"),
    #'lv': (CAT, u"Nedēļas raksti"),
-    'mk': (CAT, u"Избрани статии"),
+    'mk': (CAT, u"Избрани статии на главната страница"),
     'ml': (BACK, u"Featured"),
     'mr': (CAT, u"मुखपृष्ठ सदर लेख"),
     'ms': (BACK, u"Rencana pilihan"),
@@ -195,6 +196,7 @@ featured_name = {
     'sq': (BACK, u"Artikulli perfekt"),
     'sr': (CAT, u"Изабрани"),
     'sv': (CAT, u"Wikipedia:Utmärkta artiklar"),
+    'szl': (CAT, u"Wyrůžńůne artikle"),
     'ta': (CAT, u"சிறப்புக் கட்டுரைகள்"),
     'te': (CAT, u"విశేషవ్యాసాలు"),
     'th': (BACK, u"บทความคัดสรร"),
@@ -206,7 +208,7 @@ featured_name = {
     'uz': (CAT, u"Vikipediya:Tanlangan maqolalar"),
     'vi': (CAT, u"Bài viết chọn lọc"),
     'vo': (CAT, u"Yegeds gudik"),
-   #'wa': (CAT, u"Raspepyî årtike"),
+    'wa': (CAT, u"Raspepyî årtike"),
     'yi': (CAT, u"רעקאמענדירטע ארטיקלען"),
     'yo': (BACK, u"Ayoka pataki"),
     'zh': (CAT, u"特色条目"),
@@ -306,11 +308,11 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
     if nocache:
         cc={}
 
-    templatelist = template['_default']
     try:
-        templatelist += template[tosite.lang]
+        templatelist = template[tosite.lang]
+        templatelist += template['_default']
     except KeyError:
-        pass
+        templatelist = template['_default']
 
     findtemplate = '(' + '|'.join(templatelist) + ')'
     re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate.replace(u' ', u'[ _]'), fromsite.lang), re.IGNORECASE)
