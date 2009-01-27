@@ -5403,9 +5403,11 @@ your connection is down. Retrying in %i minutes..."""
             api_url = self.api_address()
             startEncoded = urllib.quote(start.encode(self.encoding()))
             api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, config.special_page_limit, namespace)
-            # TODO: support includeredirects="only" like in the old method
+
             if not includeredirects:
                 api_url += '&apfilterredir=nonredirects'
+            elif includeredirects == 'only':
+                api_url += '&apfilterredir=redirects'
 
             if throttle:
                 get_throttle()
