@@ -419,7 +419,6 @@ class Family(family.Family):
             'en': self.alphabetic,
             'et': self.alphabetic,
             'fi': self.alphabetic,
-            'fr': self.alphabetic,
             'fy': self.fyinterwiki,
             'he': ['en'],
             'hu': ['en'],
