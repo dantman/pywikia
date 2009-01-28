@@ -1034,7 +1034,7 @@ class GeneratorFactory:
             pass
         if gen:
             self.gens.append(gen)
-            return True
+            return self.getCombinedGenerator()
         else:
             return False
 
