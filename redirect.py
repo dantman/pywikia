@@ -292,7 +292,7 @@ class RedirectGenerator:
         # this will run forever, until user interrupts it
         import datetime
 
-        if not self.offset:
+        if self.offset <= 0:
             self.offset = 1
         offsetpattern = re.compile(
 r"""\(<a href="/w/index\.php\?title=Special:Log&amp;offset=(\d+)&amp;limit=500&amp;type=move" title="Special:Log" rel="next">older 500</a>\)""")
@@ -308,7 +308,7 @@ r"""\(<a href="/w/index\.php\?title=Special:Log&amp;offset=(\d+)&amp;limit=500&a
             try:
                 move_list = site.getUrl(move_url)
                 if wikipedia.verbose:
-                    wikipedia.output(u"[%s]" % offset)
+                    wikipedia.output(u"[%s]" % offset_time)
             except:
                 import traceback
                 wikipedia.output(unicode(traceback.format_exc()))
