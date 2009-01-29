@@ -86,13 +86,14 @@ These arguments are useful to provide hints to the bot:
                        * 10:      The 10 largest languages (sites with most
                                   articles). Analogous for any other natural
                                   number.
+                       * arab:    All languages useing the Arabic alphabet.
                        * cyril:   All languages that use the Cyrillic alphabet.
                        * chinese: All Chinese dialects.
                        * latin:   All languages using the Latin script.
                        * scand:   All Scandinavian languages.
 
-    -hintfile:     similar to -hint, except that the hints are taken from
-                   the given file, one per line, instead of the command line.
+    -hintfile:     similar to -hint, except that hints are taken from the given
+                   file, enclosed in [[]] each, instead of the command line.
 
     -askhints:     for each page one or more hints are asked. See hint: above
                    for the format, one can for example give "en:something" or
@@ -150,10 +151,10 @@ These arguments define how much user confirmation is required:
                    alternatives actually exists.
                    (note: without ending colon)
 
-    -select        ask for each link whether it should be include before
+    -select        ask for each link whether it should be included before
                    changing any page. This is useful if you want to remove
-                   invalid interwiki and if you do multiple hints of which
-                   some might be correct and others incorrect. Combining
+                   invalid interwiki links and if you do multiple hints of
+                   which some might be correct and others incorrect. Combining
                    -select and -confirm is possible, but seems like overkill.
                    (note: without ending colon)
 
@@ -161,8 +162,8 @@ These arguments specify in which way the bot should follow interwiki links:
 
     -noredirect    do not follow redirects. (note: without ending colon)
 
-    -initialredirect  work on target if a redirect is entered on the command
-                   line. (note: without ending colon)
+    -initialredirect  work on its target if a redirect is entered on the
+                   command line. (note: without ending colon)
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
