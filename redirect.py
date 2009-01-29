@@ -22,8 +22,9 @@ and argument can be:
 
 -namespace:n   Namespace to process. Works only with an XML dump.
 
--offset:n      Number of redirect to restart with (see progress). Works only
-               with an XML dump or with -moves.
+-offset:n      With -xml, the number of the redirect to restart with (see
+               progress). With -moves, the number of hours ago to start
+               scanning moved pages. Otherwise, ignored.
 
 -moves         Instead of using Special:Doubleredirects, use the page move
                log to find double-redirect candidates (only works with
@@ -291,30 +292,39 @@ class RedirectGenerator:
         # this will run forever, until user interrupts it
         import datetime
 
+        if not self.offset:
+            self.offset = 1
         offsetpattern = re.compile(
 r"""\(<a href="/w/index\.php\?title=Special:Log&amp;offset=(\d+)&amp;limit=500&amp;type=move" title="Special:Log" rel="next">older 500</a>\)""")
-        start = datetime.datetime.utcnow() - datetime.timedelta(0, 3600)
-        # one hour ago
-        offset = start.strftime("%Y%m%d%H%M%S")
+        start = datetime.datetime.utcnow() \
+                - datetime.timedelta(0, self.offset*3600)
+        # self.offset hours ago
+        offset_time = start.strftime("%Y%m%d%H%M%S")
         site = wikipedia.getSite()
         while True:
             move_url = \
                 site.path() + "?title=Special:Log&limit=500&offset=%s&type=move"\
-                       % offset
+                       % offset_time
             try:
                 move_list = site.getUrl(move_url)
-#                wikipedia.output(u"[%s]" % offset)
+                if wikipedia.verbose:
+                    wikipedia.output(u"[%s]" % offset)
             except:
                 import traceback
-                traceback.print_exc()
+                wikipedia.output(unicode(traceback.format_exc()))
                 return
-            for moved_page in self.move_regex.findall(move_list):
+            g = self.move_regex.findall(move_list)
+            if wikipedia.verbose:
+                wikipedia.output(u"%s moved pages" % len(g))
+            for moved_title in g:
+                moved_page = wikipedia.Page(site, moved_title)
+                if not moved_page.isRedirectPage():
+                    continue
                 # moved_page is now a redirect, so any redirects pointing
                 # to it need to be changed
                 try:
-                    for page in wikipedia.Page(site, moved_page
-                                ).getReferences(follow_redirects=True,
-                                                redirectsOnly=True):
+                    for page in moved_page.getReferences(follow_redirects=True,
+                                                         redirectsOnly=True):
                         yield page
                 except wikipedia.NoPage:
                     # original title must have been deleted after move
@@ -322,7 +332,7 @@ r"""\(<a href="/w/index\.php\?title=Special:Log&amp;offset=(\d+)&amp;limit=500&a
             m = offsetpattern.search(move_list)
             if not m:
                 break
-            offset = m.group(1)
+            offset_time = m.group(1)
 
 
 class RedirectRobot:
@@ -444,13 +454,21 @@ class RedirectRobot:
                         wikipedia.output(
                            u'Warning: Redirect target %s forms a redirect loop.'
                               % targetPage.aslink())
-
-                        content=targetPage.get(get_redirect=True)
-                        if sd_template.has_key(targetPage.site().lang) and sd_tagging_sum.has_key(targetPage.site().lang):
+                        try:
+                            content = targetPage.get(get_redirect=True)
+                        except wikipedia.SectionError:
+                            content = wikipedia.Page(
+                                          targetPage.site(),
+                                          targetPage.sectionFreeTitle()
+                                      ).get(get_redirect=True)
+                        if sd_template.has_key(targetPage.site().lang) \
+                                and sd_tagging_sum.has_key(targetPage.site().lang):
                             wikipedia.output(u"Tagging redirect for deletion")
                             # Delete the two redirects
-                            content = wikipedia.translate(targetPage.site().lang,sd_template)+"\n"+content
-                            summary = wikipedia.translate(targetPage.site().lang,sd_tagging_sum)
+                            content = wikipedia.translate(targetPage.site().lang,
+                                                          sd_template)+"\n"+content
+                            summary = wikipedia.translate(targetPage.site().lang,
+                                                          sd_tagging_sum)
                             targetPage.put(content, summary)
                             redir.put(content, summary)
                         else:
@@ -462,8 +480,8 @@ class RedirectRobot:
                 text = mysite.redirectRegex().sub(
                         '#%s %s' %
                             (mysite.redirect( True ),
-                              targetPage.aslink()),
-                              oldText)
+                             targetPage.aslink()),
+                        oldText)
                 if text == oldText:
                     break
                 wikipedia.showDiff(oldText, text)
