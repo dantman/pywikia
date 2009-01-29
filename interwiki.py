@@ -31,6 +31,10 @@ These command-line arguments can be used to specify which pages to work on:
 
     -new:          Work on the 100 newest pages. If given as -new:x, will work
                    on the x newest pages.
+                   When multiple -namespace parameters are given, x pages are
+                   inspected, and only the ones in the selected name spaces are
+                   processed. Use -namespace:all for all namespaces. Without
+                   -namespace, only article pages are processed.
 
                    This implies -noredirect.
 
@@ -1600,6 +1604,7 @@ if __name__ == "__main__":
         hintlessPageGen = None
         optContinue = False
         optRestore = False
+        newPages = None
         # This factory is responsible for processing command line arguments
         # that are also used by other scripts and that determine on which pages
         # to work on.
@@ -1694,7 +1699,6 @@ if __name__ == "__main__":
                     newPages = int(arg[5:])
                 else:
                     newPages = 100
-                hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages)
             elif arg.startswith('-skipfile:'):
                 skipfile = arg[10:]
                 skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
@@ -1752,6 +1756,22 @@ if __name__ == "__main__":
             globalvar.skip.add(wikipedia.Page(site, mainpagename))
         except:
             wikipedia.output(u'Missing main page name')
+
+        if newPages != None:
+            if len(namespaces) == 0:
+                ns = 0 
+            if len(namespaces) == 1:
+                ns = namespaces[0]
+                if ns != 'all':
+                    if isinstance(ns, unicode) or isinstance(ns, str):
+                        index = site.getNamespaceIndex(ns)
+                        if index is None:
+                            raise ValueError(u'Unknown namespace: %s' % ns)
+                        ns = index
+                namespaces = []
+            else:
+                ns = 'all'
+            hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
 
         if optRestore or optContinue:
             site = wikipedia.getSite()

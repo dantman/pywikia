@@ -5010,7 +5010,7 @@ your connection is down. Retrying in %i minutes..."""
             yield page, match, relevance, '', '', ''
 
     # TODO: avoid code duplication for the following methods
-    def newpages(self, number = 10, get_redirect = False, repeat = False):
+    def newpages(self, number = 10, get_redirect = False, repeat = False, namespace = 0):
         """Yield new articles (as Page objects) from Special:Newpages.
 
         Starts with the newest article and fetches the number of articles
@@ -5029,9 +5029,10 @@ your connection is down. Retrying in %i minutes..."""
         # TODO: Repeat mechanism doesn't make much sense as implemented;
         #       should use both offset and limit parameters, and have an
         #       option to fetch older rather than newer pages
+        # TODO: extract and return edit comment.
         seen = set()
         while True:
-            path = self.newpages_address(n=number)
+            path = self.newpages_address(n=number, namespace=namespace)
             # The throttling is important here, so always enabled.
             get_throttle()
             html = self.getUrl(path)
@@ -5856,9 +5857,9 @@ your connection is down. Retrying in %i minutes..."""
         """Return path to Special:Log."""
         return self.family.log_address(self.lang, n, mode)
 
-    def newpages_address(self, n=50):
+    def newpages_address(self, n=50, namespace=0):
         """Return path to Special:Newpages."""
-        return self.family.newpages_address(self.lang, n)
+        return self.family.newpages_address(self.lang, n, namespace)
 
     def longpages_address(self, n=500):
         """Return path to Special:Longpages."""

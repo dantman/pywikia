@@ -249,10 +249,10 @@ def PrefixingPageGenerator(prefix, namespace = None, includeredirects = True, si
     for page in site.prefixindex(prefix = title, namespace = namespace, includeredirects = includeredirects):
         yield page
 
-def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, site = None):
+def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, site = None, namespace = 0):
     if site is None:
         site = wikipedia.getSite()
-    for page in site.newpages(number=number, get_redirect=get_redirect, repeat=repeat):
+    for page in site.newpages(number=number, get_redirect=get_redirect, repeat=repeat, namespace=namespace):
         yield page[0]
 
 def FileLinksGenerator(referredImagePage):

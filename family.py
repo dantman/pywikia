@@ -3465,8 +3465,8 @@ class Family:
     def log_address(self, code, limit=50, mode = ''):
         return "%s?useskin=monobook&title=Special:Log&type=%s&user=&page=&limit=%d" % (self.path(code), mode, limit)
 
-    def newpages_address(self, code, limit=50):
-        return "%s?useskin=monobook&title=%s:Newpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+    def newpages_address(self, code, limit=50, namespace=0):
+        return "%s?useskin=monobook&title=%s:Newpages&limit=%d&namespace=%s" % (self.path(code), self.special_namespace_url(code), limit, namespace)
 
     def longpages_address(self, code, limit=500):
         return "%s?useskin=monobook&title=%s:Longpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
