@@ -191,7 +191,7 @@ class Family:
                 'crh': [u'Mahsus', u'Махсус'],
                 'cs': u'Speciální',
                 'csb': u'Specjalnô',
-                'cu': [u'Наро чьна', u'Наро́чьна'],
+                'cu': [u'Наро́чьна', u'Нарочьна'],
                 'cv': u'Ятарлă',
                 'cy': u'Arbennig',
                 'da': u'Speciel',
