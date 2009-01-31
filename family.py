@@ -2403,7 +2403,7 @@ class Family:
                 'si': u'ප්‍රවර්ග සාකච්ඡාව',
                 'sk': u'Diskusia ku kategórii',
                 'sl': u'Pogovor o kategoriji',
-                'sq': [u'Kategoria Diskutim', u'Kategori Diskutim'],
+                'sq': [u'Kategoria diskutim', u'Kategori Diskutim'],
                 'sr': u'Разговор о категорији',
                 'srn': [u'Taki fu guru', u'Overleg categorie'],
                 'stq': u'Kategorie Diskussion',
