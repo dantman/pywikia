@@ -1760,7 +1760,7 @@ if __name__ == "__main__":
         if newPages != None:
             if len(namespaces) == 0:
                 ns = 0 
-            if len(namespaces) == 1:
+            elif len(namespaces) == 1:
                 ns = namespaces[0]
                 if ns != 'all':
                     if isinstance(ns, unicode) or isinstance(ns, str):
