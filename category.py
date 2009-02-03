@@ -641,7 +641,7 @@ class CategoryTidyRobot:
     def __init__(self, catTitle, catDB):
         self.catTitle = catTitle
         self.catDB = catDB
-        self.editSummary = wikipedia.translate(wikipedia.getSite(), msg_change) % cat.title()
+        self.editSummary = wikipedia.translate(wikipedia.getSite(), msg_change) % catTitle
 
     def move_to_category(self, article, original_cat, current_cat):
         '''
