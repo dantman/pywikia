@@ -343,7 +343,7 @@ class ReferencesRobot:
         self.limit = limit
         self.ignorepdf = ignorepdf
         self.site = wikipedia.getSite()
-        self.stopPage = wikipedia.translate(self.site, stopPage)
+        self.stopPage = wikipedia.Page(self.site, wikipedia.translate(self.site, stopPage))
 
         local = wikipedia.translate(self.site, badtitles)
         if local:
@@ -356,8 +356,7 @@ class ReferencesRobot:
         self.deduplicator = DuplicateReferences()
 
         try :
-            self.stopPageRevId = wikipedia.Page(self.site,
-                                                self.stopPage).latestRevision()
+            self.stopPageRevId = self.stopPage.latestRevision()
         except wikipedia.NoPage :
             wikipedia.output(u'The stop page %s does not exist'
                                 % self.stopPage.aslink())
@@ -665,8 +664,7 @@ class ReferencesRobot:
 
             if editedpages % 20 == 0:
                 wikipedia.output('\03{lightgreen}Checking stop page...\03{default}')
-                actualRev = wikipedia.Page(self.site,
-                                           self.stopPage).latestRevision()
+                actualRev = self.stopPage.latestRevision()
                 if actualRev != self.stopPageRevId:
                     wikipedia.output(u'[[%s]] has been edited : Someone wants us to stop.' % self.stopPage)
                     return
