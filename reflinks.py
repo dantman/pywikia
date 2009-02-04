@@ -45,7 +45,7 @@ import subprocess, tempfile, os
 
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
-            'it':u'Utente:DumZiBoT/EditThisPageToStopMe',
+            'it':u'Utente:Màrço27Bot/EditThisPageToStopMe',
             'ko':u'사용자:GrassnBreadRefBot/EditThisPageToStopMe1',
             'hu':'User:Damibot/EditThisPageToStopMe',
             'en':u'User:DumZiBoT/EditThisPageToStopMe'}
@@ -55,6 +55,7 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
+        'it':u'Bot: Correggo collegamenti esterni senza titolo nelle note (si veda [[:en:User:DumZiBoT/refLinks|la documentazione]])',
         'en':u'Bot: Converting bare references, using ref names to avoid duplicates, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'[%s] {{lien mort}}',
@@ -62,6 +63,7 @@ deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'hu':u'[%s] {{halott link}}',
                'ko':u'[%s] {{죽은 바깥 고리}}',
                'es':u'{{enlace roto2|%s}}',
+               'it':u'{{Link non attivo|%s}}',
                'en':u'[%s] {{dead link}}'}
 
 comment = {'fr':u'Titre généré automatiquement',
@@ -70,7 +72,8 @@ comment = {'fr':u'Titre généré automatiquement',
            'ko':u'봇이 따온 제목',
            'es':u'Título generado por un bot',
            'en':u'Bot generated title',
-		   'ar':u'عنوان مولد بالبوت'}
+           'it':u'Titolo generato da un bot',
+           'ar':u'عنوان مولد بالبوت'}
 
 soft404 = re.compile(ur'\D404(\D|\Z)|error|errdoc|Not.{0,3}Found|sitedown|eventlog', re.IGNORECASE)
 # matches an URL at the index of a website
@@ -106,12 +109,13 @@ globalbadtitles = """
 # Language-specific bad titles
 badtitles = { 'en': '',
               'fr': '.*(404|page|site).*en +travaux.*',
-              'es': '.*sitio.*no +disponible.*'
+              'es': '.*sitio.*no +disponible.*',
+              'it': '((pagina|sito) (non trovata|inesistente)|accedi)'
             }
 
 # Regex that match bare references
 linksInRef = re.compile(
-	# bracketed URLs
+    # bracketed URLs
 	ur'(?i)<ref(?P<name>[^>]*)>\s*\[?(?P<url>(?:http|https|ftp)://(?:' +
 	# unbracketed with()
 	ur'^\[\]\s<>"]+\([^\[\]\s<>"]+[^\[\]\s\.:;\\,<>\?"]+|'+
