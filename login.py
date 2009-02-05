@@ -64,18 +64,25 @@ botList = {
 
 
 class LoginManager:
-    def __init__(self, password = None, sysop = False, site = None):
+    def __init__(self, password = None, sysop = False, site = None, username=None):
         self.site = site or wikipedia.getSite()
-        if sysop:
-            try:
-                self.username = config.sysopnames[self.site.family.name][self.site.lang]
-            except:
-                raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
-        else:
-            try:
-                self.username = config.usernames[self.site.family.name][self.site.lang]
-            except:
-                raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+	if username:
+		self.username=username
+		# perform writeback.
+		if site.family.name not in config.usernames:
+			config.usernames[site.family.name]={}
+		config.usernames[site.family.name][self.site.lang]=username
+	else:
+		if sysop:
+		    try:
+			self.username = config.sysopnames[self.site.family.name][self.site.lang]
+		    except:
+			raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+		else:
+		    try:
+			self.username = config.usernames[self.site.family.name][self.site.lang]
+		    except:
+			raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
         self.password = password
         if getattr(config, 'password_file', ''):
             self.readPassword()

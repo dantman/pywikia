@@ -809,7 +809,7 @@ not supported by PyWikipediaBot!"""
             RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>', re.DOTALL)
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
-            raise NoPage(self.site(), self.aslink(forceInterwiki = True))
+            raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
         # Look if the page is on our watchlist
         matchWatching = Rwatchlist.search(text)
         if matchWatching:
