@@ -3,14 +3,27 @@
 Program to (re)categorize images at commons.
 
 The program uses commonshelper for category suggestions.
-It takes the suggestions and the current categories. Put the categories through some filters and add the result
+It takes the suggestions and the current categories. Put the categories through some filters and adds the result.
+
+The following command line parameters are supported:
+
+-onlyfilter     Don't use Commonsense to get categories, just filter the current categories
+
+-hint           Give Commonsense a hint.
+                For example -hint:li.wikipedia.org
+
+-onlyhint       Give Commonsense a hint. And only work on this hint.
+                Syntax is the same as -hint. Some special hints are possible:
+                _20 : Work on the top 20 wikipedia's
+                _80 : Work on the top 80 wikipedia's
+                wps : Work on all wikipedia's
 
 """
 __version__ = '$Id$'
 #
 #  (C) Multichill 2008
-#  (tkinter part loosely based on imagecopy.py)
-# Distributed under the terms of the MIT license.
+#   
+#   Distributed under the terms of the MIT license.
 #
 #
 import os, sys, re, codecs
@@ -23,6 +36,9 @@ import socket
 
 category_blacklist = []
 countries = []
+
+search_wikis=u'_20'
+hint_wiki=u''
 
 def initLists():
     '''
@@ -81,8 +97,11 @@ def getCommonshelperCats(imagepage):
     commonshelperCats = []
     usage = []
     galleries = []
+
+    global search_wikis
+    global hint_wiki
     
-    parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'cl' : 'li'})
+    parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'p' : search_wikis, 'cl' : hint_wiki})
     commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usagenum>(\d)+)\)\s(?P<usage>(.*))\s#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)\s(?P<gals>(.*))\s(.*)#EOF$', re.MULTILINE + re.DOTALL)
 
     gotInfo = False;
@@ -121,6 +140,9 @@ def getCommonshelperCats(imagepage):
     return (commonshelperCats, usage, galleries)
 
 def getUsage(use):
+    '''
+    Parse the Commonsense output to get the usage
+    '''
     result = []
     lang = ''
     project = ''
@@ -145,6 +167,9 @@ def getUsage(use):
                          
 
 def applyAllFilters(categories):
+    '''
+    Apply all filters on categories.
+    ''''
     result = []
     result = filterBlacklist(categories)
     result = filterDisambiguation(result)
@@ -283,6 +308,9 @@ def removeTemplates(oldtext = u''):
     return result
 
 def getCheckCategoriesTemplate(usage, galleries, ncats):
+    '''
+    Build the check categories template with all parameters
+    '''
     result = u'{{Check categories|year={{subst:CURRENTYEAR}}|month={{subst:CURRENTMONTHNAME}}|day={{subst:CURRENTDAY}}\n'
 
     usageCounter = 1
@@ -305,17 +333,24 @@ def getCheckCategoriesTemplate(usage, galleries, ncats):
 
 def main(args):
     '''
-    Main loop. Get a generator. Set up the 3 threads and the 2 queue's and fire everything up.
+    Main loop. Get a generator and options. Work on all images in the generator.
     '''
     generator = None
     onlyfilter = False
     genFactory = pagegenerators.GeneratorFactory()
 
+    global search_wikis
+    global hint_wiki
+    
     site = wikipedia.getSite(u'commons', u'commons')
     wikipedia.setSite(site)
     for arg in wikipedia.handleArgs():
         if arg == '-onlyfilter':
             onlyfilter = True
+        elif arg.startswith('-hint:'):
+            hint_wiki = arg [len('-hint:'):]
+        elif arg.startswith('-onlyhint'):
+            search_wikis = arg [len('-onlyhint:'):]
         else:
             genFactory.handleArg(arg)
 
