@@ -9,6 +9,8 @@ The following command line parameters are supported:
 
 -onlyfilter     Don't use Commonsense to get categories, just filter the current categories
 
+-onlyuncat      Only work on uncategorized images. Will prevent the bot from working on an image multiple times.
+
 -hint           Give Commonsense a hint.
                 For example -hint:li.wikipedia.org
 
@@ -56,28 +58,32 @@ def initLists():
         countries.append(country.titleWithoutNamespace())
     return
 
-def categorizeImages(generator, onlyfilter):
+def categorizeImages(generator, onlyFilter, onlyUncat):
     '''
     Loop over all images in generator and try to categorize them. Get category suggestions from CommonSense.
     '''
     for page in generator:
         if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()):
             imagepage = wikipedia.ImagePage(page.site(), page.title())
-            #imagepage.get()
-            wikipedia.output(u'Working on ' + imagepage.title());
-            currentCats = getCurrentCats(imagepage)
-            if(onlyfilter):
-                commonshelperCats = []
-                usage = []
-                galleries = []
-            else:
-                (commonshelperCats, usage, galleries) = getCommonshelperCats(imagepage)
-            newcats = applyAllFilters(commonshelperCats+currentCats)
+            wikipedia.output(u'Working on ' + imagepage.title())
 
-            if (len(newcats) > 0 and not(set(currentCats)==set(newcats))):
-                for cat in newcats:
-                    wikipedia.output(u' Found new cat: ' + cat);
-                saveImagePage(imagepage, newcats, usage, galleries, onlyfilter)
+            if(onlyUncat and not(u'Uncategorized' in imagepage.templates())):
+                wikipedia.output(u'No Uncategorized template found')
+            else:                
+                currentCats = getCurrentCats(imagepage)
+                if(onlyFilter):
+                    commonshelperCats = []
+                    usage = []
+                    galleries = []
+                else:
+                    (commonshelperCats, usage, galleries) = getCommonshelperCats(imagepage)
+                newcats = applyAllFilters(commonshelperCats+currentCats)
+
+                if (len(newcats) > 0 and not(set(currentCats)==set(newcats))):
+                    for cat in newcats:
+                        wikipedia.output(u' Found new cat: ' + cat);
+                    saveImagePage(imagepage, newcats, usage, galleries, onlyFilter)
+            
 
 
 def getCurrentCats(imagepage):
@@ -169,7 +175,7 @@ def getUsage(use):
 def applyAllFilters(categories):
     '''
     Apply all filters on categories.
-    ''''
+    '''
     result = []
     result = filterBlacklist(categories)
     result = filterDisambiguation(result)
@@ -275,19 +281,19 @@ def filterParents(categories):
     return result
 
 
-def saveImagePage(imagepage, newcats, usage, galleries, onlyfilter):
+def saveImagePage(imagepage, newcats, usage, galleries, onlyFilter):
     '''
     Remove the old categories and add the new categories to the image.
     '''
     newtext = wikipedia.removeCategoryLinks(imagepage.get(), imagepage.site())    
 
-    if not(onlyfilter):
+    if not(onlyFilter):
         newtext = removeTemplates(newtext)
         newtext = newtext + getCheckCategoriesTemplate(usage, galleries, len(newcats))
     for category in newcats:
         newtext = newtext + u'[[Category:' + category + u']]\n'
 
-    if(onlyfilter):
+    if(onlyFilter):
         comment = u'Filtering categories'
     else:
         comment = u'Image is categorized by a bot using data from [[Commons:Tools#CommonSense|CommonSense]]'
@@ -336,7 +342,8 @@ def main(args):
     Main loop. Get a generator and options. Work on all images in the generator.
     '''
     generator = None
-    onlyfilter = False
+    onlyFilter = False
+    onlyUncat = False
     genFactory = pagegenerators.GeneratorFactory()
 
     global search_wikis
@@ -346,7 +353,9 @@ def main(args):
     wikipedia.setSite(site)
     for arg in wikipedia.handleArgs():
         if arg == '-onlyfilter':
-            onlyfilter = True
+            onlyFilter = True
+        elif arg == '-onlyuncat':
+            onlyUncat = True
         elif arg.startswith('-hint:'):
             hint_wiki = arg [len('-hint:'):]
         elif arg.startswith('-onlyhint'):
@@ -359,7 +368,7 @@ def main(args):
         generator = pagegenerators.CategorizedPageGenerator(catlib.Category(site, u'Category:Media needing categories'), recurse=True)
 
     initLists()
-    categorizeImages(generator, onlyfilter)
+    categorizeImages(generator, onlyFilter, onlyUncat)
 
     wikipedia.output(u'All done')
 
