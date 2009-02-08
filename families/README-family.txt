@@ -15,8 +15,8 @@ more than one wiki, each wiki needs to be identified by a unique code.
 After you copy the text, go through and edit it, based upon the comment
 lines.  First, do a global search-and-replace to change all instances of
 'WIKINAME' to your actual wiki name.  Everything in the example below is
-based on the bot's default settings, except for the namespace names, which
-are made-up examples. You only need to change it if your wiki's value is
+based on the bot's default settings, except for those that are marked as
+examples. You only need to change it if your wiki's value is
 different from the default. You can delete anything that is not indicated as
 "REQUIRED", if your new wiki doesn't vary from the default settings.
 
@@ -43,14 +43,14 @@ class Family(family.Family):          # REQUIRED
         # You only need to enter translations that differ from the default.
         # There are two ways of entering namespace translations.
         # 1.  If you only need to change the translation of a particular
-        #     namespace for one or two languages, use this format:
+        #     namespace for one or two languages, use this format (example):
         self.namespaces[2]['en'] = u'Wikiuser'
         self.namespaces[3]['en'] = u'Wikiuser talk'
 
         # 2.  If you need to change the translation for many languages
         #     for the same namespace number, use this format (this is common
         #     for namespaces 4 and 5, because these are usually given a
-        #     unique name for each wiki):
+        #     unique name for each wiki) (example):
         self.namespaces[4] = {
             '_default': [u'WIKINAME', self.namespaces[4]['_default']], # REQUIRED
             'de': 'Name des wiki',
@@ -66,33 +66,29 @@ class Family(family.Family):          # REQUIRED
 
         # On most wikis page names must start with a capital letter, but some
         # languages don't use this.  This should be a list of languages that
-        # _don't_ require the first letter to be capitalized; e.g.,
+        # _don't_ require the first letter to be capitalized.  Example:
         # self.nocapitalize = ['foo', 'bar']
-        self.nocapitalize = []
 
         # SETTINGS FOR WIKIS THAT USE DISAMBIGUATION PAGES:
 
-        # A list of disambiguation template names in different languages
-        self.disambiguationTemplates = {
-            'en': ['disambig', 'disambiguation'],
-        }
+        # Disambiguation template names in different languages; each value
+        # must be a list, even if there is only one entry.  Example:
+        # self.disambiguationTemplates['en'] = ['disambig', 'disambiguation']
 
-        # A list with the name of the category containing disambiguation
+        # The name of the category containing disambiguation
         # pages for the various languages. Only one category per language,
         # and without the namespace, so add things like:
-        self.disambcatname = {
-            'en': "Disambiguation",
-        }
+        # self.disambcatname['en'] = "Disambiguation"
 
         # SETTINGS FOR WIKIS THAT USE INTERLANGUAGE LINKS:
 
         # attop is a list of languages that prefer to have the interwiki
-        # links at the top of the page.
-        self.interwiki_attop = []
+        # links at the top of the page.  Example:
+        # self.interwiki_attop = ['de', 'xz']
 
         # on_one_line is a list of languages that want the interwiki links
-        # one-after-another on a single line
-        self.interwiki_on_one_line = []
+        # one-after-another on a single line.  Example:
+        # self.interwiki_on_one_line = ['aa', 'cc']
 
         # String used as separator between interwiki links and the text
         self.interwiki_text_separator = '\r\n\r\n'
@@ -171,7 +167,7 @@ class Family(family.Family):          # REQUIRED
         # raise NotImplementedError, "%s wiki family does not support api.php" % self.name
         return '%s/api.php' % self.scriptpath(code)
 
-    # Which version of MediaWiki is used?
+    # Which version of MediaWiki is used? REQUIRED
     def version(self, code):
         # Replace with the actual version being run on your wiki
         return '1.13alpha'
