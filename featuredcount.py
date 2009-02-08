@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-This script only counts how many have featured articles all wikipedias.
+This script only counts how many featured articles all wikipedias have.
 
 usage: featuredcount.py
 

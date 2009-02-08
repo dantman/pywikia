@@ -33,6 +33,8 @@ class BasicBot:
         'de': u'Bot: Ändere ...',
         'en': u'Robot: Changing ...',
         'ja':u'ロボットによる：編集',
+        'ksh': u'Bot: Ännern ...',
+        'nds': u'Bot: Änderung ...',
         'nl': u'Bot: wijziging ...',
         'pt': u'Bot: alterando...',
         'sv': u'Bot: Ändrar ...',

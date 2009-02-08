@@ -20,6 +20,7 @@ import wikipedia, sys
 
 msg={
     'ar':u'بوت: تغيير التصنيفات',
+    'de':u'Bot: Wechsele Kategorien',
     'en':u'Bot: Changing categories',
     'he':u'Bot: משנה קטגוריות',
     'fr':u'Bot: Change categories',
@@ -28,6 +29,7 @@ msg={
     'it':u'Bot: Cambio categorie',
     'ja':u'ロボットによる: カテゴリ変更',
     'lt':u'robotas: Keičiamos kategorijos',
+    'ksh':u'Bot: Saachjruppe tuusche of dobei donn',
     'nl':u'Bot: wijziging van categorieën',
     'pl':u'Bot: Zmiana kategorii',
     'pt':u'Bot: Categorizando',

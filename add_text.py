@@ -61,6 +61,8 @@ msg = {
     'he': u'בוט: מוסיף %s',
     'it': u'Bot: Aggiungo %s',
     'ja': u'ロボットによる: 追加 %s',
+    'ksh': u'Bot: dobeijedonn: %s',
+    'nds': u'Bot: tofoiegt: %s',
     'nn': u'Robot: La til %s',
     'pt': u'Bot: Adicionando %s',
     'sv': u'Bot: Lägger till %s',
