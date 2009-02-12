@@ -185,6 +185,15 @@ These arguments specify in which way the bot should follow interwiki links:
                    you are sure you have first gotten the interwiki on the
                    starting page exactly right).
                    (note: without ending colon)
+ 
+    -hintsareright do not follow interwiki links to sites for which hints
+                   on existing pages are given. Note that, hints given
+                   interactively, via the -askhint command line option,
+                   are only effective once they have been entered, thus
+                   interwiki links on the starting page are followed
+                   regardess of hints given when prompted. 
+                   (Warning! Should be used with caution!)
+                   (note: without ending colon)
 
     -back          only work on pages that have no backlink from any other
                    language; if a backlink is found, all work on the page
@@ -485,6 +494,7 @@ class Global(object):
     followinterwiki = True
     minsubjects = config.interwiki_min_subjects
     nobackonly = False
+    hintsareright = False
 
 class Subject(object):
     """
@@ -511,7 +521,10 @@ class Subject(object):
         # This is a list of all pages that are currently scheduled for
         # download.
         self.pending = []
-        self.translate(hints)
+        if globalvar.hintsareright:
+            # This is a set of sites that we got hits to
+            self.hintedsites = set()
+        self.translate(hints, globalvar.hintsareright)
         self.confirm = globalvar.confirm
         self.problemfound = False
         self.untranslated = None
@@ -558,7 +571,7 @@ class Subject(object):
                         return page
         return None
 
-    def translate(self, hints = None):
+    def translate(self, hints = None, keephintedsites = False):
         """Add the given translation hints to the todo list"""
         if globalvar.same:
             if hints:
@@ -573,6 +586,8 @@ class Subject(object):
         for page in pages:
             self.todo.append(page)
             self.foundIn[page] = [None]
+            if keephintedsites:
+                self.hintedsites.add(page.site)
 
     def openSites(self, allowdoubles = False):
         """Return a list of sites for all things we still need to do"""
@@ -781,6 +796,8 @@ class Subject(object):
 = globalvar.hintnobracket)
                         for page in pages:
                             self.addIfNew(page, counter, None)
+                            if globalvar.hintsareright:
+                                self.hintedsites.add(page.site)
 
     def workDone(self, counter):
         """
@@ -888,6 +905,10 @@ class Subject(object):
                             self.done.remove(page)
                         iw = ()
                     for linkedPage in iw:
+                        if globalvar.hintsareright:
+                            if linkedPage.site in self.hintedsites:
+                                wikipedia.output(u"NOTE: %s: %s extra interwiki on hinted site ignored %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                break
                         if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage, counter) or self.wiktionaryMismatch(linkedPage)):
                             if globalvar.followinterwiki or page == self.originPage:
                                 if self.addIfNew(linkedPage, counter, page):
@@ -1738,6 +1759,8 @@ if __name__ == "__main__":
                 globalvar.bracketonly = True
             elif arg == '-localright':
                 globalvar.followinterwiki = False
+            elif arg == '-hintsareright':
+                globalvar.hintsareright = True
             elif arg.startswith('-array:'):
                 globalvar.minsubjects = int(arg[7:])
             elif arg.startswith('-query:'):
