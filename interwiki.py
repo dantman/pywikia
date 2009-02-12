@@ -1428,7 +1428,7 @@ class InterwikiBot(object):
                             continue
                     break
 
-                if len(self.generateUntil) > 0:
+                if self.generateUntil:
                     if page.titleWithoutNamespace() > self.generateUntil:
                         raise StopIteration
                 self.add(page, hints = hints)
