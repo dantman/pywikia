@@ -64,6 +64,12 @@ Additionaly, these arguments can be used to restrict the bot to certain pages:
     -number:       used as -number:#, specifies that the robot should process
                    that amount of pages and then stop. This is only useful in
                    combination with -start. The default is not to stop.
+ 
+    -until:        used as -until:title, specifies that the robot should process
+                   pages in wiki default sort order up to, and including, "title"
+                   and then stop. This is only useful in combination with -start.
+                   The default is not to stop.
+                   Note: do not specify a namespace, even if -start has one.
 
     -bracket       only work on pages that have (in the home language) parenthesis
                    in their title. All other pages are skipped.
@@ -1378,11 +1384,13 @@ class InterwikiBot(object):
             # Keep correct counters
             self.plus(site)
 
-    def setPageGenerator(self, pageGenerator, number = None):
+#    def setPageGenerator(self, pageGenerator, number = None):
+    def setPageGenerator(self, pageGenerator, number = None, until = None):
         """Add a generator of subjects. Once the list of subjects gets
            too small, this generator is called to produce more Pages"""
         self.pageGenerator = pageGenerator
         self.generateNumber = number
+        self.generateUntil = until
 
     def dump(self):
         site = wikipedia.getSite()
@@ -1420,12 +1428,14 @@ class InterwikiBot(object):
                             continue
                     break
 
+                if len(self.generateUntil) > 0:
+                    if page.titleWithoutNamespace() > self.generateUntil:
+                        raise StopIteration
                 self.add(page, hints = hints)
                 self.generated += 1
                 if self.generateNumber:
-                    if self.generated == self.generateNumber:
-                        self.pageGenerator = None
-                        break
+                    if self.generated >= self.generateNumber:
+                        raise StopIteration
             except StopIteration:
                 self.pageGenerator = None
                 break
@@ -1620,6 +1630,7 @@ if __name__ == "__main__":
         # default to [] which means all namespaces will be processed
         namespaces = []
         number = None
+        until = None
         warnfile = None
         # a normal PageGenerator (which doesn't give hints, only Pages)
         hintlessPageGen = None
@@ -1740,6 +1751,8 @@ if __name__ == "__main__":
             # deprecated for consistency with other scripts
             elif arg.startswith('-number:'):
                 number = int(arg[8:])
+            elif arg.startswith('-until:'):
+                until = arg[7:]
             elif arg.startswith('-neverlink:'):
                 globalvar.neverlink += arg[11:].split(",")
             elif arg.startswith('-ignore:'):
@@ -1826,7 +1839,7 @@ if __name__ == "__main__":
             if len(namespaces) > 0:
                 hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
             # we'll use iter() to create make a next() function available.
-            bot.setPageGenerator(iter(hintlessPageGen), number = number)
+            bot.setPageGenerator(iter(hintlessPageGen), number = number, until=until)
         elif warnfile:
             # TODO: filter namespaces if -namespace parameter was used
             readWarnfile(warnfile, bot)
