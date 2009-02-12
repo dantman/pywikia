@@ -66,7 +66,7 @@ msg_double={
     'ka': u'რობოტი: ორმაგი გადამისამართების გასწორება',
     'ko': u'로봇: 이중 넘겨주기 수정',
     'kk': u'Бот: Шынжырлы айдатуды түзетті',
-    'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
+    'ksh':u'Bot: [[special:doubleredirects|Dubbel Ömlëijdong]] fottjemaat',
     'lb': u'Bot: Duebel Viruleedung gefléckt',
     'lt': u'robotas: Taisomas dvigubas peradresavimas',
     'nds':u'Bot: Dubbelte Wiederleiden rutmakt',

@@ -692,8 +692,8 @@ def DuplicateFilterPageGenerator(generator):
 
 def RegexFilterPageGenerator(generator, regex):
     """
-    Wraps around another generator. Yields only thos pages, which titles are
-    positively matched to regex.
+    Wraps around another generator. Yields only those pages, the titles of
+    which are positively matched to regex.
     """
     reg = re.compile(regex, re.I)
 
@@ -798,7 +798,7 @@ class PreloadingGenerator(object):
 class GeneratorFactory:
     """
     This factory is responsible for processing command line arguments
-    that are used by many scripts and that determine on which pages
+    that are used by many scripts and that determine which pages
     to work on.
     """
     def __init__(self):
