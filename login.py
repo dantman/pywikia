@@ -27,6 +27,11 @@ Parameters:
 
    -force       Ignores if the user is already logged in, and tries to log in.
 
+   -v -v        Shows http requests made when logging in. This might leak
+    (doubly     private data (password, session id), so make sure to check the
+     verbose)   output. Using -log is recommended: this will output a lot of
+		data
+
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this
 combination, and store the resulting cookies (containing your password hash,
@@ -65,7 +70,7 @@ botList = {
 
 
 class LoginManager:
-    def __init__(self, password = None, sysop = False, site = None, username=None):
+    def __init__(self, password = None, sysop = False, site = None, username=None, verbose=False):
         self.site = site or wikipedia.getSite()
 	if username:
 		self.username=username
@@ -85,6 +90,7 @@ class LoginManager:
 		    except:
 			raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
         self.password = password
+	self.verbose = verbose
         if getattr(config, 'password_file', ''):
             self.readPassword()
 
@@ -135,19 +141,36 @@ class LoginManager:
                 predata["wpCaptchaWord"] = captcha['answer']
             login_address = self.site.login_address()
             address = login_address + '&action=submit'
-
-        if self.site.hostname() in config.authenticate.keys():
+        
+	if self.site.hostname() in config.authenticate.keys():
             headers = {
                 "Content-type": "application/x-www-form-urlencoded",
                 "User-agent": wikipedia.useragent
             }
             data = self.site.urlEncode(predata)
+	    if self.verbose:
+	      fakepredata = predata
+	      fakepredata['wpPassword'] = u'XXXX'
+	      wikipedia.output(u"urllib2.urlopen(urllib2.Request('%s', %s, %s)):" % (self.site.protocol() + '://' + self.site.hostname() + address, self.site.urlEncode(fakepredata), headers))
             response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data, headers))
             data = response.read()
+	    if self.verbose:
+              fakedata = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
+	      trans = config.transliterate
+	      config.transliterate = False #transliteration breaks for some reason
+              wikipedia.output(data.decode(self.site.encoding()))
+	      config.transliterate = trans
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
             response, data = self.site.postData(address, self.site.urlEncode(predata))
+	    if self.verbose:
+	      fakepredata = predata
+	      fakepredata['wpPassword'] = u'XXXXX'
+	      wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
+	      fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
+	      wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
+	      wikipedia.output(u"%s" % data)
             Reat=re.compile(': (.*?);')
             L = []
 
@@ -261,6 +284,10 @@ def main():
         else:
             wikipedia.showHelp('login')
             return
+    
+    if wikipedia.verbose > 1:
+      wikipedia.output(u"WARNING: Using -v -v on login.py might leak private data. When sharing, please double check your password is not readable and log out your bots session.")
+      verbose = True # only use this verbose when running from login.py
     if logall:
         if sysop:
             namedict = config.sysopnames
@@ -273,13 +300,13 @@ def main():
                     if not forceLogin and site.loggedInAs(sysop = sysop) != None:
                         wikipedia.output(u'Already logged in on %s' % site)
                     else:
-                        loginMan = LoginManager(password, sysop = sysop, site = site)
+                        loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
                         loginMan.login()
                 except wikipedia.NoSuchSite:
                     wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
 
     else:
-        loginMan = LoginManager(password, sysop = sysop)
+        loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
         loginMan.login()
 
 if __name__ == "__main__":
