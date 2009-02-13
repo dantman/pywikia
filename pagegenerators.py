@@ -931,10 +931,10 @@ class GeneratorFactory:
             page = wikipedia.Page(site, title)
             gen = InterwikiPageGenerator(page)
         elif arg.startswith('-randomredirect'):
-            if len(arg) == 7:
+            if len(arg) == 15:
                 gen = RandomRedirectPageGenerator()
             else:
-                gen = RandomRedirectPageGenerator(number = int(arg[8:]))
+                gen = RandomRedirectPageGenerator(number = int(arg[16:]))
         elif arg.startswith('-random'):
             if len(arg) == 7:
                 gen = RandomPageGenerator()
