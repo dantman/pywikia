@@ -6319,8 +6319,6 @@ def handleArgs(*args):
         elif arg == '-nolog':
             setLogfileStatus(False)
         elif arg == '-verbose' or arg == "-v":
-            output(u'Pywikipediabot %s' % (version.getversion()))
-            output(u'Python %s' % (sys.version))
             verbose += 1
         elif arg == '-daemonize':
             import daemonize
@@ -6332,6 +6330,9 @@ def handleArgs(*args):
             # the argument is not global. Let the specific bot script care
             # about it.
             nonGlobalArgs.append(arg)
+    if verbose:
+      output(u'Pywikipediabot %s' % (version.getversion()))
+      output(u'Python %s' % (sys.version))
     return nonGlobalArgs
 
 #########################
