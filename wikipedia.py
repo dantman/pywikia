@@ -4225,6 +4225,7 @@ class Site(object):
         unusedcategories(): Special:Unusuedcategories (yields Category)
         unusedfiles(): Special:Unusedimages (yields ImagePage)
         randompages: Special:Random
+        randomredirectpages: Special:Random
         withoutinterwiki: Special:Withoutinterwiki
         linksearch: Special:Linksearch
 
@@ -4292,6 +4293,7 @@ class Site(object):
         double_redirects_address: Special:Doubleredirects.
         broken_redirects_address: Special:Brokenredirects.
         random_address: Special:Random.
+        randomredirect_address: Special:Random.
         login_address: Special:Userlogin.
         captcha_image_address(id): Special:Captcha for image 'id'.
         watchlist_address: Special:Watchlist editor.
@@ -5376,10 +5378,35 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def randompages(self, number=1, repeat=False):
-        """Yield irandom pages via Special:Random."""
+    def randompages(self, number=1, repeat=False, randmoredirect=False):
+        """Yield irandom pages via Special:Random, or Special:RandmRedirect."""
         seen = set()
-        path = self.random_address()
+        if randomredirect:
+            path = self.randomredirect_address()
+        else:
+            path = self.random_address()
+        entryR = re.compile('var wgPageName = "(?P<title>.+?)";')
+        while True:
+            for ignored in range(number):
+                # MediaWiki advances its random pages only every second.
+                time.sleep(1)
+                html = self.getUrl(path)
+                # output(u' html=%s' % (html))
+                m = entryR.search(html)
+                if m != None:
+                    title = m.group('title')
+                    # output(u' title=%s' % ( title ))
+                    if title not in seen:
+                        seen.add(title)
+                        page = Page(self, title)
+
+    def randomredirectpages(self, number=1, repeat=False, randmoredirect=True):
+        """Yield irandom pages via Special:Random, or Special:RandmRedirect."""
+        seen = set()
+        if randomredirect:
+            path = self.randomredirect_address()
+        else:
+            path = self.random_address()
         entryR = re.compile('var wgPageName = "(?P<title>.+?)";')
         while True:
             for ignored in range(number):
@@ -5964,6 +5991,10 @@ your connection is down. Retrying in %i minutes..."""
     def random_address(self):
         """Return path to Special:Random."""
         return self.family.random_address(self.lang)
+
+    def randomredirect_address(self):
+        """Return path to Special:RandomRedirect."""
+        return self.family.randomredirect_address(self.lang)
 
     def login_address(self):
         """Return path to Special:Userlogin."""

@@ -126,6 +126,11 @@ parameterHelp = """\
 -random           Work on random pages returned by [[Special:Random]].
                   Can also be given as "-random:n" where n is the number
                   of pages to be returned, else 100 pages are returned.
+
+-randomredirect   Work on random redirect target pages returned by
+                  [[Special:Randomredirect]].  Can also be given as
+                  "-randomredirect:n" where n is the number of pages to be
+                  returned, else 100 pages are returned.
 """
 
 
@@ -389,6 +394,12 @@ def RandomPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()
     for page in site.randompages(number=number, repeat=repeat):
+        yield page
+
+def RandomRedirectPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.randomredirectpages(number=number, repeat=repeat):
         yield page
 
 def TextfilePageGenerator(filename=None, site=None):
@@ -919,6 +930,11 @@ class GeneratorFactory:
                 title = wikipedia.input(u'Which page should be processed?')
             page = wikipedia.Page(site, title)
             gen = InterwikiPageGenerator(page)
+        elif arg.startswith('-randomredirect'):
+            if len(arg) == 7:
+                gen = RandomRedirectPageGenerator()
+            else:
+                gen = RandomRedirectPageGenerator(number = int(arg[8:]))
         elif arg.startswith('-random'):
             if len(arg) == 7:
                 gen = RandomPageGenerator()
