@@ -3373,6 +3373,9 @@ class Family:
         else:
             return '%s?useskin=monobook&title=%s:BrokenRedirects&limit=%d' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
 
+    def random_address(self, code):
+        return "%s?useskin=monobook&title=%s:Random" % (self.path(code), self.special_namespace_url(code))
+
     def allmessages_address(self, code):
         return "%s?useskin=monobook&title=%s:Allmessages&ot=html" % (self.path(code), self.special_namespace_url(code))
 

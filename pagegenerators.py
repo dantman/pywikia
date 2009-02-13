@@ -122,6 +122,10 @@ parameterHelp = """\
 -withoutinterwiki Work on all pages that don't have interlanguage links.
                   Argument can be given as "-withoutinterwiki:n" where
                   n is some number (??).
+
+-random           Work on random pages returned by [[Special:Random]].
+                  Can also be given as "-random:n" where n is the number
+                  of pages to be returned, else 100 pages are returned.
 """
 
 
@@ -379,6 +383,12 @@ def ShortPagesPageGenerator(number = 100, repeat = False, site = None):
 def LinkedPageGenerator(linkingPage):
     """Yields all pages linked from a specific page."""
     for page in linkingPage.linkedPages():
+        yield page
+
+def RandomPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.randompages(number=number, repeat=repeat):
         yield page
 
 def TextfilePageGenerator(filename=None, site=None):
@@ -909,6 +919,11 @@ class GeneratorFactory:
                 title = wikipedia.input(u'Which page should be processed?')
             page = wikipedia.Page(site, title)
             gen = InterwikiPageGenerator(page)
+        elif arg.startswith('-random'):
+            if len(arg) == 7:
+                gen = RandomPageGenerator()
+            else:
+                gen = RandomPageGenerator(number = int(arg[8:]))
         elif arg.startswith('-file'):
             textfilename = arg[6:]
             if not textfilename:

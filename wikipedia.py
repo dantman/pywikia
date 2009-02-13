@@ -4224,6 +4224,7 @@ class Site(object):
             ImagePage objects)
         unusedcategories(): Special:Unusuedcategories (yields Category)
         unusedfiles(): Special:Unusedimages (yields ImagePage)
+        randompages: Special:Random
         withoutinterwiki: Special:Withoutinterwiki
         linksearch: Special:Linksearch
 
@@ -4290,6 +4291,7 @@ class Site(object):
         upload_address: Special:Upload.
         double_redirects_address: Special:Doubleredirects.
         broken_redirects_address: Special:Brokenredirects.
+        random_address: Special:Random.
         login_address: Special:Userlogin.
         captcha_image_address(id): Special:Captcha for image 'id'.
         watchlist_address: Special:Watchlist editor.
@@ -5374,6 +5376,28 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
+    def randompages(self, number=1, repeat=False):
+        """Yield irandom pages via Special:Random."""
+        seen = set()
+        path = self.random_address()
+        entryR = re.compile('var wgPageName = "(?P<title>.+?)";')
+        while True:
+            for ignored in range(number):
+                # MediaWiki advances its random pages only every second.
+                time.sleep(1)
+                html = self.getUrl(path)
+                # output(u' html=%s' % (html))
+                m = entryR.search(html)
+                if m != None:
+                    title = m.group('title')
+                    # output(u' title=%s' % ( title ))
+                    if title not in seen:
+                        seen.add(title)
+                        page = Page(self, title)
+                        yield page
+            if not repeat:
+                break
+
 
     def allpages(self, start='!', namespace=None, includeredirects=True,
                  throttle=True):
@@ -5936,6 +5960,10 @@ your connection is down. Retrying in %i minutes..."""
     def broken_redirects_address(self, default_limit = True):
         """Return path to Special:Brokenredirects."""
         return self.family.broken_redirects_address(self.lang, default_limit)
+
+    def random_address(self):
+        """Return path to Special:Random."""
+        return self.family.random_address(self.lang)
 
     def login_address(self):
         """Return path to Special:Userlogin."""
