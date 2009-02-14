@@ -167,7 +167,7 @@ class Family(family.Family):
             'mn': u'Wiktionary-н хэлэлцүүлэг',
             'mr': u'Wiktionary चर्चा',
             'ms': u'Perbincangan Wiktionary',
-            'mt': u'Wiktionary diskuti',
+            'mt': u'Wiktionary diskussjoni',
             'nah': u'Wiktionary tēixnāmiquiliztli',
             'nap': [u'Wiktionary chiàcchiera', u'Discussioni Wiktionary'],
             'nds': u'Wiktionary Diskuschoon',
