@@ -6765,7 +6765,7 @@ Global arguments available for all bots:
         if hasattr(module, 'docuReplacements'):
             for key, value in module.docuReplacements.iteritems():
                 helpText = helpText.replace(key, value.strip('\n\r'))
-        output(helpText)
+        output(helpText, toStdout = True)
     except:
         raise
         output(u'Sorry, no help available for %s' % moduleName)
