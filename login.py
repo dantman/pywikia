@@ -269,6 +269,8 @@ def main():
     sysop = False
     logall = False
     forceLogin = False
+    verbose = False
+
     for arg in wikipedia.handleArgs():
         if arg.startswith("-pass"):
             if len(arg) == 5:
