@@ -549,6 +549,7 @@ fixes = {
             'en': u'Robot: Replacing links to .yu domains',
          },
          'replacements': [
+            (u'www.blic.co.yu',         u'www.blic.rs'),
             (u'www.budva.cg.yu',        u'www.budva.rs'),
             (u'spc.org.yu',             u'www.spc.rs'),
             (u'www.oks.org.yu',         u'www.oks.org.rs'),
@@ -562,6 +563,7 @@ fixes = {
             # (u'www.danas.co.yu',        u'www.danas.rs'), # Archive links don't seem to work
             (u'www.belex.co.yu',        u'www.belex.rs'),
             (u'www.beograd.org.yu',     u'www.beograd.rs'),
+            (u'www.vlada.cg.yu',        u'www.vlada.me'),
         ],
     },
 }
