@@ -539,6 +539,31 @@ fixes = {
             (u'Special:Whatlinkshere',   u'Special:WhatLinksHere'),
         ],
     },
+    # yu top-level domain will soon be disabled,
+    # see http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
+    # The following are domains that are often-used.
+    'yu-tld': {
+        'regex': False,
+        'msg': {
+            'de': u'Bot: Ersetze Links auf .yu-Domains',
+            'en': u'Robot: Replacing links to .yu domains',
+         },
+         'replacements': [
+            (u'www.budva.cg.yu',        u'www.budva.rs'),
+            (u'spc.org.yu',             u'www.spc.rs'),
+            (u'www.oks.org.yu',         u'www.oks.org.rs'),
+            (u'www.kikinda.org.yu',     u'www.kikinda.rs'),
+            (u'www.ds.org.yu',          u'www.ds.org.rs'),
+            (u'www.nbs.yu',             u'www.nbs.rs'),
+            (u'www.serbia.sr.gov.yu',   u'www.srbija.gov.rs'),
+            (u'eunet.yu',               u'eunet.rs'),
+            (u'www.zastava-arms.co.yu', u'www.zastava-arms.co.rs'),
+            (u'www.airportnis.co.yu',   u'www.airportnis.rs'),
+            # (u'www.danas.co.yu',        u'www.danas.rs'), # Archive links don't seem to work
+            (u'www.belex.co.yu',        u'www.belex.rs'),
+            (u'www.beograd.org.yu',     u'www.beograd.rs'),
+        ],
+    },
 }
 
 #
