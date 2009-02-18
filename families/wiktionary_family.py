@@ -78,6 +78,7 @@ class Family(family.Family):
             'nl': u'WikiWoordenboek',
             'oc': u'Wikiccionari',
             'pl': u'Wikisłownik',
+            'ps': u'ويکيسيند',
             'pt': u'Wikcionário',
             'ro': u'Wikţionar',
             'ru': u'Викисловарь',
@@ -177,7 +178,7 @@ class Family(family.Family):
             'oc': u'Discussion Wikiccionari',
             'pa': u'Wiktionary ਚਰਚਾ',
             'pl': u'Wikidyskusja',
-            'ps': u'د Wiktionary خبرې اترې',
+            'ps': u'د ويکيسيند خبرې اترې',
             'pt': u'Wikcionário Discussão',
             'qu': u'Wiktionary rimanakuy',
             'ro': u'Discuţie Wikţionar',
@@ -209,6 +210,7 @@ class Family(family.Family):
             'wa': u'Wiktionary copene',
             'wo': u'Wiktionary waxtaan',
             'yi': [u'װיקיװערטערבוך רעדן', u'וויקיווערטערבוך רעדן'],
+            'za': u'Wiktionary讨论',
         }
 
         self.namespaces[100] = {
