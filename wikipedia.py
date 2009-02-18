@@ -2023,8 +2023,10 @@ not supported by PyWikipediaBot!"""
         # summary.
         if self.site().versionnumber() < 4:
             editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
-        else:
+        elif self.site().versionnumber() < 15:
             editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
+        else:
+            editR = re.compile(r'<li[^>]*>\([^\)]*\) \([^\)]*\) <[^>]*><[^>]*> <a href="[^\'"]*oldid=(\d*)"[^>]*>([^<]*)</a> <span class=[\'"]history-user[\'"]><a [^>]*>([^<]*)</a>(?:[^<]|<(?!span class="comment">)(?!/li>))*(?:<span class="comment">\((.*)\)</span>)?.*</li>', re.UNICODE)
 
         startFromPage = None
         thisHistoryDone = False
