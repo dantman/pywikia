@@ -16,10 +16,10 @@ class Family(family.Family):
         }
 
         self.namespaces[4] = {
-            '_default': [u'Betawiki'],
+            '_default': [u'Project'],
         }
         self.namespaces[5] = {
-            '_default': [u'Betawiki talk'],
+            '_default': [u'Project talk'],
         }
         self.namespaces[6] = {
             '_default': [u'File'],
@@ -51,24 +51,24 @@ class Family(family.Family):
         self.namespaces[1203] = {
             '_default': [u'FreeCol talk'],
         }
-        self.namespaces[1204] = {
-            '_default': [u'Deprecated1'],
-        }
-        self.namespaces[1205] = {
-            '_default': [u'Deprecated1 talk'],
-        }
-        self.namespaces[1206] = {
-            '_default': [u'Deprecated2'],
-        }
-        self.namespaces[1207] = {
-            '_default': [u'Deprecated2 talk'],
-        }
         self.namespaces[1210] = {
             '_default': [u'Mantis'],
         }
         self.namespaces[1211] = {
             '_default': [u'Mantis talk'],
         }
+        self.namespaces[1212] = {
+            '_default': [u'Mwlib'],
+        }
+        self.namespaces[1213] = {
+            '_default': [u'Mwlib talk'],
+        }
+        self.namespaces[1214] = {
+            '_default': [u'Commonist'],
+        }
+        self.namespaces[1215] = {
+            '_default': [u'Commonist talk'],
+        }
 
     def version(self, code):
-        return "1.14alpha"
+        return "1.15alpha"
