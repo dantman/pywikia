@@ -853,16 +853,14 @@ class main:
         wikipedia.output(u'Checking if %s is on commons...' % self.imageName)
         commons_site = wikipedia.getSite('commons', 'commons')
         regexOnCommons = r"\n\*\[\[:File:%s\]\] is also on '''Commons''': \[\[commons:File:.*?\]\](?: \(same name\)|)$" % re.escape(self.imageName)
-        imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
-        hash_found = imagePage.getHash()
+        hash_found = self.image.getHash()
         if hash_found == None:
             return False # Problems? Yes! Image deleted, no hash found. Skip the image.
         else:
             commons_image_with_this_hash = commons_site.getFilesFromAnHash(hash_found)
-            if commons_image_with_this_hash != []:
+            if commons_image_with_this_hash != [] and commons_image_with_this_hash != 'None':
                 wikipedia.output(u'%s is on commons!' % self.imageName)
-                imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
-                on_commons_text = imagePage.getImagePageHtml()
+                on_commons_text = self.image.getImagePageHtml()
                 if u"<div class='sharedUploadNotice'>" in on_commons_text:
                     wikipedia.output(u"But, the file doesn't exist on your project! Skip...")
                     # Problems? Yes! We have to skip the check part for that image!
@@ -897,9 +895,7 @@ class main:
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
         duplicateRegex = r'\n\*(?:\[\[:File:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:File:%s\]\])$' % (re.escape(self.convert_to_url(self.imageName)), re.escape(self.convert_to_url(self.imageName)))
-        imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
-        hash_found = imagePage.getHash()
-        duplicates = self.site.getFilesFromAnHash(hash_found)
+        duplicates = self.image.getDuplicates()
         if duplicates == None:
             return False # Error, image deleted, no hash found. Skip the image.
         if len(duplicates) > 1:
