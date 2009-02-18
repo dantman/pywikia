@@ -496,7 +496,7 @@ class EmailSender(wikipedia.Page):
             wikipedia.output(u'No data found.')
             return False
 
-def categoryAllElements(CatName, cmlimit = 5000):
+def categoryAllElements(CatName, cmlimit = 5000, categories_parsed = []):
     #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
     """
     Category to load all the elements in a category. Limit: 5000 elements.
@@ -512,6 +512,7 @@ def categoryAllElements(CatName, cmlimit = 5000):
 
     data = query.GetData(params,
                     useAPI = True, encodeTitle = False)
+    categories_parsed.append(CatName)
     try:
         members = data['query']['categorymembers']
     except KeyError:
@@ -528,20 +529,23 @@ def categoryAllElements(CatName, cmlimit = 5000):
         ns = subcat['ns']
         pageid = subcat['pageid']
         title = subcat['title']
-        if ns == 14:     
-            allmembers.extend(categoryAllElements(title))
+        if ns == 14:
+            if title not in categories_parsed:
+                categories_parsed.append(title)
+                (results_part, categories_parsed) = categoryAllElements(title, 5000, categories_parsed)
+                allmembers.extend(results_part)
     for member in allmembers:
         ns = member['ns']
         pageid = member['pageid']
         title = member['title']
         results.append(member)
-    return results
+    return (results, categories_parsed)
 def categoryAllPageObjects(CatName):
     """
     From a list of dictionaries, return a list of page objects.
     """
     final = list()
-    for element in categoryAllElements(CatName):
+    for element in categoryAllElements(CatName)[0]:
         final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
     return final
 
@@ -692,21 +696,16 @@ class main:
         second_text = False
         # Getting the talk page's history, to check if there is another advise...
         # The try block is used to prevent error if you use an old wikipedia.py's version.
-        edit_to_load = 10
         try:
             testoattuale = self.talk_page.get()
-            try:
-                history = self.talk_page.getVersionHistory(False, False, False, edit_to_load)
-            except TypeError:
-                history = self.talk_page.getVersionHistory(False, False, False)
-            latest_edit = history[0]
-            latest_user = latest_edit[2]
+            history = self.talk_page.getLatestEditor(limit = 10)
+            latest_user = history[0]["user"]
             wikipedia.output(u'The latest user that has written something is: %s' % latest_user)
             for i in self.botolist:
                 if latest_user == i:
                     second_text = True
                     # A block to prevent the second message if the bot also welcomed users...
-                    if latest_edit == history[-1]:
+                    if history[0]['timestamp'] == history[-1]['timestamp']:
                         second_text = False
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'The user talk is a redirect, trying to get the right talk...')
