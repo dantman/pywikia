@@ -2878,6 +2878,28 @@ class ImagePage(Page):
             output(u'Image deleted before getting the Hash. Skipping...')
             return None
 
+    def getDuplicates(self):
+        #action=query&titles=File:Ayasegawa.jpg&prop=duplicatefiles
+        """
+        Function that detects if a user is currently blocked or not.
+        """
+        params = {
+            'action'    :'query',
+            'titles'    : self.title(),
+            'prop'      :'duplicatefiles',
+            }
+
+        data = query.GetData(params,
+                        useAPI = True, encodeTitle = False)
+        pageid = data[u'query'][u'pages'].keys()[0]
+        duplicates = list()
+        try:
+            for duplicateData in data[u'query'][u'pages'][pageid][u'duplicatefiles']:
+                duplicates.append(duplicateData[u"name"])
+            return duplicates
+        except KeyError:
+            return None
+
     def getFileVersionHistoryTable(self):
         """Return the version history in the form of a wiki table."""
         lines = []
@@ -6217,11 +6239,11 @@ your connection is down. Retrying in %i minutes..."""
         }
         data = query.GetData(params, site = getSite(self.lang, self.family), useAPI = True, encodeTitle = False)
         allimages = data['query']['allimages']
-        duplicates = list()
+        files = list()
         for imagedata in allimages:
             image = imagedata[u'name']
-            duplicates.append(image)
-        return duplicates
+            files.append(image)
+        return files
 
 # Caches to provide faster access
 _sites = {}
