@@ -2727,7 +2727,8 @@ not supported by PyWikipediaBot!"""
         else:
             return new_text
 
-    def getLatestEditor(self, limit):
+    def getLatestEditors(self, limit = 1):
+        """ Function to get the last editors of a page """
         #action=query&prop=revisions&titles=API&rvprop=timestamp|user|comment
         params = {
             'action'    :'query',
