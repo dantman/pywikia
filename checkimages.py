@@ -698,7 +698,7 @@ class main:
         # The try block is used to prevent error if you use an old wikipedia.py's version.
         try:
             testoattuale = self.talk_page.get()
-            history = self.talk_page.getLatestEditor(limit = 10)
+            history = self.talk_page.getLatestEditors(limit = 10)
             latest_user = history[0]["user"]
             wikipedia.output(u'The latest user that has written something is: %s' % latest_user)
             for i in self.botolist:
