@@ -149,11 +149,10 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
 
         self.edit_request_text = wikipedia.translate(self.site.lang,
             {'en': u"""\
-{{editprotected}}
 The following protected pages have been detected as requiring updates to \
 category links:
 %s
---~~~~
+~~~~
 """,
             })
 
@@ -281,6 +280,13 @@ category links:
         waited = 0
         while True:
             response, data = self.site.postForm(addr, querydata)
+            if response.status != 200:
+                # WARNING: if the server is down, this could
+                # cause an infinite loop
+                wikipedia.output(u"HTTP error %i received; retrying..."
+                                  % response.status)
+                time.sleep(5)
+                continue
             if data.startswith(u"unknown_action"):
                 e = {'code': data[:14], 'info': data[16:]}
                 raise APIError(e)
@@ -289,9 +295,9 @@ category links:
             except ValueError:
                 # if the result isn't valid JSON, there must be a server
                 # problem.  Wait a few seconds and try again
-                # TODO: warn user; if the server is down, this could
+                # WARNING: if the server is down, this could
                 # cause an infinite loop
-                wikipedia.output("Invalid API response received; retrying...")
+                wikipedia.output(u"Invalid API response received; retrying...")
                 time.sleep(5)
                 continue
             if type(result) is dict and result.has_key("error"):
@@ -313,8 +319,9 @@ category links:
                 return
             assert type(result) is dict, \
                    "Unexpected result of type '%s' received." % type(result)
-            assert result.has_key("query"), \
-                   "No 'query' response found, result keys = %s" % result.keys()
+            if "query" not in result:
+                # query returned no results
+                return
             yield result['query']
             if result.has_key("query-continue"):
                 assert len(result['query-continue'].keys()) == 1, \
@@ -388,9 +395,13 @@ category links:
         if record:
             cPickle.dump(record, open(datafile + ".bak", "wb"))
 
-        # Set up regexes for later scanning
-        template_list = self.redir_templates[self.site.family.name
-                                             ][self.site.lang]
+        try:
+            template_list = self.redir_templates[self.site.family.name
+                                                ][self.site.lang]
+        except KeyError:
+            wikipedia.output(u"No redirect templates defined for %s"
+                              % self.site.sitename())
+            return
         # regex to match soft category redirects
         #  note that any templates containing optional "category:" are
         #  incorrect and will be fixed by the bot
@@ -405,21 +416,10 @@ category links:
                                           for item in template_list),
                      'catns': self.site.namespace(14)},
             re.I|re.X)
-        # regex to match hard redirects to category pages
-        catredir_regex = re.compile(
-            ur'\s*#(?:%(redir)s)\s*:?\s*\[\[\s*:?%(catns)s\s*:(.*?)\]\]\s*'
-                             % {'redir': "|".join(redirect_magicwords),
-                                'catns': self.site.namespace(14)},
-                            re.I)
-        # regex to match all other hard redirects
-        redir_regex = re.compile(ur"(?i)\s*#(?:%s)\s*:?\s*\[\[(.*?)\]\]"
-                                  % "|".join(redirect_magicwords),
-                                 re.I)
 
         # check for hard-redirected categories that are not already marked
         # with an appropriate template
         comment = wikipedia.translate(self.site.lang, self.redir_comment)
-        print comment
         for result in self.query_results(list='allpages',
                                          apnamespace='14', # Category:
                                          apfrom='!',
@@ -427,16 +427,16 @@ category links:
                                          aplimit='max'):
             gen = (wikipedia.Page(self.site, page_item['title'])
                    for page_item in result['allpages'])
+            # gen yields all hard redirect pages in namespace 14
             for page in pagegenerators.PreloadingGenerator(gen, 120):
-                text = page.get(get_redirect=True)
-                if re.search(template_regex, text):
+                if page.isCategoryRedirect():
                     # this is already a soft-redirect, so skip it (for now)
                     continue
-                m = catredir_regex.match(text)
-                if m:
+                target = page.getRedirectTarget()
+                if target.namespace() == 14:
                     # this is a hard-redirect to a category page
                     newtext = (u"{{%(template)s|%(cat)s}}"
-                               % {'cat': m.group(1),
+                               % {'cat': target.titleWithoutNamespace(),
                                   'template': template_list[0]})
                     try:
                         page.put(newtext, comment, minorEdit=True)
@@ -450,16 +450,10 @@ category links:
                                 page.aslink(textlink=True),
                                 e))
                 else:
-                    r = redir_regex.match(text)
-                    if r:
-                        problems.append(
-                            u"# %s is a hard redirect to [[:%s]]"
-                             % (page.aslink(textlink=True),
-                                r.group(1)))
-                    else:
-                        problems.append(
-                    u"# %s is a hard redirect; unable to extract target."
-                             % page.aslink(textlink=True))
+                    problems.append(
+                        u"# %s is a hard redirect to %s"
+                         % (page.aslink(textlink=True),
+                            target.aslink(textlink=True)))
 
         wikipedia.output("Done checking hard-redirect category pages.")
 
@@ -496,41 +490,40 @@ category links:
         for cat in pagegenerators.PreloadingGenerator(catpages, 120):
             cat_title = cat.titleWithoutNamespace()
             if "category redirect" in cat_title:
-                self.log_text.append(u"* Ignoring [[:%s%s]]"
-                                      % (self.catprefix, cat_title))
+                self.log_text.append(u"* Ignoring %s"
+                                      % cat.aslink(textlink=True))
                 continue
             try:
                 text = cat.get(get_redirect=True)
             except wikipedia.Error:
-                self.log_text.append(u"* Could not load [[:%s%s]]; ignoring"
-                                      % (self.catprefix, cat_title))
+                self.log_text.append(u"* Could not load %s; ignoring"
+                                      % cat.aslink(textlink=True))
                 continue
-            match = template_regex.search(text)
-            if match is None:
-                self.log_text.append(u"* False positive: [[:%s%s]]"
-                                      % (self.catprefix, cat_title))
+            if not cat.isCategoryRedirect():
+                self.log_text.append(u"* False positive: %s"
+                                      % cat.aslink(textlink=True))
                 continue
             if cat_title not in record:
                 # make sure every redirect has a record entry
                 record[cat_title] = {today: None}
             catlist.append(cat)
-            destination = match.group(2)
-            target = catlib.Category(self.site, self.catprefix+destination)
+            target = cat.getCategoryRedirectTarget()
+            destination = target.titleWithoutNamespace()
             destmap.setdefault(target, []).append(cat)
             catmap[cat] = destination
-            if match.group(1):
-                # category redirect target starts with "Category:" - fix it
-                text = text[ :match.start(1)] + text[match.end(1): ]
-                try:
-                    cat.put(text,
-                            u"Robot: fixing category redirect parameter format")
-                    self.log_text.append(
-                        u"* Removed category prefix from parameter in %s"
-                         % cat.aslink(textlink=True))
-                except wikipedia.Error:
-                    self.log_text.append(
-                        u"* Unable to save changes to %s"
-                         % cat.aslink(textlink=True))
+##            if match.group(1):
+##                # category redirect target starts with "Category:" - fix it
+##                text = text[ :match.start(1)] + text[match.end(1): ]
+##                try:
+##                    cat.put(text,
+##                            u"Robot: fixing category redirect parameter format")
+##                    self.log_text.append(
+##                        u"* Removed category prefix from parameter in %s"
+##                         % cat.aslink(textlink=True))
+##                except wikipedia.Error:
+##                    self.log_text.append(
+##                        u"* Unable to save changes to %s"
+##                         % cat.aslink(textlink=True))
 
         # delete record entries for non-existent categories
         for cat_name in list(record.keys()):
