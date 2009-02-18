@@ -2727,6 +2727,23 @@ not supported by PyWikipediaBot!"""
         else:
             return new_text
 
+    def getLatestEditor(self, limit):
+        #action=query&prop=revisions&titles=API&rvprop=timestamp|user|comment
+        params = {
+            'action'    :'query',
+            'prop'      :'revisions',
+            'rvprop'    :'user|timestamp',
+            'rvlimit'   :limit,
+            'titles'    :self.title(),
+            }
+        data = query.GetData(params, useAPI = True, encodeTitle = False)
+        try:
+            # We don't know the page's id, if any other better idea please change it
+            pageid = data['query']['pages'].keys()[0]
+            nickdata = data['query']['pages'][pageid][u'revisions']
+            return nickdata
+        except KeyError:
+            raise NoPage(u'API Error, nothing found in the APIs')
 
 class ImagePage(Page):
     """A subclass of Page representing an image descriptor wiki page.
@@ -2851,7 +2868,7 @@ class ImagePage(Page):
             return [nick, timestamp]
         except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
-
+        
     def getHash(self):
         """ Function that return the Hash of an image in oder to understand if two
             Images are the same or not.
