@@ -266,12 +266,12 @@ class imageTransfer (threading.Thread):
         tablock=CH.split('<textarea ')[1].split('>')[0]
         CH=CH.split('<textarea '+tablock+'>')[1].split('</textarea>')[0]
         CH=CH.replace(u'&times;', u'×')
-        wikipedia.output(CH);
-        #CH=CH.decode('utf-8')
-        ## if not '[[category:' in CH.lower():
+        CH = self.fixAuthor(CH)
+        wikipedia.output(CH);        
+
         # I want every picture to be tagged with the bottemplate so i can check my contributions later.
         CH=u'\n\n{{BotMoveToCommons|'+ self.imagePage.site().language() + '.' + self.imagePage.site().family.name +'}}'+CH
-        #urlEncoding='utf-8'
+                
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
 
@@ -311,6 +311,28 @@ class imageTransfer (threading.Thread):
                 imagebot = ImageRobot(generator = self.preloadingGen, oldImage = self.imagePage.titleWithoutNamespace(), newImage = self.newname, summary = moveSummary, always = True, loose = True)
                 imagebot.run()
         return
+    
+    def fixAuthor(self, pageText):
+        '''
+        Fix the author field in the information template.
+        '''
+        informationRegex = re.compile(u'\|Author\=Original uploader was (?P<author>\[\[:\w+:\w+:\w+\|\w+\]\] at \[.+\])')
+        selfRegex = re.compile(u'\{\{self\|author\=(?P<author>\[\[:\w+:\w+:\w+\|\w+\]\] at \[.+\])\|')
+
+        #Find the |Author=Original uploader was ....
+        informationMatch = informationRegex.search(pageText)
+
+        #Find the {{self|author=
+        selfMatch = selfRegex.search(pageText)
+        
+        #Check if both are found and are equal
+        if (informationMatch and selfMatch):
+            if(informationMatch.group('author')==selfMatch.group('author')):
+                #Replace |Author=Original uploader was ... with |Author= ...
+                pageText = informationRegex.sub(r'|Author=\g<author>', pageText)
+                
+        return pageText
+    
 
 #-label ok skip view
 #textarea
