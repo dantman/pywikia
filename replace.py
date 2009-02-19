@@ -627,6 +627,8 @@ u'Press Enter to use this default message, or enter a description of the\nchange
                 wikipedia.translate(wikipedia.getSite(), fix['msg']))
         if fix.has_key('exceptions'):
             exceptions = fix['exceptions']
+        if fix.has_key('nocase'):
+            caseInsensitive = fix['nocase']
         replacements = fix['replacements']
 
     #Set the regular expression flags

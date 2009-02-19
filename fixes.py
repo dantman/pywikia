@@ -544,6 +544,7 @@ fixes = {
     # The following are domains that are often-used.
     'yu-tld': {
         'regex': False,
+        'nocase': True,
         'msg': {
             'de': u'Bot: Ersetze Links auf .yu-Domains',
             'en': u'Robot: Replacing links to .yu domains',
