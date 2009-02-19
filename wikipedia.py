@@ -5664,7 +5664,7 @@ your connection is down. Retrying in %i minutes..."""
             siteurl = siteurl[2:]
         output(u'Querying [[Special:Linksearch]]...')
         cache = []
-        R = re.compile('title ?=\"(.*?)\"')
+        R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
         for url in [siteurl, '*.' + siteurl]:
             offset = 0
             while True:
