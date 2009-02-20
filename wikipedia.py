@@ -5660,12 +5660,14 @@ your connection is down. Retrying in %i minutes..."""
 
     def linksearch(self, siteurl, limit=500):
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
-        if siteurl.startswith('*.'):
-            siteurl = siteurl[2:]
         output(u'Querying [[Special:Linksearch]]...')
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
-        for url in [siteurl, '*.' + siteurl]:
+
+        urlsToRetrieve = [siteurl]
+        if not siteurl.startswith('*.'):
+            urlsToRetrieve.append('*.' + siteurl)
+        for url in urlsToRetrieve:
             offset = 0
             while True:
                 path = self.linksearch_address(url, limit=limit, offset=offset)
