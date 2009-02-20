@@ -691,12 +691,19 @@ class Subject(object):
                     wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i because page %s in the correct namespace has already been found." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace(), preferredPage.aslink(True)))
                     return True
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'give up'], ['y', 'n', 'g'])
+                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'Add an alternative', 'give up'], ['y', 'n', 'a', 'g'])
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
                         self.foundIn[linkedPage] = [linkingPage]
                         if choice == 'g':
                             self.makeForcedStop(counter)
+                        elif choice == 'a':
+                            newHint = wikipedia.input(u'Give the alternative for language %s, not using a language code:' % linkedPage.site().language())
+                            if newHint:
+                                alternativePage = wikipedia.Page(linkedPage.site(), newHint)
+                                if alternativePage:
+                                    # add the page that was entered by the user
+                                    self.addIfNew(alternativePage, counter, None)
                         else:
                             wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
                         return True
@@ -1384,7 +1391,6 @@ class InterwikiBot(object):
             # Keep correct counters
             self.plus(site)
 
-#    def setPageGenerator(self, pageGenerator, number = None):
     def setPageGenerator(self, pageGenerator, number = None, until = None):
         """Add a generator of subjects. Once the list of subjects gets
            too small, this generator is called to produce more Pages"""
