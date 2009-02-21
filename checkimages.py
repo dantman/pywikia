@@ -522,7 +522,7 @@ def categoryAllElements(CatName, cmlimit = 5000, categories_parsed = []):
         else:
             raise wikipedia.Error(data)
     if len(members) == int(cmlimit):
-        raise wikipedia.Error(u'The category selected as >= %s elements, limit reached.' % cmlimit)
+        raise wikipedia.Error(u'The category selected has >= %s elements, limit reached.' % cmlimit)
     allmembers = members
     results = list()
     for subcat in members:
@@ -1157,6 +1157,8 @@ class main:
         self.whiteTemplatesFound = False
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)[|\n<}]', re.DOTALL)
         templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
+        if self.licenses_found == [] and templatesInTheImageRaw != []:
+            raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
         self.allLicenses = list()
         if self.list_licenses == []:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
