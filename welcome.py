@@ -442,7 +442,7 @@ def parselog(wsite, raw, talk, number, sul):
         #FIXME: It counts the first 50 edits
         # if number > 50, it won't work
         # (not *so* useful, it should be enough).
-        contribnum = contribs.count('<li class="">')
+        contribnum = contribs.count('<li class=')
         if contribnum == 0:
             contribnum = contribs.count('<li>')
 
