@@ -442,7 +442,9 @@ def parselog(wsite, raw, talk, number, sul):
         #FIXME: It counts the first 50 edits
         # if number > 50, it won't work
         # (not *so* useful, it should be enough).
-        contribnum = contribs.count('<li>')
+        contribnum = contribs.count('<li class="">')
+        if contribnum == 0:
+            contribnum = contribs.count('<li>')
 
         if contribnum >= number:
             wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
@@ -500,7 +502,7 @@ def blocked(username):
 
     data = query.GetData(params,
                     useAPI = True, encodeTitle = False)
-     # If there's not the blockedby parameter (that means the user isn't blocked), it will return False otherwise True.
+    # If there's not the blockedby parameter (that means the user isn't blocked), it will return False otherwise True.
     try:
         blockedBy = data['query']['users'][0]['blockedby']
     except KeyError:
