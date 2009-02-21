@@ -2026,7 +2026,7 @@ not supported by PyWikipediaBot!"""
         elif self.site().versionnumber() < 15:
             editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
         else:
-            editR = re.compile(r'<li[^>]*>\([^\)]*\) \([^\)]*\) <[^>]*><[^>]*> <a href="[^\'"]*oldid=(\d*)"[^>]*>([^<]*)</a> <span class=[\'"]history-user[\'"]><a [^>]*>([^<]*)</a>(?:[^<]|<(?!span class="comment">)(?!/li>))*(?:<span class="comment">\((.*)\)</span>)?.*</li>', re.UNICODE)
+            editR = re.compile(r'<li[^>]*>\(cur|<a[^<]*</a>\) \(prev|<a[^<]*</a>\) <[^>]*><[^>]*> <a href="[^\'"]*oldid=(\d*)"[^>]*>([^<]*)</a> <span class=[\'"]history-user[\'"]><a [^>]*>([^<]*)</a>(?:[^<]|<(?!span class="comment">)(?!/li>))*(?:<span class="comment">\((.*)\)</span>)?.*</li>', re.UNICODE)
 
         startFromPage = None
         thisHistoryDone = False
