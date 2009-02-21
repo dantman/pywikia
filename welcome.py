@@ -443,8 +443,6 @@ def parselog(wsite, raw, talk, number, sul):
         # if number > 50, it won't work
         # (not *so* useful, it should be enough).
         contribnum = contribs.count('<li class=')
-        if contribnum == 0:
-            contribnum = contribs.count('<li>')
 
         if contribnum >= number:
             wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
