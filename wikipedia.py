@@ -1355,7 +1355,7 @@ not supported by PyWikipediaBot!"""
                             force, callback))
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
-            force=False):
+            force=False, sysop=False):
         """Save the page with the contents of the first argument as the text.
 
         Optional parameters:
@@ -1371,7 +1371,7 @@ not supported by PyWikipediaBot!"""
             self.get()
         except:
             pass
-        sysop = self._getActionUser(action = 'edit', restriction = self.editRestriction, sysop = False)
+        sysop = self._getActionUser(action = 'edit', restriction = self.editRestriction, sysop = sysop)
         username = self.site().loggedInAs()
 
         # Check blocks
