@@ -14,7 +14,7 @@ Library to work with category pages on Wikipedia
 #
 __version__ = '$Id$'
 #
-import re, time, urllib
+import re, time, urllib, query
 import wikipedia
 try:
     set # introduced in Python 2.4: faster and future
