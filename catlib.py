@@ -518,6 +518,60 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u"Saving page %s failed: %s"
                              % (article.aslink(), error.message))
 
+def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
+    #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
+    """
+    Category to load all the elements in a category using the APIs. Limit: 5000 elements.
+    """
+    wikipedia.output("Loading %s..." % CatName)
+    
+    params = {
+        'action'    :'query',
+        'list'      :'categorymembers',
+        'cmlimit'   :cmlimit,
+        'cmtitle'   :CatName,
+        }
+
+    data = query.GetData(params,
+                    useAPI = True, encodeTitle = False)
+    categories_parsed.append(CatName)
+    try:
+        members = data['query']['categorymembers']
+    except KeyError:
+        if int(cmlimit) != 500:
+            wikipedia.output(u'An Error occured, trying to reload the category.')
+            return categoryAllElements(CatName, cmlimit = 500)
+        else:
+            raise wikipedia.Error(data)
+    if len(members) == int(cmlimit):
+        raise wikipedia.Error(u'The category selected has >= %s elements, limit reached.' % cmlimit)
+    allmembers = members
+    results = list()
+    for subcat in members:
+        ns = subcat['ns']
+        pageid = subcat['pageid']
+        title = subcat['title']
+        if ns == 14:
+            if title not in categories_parsed:
+                categories_parsed.append(title)
+                (results_part, categories_parsed) = categoryAllElements(title, 5000, categories_parsed)
+                allmembers.extend(results_part)
+    for member in allmembers:
+        ns = member['ns']
+        pageid = member['pageid']
+        title = member['title']
+        results.append(member)
+    return (results, categories_parsed)
+
+def categoryAllPageObjectsAPI(CatName):
+    """
+    From a list of dictionaries, return a list of page objects.
+    """
+    final = list()
+    for element in categoryAllElementsAPI(CatName)[0]:
+        final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
+    return final
+
 def test():
     site = wikipedia.getSite()
 
