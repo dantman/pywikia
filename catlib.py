@@ -540,7 +540,7 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
     except KeyError:
         if int(cmlimit) != 500:
             wikipedia.output(u'An Error occured, trying to reload the category.')
-            return categoryAllElements(CatName, cmlimit = 500)
+            return categoryAllElementsAPI(CatName, cmlimit = 500)
         else:
             raise wikipedia.Error(data)
     if len(members) == int(cmlimit):
@@ -554,7 +554,7 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
         if ns == 14:
             if title not in categories_parsed:
                 categories_parsed.append(title)
-                (results_part, categories_parsed) = categoryAllElements(title, 5000, categories_parsed)
+                (results_part, categories_parsed) = categoryAllElementsAPI(title, 5000, categories_parsed)
                 allmembers.extend(results_part)
     for member in allmembers:
         ns = member['ns']
