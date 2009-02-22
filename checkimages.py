@@ -496,58 +496,6 @@ class EmailSender(wikipedia.Page):
             wikipedia.output(u'No data found.')
             return False
 
-def categoryAllElements(CatName, cmlimit = 5000, categories_parsed = []):
-    #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
-    """
-    Category to load all the elements in a category. Limit: 5000 elements.
-    """
-    wikipedia.output("Loading %s..." % CatName)
-    
-    params = {
-        'action'    :'query',
-        'list'      :'categorymembers',
-        'cmlimit'   :cmlimit,
-        'cmtitle'   :CatName,
-        }
-
-    data = query.GetData(params,
-                    useAPI = True, encodeTitle = False)
-    categories_parsed.append(CatName)
-    try:
-        members = data['query']['categorymembers']
-    except KeyError:
-        if int(cmlimit) != 500:
-            wikipedia.output(u'An Error occured, trying to reload the category.')
-            return categoryAllElements(CatName, cmlimit = 500)
-        else:
-            raise wikipedia.Error(data)
-    if len(members) == int(cmlimit):
-        raise wikipedia.Error(u'The category selected has >= %s elements, limit reached.' % cmlimit)
-    allmembers = members
-    results = list()
-    for subcat in members:
-        ns = subcat['ns']
-        pageid = subcat['pageid']
-        title = subcat['title']
-        if ns == 14:
-            if title not in categories_parsed:
-                categories_parsed.append(title)
-                (results_part, categories_parsed) = categoryAllElements(title, 5000, categories_parsed)
-                allmembers.extend(results_part)
-    for member in allmembers:
-        ns = member['ns']
-        pageid = member['pageid']
-        title = member['title']
-        results.append(member)
-    return (results, categories_parsed)
-def categoryAllPageObjects(CatName):
-    """
-    From a list of dictionaries, return a list of page objects.
-    """
-    final = list()
-    for element in categoryAllElements(CatName)[0]:
-        final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
-    return final
 
 # Here there is the main class.
 class main:
@@ -1086,7 +1034,7 @@ class main:
         if catName == None:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
-        list_licenses = categoryAllPageObjects(catName)
+        list_licenses = catlib.categoryAllPageObjectsAPI(catName)
         wikipedia.output('') # blank line
 
         # Add the licenses set in the default page as licenses
