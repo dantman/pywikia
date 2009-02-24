@@ -246,7 +246,10 @@ class transliterator(object):
         self.trans[u"⁂"] = u"***"
         self.trans[u"◊"] = u"<>"
         self.trans[u"‽"] = u"?!"
-        self.trans[u"؟"] = u";-)"      
+        self.trans[u"؟"] = u";-)"
+        self.trans[u"¹"] = u"1"
+        self.trans[u"²"] = u"2"
+        self.trans[u"³"] = u"3"
 
         # Cyrillic
         self.trans.update({u"А" : u"A", u"а" : u"a", u"Б" : u"B", u"б" : u"b",
