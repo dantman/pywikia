@@ -5418,10 +5418,11 @@ your connection is down. Retrying in %i minutes..."""
                     if title not in seen:
                         seen.add(title)
                         yield Page(self, title)
-                        
+            if not repeat:
+                break
 
-    def randomredirectpages(self, number=1, repeat=False, randmoredirect=True):
-        """Yield irandom pages via Special:Random, or Special:RandmRedirect."""
+    def randomredirectpages(self, number=1, repeat=False, randomredirect=True):
+        """Yield random pages via Special:Random, or Special:RandomRedirect."""
         seen = set()
         if randomredirect:
             path = self.randomredirect_address()
