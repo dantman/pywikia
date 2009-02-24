@@ -5397,8 +5397,8 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def randompages(self, number=1, repeat=False, randmoredirect=False):
-        """Yield irandom pages via Special:Random, or Special:RandmRedirect."""
+    def randompages(self, number=1, repeat=False, randomredirect=False):
+        """Yield random pages via Special:Random, or Special:RandomRedirect."""
         seen = set()
         if randomredirect:
             path = self.randomredirect_address()
@@ -5417,7 +5417,8 @@ your connection is down. Retrying in %i minutes..."""
                     # output(u' title=%s' % ( title ))
                     if title not in seen:
                         seen.add(title)
-                        page = Page(self, title)
+                        yield Page(self, title)
+                        
 
     def randomredirectpages(self, number=1, repeat=False, randmoredirect=True):
         """Yield irandom pages via Special:Random, or Special:RandmRedirect."""
