@@ -63,7 +63,7 @@ deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'hu':u'[%s] {{halott link}}',
                'ko':u'[%s] {{죽은 바깥 고리}}',
                'es':u'{{enlace roto2|%s}}',
-               'it':u'{{Link non attivo|%s}}',
+               'it':u'{{Collegamento interrotto|%s}}',
                'en':u'[%s] {{dead link}}'}
 
 comment = {'fr':u'Titre généré automatiquement',
