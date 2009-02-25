@@ -50,6 +50,7 @@ msg = {
     'en':u'Robot: Adding missing <references /> tag',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
+    'it':u'Bot: Aggiungo il tag <references /> mancante',
     'ja':u'ロボットによる: <references /> タグを追加。',
     'ko':u'봇: 이전에 없던 <references /> 추가',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
@@ -102,6 +103,11 @@ placeBeforeSections = {
     'hu': [
         u'Külső hivatkozások',
         u'Lásd még',
+    ],
+    'it': [
+        u'Note',
+        u'Vedi anche',
+        u'Riferimenti',
     ],
     'ja':[
         u'外部リンク',
@@ -178,6 +184,9 @@ referencesSections = {
         u'Hivatkozások',
         u'Megjegyzések',
     ],
+    'it': [
+        u'Note',
+    ],
     'ja':[
         u'脚注',
         u'脚注欄',
@@ -233,6 +242,7 @@ referencesTemplates = {
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'hu': [u'reflist'],
+        'it': [u'References'],
         'ja': [u'Reflist'],
         'ko': [u'주석', u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
