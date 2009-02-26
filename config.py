@@ -401,6 +401,10 @@ cosmetic_changes_mylang_only = True
 # Use the experimental disk cache to prevent huge memory usage
 use_diskcache = False
 
+# Retry loading a page on failure (back off 1 minute, 2 minutes, 4 minutes
+# up to 30 minutes)
+retry_on_fail = True
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.

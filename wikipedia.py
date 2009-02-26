@@ -759,7 +759,7 @@ not supported by PyWikipediaBot!"""
                 elif text.find(self.site().mediawiki_message('badaccess')) != -1 or \
                 text.find("<div class=\"permissions-errors\">") != -1:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
-                else:
+                elif config.retry_on_fail:
                     if text.find( "<title>Wikimedia Error</title>") > -1:
                         output( u"Wikimedia has technical problems; will retry in %i minutes." % retry_idle_time)
                     else:
@@ -771,6 +771,9 @@ not supported by PyWikipediaBot!"""
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
+                else:
+                    output( u"Failed to access wiki")
+		    sys.exit(1)
         # Check for restrictions
         m = re.search('var wgRestrictionEdit = \\["(\w+)"\\]', text)
         if m:
@@ -4635,7 +4638,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         return response, data
 
-    def getUrl(self, path, retry = True, sysop = False, data = None,
+    def getUrl(self, path, retry = None, sysop = False, data = None,
                compress = True, no_hostname = False, cookie_only=False):
         """
         Low-level routine to get a URL from the wiki.
@@ -4651,6 +4654,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
            Returns the HTML text of the page converted to unicode.
         """
+
+	if retry==None:
+		retry=config.retry_on_fail
+
         if False: #self.persistent_http and not data:
             self.conn.putrequest('GET', path)
             self.conn.putheader('User-agent', useragent)
