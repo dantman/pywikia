@@ -159,7 +159,6 @@ ignoreTemplates = {
     'fr' : [u'Commons', u'Commons cat'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],
-    'la' : [u'Categoria Nati', u'Categoria Mortui'],
     'nl' : [u'Commons', u'Catbeg', u'Catsjab', u'Catwiki'],
 }
 
