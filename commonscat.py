@@ -264,12 +264,13 @@ def changeCommonscat (page = None, oldcat = u'', newcat = u''):
 
 def findCommonscatLink (page=None):
     for ipage in page.interwiki():
-        possibleCommonscat = getCommonscatLink (ipage)
-        if (possibleCommonscat!= u''):
-            checkedCommonscat = checkCommonscatLink(possibleCommonscat)
-            if (checkedCommonscat!= u''):
-                wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + checkedCommonscat + ".")
-                return checkedCommonscat
+        if(ipage.exists() and not ipage.isRedirectPage() and not ipage.isDisambig()):
+            possibleCommonscat = getCommonscatLink (ipage)
+            if (possibleCommonscat!= u''):
+                checkedCommonscat = checkCommonscatLink(possibleCommonscat)
+                if (checkedCommonscat!= u''):
+                    wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + checkedCommonscat + ".")
+                    return checkedCommonscat
     return u''
     
 
@@ -354,7 +355,8 @@ def main():
     pregenerator = pagegenerators.PreloadingGenerator(generator)
 
     for page in pregenerator:
-        (status, always) = addCommonscat(page, summary, always)
+        if(page.exists() and not page.isRedirectPage() and not page.isDisambig()):
+            (status, always) = addCommonscat(page, summary, always)
 
 if __name__ == "__main__":
     try:
