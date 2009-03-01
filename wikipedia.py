@@ -2029,7 +2029,7 @@ not supported by PyWikipediaBot!"""
         elif self.site().versionnumber() < 15:
             editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
         else:
-            editR = re.compile(r'<li class=".*?">\((?:\w*|<a[^<]*</a>)\)\s\((?:\w*|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <span class="minor">m</span>|)(?: <span class="history-size">|).*?</span>(?: <span class=[\'"]comment[\'"]>\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\)|) </li>', re.UNICODE)
+            editR = re.compile(r'<li class=".*?">\((?:\w*|<a[^<]*</a>)\)\s\((?:\w*|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <span class="minor">m</span>|)(?: <span class="history-size">.*?</span>|)(?: <span class=[\'"]comment[\'"]>\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\)|)\s*</li>', re.UNICODE)
         startFromPage = None
         thisHistoryDone = False
         skip = False # Used in determining whether we need to skip the first page
