@@ -782,7 +782,7 @@ class Subject(object):
         if config.without_interwiki:
             f = codecs.open(
                 wikipedia.config.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
-            f.write("# %s \n" % page.aslink())
+            f.write("# %s \n" % page.aslink(forceInterwiki=True))
             f.close()
 
     def askForHints(self, counter):
@@ -1659,7 +1659,7 @@ if __name__ == "__main__":
                 globalvar.auto = False
             elif arg.startswith('-hint:'):
                 hints.append(arg[6:])
-            elif arg.startswith('-hintfile:'):
+            elif arg.startswith('-hintfile'):
                 hintfilename = arg[10:]
                 if (hintfilename is None) or (hintfilename == ''):
                     hintfilename = wikipedia.input(u'Please enter the hint filename:')
