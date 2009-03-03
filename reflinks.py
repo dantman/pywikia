@@ -55,7 +55,7 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
-        'it':u'Bot: Correggo collegamenti esterni senza titolo nelle note (si veda [[:en:User:DumZiBoT/refLinks|la documentazione]])',
+        'it':u'Bot: Sistemo note con collegamenti esterni senza titolo ([[Utente:Màrço27Bot/refLinks.py|documentazione]])',
         'en':u'Bot: Converting bare references, using ref names to avoid duplicates, see [[User:DumZiBoT/refLinks|FAQ]]'}
 
 deadLinkTag = {'fr':u'[%s] {{lien mort}}',
