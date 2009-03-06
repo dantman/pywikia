@@ -749,7 +749,7 @@ class Family(family.Family):
             'th':  [u'แก้กำกวม', u'Disambig', u'คำกำกวม'],
             'tl':  [u'Paglilinaw', u'Disambig'],
             'tr':  [u'Anlam ayrım', u'Disambig', u'Anlam ayrımı',
-                    u'Kişi adları (anlam ayrımı)'],
+                    u'Kişi adları (anlam ayrımı)', u'Yerleşim yerleri (anlam ayrımı)'],
             'uk':  [u'Неоднозначність',u'DisambigG', u'Disambig', u'DisambigN',
                     u'Багатозначність'],
             'vec': [u'Disambigua'],
