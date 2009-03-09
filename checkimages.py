@@ -1377,7 +1377,11 @@ class main:
         #if p.exists(): <-- improve thebot, better to make as
         #                   less call to the server as possible
         # Here begins the check block.
-        if self.some_problem == True:
+        if brackets == True and license_found != None:
+            # It works also without this... but i want only to be sure ^^
+            brackets = False
+            return True
+        elif self.some_problem == True:
             if self.mex_used in self.imageCheckText:
                 wikipedia.output(u'File already fixed. Skip.')
                 return True
@@ -1395,10 +1399,7 @@ class main:
                 wikipedia.output(u"Skipping the file...")
             self.some_problem = False
             return True
-        elif brackets == True and license_found != None:
-            # It works also without this... but i want only to be sure ^^
-            brackets = False
-            return True
+        
         elif delete == True:
             wikipedia.output(u"%s is not a file!" % self.imageName)
             # Modify summary text
