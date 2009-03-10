@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config
+import family, config, wikipedia
 
 __version__ = '$Id$'
 
@@ -18,8 +18,12 @@ class Family(family.Family):
         self.langs = {
             'beta': 'beta.wikiversity.org',
         }
-        for lang in self.languages_by_size:
-            self.langs[lang] = '%s.wikiversity.org' % lang
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            for lang in self.languages_by_size:
+                self.langs[lang] = 'secure.wikimedia.org'
+        else:
+            for lang in self.languages_by_size:
+                self.langs[lang] = '%s.wikiversity.org' % lang
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
@@ -47,6 +51,7 @@ class Family(family.Family):
         }
 
         self.namespaces[100] = {
+            'cs': u'Fórum',
             'el': u'Σχολή',
             'en': u'School',
             'it': u'Facoltà',
@@ -54,6 +59,7 @@ class Family(family.Family):
 	    'cs': u'Fórum',
         }
         self.namespaces[101] = {
+            'cs': u'Fórum diskuse',
             'el': u'Συζήτηση Σχολής',
             'en': u'School talk',
             'it': u'Discussioni facoltà',

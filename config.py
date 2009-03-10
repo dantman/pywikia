@@ -63,6 +63,18 @@ solve_captcha = True
 # 2. You must use the hostname of the site, not its family/language pair
 authenticate = {}
 
+#
+#	Security Connection for Wikimedia Projects
+#
+#
+#
+SSL_connection = False
+
+available_ssl_project = [
+    u'wikipedia',u'wikinews',u'wikisource',u'wiktionary',u'wikibooks',u'wikiquote',u'wikiversity'
+]
+    #u'meta',u'mediawiki',u'commons',u'species',u'incubator']
+
 # password_file = ".passwd"
 # A password file with default passwords. For more information, please
 # see LoginManager.readPassword in login.py.

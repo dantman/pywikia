@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config
+import family, config, wikipedia
 
 __version__ = '$Id$'
 
@@ -23,8 +23,12 @@ class Family(family.Family):
             'ga', 'cr', 'nds', 'kk', 'kr', 'als', 'za', 'ks',
         ]
 
-        for lang in self.languages_by_size:
-            self.langs[lang] = '%s.wikiquote.org' % lang
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            for lang in self.languages_by_size:
+                self.langs[lang] = 'secure.wikimedia.org'
+        else:
+            for lang in self.languages_by_size:
+                self.langs[lang] = '%s.wikiquote.org' % lang
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.

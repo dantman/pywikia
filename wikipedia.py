@@ -6524,6 +6524,12 @@ def translate(code, xdict):
     if hasattr(code,'lang'):
         code = code.lang
 
+    if xdict.has_key('wikipedia') :
+        if xdict.has_key(default_family):
+            xdict = xdict[default_family]
+        else:
+            xdict = xdict['wikipedia']
+
     if xdict.has_key(code):
         return xdict[code]
     for alt in altlang(code):

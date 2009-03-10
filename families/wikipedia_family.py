@@ -40,8 +40,12 @@ class Family(family.Family):
             'myv', 'sah', 'srn', 'szl', 'arz',
         ]
 
-        for lang in self.languages_by_size:
-            self.langs[lang] = '%s.wikipedia.org' % lang
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            for lang in self.languages_by_size:
+                self.langs[lang] = 'secure.wikimedia.org'
+        else:
+            for lang in self.languages_by_size:
+                self.langs[lang] = '%s.wikipedia.org' % lang
 
         # Override defaults
         self.namespaces[2]['cs'] = u'Wikipedista'

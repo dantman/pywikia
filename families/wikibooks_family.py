@@ -26,8 +26,12 @@ class Family(family.Family):
             'xh', 'rm', 'ba', 'za', 'bi', 'my', 'wa', 'zu', 'mi',
         ]
 
-        for lang in self.languages_by_size:
-            self.langs[lang] = '%s.wikibooks.org' % lang
+        if config.SSL_connection and config.family in config.available_ssl_project:
+            for lang in self.languages_by_size:
+                self.langs[lang] = 'secure.wikimedia.org'
+        else:
+            for lang in self.languages_by_size:
+                self.langs[lang] = '%s.wikibooks.org' % lang
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikipedysta'
@@ -64,6 +68,7 @@ class Family(family.Family):
             'ml': u'വിക്കിപാഠശാല',
             'no': u'Wikibøker',
             'oc': u'Wikilibres',
+            'ps': u'ويکيتابونه',
             'ro': u'Wikimanuale',
             'ru': u'Викиучебник',
             'sl': u'Wikiknjige',
@@ -141,7 +146,7 @@ class Family(family.Family):
             'oc': u'Discussion Wikilibres',
             'pa': u'Wikibooks ਚਰਚਾ',
             'pl': u'Dyskusja Wikibooks',
-            'ps': u'د Wikibooks خبرې اترې',
+            'ps': u'د ويکيتابونه خبرې اترې',
             'pt': u'Wikibooks Discussão',
             'qu': u'Wikibooks rimanakuy',
             'ro': u'Discuţie Wikimanuale',
@@ -168,6 +173,7 @@ class Family(family.Family):
             'vi': u'Thảo luận Wikibooks',
             'vo': u'Bespik dö Vükibuks',
             'wa': u'Wikibooks copene',
+            'za': u'Wikibooks讨论',
         }
 
         self.namespaces[100] = {

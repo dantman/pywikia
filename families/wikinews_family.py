@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config
+import family, config, wikipedia
 
 __version__ = '$Id$'
 
@@ -17,8 +17,12 @@ class Family(family.Family):
             'th', 'bs', 'ar', 'bg', 'ta', 'cs', 'hu',
         ]
 
-        for lang in self.languages_by_size:
-            self.langs[lang] = '%s.wikinews.org' % lang
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            for lang in self.languages_by_size:
+                self.langs[lang] = 'secure.wikimedia.org'
+        else:
+            for lang in self.languages_by_size:
+                self.langs[lang] = '%s.wikinews.org' % lang
 
         # Override defaults
         self.namespaces[2]['cs'] = u'Redaktor'

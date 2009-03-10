@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import config, urllib, re
+import config, urllib, re, wikipedia
 from datetime import timedelta, datetime
 
 __version__='$Id$'
@@ -3331,7 +3331,10 @@ class Family:
         Can be overridden to return 'https'.
         Other protocols are not supported.
         """
-        return 'http'
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            return 'https'
+        else:
+            return 'http'
 
     def hostname(self, code):
         return self.langs[code]
@@ -3348,7 +3351,10 @@ class Family:
         uses a different value.
 
         """
-        return '/w'
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            return '/%s/%s/w' % (wikipedia.default_family, code)
+        else:
+            return '/w'
 
     def path(self, code):
         return '%s/index.php' % self.scriptpath(code)
@@ -3360,7 +3366,10 @@ class Family:
         return '%s/api.php' % self.scriptpath(code)
 
     def nicepath(self, code):
-        return '/wiki/'
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            return '/%s/%s/wiki/' % (wikipedia.default_family, code)
+        else:
+            return '/wiki/'
 
     def dbName(self, code):
         # returns the name of the MySQL database

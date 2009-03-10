@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config
+import family, config, wikipedia
 
 __version__ = '$Id$'
 
@@ -23,8 +23,12 @@ class Family(family.Family):
         self.langs = {
             '-': 'wikisource.org',
         }
-        for lang in self.languages_by_size:
-            self.langs[lang] = '%s.wikisource.org' % lang
+        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+            for lang in self.languages_by_size:
+                self.langs[lang] = 'secure.wikimedia.org'
+        else:
+            for lang in self.languages_by_size:
+                self.langs[lang] = '%s.wikisource.org' % lang
 
         # Override defaults
         self.namespaces[2]['pl'] = 'Wikiskryba'
@@ -134,9 +138,11 @@ class Family(family.Family):
             'fa': [u'درگاه', u'Portal'],
             'fr': u'Transwiki',
             'he': u'קטע',
+            'hr': u'Autor',
             'hu': u'Szerző',
             'hy': u'Հեղինակ',
             'nl': u'Hoofdportaal',
+            'pl': u'Strona',
             'pt': u'Portal',
             'sl': u'Stran',
             'tr': u'Kişi',
@@ -150,9 +156,11 @@ class Family(family.Family):
             'fa': [u'بحث درگاه', u'Portal talk'],
             'fr': u'Discussion Transwiki',
             'he': u'שיחת קטע',
+            'hr': u'Razgovor o autoru',
             'hu': u'Szerző vita',
             'hy': u'Հեղինակի քննարկում',
             'nl': u'Overleg hoofdportaal',
+            'pl': u'Dyskusja strony',
             'pt': u'Portal Discussão',
             'sl': u'Pogovor o strani',
             'tr': u'Kişi tartışma',
@@ -166,11 +174,13 @@ class Family(family.Family):
             'en': u'Author',
             'es': u'Página',
             'fa': [u'مؤلف', u'Author'],
+            'hr': u'Stranica',
             'hy': u'Պորտալ',
             'it': u'Autore',
             'la': u'Scriptor',
             'nb': u'Forfatter',
             'no': u'Forfatter',
+            'pl': u'Indeks',
             'pt': u'Autor',
         }
         self.namespaces[103] = {
@@ -182,11 +192,13 @@ class Family(family.Family):
             'en': u'Author talk',
             'es': u'Página Discusión',
             'fa': [u'بحث مؤلف', u'Author talk'],
+            'hr': u'Razgovor o stranici',
             'hy': u'Պորտալի քննարկում',
             'it': u'Discussioni autore',
             'la': u'Disputatio Scriptoris',
             'nb': u'Forfatterdiskusjon',
             'no': u'Forfatterdiskusjon',
+            'pl': u'Dyskusja indeksu',
             'pt': u'Autor Discussão',
         }
 
@@ -199,11 +211,13 @@ class Family(family.Family):
             'fa': [u'برگه', u'Page'],
             'fr': u'Page',
             'he': u'עמוד',
+            'hr': u'Sadržaj',
             'hy': u'Էջ',
             'it': u'Progetto',
             'la': u'Pagina',
             'pt': u'Galeria',
             'ru': u'Страница',
+            'sl': u'Kazalo',
             'sv': u'Sida',
             'te': [u'పేజీ', u'Page'],
         }
@@ -217,11 +231,13 @@ class Family(family.Family):
             'fa': [u'بحث برگه', u'Page talk'],
             'fr': u'Discussion Page',
             'he': u'שיחת עמוד',
+            'hr': u'Razgovor o sadržaju',
             'hy': u'Էջի քննարկում',
             'it': u'Discussioni progetto',
             'la': u'Disputatio Paginae',
             'pt': u'Galeria Discussão',
             'ru': u'Обсуждение страницы',
+            'sl': u'Pogovor o kazalu',
             'sv': u'Siddiskussion',
             'te': [u'పేజీ చర్చ', u'Page talk'],
         }

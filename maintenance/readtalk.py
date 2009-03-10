@@ -16,6 +16,7 @@ import wikipedia, config
 
 def readtalk(lang, familyName):
     site = wikipedia.getSite(code=lang, fam=familyName)
+    site.forceLogin();
     page = wikipedia.Page(site, u'User_Talk:' + config.usernames[familyName][lang])
     wikipedia.output(u'Reading talk page from %s:%s'% (lang,familyName))
     try:
