@@ -66,6 +66,7 @@ msg = {
     'nn': u'Robot: La til %s',
     'pt': u'Bot: Adicionando %s',
     'sv': u'Bot: Lägger till %s',
+    'vo': u'Bot: Läükon vödemi: %s',
     'zh': u'機器人: 正在新增 %s',
     }
 
