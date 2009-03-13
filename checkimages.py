@@ -1114,7 +1114,7 @@ class main:
         for template_selected in templatesInTheImageRaw:
             for templateReal in self.licenses_found:
                 if self.convert_to_url(template_selected).lower().replace('template:', '') == \
-                       self.convert_to_url(templateReal.title().lower().replace('template:', '')):
+                       self.convert_to_url(templateReal.title().replace('template:', '')).lower():
                     if templateReal not in self.allLicenses: # don't put the same template, twice.
                         self.allLicenses.append(templateReal)
         if self.licenses_found != []:
