@@ -1018,7 +1018,7 @@ not supported by PyWikipediaBot!"""
             return True
 
         try:
-            templates = self.templatesWithParams();
+            templates = self.templatesWithParams(get_redirect=True);
         except (NoPage, IsRedirectPage, SectionError):
             return True
 
