@@ -1056,6 +1056,7 @@ class main:
         This function check this.
         """
         if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
+            self.license_selected = template.title().replace('Template:', '')
             self.seems_ok = True
             self.license_found = self.license_selected # let the last "fake" license normally detected
             return True
@@ -1076,7 +1077,6 @@ class main:
         we can find something in the info that we already have, then make a deeper check.
         """
         for template in self.licenses_found:
-            self.license_selected = template.title().replace('Template:', '')
             result = self.miniTemplateCheck(template)
             if result:
                 break
@@ -1086,12 +1086,11 @@ class main:
                     template.pageAPInfo()
                 except wikipedia.IsRedirectPage:
                     template = template.getRedirectTarget()
+                    result = self.miniTemplateCheck(template)
+                    if result:
+                        break                        
                 except wikipedia.NoPage:
-                    continue  
-                self.license_selected = template.title().replace('Template:', '')
-                result = self.miniTemplateCheck(template)
-                if result:
-                    break            
+                    continue          
                 
     def smartDetection(self):
         """ The bot instead of checking if there's a simple template in the
@@ -1113,8 +1112,8 @@ class main:
         # Found the templates ONLY in the image's description
         for template_selected in templatesInTheImageRaw:
             for templateReal in self.licenses_found:
-                if self.convert_to_url(template_selected).lower().replace('template:', '') == \
-                       self.convert_to_url(templateReal.title().replace('template:', '')).lower():
+                if self.convert_to_url(template_selected).lower().replace('template%3a', '') == \
+                       self.convert_to_url(templateReal.title()).lower().replace('template%3a', ''):
                     if templateReal not in self.allLicenses: # don't put the same template, twice.
                         self.allLicenses.append(templateReal)
         if self.licenses_found != []:
