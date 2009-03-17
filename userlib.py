@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to work with users, their pages and talk pages.
 """
@@ -33,9 +33,6 @@ class User:
     as well as methods for blocking and unblocking.
     """
 
-    #TODO list:
-    #- browse contributions
-
     def __init__(self, site, name):
         """
         Initializer for a User object.
@@ -69,6 +66,13 @@ class User:
         return wikipedia.Page(self.site,fullpagename)
 
     def editedPages(self, limit=500):
+        """ Deprecated function that wraps 'contributions'
+	    for backwards compatibility
+        """
+        for page in self.contributions(limit):
+            yield page[0]
+
+    def contributions(self, limit=500):
         """ Yields pages that the user has edited, with an upper bound of ``limit''.
         Pages returned are not guaranteed to be unique
         (straight Special:Contributions parsing, in chunks of 500 items)."""
@@ -92,11 +96,23 @@ class User:
 	older_str = older_str.replace('$1',str(step))
 
         address = self.site.contribs_address(self.name,limit=step)
-        contribRX = re.compile('<li[^>]*>.*>diff</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a>')
+        contribRX = re.compile('<li[^>]*> *<a href="(?P<url>[^"]*?)" title="[^"]+">(?P<date>[^<]+)</a>.*>diff</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a> *(?P<comment>.*?)(?P<top><strong> *\(top\) *</strong>)? *(<span class="mw-rollback-link">\[<a href="[^"]+token=(?P<rollbackToken>[^"]+)%2B%5C".*rollback</a>\]</span>)? *</li>')
+
         while offset < limit:
             data = self.site.getUrl(address)
             for pg in contribRX.finditer(data):
-                yield wikipedia.Page(self.site,pg.group('title'))
+                url = pg.group('url')
+                oldid = url[url.find('&amp;oldid=')+11:]
+                date = pg.group('date')
+                comment = pg.group('comment')
+                rollbackToken = pg.group('rollbackToken')
+                top = None
+                if pg.group('top'):
+                    top = True
+
+                # top, new, minor, should all go in a flags field
+                yield wikipedia.Page(self.site,pg.group('title')), oldid, date, comment, rollbackToken
+
                 offset += 1
                 if offset == limit:
                     break
