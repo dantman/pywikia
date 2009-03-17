@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to work with users, their pages and talk pages.
 """
@@ -101,7 +101,7 @@ class User:
                 offset += 1
                 if offset == limit:
                     break
-            nextRX = re.search('\(<a href="(?P<address>.*?)">' + older_str + '</a>\)',data)
+            nextRX = re.search('\(<a href="(?P<address>[^"]+)"[^>]*>' + older_str + '</a>\)',data)
             if nextRX:
                 address = nextRX.group('address').replace('&amp;','&')
             else:
