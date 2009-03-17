@@ -92,12 +92,11 @@ class User:
 	older_str = older_str.replace('$1',str(step))
 
         address = self.site.contribs_address(self.name,limit=step)
+        contribRX = re.compile('<li[^>]*>.*>diff</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a>')
         while offset < limit:
-            wikipedia.output(u'Querying [[Special:Contributions/%s]]...' % self.name)
             data = self.site.getUrl(address)
-            contribRX = re.compile('<li[^>]*>.*?<a href=".*?" title="(?P<target>.*?)">(?P=target)</a>')
             for pg in contribRX.finditer(data):
-                yield wikipedia.Page(self.site,pg.group('target'))
+                yield wikipedia.Page(self.site,pg.group('title'))
                 offset += 1
                 if offset == limit:
                     break
