@@ -80,12 +80,22 @@ class User:
 
         offset = 0
         step = min(limit,500)
-        older_str = self.site.mediawiki_message('sp-contributions-older').replace('$1',str(step))
+        older_str = None
+	try:
+	    older_str = self.site.mediawiki_message('pager-older-n')
+	except wikipedia.KeyError:
+	    older_str = self.site.mediawiki_message('sp-contributions-older')
+        if older_str.startswith('{{PLURAL:$1'):
+	    older_str = older_str[13:]
+	    older_str = older_str[older_str.find('|')+1:]
+	    older_str = older_str[:-2]
+	older_str = older_str.replace('$1',str(step))
+
         address = self.site.contribs_address(self.name,limit=step)
         while offset < limit:
             wikipedia.output(u'Querying [[Special:Contributions/%s]]...' % self.name)
             data = self.site.getUrl(address)
-            contribRX = re.compile('<li>.*?<a href=".*?" title="(?P<target>.*?)">(?P=target)</a>')
+            contribRX = re.compile('<li[^>]*>.*?<a href=".*?" title="(?P<target>.*?)">(?P=target)</a>')
             for pg in contribRX.finditer(data):
                 yield wikipedia.Page(self.site,pg.group('target'))
                 offset += 1
