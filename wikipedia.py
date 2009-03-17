@@ -5934,9 +5934,9 @@ your connection is down. Retrying in %i minutes..."""
         """Return path to Special:Allpages."""
         return self.family.allpages_address(self.lang, start=s, namespace = ns)
 
-    def log_address(self, n=50, mode = ''):
+    def log_address(self, n=50, mode = '', user = ''):
         """Return path to Special:Log."""
-        return self.family.log_address(self.lang, n, mode)
+        return self.family.log_address(self.lang, n, mode, user)
 
     def newpages_address(self, n=50, namespace=0):
         """Return path to Special:Newpages."""

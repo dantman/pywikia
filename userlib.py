@@ -107,6 +107,32 @@ class User:
             else:
                 break
 
+    def uploadedImages(self, number = 10):
+        """Yield ImagePages from Special:Log&type=upload"""
+
+        regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a> .* uploaded "<a href=".*?"(?P<new> class="new")? title="(Image|File):(?P<image>.+?)"\s*>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
+
+        path = self.site.log_address(number, mode = 'upload', user = self.name)
+        html = self.site.getUrl(path)
+
+        redlink_key = self.site.mediawiki_message('red-link-title')
+        redlink_tail_len = None
+        if redlink_key.startswith('$1 '):
+            redlink_tail_len = len(redlink_key[3:])
+
+        for m in regexp.finditer(html):
+            image = m.group('image')
+            deleted = False
+            if m.group('new'):
+                deleted = True
+                if redlink_tail_len:
+                    image = image[0:0-redlink_tail_len]
+
+            date = m.group('date')
+            comment = m.group('comment') or ''
+
+            yield wikipedia.ImagePage(self.site, image), date, comment, deleted
+
     def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
         """
         Block the user.
