@@ -3259,6 +3259,7 @@ class Family:
         'mt': [u'rindirizza'],
         'mwl': [u'ancaminar'],
         'mzn': [u'تغییرمسیر'],
+        'nah': [u'redirección'],
         'nds': [u'wiederleiden'],
         'nds-nl': [u'deurverwiezing'],
         'new': [u'पुनर्निर्देश'],
