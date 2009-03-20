@@ -3210,6 +3210,8 @@ class Family:
         'af': [u'AANSTUUR'],
         'als': [u'WEITERLEITUNG', u'REDIRECT'],
         'ar': [u'تحويل'],
+        'arz': [u'تحويل'],
+        'av': [u'перенаправление'],
         'bar': [u'WEITERLEITUNG', u'REDIRECT'],
         'be-tarask': [u'перанакіраваньне'],
         'be-x-old': [u'перанакіраваньне'],
