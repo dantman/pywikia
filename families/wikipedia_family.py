@@ -642,6 +642,7 @@ class Family(family.Family):
             'ar':  [u'Disambig', u'توضيح'],
             'arc': [u'ܕ'],
             'ast': [u'Dixebra'],
+            'av':  [u'Неоднозначность'],
             'az':  [u'Dəqiqləşdirmə'],
             'bar': [u'Begriffsklärung'],
             'be':  [u'Неадназначнасць', u'Disambig'],
