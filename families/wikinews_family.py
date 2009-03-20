@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config, wikipedia
+import family, config
 
 __version__ = '$Id$'
 
@@ -17,7 +17,7 @@ class Family(family.Family):
             'th', 'bs', 'ar', 'bg', 'ta', 'cs', 'hu',
         ]
 
-        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+        if config.SSL_connection and self.name in config.available_ssl_project:
             for lang in self.languages_by_size:
                 self.langs[lang] = 'secure.wikimedia.org'
         else:
