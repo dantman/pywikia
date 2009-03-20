@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import config, urllib, re, wikipedia
+import config, urllib, re
 from datetime import timedelta, datetime
 
 __version__='$Id$'
@@ -3341,7 +3341,7 @@ class Family:
         Can be overridden to return 'https'.
         Other protocols are not supported.
         """
-        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
+        if config.SSL_connection and self.name in config.available_ssl_project:
             return 'https'
         else:
             return 'http'
@@ -3361,8 +3361,8 @@ class Family:
         uses a different value.
 
         """
-        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
-            return '/%s/%s/w' % (wikipedia.default_family, code)
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            return '/%s/%s/w' % (self.name, code)
         else:
             return '/w'
 
@@ -3376,8 +3376,8 @@ class Family:
         return '%s/api.php' % self.scriptpath(code)
 
     def nicepath(self, code):
-        if config.SSL_connection and wikipedia.default_family in config.available_ssl_project:
-            return '/%s/%s/wiki/' % (wikipedia.default_family, code)
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            return '/%s/%s/wiki/' % (self.name, code)
         else:
             return '/wiki/'
 
