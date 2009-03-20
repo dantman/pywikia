@@ -685,6 +685,7 @@ class Family(family.Family):
             'ga':  [u'Idirdhealú', u'Disambig'],
             'gl':  [u'Homónimos', u'Disambig'],
             'gv':  [u'Reddaghey'],
+            'haw': [u'Huaʻōlelo puana like'],
             'he':  [u'פירושונים', u'Disambig'],
             'hi':  [u'बहुविकल्पी शब्द', u'Disambig',],
             'hr':  [u'Disambig', u'Razdvojba'],
