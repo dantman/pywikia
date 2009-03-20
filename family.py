@@ -3269,6 +3269,7 @@ class Family:
         'srn': [u'STIR'],
         'su': [u'redirected', u'alih'],
         'sv': [u'OMDIRIGERING'],
+        'szl': [u'REDIRECT', u'TAM'],
         'ta': [u'வழிமாற்று'],
         'te': [u'దారిమార్పు'],
         'th': [u'เปลี่ยนทาง'],
