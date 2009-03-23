@@ -64,8 +64,10 @@ msg = {
     'ksh': u'Bot: dobeijedonn: %s',
     'nds': u'Bot: tofoiegt: %s',
     'nn': u'Robot: La til %s',
+    'pl': u'Robot dodaje: %s',
     'pt': u'Bot: Adicionando %s',
     'sv': u'Bot: Lägger till %s',
+    'szl': u'Bot dodowo: %s',
     'vo': u'Bot: Läükon vödemi: %s',
     'zh': u'機器人: 正在新增 %s',
     }
