@@ -4705,13 +4705,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             while not retrieved:
                 try:
                     if self.hostname() in config.authenticate.keys():
-                        if False: # compress:
-                            request = urllib2.Request(url, data)
-                            request.add_header('Accept-encoding', 'gzip')
-                            opener = urllib2.build_opener()
-                            f = opener.open(request)
-                        else:
-                            f = urllib2.urlopen(url, data)
+		      request = urllib2.Request(url, data)
+                      request.add_header('User-agent', useragent)
+                      opener = urllib2.build_opener()
+                      f = opener.open(request)
                     else:
                         f = uo.open(url, data)
                     retrieved = True
