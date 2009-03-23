@@ -99,6 +99,7 @@ msg_double={
     'ru': u'Робот: исправление двойного перенаправления',
     'sr': u'Бот: Поправка дуплих преусмерења',
     'sv': u'Robot: Rättar dubbel omdirigering',
+    'szl': u'Robot sprowjo tuplowane przekerowańa',
     'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน',
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
     'uk': u'Робот: виправлення подвійного перенаправлення',
