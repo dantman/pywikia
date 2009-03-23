@@ -142,6 +142,7 @@ msg = {
     'en': u'Robot: Automated text replacement %s',
     'es': u'Robot: Reemplazo automático de texto %s',
     'fa': u'ربات: تغییر خودکار متن %s',
+    'fi': u'Botti korvasi automaattisesti tekstin %s',
     'fr': u'Bot : Remplacement de texte automatisé %s',
     'he': u'בוט: החלפת טקסט אוטומטית %s',
     'hu': u'Robot: Automatikus szövegcsere %s',
