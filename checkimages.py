@@ -342,7 +342,9 @@ PageWithHiddenTemplates = {
     'commons': u'User:Filbot/White_templates#White_templates',
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
+    'ja':None,
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
+    'zh':None,
     }
 
 # A page where there's a list of template to consider as licenses.
@@ -360,8 +362,10 @@ HiddenTemplateNotification = {
         'de'     : None,
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
+        'ja'     :None,
         'ko'     : u"\n{{subst:User:Kwj2772/whitetemplates|%s}} --~~~~", 
         'ta'     : None,
+        'zh'     :None,
         }
 
 # In this part there are the parameters for the dupe images.
@@ -372,43 +376,57 @@ duplicatesText = {
         'commons': u'\n{{Dupe|__image__}}',
         'en'     : None,
         'it'     : u'\n{{Progetto:Coordinamento/Immagini/Bot/Template duplicati|__images__}}',
+        'ja'     :None,
+        'zh'     :None,
         }
 # Head of the message given to the author
 duplicate_user_talk_head = {
         'commons': None,
         'en'     : None, 
         'it'     : u'\n\n== File doppio ==\n',
+        'ja'     :None,
+        'zh'     :None,
         }
 # Message to put in the talk
 duplicates_user_talk_text = {
         'commons': u'{{subst:User:Filnik/duplicates|File:%s|File:%s}}', # FIXME: it doesn't exist
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
+        'ja'     :None,
+        'zh'     :None,
         }
 # Comment used by the bot while it reports the problem in the uploader's talk
 duplicates_comment_talk = {
         'commons': u'Bot: Dupe file found',
         'en'     : None,
         'it'     : u"Bot: Notifico il file doppio trovato",
+        'ja'     :None,
+        'zh'     :None,
         }
 # Comment used by the bot while it reports the problem in the image
 duplicates_comment_image = {
         'commons': u'Bot: Tagging dupe file',
         'en'     : None,
         'it'     : u'Bot: File doppio, da cancellare',
+        'ja'     :None,
+        'zh'     :None,
         }
 # Regex to detect the template put in the image's decription to find the dupe
 duplicatesRegex = {
         'commons': r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
         'en'     : None,
         'it'     : r'\{\{(?:[Tt]emplate:|)[Pp]rogetto:[Cc]oordinamento/Immagini/Bot/Template duplicati[|}]',
+        'ja'     :None,
+        'zh'     :None,
         }
 # Category with the licenses and / or with subcategories with the other licenses.
 category_with_licenses = {
         'commons': 'Category:License tags',
-        'en'     : None,
+        'en'     : 'Category:Wikipedia image copyright templates',
         'it'     : 'Categoria:Template Licenze copyright',
+        'ja'     : 'Category:画像の著作権表示テンプレート',
         'ko'     : '분류:그림 저작권 틀',
+        'zh'     : 'Category:版權申告模板',
         }
 
 ## Put None if you don't use this option or simply add nothing if en
@@ -417,11 +435,15 @@ category_with_licenses = {
 emailPageWithText = {
         'de':'Benutzer:ABF/D3',
         'en':None,
+        'ja':None,
+        'zh':None,
         }
 # Title of the email
 emailSubject = {
         'de':'Problemen mit Deinem Bild auf der Deutschen Wikipedia',
         'en':None,
+        'ja':None,
+        'zh':None,
         }
 
 # Add your project (in alphabetical order) if you want that the bot start
