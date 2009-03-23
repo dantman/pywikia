@@ -127,14 +127,20 @@ nowCommons = {
         u'Nowcommons',
         u'NC'
     ],
-    'ja':[
-        u'NowCommons',
-    ],
     'ia': [
         u'OraInCommons'
     ],
     'it': [
         u'NowCommons',
+    ],
+    'ja':[
+        u'NowCommons',
+    ],
+    'ko': [
+        u'NowCommons',
+        u'공용중복',
+        u'공용 중복',
+        u'Nowcommons',
     ],
     'nl': [
         u'NuCommons',
@@ -159,6 +165,7 @@ namespaceInTemplate = [
     'ia',
     'it',
     'ja',
+    'ko',
     'lt',
     'ro',
     'zh',
