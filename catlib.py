@@ -36,6 +36,7 @@ msg_created_for_renaming = {
     'ksh':u'Bot: hääjeholldt von %s. Schriiver: %s',
     'nds':u'Kat-Bot: herschaven von %s. Schriever: %s',
     'nl':u'Bot: hernoemd van %s. Auteurs: %s',
+    'nn':u'robot: flytta frå %s. Bidragsytarar: %s',
     'pl':u'Robot przenosi z %s. Autorzy: %s',
     'pt':u'Bot: Movido de %s. Autor: %s',
     'zh':u'機器人: 已從 %s 移動。原作者是 %s',
