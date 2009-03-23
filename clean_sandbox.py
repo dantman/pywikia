@@ -49,7 +49,7 @@ content = {
 
 msg = {
     'ar': u'روبوت: هذه الصفحة سيتم تفريغها تلقائيا',
-    'da': u'Bot: Nyt sand',
+    'da': u'Bot: Nyt sand (fra[[Skabelon:Sandkasse tekst]])',
     'de': u'Bot: Setze Seite zurück.',
     'en': u'Robot: Automatically cleaned',
     'fi': u'Botti siivosi hiekkalaatikon.',
