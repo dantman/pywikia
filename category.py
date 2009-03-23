@@ -118,6 +118,7 @@ msg_add={
     'ru':u'Робот: добавление [[Категория:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
+    'szl':u'Bot dodowo: [[Kategoria:%s]]',
     'zh':u'機器人:新增目錄 [[Category:%s]]',
     }
 
