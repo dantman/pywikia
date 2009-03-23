@@ -204,6 +204,7 @@ logbook = {
     'en': u'Project:Welcome log',
     'fa': u'Project:سیاهه خوشامد',
     'fr': u'Wikipedia:Prise de décision/Accueil automatique des nouveaux par un robot/log',
+    'ga': u'Project:Log fáilte',
     'he': None, # no welcome log on he.wiki
     'id': None, # no welcome log on id.wiki
     'it': u'Project:Benvenuto Bot/Log',
@@ -227,6 +228,7 @@ summary = {
     'en':u'Welcome!',
     'fa':u'خوش آمدید!',
     'fr':u'Bienvenue sur Wikipedia !',
+    'ga':u'Fáilte!',
     'he':u'ברוך הבא!',
     'id':u'Selamat datang',
     'it':u'Benvenuto!',
@@ -252,6 +254,7 @@ netext = {
     'en':u'{{subst:welcome}} %s',
     'fa':u'{{جا:خوشامد}} %s',
     'fr':u'{{subst:Discussion Projet:Aide/Bienvenue}} %s',
+    'ga':u'{{subst:fáilte}} %s',
     'he':u'{{ס:ברוך הבא}} %s',
     'id':u'{{sdbot|%s}}',
     'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
@@ -275,6 +278,7 @@ summary2 = {
     'en':u'Updating log',
     'fa':u'به روز رسانی سیاهه',
     'fr':u'Mise a jour du log',
+    'ga':u'Log a thabhairt suas chun dáta',
     'it':u'Aggiorno il log',
     'ja':u'更新記録',
     'nl':u'Logboek bijwerken',
@@ -292,6 +296,7 @@ report_page = {
     'de': u'Benutzer:Filnik/Report',
     'en': u'Project:Administrator intervention against vandalism',
     'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
+    'ga': u'Project:Log fáilte/Drochainmneacha',
     'it': u'Project:Benvenuto_Bot/Report',
     'ja': u'利用者:Alexbot/report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
@@ -343,6 +348,7 @@ report_text = {
     'en':u'\n*{{Userlinks|%s}} ' + timeselected,
     'fa':u'\n*{{کاربر|%s}}' + timeselected,
     'fr':u'\n*{{u|%s}} ' + timeselected,
+    'ga':u'\n*[[Plé úsáideora:%s]] ' + timeselected,
     'it':u"\n{{Reported|%s|",
     'ja':u"\n*{{User2|%s}}" + timeselected,
     'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
@@ -368,6 +374,7 @@ random_sign = {
 whitelist_pg = {
     'ar':u'Project:سجل الترحيب/قائمة بيضاء',
     'en':u'User:Filnik/whitelist',
+    'ga':u'Project:Log fáilte/Bánliosta',
     'it':u'Project:Benvenuto_Bot/Lista_Whitewords',
     'ru':u'Участник:LatitudeBot/Белый_список',
     }
