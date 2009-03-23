@@ -1541,7 +1541,8 @@ not supported by PyWikipediaBot!"""
             # Check blocks
             self.site().checkBlocks(sysop = sysop)
             # A second text area means that an edit conflict has occured.
-            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
+            editconflict = re.compile('id=["\']wpTextbox2[\'"] name="wpTextbox2"')
+            if editconflict.search(data):
                 raise EditConflict(u'An edit conflict has occured.')
 
             # remove the wpAntispam keyword before checking for Spamfilter
