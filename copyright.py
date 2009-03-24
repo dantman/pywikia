@@ -1031,7 +1031,7 @@ class CheckRobot:
 
             wikipedia.output(page.title())
 
-        if original_text:
+            if original_text:
                 text = skip_section(original_text)
 
                 if remove_wikicode_dotall:

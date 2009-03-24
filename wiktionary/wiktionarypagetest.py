@@ -200,7 +200,7 @@ The translations below need to be checked by native speakers and inserted into t
                   }
         },
         {'definition': u"A piece of metal, often [[hexagonal]], with a hole through it with internal threading intended to fit on to a bolt.", 'concisedef': u'that fits on a bolt',
-     'trans': {'remark': '',
+         'trans': {'remark': '',
                    'alltrans': {
                              'nl': {'remark': '',
                                     'translations': [{'remark': '',

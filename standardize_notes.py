@@ -741,15 +741,15 @@ class ReplaceRobot:
                     break    # found a matching previous linkname so stop looking
             if extlink_linktext == None or len(extlink_linktext) < 20:
                 exlink_linktext = urltitle
-    # Look for a news web site
+        # Look for a news web site
         for (sitename, newscompany, stripprefix) in newssites:
-        if refname.startswith( sitename ):
-        # If there is a prefix to strip from the title
+            if refname.startswith( sitename ):
+            # If there is a prefix to strip from the title
                 if stripprefix and extlink_linktext.startswith( stripprefix ):
-            extlink_linktext = extlink_linktext[len(stripprefix):]
-            new_text = u'{{news reference | title=%s | url=%s | urldate=%s | org=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat(), newscompany ) + '\n'
-        break
-    else:        # else no special site found
+                    extlink_linktext = extlink_linktext[len(stripprefix):]
+                    new_text = u'{{news reference | title=%s | url=%s | urldate=%s | org=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat(), newscompany ) + '\n'
+                    break
+        else:        # else no special site found
             new_text = u'{{web reference | title=%s | url=%s | date=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat() )
         return (new_text)
 
@@ -762,9 +762,9 @@ class ReplaceRobot:
         urltitle = self.doGetTitleFromURL( 'http://dx.doi.org/' + doi_linktext ) # try to get title from URL
         refname = 'refbot%d' % refsequence
         if urltitle:
-        new_text = '# {{note|%s}} %s {{doi|%s}}' % (refname, urltitle, doi_linktext) + '\n'
+            new_text = '# {{note|%s}} %s {{doi|%s}}' % (refname, urltitle, doi_linktext) + '\n'
         else:
-        new_text = '# {{note|%s}} {{doi|%s}}' % (refname, doi_linktext) + '\n'
+            new_text = '# {{note|%s}} {{doi|%s}}' % (refname, doi_linktext) + '\n'
         return (refname, new_text)
 
     def doBuildSequenceListOfReferences(self, original_text):

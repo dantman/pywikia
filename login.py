@@ -29,8 +29,8 @@ Parameters:
 
    -v -v        Shows http requests made when logging in. This might leak
     (doubly     private data (password, session id), so make sure to check the
-     verbose)   output. Using -log is recommended: this will output a lot of
-        data
+     verbose)   output. Using -log is recommended: this will output a lot of 
+                data
 
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this

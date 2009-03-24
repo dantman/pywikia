@@ -2997,21 +2997,21 @@ class Family:
         # equivalent articles have identical titles among the group.
         self.language_groups = {
             # languages using the arabic script (incomplete)
-        'arab' : [
+            'arab' : [
                 'ar', 'arz', 'ps', 'sd', 'ur',
                 # languages using multiple scripts, including arabic
-            'kk', 'ku', 'tt', 'ug'
+                'kk', 'ku', 'tt', 'ug'
             ],
             # languages that use chinese symbols
             'chinese': [
                 'wuu', 'zh', 'zh-classical', 'zh-yue', 'gan', 'ii',
                 # languages using multiple/mixed scripts, including chinese
-        'ja', 'za'
+                'ja', 'za'
             ],
             # languages that use the cyrillic alphabet
             'cyril': [
                 'ab', 'av', 'ba', 'be', 'be-x-old', 'bg', 'bxr', 'ce', 'cu', 'cv', 'kv',
-        'ky', 'mk', 'lbe', 'mdf', 'mn', 'mo', 'myv', 'os', 'ru', 'sah', 'tg',
+                'ky', 'mk', 'lbe', 'mdf', 'mn', 'mo', 'myv', 'os', 'ru', 'sah', 'tg',
                 'tk', 'udm', 'uk', 'xal',
                 # languages using multiple scripts, including cyrillic
                 'ha', 'kk', 'sh', 'sr', 'tt'
@@ -3019,22 +3019,22 @@ class Family:
             # languages that use the latin alphabet
             'latin': [
                 'aa', 'af', 'ak', 'als', 'an', 'ang', 'ast', 'ay', 'bar', 'bat-smg',
-        'bcl', 'bi', 'bm', 'br', 'bs', 'ca', 'cbk-zam', 'cdo', 'ceb', 'ch',
-        'cho', 'chy', 'co', 'crh', 'cs', 'csb', 'cy', 'da', 'de', 'diq', 'dsb',
-        'ee', 'eml', 'en', 'eo', 'es', 'et', 'eu', 'ext', 'ff', 'fi', 'fiu-vro',
-        'fj', 'fo', 'fr', 'frp', 'fur', 'fy', 'ga', 'gd', 'gl', 'gn', 'gv',
-        'hak', 'haw', 'hif', 'ho', 'hr', 'hsb', 'ht', 'hu', 'hz', 'ia', 'id',
-        'ie', 'ig', 'ik', 'ilo', 'io', 'is', 'it', 'jbo', 'jv', 'kaa', 'kab',
-        'kg', 'ki', 'kj', 'kl', 'kr', 'ksh', 'kw', 'la', 'lad', 'lb', 'lg',
-        'li', 'lij', 'lmo', 'ln', 'lt', 'lv', 'map-bms', 'mg', 'mh', 'mi', 'ms',
-        'mt', 'mus', 'na', 'nah', 'nap', 'nds', 'nds-nl', 'ng', 'nl', 'nn',
-        'no', 'nov', 'nrm', 'nv', 'ny', 'oc', 'om', 'pag', 'pam', 'pap', 'pdc',
-        'pih', 'pl', 'pms', 'pt', 'qu', 'rm', 'rn', 'ro', 'roa-rup', 'roa-tara',
+                'bcl', 'bi', 'bm', 'br', 'bs', 'ca', 'cbk-zam', 'cdo', 'ceb', 'ch',
+                'cho', 'chy', 'co', 'crh', 'cs', 'csb', 'cy', 'da', 'de', 'diq', 'dsb',
+                'ee', 'eml', 'en', 'eo', 'es', 'et', 'eu', 'ext', 'ff', 'fi', 'fiu-vro',
+                'fj', 'fo', 'fr', 'frp', 'fur', 'fy', 'ga', 'gd', 'gl', 'gn', 'gv',
+                'hak', 'haw', 'hif', 'ho', 'hr', 'hsb', 'ht', 'hu', 'hz', 'ia', 'id',
+                'ie', 'ig', 'ik', 'ilo', 'io', 'is', 'it', 'jbo', 'jv', 'kaa', 'kab',
+                'kg', 'ki', 'kj', 'kl', 'kr', 'ksh', 'kw', 'la', 'lad', 'lb', 'lg',
+                'li', 'lij', 'lmo', 'ln', 'lt', 'lv', 'map-bms', 'mg', 'mh', 'mi', 'ms',
+                'mt', 'mus', 'na', 'nah', 'nap', 'nds', 'nds-nl', 'ng', 'nl', 'nn',
+                'no', 'nov', 'nrm', 'nv', 'ny', 'oc', 'om', 'pag', 'pam', 'pap', 'pdc',
+                'pih', 'pl', 'pms', 'pt', 'qu', 'rm', 'rn', 'ro', 'roa-rup', 'roa-tara',
                 'rw', 'sc', 'scn', 'sco', 'se', 'sg', 'simple', 'sk', 'sl', 'sm', 'sn',
-        'so', 'sq', 'srn', 'ss', 'st', 'stq', 'su', 'sv', 'sw', 'szl', 'tet',
-        'tl', 'tn', 'to', 'tpi', 'tr', 'ts', 'tum', 'tw', 'ty', 'uz', 've',
-        'vec', 'vi', 'vls', 'vo', 'wa', 'war', 'wo', 'xh', 'yo', 'zea',
-        'zh-min-nan', 'zu',
+                'so', 'sq', 'srn', 'ss', 'st', 'stq', 'su', 'sv', 'sw', 'szl', 'tet',
+                'tl', 'tn', 'to', 'tpi', 'tr', 'ts', 'tum', 'tw', 'ty', 'uz', 've',
+                'vec', 'vi', 'vls', 'vo', 'wa', 'war', 'wo', 'xh', 'yo', 'zea',
+                'zh-min-nan', 'zu',
                 # languages using multiple scripts, including latin
                 'az', 'chr', 'ha', 'iu', 'kk', 'ku', 'rmy', 'sh', 'sr', 'tt', 'ug', 'za'
             ],
