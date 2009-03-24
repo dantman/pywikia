@@ -773,7 +773,7 @@ not supported by PyWikipediaBot!"""
                         retry_idle_time = 30
                 else:
                     output( u"Failed to access wiki")
-            sys.exit(1)
+                    sys.exit(1)
         # Check for restrictions
         m = re.search('var wgRestrictionEdit = \\["(\w+)"\\]', text)
         if m:
