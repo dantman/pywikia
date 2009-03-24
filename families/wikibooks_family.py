@@ -232,6 +232,7 @@ class Family(family.Family):
             'he': u'מדף',
             'ka': u'თარო',
             'nl': u'Wikijunior',
+            'pl': u'Wikijunior',
             'ro': u'Carte de bucate',
             'ru': u'Рецепт',
         }
@@ -240,6 +241,7 @@ class Family(family.Family):
             'he': u'שיחת מדף',
             'ka': u'თარო განხილვა',
             'nl': u'Overleg Wikijunior',
+            'pl': u'Dyskusja Wikijuniora',
             'ro': u'Discuţie Carte de bucate',
             'ru': u'Обсуждение рецепта',
         }
