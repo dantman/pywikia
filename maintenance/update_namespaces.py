@@ -7,7 +7,8 @@ from wikipedia import output
 import family_check
 import re
 
-r_namespace_section = r'(?s)self\.namespaces\[%s]\s*\=\s*\{(.*?)\}'
+r_namespace_section_main = r'(?s)self\.namespaces\s*\=\s*\{.*\s+%s\s*:\s*\{(.*?)\}'
+r_namespace_section_sub = r'(?s)self\.namespaces\[%s]\s*\=\s*\{(.*?)\}'
 
 r_string = '[u]?[r]?[\'"].*?[\'"]'
 r_list = '\\[.*?\\]'
@@ -15,8 +16,17 @@ r_namespace_def = re.compile(r'[\'"]([a-z_-]*)[\'"]\s*\:\s*((?:%s)|(?:%s))\s*,' 
 def update_family(family, changes):
     global namespace_section_text, namespace_defs, new_defs
     
-    output(u'Updating family %s' % family)
-    family_file = open('../families/%s_family.py' % family.name, 'r')
+    if family:
+        output(u'Updating family %s' % family.name)
+        family_file_name = '../families/%s_family.py' % family.name
+        r_namespace_section = r_namespace_section_sub
+        base_indent = 8
+    else:
+        output(u'Updating family.py')
+        family_file_name = '../family.py'
+        r_namespace_section = r_namespace_section_main
+        base_indent = 12
+    family_file = open(family_file_name, 'r')
     old_family_text = family_text = family_file.read()
     family_file.close()
     
@@ -40,12 +50,14 @@ def update_family(family, changes):
                     
             new_defs = namespace_defs.items()
             new_defs.sort(key = lambda x: x[0])
-            new_text = '\n' + ''.join([12 * ' ' + "'%s': %s,\n" % i for i in new_defs]) + ' ' * 8
+            new_text = '\n' + ''.join([(base_indent + 4) * ' ' + "'%s': %s,\n" % i for i in new_defs]) + ' ' * base_indent
             family_text = family_text.replace(namespace_section.group(1), new_text)
             
-    if test_data(family_text):
+    if family_text == old_family_text:
+        output(u'No changes made')
+    elif test_data(family_text):
         output(u'Saving to family file')
-        family_file = open('../families/%s_family.py' % family.name, 'w')
+        family_file = open(family_file_name, 'w')
         family_file.write(family_text)
         family_file.close()
     else:
@@ -70,5 +82,7 @@ if __name__ == '__main__':
         family = wikipedia.Family(wikipedia.default_family)
         result = family_check.check_family(family)
         update_family(family, result)
+        # Update also the family.py file
+        update_family(None, result)
     finally:
         wikipedia.stopme()
