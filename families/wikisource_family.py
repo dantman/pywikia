@@ -182,6 +182,7 @@ class Family(family.Family):
             'no': u'Forfatter',
             'pl': u'Indeks',
             'pt': u'Autor',
+            'zh': u'Author',
         }
         self.namespaces[103] = {
             'ar': u'نقاش المؤلف',
@@ -200,6 +201,7 @@ class Family(family.Family):
             'no': u'Forfatterdiskusjon',
             'pl': u'Dyskusja indeksu',
             'pt': u'Autor Discussão',
+            'zh': u'Author talk',
         }
 
         self.namespaces[104] = {
@@ -215,11 +217,13 @@ class Family(family.Family):
             'hy': u'Էջ',
             'it': u'Progetto',
             'la': u'Pagina',
+            'no': u'Side',
             'pt': u'Galeria',
             'ru': u'Страница',
             'sl': u'Kazalo',
             'sv': u'Sida',
             'te': [u'పేజీ', u'Page'],
+            'zh': u'Page',
         }
 
         self.namespaces[105] = {
@@ -235,11 +239,13 @@ class Family(family.Family):
             'hy': u'Էջի քննարկում',
             'it': u'Discussioni progetto',
             'la': u'Disputatio Paginae',
+            'no': u'Sidediskusjon',
             'pt': u'Galeria Discussão',
             'ru': u'Обсуждение страницы',
             'sl': u'Pogovor o kazalu',
             'sv': u'Siddiskussion',
             'te': [u'పేజీ చర్చ', u'Page talk'],
+            'zh': u'Page talk',
         }
 
         self.namespaces[106] = {
@@ -248,9 +254,11 @@ class Family(family.Family):
             'hy': u'Ինդեքս',
             'it': u'Portale',
             'la': u'Liber',
+            'no': u'Indeks',
             'pt': u'Página',
             'ru': u'Индекс',
             'sv': u'Författare',
+            'zh': u'Index',
         }
 
         self.namespaces[107] = {
@@ -259,9 +267,11 @@ class Family(family.Family):
             'hy': u'Ինդեքսի քննարկում',
             'it': u'Discussioni portale',
             'la': u'Disputatio Libri',
+            'no': u'Indeksdiskusjon',
             'pt': u'Página Discussão',
             'ru': u'Обсуждение индекса',
             'sv': u'Författardiskussion',
+            'zh': u'Index talk',
         }
 
         self.namespaces[108] = {
