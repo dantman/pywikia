@@ -136,7 +136,7 @@ comm = {
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
 empty = {
         'commons':u'{{subst:welcome}}\n~~~~\n',
-    	'ar'     :u'{{ترحيب}}\n~~~~\n',
+        'ar'     :u'{{ترحيب}}\n~~~~\n',
         'de'     :u'{{subst:willkommen}} ~~~~',
         'en'     :u'{{welcome}}\n~~~~\n',
         'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
@@ -165,7 +165,7 @@ comm2 = {
 # In reality, there aren't unknown extension, they are only not allowed...
 delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
-    		'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
+            'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
             'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
             'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
@@ -178,7 +178,7 @@ delete_immediately = {
 # The header of the Unknown extension's message.
 delete_immediately_head = {
             'commons':u"\n== Unknown extension! ==\n",
-    		'ar'     :u"\n== امتداد غير معروف! ==\n",
+            'ar'     :u"\n== امتداد غير معروف! ==\n",
             'en'     :u"\n== Unknown extension! ==\n",
             'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
             'it'     :u'\n\n== File non specificato ==\n',
@@ -230,7 +230,7 @@ nothing_head = {
 nothing_notification = {
                 'commons':u"\n{{subst:User:Filnik/untagged|File:%s}}\n\n''This message was '''added automatically by [[User:" + \
                 "__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~",
-    			'ar'     :u"{{subst:مصدر الصورة|File:%s}} --~~~~",
+                'ar'     :u"{{subst:مصدر الصورة|File:%s}} --~~~~",
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|File:%s}} --~~~~",
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
@@ -295,7 +295,7 @@ timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
             'commons':u"\n*[[:File:%s]] " + timeselected,
-    		'ar':u"\n*[[:صورة:%s]] " + timeselected,
+            'ar':u"\n*[[:صورة:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:File:%s]] " + timeselected,
             'hu':u"\n*[[:Kép:%s]] " + timeselected,
@@ -327,7 +327,7 @@ comm10 = {
 # Warning 3: the part that use this regex is case-insensitive (just to let you know..)
 HiddenTemplate = {
         'commons':[u'Template:Information'], # Put the other in the page on the project defined below
-    	'ar':[u'Template:معلومات'],
+        'ar':[u'Template:معلومات'],
         'de':[u'Template:Information'],
         'en':[u'Template:Information'],
         'hu':[u'Template:Információ', u'Template:Enwiki', u'Template:Azonnali'],

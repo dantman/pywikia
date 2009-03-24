@@ -78,7 +78,7 @@ class NoEnoughData(wikipedia.Error):
     """ Error class for when the user doesn't specified all the data needed """
 
 class NothingFound(wikipedia.Error):
-	""" An exception indicating that a regex has return [] instead of results."""
+    """ An exception indicating that a regex has return [] instead of results."""
 
 # Useful for the untagged function
 def pageText(url):

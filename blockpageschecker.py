@@ -121,7 +121,7 @@ templateNoRegex = {
 # Category where the bot will check
 categoryToCheck = {
             'en':[u'Category:Protected'],
-			'ar':[u'تصنيف:محتويات محمية'],
+            'ar':[u'تصنيف:محتويات محمية'],
             'fr':[u'Category:Page semi-protégée', u'Category:Page protégée', u'Catégorie:Article protégé'],
             'he':[u'קטגוריה:ויקיפדיה: דפים מוגנים', u'קטגוריה:ויקיפדיה: דפים מוגנים חלקית'],
             'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
@@ -134,7 +134,7 @@ categoryToCheck = {
 # Comment used when the Bot edits
 comment = {
             'en':u'Bot: Deleting out-dated template',
-			'ar':u'بوت: حذف قالب قديم',
+            'ar':u'بوت: حذف قالب قديم',
             'fr':u'Robot: Mise à jour des bandeaux de protection',
             'he':u'בוט: מסיר תבנית שעבר זמנה',
             'it':u'Bot: Tolgo o sistemo template di avviso blocco',

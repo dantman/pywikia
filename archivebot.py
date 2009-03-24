@@ -56,7 +56,7 @@ messages = {
             'ArchiveSummary': u'Archiving %(count)d thread(s) from [[%(from)s]].',
             'OlderThanSummary': u'older than',
             },
-	    'ar': {
+        'ar': {
             'ArchiveFull': u'(الأرشيف ممتلئ)',
             'InitialArchiveHeader': u'{{أرشيف نقاش}}',
             'PageSummary': u'أرشفة %(count)d قسم(أقسام) (%(why)s) إلى %(archives)s.',
@@ -76,7 +76,7 @@ messages = {
             'PageSummary': u'%(count)d szakasz archiválása (%(why)s) a(z) %(archives)s lapra.',
             'ArchiveSummary': u'%(count)d szakasz archiválása a(z) [[%(from)s]] lapról.',
             'OlderThanSummary': u'régebbi, mint',
-        	},
+            },
         'no': {
             'ArchiveFull': u'(ARKIV FULLT)',
             'InitialArchiveHeader': u'{{arkiv}}',
@@ -225,7 +225,7 @@ class DiscussionThread(object):
 # 18. apr 2006 kl.18:39 (UTC)
 # 4. nov 2006 kl. 20:46 (CET)
         if not TM:
-	        TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
+            TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
         if TM:
 #            wikipedia.output(TM)
             TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")

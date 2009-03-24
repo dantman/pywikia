@@ -87,7 +87,7 @@ nowCommons = {
     '_default': [
         u'NowCommons'
     ],
-	'ar': [
+    'ar': [
         u'الآن كومنز',
         u'الآن كومونز',
     ],

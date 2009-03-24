@@ -220,7 +220,7 @@ moveToCommonsTemplate = {
 
 imageMoveMessage = {
     '_default': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
-	'ar': u'[[:File:%s|الصورة]] تم نقلها إلى [[:commons:Image:%s|كومنز]].',
+    'ar': u'[[:File:%s|الصورة]] تم نقلها إلى [[:commons:Image:%s|كومنز]].',
     'en': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
     'hu': u'[[:File:%s|Kép]] átmozgatva a [[:commons:Image:%s|Commons]]ba.',
     'nl': u'[[:File:%s|Bestand]] is verplaatst naar [[:commons:Image:%s|commons]].',

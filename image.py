@@ -45,7 +45,7 @@ class ImageRobot:
     """
     # Summary messages for replacing images
     msg_replace={
-	    'ar': u'روبوت - استبدال الصورة %s مع %s',
+        'ar': u'روبوت - استبدال الصورة %s مع %s',
         'de': u'Bot: Ersetze Bild %s durch %s',
         'en': u'Robot - Replacing image %s with %s',
         'es': u'Robot - Reemplazando imagen %s por %s',
@@ -65,7 +65,7 @@ class ImageRobot:
 
     # Summary messages for removing images
     msg_remove={
-	    'ar': u'روبوت - إزالة الصورة %s',
+        'ar': u'روبوت - إزالة الصورة %s',
         'de': u'Bot: Entferne Bild %s',
         'en': u'Robot - Removing image %s',
         'es': u'Robot - Retirando imagen %s',

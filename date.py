@@ -782,7 +782,7 @@ formats = {
             (lambda v: dh_constVal( v, 1, u'1-9'),                                              lambda p: p == 1),
             (lambda v: dh( v, u'%d-%d', lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),     alwaysTrue)]),
 
-        'nn' :      lambda v: dh_decAD( v, u'%d0-åra' ),	# FIXME: not sure of this one
+        'nn' :      lambda v: dh_decAD( v, u'%d0-åra' ),    # FIXME: not sure of this one
         'no' :      lambda v: dh_decAD( v, u'%d-årene' ),
         'os' :      lambda v: dh_decAD( v, u'%d-тæ' ),
 
@@ -998,33 +998,33 @@ formats = {
 
     'CenturyBC': {
         'af' :      lambda m: multi( m, [
-            (lambda v: dh_centuryBC( v, u'%dste eeu v.C.' ),        	lambda p: p in [1,8] or (p >= 20)),
-            (lambda v: dh_centuryBC( v, u'%dde eeu v.C.' ),         	alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%dste eeu v.C.' ),            lambda p: p in [1,8] or (p >= 20)),
+            (lambda v: dh_centuryBC( v, u'%dde eeu v.C.' ),             alwaysTrue)]),
         'bg' :      lambda v: dh_centuryBC( v, u'%d век пр.н.е.' ),
-		'br' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 1, u'Iañ kantved kt JK'),      	lambda p: p == 1),
-            (lambda v: dh_constVal( v, 2, u'Eil kantved kt JK'),      	lambda p: p == 2),
-            (lambda v: dh_centuryBC( v, u'%Re kantved kt JK'),        	lambda p: p in [2,3]),
-            (lambda v: dh_centuryBC( v, u'%Rvet kantved kt JK'),      	alwaysTrue)]),
+        'br' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 1, u'Iañ kantved kt JK'),          lambda p: p == 1),
+            (lambda v: dh_constVal( v, 2, u'Eil kantved kt JK'),          lambda p: p == 2),
+            (lambda v: dh_centuryBC( v, u'%Re kantved kt JK'),            lambda p: p in [2,3]),
+            (lambda v: dh_centuryBC( v, u'%Rvet kantved kt JK'),          alwaysTrue)]),
         'ca' :      lambda v: dh_centuryBC( v, u'Segle %R aC' ),
         'cs' :      lambda v: dh_centuryBC( v, u'%d. století př. n. l.' ),
         'da' :      lambda v: dh_centuryBC( v, u'%d. århundrede f.Kr.' ),
         'de' :      lambda v: dh_centuryBC( v, u'%d. Jahrhundert v. Chr.' ),
         'el' :      lambda v: dh_centuryBC( v, u'%dος αιώνας π.Χ.' ),
         'en' :      lambda m: multi( m, [
-            (lambda v: dh_centuryBC( v, u'%dst century BC' ),         	lambda p: p == 1 or (p > 20 and p%10 == 1)),
-            (lambda v: dh_centuryBC( v, u'%dnd century BC' ),        	lambda p: p == 2 or (p > 20 and p%10 == 2)),
-            (lambda v: dh_centuryBC( v, u'%drd century BC' ),         	lambda p: p == 3 or (p > 20 and p%10 == 3)),
-            (lambda v: dh_centuryBC( v, u'%dth century BC' ),         	alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%dst century BC' ),             lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_centuryBC( v, u'%dnd century BC' ),            lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_centuryBC( v, u'%drd century BC' ),             lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_centuryBC( v, u'%dth century BC' ),             alwaysTrue)]),
         'eo' :      lambda v: dh_centuryBC( v, u'%d-a jarcento a.K.' ),
         'es' :      lambda v: dh_centuryBC( v, u'Siglo %R adC' ),
         'et' :      lambda v: dh_centuryBC( v, u'%d. aastatuhat eKr' ),
         'fi' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata eaa.'),				lambda p: p == 1),
+            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata eaa.'),                lambda p: p == 1),
             (lambda v: dh( v, u'%d00-luku eaa.', lambda i: i-1, lambda ii: ii[0]+1 ),    alwaysTrue)]),
         'fr' :      lambda m: multi( m, [
-            (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),   					lambda p: p == 1),
-            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),    					alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),                       lambda p: p == 1),
+            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),                        alwaysTrue)]),
         'he' :      lambda v: dh_centuryBC( v, u'המאה ה־%d לפני הספירה' ),
         'hr' :      lambda v: dh_centuryBC( v, u'%d. stoljeće p.n.e.' ),
         'id' :      lambda v: dh_centuryBC( v, u'Abad ke-%d SM' ),
@@ -1361,7 +1361,7 @@ addFmt2('su', False, u"%%d %s", True )
 addFmt2('sv', False, u"%%d %s", False )
 addFmt2('ta', False, u"%s %%d" )
 addFmt2('te', False, u"%s %%d" )
-addFmt2('th', False, u"%%d %s" )	# %%T
+addFmt2('th', False, u"%%d %s" )    # %%T
 addFmt2('tl', False, u"%s %%d" )
 addFmt2('tr', False, u"%%d %s", True )
 addFmt2('tt', False, u"%%d. %s", True )
@@ -1442,21 +1442,21 @@ addFmt ('zh-min-nan',True,  makeMonthList( u"%%d nî %d goe̍h" ))
 # In addition, tuple contains start, end, and step values that will be used to test the formats table for internal consistency.
 #
 formatLimits = {
-    'MonthName'			: (lambda v: 1<=v and v<13,                 1,13),
-    'Number'			: (lambda v: 0<=v and v<1000000,            0,1001),
+    'MonthName'            : (lambda v: 1<=v and v<13,                 1,13),
+    'Number'            : (lambda v: 0<=v and v<1000000,            0,1001),
 
-    'YearAD'			: (lambda v: 0<=v and v<2501,               0,2501),
-    'YearBC'			: (lambda v: 0<=v and v<4001,               0,501),   # zh: has years as old as 前1700年
-    'DecadeAD'			: (lambda v: 0<=v and v<2501,               0,2501),  # At some point need to re-add  "and v%10==0" to the limitation
-    'DecadeBC'			: (lambda v: 0<=v and v<4001,               0,501),   # zh: has decades as old as 前1700年代
-    'CenturyAD'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'CenturyBC'			: (lambda v: 1<=v and v<91,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'MillenniumAD'		: (lambda v: 1<=v and v<6,                  1,4),     # For milleniums, only test first 3 AD Milleniums,
-    'MillenniumBC'		: (lambda v: 1<=v and v<20,                 1,2),     # And only 1 BC Millenium
+    'YearAD'            : (lambda v: 0<=v and v<2501,               0,2501),
+    'YearBC'            : (lambda v: 0<=v and v<4001,               0,501),   # zh: has years as old as 前1700年
+    'DecadeAD'            : (lambda v: 0<=v and v<2501,               0,2501),  # At some point need to re-add  "and v%10==0" to the limitation
+    'DecadeBC'            : (lambda v: 0<=v and v<4001,               0,501),   # zh: has decades as old as 前1700年代
+    'CenturyAD'            : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'CenturyBC'            : (lambda v: 1<=v and v<91,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'MillenniumAD'        : (lambda v: 1<=v and v<6,                  1,4),     # For milleniums, only test first 3 AD Milleniums,
+    'MillenniumBC'        : (lambda v: 1<=v and v<20,                 1,2),     # And only 1 BC Millenium
     'CenturyAD_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'CenturyBC_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'Cat_Year_MusicAlbums'	: (lambda v: 1950<=v and v<2021,        1950,2021),
-    'CurrEvents'			: (lambda v: 0<=v and v<1,              0,1),
+    'Cat_Year_MusicAlbums'    : (lambda v: 1950<=v and v<2021,        1950,2021),
+    'CurrEvents'            : (lambda v: 0<=v and v<1,              0,1),
 }
 
 # All month of year articles are in the same format

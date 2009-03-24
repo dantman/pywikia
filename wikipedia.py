@@ -773,7 +773,7 @@ not supported by PyWikipediaBot!"""
                         retry_idle_time = 30
                 else:
                     output( u"Failed to access wiki")
-		    sys.exit(1)
+            sys.exit(1)
         # Check for restrictions
         m = re.search('var wgRestrictionEdit = \\["(\w+)"\\]', text)
         if m:
@@ -4656,8 +4656,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
            Returns the HTML text of the page converted to unicode.
         """
 
-	if retry==None:
-		retry=config.retry_on_fail
+    if retry==None:
+        retry=config.retry_on_fail
 
         if False: #self.persistent_http and not data:
             self.conn.putrequest('GET', path)
@@ -4705,7 +4705,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             while not retrieved:
                 try:
                     if self.hostname() in config.authenticate.keys():
-		      request = urllib2.Request(url, data)
+              request = urllib2.Request(url, data)
                       request.add_header('User-agent', useragent)
                       opener = urllib2.build_opener()
                       f = opener.open(request)

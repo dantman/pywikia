@@ -64,7 +64,7 @@ solve_captcha = True
 authenticate = {}
 
 #
-#	Security Connection for Wikimedia Projects
+#    Security Connection for Wikimedia Projects
 #
 #
 #

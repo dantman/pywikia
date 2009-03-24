@@ -84,7 +84,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Anarchopedia',
             'it': u'Discussioni Anarchopedia',
             'ja': u'アナーキォペディア‐ノート' ,
-	        'no': u'Anarchopedia-diskusjon' ,
+            'no': u'Anarchopedia-diskusjon' ,
             'sh': u'Разговор о Anarhopedija / Анархопедија',
             'or': u'Anarchopedia-diskusjon',
             'pl': u'Dyskusja Anarchopedia',

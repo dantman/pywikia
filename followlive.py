@@ -286,7 +286,7 @@ templates = {
             'pos' : 'top'},
 
         u'{{subst:Notchinese/auto}}':{
-		    'msg' : u'機器人掛上模板: 本条目没有翻译',
+            'msg' : u'機器人掛上模板: 本条目没有翻译',
             'pos' : 'top'},
 
         u'{{subst:Substub/auto}}' :{

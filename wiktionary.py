@@ -584,11 +584,11 @@ class Entry:
         """ Constructor
             Called with one parameter:
             - the language of this entry
-	    and can optionally be initialized with a first meaning
+        and can optionally be initialized with a first meaning
         """
         self.entrylang=entrylang
         self.meanings = {} # a dictionary containing the meanings for this term grouped by part of speech
-	if meaning:
+    if meaning:
             self.addMeaning(meaning)
         self.posorder = [] # we don't want to shuffle the order of the parts of speech, so we keep a list to keep the order in which they were encountered
 
@@ -804,7 +804,7 @@ class Meaning:
             ready for Wiktionary
             The behavior changes with the circumstances.
             For an entry in the same language as the Wiktionary the full list of translations is contained in the output, excluding the local
-	    language itself
+        language itself
             - This list of translations has to end up in a table with two columns
             - The first column of this table contains languages with names from A to M, the second contains N to Z
             - If a column in this list remains empty a html comment is put in that column

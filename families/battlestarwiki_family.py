@@ -19,7 +19,7 @@ class Family(family.Family):
             }
 
         # Most namespaces are inherited from family.
-		
+        
         self.namespaces[4] = {
             '_default': u'Battlestar Wiki',
         }
@@ -47,7 +47,7 @@ class Family(family.Family):
         # if you carefully avoid the options, you could get away without these
         # for another wiki family.
         self.languages_by_size = ['en', 'de']
-		
+        
         alphabetic = ['de', 'en', 'es', 'fr', 'tr', 'zh']
 
     def hostname(self,code):

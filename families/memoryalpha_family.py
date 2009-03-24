@@ -39,12 +39,12 @@ class Family(family.Family):
             'sv': u'Memory Alphadiskussion',
         }
         self.namespaces[100] = {
-			'_default': u'Forum',
-		}
+            '_default': u'Forum',
+        }
         self.namespaces[101] = {
-			'_default': u'Forum talk',
-			'de': u'Forum Diskussion',
-		}
+            '_default': u'Forum talk',
+            'de': u'Forum Diskussion',
+        }
 
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so

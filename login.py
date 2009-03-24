@@ -30,7 +30,7 @@ Parameters:
    -v -v        Shows http requests made when logging in. This might leak
     (doubly     private data (password, session id), so make sure to check the
      verbose)   output. Using -log is recommended: this will output a lot of
-		data
+        data
 
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this
@@ -72,25 +72,25 @@ botList = {
 class LoginManager:
     def __init__(self, password = None, sysop = False, site = None, username=None, verbose=False):
         self.site = site or wikipedia.getSite()
-	if username:
-		self.username=username
-		# perform writeback.
-		if site.family.name not in config.usernames:
-			config.usernames[site.family.name]={}
-		config.usernames[site.family.name][self.site.lang]=username
-	else:
-		if sysop:
-		    try:
-			self.username = config.sysopnames[self.site.family.name][self.site.lang]
-		    except:
-			raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
-		else:
-		    try:
-			self.username = config.usernames[self.site.family.name][self.site.lang]
-		    except:
-			raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+    if username:
+        self.username=username
+        # perform writeback.
+        if site.family.name not in config.usernames:
+            config.usernames[site.family.name]={}
+        config.usernames[site.family.name][self.site.lang]=username
+    else:
+        if sysop:
+            try:
+            self.username = config.sysopnames[self.site.family.name][self.site.lang]
+            except:
+            raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+        else:
+            try:
+            self.username = config.usernames[self.site.family.name][self.site.lang]
+            except:
+            raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
         self.password = password
-	self.verbose = verbose
+    self.verbose = verbose
         if getattr(config, 'password_file', ''):
             self.readPassword()
 
@@ -142,35 +142,35 @@ class LoginManager:
             login_address = self.site.login_address()
             address = login_address + '&action=submit'
         
-	if self.site.hostname() in config.authenticate.keys():
+    if self.site.hostname() in config.authenticate.keys():
             headers = {
                 "Content-type": "application/x-www-form-urlencoded",
                 "User-agent": wikipedia.useragent
             }
             data = self.site.urlEncode(predata)
-	    if self.verbose:
-	      fakepredata = predata
-	      fakepredata['wpPassword'] = u'XXXX'
-	      wikipedia.output(u"urllib2.urlopen(urllib2.Request('%s', %s, %s)):" % (self.site.protocol() + '://' + self.site.hostname() + address, self.site.urlEncode(fakepredata), headers))
+        if self.verbose:
+          fakepredata = predata
+          fakepredata['wpPassword'] = u'XXXX'
+          wikipedia.output(u"urllib2.urlopen(urllib2.Request('%s', %s, %s)):" % (self.site.protocol() + '://' + self.site.hostname() + address, self.site.urlEncode(fakepredata), headers))
             response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data, headers))
             data = response.read()
-	    if self.verbose:
+        if self.verbose:
               fakedata = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
-	      trans = config.transliterate
-	      config.transliterate = False #transliteration breaks for some reason
+          trans = config.transliterate
+          config.transliterate = False #transliteration breaks for some reason
               wikipedia.output(data.decode(self.site.encoding()))
-	      config.transliterate = trans
+          config.transliterate = trans
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
             response, data = self.site.postData(address, self.site.urlEncode(predata))
-	    if self.verbose:
-	      fakepredata = predata
-	      fakepredata['wpPassword'] = u'XXXXX'
-	      wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
-	      fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
-	      wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
-	      wikipedia.output(u"%s" % data)
+        if self.verbose:
+          fakepredata = predata
+          fakepredata['wpPassword'] = u'XXXXX'
+          wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
+          fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
+          wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
+          wikipedia.output(u"%s" % data)
             Reat=re.compile(': (.*?);')
             L = []
 

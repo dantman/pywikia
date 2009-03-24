@@ -39,7 +39,7 @@ template_cat = {
 
 stat_msg = {
     'en': [u'Statistics', u'Page', u'Entries', u'Size', u'Total', 'Update'],
-	'ar': [u'إحصاءات', u'صفحة', u'مدخلات', u'حجم', u'إجمالي', 'تحديث'],
+    'ar': [u'إحصاءات', u'صفحة', u'مدخلات', u'حجم', u'إجمالي', 'تحديث'],
     'it': [u'Statistiche', u'Pagina', u'Segnalazioni', u'Lunghezza', u'Totale', u'Ultimo aggiornamento'],
 }
 

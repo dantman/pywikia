@@ -52,7 +52,7 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
     }
 
     msg = {
-	    'ar': u'روبوت: إصلاح وصلة خاطئة إلى %s',
+        'ar': u'روبوت: إصلاح وصلة خاطئة إلى %s',
         'da': u'Omdirigeringer af fejlstavninger',
         'de': u'Bot: korrigiere Link auf Falschschreibung: %s',
         'en': u'Robot: Fixing misspelled link to %s',

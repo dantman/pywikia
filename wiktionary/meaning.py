@@ -312,7 +312,7 @@ class Meaning:
             ready for Wiktionary
             The behavior changes with the circumstances.
             For an entry in the same language as the Wiktionary the full list of translations is contained in the output, excluding the local
-	    language itself
+        language itself
             - This list of translations has to end up in a table with two columns
             - The first column of this table contains languages with names from A to M, the second contains N to Z
             - If a column in this list remains empty a html comment is put in that column

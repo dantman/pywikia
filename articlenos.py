@@ -21,8 +21,8 @@ class ArtNoDisp(SingleServerIRCBot):
     def __init__(self, site, channel, nickname, server, port=6667):
         SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel
-	self.site = site
-	self.other_ns = re.compile(u'14\[\[07(' + u'|'.join(site.namespaces()) + u')')
+    self.site = site
+    self.other_ns = re.compile(u'14\[\[07(' + u'|'.join(site.namespaces()) + u')')
         self.api_url = self.site.api_address()
         self.api_url += 'action=query&meta=siteinfo&siprop=statistics&format=xml'
         self.api_found = re.compile(r'articles="(.*?)"')
@@ -35,7 +35,7 @@ class ArtNoDisp(SingleServerIRCBot):
         c.join(self.channel)
 
     def on_privmsg(self, c, e):
-	pass
+    pass
 
     def on_pubmsg(self, c, e):
         match = self.re_edit.match(e.arguments()[0])
@@ -59,19 +59,19 @@ class ArtNoDisp(SingleServerIRCBot):
                 return
         except wikipedia.IsRedirectPage:
                 return
-	print entry[0], name
+    print entry[0], name
 
     def on_dccmsg(self, c, e):
-	pass
+    pass
 
     def on_dccchat(self, c, e):
-	pass
+    pass
 
     def do_command(self, e, cmd):
-	pass
+    pass
 
     def on_quit(self, e, cmd):
-	pass
+    pass
 
 def main():
     site = wikipedia.getSite()

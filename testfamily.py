@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8	 -*-
+# -*- coding: utf-8     -*-
 """
 This utility's primary use is to find all mismatches between the namespace
 naming in the family files and the language files on the wiki servers.

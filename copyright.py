@@ -1029,9 +1029,9 @@ class CheckRobot:
                     wikipedia.output(u'Page %s is a disambiguation page' % page.aslink())
                     continue
 
-    	    wikipedia.output(page.title())
+            wikipedia.output(page.title())
 
-	    if original_text:
+        if original_text:
                 text = skip_section(original_text)
 
                 if remove_wikicode_dotall:

@@ -67,7 +67,7 @@ class User:
 
     def editedPages(self, limit=500):
         """ Deprecated function that wraps 'contributions'
-	    for backwards compatibility
+        for backwards compatibility
         """
         for page in self.contributions(limit):
             yield page[0]
@@ -85,15 +85,15 @@ class User:
         offset = 0
         step = min(limit,500)
         older_str = None
-	try:
-	    older_str = self.site.mediawiki_message('pager-older-n')
-	except wikipedia.KeyError:
-	    older_str = self.site.mediawiki_message('sp-contributions-older')
+    try:
+        older_str = self.site.mediawiki_message('pager-older-n')
+    except wikipedia.KeyError:
+        older_str = self.site.mediawiki_message('sp-contributions-older')
         if older_str.startswith('{{PLURAL:$1'):
-	    older_str = older_str[13:]
-	    older_str = older_str[older_str.find('|')+1:]
-	    older_str = older_str[:-2]
-	older_str = older_str.replace('$1',str(step))
+        older_str = older_str[13:]
+        older_str = older_str[older_str.find('|')+1:]
+        older_str = older_str[:-2]
+    older_str = older_str.replace('$1',str(step))
 
         address = self.site.contribs_address(self.name,limit=step)
         contribRX = re.compile('<li[^>]*> *<a href="(?P<url>[^"]*?)" title="[^"]+">(?P<date>[^<]+)</a>.*>diff</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a> *(?P<comment>.*?)(?P<top><strong> *\(top\) *</strong>)? *(<span class="mw-rollback-link">\[<a href="[^"]+token=(?P<rollbackToken>[^"]+)%2B%5C".*rollback</a>\]</span>)? *</li>')

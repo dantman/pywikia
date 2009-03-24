@@ -83,7 +83,7 @@ class SpeedyRobot:
     # _default will be used if no such semantic template was used.
     deletion_messages = {
         'wikipedia':{
-	        'ar': {
+            'ar': {
                 u'_default': u'حذف مرشح للحذف السريع حسب [[ويكيبيديا:حذف سريع|معايير الحذف السريع]]',
                 },
             'de': {

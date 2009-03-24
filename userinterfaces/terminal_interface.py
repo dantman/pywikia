@@ -263,7 +263,7 @@ class UI:
             answer = self.input(prompt)
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
                 return answer
-            elif default and answer=='':		# empty string entered
+            elif default and answer=='':        # empty string entered
                 return default
 
     def editText(self, text, jumpIndex = None, highlight = None):

@@ -92,7 +92,7 @@ class DjVuTextBot:
             self.prefix = self.prefix[6:]
         wikipedia.output(u"Using prefix %s" % self.prefix)
         gen = self.PagesGenerator()
-    
+   
         site = wikipedia.getSite()
         self.username = config.usernames[site.family.name][site.lang]
 
@@ -109,7 +109,7 @@ class DjVuTextBot:
         s = f.read()
         f.close()
         return s.find('TXTz') >= 0
-       
+      
     def get_page(self, pageno):
         wikipedia.output(unicode("fetching page %d" % (pageno)))
         cmd = u"djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
@@ -142,7 +142,7 @@ class DjVuTextBot:
 
         # only save if something was changed
         # automatically ask if overwriting an existing page
-        
+       
         ask = self.ask
         if exists:
             ask = True

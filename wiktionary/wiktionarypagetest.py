@@ -199,8 +199,8 @@ The translations below need to be checked by native speakers and inserted into t
                                }
                   }
         },
-        {'definition': u"A piece of metal, often [[hexagonal]], with a hole through it with internal threading intended to fit on to a bolt.", 'concisedef': u'that fits on a bolt', 
-	 'trans': {'remark': '',
+        {'definition': u"A piece of metal, often [[hexagonal]], with a hole through it with internal threading intended to fit on to a bolt.", 'concisedef': u'that fits on a bolt',
+     'trans': {'remark': '',
                    'alltrans': {
                              'nl': {'remark': '',
                                     'translations': [{'remark': '',
@@ -370,18 +370,18 @@ The translations below need to be checked by native speakers and inserted into t
 #             internalrepresentation=value['internalrep']
 #             apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
 #             apage.parseWikiPage(value['wikiformat'])
-# 
+#
 #             self.assertEqual(apage.categories, internalrepresentation[0])
-# 
+#
 #     def testWhetherLinksAreParsedProperly(self):
 #         """Test whether Links are parsed properly"""
 #         for value in self.knownvalues:
 #             internalrepresentation=value['internalrep']
 #             apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
 #             apage.parseWikiPage(value['wikiformat'])
-# 
+#
 #             self.assertEqual(apage.interwikilinks, internalrepresentation[1])
-# 
+#
 #     def testWhetherDefsAreParsedProperly(self):
 #         """Test whether definitions are parsed properly"""
 #         for value in self.knownvalues:
@@ -396,14 +396,14 @@ The translations below need to be checked by native speakers and inserted into t
 #                 refdefs=[]
 #                 for definition in definitions:
 #                     refdefs.append(definition['definition'])
-# 
+#
 #                 resultmeanings=[]
 #                 for key in apage.entries[entrylang].meanings.keys():
 #                     for resultmeaning in apage.entries[entrylang].meanings[key]:
 #                         resultmeanings.append(resultmeaning.definition)
-# 
+#
 #                 self.assertEqual(resultmeanings.sort(), refdefs.sort())
-# 
+#
 #     def testWhetherDefsAndConciseDefsAreMatchedProperly(self):
 #         """Test whether definitions and concisedefs are matched properly"""
 #         for value in self.knownvalues:
@@ -416,16 +416,16 @@ The translations below need to be checked by native speakers and inserted into t
 #                 for definition in definitions:
 #                     if definition['concisedef']!='':
 #                         refdefs[definition['concisedef']] = definition['definition']
-# 
+#
 #                 resultmeanings={}
 #                 for key in apage.entries[entrylang].meanings.keys():
 #                     for resultmeaning in apage.entries[entrylang].meanings[key]:
 #                         resultmeanings[resultmeaning.concisedef] = resultmeaning.definition
-# 
+#
 #                 for concisedef in resultmeanings.keys():
 #                     if concisedef!='' and refdefs.has_key(concisedef) and resultmeanings.has_key(concisedef):
 #                         self.assertEqual(resultmeanings[concisedef], refdefs[concisedef])
-# 
+#
 #     def testWhetherSynonymsAreParsedProperly(self):
 #         """Test whether synonyms are parsed properly"""
 #         for value in self.knownvalues:
@@ -438,16 +438,16 @@ The translations below need to be checked by native speakers and inserted into t
 #                 for definition in definitions:
 #                     if definition.has_key('syns') and definition['syns']!='':
 #                         refsyns[definition['concisedef']] = definition['syns']
-# 
+#
 #                 resultsyns={}
 #                 for key in apage.entries[entrylang].meanings.keys():
 #                     for resultmeaning in apage.entries[entrylang].meanings[key]:
 #                         resultsyns[resultmeaning.concisedef] = resultmeaning.synonyms
-# 
+#
 #                 for concisedef in resultsyns.keys():
 #                     if concisedef!='' and refsyns.has_key(concisedef) and resultsyns.has_key(concisedef):
 #                         self.assertEqual(resultsyns[concisedef], refsyns[concisedef])
-# 
+#
     def testWhetherTranslationsAreParsedProperly(self):
         """Test whether translations are parsed properly"""
         for value in self.knownvalues:

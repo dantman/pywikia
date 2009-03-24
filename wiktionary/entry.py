@@ -17,11 +17,11 @@ class Entry:
         """ Constructor
             Called with one parameter:
             - the language of this entry
-	    and can optionally be initialized with a first meaning
+        and can optionally be initialized with a first meaning
         """
         self.entrylang=entrylang
         self.meanings = {} # a dictionary containing the meanings for this term grouped by part of speech
-	if meaning:
+    if meaning:
             self.addMeaning(meaning)
         self.posorder = [] # we don't want to shuffle the order of the parts of speech, so we keep a list to keep the order in which they were encountered
 

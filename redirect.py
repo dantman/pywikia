@@ -305,7 +305,7 @@ class RedirectGenerator:
             site = wikipedia.getSite()
         if namespaces == []:
             namespaces = [ 0 ]
-        maxurllen = 1018	# accomodate "GET " + apiQ + CR + LF in 1024 bytes.
+        maxurllen = 1018    # accomodate "GET " + apiQ + CR + LF in 1024 bytes.
         apiQ = ''
         for pageid in self.get_redirect_pageids_via_api(number = number, namespaces = namespaces,
                              site = site, start = start, until = until ):
@@ -802,7 +802,7 @@ def main(*args):
         elif arg.startswith('-namespace:'):
             ns = arg[11:]
             if ns == '':
-		## "-namespace:" does NOT yield -namespace:0 further down the road!
+        ## "-namespace:" does NOT yield -namespace:0 further down the road!
                 ns = wikipedia.input(
                                 u'Please enter a namespace by its number: ')
 #                                u'Please enter a namespace by its name or number: ')  TODO! at least for some generators.
