@@ -4656,8 +4656,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
            Returns the HTML text of the page converted to unicode.
         """
 
-    if retry==None:
-        retry=config.retry_on_fail
+        if retry==None:
+            retry=config.retry_on_fail
 
         if False: #self.persistent_http and not data:
             self.conn.putrequest('GET', path)
@@ -4705,7 +4705,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             while not retrieved:
                 try:
                     if self.hostname() in config.authenticate.keys():
-              request = urllib2.Request(url, data)
+                      request = urllib2.Request(url, data)
                       request.add_header('User-agent', useragent)
                       opener = urllib2.build_opener()
                       f = opener.open(request)
@@ -4735,7 +4735,7 @@ your connection is down. Retrying in %i minutes..."""
             headers = f.info()
 
         if cookie_only:
-         return headers.get('set-cookie', '')
+            return headers.get('set-cookie', '')
         contentType = headers.get('content-type', '')
         contentEncoding = headers.get('content-encoding', '')
 

@@ -72,25 +72,25 @@ botList = {
 class LoginManager:
     def __init__(self, password = None, sysop = False, site = None, username=None, verbose=False):
         self.site = site or wikipedia.getSite()
-    if username:
-        self.username=username
-        # perform writeback.
-        if site.family.name not in config.usernames:
-            config.usernames[site.family.name]={}
-        config.usernames[site.family.name][self.site.lang]=username
-    else:
-        if sysop:
-            try:
-            self.username = config.sysopnames[self.site.family.name][self.site.lang]
-            except:
-            raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+        if username:
+            self.username=username
+            # perform writeback.
+            if site.family.name not in config.usernames:
+                config.usernames[site.family.name]={}
+            config.usernames[site.family.name][self.site.lang]=username
         else:
-            try:
-            self.username = config.usernames[self.site.family.name][self.site.lang]
-            except:
-            raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
-        self.password = password
-    self.verbose = verbose
+            if sysop:
+                try:
+                    self.username = config.sysopnames[self.site.family.name][self.site.lang]
+                except:
+                    raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+            else:
+                try:
+                    self.username = config.usernames[self.site.family.name][self.site.lang]
+                except:
+                    raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+            self.password = password
+        self.verbose = verbose
         if getattr(config, 'password_file', ''):
             self.readPassword()
 
@@ -142,50 +142,50 @@ class LoginManager:
             login_address = self.site.login_address()
             address = login_address + '&action=submit'
         
-    if self.site.hostname() in config.authenticate.keys():
+        if self.site.hostname() in config.authenticate.keys():
             headers = {
                 "Content-type": "application/x-www-form-urlencoded",
                 "User-agent": wikipedia.useragent
             }
             data = self.site.urlEncode(predata)
-        if self.verbose:
-          fakepredata = predata
-          fakepredata['wpPassword'] = u'XXXX'
-          wikipedia.output(u"urllib2.urlopen(urllib2.Request('%s', %s, %s)):" % (self.site.protocol() + '://' + self.site.hostname() + address, self.site.urlEncode(fakepredata), headers))
+            if self.verbose:
+                fakepredata = predata
+                fakepredata['wpPassword'] = u'XXXX'
+                wikipedia.output(u"urllib2.urlopen(urllib2.Request('%s', %s, %s)):" % (self.site.protocol() + '://' + self.site.hostname() + address, self.site.urlEncode(fakepredata), headers))
             response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data, headers))
             data = response.read()
-        if self.verbose:
-              fakedata = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
-          trans = config.transliterate
-          config.transliterate = False #transliteration breaks for some reason
-              wikipedia.output(data.decode(self.site.encoding()))
-          config.transliterate = trans
+            if self.verbose:
+                fakedata = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
+                trans = config.transliterate
+                config.transliterate = False #transliteration breaks for some reason
+                wikipedia.output(fakedata.decode(self.site.encoding()))
+                config.transliterate = trans
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
             response, data = self.site.postData(address, self.site.urlEncode(predata))
-        if self.verbose:
-          fakepredata = predata
-          fakepredata['wpPassword'] = u'XXXXX'
-          wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
-          fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
-          wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
-          wikipedia.output(u"%s" % data)
+            if self.verbose:
+                fakepredata = predata
+                fakepredata['wpPassword'] = u'XXXXX'
+                wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
+                fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
+                wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
+                wikipedia.output(u"%s" % data)
             Reat=re.compile(': (.*?);')
             L = []
-
+    
             for eat in response.msg.getallmatchingheaders('set-cookie'):
                 m = Reat.search(eat)
                 if m:
                     L.append(m.group(1))
-
+    
             got_token = got_user = False
             for Ldata in L:
                 if 'Token=' in Ldata:
                     got_token = True
                 if 'User=' in Ldata or 'UserName=' in Ldata:
                     got_user = True
-
+    
             if got_token and got_user:
                 return "\n".join(L)
             elif not captcha:
@@ -210,18 +210,18 @@ class LoginManager:
 
     def readPassword(self):
         """
-            Reads passwords from a file. DO NOT FORGET TO REMOVE READ
-            ACCESS FOR OTHER USERS!!! Use chmod 600 password-file.
-            All lines below should be valid Python tuples in the form
-            (code, family, username, password) or (username, password)
-            to set a default password for an username. Default usernames
-            should occur above specific usernames.
+        Reads passwords from a file. DO NOT FORGET TO REMOVE READ
+        ACCESS FOR OTHER USERS!!! Use chmod 600 password-file.
+        All lines below should be valid Python tuples in the form
+        (code, family, username, password) or (username, password)
+        to set a default password for an username. Default usernames
+        should occur above specific usernames.
 
-            Example:
+        Example:
 
-            ("my_username", "my_default_password")
-            ("my_sysop_user", "my_sysop_password")
-            ("en", "wikipedia", "my_en_user", "my_en_pass")
+        ("my_username", "my_default_password")
+        ("my_sysop_user", "my_sysop_password")
+        ("en", "wikipedia", "my_en_user", "my_en_pass")
         """
         file = open(config.password_file)
         for line in file:
