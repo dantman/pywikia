@@ -1872,10 +1872,10 @@ not supported by PyWikipediaBot!"""
         Template parameters are ignored.
         """
         if not hasattr(self, "_templates"):
-            self._templates = list(set(template
+            self._templates = list(set([template
                                        for (template, param)
                                        in self.templatesWithParams(
-                                               get_redirect=get_redirect)))
+                                               get_redirect=get_redirect)]))
         return self._templates
 
     def templatesWithParams(self, thistxt=None, get_redirect=False):
