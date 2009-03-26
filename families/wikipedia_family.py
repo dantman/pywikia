@@ -205,7 +205,7 @@ class Family(family.Family):
             'fur': u'Discussion Vichipedie',
             'fy': u'Wikipedy oerlis',
             'ga': u'Plé Vicipéide',
-            'gan': u'Wikipedia討論',
+            'gan': u'Wikipedia talk',
             'gl': u'Conversa Wikipedia',
             'glk': u'بحث Wikipedia',
             'gn': u'Vikipetã myangekõi',
