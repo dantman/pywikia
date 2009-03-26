@@ -1,3 +1,17 @@
+"""
+Check the family files against the live site, and updates
+both the generic family.py and the site-specific family.
+
+options:
+    -nomain        Don't modify the main family.py
+    -wikimedia     Update all the wikimedia families
+"""
+#
+# (C) Pywikipedia bot team, 2003-2007
+#
+# Distributed under the terms of the MIT license.
+#
+
 import sys
 sys.path.append('..')
 
@@ -76,13 +90,30 @@ def test_data(_test_data):
         return True
     return True
     
-if __name__ == '__main__':
-    try:
-        wikipedia.handleArgs()
-        family = wikipedia.Family(wikipedia.default_family)
+def check_and_update(families, update_main):
+    for family in families:
+        family = wikipedia.Family(family)
         result = family_check.check_family(family)
         update_family(family, result)
-        # Update also the family.py file
-        update_family(None, result)
+        if update_main:
+            # Update also the family.py file
+            update_family(None, result)
+    
+if __name__ == '__main__':
+    try:
+        update_main_family = True
+        update_wikimedia = False
+        for arg in wikipedia.handleArgs():
+            if  arg == '-nomain':
+                update_main_family = False
+            elif arg == '-wikimedia':
+                update_wikimedia = True
+
+        if update_wikimedia:
+            families = ['wikipedia', 'wikinews', 'wikibooks', 'wikiquote', 
+                        'wikisource', 'wikiversity', 'wiktionary']
+        else:
+            families = [ wikipedia.default_family ]
+        check_and_update(families, update_main_family)
     finally:
         wikipedia.stopme()
