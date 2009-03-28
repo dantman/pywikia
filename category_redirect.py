@@ -126,8 +126,7 @@ u'Robot: Changing category link (following [[Template:Category redirect|category
             'ar':
 u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
             'da':
-u"Robot: tilføjer omdirigeringsskabelon for
-vedligeholdelse",
+u"Robot: tilføjer omdirigeringsskabelon for vedligeholdelse",
             'en':
 u"Robot: adding category redirect template for maintenance",
             'hu':
