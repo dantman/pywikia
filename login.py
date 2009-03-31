@@ -89,7 +89,7 @@ class LoginManager:
                     self.username = config.usernames[self.site.family.name][self.site.lang]
                 except:
                     raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
-            self.password = password
+        self.password = password
         self.verbose = verbose
         if getattr(config, 'password_file', ''):
             self.readPassword()
