@@ -4893,6 +4893,24 @@ your connection is down. Retrying in %i minutes..."""
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
 
+    def scrubxml(self,xml):
+        """scrub the start of xml input, to make things work, even
+        when crap is inserted ahead of the actual xml data. (such as when php reports strict
+        warnings)"""
+        xml2=""
+        start=False
+        warn=False
+        for line in xml.split("\n"):
+            if line.startswith("<?xml"):
+                start=True
+            else:
+		 warn=True
+            if start:
+                xml2+=line+"\n"
+        if warn==True:
+            pass    #TODO: we could issue a warning for broken xml
+        return xml2
+
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
@@ -4939,6 +4957,7 @@ your connection is down. Retrying in %i minutes..."""
                 else:
                     xml = self.getUrl(self.get_address("Special:Allmessages")
                                         + "&ot=xml")
+                    xml=self.scrubxml(xml)
                     # xml structure is :
                     # <messages lang="fr">
                     #    <message name="about">À propos</message>
