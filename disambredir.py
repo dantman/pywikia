@@ -5,7 +5,7 @@ Goes through the disambiguation pages, checks their links, and asks for
 each link that goes to a redirect page whether it should be replaced.
 """
 #
-# (C) André Engels, 2006
+# (C) André Engels and others, 2006-2009
 #
 # Distributed under the terms of the MIT license.
 #
@@ -108,16 +108,11 @@ def treat(text, linkedPage, targetPage):
         continue
     return text
 
-def workon(page):
-    try:
-        text = page.get()
-    except wikipedia.IsRedirectPage:
-        return
+def workon(page, links):
+    text = page.get()
     # Show the title of the page we're working on.
     # Highlight the title in purple.
     wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-    links = page.linkedPages()
-    wikipedia.getall(mysite,links)
     for page2 in links:
         try:
             target = page2.getRedirectTarget()
@@ -150,8 +145,20 @@ try:
     # only work on articles
     generator = pagegenerators.NamespaceFilterPageGenerator(generator, [0])
     generator = pagegenerators.PreloadingGenerator(generator)
+    pagestodo = []
+    pagestoload = []
     for page in generator:
-        workon(page)
+        if page.isRedirectPage():
+            continue
+        linked = page.linkedPages()
+        pagestodo.append((page,linked))
+        pagestoload += linked
+        if len(pagestoload) > 49:
+            wikipedia.getall(mysite,pagestoload)
+            for page, links in pagestodo:
+                workon(page,links)
+            pagestoload = []
+            pagestodo = []
 
 finally:
     wikipedia.stopme()
