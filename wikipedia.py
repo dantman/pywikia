@@ -1358,7 +1358,7 @@ not supported by PyWikipediaBot!"""
                             force, callback))
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
-            force=False, sysop=False):
+            force=False, sysop=False, botflag=True):
         """Save the page with the contents of the first argument as the text.
 
         Optional parameters:
@@ -1416,7 +1416,7 @@ not supported by PyWikipediaBot!"""
             comment = encodeEsperantoX(comment)
 
         return self._putPage(newtext, comment, watchArticle, minorEdit,
-                             newPage, self.site().getToken(sysop = sysop), sysop = sysop)
+                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, botflag=botflag)
 
     def _encodeArg(self, arg, msgForError):
         """Encode an ascii string/Unicode string to the site's encoding"""
@@ -1434,7 +1434,7 @@ not supported by PyWikipediaBot!"""
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
-                captcha=None):
+                captcha=None, botflag=True):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1451,6 +1451,8 @@ not supported by PyWikipediaBot!"""
             # We will need to fill this more smartly if we ever decide to edit by section
             'wpSection': '', 
         }
+        if not botflag:
+            predata['bot']='0'
         if captcha:
             predata["wpCaptchaId"] = captcha['id']
             predata["wpCaptchaWord"] = captcha['answer']
