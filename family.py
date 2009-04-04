@@ -1091,7 +1091,7 @@ class Family:
                 'csb': u'Diskùsëjô òbrôzków',
                 'cu': [u'Дѣ́ла бєсѣ́да', u'Ви́да бєсѣ́да'],
                 'cv': u'Ӳкерчĕке сӳтсе явмалли',
-                'cy': u'Sgwrs Delwedf',
+                'cy': u'Sgwrs Delwedd',
                 'da': u'Fildiskussion',
                 'de': [u'Datei Diskussion', u'Bild Diskussion'],
                 'dsb': [u'Diskusija wó dataji', u'Diskusija wó wobrazu'],
