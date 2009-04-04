@@ -51,9 +51,8 @@ def get_imagelinks(url):
                 links += [relativepath+"/"+link]
     return links
 
-def main(give_url,image_url):
+def main(give_url, image_url, desc):
     url = give_url
-    basicdesc = []
 
     if url == '':
         if image_url:
@@ -71,11 +70,11 @@ def main(give_url,image_url):
         if answer:
             maximum=int(answer)
 
-    if basicdesc == []:
+    if not desc:
         basicdesc = wikipedia.input(
             u"What text should be added at the end of the description of each image from this url?")
     else:
-        basicdesc = ' '.join(desc)
+        basicdesc = desc
 
     if image_url:
         ilinks = []
@@ -99,6 +98,7 @@ try:
     url = u''
     image_url = False
     shown = False
+    desc = []
 
     for arg in wikipedia.handleArgs():
         if arg == "-pattern":
@@ -111,9 +111,10 @@ try:
             url = arg
         else:
             desc += [arg]
+    desc = ' '.join(desc)
 
     fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
     mysite = wikipedia.getSite()
-    main(url,image_url)
+    main(url, image_url, desc)
 finally:
     wikipedia.stopme()
