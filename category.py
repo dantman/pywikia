@@ -45,6 +45,8 @@ and option can be one of these:
  * -recurse    - Recurse through all subcategories of categories.
  * -match      - Only work on pages whose titles match the given regex (for
                  move and remove actions).
+ * -create     - An option for add: if a page doesn't exist, do not skip it,
+                 create it instead
 
 If action is "add", the following options are supported:
 
@@ -318,7 +320,7 @@ def sorted_by_last_name(catlink, pagelink):
         else:
             return wikipedia.Page(site, catlink.title())
 
-def add_category(sort_by_last_name = False):
+def add_category(sort_by_last_name = False, create_pages = False):
     '''A robot to mass-add a category to a list of pages.'''
     site = wikipedia.getSite()
     if gen:
@@ -352,42 +354,46 @@ Are you sure? [y/n]:""")
                 try:
                     text = page.get()
                 except wikipedia.NoPage:
-                    wikipedia.output(u"%s doesn't exist yet. Ignoring."
-                                     % (page.title()))
-                    pass
+                    if create_pages:
+                        wikipedia.output(u"%s doesn't exist yet. Creating."
+                                        % (page.title()))
+                        text = ''
+                    else:
+                        wikipedia.output(u"%s doesn't exist yet. Ignoring."
+                                        % (page.title()))
+                        continue
                 except wikipedia.IsRedirectPage, arg:
                     redirTarget = wikipedia.Page(site, arg.args[0])
                     wikipedia.output(
                         u"WARNING: %s is redirect to %s. Ignoring."
                         % (page.title(), redirTarget.title()))
+                    continue
+                cats = page.categories()
+                # Show the title of the page we're working on.
+                # Highlight the title in purple.
+                wikipedia.output(
+                    u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                    % page.title())
+                wikipedia.output(u"Current categories:")
+                for cat in cats:
+                    wikipedia.output(u"* %s" % cat.title())
+                catpl = wikipedia.Page(site,
+                                       cat_namespace + ':' + newcatTitle)
+                if sort_by_last_name:
+                    catpl = sorted_by_last_name(catpl, page)
+                if catpl in cats:
+                    wikipedia.output(u"%s is already in %s."
+                                     % (page.title(), catpl.title()))
                 else:
-                    cats = page.categories()
-                    # Show the title of the page we're working on.
-                    # Highlight the title in purple.
-                    wikipedia.output(
-                        u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
-                        % page.title())
-                    wikipedia.output(u"Current categories:")
-                    for cat in cats:
-                        wikipedia.output(u"* %s" % cat.title())
-                    catpl = wikipedia.Page(site,
-                                           cat_namespace + ':' + newcatTitle)
-                    if sort_by_last_name:
-                        catpl = sorted_by_last_name(catpl, page)
-                    if catpl in cats:
-                        wikipedia.output(u"%s is already in %s."
-                                         % (page.title(), catpl.title()))
-                    else:
-                        wikipedia.output(u'Adding %s' % catpl.aslink())
-                        cats.append(catpl)
-                        text = page.get()
-                        text = wikipedia.replaceCategoryLinks(text, cats)
-                        try:
-                            page.put(text, comment = editSummary)
-                        except wikipedia.EditConflict:
-                            wikipedia.output(
-                                u'Skipping %s because of edit conflict'
-                                % (page.title()))
+                    wikipedia.output(u'Adding %s' % catpl.aslink())
+                    cats.append(catpl)
+                    text = wikipedia.replaceCategoryLinks(text, cats)
+                    try:
+                        page.put(text, comment = editSummary)
+                    except wikipedia.EditConflict:
+                        wikipedia.output(
+                            u'Skipping %s because of edit conflict'
+                            % (page.title()))
 
 class CategoryMoveRobot:
     """Robot to move pages from one category to another."""
@@ -899,6 +905,7 @@ if __name__ == "__main__":
         action = None
         sort_by_last_name = False
         restore = False
+        create_pages = False
         for arg in wikipedia.handleArgs():
             if arg == 'add':
                 action = 'add'
@@ -946,6 +953,8 @@ if __name__ == "__main__":
                 talkPages = True
             elif arg == '-recurse':
                 recurse = True
+            elif arg == '-create':
+                create_pages = True
             else:
                 genFactory.handleArg(arg)
 
@@ -960,7 +969,7 @@ if __name__ == "__main__":
                 # The preloading generator is responsible for downloading multiple
                 # pages from the wiki simultaneously.
             gen = pagegenerators.PreloadingGenerator(genFactory.getCombinedGenerator())
-            add_category(sort_by_last_name)
+            add_category(sort_by_last_name, create_pages)
         elif action == 'remove':
             if (fromGiven == False):
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
