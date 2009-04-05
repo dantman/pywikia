@@ -832,7 +832,7 @@ class main:
                 on_commons_text = self.image.getImagePageHtml()
                 if u"<div class='sharedUploadNotice'>" in on_commons_text:
                     wikipedia.output(u"But, the file doesn't exist on your project! Skip...")
-                    # Problems? Yes! We have to skip the check part for that image!
+                    # Problems? Yes! We have to skip the check part for that image
                     # Because it's on commons but someone has added something on your project.
                     return False
                 elif re.findall(r'\bstemma\b', self.imageName.lower()) != [] and self.site.lang == 'it':
@@ -1366,7 +1366,7 @@ class main:
             wikipedia.output(u"Skipping %s because it has been deleted." % self.imageName)
             return True
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u"The file description for %s is a redirect?!" % self.imageName)
+            wikipedia.output(u"Skipping %s because it's a redirect." % self.imageName)
             return True
         # Delete the fields where the templates cannot be loaded
         regex_nowiki = re.compile(r'<nowiki>(.*?)</nowiki>', re.DOTALL)
