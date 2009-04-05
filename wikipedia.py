@@ -2876,8 +2876,8 @@ class ImagePage(Page):
             raise NoPage(u'API Error, nothing found in the APIs')
         
     def getHash(self):
-        """ Function that return the Hash of an image in oder to understand if two
-            Images are the same or not.
+        """ Function that return the Hash of an file in oder to understand if two
+            Files are the same or not.
             """
         if self.exists():
             params = {
@@ -2892,15 +2892,20 @@ class ImagePage(Page):
             try:
                 hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
             except (KeyError, IndexError):
-                if self.exists():
-                    raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
-                else:
-                    output(u'Image deleted before getting the Hash. Skipping...')
+                try:
+                    self.get()
+                except NoPage:
+                    output(u'%s has been deleted before getting the Hash. Skipping...' % self.title())
                     return None
+                except IsRedirectPage:
+                    output("Skipping %s because it's a redirect." % self.title())
+                    return None
+                else:
+                    raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
             else:
                 return hash_found
         else:
-            output(u'Image deleted before getting the Hash. Skipping...')
+            output(u'File deleted before getting the Hash. Skipping...')
             return None
 
     def getFileVersionHistoryTable(self):
