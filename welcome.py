@@ -11,7 +11,7 @@ from here: http://botwiki.sno.cc/wiki/Python:Welcome.py
 Ensure you have community support before running this bot!
 
 URLs to current implementations:
-* Arabic Wikipedia: http://ar.wikipedia.org/wiki/ويكيبيديا:سجل_الترحيب
+* Arabic Wikinews: http://ar.wikinews.org/wiki/ويكي_الأخبار:سجل_الترحيب
 * Wikimedia Commons: http://commons.wikimedia.org/wiki/Commons:Welcome_log
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
@@ -248,7 +248,7 @@ summary = {
 # sign, so in this way it will change according to your parameters).
 netext = {
     'commons':u'{{subst:welcome}} %s',
-    'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}} %s',
+    'ar':u'{{subst:ترحيب}} %s',
     'da':u'{{velkommen|%s}}',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}} %s',
