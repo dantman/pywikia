@@ -12,7 +12,7 @@ class Family(family.Family):
         self.name = 'wikiversity'
 
         self.languages_by_size = [
-            'en', 'fr', 'es', 'de', 'it', 'el', 'cs', 'ja', 'pt', 'fi',
+            'en', 'fi', 'fr', 'es', 'de', 'it', 'el', 'cs', 'ja', 'pt'
         ]
 
         self.langs = {
@@ -34,10 +34,10 @@ class Family(family.Family):
             'cs': u'Wikiverzita',
             'el': u'Βικιεπιστήμιο',
             'es': u'Wikiversidad',
+            'fi': u'Wikiopisto',
             'fr': u'Wikiversité',
             'it': u'Wikiversità',
             'pt': u'Wikiversidade',
-            'fi': u'Wikiopisto',
         }
         self.namespaces[5] = {
             '_default': [u'Wikiversity talk', self.namespaces[5]['_default']],
@@ -45,11 +45,11 @@ class Family(family.Family):
             'de': u'Wikiversity Diskussion',
             'el': u'Συζήτηση Βικιεπιστημίου',
             'es': u'Wikiversidad Discusión',
+            'fi': u'Keskustelu Wikiopistosta'
             'fr': u'Discussion Wikiversité',
             'it': u'Discussioni Wikiversità',
             'ja': u'Wikiversity‐ノート',
             'pt': u'Wikiversidade Discussão',
-	    'fi': u'Keskustelu Wikiopistosta'
         }
 
         self.namespaces[100] = {
@@ -58,7 +58,6 @@ class Family(family.Family):
             'en': u'School',
             'it': u'Facoltà',
             'ja': u'School',
-        'cs': u'Fórum',
         }
         self.namespaces[101] = {
             'cs': u'Fórum diskuse',
@@ -66,7 +65,6 @@ class Family(family.Family):
             'en': u'School talk',
             'it': u'Discussioni facoltà',
             'ja': u'School‐ノート',
-        'cs': u'Fórum diskuse',
         }
         self.namespaces[102] = {
             'el': u'Τμήμα',
