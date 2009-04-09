@@ -12,7 +12,7 @@ class Family(family.Family):
         self.name = 'wikiversity'
 
         self.languages_by_size = [
-            'en', 'fr', 'es', 'de', 'it', 'el', 'cs', 'ja', 'pt',
+            'en', 'fr', 'es', 'de', 'it', 'el', 'cs', 'ja', 'pt', 'fi',
         ]
 
         self.langs = {
@@ -37,6 +37,7 @@ class Family(family.Family):
             'fr': u'Wikiversité',
             'it': u'Wikiversità',
             'pt': u'Wikiversidade',
+            'fi': u'Wikiopisto',
         }
         self.namespaces[5] = {
             '_default': [u'Wikiversity talk', self.namespaces[5]['_default']],
@@ -48,6 +49,7 @@ class Family(family.Family):
             'it': u'Discussioni Wikiversità',
             'ja': u'Wikiversity‐ノート',
             'pt': u'Wikiversidade Discussão',
+	    'fi': u'Keskustelu Wikiopistosta'
         }
 
         self.namespaces[100] = {
