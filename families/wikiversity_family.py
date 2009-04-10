@@ -45,7 +45,7 @@ class Family(family.Family):
             'de': u'Wikiversity Diskussion',
             'el': u'Συζήτηση Βικιεπιστημίου',
             'es': u'Wikiversidad Discusión',
-            'fi': u'Keskustelu Wikiopistosta'
+            'fi': u'Keskustelu Wikiopistosta',
             'fr': u'Discussion Wikiversité',
             'it': u'Discussioni Wikiversità',
             'ja': u'Wikiversity‐ノート',
