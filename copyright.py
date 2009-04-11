@@ -15,7 +15,7 @@ Windows Live Search requires to get an AppID from http://search.msn.com/develope
 and to download/install the SOAPpy module from http://pywebsvcs.sf.net or using
 SVN with the following command:
 
-svn co http://pywebsvcs.svn.sourceforge.net/svnroot/pywebsvcs/trunk/SOAPpy SOAPpy
+svn co http://pywebsvcs.svn.sourceforge.net/svnroot/pywebsvcs/trunk/SOAPpy/SOAPpy SOAPpy
 
 Unlike SOAPpy version 0.12, current SVN version has no problem with Python 2.5.
 
