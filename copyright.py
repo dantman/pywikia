@@ -1022,7 +1022,7 @@ class CheckRobot:
                 continue
             except wikipedia.SectionError:
                 error("Page %s has no section %s" % (page.title(), page.section()))
-		continue
+                continue
 
             if skip_disambig:
                 if page.isDisambig():
