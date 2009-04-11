@@ -910,8 +910,8 @@ def soap(engine, query, url, numresults = 10):
 
                     try:
                         server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
-                    except:
-                        error("Live Search Error")
+                    except Exception, err:
+                        error("Live Search Error: %s" % err)
                         raise
 
                     params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
