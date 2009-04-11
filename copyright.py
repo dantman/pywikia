@@ -944,12 +944,7 @@ def soap(engine, query, url, numresults = 10):
             except KeyboardInterrupt:
                 raise
             except Exception, err:
-
-                #
-                # SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
-                # Daily limit of 1000 queries exceeded for key ***>
-                #
-
+                # Something is going wrong...
                 if 'Daily limit' in str(err) or 'Insufficient quota for key' in str(err):
                     exceeded_in_queries('google')
                 elif 'limit exceeded' in str(err):
