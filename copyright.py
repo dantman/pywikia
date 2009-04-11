@@ -866,7 +866,7 @@ def exceeded_in_queries(engine):
         exec('config.copyright_' + engine + ' = False')
     # Sleeping
     if config.copyright_exceeded_in_queries == 2:
-        error("Got a queries exceeded error. Sleeping for %d hours..." % (config.copyright_exceeded_in_queries_sleep_hours))
+        error("Got a queries exceeded error from %s. Sleeping for %d hours..." % (engine.capitalize(), config.copyright_exceeded_in_queries_sleep_hours))
         time.sleep(config.copyright_exceeded_in_queries_sleep_hours * 60 * 60)
     # Stop execution
     if config.copyright_exceeded_in_queries == 3:
@@ -944,7 +944,6 @@ def soap(engine, query, url, numresults = 10):
             except KeyboardInterrupt:
                 raise
             except Exception, err:
-                error(err, "Got an error")
 
                 #
                 # SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
@@ -953,10 +952,12 @@ def soap(engine, query, url, numresults = 10):
 
                 if 'Daily limit' in str(err) or 'Insufficient quota for key' in str(err):
                     exceeded_in_queries('google')
-                if 'limit exceeded' in str(err):
+                elif 'limit exceeded' in str(err):
                     exceeded_in_queries('yahoo')
                 #FIXME: Live Search
                 #
+                else:
+                    error(err, "Got an error")
 
                 if search_request_retry:
                     search_request_retry -= 1
