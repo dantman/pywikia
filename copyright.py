@@ -954,8 +954,8 @@ def soap(engine, query, url, numresults = 10):
                     exceeded_in_queries('google')
                 elif 'limit exceeded' in str(err):
                     exceeded_in_queries('yahoo')
-                #FIXME: Live Search
-                #
+                elif 'Invalid value for AppID in request' in str(err):
+                    exceeded_in_queries('msn')
                 else:
                     error(err, "Got an error")
 
