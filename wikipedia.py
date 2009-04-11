@@ -4718,6 +4718,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                       f = opener.open(request)
                     else:
                         f = uo.open(url, data)
+
+                    # read & info can raise socket.error
+                    text = f.read()
+                    headers = f.info()
+
                     retrieved = True
                 except KeyboardInterrupt:
                     raise
@@ -4737,9 +4742,6 @@ your connection is down. Retrying in %i minutes..."""
                             retry_idle_time = 30
                     else:
                         raise
-            text = f.read()
-
-            headers = f.info()
 
         if cookie_only:
             return headers.get('set-cookie', '')
