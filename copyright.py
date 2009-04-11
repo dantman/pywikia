@@ -1173,6 +1173,7 @@ def main():
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = pageNumber)
     bot = CheckRobot(preloadingGen)
     bot.run()
+    print_stats()
 
 excl_list = exclusion_list()
 
@@ -1189,4 +1190,3 @@ if __name__ == "__main__":
         main()
     finally:
         wikipedia.stopme()
-        print_stats()
