@@ -11,12 +11,14 @@ no longer issuing new SOAP API keys).
 Yahoo! search requires pYsearch module from http://pysearch.sourceforge.net
 and a Yahoo AppID from http://developer.yahoo.com.
 
-Windows Live Search requires to install the SOAPpy module from
-http://pywebsvcs.sf.net and get an AppID from http://search.msn.com/developer.
-If you use Python 2.5 and have SOAPpy version 0.12.0, you must edit three
-files (SOAPpy/Client.py, SOAPpy/Server.py, SOAPpy/Types.py) to fix a simple
-syntax error by moving 'from __future__ imports...' line to beginning of the
-code.
+Windows Live Search requires to get an AppID from http://search.msn.com/developer
+and to download/install the SOAPpy module from http://pywebsvcs.sf.net or using
+SVN with the following command:
+
+svn co http://pywebsvcs.svn.sourceforge.net/svnroot/pywebsvcs/trunk/SOAPpy SOAPpy
+
+Unlike SOAPpy version 0.12, current SVN version has no problem with Python 2.5.
+
 
 You can run the bot with the following commandline parameters:
 
