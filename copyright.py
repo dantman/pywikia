@@ -1020,6 +1020,9 @@ class CheckRobot:
                 bot = CheckRobot(iter([newpage,]))
                 bot.run()
                 continue
+            except wikipedia.SectionError:
+                error("Page %s has no section %s" % (page.title(), page.section()))
+		continue
 
             if skip_disambig:
                 if page.isDisambig():
