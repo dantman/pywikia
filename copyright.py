@@ -1191,11 +1191,7 @@ def main():
 
 excl_list = exclusion_list()
 
-if number_of_words > 22:
-    if not config.copyright_google and not config.copyright_yahoo and config.copyright_msn:
-        warn("'number_of_words' variable set to 22 as Live Search requires a lower value of %s" % number_of_words, prefix = 'Warning')
-        number_of_words = 22
-    elif config.copyright_msn:
+if number_of_words > 22 and config.copyright_msn:
         warn("Live Search requires a lower value for 'number_of_words' variable "
              "(current value is %d, a good value may be 22)." % (number_of_words), prefix = 'Warning')
 
