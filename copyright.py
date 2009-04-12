@@ -238,7 +238,9 @@ editsection_names = {
 sections_to_skip = {
     'en':['References', 'Further reading', 'Citations', 'External links'],
     'fr':['Liens externes'],
-    'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni', 'Pubblicazioni principali'],
+    'it':['Bibliografia', 'Discografia', 'Opere bibliografiche', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni', 'Pubblicazioni principali', 'Bibliografia parziale'],
+    'ja':[u'脚注',u'脚注欄',u'脚注・出典',u'出典',u'注釈'],
+    'zh':[u'參考文獻',u'参考文献',u'參考資料',u'参考资料', u'資料來源',u'资料来源',u'參見',u'参见',u'參閱',u'参阅'],
 }
 
 num_google_queries = 0 ; num_yahoo_queries = 0 ; num_msn_queries = 0
