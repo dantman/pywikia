@@ -3452,98 +3452,98 @@ class Family:
         return 1000 * int(M.group(1)) + int(M.group(2)) - 1000
 
     def page_action_address(self, code, name, action):
-        return '%s?useskin=monobook&title=%s&action=%s' % (self.path(code), name, action)
+        return '%s?title=%s&action=%s&useskin=monobook' % (self.path(code), name, action)
 
     def put_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&action=submit' % (self.path(code), name)
+        return '%s?title=%s&action=submit&useskin=monobook' % (self.path(code), name)
 
     def get_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&redirect=no' % (self.path(code), name)
+        return '%s?title=%s&redirect=no&useskin=monobook' % (self.path(code), name)
 
     # The URL to get a page, in the format indexed by Google.
     def nice_get_address(self, code, name):
         return '/wiki/%s' % (name)
 
     def edit_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&action=edit' % (self.path(code), name)
+        return '%s?title=%s&action=edit&useskin=monobook' % (self.path(code), name)
 
     def purge_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&redirect=no&action=purge' % (self.path(code), name)
+        return '%s?title=%s&redirect=no&action=purge&useskin=monobook' % (self.path(code), name)
 
     def references_address(self, code, name):
-        return '%s?useskin=monobook&title=%s:Whatlinkshere&target=%s&limit=%d' % (self.path(code), self.special_namespace_url(code), name, config.special_page_limit)
+        return '%s?title=%s:Whatlinkshere&target=%s&limit=%d&useskin=monobook' % (self.path(code), self.special_namespace_url(code), name, config.special_page_limit)
 
     def upload_address(self, code):
-        return '%s?useskin=monobook&title=%s:Upload' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Upload&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def double_redirects_address(self, code, default_limit = True):
         if default_limit:
-            return '%s?useskin=monobook&title=%s:DoubleRedirects' % (self.path(code), self.special_namespace_url(code))
+            return '%s?title=%s:DoubleRedirects&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
         else:
-            return '%s?useskin=monobook&title=%s:DoubleRedirects&limit=%d' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
+            return '%s?title=%s:DoubleRedirects&limit=%d&useskin=monobook' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
 
     def broken_redirects_address(self, code, default_limit = True):
         if default_limit:
-            return '%s?useskin=monobook&title=%s:BrokenRedirects' % (self.path(code), self.special_namespace_url(code))
+            return '%s?title=%s:BrokenRedirects&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
         else:
-            return '%s?useskin=monobook&title=%s:BrokenRedirects&limit=%d' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
+            return '%s?title=%s:BrokenRedirects&limit=%d&useskin=monobook' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
 
     def random_address(self, code):
-        return "%s?useskin=monobook&title=%s:Random" % (self.path(code), self.special_namespace_url(code))
+        return "%s?title=%s:Random&useskin=monobook" % (self.path(code), self.special_namespace_url(code))
 
     def randomredirect_address(self, code):
-        return "%s?useskin=monobook&title=%s:RandomRedirect" % (self.path(code), self.special_namespace_url(code))
+        return "%s?title=%s:RandomRedirect&useskin=monobook" % (self.path(code), self.special_namespace_url(code))
 
     def allmessages_address(self, code):
-        return "%s?useskin=monobook&title=%s:Allmessages&ot=html" % (self.path(code), self.special_namespace_url(code))
+        return "%s?title=%s:Allmessages&ot=html&useskin=monobook" % (self.path(code), self.special_namespace_url(code))
 
     def login_address(self, code):
-        return '%s?useskin=monobook&title=%s:Userlogin' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Userlogin&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def captcha_image_address(self, code, id):
-        return '%s?useskin=monobook&title=%s:Captcha/image&wpCaptchaId=%s' % (self.path(code), self.special_namespace_url(code), id)
+        return '%s?title=%s:Captcha/image&wpCaptchaId=%s&useskin=monobook' % (self.path(code), self.special_namespace_url(code), id)
 
     def watchlist_address(self, code):
-        return '%s?useskin=monobook&title=%s:Watchlist/edit' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Watchlist/edit&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def contribs_address(self, code, target, limit=500, offset=''):
-        return '%s?useskin=monobook&title=%s:Contributions&target=%s&limit=%s&offset=%s' % (self.path(code), self.special_namespace_url(code), target, limit, offset)
+        return '%s?title=%s:Contributions&target=%s&limit=%s&offset=%s&useskin=monobook' % (self.path(code), self.special_namespace_url(code), target, limit, offset)
 
     def move_address(self, code):
-        return '%s?useskin=monobook&title=%s:Movepage&action=submit' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Movepage&action=submit&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def delete_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&action=delete' % (self.path(code), name)
+        return '%s?title=%s&action=delete&useskin=monobook' % (self.path(code), name)
 
     def undelete_view_address(self, code, name, ts=''):
-        return '%s?useskin=monobook&title=%s:Undelete&target=%s&timestamp=%s' % (self.path(code), self.special_namespace_url(code), name, ts)
+        return '%s?title=%s:Undelete&target=%s&timestamp=%s&useskin=monobook' % (self.path(code), self.special_namespace_url(code), name, ts)
 
     def undelete_address(self, code):
-        return '%s?useskin=monobook&title=%s:Undelete&action=submit' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Undelete&action=submit&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def protect_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&action=protect' % (self.path(code), name)
+        return '%s?title=%s&action=protect&useskin=monobook' % (self.path(code), name)
 
     def unprotect_address(self, code, name):
-        return '%s?useskin=monobook&title=%s&action=unprotect' % (self.path(code), name)
+        return '%s?title=%s&action=unprotect&useskin=monobook' % (self.path(code), name)
 
     def block_address(self, code):
-      return '%s?useskin=monobook&title=%s:Blockip&action=submit' % (self.path(code), self.special_namespace_url(code))
+      return '%s?title=%s:Blockip&action=submit&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def unblock_address(self, code):
-      return '%s?useskin=monobook&title=%s:Ipblocklist&action=submit' % (self.path(code), self.special_namespace_url(code))
+      return '%s?title=%s:Ipblocklist&action=submit&useskin=monobook' % (self.path(code), self.special_namespace_url(code))
 
     def blocksearch_address(self, code, name):
-      return '%s?useskin=monobook&title=%s:Ipblocklist&action=search&ip=%s' % (self.path(code), self.special_namespace_url(code), name)
+      return '%s?title=%s:Ipblocklist&action=search&ip=%s&useskin=monobook' % (self.path(code), self.special_namespace_url(code), name)
 
     def linksearch_address(self, code, link, limit=500, offset=0):
-        return '%s?useskin=monobook&title=%s:Linksearch&limit=%d&offset=%d&target=%s' % (self.path(code), self.special_namespace_url(code), limit, offset, link)
+        return '%s?title=%s:Linksearch&limit=%d&offset=%d&target=%s&useskin=monobook' % (self.path(code), self.special_namespace_url(code), limit, offset, link)
 
     def version_history_address(self, code, name, limit = config.special_page_limit):
-        return '%s?useskin=monobook&title=%s&action=history&limit=%d' % (self.path(code), name, limit)
+        return '%s?title=%s&action=history&limit=%d&useskin=monobook' % (self.path(code), name, limit)
 
     def export_address(self, code):
-        return '%s?useskin=monobook&title=%s:Export' % (self.path(code), self.special_namespace_url('_default'))
+        return '%s?title=%s:Export&useskin=monobook' % (self.path(code), self.special_namespace_url('_default'))
 
     def query_address(self, code):
         return '%s?' % self.querypath(code)
@@ -3569,7 +3569,7 @@ class Family:
                     if i > 0:
                         namespace_params = namespace_params + '&ns%d=1' % i
 
-        return "%s?useskin=monobook&title=%s:Search&search=%s&limit=%d%s&fulltext=1" % (self.path(code),
+        return "%s?title=%s:Search&search=%s&limit=%d%s&fulltext=1&useskin=monobook" % (self.path(code),
                                                             self.special_namespace_url(code),
                                                             query,
                                                             limit,
@@ -3577,59 +3577,59 @@ class Family:
 
     def allpages_address(self, code, start, namespace = 0):
         if self.version(code)=="1.2":
-            return '%s?useskin=monobook&title=%s:Allpages&printable=yes&from=%s' % (
+            return '%s?title=%s:Allpages&printable=yes&from=%s&useskin=monobook' % (
                 self.path(code), self.special_namespace_url(code), start)
         else:
-            return '%s?useskin=monobook&title=%s:Allpages&from=%s&namespace=%s' % (
+            return '%s?title=%s:Allpages&from=%s&namespace=%s&useskin=monobook' % (
                 self.path(code), self.special_namespace_url(code), start, namespace)
 
     def log_address(self, code, limit=50, mode = '', user = ''):
-        return "%s?useskin=monobook&title=Special:Log&type=%s&user=%s&page=&limit=%d" % (self.path(code), mode, user, limit)
+        return "%s?title=Special:Log&type=%s&user=%s&page=&limit=%d&useskin=monobook" % (self.path(code), mode, user, limit)
 
     def newpages_address(self, code, limit=50, namespace=0):
-        return "%s?useskin=monobook&title=%s:Newpages&limit=%d&namespace=%s" % (self.path(code), self.special_namespace_url(code), limit, namespace)
+        return "%s?title=%s:Newpages&limit=%d&namespace=%s&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit, namespace)
 
     def longpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Longpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Longpages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def shortpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Shortpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Shortpages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def categories_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Categories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Categories&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def unusedfiles_address(self, code, limit=500):
-            return "%s?useskin=monobook&title=%s:Unusedimages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+            return "%s?title=%s:Unusedimages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def deadendpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Deadendpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Deadendpages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def ancientpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Ancientpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Ancientpages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def lonelypages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Lonelypages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Lonelypages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def protectedpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:ProtectedPages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:ProtectedPages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def unwatchedpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Unwatchedpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Unwatchedpages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def uncategorizedcategories_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Uncategorizedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Uncategorizedcategories&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def uncategorizedimages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Uncategorizedimages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Uncategorizedimages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def uncategorizedpages_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Uncategorizedpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Uncategorizedpages&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def unusedcategories_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Unusedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Unusedcategories&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def withoutinterwiki_address(self, code, limit=500):
-        return "%s?useskin=monobook&title=%s:Withoutinterwiki&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+        return "%s?title=%s:Withoutinterwiki&limit=%d&useskin=monobook" % (self.path(code), self.special_namespace_url(code), limit)
 
     def code2encoding(self, code):
         """Return the encoding for a specific language wiki"""
