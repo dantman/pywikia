@@ -88,7 +88,7 @@ no_result_with_those_words = '-Wikipedia'
 min_query_string_len = 120
 
 # Split the text into strings of a specified number of words.
-number_of_words = 31
+number_of_words = 22
 
 # Try to skip quoted text.
 exclude_quote = True
