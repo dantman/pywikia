@@ -33,6 +33,8 @@ You can run the bot with the following commandline parameters:
 -output      - Append results to a specified file (default:
                'copyright/output.txt')
 
+-text:input_text - Work on a specified text
+
 -file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
                Argument can also be given as "-file:filename".
@@ -67,6 +69,11 @@ request, use this:
 
     python copyright.py -cat:"Wikipedia featured articles" -maxquery:0
 
+You can include also the text to examine directly on the command line:
+
+    python copyright.py -text:"
+    ...text...
+    "
 """
 
 #
