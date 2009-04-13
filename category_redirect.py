@@ -116,6 +116,8 @@ u"Robot: moving pages out of redirected category",
 u"Bot: Lapok automatikus áthelyezése átirányított kategóriából",
             'ja':
 u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
+            'ksh':
+u"Bot: Sigk uß en ömjeleidt Saachjropp eruß jesammdt.",
             'no':
 u"Robot: Flytter sider ut av omdirigeringskategori",
             'commons':
@@ -133,6 +135,8 @@ u"Robot: adding category redirect template for maintenance",
 u"Bot: kategóriaátirányítás sablon hozzáadása",
             'ja':
 u"ロボットによる: 移行中のカテゴリとしてタグ付け",
+            'ksh':
+u"Bot: Ömleidungsschalbon dobeijedonn.",
             'no':
 u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
         }
@@ -144,6 +148,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'hu': u"Bot: Kettős átirányítás javítása",
             'ja': u"ロボットによる: 二重リダイレクト修正",
             'no': u"Robot: Ordner doble omdirigeringer",
+            'ksh': u"Bot: dubbel Ömleidung eruß jemaat.",
         }
 
         self.maint_comment = {
@@ -153,6 +158,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'hu': u"Kategóriaátirányítás-karbantartó bot",
             'ja': u"移行中のカテゴリのメンテナンス・ボット",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
+            'ksh': u"Bot för de Saachjroppe ier Ömleidunge.",
         }
 
         self.edit_request_text = wikipedia.translate(self.site.lang,
@@ -162,10 +168,18 @@ category links:
 %s
 ~~~~
 """,
+            'ksh': u"""\
+Hee di Sigge sin jeschötz un möße ier Saachjroppe odder Lingks op Saachjroppe \
+aanjepaß krijje:
+%s
+~~~~
+""",
             })
 
         self.edit_request_item = wikipedia.translate(self.site.lang,
-            {'en': u"* %s is in %s, which is a redirect to %s",
+            {
+		'en': u"* %s is in %s, which is a redirect to %s",
+            	'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",
             })
 
     def change_category(self, article, oldCat, newCat, comment=None,
