@@ -1174,8 +1174,9 @@ class Subject(object):
             # This is not a page, but a subpage. Do not edit it.
             wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
             raise SaveError
-
-        if not page.exists():
+        try:
+            pagetext = page.get()
+        except wikipedia.NoPage:
             wikipedia.output(u"Not editing %s: page does not exist" % page.aslink(True))
             raise SaveError
 
@@ -1186,7 +1187,7 @@ class Subject(object):
         new = dict(newPages)
 
         # remove interwiki links to ignore
-        for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', page.get()):
+        for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', pagetext):
             try:
                 ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
             except (wikipedia.NoSuchSite, wikipedia.InvalidTitle):
