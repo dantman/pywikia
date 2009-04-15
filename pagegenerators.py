@@ -705,10 +705,11 @@ def DuplicateFilterPageGenerator(generator):
     Wraps around another generator. Yields all pages, but prevents
     duplicates.
     """
-    seenPages = []
+    seenPages = set()
     for page in generator:
-        if page not in seenPages:
-            seenPages.append(page)
+        _page = page.aslink(forceInterwiki = True)[2:-2]
+        if _page not in seenPages:
+            seenPages.add(_page)
             yield page
 
 def RegexFilterPageGenerator(generator, regex):
