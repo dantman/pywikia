@@ -4901,16 +4901,6 @@ your connection is down. Retrying in %i minutes..."""
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
 
-    def scrubxml(self, xml):
-        """scrub the start of xml input, to make things work, even
-        when crap is inserted ahead of the actual xml data. 
-        (such as when php reports strict warnings)"""
-        start = xml.find('<?xml')
-        if start < 0:
-            # '<?xml' not found ? Should not happen.
-            return ""
-        return xml[start:]
-
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
@@ -4964,8 +4954,14 @@ your connection is down. Retrying in %i minutes..."""
                     # </messages>
                     if elementtree:
                         decode = xml.encode(self.encoding())
-                        clean = self.scrubxml(decode)
-                        tree = XML(clean)
+
+                        # Skip extraneous data such as PHP warning or extra
+                        # whitespaces added from some MediaWiki extensions
+                        xml_dcl_pos = decode.find('<?xml')
+                        if xml_dcl_pos > 0:
+                            decode = decode[xml_dcl_pos:]
+
+                        tree = XML(decode)
                         self._mediawiki_messages = _dict([(tag.get('name').lower(), tag.text)
                                 for tag in tree.getiterator('message')])
                     else:
