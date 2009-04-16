@@ -294,27 +294,25 @@ class TemplateRobot:
         if self.addedCat:
             self.addedCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.addedCat)
 
-        # get edit summary message
-        if self.editSummary:
-            wikipedia.setAction(self.editSummary)
-        else:
+        # get edit summary message if it's empty
+        if (self.editSummary==''):
             oldTemplateNames = (', ').join(self.templates.keys())
             mysite = wikipedia.getSite()
             if self.remove:
                 if len(self.templates) > 1:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_remove) % oldTemplateNames)
+                    self.editSummary = wikipedia.translate(mysite, self.msgs_remove) % oldTemplateNames
                 else:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % oldTemplateNames)
+                    self.editSummary = wikipedia.translate(mysite, self.msg_remove) % oldTemplateNames
             elif self.subst:
                 if len(self.templates) > 1:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_subst) % oldTemplateNames)
+                    self.editSummary = wikipedia.translate(mysite, self.msgs_subst) % oldTemplateNames
                 else:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_subst) % oldTemplateNames)
+                    self.editSummary = wikipedia.translate(mysite, self.msg_subst) % oldTemplateNames
             else:
                 if len(self.templates) > 1:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_change) % oldTemplateNames)
+                    self.editSummary = wikipedia.translate(mysite, self.msgs_change) % oldTemplateNames
                 else:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % oldTemplateNames)
+                    self.editSummary = wikipedia.translate(mysite, self.msg_change) % oldTemplateNames
 
     def run(self):
         """
@@ -343,7 +341,7 @@ class TemplateRobot:
             else:
                 replacements.append((templateRegex, '{{' + new + '\g<parameters>}}'))
 
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions = {}, acceptall = self.acceptAll, addedCat=self.addedCat)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions = {}, acceptall = self.acceptAll, addedCat=self.addedCat, editSummary=self.editSummary)
         replaceBot.run()
 
 def main():

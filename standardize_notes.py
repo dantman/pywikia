@@ -1029,7 +1029,7 @@ def main():
     # default to -1 which means all namespaces will be processed
     namespace = -1
     # Load default summary message.
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
+    editSummary = wikipedia.translate(wikipedia.getSite(), msg)
     # List of references in Notes section
     references = []
     # Notes sequence number
@@ -1083,7 +1083,7 @@ def main():
         return
     if (len(commandline_replacements) == 2):
         replacements[commandline_replacements[0]] = commandline_replacements[1]
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
+        editSummary = wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')'
     else:
         change = ''
         default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
@@ -1091,7 +1091,7 @@ def main():
         summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
         if summary_message == '':
             summary_message = default_summary_message
-        wikipedia.setAction(summary_message)
+        editSummary = summary_message
 
         # Perform the predefined actions.
         try:
@@ -1102,14 +1102,14 @@ def main():
         if fix.has_key('regex'):
             regex = fix['regex']
         if fix.has_key('msg'):
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), fix['msg']))
+            editSummary = wikipedia.translate(wikipedia.getSite(), fix['msg'])
         if fix.has_key('exceptions'):
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
     gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
-    bot = ReplaceRobot(preloadingGen, replacements, refsequence, references, refusage, exceptions, regex, acceptall)
+    bot = ReplaceRobot(preloadingGen, replacements, refsequence, references, refusage, exceptions, regex, acceptall, editSummary)
     bot.run()
 
 

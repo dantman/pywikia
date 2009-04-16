@@ -251,7 +251,7 @@ class ReplaceRobot:
     """
     def __init__(self, generator, replacements, exceptions={},
                  acceptall=False, allowoverlap=False, recursive=False,
-                 addedCat=None, sleep=None):
+                 addedCat=None, sleep=None, editSummary=''):
         """
         Arguments:
             * generator    - A generator that yields Page objects.
@@ -292,6 +292,8 @@ class ReplaceRobot:
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
         self.recursive = recursive
+        # Some function to set default editSummary should probably be added
+        self.editSummary = editSummary
         if addedCat:
             site = wikipedia.getSite()
             cat_ns = site.category_namespaces()[0]
@@ -419,12 +421,12 @@ class ReplaceRobot:
                 if choice == 'a':
                     self.acceptall = True
                 if choice == 'y':
-                    page.put_async(new_text)
+                    page.put_async(new_text, self.editSummary)
                 # choice must be 'N'
                 break
             if self.acceptall and new_text != original_text:
                 try:
-                    page.put(new_text)
+                    page.put(new_text, self.editSummary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Skipping %s because of edit conflict'
                                      % (page.title(),))
@@ -455,7 +457,7 @@ def main(*args):
     add_cat = None
     gen = None
     # summary message
-    summary_commandline = None
+    summary_commandline = False
     # Array which will collect commandline parameters.
     # First element is original text, second element is replacement text.
     commandline_replacements = []
@@ -499,7 +501,7 @@ def main(*args):
     genFactory = pagegenerators.GeneratorFactory()
     # Load default summary message.
     # BUG WARNING: This is probably incompatible with the -lang parameter.
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
+    editSummary = wikipedia.translate(wikipedia.getSite(), msg)
     # Between a regex and another (using -fix) sleep some time (not to waste
     # too much CPU
     sleep = None
@@ -555,7 +557,7 @@ def main(*args):
         elif arg.startswith('-addcat:'):
             add_cat = arg[len('addcat:'):]
         elif arg.startswith('-summary:'):
-            wikipedia.setAction(arg[len('-summary:'):])
+            editSummary = arg[len('-summary:'):]
             summary_commandline = True
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
@@ -568,24 +570,21 @@ def main(*args):
     elif (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0],
                              commandline_replacements[1]))
-        if summary_commandline == None:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg )
-                                % (' (-' + commandline_replacements[0] + ' +'
-                                   + commandline_replacements[1] + ')'))
+        if summary_commandline == False:
+            editSummary = wikipedia.translate(wikipedia.getSite(), msg ) % (' (-' + commandline_replacements[0] + ' +'
+                                   + commandline_replacements[1] + ')')
     elif (len(commandline_replacements) > 1):
         if (fix == None):
             for i in xrange (0, len(commandline_replacements), 2):
                 replacements.append((commandline_replacements[i],
                                      commandline_replacements[i + 1]))
-            if summary_commandline == None:
+            if summary_commandline == False:
                 pairs = [( commandline_replacements[i],
                            commandline_replacements[i + 1] )
                          for i in range(0, len(commandline_replacements), 2)]
                 replacementsDescription = '(%s)' % ', '.join(
                     [('-' + pair[0] + ' +' + pair[1]) for pair in pairs])
-                wikipedia.setAction(
-                    wikipedia.translate(wikipedia.getSite(), msg )
-                    % replacementsDescription)
+                editSummary = wikipedia.translate(wikipedia.getSite(), msg ) % replacementsDescription
         else:
            raise wikipedia.Error(
                'Specifying -fix with replacements is undefined')
@@ -611,7 +610,7 @@ u'Please enter another text that should be replaced, or press Enter to start:')
 u'Press Enter to use this default message, or enter a description of the\nchanges your bot will make:')
             if summary_message == '':
                 summary_message = default_summary_message
-            wikipedia.setAction(summary_message)
+            editSummary = summary_message
 
     else:
         # Perform one of the predefined actions.
@@ -624,8 +623,7 @@ u'Press Enter to use this default message, or enter a description of the\nchange
         if fix.has_key('regex'):
             regex = fix['regex']
         if fix.has_key('msg'):
-            wikipedia.setAction(
-                wikipedia.translate(wikipedia.getSite(), fix['msg']))
+            editSummary = wikipedia.translate(wikipedia.getSite(), fix['msg'])
         if fix.has_key('exceptions'):
             exceptions = fix['exceptions']
         if fix.has_key('nocase'):
@@ -699,7 +697,7 @@ LIMIT 200""" % (whereClause, exceptClause)
                                             pageNumber=20, lookahead=100)
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=60)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep, editSummary)
     bot.run()
 
 if __name__ == "__main__":

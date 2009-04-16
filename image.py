@@ -94,6 +94,7 @@ class ImageRobot:
         self.generator = generator
         self.oldImage = oldImage
         self.newImage = newImage
+        self.editSummary = summary
         self.summary = summary
         self.always = always
         self.loose = loose
@@ -101,11 +102,11 @@ class ImageRobot:
         # get edit summary message
         mysite = wikipedia.getSite()
         if summary:
-            wikipedia.setAction(summary)
+            self.editSummary = summary
         elif self.newImage:
-            wikipedia.setAction(wikipedia.translate(mysite, self.msg_replace) % (self.oldImage, self.newImage))
+            self.editSummary = wikipedia.translate(mysite, self.msg_replace) % (self.oldImage, self.newImage)
         else:
-            wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % self.oldImage)
+            self.editSummary = wikipedia.translate(mysite, self.msg_remove) % self.oldImage
 
     def run(self):
         """
@@ -141,7 +142,7 @@ class ImageRobot:
         else:
             replacements.append((ImageRegex, ''))
 
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, acceptall = self.always)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, acceptall = self.always, editSummary = self.editSummary)
         replaceBot.run()
 
 def main():
