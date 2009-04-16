@@ -3241,7 +3241,8 @@ class Throttle(object):
                 f.write(str(p)+' '+str(processes[p])+'\n')
             f.close()
             self.process_multiplicity = count
-            output(u"Checked for running processes. %s processes currently running, including the current process." % count)
+            if verbose:
+                output(u"Checked for running processes. %s processes currently running, including the current process." % count)
         finally:
             self.lock.release()
 
