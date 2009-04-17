@@ -121,6 +121,7 @@ talk_report_msg = {
     'pl': u'Robot zgłasza niedostępny link zewnętrzny',
     'pt': u'Bot: Link externo não funcionando',
     'sr': u'Бот: Пријављивање непостојећих спољашњих повезница',
+    'zh': u'BOT: 报告失效的外部链接',
 }
 
 # The first %s will be replaced by the URL and the error report.
@@ -143,6 +144,7 @@ talk_report = {
     'pl': u'== %s ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
     'pt': u'== %s ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
     'sr': u'== %s ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
+    'zh': u'== %s ==\n\n一个自动运行的bot发现下列外部链接可能已经失效。请帮助修复错误的链接或者移除它!\n\n%s\n%s--~~~~',
 }
 
 talk_report_caption = {
@@ -161,6 +163,7 @@ talk_report_caption = {
     'pl': u'Martwy link',
     'pt': u'Link quebrado',
     'sr': u'Покварене спољашње повезнице',
+    'zh': u'失效链接',
 }
 
 talk_report_archive = {
@@ -175,6 +178,7 @@ talk_report_archive = {
     'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te verwijzen naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
+    'zh': u'这个网页已经被保存在互联网档案馆（Internet Archive）。请为该网页提供一个合适的存档版本： [%s]。',
 }
 
 ignorelist = [
@@ -603,7 +607,7 @@ class History:
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 * 60 * 24 * 7:
+            if timeSinceFirstFound > 60 * 60 * 2:
                 # search for archived page
                 iac = InternetArchiveConsulter(url)
                 archiveURL = iac.getArchiveURL()
