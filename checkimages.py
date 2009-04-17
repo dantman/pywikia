@@ -999,12 +999,12 @@ class main:
         try:
             if self.settings == None: self.settingsData = None
             else:
-                x = wikipedia.Page(self.site, self.settings)
+                wikiPage = wikipedia.Page(self.site, self.settings)
                 self.settingsData = list()
                 try:
-                    testo = x.get()
+                    testo = wikiPage.get()
                     rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
-                    r = re.compile(rxp, re.UNICODE|re.M)
+                    r = re.compile(rxp, re.UNICODE|re.DOTALL)
                     number = 1
                     for m in r.finditer(testo):
                         name = str(m.group(1))
@@ -1020,6 +1020,7 @@ class main:
                         number += 1
                     if self.settingsData == list():
                         wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
+                        exit()
                         self.settingsData = None
                 except wikipedia.NoPage:
                     wikipedia.output(u"The settings' page doesn't exist!")
