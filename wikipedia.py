@@ -6112,7 +6112,7 @@ your connection is down. Retrying in %i minutes..."""
         """Perform equality and inequality tests on Site objects."""
         if not isinstance(other, Site):
             return 1
-        if self.family == other.family:
+        if self.family.name == other.family.name:
             return cmp(self.lang ,other.lang)
         return cmp(self.family.name, other.family.name)
 
