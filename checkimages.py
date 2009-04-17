@@ -696,9 +696,15 @@ class main:
         else:
             commentox = self.commTalk
         if second_text == True:
-            self.talk_page.put(u"%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
+            try:
+                self.talk_page.put(u"%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
+            except wikipedia.LockedPage:
+                wikipedia.output(u'Talk page blocked, skip.')
         elif second_text == False:
-            self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
+            try:
+                self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
+            except wikipedia.LockedPage:
+                wikipedia.output(u'Talk page blocked, skip.')
         if emailPageName != None and emailSubj != None:
             emailPage = wikipedia.Page(self.site, emailPageName)
             try:
@@ -726,26 +732,15 @@ class main:
             raise NothingFound(u'Nothing found! Try to use the tool by yourself to be sure that it works!')
         else:
             for result in results:
-                wikiPage = wikipedia.Page(self.site, result)
+                wikiPage = wikipedia.ImagePage(self.site, result)
                 yield wikiPage
 
     def regexGenerator(self, regexp, textrun):
         """ Generator used when an user use a regex parsing a page to yield the results """
-        pos = 0
-        done = list()
-        ext_list = list()
-        r = re.compile(r'%s' % regexp, re.UNICODE|re.M)
-        while 1:
-            m = r.search(textrun, pos)
-            if m == None:
-                wikipedia.output(u"\t\t>> All images checked. <<")
-                break
-            pos = m.end()
-            image = m.group(1)
-            if image not in done:
-                done.append(image)
-                yield image
-                #continue
+        regex = re.compile(r'%s' % regexp, re.UNICODE|re.DOTALL)
+        results = regex.findall(textrun)
+        for image in results:
+            yield wikipedia.ImagePage(self.site, image)
 
     def loadHiddenTemplates(self):
         """ Function to load the white templates """
@@ -979,7 +974,7 @@ class main:
             raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
         pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
-        n = re.compile(regex, re.UNICODE|re.M)
+        n = re.compile(regex, re.UNICODE|re.DOTALL)
         y = n.search(text_get, pos)
         if y == None:
             # Adding the log
@@ -1003,7 +998,7 @@ class main:
                 self.settingsData = list()
                 try:
                     testo = wikiPage.get()
-                    rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
+                    rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?([^\n]*?)['\"]?\n"
                     r = re.compile(rxp, re.UNICODE|re.DOTALL)
                     number = 1
                     for m in r.finditer(testo):
@@ -1152,16 +1147,41 @@ class main:
                         self.allLicenses.remove(template)
                 if self.allLicenses != list():      
                     self.license_found = self.allLicenses[0].title()
-        if not self.seems_ok and self.license_found != None:
-            rep_text_license_fake = u"\n*[[:File:%s]] seems to have " % self.imageName + \
-                    "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
-            regexFakeLicense = r"\* ?\[\[:File:%s\]\] seems to have " % (re.escape(self.imageName)) + \
-                    "a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.license_found))
-            printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
-            self.report_image(self.imageName, rep_text = rep_text_license_fake,
-                                   addings = False, regex = regexFakeLicense)
-        elif self.license_found != None:
-            printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, self.license_found))
+
+        self.some_problem = False # If it has "some_problem" it must check
+                  # the additional settings.
+        # if self.settingsData, use addictional settings
+        if self.settingsData != None:
+            self.findAdditionalProblems()
+
+        if self.some_problem == False:       
+            if not self.seems_ok and self.license_found != None:
+                rep_text_license_fake = u"\n*[[:File:%s]] seems to have " % self.imageName + \
+                        "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
+                regexFakeLicense = r"\* ?\[\[:File:%s\]\] seems to have " % (re.escape(self.imageName)) + \
+                        "a ''fake license'', license detected: <nowiki>%s</nowiki>$" % (re.escape(self.license_found))
+                printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
+                self.report_image(self.imageName, rep_text = rep_text_license_fake,
+                                       addings = False, regex = regexFakeLicense)
+            elif self.license_found != None:
+                printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, self.license_found))
+        else:
+            if self.mex_used in self.imageCheckText:
+                wikipedia.output(u'File already fixed. Skip.')
+            else:
+                wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
+                if self.mex_used.lower() == 'default':
+                    self.mex_used = self.unvertext
+                if self.imagestatus_used == False:
+                    reported = self.report_image(self.imageName)
+                else:
+                    reported = True
+                if reported == True:
+                    #if self.imagestatus_used == True:
+                    self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
+                else:
+                    wikipedia.output(u"Skipping the file...")
+                self.some_problem = False
         return (self.license_found, self.whiteTemplatesFound)
 
     def load(self, raw):
@@ -1343,7 +1363,7 @@ class main:
         extension = self.imageName.split('.')[-1] # get the extension from the image's name
         # Load the notification messages
         HiddenTN = wikipedia.translate(self.site, HiddenTemplateNotification)
-        unvertext = wikipedia.translate(self.site, n_txt)
+        self.unvertext = wikipedia.translate(self.site, n_txt)
         di = wikipedia.translate(self.site, delete_immediately)
         dih = wikipedia.translate(self.site, delete_immediately_head)
         din = wikipedia.translate(self.site, delete_immediately_notification)
@@ -1389,11 +1409,6 @@ class main:
             if parl.lower() in extension.lower():
                 delete = True
         (license_found, hiddenTemplateFound) = self.smartDetection()
-        self.some_problem = False # If it has "some_problem" it must check
-                  # the additional settings.
-        # if self.settingsData, use addictional settings
-        if self.settingsData != None:
-            self.findAdditionalProblems()
         # If the image exists (maybe it has been deleting during the oder
         # checking parts or something, who knows? ;-))
         #if p.exists(): <-- improve thebot, better to make as
@@ -1402,26 +1417,7 @@ class main:
         if brackets == True and license_found != None:
             # It works also without this... but i want only to be sure ^^
             brackets = False
-            return True
-        elif self.some_problem == True:
-            if self.mex_used in self.imageCheckText:
-                wikipedia.output(u'File already fixed. Skip.')
-                return True
-            wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
-            if self.mex_used.lower() == 'default':
-                self.mex_used = unvertext
-            if self.imagestatus_used == False:
-                reported = self.report_image(self.imageName)
-            else:
-                reported = True
-            if reported == True:
-                #if self.imagestatus_used == True:
-                self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
-            else:
-                wikipedia.output(u"Skipping the file...")
-            self.some_problem = False
-            return True
-        
+            return True        
         elif delete == True:
             wikipedia.output(u"%s is not a file!" % self.imageName)
             # Modify summary text
@@ -1439,7 +1435,7 @@ class main:
             else:
                 notification = nn % self.imageName
             head = nh
-            self.report(unvertext, self.imageName, notification, head, smwl)
+            self.report(self.unvertext, self.imageName, notification, head, smwl)
             return True
         else:
             wikipedia.output(u"%s has only text and not the specific license..." % self.imageName)
@@ -1448,7 +1444,7 @@ class main:
             else:
                 notification = nn % self.imageName
             head = nh
-            self.report(unvertext, self.imageName, notification, head, smwl)
+            self.report(self.unvertext, self.imageName, notification, head, smwl)
             return True
 
 def checkbot():
