@@ -48,7 +48,9 @@ stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'it':u'Utente:Màrço27Bot/EditThisPageToStopMe',
             'ko':u'사용자:GrassnBreadRefBot/EditThisPageToStopMe1',
             'hu':'User:Damibot/EditThisPageToStopMe',
-            'en':u'User:DumZiBoT/EditThisPageToStopMe'}
+            'en':u'User:DumZiBoT/EditThisPageToStopMe',
+            'zh':u'User:Sz-iwbot',
+}
 
 msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en utilisant des références nommées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
@@ -56,7 +58,8 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
         'it':u'Bot: Sistemo note con collegamenti esterni senza titolo ([[Utente:Màrço27Bot/refLinks.py|documentazione]])',
-        'en':u'Bot: Converting bare references, using ref names to avoid duplicates, see [[User:DumZiBoT/refLinks|FAQ]]'}
+        'en':u'Bot: Converting bare references, using ref names to avoid duplicates, see [[User:DumZiBoT/refLinks|FAQ]]',
+}
 
 deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'de':u'',
