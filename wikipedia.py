@@ -583,19 +583,18 @@ not supported by PyWikipediaBot!"""
         namespaces will be preceded by a : character).
 
         """
-        if not noInterwiki and (forceInterwiki or self.site() != getSite()):
+        if not noInterwiki and (forceInterwiki or self._site != getSite()):
+            colon = ""
             if textlink:
-                left = "[[:"
-            else:
-                left = "[["
-            if self.site().family != getSite().family \
-                    and self.site().family.name != self.site().lang:
-                return u'%s%s:%s:%s]]' % (left, self.site().family.name,
-                                          self.site().lang,
+                colon = ":"
+            if  self._site.family != getSite().family \
+                    and self._site.family.name != self._site.lang:
+                return u'[[%s%s:%s:%s]]' % (colon, self._site.family.name,
+                                          self._site.lang,
                                           self.title(savetitle=True,
                                                      decode=True))
             else:
-                return u'%s%s:%s]]' % (left, self.site().lang,
+                return u'[[%s%s:%s]]' % (colon, self._site.lang,
                                        self.title(savetitle=True, decode=True))
         elif textlink and (self.isImage() or self.isCategory()):
                 return u'[[:%s]]' % self.title(savetitle=True, decode=True)
