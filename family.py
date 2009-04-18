@@ -160,6 +160,7 @@ class Family:
                 'yi': u'מעדיע',
                 'yo': u'Amóhùnmáwòrán',
                 'za': u'媒体',
+                'zh': [u'media', u'媒体', u'媒體'],
             },
             -1: {
                 '_default': u'Special',
@@ -332,6 +333,7 @@ class Family:
                 'yo': u'Pàtàkì',
                 'za': u'特殊',
                 'zea': u'Speciaol',
+                'zh': [u'Special', u'特殊'],
             },
             0: {
                 '_default': None,
@@ -513,6 +515,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀',
                 'za': u'讨论',
                 'zea': u'Overleg',
+                'zh': [u'Talk', u'讨论', u'討論', u'对话', u'對話'],
             },
             2: {
                 '_default': u'User',
@@ -690,6 +693,7 @@ class Family:
                 'yo': u'Oníṣe',
                 'za': u'用户',
                 'zea': u'Gebruker',
+                'zh': [u'user', u'用户', u'用戶'],
             },
             3: {
                 '_default': u'User talk',
@@ -866,6 +870,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ oníṣe',
                 'za': u'用户讨论',
                 'zea': u'Overleg gebruker',
+                'zh': [u'User talk', u'User talk', u'用户讨论', u'用户对话', u'用戶討論', u'用戶對話'],
             },
             4: {
                 '_default': u'Project',
@@ -1052,6 +1057,7 @@ class Family:
                 'yo': u'Àwòrán',
                 'za': u'文件',
                 'zea': u'Plaetje',
+                'zea': [u'File', u'Image', u'文件', u'图像', u'圖像'],
             },
             7: {
                 '_default': [u'File talk', u'Image talk'],
@@ -1230,6 +1236,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ àwòrán',
                 'za': u'文件讨论',
                 'zea': u'Overleg plaetje',
+                'zh': [u'File talk', u'Image talk', u'文件讨论', u'图像讨论', u'文件对话', u'图像对话', u'文件討論', u'圖像討論', u'文件對話', u'圖像對話'],
             },
             8: {
                 '_default': u'MediaWiki',
@@ -1460,6 +1467,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ mediaWiki',
                 'za': u'MediaWiki讨论',
                 'zea': u'Overleg MediaWiki',
+                'zh': [u'MediaWiki talk', u'MediaWiki讨论', u'MediaWiki对话', u'MediaWiki討論', u'MediaWiki對話'],
             },
             10: {
                 '_default': u'Template',
@@ -1627,6 +1635,7 @@ class Family:
                 'yo': u'Àdàkọ',
                 'za': u'模板',
                 'zea': u'Sjabloon',
+                'zh': [u'Template', u'模板'],
             },
             11: {
                 '_default': u'Template talk',
@@ -1801,6 +1810,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ àdàkọ',
                 'za': u'模板讨论',
                 'zea': u'Overleg sjabloon',
+                'zh': [u'Template talk', u'模板讨论', u'模板討論', u'模板对话', u'模板對話'],
             },
             12: {
                 '_default': u'Help',
@@ -1975,6 +1985,7 @@ class Family:
                 'yo': u'Ìrànlọ́wọ́',
                 'za': u'帮助',
                 'zea': u'Ulpe',
+                'zh': [u'Help', u'帮助', u'幫助'],
             },
             13: {
                 '_default': u'Help talk',
@@ -2152,6 +2163,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ ìrànlọ́wọ́',
                 'za': u'帮助讨论',
                 'zea': u'Overleg ulpe',
+                'zh': [u'Help talk', u'帮助讨论', u'幫助討論', u'幫助對話', u'帮助对话'],
             },
             14: {
                 '_default': u'Category',
@@ -2328,7 +2340,7 @@ class Family:
                 'yo': u'Ẹ̀ka',
                 'za': u'分类',
                 'zea': u'Categorie',
-                'zh': u'Category',
+                'zh': [u'Category', u'分类', u'分類'],
             },
             15: {
                 '_default': u'Category talk',
@@ -2506,6 +2518,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ ẹ̀ka',
                 'za': u'分类讨论',
                 'zea': u'Overleg categorie',
+                'zh': [u'Category talk', u'分类讨论', u'分類討論', u'分类对话', u'分類對話'],
             },
         }
 
