@@ -1015,7 +1015,6 @@ class main:
                         number += 1
                     if self.settingsData == list():
                         wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
-                        exit()
                         self.settingsData = None
                 except wikipedia.NoPage:
                     wikipedia.output(u"The settings' page doesn't exist!")
