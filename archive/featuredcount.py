@@ -1,12 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
+##################################################
+This script all function have merge to featured.py. plese use:
+
+  featured.py -fromall -count
+
+shizhao 2009-04-18
+##################################################
+
+
 This script only counts how many featured articles all wikipedias have.
 
 usage: featuredcount.py
 
 """
-__version__ = '$Id$'
+__version__ = '$Id: featuredcount.py 6336 2009-02-08 04:14:37Z purodha $'
 
 #
 # Distributed under the terms of the MIT license.
