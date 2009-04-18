@@ -160,7 +160,7 @@ ignoreTemplates = {
     'fr' : [u'Commons', u'Commons cat'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS'],
-    'nl' : [u'Commons', u'Catbeg', u'Catsjab', u'Catwiki'],
+    'nl' : [u'Commons', u'Commonsklein', u'Commonscatklein', u'Catbeg', u'Catsjab', u'Catwiki'],
 }
 
 def getTemplate (lang = None):
