@@ -17,6 +17,10 @@ This script understands various command-line arguments:
 
 * -top               : using -top if you want moving {{Link FA|lang}} to top of interwiki.
                        DEFAULT: placing {{Link FA|lang}} right next to corresponding interwiki.
+* -count             : counts how many featured articles of an languages (using "-fromlang" argument) 
+                       or all wikipedias (using "-fromall" argument). (merge /archive/featuredcount.py) like: 
+                           featured.py -fromlang:en,he -count  
+                       (give counts how many featured articles of en and he wp)
 
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
 
@@ -374,6 +378,7 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
 
 if __name__=="__main__":
     template_on_top = False
+    featuredcount = False
     fromlang=[]
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':
@@ -397,6 +402,8 @@ if __name__=="__main__":
             afterpage=arg[7:]
         elif arg == '-top':
             template_on_top = True
+        elif arg == '-count':
+            featuredcount = True
 
     if not fromlang:
         wikipedia.showHelp('featured')
@@ -406,7 +413,9 @@ if __name__=="__main__":
     try:
         for ll in fromlang:
             fromsite = wikipedia.getSite(ll)
-            if  fromsite != wikipedia.getSite():
+            if featuredcount:
+                featuredArticles(fromsite)
+            elif  fromsite != wikipedia.getSite():
                 featuredWithInterwiki(fromsite, wikipedia.getSite(),
                                       template_on_top)
     finally:
