@@ -870,7 +870,7 @@ class Family:
                 'yo': u'Ọ̀rọ̀ oníṣe',
                 'za': u'用户讨论',
                 'zea': u'Overleg gebruker',
-                'zh': [u'User talk', u'User talk', u'用户讨论', u'用户对话', u'用戶討論', u'用戶對話'],
+                'zh': [u'User talk', u'用户讨论', u'用户对话', u'用戶討論', u'用戶對話'],
             },
             4: {
                 '_default': u'Project',
