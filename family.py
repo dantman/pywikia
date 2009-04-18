@@ -2328,7 +2328,7 @@ class Family:
                 'yo': u'Ẹ̀ka',
                 'za': u'分类',
                 'zea': u'Categorie',
-                'zh': u'分类',
+                'zh': u'Category',
             },
             15: {
                 '_default': u'Category talk',
