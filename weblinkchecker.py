@@ -607,7 +607,7 @@ class History:
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 * 60 * 2:
+            if timeSinceFirstFound > 60 * 60 * 24 * 7:
                 # search for archived page
                 iac = InternetArchiveConsulter(url)
                 archiveURL = iac.getArchiveURL()
