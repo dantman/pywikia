@@ -17,7 +17,7 @@ This script understands various command-line arguments:
 
 * -top               : using -top if you want moving {{Link FA|lang}} to top of interwiki.
                        DEFAULT: placing {{Link FA|lang}} right next to corresponding interwiki.
-* -count             : counts how many featured articles of an languages (using "-fromlang" argument) 
+* -count             : Only counts how many featured articles of an languages (using "-fromlang" argument) 
                        or all wikipedias (using "-fromall" argument). (merge /archive/featuredcount.py) like: 
                            featured.py -fromlang:en,he -count  
                        (give counts how many featured articles of en and he wp)
