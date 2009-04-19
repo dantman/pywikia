@@ -160,7 +160,7 @@ class Family:
                 'yi': u'מעדיע',
                 'yo': u'Amóhùnmáwòrán',
                 'za': u'媒体',
-                'zh': [u'media', u'媒体', u'媒體'],
+                'zh': [u'Media', u'媒体', u'媒體'],
             },
             -1: {
                 '_default': u'Special',
@@ -693,7 +693,7 @@ class Family:
                 'yo': u'Oníṣe',
                 'za': u'用户',
                 'zea': u'Gebruker',
-                'zh': [u'user', u'用户', u'用戶'],
+                'zh': [u'User', u'用户', u'用戶'],
             },
             3: {
                 '_default': u'User talk',
