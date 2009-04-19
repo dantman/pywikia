@@ -1136,17 +1136,18 @@ class main:
         if self.licenses_found != []:
             self.templateInList()
             if self.license_found == None and self.allLicenses != list():
-                iterLicenses = self.allLicenses
-                for template in iterLicenses:
+                # If only iterlist = self.AllLicenses if I remove something
+                # from iterlist it will be remove from self.AllLicenses too
+                iterlist = list(self.allLicenses)
+                for template in iterlist:
                     try:
                         template.pageAPInfo()
                     except wikipedia.IsRedirectPage:
                         template = template.getRedirectTarget()
                     except wikipedia.NoPage:
-                        self.allLicenses.remove(template)
+                        self.allLicenses.remove(template)            
                 if self.allLicenses != list():      
                     self.license_found = self.allLicenses[0].title()
-
         self.some_problem = False # If it has "some_problem" it must check
                   # the additional settings.
         # if self.settingsData, use addictional settings
