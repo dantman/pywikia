@@ -411,7 +411,7 @@ class ReferringPageGeneratorWithIgnore:
         refs = [page for page in self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)]
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
-        if ignore_title.has_key(self.disambPage.site().family.name) and ignore_title[self.disambPage.site().family.name].has_key(self.disambPage.site().lang):
+        if self.disambPage.site().family.name in ignore_title and self.disambPage.site().lang in ignore_title[self.disambPage.site().family.name]:
             for ig in ignore_title[self.disambPage.site().family.name][self.disambPage.site().lang]:
                 for i in range(len(refs)-1, -1, -1):
                     if re.match(ig, refs[i].title()):
@@ -542,7 +542,7 @@ class DisambiguationRobot(object):
     def setupRegexes(self):
         # compile regular expressions
         self.ignore_contents_regexes = []
-        if self.ignore_contents.has_key(self.mylang):
+        if self.mylang in self.ignore_contents:
             for ig in self.ignore_contents[self.mylang]:
                 self.ignore_contents_regexes.append(re.compile(ig))
 
@@ -789,7 +789,7 @@ class DisambiguationRobot(object):
 
     def findAlternatives(self, disambPage):
         if disambPage.isRedirectPage() and not self.primary:
-            if self.primary_redir_template.has_key(disambPage.site().lang) and self.primary_redir_template[disambPage.site().lang] in disambPage.templates(get_redirect = True):
+            if disambPage.site().lang in self.primary_redir_template and self.primary_redir_template[disambPage.site().lang] in disambPage.templates(get_redirect = True):
                 baseTerm = disambPage.title()
                 for template in disambPage.templatesWithParams(get_redirect = True):
                     if template[0] == self.primary_redir_template[disambPage.site().lang] and len(template[1]) > 0:
@@ -860,7 +860,7 @@ or press enter to quit:""")
             targets = wikipedia.translate(self.mysite, unknown_msg)
 
         # first check whether user has customized the edit comment
-        if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
+        if self.mysite.family.name in wikipedia.config.disambiguation_comment and self.mylang in wikipedia.config.disambiguation_comment[self.mysite.family.name]:
             try:
                 self.comment = wikipedia.translate(self.mysite,
                                 wikipedia.config.disambiguation_comment[
@@ -886,9 +886,9 @@ or press enter to quit:""")
 
     def run(self):
         if self.main_only:
-            if not ignore_title.has_key(self.mysite.family.name):
+            if self.mysite.family.name not in ignore_title:
                 ignore_title[self.mysite.family.name] = {}
-            if not ignore_title[self.mysite.family.name].has_key(self.mylang):
+            if self.mylang not in ignore_title[self.mysite.family.name]:
                 ignore_title[self.mysite.family.name][self.mylang] = []
             ignore_title[self.mysite.family.name][self.mylang] += [
                 u'%s:' % namespace for namespace in self.mysite.namespaces()]

@@ -46,11 +46,11 @@ class WarnfileReader:
                         targetSite = mysite.getSite(code = m.group('targetlang'))
                         targetPage = wikipedia.Page(targetSite, m.group('targettitle'))
                         if removing:
-                            if not removeHints.has_key(page):
+                            if page not in removeHints:
                                 removeHints[page]=[]
                             removeHints[page].append(targetPage)
                         else:
-                            if not hints.has_key(page):
+                            if page not in hints:
                                 hints[page]=[]
                             hints[page].append(targetPage)
                     except wikipedia.Error:
@@ -80,11 +80,11 @@ class WarnfileRobot:
                 continue
             new={}
             new.update(old)
-            if hints.has_key(page):
+            if page in hints:
                 for page2 in hints[page]:
                     site = page2.site()
                     new[site] = page2
-            if removeHints.has_key(page):
+            if page in removeHints:
                 for page2 in removeHints[page]:
                     site = page2.site()
                     try:

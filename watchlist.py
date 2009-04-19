@@ -30,7 +30,7 @@ cache = {}
 def get(site = None):
     if site is None:
         site = wikipedia.getSite()
-    if cache.has_key(site):
+    if site in cache:
         # Use cached copy if it exists.
         watchlist = cache[site]
     else:

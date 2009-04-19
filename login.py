@@ -99,7 +99,7 @@ class LoginManager:
         Checks whether the bot is listed on a specific page to comply with
         the policy on the respective wiki.
         """
-        if botList.has_key(self.site.family.name) and botList[self.site.family.name].has_key(self.site.language()):
+        if self.site.family.name in botList and self.site.language() in botList[self.site.family.name]:
             botListPageTitle = botList[self.site.family.name][self.site.language()]
             botListPage = wikipedia.Page(self.site, botListPageTitle)
             for linkedPage in botListPage.linkedPages():

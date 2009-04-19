@@ -193,9 +193,9 @@ class XmlDumpReplacePageGenerator:
         self.skipping = bool(xmlStart)
 
         self.excsInside = []
-        if self.exceptions.has_key('inside-tags'):
+        if 'inside-tags' in self.exceptions:
             self.excsInside += self.exceptions['inside-tags']
-        if self.exceptions.has_key('inside'):
+        if 'inside' in self.exceptions:
             self.excsInside += self.exceptions['inside']
         import xmlreader
         self.site = wikipedia.getSite()
@@ -226,11 +226,11 @@ class XmlDumpReplacePageGenerator:
                 pass
 
     def isTitleExcepted(self, title):
-        if self.exceptions.has_key('title'):
+        if 'title' in self.exceptions:
             for exc in self.exceptions['title']:
                 if exc.search(title):
                     return True
-        if self.exceptions.has_key('require-title'):
+        if 'require-title' in self.exceptions:
             for req in self.exceptions['require-title']:
                 if not req.search(title): # if not all requirements are met:
                     return True
@@ -238,7 +238,7 @@ class XmlDumpReplacePageGenerator:
         return False
 
     def isTextExcepted(self, text):
-        if self.exceptions.has_key('text-contains'):
+        if 'text-contains' in self.exceptions:
             for exc in self.exceptions['text-contains']:
                 if exc.search(text):
                     return True
@@ -305,11 +305,11 @@ class ReplaceRobot:
         """
         Iff one of the exceptions applies for the given title, returns True.
         """
-        if self.exceptions.has_key('title'):
+        if 'title' in self.exceptions:
             for exc in self.exceptions['title']:
                 if exc.search(title):
                     return True
-        if self.exceptions.has_key('require-title'):
+        if 'require-title' in self.exceptions:
             for req in self.exceptions['require-title']:
                 if not req.search(title):
                     return True
@@ -320,7 +320,7 @@ class ReplaceRobot:
         Iff one of the exceptions applies for the given page contents,
         returns True.
         """
-        if self.exceptions.has_key('text-contains'):
+        if 'text-contains' in self.exceptions:
             for exc in self.exceptions['text-contains']:
                 if exc.search(original_text):
                     return True
@@ -333,9 +333,9 @@ class ReplaceRobot:
         """
         new_text = original_text
         exceptions = []
-        if self.exceptions.has_key('inside-tags'):
+        if 'inside-tags' in self.exceptions:
             exceptions += self.exceptions['inside-tags']
-        if self.exceptions.has_key('inside'):
+        if 'inside' in self.exceptions:
             exceptions += self.exceptions['inside']
         for old, new in self.replacements:
             if self.sleep != None:
@@ -620,13 +620,13 @@ u'Press Enter to use this default message, or enter a description of the\nchange
             wikipedia.output(u'Available predefined fixes are: %s'
                              % fixes.fixes.keys())
             return
-        if fix.has_key('regex'):
+        if 'regex' in fix:
             regex = fix['regex']
-        if fix.has_key('msg'):
+        if 'msg' in fix:
             editSummary = wikipedia.translate(wikipedia.getSite(), fix['msg'])
-        if fix.has_key('exceptions'):
+        if 'exceptions' in fix:
             exceptions = fix['exceptions']
-        if fix.has_key('nocase'):
+        if 'nocase' in fix:
             caseInsensitive = fix['nocase']
         replacements = fix['replacements']
 
@@ -648,7 +648,7 @@ u'Press Enter to use this default message, or enter a description of the\nchange
         replacements[i] = oldR, new
 
     for exceptionCategory in ['title', 'require-title', 'text-contains', 'inside']:
-        if exceptions.has_key(exceptionCategory):
+        if exceptionCategory in exceptions:
             patterns = exceptions[exceptionCategory]
             if not regex:
                 patterns = [re.escape(pattern) for pattern in patterns]

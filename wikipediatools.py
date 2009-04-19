@@ -28,7 +28,7 @@ def get_base_dir():
             sys.argv.remove(arg)
             break
     else:
-        if os.environ.has_key("PYWIKIBOT_DIR"):
+        if "PYWIKIBOT_DIR" in os.environ:
             base_dir = os.environ["PYWIKIBOT_DIR"]
         else:
             if os.path.exists('user-config.py'):

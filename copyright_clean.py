@@ -89,14 +89,14 @@ def page_exist(title):
     for pageobjs in query_results_titles:
         for key in pageobjs['query']['pages']:
             if pageobjs['query']['pages'][key]['title'] == title:
-                if pageobjs['query']['pages'][key].has_key('missing'):
+                if 'missing' in pageobjs['query']['pages'][key]:
                     wikipedia.output('* ' + title)
                     return False
     return True
 
 def revid_exist(revid):
     for pageobjs in query_results_revids:
-        if pageobjs['query'].has_key('badrevids'):
+        if 'badrevids' pageobjs['query']:
             for id in pageobjs['query']['badrevids']:
                 if id == int(revid):
                     # print rv

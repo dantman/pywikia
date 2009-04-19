@@ -29,7 +29,7 @@ import wikipedia
 print "-->"
 mysite = wikipedia.getSite()
 
-newbies = form.has_key('newbies')
+newbies = 'newbies' in form
 
 if newbies:
     post = 'title=Speciaal:Bijdragen&target=newbies'

@@ -2460,7 +2460,7 @@ not supported by PyWikipediaBot!"""
         """
         if self._deletedRevs == None:
             self.loadDeletedRevisions()
-        if not self._deletedRevs.has_key(timestamp):
+        if timestamp not in self._deletedRevs:
             #TODO: Throw an exception instead?
             return None
 
@@ -2485,7 +2485,7 @@ not supported by PyWikipediaBot!"""
         """
         if self._deletedRevs == None:
             self.loadDeletedRevisions()
-        if not self._deletedRevs.has_key(timestamp):
+        if timestamp not in self._deletedRevs:
             #TODO: Throw an exception?
             return None
         self._deletedRevs[timestamp][4] = undelete
@@ -3417,7 +3417,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         if isinstance(exc, str) or isinstance(exc, unicode):
             # assume it's a reference to the exceptionRegexes dictionary
             # defined above.
-            if not exceptionRegexes.has_key(exc):
+            if exc not in exceptionRegexes:
                 raise ValueError("Unknown tag type: " + exc)
             dontTouchRegexes.append(exceptionRegexes[exc])
         else:
@@ -4104,7 +4104,7 @@ def html2unicode(text, ignore = []):
                 unicodeCodepoint = int(match.group('hex'), 16)
             elif match.group('name'):
                 name = match.group('name')
-                if htmlentitydefs.name2codepoint.has_key(name):
+                if name in htmlentitydefs.name2codepoint:
                     # We found a known HTML entity.
                     unicodeCodepoint = htmlentitydefs.name2codepoint[name]
             result += text[:match.start()]
@@ -4337,7 +4337,7 @@ class Site(object):
             self.family = fam
 
         # if we got an outdated language code, use the new one instead.
-        if self.family.obsolete.has_key(self.lang):
+        if self.lang in self.family.obsolete:
             if self.family.obsolete[self.lang] is not None:
                 self.lang = self.family.obsolete[self.lang]
             else:
@@ -6126,7 +6126,7 @@ your connection is down. Retrying in %i minutes..."""
     def interwiki_putfirst_doubled(self, list_of_links):
         # TODO: is this even needed?  No family in the framework has this
         # dictionary defined!
-        if self.family.interwiki_putfirst_doubled.has_key(self.lang):
+        if self.lang in self.family.interwiki_putfirst_doubled:
             if len(list_of_links) >= self.family.interwiki_putfirst_doubled[self.lang][0]:
                 list_of_links2 = []
                 for lang in list_of_links:
@@ -6177,7 +6177,7 @@ your connection is down. Retrying in %i minutes..."""
         # may or may not actually exist on the wiki), use
         # self.family.namespaces.keys()
 
-        if _namespaceCache.has_key(self):
+        if self in _namespaceCache:
             return _namespaceCache[self]
         else:
             nslist = []
@@ -6276,7 +6276,7 @@ def getSite(code=None, fam=None, user=None, persistent_http=None, noLogin=False)
     if fam == None:
         fam = default_family
     key = '%s:%s:%s:%s' % (fam, code, user, persistent_http)
-    if not _sites.has_key(key):
+    if key not in _sites:
         _sites[key] = Site(code=code, fam=fam, user=user,
                            persistent_http=persistent_http)
     ret =  _sites[key]
@@ -6537,18 +6537,18 @@ def translate(code, xdict):
     if hasattr(code,'lang'):
         code = code.lang
 
-    if xdict.has_key('wikipedia') :
-        if xdict.has_key(default_family):
+    if 'wikipedia' in xdict:
+        if default_family in xdict:
             xdict = xdict[default_family]
         else:
             xdict = xdict['wikipedia']
 
-    if xdict.has_key(code):
+    if code in xdict:
         return xdict[code]
     for alt in altlang(code):
-        if xdict.has_key(alt):
+        if alt in xdict:
             return xdict[alt]
-    if xdict.has_key('en'):
+    if 'en' in xdict:
         return xdict['en']
     return xdict.values()[0]
 

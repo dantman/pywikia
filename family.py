@@ -3094,7 +3094,7 @@ class Family:
         return self.known_families
 
     def linktrail(self, code, fallback = '_default'):
-        if self.linktrails.has_key(code):
+        if code in self.linktrails:
             return self.linktrails[code]
         elif fallback:
             return self.linktrails[fallback]
@@ -3143,12 +3143,12 @@ class Family:
     def isDefinedNS(self, ns_number):
         """Return True if the namespace has been defined in this family.
         """
-        return self.namespaces.has_key(ns_number)
+        return ns_number in self.namespaces
 
     def isNsI18N(self, ns_number, code):
         """Return True if the namespace has been internationalized.
         (it has a custom entry for a given language)"""
-        return self.namespaces[ns_number].has_key(code)
+        return code in self.namespaces[ns_number]
 
     def isDefinedNSLanguage(self, ns_number, code, fallback='_default'):
         """Return True if the namespace has been defined in this family
@@ -3227,7 +3227,7 @@ class Family:
                 % code)
 
     def disambig(self, code, fallback = '_default'):
-        if self.disambiguationTemplates.has_key(code):
+        if code in self.disambiguationTemplates:
             return self.disambiguationTemplates[code]
         elif fallback:
             return self.disambiguationTemplates[fallback]
