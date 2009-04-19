@@ -4,7 +4,7 @@ __version__ = '$Id: incubator_family.py 4068 2007-08-18 13:10:09Z btongminh $'
 
 import family
 
-# The Wikimedia i18n family (should be called Betawiki, but already exists)
+# The Wikimedia i18n family
 
 class Family(family.Family):
 
@@ -50,6 +50,12 @@ class Family(family.Family):
         }
         self.namespaces[1203] = {
             '_default': [u'FreeCol talk'],
+        }
+        self.namespaces[1204] = {
+            '_default': [u'Nocc'],
+        }
+        self.namespaces[1205] = {
+            '_default': [u'Nocc talk'],
         }
         self.namespaces[1210] = {
             '_default': [u'Mantis'],
