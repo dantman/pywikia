@@ -46,7 +46,9 @@ Furthermore, the following command line parameters are supported:
 
 -notalk      Overrides the report_dead_links_on_talk config variable, disabling
              the feature.
-
+-day         the first time found dead link longer than x day ago, it should
+             probably be fixed or removed. if no set, default is 7 day.
+             
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 
@@ -522,7 +524,7 @@ class LinkCheckThread(threading.Thread):
                 wikipedia.output('*Link to %s in [[%s]] is back alive.' % (self.url, self.page.title()))
         else:
             wikipedia.output('*[[%s]] links to %s - %s.' % (self.page.title(), self.url, message))
-            self.history.setLinkDead(self.url, message, self.page)
+            self.history.setLinkDead(self.url, message, self.page, day)
 
 class History:
     '''
@@ -591,7 +593,7 @@ class History:
             self.reportThread.report(url, errorReport, containingPage, archiveURL)
 
 
-    def setLinkDead(self, url, error, page):
+    def setLinkDead(self, url, error, page, day):
         """
         Adds the fact that the link was found dead to the .dat file.
         """
@@ -604,10 +606,10 @@ class History:
             # ago, we won't save it in the history this time.
             if timeSinceLastFound > 60 * 60:
                 self.historyDict[url].append((page.title(), now, error))
-            # if the first time we found this link longer than a week ago,
+            # if the first time we found this link longer than x day ago (default is a week),
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 * 60 * 24 * 7:
+            if timeSinceFirstFound > 60 * 60 * 24 * day:
                 # search for archived page
                 iac = InternetArchiveConsulter(url)
                 archiveURL = iac.getArchiveURL()
@@ -787,7 +789,7 @@ def main():
     # that are also used by other scripts and that determine on which pages
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
-
+    day = 7
     for arg in wikipedia.handleArgs():
         if arg == '-talk':
             config.report_dead_links_on_talk = True
@@ -802,6 +804,9 @@ def main():
             gen = RepeatPageGenerator()
         elif arg.startswith('-ignore:'):
             HTTPignore.append(int(arg[8:]))
+        elif arg.startswith('-day:'):
+            global day
+            day = arg[5:]
         else:
             if not genFactory.handleArg(arg):
                 singlePageTitle.append(arg)
