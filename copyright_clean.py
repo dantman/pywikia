@@ -96,7 +96,7 @@ def page_exist(title):
 
 def revid_exist(revid):
     for pageobjs in query_results_revids:
-        if 'badrevids' pageobjs['query']:
+        if 'badrevids' in pageobjs['query']:
             for id in pageobjs['query']['badrevids']:
                 if id == int(revid):
                     # print rv
