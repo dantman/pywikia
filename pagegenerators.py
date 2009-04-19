@@ -705,11 +705,11 @@ def DuplicateFilterPageGenerator(generator):
     Wraps around another generator. Yields all pages, but prevents
     duplicates.
     """
-    seenPages = set()
+    seenPages = dict()
     for page in generator:
         _page = u"%s:%s:%s" % (page._site.family.name, page._site.lang, page._title)
         if _page not in seenPages:
-            seenPages.add(_page)
+            seenPages[_page] = True
             yield page
 
 def RegexFilterPageGenerator(generator, regex):
