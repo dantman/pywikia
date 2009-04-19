@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """This bot will move pages out of redirected categories
 
-Usage: category-redirect.py [options]
+Usage: category_redirect.py [options]
 
 The bot will look for categories that are marked with a category redirect
 template, take the first parameter of the template as the target of the
@@ -59,6 +59,7 @@ class CategoryRedirectBot(object):
                 'ja': "Category:移行中のカテゴリ",
                 'no': "Kategori:Wikipedia omdirigertekategorier",
                 'simple': "Category:Category redirects",
+                'zh': u"Category:已重定向的分类",
             },
             'commons': {
                 'commons': "Category:Category redirects"
@@ -90,6 +91,12 @@ class CategoryRedirectBot(object):
                 'no': ("Kategoriomdirigering"),
                 'simple': ("Category redirect",
                            "Catredirect"),
+                'zh': (u"分类重定向",
+                       u"Cat-redirect",
+                       u"重定向分类",
+                       u"重定向分类",
+                       u"Cr",
+                       u"CR"),
                 },
             'commons': {
                 'commons': (u'Category redirect',
@@ -121,7 +128,9 @@ u"Bot: Sigk uß en ömjeleidt Saachjropp eruß jesammdt.",
             'no':
 u"Robot: Flytter sider ut av omdirigeringskategori",
             'commons':
-u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])'
+u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])',
+            'zh':
+u'机器人：改变已重定向分类中的页面的分类',
         }
 
         self.redir_comment = {
@@ -139,6 +148,8 @@ u"ロボットによる: 移行中のカテゴリとしてタグ付け",
 u"Bot: Ömleidungsschalbon dobeijedonn.",
             'no':
 u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
+            'zh':
+u"机器人: 增加分类重定向模板，用于维护",
         }
 
         self.dbl_redir_comment = {
@@ -149,6 +160,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'ja': u"ロボットによる: 二重リダイレクト修正",
             'no': u"Robot: Ordner doble omdirigeringer",
             'ksh': u"Bot: dubbel Ömleidung eruß jemaat.",
+            'zh': u"Bot: 修复双重重定向",
         }
 
         self.maint_comment = {
@@ -159,6 +171,7 @@ u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'ja': u"移行中のカテゴリのメンテナンス・ボット",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
             'ksh': u"Bot för de Saachjroppe ier Ömleidunge.",
+            'zh': u"分类重定向维护机器人",
         }
 
         self.edit_request_text = wikipedia.translate(self.site.lang,
@@ -171,6 +184,12 @@ category links:
             'ksh': u"""\
 Hee di Sigge sin jeschötz un möße ier Saachjroppe odder Lingks op Saachjroppe \
 aanjepaß krijje:
+%s
+~~~~
+""",
+            'zh': u"""\
+下列被保护页面被检测出需要更新 \
+分类链接:
 %s
 ~~~~
 """,
