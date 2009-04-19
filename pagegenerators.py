@@ -707,7 +707,7 @@ def DuplicateFilterPageGenerator(generator):
     """
     seenPages = set()
     for page in generator:
-        _page = page.aslink(forceInterwiki = True)[2:-2]
+        _page = u"%s:%s:%s" % (page._site.family.name, page._site.lang, page._title)
         if _page not in seenPages:
             seenPages.add(_page)
             yield page
