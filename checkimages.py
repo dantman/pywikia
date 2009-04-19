@@ -1116,23 +1116,38 @@ class main:
             """
         self.seems_ok = False
         self.license_found = None
-        self.hiddentemplates = self.loadHiddenTemplates()      
-        self.licenses_found = self.image.getTemplates()
         self.whiteTemplatesFound = False
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)[|\n<}]', re.DOTALL)
-        templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
-        if self.licenses_found == [] and templatesInTheImageRaw != []:
-            raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
-        self.allLicenses = list()
-        if self.list_licenses == []:
-            raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
-        # Found the templates ONLY in the image's description
-        for template_selected in templatesInTheImageRaw:
-            for templateReal in self.licenses_found:
-                if self.convert_to_url(template_selected).lower().replace('template%3a', '') == \
-                       self.convert_to_url(templateReal.title()).lower().replace('template%3a', ''):
-                    if templateReal not in self.allLicenses: # don't put the same template, twice.
-                        self.allLicenses.append(templateReal)
+        dummy_edit = False
+        while 1:
+            self.hiddentemplates = self.loadHiddenTemplates()      
+            self.licenses_found = self.image.getTemplates()
+            templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
+            if self.licenses_found == [] and templatesInTheImageRaw != []:
+                raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
+            self.allLicenses = list()
+            if self.list_licenses == []:
+                raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
+            # Found the templates ONLY in the image's description
+            for template_selected in templatesInTheImageRaw:
+                for templateReal in self.licenses_found:
+                    if self.convert_to_url(template_selected).lower().replace('template%3a', '') == \
+                           self.convert_to_url(templateReal.title()).lower().replace('template%3a', ''):
+                        if templateReal not in self.allLicenses: # don't put the same template, twice.
+                            self.allLicenses.append(templateReal)
+            # perform a dummy edit, sometimes there are problems with the Job queue
+            if self.allLicenses == self.licenses_found and not dummy_edit and self.licenses_found != []:
+                wikipedia.output(u"Seems that there's a problem regarding the Job queue, trying with a dummy edit to solve the problem.")
+                try:
+                    
+                    self.imageCheckText = self.image.get()
+                    self.image.put(self.imageCheckText, 'Bot: Dummy edit,if you see this comment write [[User talk:%s|here]].' % self.botnick)
+                except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                    return (None, list())
+                dummy_edit = True
+            else:
+                break
+            
         if self.licenses_found != []:
             self.templateInList()
             if self.license_found == None and self.allLicenses != list():
