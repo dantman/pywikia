@@ -344,6 +344,7 @@ PageWithHiddenTemplates = {
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
     'ja':None,
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
+    'ta':None,
     'zh':None,
     }
 
@@ -353,6 +354,7 @@ PageWithAllowedTemplates = {
     'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/AllowedTemplates',
     'ko':u'User:Kwjbot_IV/AllowedTemplates',
+    'ta':None,
     }
 
 # Template added when the bot finds only an hidden template and nothing else.
@@ -364,7 +366,7 @@ HiddenTemplateNotification = {
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
         'ja'     :None,
         'ko'     : u"\n{{subst:User:Kwj2772/whitetemplates|%s}} --~~~~", 
-        'ta'     : None,
+        'ta'     :None,
         'zh'     :None,
         }
 
@@ -377,6 +379,7 @@ duplicatesText = {
         'en'     : None,
         'it'     : u'\n{{Progetto:Coordinamento/Immagini/Bot/Template duplicati|__images__}}',
         'ja'     :None,
+        'ta'     :None,
         'zh'     :None,
         }
 # Head of the message given to the author
@@ -385,6 +388,7 @@ duplicate_user_talk_head = {
         'en'     : None, 
         'it'     : u'\n\n== File doppio ==\n',
         'ja'     :None,
+        'ta'     :None,
         'zh'     :None,
         }
 # Message to put in the talk
@@ -393,6 +397,7 @@ duplicates_user_talk_text = {
         'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
         'ja'     :None,
+        'ta'     :None,
         'zh'     :None,
         }
 # Comment used by the bot while it reports the problem in the uploader's talk
@@ -401,6 +406,7 @@ duplicates_comment_talk = {
         'en'     : None,
         'it'     : u"Bot: Notifico il file doppio trovato",
         'ja'     :None,
+        'ta'     :None,
         'zh'     :None,
         }
 # Comment used by the bot while it reports the problem in the image
@@ -409,6 +415,7 @@ duplicates_comment_image = {
         'en'     : None,
         'it'     : u'Bot: File doppio, da cancellare',
         'ja'     :None,
+        'ta'     :None,
         'zh'     :None,
         }
 # Regex to detect the template put in the image's decription to find the dupe
@@ -417,6 +424,7 @@ duplicatesRegex = {
         'en'     : None,
         'it'     : r'\{\{(?:[Tt]emplate:|)[Pp]rogetto:[Cc]oordinamento/Immagini/Bot/Template duplicati[|}]',
         'ja'     :None,
+        'ta'     :None,
         'zh'     :None,
         }
 # Category with the licenses and / or with subcategories with the other licenses.
@@ -426,6 +434,7 @@ category_with_licenses = {
         'it'     : 'Categoria:Template Licenze copyright',
         'ja'     : 'Category:画像の著作権表示テンプレート',
         'ko'     : '분류:그림 저작권 틀',
+        'ta'     :'Category:காப்புரிமை வார்ப்புருக்கள்',
         'zh'     : 'Category:版權申告模板',
         }
 
@@ -436,6 +445,7 @@ emailPageWithText = {
         'de':'Benutzer:ABF/D3',
         'en':None,
         'ja':None,
+        'ta':None,
         'zh':None,
         }
 # Title of the email
@@ -443,6 +453,7 @@ emailSubject = {
         'de':'Problemen mit Deinem Bild auf der Deutschen Wikipedia',
         'en':None,
         'ja':None,
+        'ta':None,
         'zh':None,
         }
 
