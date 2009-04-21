@@ -1191,7 +1191,7 @@ def main():
         wikipedia.output(__doc__, 'utf-8')
 
     if text:
-        output = query(lines = text.splitlines())
+        output = SearchEngine().query(lines = text.splitlines())
         if output:
             wikipedia.output(output)
 
