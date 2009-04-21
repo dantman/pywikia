@@ -250,8 +250,6 @@ sections_to_skip = {
     'zh':[u'參考文獻',u'参考文献',u'參考資料',u'参考资料', u'資料來源',u'资料来源',u'參見',u'参见',u'參閱',u'参阅'],
 }
 
-num_google_queries = 0 ; num_yahoo_queries = 0 ; num_msn_queries = 0
-
 if enable_color:
     warn_color = '\03{%s}' % warn_color
     error_color = '\03{%s}' % error_color
@@ -270,15 +268,6 @@ def warn(text, prefix = None):
 
 def error(text ,prefix = None):
     _output(text, prefix = prefix, color = error_color)
-
-def print_stats():
-        wikipedia.output('\n'
-                         'Search engine | number of queries\n'
-                         '---------------------------------\n'
-                         'Google        | %s\n'
-                         'Yahoo!        | %s\n'
-                         'Live Search   | %s\n'
-                         % (num_google_queries, num_yahoo_queries, num_msn_queries))
 
 def skip_section(text):
     l = list()
@@ -307,106 +296,126 @@ def cut_section(text, sectC):
             return text[:start.start()]
     return text
 
-def exclusion_file_list():
-    for i in pages_for_exclusion_database:
-        path = wikipedia.config.datafilepath(appdir, i[0], i[2])
-        wikipedia.config.makepath(path)
-        p = wikipedia.Page(wikipedia.getSite(i[0]), i[1])
-        yield p, path
+class URLExclusion:
+    def __init__(self):
+        self.URLlist = set()
+        self.scan()
 
-def load_pages(force_update = False):
-    for page, path in exclusion_file_list():
-        try:
-            force_load = force_update
-            if not os.path.exists(path):
-                print 'Creating file \'%s\' (%s)' % (
-                            wikipedia.config.shortpath(path), page.aslink())
-                force_load = True
-            else:
-                file_age = time.time() - os.path.getmtime(path)
-                if file_age > 24 * 60 * 60:
-                    print 'Updating file \'%s\' (%s)' % (
-                            wikipedia.config.shortpath(path), page.aslink())
-                    force_load = True
-        except OSError:
-            raise
+    def pages_list(self):
+        for i in pages_for_exclusion_database:
+            path = wikipedia.config.datafilepath(appdir, i[0], i[2])
+            wikipedia.config.makepath(path)
+            page = wikipedia.Page(wikipedia.getSite(i[0]), i[1])
+            yield page, path
 
-        if force_load:
-            data = None
+    def download(self, force_update = False):
+        for page, path in self.pages_list():
+            download = force_update
             try:
-                data = page.get()
-            except KeyboardInterrupt:
+                if not os.path.exists(path):
+                    print 'Creating file \'%s\' (%s)' % (wikipedia.config.shortpath(path),
+                                                         page.aslink())
+                    download = True
+                else:
+                    file_age = time.time() - os.path.getmtime(path)
+                    if download or file_age > 24 * 60 * 60:
+                        print 'Updating file \'%s\' (%s)' % (
+                        wikipedia.config.shortpath(path), page.aslink())
+                        download = True
+            except OSError:
                 raise
-            except wikipedia.IsRedirectPage, arg:
-                data = page.getRedirectTarget().get()
-            except:
-                error('Getting page failed')
 
-            if data:
-                f = codecs.open(path, 'w', 'utf-8')
-                f.write(data)
-                f.close()
-    return
+            if download:
+                data = None
+                try:
+                    data = page.get()
+                except KeyboardInterrupt:
+                    raise
+                except wikipedia.IsRedirectPage, arg:
+                    data = page.getRedirectTarget().get()
+                except:
+                    error('Getting page failed')
 
-def check_list(url, clist, verbose = False):
-    for entry in clist:
-        if entry:
-            if url.find(entry) != -1:
-                if verbose > 1:
-                    warn('URL Excluded: %s\nReason: %s' % (url, entry))
-                elif verbose:
-                    warn('URL Excluded: %s' % url)
-                return True
+                if data:
+                    f = codecs.open(path, 'w', 'utf-8')
+                    f.write(data)
+                    f.close()
+                    
+    def update(self):
+        self.download(force_update = True)
+        self.scan()
 
-def exclusion_list():
-    prelist = []
-    result_list = []
-    load_pages()
+    def check(self, url, verbose = False):
+        for entry in self.URLlist:
+           if url.find(entry) != -1:
+               if verbose > 1:
+                   warn('URL Excluded: %s\nReason: %s' % (url, entry))
+               elif verbose:
+                   warn('URL Excluded: %s' % url)
+               return True
+        return False
 
-    for page, path in exclusion_file_list():
-        if 'exclusion_list.txt' in path:
-            result_list += re.sub("</?pre>","",
-                                  read_file(path,
-                                            cut_comment=True,
-                                            cut_newlines=True)
-                                  ).splitlines()
-        else:
-            data = read_file(path)
-            # wikipedia:en:Wikipedia:Mirrors and forks
-            prelist += re.findall("(?i)url\s*=\s*<nowiki>(?:http://)?(.*)</nowiki>", data)
-            prelist += re.findall("(?i)\*\s*Site:\s*\[?(?:http://)?(.*)\]?", data)
-            # wikipedia:it:Wikipedia:Cloni
-            if 'it/Cloni.txt' in path:
-                prelist += re.findall('(?mi)^==(?!=)\s*\[?\s*(?:<nowiki>)?\s*(?:http://)?(.*?)(?:</nowiki>)?\s*\]?\s*==', data)
-    list1 = []
-    for entry in prelist:
-        list1 += entry.split(", ")
-    list2 = []
-    for entry in list1:
-        list2 += entry.split("and ")
-    for entry in list2:
-        # Remove unnecessary part of URL
-        entry = re.sub("http://", "", entry)
-        entry = re.sub("www\.", "", entry)
-        entry = re.sub("</?nowiki>", "", entry)
-        if entry:
-            if '/' in entry:
-                entry = entry[:entry.rfind('/')]
+    def scan(self):
+        prelist = [] ; result_list = []
+        self.download()
 
-            entry = re.sub("\s.*", "", entry)
+        for page, path in self.pages_list():
+            if 'exclusion_list.txt' in path:
+                result_list += re.sub("</?pre>","",
+                                      read_file(path,
+                                                cut_comment=True,
+                                                cut_newlines=True)
+                                      ).splitlines()
+            else:
+                data = read_file(path)
+                # wikipedia:en:Wikipedia:Mirrors and forks
+                prelist += re.findall("(?i)url\s*=\s*<nowiki>(?:http://)?(.*)</nowiki>", data)
+                prelist += re.findall("(?i)\*\s*Site:\s*\[?(?:http://)?(.*)\]?", data)
+                # wikipedia:it:Wikipedia:Cloni
+                if 'it/Cloni.txt' in path:
+                    prelist += re.findall('(?mi)^==(?!=)\s*\[?\s*(?:<nowiki>)?\s*(?:http://)?(.*?)(?:</nowiki>)?\s*\]?\s*==', data)
+        list1 = []
+        for entry in prelist:
+            list1 += entry.split(", ")
+        list2 = []
+        for entry in list1:
+            list2 += entry.split("and ")
+        for entry in list2:
+            # Remove unnecessary part of URL
+            entry = re.sub("http://", "", entry)
+            entry = re.sub("www\.", "", entry)
+            entry = re.sub("</?nowiki>", "", entry)
+            if entry:
+                if '/' in entry:
+                    entry = entry[:entry.rfind('/')]
 
-            if len(entry) > 4:
-                result_list.append(entry)
+                entry = re.sub("\s.*", "", entry)
 
-    result_list += read_file(
-                        wikipedia.config.datafilepath(appdir, 'exclusion_list.txt'),
-                        cut_comment = True, cut_newlines = True
-                    ).splitlines()
+                if len(entry) > 4:
+                    result_list.append(entry)
 
-    for i in range(len(result_list)):
-            result_list[i] = re.sub('\s+$', '', result_list[i])
+        result_list += read_file(
+                            wikipedia.config.datafilepath(appdir, 'exclusion_list.txt'),
+                            cut_comment = True, cut_newlines = True
+                       ).splitlines()
 
-    return result_list
+        for i in range(len(result_list)):
+            cleaned = re.sub('\s+$', '', result_list[i])
+            if cleaned:
+                self.URLlist.add(cleaned)
+
+    def sanity_check(self):
+        print "Exclusion list sanity check..."
+        for entry in self.URLlist:
+            if (not '.' in entry and not '/' in entry) or len(entry) < 5:
+                print "** " + entry
+
+    def dump(self):
+        f = open(wikipedia.config.datafilepath(appdir, 'exclusion_list.dump'), 'w')
+        f.write('\n'.join(self.URLlist))
+        f.close()
+        print "Exclusion list dump saved."
+
 
 def read_file(filename, cut_comment = False, cut_newlines = False):
     text = u""
@@ -565,18 +574,6 @@ def remove_wikicode(text, re_dotall = False, remove_quote = exclude_quote, debug
 
     return text
 
-def exclusion_list_sanity_check():
-    print "Exclusion list sanity check..."
-    for entry in excl_list:
-        if (not '.' in entry and not '/' in entry) or len(entry) < 5:
-            print "** " + entry
-
-def exclusion_list_dump():
-    f = open(wikipedia.config.datafilepath(appdir, 'exclusion_list.dump'), 'w')
-    f.write('\n'.join(excl_list))
-    f.close()
-    print "Exclusion list dump saved."
-
 def n_index(text, n, sep):
     pos = 0
     while n>0:
@@ -603,72 +600,269 @@ def mysplit(text, dim, sep):
         break
     return l
 
-def query(lines = [], max_query_len = 1300, wikicode = True):
-    # Google max_query_len = 1480?
-    # - '-Wikipedia ""' = 1467
+class SearchEngine:
 
-    # Google limit queries to 32 words.
+    num_google_queries = num_yahoo_queries = num_msn_queries = 0
 
-    output = u""
-    n_query = 0
-    previous_group_url = 'none'
+    def __init__(self):
+        self.URLexcl = URLExclusion()
 
-    for line in lines:
-        if wikicode:
-            line = remove_wikicode(line)
-        for search_words in mysplit(line, number_of_words, " "):
-            if len(search_words) > min_query_string_len:
-                if config.copyright_economize_query:
-                    if economize_query(search_words):
-                        warn(search_words, prefix = 'Text excluded')
-                        consecutive = False
+    def __del__(self):
+        self.print_stats()
+
+    def query(self, lines = [], max_query_len = 1300, wikicode = True):
+        # Google max_query_len = 1480?
+        # - '-Wikipedia ""' = 1467
+
+        # Google limit queries to 32 words.
+
+        n_query = 0
+        output = unicode()
+        previous_group_url = 'null'
+
+        for line in lines:
+            if wikicode:
+                line = remove_wikicode(line)
+            for search_words in mysplit(line, number_of_words, " "):
+                if len(search_words) > min_query_string_len:
+                    if config.copyright_economize_query:
+                        if economize_query(search_words):
+                            warn(search_words, prefix = 'Text excluded')
+                            consecutive = False
+                            continue
+                    n_query += 1
+                    #wikipedia.output(search_words)
+                    if config.copyright_max_query_for_page and n_query > config.copyright_max_query_for_page:
+                        warn(u"Max query limit for page reached")
+                        return output
+                    if config.copyright_skip_query > n_query:
                         continue
-                n_query += 1
-                #wikipedia.output(search_words)
-                if config.copyright_max_query_for_page and n_query > config.copyright_max_query_for_page:
-                    warn(u"Max query limit for page reached")
-                    return output
-                if config.copyright_skip_query > n_query:
-                    continue
-                if len(search_words) > max_query_len:
-                    search_words = search_words[:max_query_len]
-                    consecutive = False
-                    if " " in search_words:
-                         search_words = search_words[:search_words.rindex(" ")]
+                    if len(search_words) > max_query_len:
+                        search_words = search_words[:max_query_len]
+                        consecutive = False
+                        if " " in search_words:
+                             search_words = search_words[:search_words.rindex(" ")]
 
-                results = get_results(search_words)
+                    results = self.get_results(search_words)
 
-                group_url = '' ; cmp_group_url = ''
+                    group_url = '' ; cmp_group_url = ''
 
-                for url, engine, comment in results:
-                    if comment:
-                        group_url += '\n*%s - %s (%s)' % (engine, url, "; ".join(comment))
-                    else:
-                        group_url += '\n*%s - %s' % (engine, url)
-                    cmp_group_url += '\n*%s - %s' % (engine, url)
-                if results:
-                    group_url_list = group_url.splitlines()
-                    cmp_group_url_list = cmp_group_url.splitlines()
-                    group_url_list.sort()
-                    cmp_group_url_list.sort()
-                    group_url = '\n'.join(group_url_list)
-                    cmp_group_url = '\n'.join(cmp_group_url_list)
-                    if previous_group_url == cmp_group_url:
-                        if consecutive:
-                            output += ' ' + search_words
+                    for url, engine, comment in results:
+                        if comment:
+                            group_url += '\n*%s - %s (%s)' % (engine, url, "; ".join(comment))
                         else:
-                            output += '\n**' + search_words
+                            group_url += '\n*%s - %s' % (engine, url)
+                        cmp_group_url += '\n*%s - %s' % (engine, url)
+                    if results:
+                        group_url_list = group_url.splitlines()
+                        cmp_group_url_list = cmp_group_url.splitlines()
+                        group_url_list.sort()
+                        cmp_group_url_list.sort()
+                        group_url = '\n'.join(group_url_list)
+                        cmp_group_url = '\n'.join(cmp_group_url_list)
+                        if previous_group_url == cmp_group_url:
+                            if consecutive:
+                                output += ' ' + search_words
+                            else:
+                                output += '\n**' + search_words
+                        else:
+                            output += group_url + '\n**' + search_words
+
+                        previous_group_url = cmp_group_url
+                        consecutive = True
                     else:
-                        output += group_url + '\n**' + search_words
-
-                    previous_group_url = cmp_group_url
-                    consecutive = True
+                        consecutive = False
                 else:
-                    consecutive = False
-            else:
-               consecutive = False
+                   consecutive = False
 
-    return output
+        return output
+
+    def add_in_urllist(self, url, add_item, engine, cache_url = None):
+        if (engine == 'google' and config.copyright_check_in_source_google) or \
+        (engine == 'yahoo' and config.copyright_check_in_source_yahoo) or \
+        (engine == 'msn' and config.copyright_check_in_source_msn):
+            check_in_source = True
+        else:
+            check_in_source = False
+
+        if check_in_source or config.copyright_show_date or config.copyright_show_length:
+            s = None
+            cache = False
+
+            # list to store date, length, cache URL
+            comment = list()
+
+            try:
+                s = WebPage(add_item, self.URLexcl)
+            except URL_exclusion:
+                pass
+            except NoWebPage:
+                cache = True
+
+            if s:
+                # Before of add url in result list, perform the check in source
+                if check_in_source:
+                    if s.check_in_source():
+                        return
+
+                if config.copyright_show_date:
+                    date = s.lastmodified()
+                    if date:
+                        if date[:3] != time.localtime()[:3]:
+                            comment.append("%s/%s/%s" % (date[2], date[1], date[0]))
+
+                unit = 'bytes'
+
+                if config.copyright_show_length:
+                    length = s.length()
+                    if length > 1024:
+                        # convert in kilobyte
+                        length /= 1024
+                        unit = 'KB'
+                        if length > 1024:
+                            # convert in megabyte
+                            length /= 1024
+                            unit = 'MB'
+                    if length > 0:
+                        comment.append("%d %s" % (length, unit))
+
+            if cache:
+                if cache_url:
+                    if engine == 'google':
+                        comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % urllib.quote(short_url(add_item)))
+                    elif engine == 'yahoo':
+                        #cache = False
+                        #comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib2.unquote(cache_url)))
+                        comment.append("''Yahoo cache''")
+                    elif engine == 'msn':
+                        comment.append('[%s Live cache]' % re.sub('&lang=[^&]*','', cache_url))
+                else:
+                    comment.append('[http://web.archive.org/*/%s archive.org]' % short_url(add_item))
+
+        for i in range(len(url)):
+            if add_item in url[i]:
+                if engine not in url[i][1]:
+                    if url[i][2]:
+                        comment = url[i][2]
+                    url[i] = (add_item, url[i][1] + ', ' + engine, comment)
+                return
+        url.append((add_item, engine, comment))
+        return
+
+    def soap(self, engine, query, url, numresults = 10):
+        print "  %s query..." % engine.capitalize()
+        search_request_retry = config.copyright_connection_tries
+        query_success = False
+
+        while search_request_retry:
+            try:
+                if engine == 'google':
+                    import google
+                    google.LICENSE_KEY = config.google_key
+                    data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query))
+                    for entry in data.results:
+                       self.add_in_urllist(url, entry.URL, 'google', entry.cachedSize)
+
+                    self.num_google_queries += 1
+
+                elif engine == 'yahoo':
+                    import yahoo.search.web
+                    data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"%s" %s' % (
+                                                      query.encode('utf_8'),
+                                                      no_result_with_those_words
+                                                     ), results = numresults)
+                    for entry in data.parse_results():
+                        cacheurl = None
+                        if entry.Cache:
+                            cacheurl = entry.Cache.Url
+                        self.add_in_urllist(url, entry.Url, 'yahoo', cacheurl)
+
+                    self.num_yahoo_queries += 1
+
+                elif engine == 'msn':
+                    #max_query_len = 150?
+                    from SOAPpy import WSDL
+
+                    try:
+                        server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
+                    except Exception, err:
+                        error("Live Search Error: %s" % err)
+                        raise
+
+                    params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
+                             'CultureInfo': region_code, 'SafeSearch': 'Off', 'Requests': {
+                             'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
+
+                    results = ''
+
+                    server_results = server.Search(Request = params)
+                    if server_results.Responses[0].Results:
+                        results = server_results.Responses[0].Results[0]
+                    if results:
+                        # list or instance?
+                        if type(results) == type([]):
+                            for entry in results:
+                                cacheurl = None
+                                if hasattr(entry, 'CacheUrl'):
+                                    cacheurl = entry.CacheUrl
+                                self.add_in_urllist(url, entry.Url, 'msn', cacheurl)
+                        else:
+                            cacheurl = None
+                            if hasattr(results, 'CacheUrl'):
+                                cacheurl = results.CacheUrl
+                            self.add_in_urllist(url, results.Url, 'msn', cacheurl)
+
+                    self.num_msn_queries += 1
+
+                search_request_retry = 0
+                query_success = True
+            except KeyboardInterrupt:
+                raise
+            except Exception, err:
+                # Something is going wrong...
+                if 'Daily limit' in str(err) or 'Insufficient quota for key' in str(err):
+                    exceeded_in_queries('google')
+                elif 'limit exceeded' in str(err):
+                    exceeded_in_queries('yahoo')
+                elif 'Invalid value for AppID in request' in str(err):
+                    exceeded_in_queries('msn')
+                else:
+                    raise
+                    error(err, "Got an error")
+
+                if search_request_retry:
+                    search_request_retry -= 1
+
+        if not query_success:
+            error('No response for: %s' % query, "Error (%s)" % engine)
+
+    def get_results(self, query, numresults = 10):
+        result_list = list()
+        query = re.sub("[()\"<>]", "", query)
+        # wikipedia.output(query)
+        if config.copyright_google:
+            self.soap('google', query, result_list)
+        if config.copyright_yahoo:
+            self.soap('yahoo', query, result_list, numresults = numresults)
+        if config.copyright_msn:
+            self.soap('msn', query, result_list)
+
+        offset = 0
+        for i in range(len(result_list)):
+            if self.URLexcl.check(result_list[i + offset][0], verbose = True):
+                result_list.pop(i + offset)
+                offset += -1
+        return result_list
+
+    def print_stats(self):
+        wikipedia.output('\n'
+                         'Search engine | number of queries\n'
+                         '---------------------------------\n'
+                         'Google        | %s\n'
+                         'Yahoo!        | %s\n'
+                         'Live Search   | %s\n'
+                         % (self.num_google_queries, self.num_yahoo_queries,
+                            self.num_msn_queries))
 
 source_seen = set()
 positive_source_seen = set()
@@ -683,12 +877,13 @@ class WebPage(object):
     """
     """
 
-    def __init__(self, url):
+    def __init__(self, url, URLExcl):
         """
         """
         global source_seen
+        self.URLexcludedlist = URLExcl.URLlist
 
-        if url in source_seen or check_list(url, excl_list):
+        if url in source_seen or URLExcl.check(url):
             raise URL_exclusion
 
         self._url = url
@@ -746,8 +941,8 @@ class WebPage(object):
     def check_regexp(self, reC, text, filename = None):
         m = reC.search(text)
         if m:
-            global excl_list, positive_source_seen
-            excl_list += [self._url]
+            global positive_source_seen
+            self.URLexcludedlist.add(self._url)
             positive_source_seen.add(self._url)
             if filename:
                 write_log("%s (%s)\n" % (self._url, m.group()), filename)
@@ -796,78 +991,6 @@ class WebPage(object):
         source_seen.add(self._url)
         return False
 
-def add_in_urllist(url, add_item, engine, cache_url = None):
-
-    if (engine == 'google' and config.copyright_check_in_source_google) or \
-    (engine == 'yahoo' and config.copyright_check_in_source_yahoo) or \
-    (engine == 'msn' and config.copyright_check_in_source_msn):
-        check_in_source = True
-    else:
-        check_in_source = False
-
-    if check_in_source or config.copyright_show_date or config.copyright_show_length:
-        s = None
-        cache = False
-
-        # list to store date, length, cache URL
-        comment = list()
-
-        try:
-            s = WebPage(add_item)
-        except URL_exclusion:
-            pass
-        except NoWebPage:
-            cache = True
-
-        if s:
-            # Before of add url in result list, perform the check in source
-            if check_in_source:
-                if s.check_in_source():
-                    return
-
-            if config.copyright_show_date:
-                date = s.lastmodified()
-                if date:
-                    if date[:3] != time.localtime()[:3]:
-                        comment.append("%s/%s/%s" % (date[2], date[1], date[0]))
-
-            unit = 'bytes'
-
-            if config.copyright_show_length:
-                length = s.length()
-                if length > 1024:
-                    # convert in kilobyte
-                    length /= 1024
-                    unit = 'KB'
-                    if length > 1024:
-                        # convert in megabyte
-                        length /= 1024
-                        unit = 'MB'
-                if length > 0:
-                    comment.append("%d %s" % (length, unit))
-
-        if cache:
-            if cache_url:
-                if engine == 'google':
-                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % urllib.quote(short_url(add_item)))
-                elif engine == 'yahoo':
-                    #cache = False
-                    #comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib2.unquote(cache_url)))
-                    comment.append("''Yahoo cache''")
-                elif engine == 'msn':
-                    comment.append('[%s Live cache]' % re.sub('&lang=[^&]*','', cache_url))
-            else:
-                comment.append('[http://web.archive.org/*/%s archive.org]' % short_url(add_item))
-
-    for i in range(len(url)):
-        if add_item in url[i]:
-            if engine not in url[i][1]:
-                if url[i][2]:
-                    comment = url[i][2]
-                url[i] = (add_item, url[i][1] + ', ' + engine, comment)
-            return
-    url.append((add_item, engine, comment))
-    return
 
 def exceeded_in_queries(engine):
     """Behavior if an exceeded error occur."""
@@ -882,112 +1005,6 @@ def exceeded_in_queries(engine):
     # Stop execution
     if config.copyright_exceeded_in_queries == 3:
         raise 'Got a queries exceeded error.'
-
-def soap(engine, query, url, numresults = 10):
-        global num_google_queries, num_yahoo_queries, num_msn_queries
-
-        print "  %s query..." % engine.capitalize()
-        search_request_retry = config.copyright_connection_tries
-        query_success = False
-
-        while search_request_retry:
-            try:
-                if engine == 'google':
-                    import google
-                    google.LICENSE_KEY = config.google_key
-                    data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query))
-                    for entry in data.results:
-                       add_in_urllist(url, entry.URL, 'google', entry.cachedSize)
-
-                    num_google_queries += 1
-
-                elif engine == 'yahoo':
-                    import yahoo.search.web
-                    data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"%s" %s' % (
-                                                      query.encode('utf_8'),
-                                                      no_result_with_those_words
-                                                     ), results = numresults)
-                    for entry in data.parse_results():
-                        cacheurl = None
-                        if entry.Cache:
-                            cacheurl = entry.Cache.Url
-                        add_in_urllist(url, entry.Url, 'yahoo', cacheurl)
-
-                    num_yahoo_queries += 1
-
-                elif engine == 'msn':
-                    #max_query_len = 150?
-                    from SOAPpy import WSDL
-
-                    try:
-                        server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
-                    except Exception, err:
-                        error("Live Search Error: %s" % err)
-                        raise
-
-                    params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
-                             'CultureInfo': region_code, 'SafeSearch': 'Off', 'Requests': {
-                             'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
-
-                    results = ''
-
-                    server_results = server.Search(Request = params)
-                    if server_results.Responses[0].Results:
-                        results = server_results.Responses[0].Results[0]
-                    if results:
-                        # list or instance?
-                        if type(results) == type([]):
-                            for entry in results:
-                                cacheurl = None
-                                if hasattr(entry, 'CacheUrl'):
-                                    cacheurl = entry.CacheUrl
-                                add_in_urllist(url, entry.Url, 'msn', cacheurl)
-                        else:
-                            cacheurl = None
-                            if hasattr(results, 'CacheUrl'):
-                                cacheurl = results.CacheUrl
-                            add_in_urllist(url, results.Url, 'msn', cacheurl)
-
-                    num_msn_queries += 1
-
-                search_request_retry = 0
-                query_success = True
-            except KeyboardInterrupt:
-                raise
-            except Exception, err:
-                # Something is going wrong...
-                if 'Daily limit' in str(err) or 'Insufficient quota for key' in str(err):
-                    exceeded_in_queries('google')
-                elif 'limit exceeded' in str(err):
-                    exceeded_in_queries('yahoo')
-                elif 'Invalid value for AppID in request' in str(err):
-                    exceeded_in_queries('msn')
-                else:
-                    error(err, "Got an error")
-
-                if search_request_retry:
-                    search_request_retry -= 1
-
-        if not query_success:
-            error('No response for: %s' % query, "Error (%s)" % engine)
-
-def get_results(query, numresults = 10):
-    result_list = list()
-    query = re.sub("[()\"<>]", "", query)
-    # wikipedia.output(query)
-    if config.copyright_google:
-        soap('google', query, result_list)
-    if config.copyright_yahoo:
-        soap('yahoo', query, result_list, numresults = numresults)
-    if config.copyright_msn:
-        soap('msn', query, result_list)
-
-    offset = 0
-    for i in range(len(result_list)):
-        if check_list(result_list[i + offset][0], excl_list, verbose = True):
-            result_list.pop(i + offset)
-            offset += -1
-    return result_list
 
 def get_by_id(title, id):
     return wikipedia.getSite().getUrl("/w/index.php?title=%s&oldid=%s&action=raw" % (title, id))
@@ -1011,6 +1028,7 @@ class CheckRobot:
         """
         """
         self.generator = generator
+        self.SearchEngine = SearchEngine()
 
     def run(self):
         """
@@ -1048,7 +1066,7 @@ class CheckRobot:
                 if remove_wikicode_dotall:
                     text = remove_wikicode(text, re_dotall = True)
 
-                output = query(lines = text.splitlines(), wikicode = not remove_wikicode_dotall)
+                output = self.SearchEngine.query(lines = text.splitlines(), wikicode = not remove_wikicode_dotall)
                 if output:
                    write_log('=== [[' + page.title() + ']] ===' + output + '\n',
                              filename = output_file)
@@ -1144,7 +1162,7 @@ def main():
             except ValueError:
                 namespaces.append(arg[11:])
         elif arg.startswith('-forceupdate'):
-            load_pages(force_update = True)
+            URLExclusion().update()
         elif arg == '-repeat':
             repeat = True
         elif arg.startswith('-new'):
@@ -1187,9 +1205,6 @@ def main():
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = pageNumber)
     bot = CheckRobot(preloadingGen)
     bot.run()
-    print_stats()
-
-excl_list = exclusion_list()
 
 if number_of_words > 22 and config.copyright_msn:
         warn("Live Search requires a lower value for 'number_of_words' variable "
