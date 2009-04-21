@@ -477,9 +477,6 @@ reImageC = re.compile('\[\[' + join_family_data('Image', 6) + ':.*?\]\]', re.I)
 reWikipediaC = re.compile('(' + '|'.join(wikipedia_names.values()) + ')', re.I)
 reSectionNamesC = re.compile('(' + '|'.join(editsection_names.values()) + ')')
 
-def cleanwikicode(text):
-    remove_wikicode(text)
-
 def remove_wikicode(text, re_dotall = False, remove_quote = exclude_quote, debug = False):
     if not text:
         return ""
