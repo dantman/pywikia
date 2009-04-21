@@ -87,7 +87,7 @@ class TextEditor(ScrolledText):
                    '<<select-all>>': ['<Control-Key-a>'],
                    '<<undo>>': ['<Control-Key-z>', '<Control-Key-Z>'],
                   }
-        for event, keylist in keydefs.items():
+        for event, keylist in keydefs.iteritems():
             if keylist:
                 self.event_add(event, *keylist)
 

@@ -3087,7 +3087,7 @@ class Family:
            This is supposed to be called in the constructor of the family."""
         self.langs[code] = location
 
-        for num, val in namespaces.items():
+        for num, val in namespaces.iteritems():
             self.namespaces[num][code]=val
 
     def get_known_families(self, site):

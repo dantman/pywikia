@@ -652,7 +652,7 @@ class Subject(object):
                 wikipedia.output("%s has a backlink from %s."%(page,linkingPage))
                 self.makeForcedStop(counter)
                 return False
-        if self.foundIn.has_key(page):
+        if page in self.foundIn:
             # not new
             self.foundIn[page].append(linkingPage)
             return False
@@ -670,7 +670,7 @@ class Subject(object):
         Returns True if the namespaces are different and the user
         has selected not to follow the linked page.
         """
-        if self.foundIn.has_key(linkedPage):
+        if linkedPage in self.foundIn:
             # We have seen this page before, don't ask again.
             return False
         elif self.originPage.namespace() != linkedPage.namespace():
@@ -985,7 +985,7 @@ class Subject(object):
                     new[site] = [page]
         # See if new{} contains any problematic values
         result = {}
-        for site, pages in new.items():
+        for site, pages in new.iteritems():
             if len(pages) > 1:
                 errorCount += 1
                 self.problem("Found more than one link for %s" % site)
@@ -1003,7 +1003,7 @@ class Subject(object):
                 return None
 
             # First loop over the ones that have more solutions
-            for site, pages in new.items():
+            for site, pages in new.iteritems():
                 if len(pages) > 1:
                     wikipedia.output(u"=" * 30)
                     wikipedia.output(u"Links to %s" % site)
@@ -1032,7 +1032,7 @@ class Subject(object):
             # Loop over the ones that have one solution, so are in principle
             # not a problem.
             acceptall = False
-            for site, pages in new.items():
+            for site, pages in new.iteritems():
                 if len(pages) == 1:
                     if not acceptall:
                         wikipedia.output(u"=" * 30)
@@ -1056,7 +1056,7 @@ class Subject(object):
                             # None acceptable
                             break
         else: # errorCount <= 0, hence there are no lists longer than one.
-            for site, pages in new.items():
+            for site, pages in new.iteritems():
                 result[site] = pages[0]
         return result
 
@@ -1092,7 +1092,7 @@ class Subject(object):
 
         # Make sure new contains every page link, including the page we are processing
         # replaceLinks will skip the site it's working on.
-        if not new.has_key(self.originPage.site()):
+        if self.originPage.site() not in new:
             new[self.originPage.site()] = self.originPage
 
         #self.replaceLinks(self.originPage, new, True, bot)
@@ -1106,10 +1106,10 @@ class Subject(object):
             frgnSiteDone = False
             for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.langs.keys() if (not s in lclSite.family.languages_by_size and not s in lclSite.family.obsolete)]:
                 site = wikipedia.getSite(code = siteCode)
-                if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and new.has_key(site)):
+                if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and site in new):
                     if site == lclSite:
                         lclSiteDone = True   # even if we fail the update
-                    if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
+                    if site.family.name in config.usernames and site.lang in config.usernames[site.family.name]:
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
@@ -1119,7 +1119,7 @@ class Subject(object):
                             notUpdatedSites.append(site)
                         except GiveUpOnPage:
                             break
-                elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
+                elif not globalvar.strictlimittwo and site in new and site != lclSite:
                     old={}
                     try:
                         for page in new[site].interwiki():
@@ -1141,7 +1141,7 @@ class Subject(object):
         else:
             for (site, page) in new.iteritems():
                 # if we have an account for this site
-                if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
+                if site.family.name in config.usernames and site.lang in config.usernames[site.family.name]:
                     # Try to do the changes
                     try:
                         if self.replaceLinks(page, new, bot):

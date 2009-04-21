@@ -271,7 +271,7 @@ def error(text ,prefix = None):
 
 def skip_section(text):
     l = list()
-    for s in sections_to_skip.values():
+    for s in sections_to_skip.itervalues():
         l.extend(s)
     sect_titles = '|'.join(l)
 

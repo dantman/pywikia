@@ -2529,7 +2529,7 @@ not supported by PyWikipediaBot!"""
                 }
 
         if self._deletedRevs != None and self._deletedRevsModified:
-            for ts in self._deletedRevs.keys():
+            for ts in self._deletedRevs:
                 if self._deletedRevs[ts][4]:
                     formdata['ts'+ts] = '1'
 
@@ -3089,7 +3089,7 @@ class _GetAll(object):
             else:
                 output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
         for id in self.site.family.namespaces:
-            if self.site.family.isDefinedNSLanguage(id, lang) and not header.namespaces.has_key(id):
+            if self.site.family.isDefinedNSLanguage(id, lang) and id not in header.namespaces:
                 output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id))
 
     def getData(self):
@@ -3236,7 +3236,7 @@ class Throttle(object):
             self.checktime = time.time()
             processes[self.pid] = self.checktime
             f = open(self.logfn(), 'w')
-            for p in processes.keys():
+            for p in processes:
                 f.write(str(p)+' '+str(processes[p])+'\n')
             f.close()
             self.process_multiplicity = count
@@ -3303,7 +3303,7 @@ class Throttle(object):
                 except (IndexError,ValueError):
                     pass    # Sometimes the file gets corrupted - ignore that line
         f = open(self.logfn(), 'w')
-        for p in processes.keys():
+        for p in processes:
             f.write(str(p)+' '+str(processes[p])+'\n')
         f.close()
 
@@ -6969,7 +6969,7 @@ if config.authenticate:
     if os.path.isfile(COOKIEFILE):
         cj.load(COOKIEFILE)
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    for site in config.authenticate.keys():
+    for site in config.authenticate:
         passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
     authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)

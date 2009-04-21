@@ -372,7 +372,7 @@ class WiktionaryPage:
                 if header.type==u'lang':
                     context['lang']=header.contents
                 if header.type==u'pos':
-                    if not(context.has_key('lang')):
+                    if 'lang' not in context:
                         # This entry lacks a language indicator,
                         # so we assume it is the same language as the Wiktionary we're working on
                         context['lang']=self.wikilang
@@ -498,7 +498,7 @@ class WiktionaryPage:
                             sample = plural = diminutive = label = definition = ''
                             examples = []
 
-                            if not(self.entries.has_key(contentblock['context']['lang'])):
+                            if contentblock['context']['lang'] not in self.entries:
                                 # If no entry for this language has been foreseen yet
                                 # let's create one
                                 anentry = Entry(contentblock['context']['lang'])
@@ -525,7 +525,7 @@ class WiktionaryPage:
             # Make sure we store the last definition
             if definition:
                 ameaning = Meaning(term=theterm, definition=definition, label=label, examples=examples)
-                if not(self.entries.has_key(contentblock['context']['lang'])):
+                if contentblock['context']['lang'] not in self.entries:
                     # If no entry for this language has been foreseen yet
                     # let's create one
                     anentry = Entry(contentblock['context']['lang'])
@@ -1016,16 +1016,16 @@ class Header:
         self.header = self.header.replace('{{','').replace('}}','').strip().lower()
 
         # Now we know the content of the header, let's try to find out what it means:
-        if pos.has_key(self.header):
+        if self.header in pos:
             self.type=u'pos'
             self.contents=pos[self.header]
-        if langnames.has_key(self.header):
+        if self.header in langnames:
             self.type=u'lang'
             self.contents=self.header
-        if invertedlangnames.has_key(self.header):
+        if self.header in invertedlangnames:
             self.type=u'lang'
             self.contents=invertedlangnames[self.header]
-        if otherheaders.has_key(self.header):
+        if self.header in otherheaders:
             self.type=u'other'
             self.contents=otherheaders[self.header]
 
