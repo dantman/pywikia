@@ -138,7 +138,6 @@ import warnings
 import unicodedata
 import xmlreader
 from BeautifulSoup import *
-import simplejson
 import weakref
 
 # Set the locale to system default. This will ensure correct string
