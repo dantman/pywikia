@@ -4151,7 +4151,7 @@ def Family(fam = None, fatal = True, force = False):
             output(u"""\
 A family name cannot include an hyphen (-). Please consider renaming your
 '%s' family to '%s' or '%s' instead.""" 
-                    % (fam, fam.replace('-', ''), fam.replace('-', '_'))
+                    % (fam, fam.replace('-', ''), fam.replace('-', '_')))
             sys.exit(1)
     except ImportError:
         if fatal:
