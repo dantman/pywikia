@@ -4145,6 +4145,14 @@ def Family(fam = None, fatal = True, force = False):
         # search for family module in the 'families' subdirectory
         sys.path.append(config.datafilepath('families'))
         exec "import %s_family as myfamily" % fam
+    except SyntaxError:
+        if '-' in fam:
+            # A python module cannot include an hyphen
+            output(u"""\
+A family name cannot include an hyphen (-). Please consider renaming your
+'%s' family to '%s' or '%s' instead.""" 
+                    % (fam, fam.replace('-', ''), fam.replace('-', '_'))
+            sys.exit(1)
     except ImportError:
         if fatal:
             output(u"""\
