@@ -131,6 +131,9 @@ parameterHelp = """\
                   [[Special:Randomredirect]].  Can also be given as
                   "-randomredirect:n" where n is the number of pages to be
                   returned, else 100 pages are returned.
+
+-gorandom         Specifies that the robot should starting at the random pages 
+                  returned by [[Special:Random]].
 """
 
 
@@ -1009,6 +1012,14 @@ class GeneratorFactory:
                                               transclusionPageTitle))
             gen = ReferringPageGenerator(transclusionPage,
                                          onlyTemplateInclusion=True)
+        elif arg.startswith('-gorandom'):
+            for firstPage in RandomPageGenerator(number = 1):
+                firstPageTitle = firstPage.title()
+            namespace = wikipedia.Page(site, firstPageTitle).namespace()
+            firstPageTitle = wikipedia.Page(site,
+                                 firstPageTitle).titleWithoutNamespace()
+            gen = AllpagesPageGenerator(firstPageTitle, namespace,
+                                        includeredirects=False)
         elif arg.startswith('-start'):
             if arg.startswith('-startxml'):
                 wikipedia.output(u'-startxml : wrong parameter')
