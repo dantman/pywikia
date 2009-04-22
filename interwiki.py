@@ -893,7 +893,12 @@ class Subject(object):
                             # Ignore the interwiki links.
                             iw = ()
                     elif globalvar.autonomous and page.site() in [p.site() for p in self.done if p != page and p.exists() and not p.isRedirectPage()]:
-                        otherpage = [p for p in self.done if p.site() == page.site() and p != page and p.exists() and not p.isRedirectPage()][0]
+                        
+                        for p in self.done:
+                            if p.site() == page.site() and p != page \
+                                and p.exists() and not p.isRedirectPage():
+                                otherpage = p
+                                break
                         wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
                         self.makeForcedStop(counter)
                         try:
