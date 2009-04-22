@@ -824,7 +824,6 @@ class SearchEngine:
                 elif 'Invalid value for AppID in request' in str(err):
                     exceeded_in_queries('msn')
                 else:
-                    raise
                     error(err, "Got an error")
 
                 if search_request_retry:
