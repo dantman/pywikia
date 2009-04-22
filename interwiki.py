@@ -1191,6 +1191,8 @@ class Subject(object):
         # clone original newPages dictionary, so that we can modify it to the local page's needs
         new = dict(newPages)
 
+        interwikis = page.interwiki()
+
         # remove interwiki links to ignore
         for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', pagetext):
             try:
@@ -1200,7 +1202,8 @@ class Subject(object):
 
             try:
                 if (new[ignorepage.site()] == ignorepage) and (ignorepage.site() != page.site()):
-                    if (ignorepage not in page.interwiki()):
+                    
+                    if (ignorepage not in interwikis):
                         wikipedia.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage.aslink(), 'from': page.aslink()})
                         new.pop(ignorepage.site())
                     else:
@@ -1222,7 +1225,7 @@ class Subject(object):
         # Put interwiki links into a map
         old={}
         try:
-            for page2 in page.interwiki():
+            for page2 in interwikis:
                 old[page2.site()] = page2
         except wikipedia.NoPage:
             wikipedia.output(u"BUG>>> %s no longer exists?" % page.aslink(True))
