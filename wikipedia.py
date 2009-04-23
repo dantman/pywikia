@@ -332,7 +332,7 @@ class Page(object):
             # restriction affects us or not
             self._editrestriction = False
 
-            if site == None:
+            if site is None:
                 site = getSite()
             elif type(site) is str or type(site) is unicode:
                 site = getSite(site)
@@ -1399,7 +1399,7 @@ not supported by PyWikipediaBot!"""
                 if comment and old.strip().replace('\r\n', '\n') != newtext.strip().replace('\r\n', '\n'):
                     comment += translate(self.site(), cosmetic_changes.msg_append)
 
-        if watchArticle == None:
+        if watchArticle is None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
                 watchArticle = self._isWatched
@@ -2258,7 +2258,7 @@ not supported by PyWikipediaBot!"""
 
         if throttle:
             put_throttle()
-        if reason == None:
+        if reason is None:
             reason = input(u'Please enter a reason for the move:')
         if self.isTalkPage():
             movetalkpage = False
@@ -2364,7 +2364,7 @@ not supported by PyWikipediaBot!"""
 
         if throttle:
             put_throttle()
-        if reason == None:
+        if reason is None:
             reason = input(u'Please enter a reason for the deletion:')
         answer = 'y'
         if prompt and not hasattr(self.site(), '_noDeletePrompt'):
@@ -2457,7 +2457,7 @@ not supported by PyWikipediaBot!"""
         retrieved earlier).
 
         """
-        if self._deletedRevs == None:
+        if self._deletedRevs is None:
             self.loadDeletedRevisions()
         if timestamp not in self._deletedRevs:
             #TODO: Throw an exception instead?
@@ -2482,7 +2482,7 @@ not supported by PyWikipediaBot!"""
         If undelete is False, mark the revision to remain deleted.
 
         """
-        if self._deletedRevs == None:
+        if self._deletedRevs is None:
             self.loadDeletedRevisions()
         if timestamp not in self._deletedRevs:
             #TODO: Throw an exception?
@@ -2527,7 +2527,7 @@ not supported by PyWikipediaBot!"""
                 'restore': self.site().mediawiki_message('undeletebtn')
                 }
 
-        if self._deletedRevs != None and self._deletedRevsModified:
+        if self._deletedRevs is not None and self._deletedRevsModified:
             for ts in self._deletedRevs:
                 if self._deletedRevs[ts][4]:
                     formdata['ts'+ts] = '1'
@@ -2565,7 +2565,7 @@ not supported by PyWikipediaBot!"""
             edit, move = edit.lower(), move.lower()
         if throttle:
             put_throttle()
-        if reason == None:
+        if reason is None:
             reason = input(
               u'Please enter a reason for the change of the protection level:')
         reason = reason.encode(self.site().encoding())
@@ -2588,7 +2588,7 @@ not supported by PyWikipediaBot!"""
             if move == 'none': move = ''
 
             # Translate no duration to infinite
-            if duration == 'none' or duration == None: duration = 'infinite'
+            if duration == 'none' or duration is None: duration = 'infinite'
 
             # Get cascading
             if cascading == False:
@@ -2686,7 +2686,7 @@ not supported by PyWikipediaBot!"""
         imagePattern = u'(%s)' % capitalizationPattern(image).replace(r'\_', '[ _]')
 
         def filename_replacer(match):
-            if replacement == None:
+            if replacement is None:
                 return u''
             else:
                 old = match.group()
@@ -2697,7 +2697,7 @@ not supported by PyWikipediaBot!"""
         # link has to be closed properly.
         paramPattern = r'(?:\|(?:(?!\[\[).|\[\[.*?\]\])*?)'
         rImage = re.compile(ur'\[\[(?P<namespace>%s)(?P<filename>%s)(?P<params>%s*?)\]\]' % (namespacePattern, imagePattern, paramPattern))
-        if replacement == None:
+        if replacement is None:
             new_text = rImage.sub('', new_text)
         else:
             new_text = rImage.sub('[[\g<namespace>%s\g<params>]]' % replacement, new_text)
@@ -3073,7 +3073,7 @@ class _GetAll(object):
             nshdr = header.namespaces[id]
             if self.site.family.isDefinedNSLanguage(id, lang):
                 ns = self.site.namespace(id)
-                if ns == None:
+                if ns is None:
                     ns = u''
                 if ns != nshdr:
                     dflt = self.site.family.namespace('_default', id)
@@ -3567,7 +3567,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     instead.
 
     """
-    if insite == None:
+    if insite is None:
         insite = getSite()
     result = {}
     # Ignore interwiki links within nowiki tags, includeonly tags, pre tags,
@@ -3609,7 +3609,7 @@ def removeLanguageLinks(text, site = None, marker = ''):
     interwiki links).
 
     """
-    if site == None:
+    if site is None:
         site = getSite()
     if not site.validLanguageLinks():
         return text
@@ -3649,7 +3649,7 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
     """
     # Find a marker that is not already in the text.
     marker = findmarker( oldtext, u'@@')
-    if site == None:
+    if site is None:
         site = getSite()
     separator = site.family.interwiki_text_separator
     cseparator = site.family.category_text_separator
@@ -4133,7 +4133,7 @@ def Family(fam = None, fatal = True, force = False):
     If fatal is True, the bot will stop running when the given family is
     unknown. If fatal is False, it will only raise a ValueError exception.
     """
-    if fam == None:
+    if fam is None:
         fam = config.family
 
     family = _familyCache.get(fam)
@@ -4450,7 +4450,7 @@ class Site(object):
         * Actions: edit, move, delete, protect, upload
         * User levels: autoconfirmed, sysop, bot, empty string (always true)
         """
-        if right == '' or right == None:
+        if right == '' or right is None:
             return True
         else:
             self._load(sysop = sysop)
@@ -4531,7 +4531,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         # wpEditToken is explicitly added as last value.
         # If a premature connection abort occurs while putting, the server will
         # not have received an edit token and thus refuse saving the page
-        if wpEditToken != None:
+        if wpEditToken is not None:
             l.append('wpEditToken=' + wpEditToken)
         return '&'.join(l)
 
@@ -4661,7 +4661,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
            Returns the HTML text of the page converted to unicode.
         """
 
-        if retry==None:
+        if retry is None:
             retry=config.retry_on_fail
 
         if False: #self.persistent_http and not data:
@@ -5287,10 +5287,10 @@ your connection is down. Retrying in %i minutes..."""
             'letype'    :'upload',
             'lelimit'   :int(number),
             }
-        if lestart != None: params['lestart'] = lestart
-        if leend != None: params['leend'] = leend
-        if leend != None: params['leuser'] = leuser
-        if leend != None: params['letitle'] = letitle
+        if lestart is not None: params['lestart'] = lestart
+        if leend is not None: params['leend'] = leend
+        if leend is not None: params['leuser'] = leuser
+        if leend is not None: params['letitle'] = letitle
 
         data = query.GetData(params,
                         useAPI = True, encodeTitle = False)
@@ -5431,7 +5431,7 @@ your connection is down. Retrying in %i minutes..."""
                 html = self.getUrl(path)
                 # output(u' html=%s' % (html))
                 m = entryR.search(html)
-                if m != None:
+                if m is not None:
                     title = m.group('title')
                     # output(u' title=%s' % ( title ))
                     if title not in seen:
@@ -5455,7 +5455,7 @@ your connection is down. Retrying in %i minutes..."""
                 html = self.getUrl(path)
                 # output(u' html=%s' % (html))
                 m = entryR.search(html)
-                if m != None:
+                if m is not None:
                     title = m.group('title')
                     # output(u' title=%s' % ( title ))
                     if title not in seen:
@@ -5659,7 +5659,7 @@ your connection is down. Retrying in %i minutes..."""
         # Avoid problems of encoding and stuff like that, let it divided please
         url = self.protectedpages_address()
         url += '&type=%s&level=%s' % (type, lvl)
-        if namespace != None: # /!\ if namespace seems simpler, but returns false when ns=0
+        if namespace is not None: # /!\ if namespace seems simpler, but returns false when ns=0
 
             url += '&namespace=%s' % namespace
         parser_text = self.getUrl(url)
@@ -6247,7 +6247,7 @@ your connection is down. Retrying in %i minutes..."""
 
             NOTE 2: it returns the image WITHOUT the image namespace.
         """
-        if hash_found == None: # If the hash is none return None and not continue
+        if hash_found is None: # If the hash is none return None and not continue
             return None
         # Now get all the images with the same hash
         #action=query&format=xml&list=allimages&aisha1=%s
@@ -6270,9 +6270,9 @@ _sites = {}
 _namespaceCache = {}
 
 def getSite(code=None, fam=None, user=None, persistent_http=None, noLogin=False):
-    if code == None:
+    if code is None:
         code = default_code
-    if fam == None:
+    if fam is None:
         fam = default_family
     key = '%s:%s:%s:%s' % (fam, code, user, persistent_http)
     if key not in _sites:

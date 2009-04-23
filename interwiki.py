@@ -295,11 +295,11 @@ except NameError:
         """
         seq2 = copy.copy(seq)
         if key:
-            if cmp == None:
+            if cmp is None:
                 cmp = __builtins__.cmp
             seq2.sort(lambda x,y: cmp(key(x), key(y)))
         else:
-            if cmp == None:
+            if cmp is None:
                 seq2.sort()
             else:
                 seq2.sort(cmp)
@@ -827,7 +827,7 @@ class Subject(object):
             # make sure that none of the linked items is an auto item
             if globalvar.skipauto:
                 dictName, year = page.autoFormat()
-                if dictName != None:
+                if dictName is not None:
                     wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))
 
             # Register this fact at the todo-counter.
@@ -1091,7 +1091,7 @@ class Subject(object):
         wikipedia.output(u"======Post-processing %s======" % self.originPage.aslink(True))
         # Assemble list of accepted interwiki links
         new = self.assemble()
-        if new == None: # User said give up or autonomous with problem
+        if new is None: # User said give up or autonomous with problem
             wikipedia.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
 
@@ -1215,7 +1215,7 @@ class Subject(object):
         pltmp = new[page.site()]
         if pltmp != page:
             s = "None"
-            if pltmp != None: s = pltmp.aslink(True)
+            if pltmp is not None: s = pltmp.aslink(True)
             wikipedia.output(u"BUG>>> %s is not in the list of new links! Found %s." % (page.aslink(True), s))
             raise SaveError
 
@@ -1435,7 +1435,7 @@ class InterwikiBot(object):
                         continue
                     if globalvar.skipauto:
                         dictName, year = page.autoFormat()
-                        if dictName != None:
+                        if dictName is not None:
                             wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
                     if globalvar.bracketonly:
@@ -1524,7 +1524,7 @@ class InterwikiBot(object):
         """
         # First find the best language to work on
         site = self.selectQuerySite()
-        if site == None:
+        if site is None:
             wikipedia.output(u"NOTE: Nothing left to do")
             return False
         # Now assemble a reasonable list of pages to get
@@ -1808,7 +1808,7 @@ if __name__ == "__main__":
         except:
             wikipedia.output(u'Missing main page name')
 
-        if newPages != None:
+        if newPages is not None:
             if len(namespaces) == 0:
                 ns = 0 
             elif len(namespaces) == 1:

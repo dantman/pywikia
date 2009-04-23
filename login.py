@@ -299,7 +299,7 @@ def main():
             for lang in namedict[familyName].iterkeys():
                 try:
                     site = wikipedia.getSite(code=lang, fam=familyName)
-                    if not forceLogin and site.loggedInAs(sysop = sysop) != None:
+                    if not forceLogin and site.loggedInAs(sysop = sysop) is not None:
                         wikipedia.output(u'Already logged in on %s' % site)
                     else:
                         loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)

@@ -171,9 +171,9 @@ class User:
             #an autoblock, so can't be blocked.
             raise AutoblockUserError
 
-        if expiry == None:
+        if expiry is None:
             expiry = input(u'Please enter the expiry time for the block:')
-        if reason == None:
+        if reason is None:
             reason = input(u'Please enter a reason for the block:')
 
         token = self.site.getToken(self, sysop = True)

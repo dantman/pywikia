@@ -217,7 +217,7 @@ class TextEditor(ScrolledText):
 class EditBoxWindow(Frame):
 
     def __init__(self, parent = None, **kwargs):
-        if parent == None:
+        if parent is None:
             # create a new window
             parent = Tk()
         self.parent = parent
@@ -376,7 +376,7 @@ class ListBoxWindow:
         self.parent.destroy()
 
     def __init__(self, parent = None):
-        if parent == None:
+        if parent is None:
             # create a new window
             parent = Tk()
         self.parent = parent

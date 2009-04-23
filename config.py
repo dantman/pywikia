@@ -472,7 +472,7 @@ for _key in globals().keys():
         print "WARNING: Configuration variable %r is defined but unknown. Misspelled?" %_key
 
 # Fix up default console_encoding
-if console_encoding == None:
+if console_encoding is None:
     if __sys.platform=='win32':
         console_encoding = 'cp850'
     else:

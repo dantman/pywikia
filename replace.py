@@ -338,7 +338,7 @@ class ReplaceRobot:
         if 'inside' in self.exceptions:
             exceptions += self.exceptions['inside']
         for old, new in self.replacements:
-            if self.sleep != None:
+            if self.sleep is not None:
                 time.sleep(self.sleep)
             new_text = wikipedia.replaceExcept(new_text, old, new, exceptions,
                                                allowoverlap=self.allowoverlap)
@@ -567,14 +567,14 @@ def main(*args):
 
     if (len(commandline_replacements) % 2):
         raise wikipedia.Error, 'require even number of replacements.'
-    elif (len(commandline_replacements) == 2 and fix == None):
+    elif (len(commandline_replacements) == 2 and fix is None):
         replacements.append((commandline_replacements[0],
                              commandline_replacements[1]))
         if summary_commandline == False:
             editSummary = wikipedia.translate(wikipedia.getSite(), msg ) % (' (-' + commandline_replacements[0] + ' +'
                                    + commandline_replacements[1] + ')')
     elif (len(commandline_replacements) > 1):
-        if (fix == None):
+        if (fix is None):
             for i in xrange (0, len(commandline_replacements), 2):
                 replacements.append((commandline_replacements[i],
                                      commandline_replacements[i + 1]))
@@ -588,7 +588,7 @@ def main(*args):
         else:
            raise wikipedia.Error(
                'Specifying -fix with replacements is undefined')
-    elif fix == None:
+    elif fix is None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
         new = wikipedia.input(u'Please enter the new text:')
         change = '(-' + old + ' +' + new

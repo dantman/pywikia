@@ -1250,7 +1250,7 @@ def addFmt( lang, isMnthOfYear, patterns ):
         raise AssertionError(u'pattern %s does not have 12 elements' % lang )
 
     for i in range(12):
-        if patterns[i] != None:
+        if patterns[i] is not None:
             if isMnthOfYear:
                 formats[yrMnthFmts[i]][lang] = eval(u'lambda v: dh_mnthOfYear( v, u"%s" )' % patterns[i])
             else:
@@ -1265,7 +1265,7 @@ def makeMonthNamedList( lang, pattern, makeUpperCase = None ):
     The pattern must be have one %s that will be replaced by the localized month name.
     Use %%d for any other parameters that should be preserved.
     """
-    if makeUpperCase == None:
+    if makeUpperCase is None:
         f = lambda s: s
     elif makeUpperCase == True:
         f = lambda s: s[0].upper() + s[1:]

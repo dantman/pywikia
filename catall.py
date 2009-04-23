@@ -118,7 +118,7 @@ try:
                         wikipedia.output(c.title())
                     print "----------------------------------------"
                     newcats=choosecats(text)
-                    if newcats == None:
+                    if newcats is None:
                         make_categories(p, [], mysite)
                     elif newcats != []:
                         make_categories(p, newcats, mysite)

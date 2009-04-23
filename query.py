@@ -31,7 +31,7 @@ import wikipedia, simplejson, urllib, time
 def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True):
     """Get data from the query api, and convert it into a data object
     """
-    if site == None:
+    if site is None:
         site = wikipedia.getSite()
 
     for k,v in params.iteritems():

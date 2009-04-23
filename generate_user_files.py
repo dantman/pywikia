@@ -7,7 +7,7 @@ import os, sys, codecs, re
 base_dir = ''
 console_encoding = sys.stdout.encoding
 
-if console_encoding == None or sys.platform == 'cygwin':
+if console_encoding is None or sys.platform == 'cygwin':
     console_encoding = "iso-8859-1"
 
 def listchoice(clist = [], message = None, default = None):
