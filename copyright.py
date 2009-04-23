@@ -83,8 +83,8 @@ You can include also the text to examine directly on the command line:
 #
 
 from __future__ import generators
-import sys, re, codecs, os, time, urllib, urllib2, httplib
-import wikipedia, pagegenerators, catlib, config
+import re, codecs, os, time, urllib, urllib2, httplib
+import wikipedia, pagegenerators, config
 
 __version__='$Id$'
 
@@ -331,7 +331,7 @@ class URLExclusion:
                     data = page.get()
                 except KeyboardInterrupt:
                     raise
-                except wikipedia.IsRedirectPage, arg:
+                except wikipedia.IsRedirectPage:
                     data = page.getRedirectTarget().get()
                 except:
                     error('Getting page failed')
@@ -443,9 +443,9 @@ def write_log(text, filename = output_file):
 
 def economize_query(text):
     # Comma separated list
-    if text.count(', ') > 4:
+    c = text.count(', ')
+    if c > 4:
         l = len(text)
-        c = text.count(', ')
         r = 100 * float(c) / l
 
         #if r >= 4 and r < 7:
@@ -1112,7 +1112,6 @@ def main():
     # Default number of pages for NewPages generator
     number = 60
 
-    firstPageTitle = None
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
