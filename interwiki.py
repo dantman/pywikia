@@ -502,6 +502,51 @@ class Global(object):
     nobackonly = False
     hintsareright = False
 
+class PageTree(object):
+    """
+    Structure to manipulate a set of pages.
+    Allows filtering efficiently by Site.
+    """
+    def __init__(self):
+        self.tree = {}
+        self.size = 0
+
+    def filter(self, site):
+        """
+        Iterates over pages that are in Site site
+        """ 
+        try:
+            for page in self.tree[site]:
+                yield page
+        except KeyError:
+            pass
+
+    def __len__(self):
+        return self.size
+
+    def add(self, page):
+        site = page.site()
+        if not site in self.tree:
+            self.tree[site] = {}
+        self.tree[site][page] = True
+        self.size += 1
+
+    def remove(self, page):
+        del self.tree[site][page]
+        self.size -= 1
+
+    def siteCounts(self):
+        """
+        Yields (Site, number of pages in site) pairs
+        """
+        for site, d in self.tree:
+            yield site, len(d)
+    
+    def __iter__(self):
+        for site, d in self.tree:
+            for page in d:
+                yield page
+
 class Subject(object):
     """
     Class to follow the progress of a single 'subject' (i.e. a page with
@@ -515,10 +560,12 @@ class Subject(object):
         self.originPage = originPage
         # todo is a list of all pages that still need to be analyzed.
         # Mark the origin page as todo.
-        self.todo = [originPage]
+        self.todo = PageTree()
+        self.todo.add(originPage)
+
         # done is a list of all pages that have been analyzed and that
         # are known to belong to this subject.
-        self.done = []
+        self.done = PageTree()
         # foundIn is a dictionary where pages are keys and lists of
         # pages are values. It stores where we found each page.
         # As we haven't yet found a page that links to the origin page, we
@@ -526,7 +573,7 @@ class Subject(object):
         self.foundIn = {self.originPage:[]}
         # This is a list of all pages that are currently scheduled for
         # download.
-        self.pending = []
+        self.pending = PageTree()
         if globalvar.hintsareright:
             # This is a set of sites that we got hits to
             self.hintedsites = set()
@@ -544,8 +591,8 @@ class Subject(object):
         first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.done + self.pending:
-            if page.site() == site:
+        for tree in [self.done, self.pending]:
+            for page in tree.filter(site):
                 if page.exists() and page.isDisambig():
                     return page
         return None
@@ -557,8 +604,8 @@ class Subject(object):
         first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.done + self.pending:
-            if page.site() == site:
+        for tree in [self.done, self.pending]:
+            for page in tree.filter(site):
                 if page.exists() and not page.isDisambig() and not page.isRedirectPage():
                     return page
         return None
@@ -570,8 +617,8 @@ class Subject(object):
         have been found, the first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.done + self.pending + self.todo:
-            if page.site() == site:
+        for tree in [self.done, self.pending, self.todo]:
+            for page in tree.filter(site):
                 if page.namespace() == self.originPage.namespace():
                     if page.exists() and not page.isRedirectPage():
                         return page
@@ -590,7 +637,7 @@ class Subject(object):
             pages = titletranslate.translate(self.originPage, hints = hints, auto = globalvar.auto, removebrackets
 = globalvar.hintnobracket)
         for page in pages:
-            self.todo.append(page)
+            self.todo.add(page)
             self.foundIn[page] = [None]
             if keephintedsites:
                 self.hintedsites.add(page.site)
@@ -603,12 +650,8 @@ class Subject(object):
         """
         siteCount = {}
 
-        for page in self.todo:
-            site = page.site()
-            try:
-                siteCount[site] += 1
-            except KeyError:
-                siteCount[site] = 1
+        for site, count in self.todo.siteCounts():
+            siteCount[site] = count
         return siteCount
 
     def willWorkOn(self, site):
@@ -619,24 +662,25 @@ class Subject(object):
         """
         # Bug-check: Isn't there any work still in progress? We can't work on
         # different sites at a time!
-        if self.pending != []:
+        if len(self.pending) > 0:
             raise 'BUG: Can\'t start to work on %s; still working on %s' % (site, self.pending)
         # Prepare a list of suitable pages
-        for page in self.todo:
-            if page.site() == site:
-                self.pending.append(page)
-        for page in self.pending:
+        result = []
+        for page in self.todo.filter(site):
+            self.pending.add(page)
+            result.append(page)
+        for page in self.pending.filter(site):
             self.todo.remove(page)
         # If there are any, return them. Otherwise, nothing is in progress.
-        return self.pending
+        return result
 
     def makeForcedStop(self,counter):
         """
         Ends work on the page before the normal end.
         """
-        for page in self.todo:
-            counter.minus(page.site())
-        self.todo = []
+        for site, count in self.todo.siteCounts():
+            counter.minus(site, count)
+        self.todo = PageTree()
         self.forcedStop = True
 
     def addIfNew(self, page, counter, linkingPage):
@@ -662,7 +706,7 @@ class Subject(object):
             return False
         else:
             self.foundIn[page] = [linkingPage]
-            self.todo.append(page)
+            self.todo.add(page)
             counter.plus(page.site())
             return True
 
@@ -828,7 +872,7 @@ class Subject(object):
         # Loop over all the pages that should have been taken care of
         for page in self.pending:
             # Mark the page as done
-            self.done.append(page)
+            self.done.add(page)
 
             # make sure that none of the linked items is an auto item
             if globalvar.skipauto:
@@ -852,15 +896,21 @@ class Subject(object):
                     if page == self.originPage:
                         if globalvar.initialredirect:
                             self.originPage = redirectTargetPage
-                            self.pending.append(redirectTargetPage)
+                            #XXX might not work if page.site != redirTar.site:
+                            # We are appending an item to 
+                            # self.pending[redirTar.site]
+                            # but we are iterating on self.pending at the same
+                            # time.
+                            # On the other hand... crosslanguage redirects?
+                            self.pending.add(redirectTargetPage)
                             counter.plus(redirectTargetPage.site)
                         else:
                             # This is a redirect page to the origin. We don't need to
                             # follow the redirection.
                             # In this case we can also stop all hints!
-                            for page2 in self.todo:
-                                counter.minus(page2.site())
-                            self.todo = []
+                            for site, count in self.todo.siteCounts():
+                                counter.minus(site, count)
+                            self.todo = PageTree()
                     elif not globalvar.followredirect:
                         wikipedia.output(u"NOTE: not following redirects.")
                     else:
@@ -873,10 +923,11 @@ class Subject(object):
                     if page == self.originPage:
                         # The page we are working on is the page that does not exist.
                         # No use in doing any work on it in that case.
-                        for page2 in self.todo:
-                            counter.minus(page2.site())
-                        self.todo = []
-                        self.done = [] # In some rare cases it might be we already did check some 'automatic' links
+                        for site, count in self.todo.siteCounts():
+                            counter.minus(site, count)
+                        self.todo = PageTree()
+                        # In some rare cases it might be we already did check some 'automatic' links 
+                        self.done = PageTree() 
                         pass
                 except wikipedia.NoSuchSite:
                     wikipedia.output(u"NOTE: site %s does not exist" % page.site())
@@ -886,8 +937,7 @@ class Subject(object):
                     (skip, alternativePage) = self.disambigMismatch(page, counter)
                     if skip:
                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
-                        if page in self.done: #XXX: Ugly bugfix - the following line has reportedly thrown "ValueError: list.remove(x): x not in list"
-                            self.done.remove(page)
+                        self.done = PageTree()
                         iw = ()
                         if alternativePage:
                             # add the page that was entered by the user
@@ -898,11 +948,14 @@ class Subject(object):
                         if globalvar.untranslatedonly:
                             # Ignore the interwiki links.
                             iw = ()
-                    elif globalvar.autonomous and page.site() in [p.site() for p in self.done if p != page and p.exists() and not p.isRedirectPage()]:
+                    # FIXME: the filtered list generated in the condition is
+                    # re-generated the lign after.
+                    # And we only use the first item of that list.
+                    elif globalvar.autonomous and [p for p in self.done.filter(page.site()) if p != page and p.exists() and not p.isRedirectPage()]:
                         
-                        for p in self.done:
-                            if p.site() == page.site() and p != page \
-                                and p.exists() and not p.isRedirectPage():
+                        for p in self.done.filter(page.site()):
+                            if p != page and p.exists() and \
+                                not p.isRedirectPage():
                                 otherpage = p
                                 break
                         wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
@@ -925,8 +978,7 @@ class Subject(object):
                     elif page.isEmpty() and not page.isCategory():
                         wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                         # Ignore the interwiki links
-                        if page in self.done: #XXX: Ugly bugfix - the following line has reportedly thrown "ValueError: list.remove(x): x not in list"
-                            self.done.remove(page)
+                        self.done = PageTree()
                         iw = ()
                     for linkedPage in iw:
                         if globalvar.hintsareright:
@@ -950,7 +1002,7 @@ class Subject(object):
                                             wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
-        self.pending = []
+        self.pending = PageTree()
         # Check whether we need hints and the user offered to give them
         if self.untranslated and not self.hintsAsked:
             self.reportInterwikilessPage(page)
@@ -1581,9 +1633,9 @@ class InterwikiBot(object):
         except KeyError:
             self.counts[site] = count
 
-    def minus(self, site):
+    def minus(self, site, count=1):
         """This is a routine that the Subject class expects in a counter"""
-        self.counts[site] -= 1
+        self.counts[site] -= count
 
     def run(self):
         """Start the process until finished"""
