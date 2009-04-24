@@ -749,14 +749,16 @@ class Subject(object):
         else:
             choice = 'y'
             if self.originPage.isDisambig() and not page.isDisambig():
-                if self.getFoundDisambig(page.site()):
-                    wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), self.getFoundDisambig(page.site()).aslink(True)))
+                disambig = self.getFoundDisambig(page.site())
+                if disambig:
+                    wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), disambig.aslink(True)))
                     return (True, None)
                 else:
                     choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             elif not self.originPage.isDisambig() and page.isDisambig():
-                if self.getFoundNonDisambig(page.site()):
-                    wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), self.getFoundNonDisambig(page.site()).aslink(True)))
+                nondisambig = self.getFoundNonDisambig(page.site())
+                if nondisambig:
+                    wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), nondisambig.aslink(True)))
                     return (True, None)
                 else:
                     choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
