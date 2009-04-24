@@ -527,8 +527,8 @@ class PageTree(object):
     def add(self, page):
         site = page.site()
         if not site in self.tree:
-            self.tree[site] = {}
-        self.tree[site][page] = True
+            self.tree[site] = []
+        self.tree[site].append(page)
         self.size += 1
 
     def removeSite(self, site):
