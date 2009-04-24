@@ -981,17 +981,18 @@ class Subject(object):
         # Each value will be a list of pages.
         new = {}
         for page in self.done:
-            site = page.site()
-            if site == self.originPage.site() and page.exists() and not page.isRedirectPage():
-                if page != self.originPage:
+            if page.exists() and not page.isRedirectPage():
+                site = page.site()
+                if site == self.originPage.site():
+                    if page != self.originPage:
                     self.problem("Found link to %s" % page.aslink(True) )
                     self.whereReport(page)
                     errorCount += 1
-            elif page.exists() and not page.isRedirectPage():
-                if site in new:
-                    new[site].append(page)
                 else:
-                    new[site] = [page]
+                    if site in new:
+                        new[site].append(page)
+                    else:
+                        new[site] = [page]
         # See if new{} contains any problematic values
         result = {}
         for site, pages in new.iteritems():
