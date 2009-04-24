@@ -545,11 +545,11 @@ class PageTree(object):
         """
         Yields (Site, number of pages in site) pairs
         """
-        for site, d in self.tree:
+        for site, d in self.tree.iteritems():
             yield site, len(d)
     
     def __iter__(self):
-        for site, d in self.tree:
+        for site, d in self.tree.iteritems():
             for page in d:
                 yield page
 
