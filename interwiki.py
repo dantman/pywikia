@@ -987,9 +987,9 @@ class Subject(object):
                 site = page.site()
                 if site == self.originPage.site():
                     if page != self.originPage:
-                    self.problem("Found link to %s" % page.aslink(True) )
-                    self.whereReport(page)
-                    errorCount += 1
+                        self.problem("Found link to %s" % page.aslink(True) )
+                        self.whereReport(page)
+                        errorCount += 1
                 else:
                     if site in new:
                         new[site].append(page)
