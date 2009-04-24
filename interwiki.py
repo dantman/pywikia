@@ -531,9 +531,15 @@ class PageTree(object):
         self.tree[site][page] = True
         self.size += 1
 
-    def remove(self, page):
-        del self.tree[site][page]
-        self.size -= 1
+    def removeSite(self, site):
+        """
+        Removes all pages from Site site
+        """
+        try:
+            self.size -= len(self.tree[site])
+            del self.tree[site]
+        except KeyError:
+            pass
 
     def siteCounts(self):
         """
@@ -669,8 +675,8 @@ class Subject(object):
         for page in self.todo.filter(site):
             self.pending.add(page)
             result.append(page)
-        for page in self.pending.filter(site):
-            self.todo.remove(page)
+
+        self.todo.removeSite(site)
         # If there are any, return them. Otherwise, nothing is in progress.
         return result
 
