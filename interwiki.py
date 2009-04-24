@@ -595,17 +595,21 @@ class Subject(object):
             if keephintedsites:
                 self.hintedsites.add(page.site)
 
-    def openSites(self, allowdoubles = False):
-        """Return a list of sites for all things we still need to do"""
-        distinctSites = {}
+    def openSites(self):
+        """
+        Return a dictionary, where keys are sites where we 
+        still have work to do on, and values are the number
+        of items in that Site that needs work on
+        """
+        siteCount = {}
 
         for page in self.todo:
             site = page.site()
-            if allowdoubles:
-                distinctSites[page] = site
-            else:
-                distinctSites[site] = site
-        return distinctSites.values()
+            try:
+                siteCount[site] += 1
+            except KeyError:
+                siteCount[site] = 1
+        return siteCount
 
     def willWorkOn(self, site):
         """
@@ -1396,9 +1400,9 @@ class InterwikiBot(object):
         """Add a single subject to the list"""
         subj = Subject(page, hints = hints)
         self.subjects.append(subj)
-        for site in subj.openSites(allowdoubles = True):
+        for site, count in subj.openSites().iteritems():
             # Keep correct counters
-            self.plus(site)
+            self.plus(site, count)
 
     def setPageGenerator(self, pageGenerator, number = None, until = None):
         """Add a generator of subjects. Once the list of subjects gets
@@ -1474,7 +1478,7 @@ class InterwikiBot(object):
             # The first subject is done. This might be a recursive call made because we
             # have to wait before submitting another modification to go live. Select
             # any language from counts.
-            oc = self.counts.keys()
+            oc = self.counts
         if wikipedia.getSite() in oc:
             return wikipedia.getSite()
         for lang in oc:
@@ -1567,12 +1571,12 @@ class InterwikiBot(object):
         """Check whether there is still more work to do"""
         return len(self) == 0 and self.pageGenerator is None
 
-    def plus(self, site):
+    def plus(self, site, count=1):
         """This is a routine that the Subject class expects in a counter"""
         try:
-            self.counts[site] += 1
+            self.counts[site] += count
         except KeyError:
-            self.counts[site] = 1
+            self.counts[site] = count
 
     def minus(self, site):
         """This is a routine that the Subject class expects in a counter"""
