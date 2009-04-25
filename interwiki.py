@@ -713,7 +713,7 @@ class Subject(object):
             return True
 
     def skipPage(self, page, target, counter):
-        return isIgnored(target) or \
+        return self.isIgnored(target) or \
             self.namespaceMismatch(page, target, counter) or \
             self.wiktionaryMismatch(target)
 
