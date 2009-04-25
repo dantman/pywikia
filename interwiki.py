@@ -1677,17 +1677,17 @@ def compareLanguages(old, new, insite):
 
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
-        fmt = lambda page: page.aslink(forceInterwiki=True)
+        fmt = lambda d, site: d[site].aslink(forceInterwiki=True)
     else:
         # Use short format, just the language code
-        fmt = lambda page: page.site().lang
+        fmt = lambda d, site: site.lang
 
     if adding:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(new[x]) for x in adding]))
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(new, x) for x in adding]))
     if removing:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(old[x]) for x in removing]))
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(old, x) for x in removing]))
     if modifying:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(new[x]) for x in modifying]))
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(new, x) for x in modifying]))
     return mods, adding, removing, modifying
 
 def readWarnfile(filename, bot):
