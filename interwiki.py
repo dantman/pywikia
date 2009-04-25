@@ -1008,7 +1008,7 @@ class Subject(object):
                             # It is new. Also verify whether it is the second on the
                             # same site
                             lpsite=linkedPage.site()
-                            for prevPage in self.foundIn.keys():
+                            for prevPage in self.foundIn:
                                 if prevPage != linkedPage and prevPage.site() == lpsite:
                                     # Still, this could be "no problem" as either may be a
                                     # redirect to the other. No way to find out quickly!
@@ -1185,7 +1185,7 @@ class Subject(object):
             lclSite = self.originPage.site()
             lclSiteDone = False
             frgnSiteDone = False
-            for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.langs.keys() if (not s in lclSite.family.languages_by_size and not s in lclSite.family.obsolete)]:
+            for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.langs if (not s in lclSite.family.languages_by_size and not s in lclSite.family.obsolete)]:
                 site = wikipedia.getSite(code = siteCode)
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and site in new):
                     if site == lclSite:
@@ -1209,7 +1209,7 @@ class Subject(object):
                         wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
                     mods, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
-                    if (len(removing) > 0 and not globalvar.autonomous) or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
+                    if (len(removing) > 0 and not globalvar.autonomous) or (len(modifying) > 0 and self.problemfound) or len(old) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
@@ -1694,8 +1694,7 @@ def readWarnfile(filename, bot):
     reader = warnfile.WarnfileReader(filename)
     # we won't use removeHints
     (hints, removeHints) = reader.getHints()
-    pages = hints.keys()
-    for page in pages:
+    for page in hints:
         # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
         # TODO: This is a quite ugly hack, in the future we should maybe make titletranslate expect a list of pagelinks.
         hintStrings = ['%s:%s' % (hintedPage.site().language(), hintedPage.title()) for hintedPage in hints[page]]
