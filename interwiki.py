@@ -716,6 +716,11 @@ class Subject(object):
             counter.plus(page.site())
             return True
 
+    def skipPage(self, page, target, counter):
+        return isIgnored(target) or \
+            self.namespaceMismatch(page, target, counter) or \
+            self.wiktionaryMismatch(target)
+
     def namespaceMismatch(self, linkingPage, linkedPage, counter):
         """
         Checks whether or not the given page has another namespace
@@ -928,7 +933,7 @@ class Subject(object):
                 elif not globalvar.followredirect:
                     wikipedia.output(u"NOTE: not following redirects.")
                 else:
-                    if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage, counter) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
+                    if not (self.skipPage(page, redirectTargetPage, counter) or (page.site().family != redirectTargetPage.site().family)):
                         if self.addIfNew(redirectTargetPage, counter, page):
                             if config.interwiki_shownew:
                                 wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
@@ -1001,7 +1006,7 @@ class Subject(object):
                     if linkedPage.site in self.hintedsites:
                         wikipedia.output(u"NOTE: %s: %s extra interwiki on hinted site ignored %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
                         break
-                if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage, counter) or self.wiktionaryMismatch(linkedPage)):
+                if not self.skipPage(page, linkedPage, counter):
                     if globalvar.followinterwiki or page == self.originPage:
                         if self.addIfNew(linkedPage, counter, page):
                             # It is new. Also verify whether it is the second on the
