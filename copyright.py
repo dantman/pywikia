@@ -874,8 +874,6 @@ class WebPage(object):
     """
 
     def __init__(self, url, URLExcl):
-        """
-        """
         global source_seen
         self.URLexcludedlist = URLExcl.URLlist
 
@@ -921,9 +919,6 @@ class WebPage(object):
          return None
 
     def get(self, force = False):
-        """
-        """
-
         # Exclude URL with listed file extension.
         if self._url[-4:] in [".pdf", ".doc", ".ppt"]:
             raise URL_exclusion
@@ -1021,20 +1016,12 @@ def checks_by_ids(ids):
 
 class CheckRobot:
     def __init__(self, generator):
-        """
-        """
         self.generator = generator
         self.SearchEngine = SearchEngine()
 
     def run(self):
-        """
-        Starts the robot.
-        """
-        # Run the generator which will yield Pages which might need to be
-        # checked.
         for page in self.generator:
             try:
-                # Load the page's text from the wiki
                 original_text = page.get()
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % page.title())
