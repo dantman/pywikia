@@ -945,75 +945,77 @@ class Subject(object):
                 iw = page.interwiki()
             except wikipedia.NoSuchSite:
                 wikipedia.output(u"NOTE: site %s does not exist" % page.site())
-            else:
-                (skip, alternativePage) = self.disambigMismatch(page, counter)
-                if skip:
-                    wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
-                    self.done = PageTree()
-                    iw = ()
-                    if alternativePage:
-                        # add the page that was entered by the user
-                        self.addIfNew(alternativePage, counter, None)
+                continue
 
-                if self.originPage == page:
-                    self.untranslated = (len(iw) == 0)
-                    if globalvar.untranslatedonly:
-                        # Ignore the interwiki links.
-                        iw = ()
-                # FIXME: the filtered list generated in the condition is
-                # re-generated the lign after.
-                # And we only use the first item of that list.
-                elif globalvar.autonomous and [p for p in self.done.filter(page.site()) if p != page and p.exists() and not p.isRedirectPage()]:
-                    
-                    for p in self.done.filter(page.site()):
-                        if p != page and p.exists() and \
-                            not p.isRedirectPage():
-                            otherpage = p
-                            break
-                    wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
-                    self.makeForcedStop(counter)
-                    try:
-                        f = codecs.open(
-                                wikipedia.config.datafilepath('autonomous_problems.dat'),
-                                'a', 'utf-8')
-                        f.write("* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
-                        if config.interwiki_graph and config.interwiki_graph_url:
-                            filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
-                            f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
-                        f.write("\n")
-                        f.close()
-                    # FIXME: What errors are we catching here? 
-                    # except: should be avoided!!
-                    except:
-                       #raise
-                       wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
-                       sys.exit()
+            (skip, alternativePage) = self.disambigMismatch(page, counter)
+            if skip:
+                wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
+                self.done = PageTree()
+                iw = ()
+                if alternativePage:
+                    # add the page that was entered by the user
+                    self.addIfNew(alternativePage, counter, None)
+
+            if self.originPage == page:
+                self.untranslated = (len(iw) == 0)
+                if globalvar.untranslatedonly:
+                    # Ignore the interwiki links.
                     iw = ()
-                elif page.isEmpty() and not page.isCategory():
-                    wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
-                    # Ignore the interwiki links
-                    self.done = PageTree()
-                    iw = ()
-                for linkedPage in iw:
-                    if globalvar.hintsareright:
-                        if linkedPage.site in self.hintedsites:
-                            wikipedia.output(u"NOTE: %s: %s extra interwiki on hinted site ignored %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
-                            break
-                    if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage, counter) or self.wiktionaryMismatch(linkedPage)):
-                        if globalvar.followinterwiki or page == self.originPage:
-                            if self.addIfNew(linkedPage, counter, page):
-                                # It is new. Also verify whether it is the second on the
-                                # same site
-                                lpsite=linkedPage.site()
-                                for prevPage in self.foundIn.keys():
-                                    if prevPage != linkedPage and prevPage.site() == lpsite:
-                                        # Still, this could be "no problem" as either may be a
-                                        # redirect to the other. No way to find out quickly!
-                                        wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
-                                        break
-                                else:
-                                    if config.interwiki_shownew:
-                                        wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+            # FIXME: the filtered list generated in the condition is
+            # re-generated the lign after.
+            # And we only use the first item of that list.
+            elif globalvar.autonomous and [p for p in self.done.filter(page.site()) if p != page and p.exists() and not p.isRedirectPage()]:
+                
+                for p in self.done.filter(page.site()):
+                    if p != page and p.exists() and \
+                        not p.isRedirectPage():
+                        otherpage = p
+                        break
+                wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
+                self.makeForcedStop(counter)
+                try:
+                    f = codecs.open(
+                            wikipedia.config.datafilepath('autonomous_problems.dat'),
+                            'a', 'utf-8')
+                    f.write("* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
+                    if config.interwiki_graph and config.interwiki_graph_url:
+                        filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
+                        f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
+                    f.write("\n")
+                    f.close()
+                # FIXME: What errors are we catching here? 
+                # except: should be avoided!!
+                except:
+                   #raise
+                   wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
+                   sys.exit()
+                iw = ()
+            elif page.isEmpty() and not page.isCategory():
+                wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
+                # Ignore the interwiki links
+                self.done = PageTree()
+                iw = ()
+
+            for linkedPage in iw:
+                if globalvar.hintsareright:
+                    if linkedPage.site in self.hintedsites:
+                        wikipedia.output(u"NOTE: %s: %s extra interwiki on hinted site ignored %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                        break
+                if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage, counter) or self.wiktionaryMismatch(linkedPage)):
+                    if globalvar.followinterwiki or page == self.originPage:
+                        if self.addIfNew(linkedPage, counter, page):
+                            # It is new. Also verify whether it is the second on the
+                            # same site
+                            lpsite=linkedPage.site()
+                            for prevPage in self.foundIn.keys():
+                                if prevPage != linkedPage and prevPage.site() == lpsite:
+                                    # Still, this could be "no problem" as either may be a
+                                    # redirect to the other. No way to find out quickly!
+                                    wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                    break
+                            else:
+                                if config.interwiki_shownew:
+                                    wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
         self.pending = PageTree()
