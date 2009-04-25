@@ -1331,8 +1331,7 @@ class Subject(object):
         if not mods:
             wikipedia.output(u'No changes needed' )
         else:
-            if mods:
-                wikipedia.output(u"Changes to be made: %s" % mods)
+            wikipedia.output(u"Changes to be made: %s" % mods)
             oldtext = page.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site())
             if globalvar.debug:
