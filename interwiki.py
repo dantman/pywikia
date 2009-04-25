@@ -1663,23 +1663,16 @@ class InterwikiBot(object):
         return len(self.subjects)
 
 def compareLanguages(old, new, insite):
-    removing = []
-    adding = []
-    modifying = []
-    for site in old.keys():
-        if site not in new:
-            removing.append(old[site])
-        elif old[site] != new[site]:
-            modifying.append(new[site])
 
-    for site2 in new.keys():
-        if site2 not in old:
-            adding.append(new[site2])
-    mods = ""
+    oldiw = set(old)
+    newiw = set(new)
+
     # sort by language code
-    adding.sort()
-    modifying.sort()
-    removing.sort()
+    adding = sorted(newiw - oldiw)
+    removing = sorted(oldiw - newiw)
+    modifying = sorted(site for site in oldiw & newiw if old[site] != new[site])
+
+    mods = ""
 
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
