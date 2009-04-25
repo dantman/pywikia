@@ -650,15 +650,11 @@ class Subject(object):
 
     def openSites(self):
         """
-        Return a dictionary, where keys are sites where we 
-        still have work to do on, and values are the number
-        of items in that Site that needs work on
+        Iterator. Yields (site, count) pairs:
+        * site is a site where we still have work to do on
+        * count is the number of items in that Site that need work on
         """
-        siteCount = {}
-
-        for site, count in self.todo.siteCounts():
-            siteCount[site] = count
-        return siteCount
+        return self.todo.siteCounts()
 
     def willWorkOn(self, site):
         """
@@ -1476,7 +1472,7 @@ class InterwikiBot(object):
         """Add a single subject to the list"""
         subj = Subject(page, hints = hints)
         self.subjects.append(subj)
-        for site, count in subj.openSites().iteritems():
+        for site, count in subj.openSites():
             # Keep correct counters
             self.plus(site, count)
 
@@ -1549,7 +1545,7 @@ class InterwikiBot(object):
         maxlang = None
         if not self.firstSubject():
             return None
-        oc = self.firstSubject().openSites()
+        oc = dict(self.firstSubject().openSites())
         if not oc:
             # The first subject is done. This might be a recursive call made because we
             # have to wait before submitting another modification to go live. Select
