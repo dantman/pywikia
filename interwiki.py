@@ -1186,7 +1186,15 @@ class Subject(object):
             lclSite = self.originPage.site()
             lclSiteDone = False
             frgnSiteDone = False
-            for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.langs if (not s in lclSite.family.languages_by_size and not s in lclSite.family.obsolete)]:
+
+            # XXX Do we really need to make an union here?
+            # we should have sorted(languages_by_size) = sorted(langs) ?!
+            langBySize = set(lclSite.family.languages_by_size)
+            allLangs = set(lcl.family.langs)
+
+            langToCheck = (langBySize + allLangs).difference(lclSite.family.obsolete)
+
+            for siteCode in langToCheck:
                 site = wikipedia.getSite(code = siteCode)
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and site in new):
                     if site == lclSite:
