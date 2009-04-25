@@ -1323,6 +1323,7 @@ class Subject(object):
         if globalvar.autonomous and not globalvar.force and len(removing) > 0:
             for rmsite in removing:
                 if rmsite != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
+                    rmPage = old[rmsite]
                     ##########
                     # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
                     # where useless bot-created articles were mass-deleted. See for example:
