@@ -932,11 +932,11 @@ class Subject(object):
                         self.todo = PageTree()
                 elif not globalvar.followredirect:
                     wikipedia.output(u"NOTE: not following redirects.")
-                else:
-                    if not (self.skipPage(page, redirectTargetPage, counter) or (page.site().family != redirectTargetPage.site().family)):
-                        if self.addIfNew(redirectTargetPage, counter, page):
-                            if config.interwiki_shownew:
-                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
+                elif page.site().family == redirectTargetPage.site().family \
+                    and not self.skipPage(page, redirectTargetPage, counter):
+                    if self.addIfNew(redirectTargetPage, counter, page):
+                        if config.interwiki_shownew:
+                            wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
 
                 continue
 
