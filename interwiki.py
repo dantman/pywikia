@@ -1313,17 +1313,17 @@ class Subject(object):
 
         # When running in autonomous mode without -force switch, make sure we don't remove any items, but allow addition of the new ones
         if globalvar.autonomous and not globalvar.force and len(removing) > 0:
-            for rmPage in removing:
-                if rmPage.site() != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
+            for rmsite in removing:
+                if rmsite != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
                     ##########
                     # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
                     # where useless bot-created articles were mass-deleted. See for example:
                     # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
-                    if rmPage.site() == wikipedia.getSite('lmo', 'wikipedia'):
+                    if rmsite == wikipedia.getSite('lmo', 'wikipedia'):
                         wikipedia.output('Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % rmPage.aslink())
                     else:
                     ##########
-                        new[rmPage.site()] = old[rmPage.site()]
+                        new[rmsite] = old[rmsite]
                         wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
             # Re-Check what needs to get done
             mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
@@ -1341,8 +1341,8 @@ class Subject(object):
                 # wikipedia.output(u"NOTE: Replace %s" % page.aslink())
                 # Determine whether we need permission to submit
                 ask = False
-                if removing and removing != [page]:   # Allow for special case of a self-pointing interwiki link
-                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
+                if removing and removing != [page.site()]:   # Allow for special case of a self-pointing interwiki link
+                    self.problem('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
                     ask = True
                 if globalvar.force:
                     ask = False
@@ -1409,7 +1409,7 @@ class Subject(object):
                 elif answer == 'g':
                     raise GiveUpOnPage
                 else:
-                    raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)))
+                    raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
             return False
 
     def reportBacklinks(self, new, updatedSites):
@@ -1682,12 +1682,14 @@ def compareLanguages(old, new, insite):
         # Use short format, just the language code
         fmt = lambda d, site: site.lang
 
+    _, add, rem, mod = wikipedia.translate(insite.lang, msg)
+
     if adding:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(new, x) for x in adding]))
+        mods += " %s: %s" % (add, ", ".join([fmt(new, x) for x in adding]))
     if removing:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(old, x) for x in removing]))
+        mods += " %s: %s" % (rem, ", ".join([fmt(old, x) for x in removing]))
     if modifying:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(new, x) for x in modifying]))
+        mods += " %s: %s" % (mod, ", ".join([fmt(new, x) for x in modifying]))
     return mods, adding, removing, modifying
 
 def readWarnfile(filename, bot):
