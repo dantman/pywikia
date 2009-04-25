@@ -1423,8 +1423,8 @@ class Subject(object):
 
         """
         # use sets because searching an element is faster than in lists
-        expectedPages = set(new.values())
-        expectedSites = set([page.site() for page in expectedPages])
+        expectedPages = set(new.itervalues())
+        expectedSites = set(new)
         try:
             for site, page in new.iteritems():
                 if site not in updatedSites and not page.section():
