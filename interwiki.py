@@ -1426,7 +1426,7 @@ class Subject(object):
         expectedPages = set(new.itervalues())
         expectedSites = set(new)
         try:
-            for site in expectedSites - updatedSites:
+            for site in expectedSites - set(updatedSites):
                 page = new[site]
                 if not page.section():
                     try:
