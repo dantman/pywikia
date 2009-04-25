@@ -1070,75 +1070,76 @@ class Subject(object):
             if len(pages) > 1:
                 errorCount += 1
                 self.problem("Found more than one link for %s" % site)
-        # If there are any errors, we need to go through all
-        # items manually.
-        if errorCount > 0 or globalvar.select:
 
-            if config.interwiki_graph:
-                graphDrawer = interwiki_graph.GraphDrawer(self)
-                graphDrawer.createGraph()
-
-            # We don't need to continue with the rest if we're in autonomous
-            # mode.
-            if globalvar.autonomous:
-                return None
-
-            # First loop over the ones that have more solutions
-            for site, pages in new.iteritems():
-                if len(pages) > 1:
-                    wikipedia.output(u"=" * 30)
-                    wikipedia.output(u"Links to %s" % site)
-                    i = 0
-                    for page2 in pages:
-                        i += 1
-                        wikipedia.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
-                        self.whereReport(page2, indent = 8)
-                    while True:
-                        answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
-                        if answer:
-                            if answer == 'g':
-                                return None
-                            elif answer == 'n':
-                                # None acceptable
-                                break
-                            elif answer.isdigit():
-                                answer = int(answer)
-                                try:
-                                    result[site] = pages[answer - 1]
-                                except IndexError:
-                                    # user input is out of range
-                                    pass
-                                else:
-                                    break
-            # Loop over the ones that have one solution, so are in principle
-            # not a problem.
-            acceptall = False
-            for site, pages in new.iteritems():
-                if len(pages) == 1:
-                    if not acceptall:
-                        wikipedia.output(u"=" * 30)
-                        page2 = pages[0]
-                        wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
-                        self.whereReport(page2, indent = 4)
-                    while True:
-                        if acceptall:
-                            answer = 'a'
-                        else:
-                            answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'], 'a')
-                        if answer == 'l': # accept all
-                            acceptall = True
-                            answer = 'a'
-                        if answer == 'a': # accept this one
-                            result[site] = pages[0]
-                            break
-                        elif answer == 'g': # give up
-                            return None
-                        elif answer == 'r': # reject
-                            # None acceptable
-                            break
-        else: # errorCount <= 0, hence there are no lists longer than one.
+        if not errorCount and not globalvar.select:
+            # no errors, so all lists have only one item
             for site, pages in new.iteritems():
                 result[site] = pages[0]
+            return result
+
+        # There are any errors.
+        if config.interwiki_graph:
+            graphDrawer = interwiki_graph.GraphDrawer(self)
+            graphDrawer.createGraph()
+
+        # We don't need to continue with the rest if we're in autonomous
+        # mode.
+        if globalvar.autonomous:
+            return None
+
+        # First loop over the ones that have more solutions
+        for site, pages in new.iteritems():
+            if len(pages) > 1:
+                wikipedia.output(u"=" * 30)
+                wikipedia.output(u"Links to %s" % site)
+                i = 0
+                for page2 in pages:
+                    i += 1
+                    wikipedia.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
+                    self.whereReport(page2, indent = 8)
+                while True:
+                    answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
+                    if answer:
+                        if answer == 'g':
+                            return None
+                        elif answer == 'n':
+                            # None acceptable
+                            break
+                        elif answer.isdigit():
+                            answer = int(answer)
+                            try:
+                                result[site] = pages[answer - 1]
+                            except IndexError:
+                                # user input is out of range
+                                pass
+                            else:
+                                break
+        # Loop over the ones that have one solution, so are in principle
+        # not a problem.
+        acceptall = False
+        for site, pages in new.iteritems():
+            if len(pages) == 1:
+                if not acceptall:
+                    wikipedia.output(u"=" * 30)
+                    page2 = pages[0]
+                    wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
+                    self.whereReport(page2, indent = 4)
+                while True:
+                    if acceptall:
+                        answer = 'a'
+                    else:
+                        answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'], 'a')
+                    if answer == 'l': # accept all
+                        acceptall = True
+                        answer = 'a'
+                    if answer == 'a': # accept this one
+                        result[site] = pages[0]
+                        break
+                    elif answer == 'g': # give up
+                        return None
+                    elif answer == 'r': # reject
+                        # None acceptable
+                        break
         return result
 
     def finish(self, bot = None):
