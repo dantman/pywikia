@@ -1683,11 +1683,11 @@ def compareLanguages(old, new, insite):
         fmt = lambda page: page.site().lang
 
     if adding:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(x) for x in adding]))
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(new[x]) for x in adding]))
     if removing:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(x) for x in removing]))
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(old[x]) for x in removing]))
     if modifying:
-        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(x) for x in modifying]))
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(new[x]) for x in modifying]))
     return mods, adding, removing, modifying
 
 def readWarnfile(filename, bot):
