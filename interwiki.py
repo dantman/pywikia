@@ -1426,8 +1426,9 @@ class Subject(object):
         expectedPages = set(new.itervalues())
         expectedSites = set(new)
         try:
-            for site, page in new.iteritems():
-                if site not in updatedSites and not page.section():
+            for site in expectedSites - updatedSites:
+                page = new[site]
+                if not page.section():
                     try:
                         linkedPages = set(page.interwiki())
                     except wikipedia.NoPage:
@@ -1438,8 +1439,8 @@ class Subject(object):
                     linkedPagesDict = {}
                     for linkedPage in linkedPages:
                         linkedPagesDict[linkedPage.site()] = linkedPage
-                    for expectedPage in expectedPages:
-                        if expectedPage != page and expectedPage not in linkedPages:
+                    for expectedPage in expectedPages - linkedPages:
+                        if expectedPage != page:
                             try:
                                 linkedPage = linkedPagesDict[expectedPage.site()]
                                 wikipedia.output(u"WARNING: %s: %s does not link to %s but to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True), linkedPage.aslink(True)))
