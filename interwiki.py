@@ -890,55 +890,55 @@ class Subject(object):
             counter.minus(page.site())
             # Now check whether any interwiki links should be added to the
             # todo list.
-            if page.section() and not page.isRedirectPage():
-                # We have been referred to a part of a page, not the whole page. Do not follow references.
-                pass
-            else:
-                try:
-                    iw = page.interwiki()
-                except wikipedia.IsRedirectPage, arg:
-                    redirectTargetPage = wikipedia.Page(page.site(), arg.args[0])
-                    wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
-                    if page == self.originPage:
-                        if globalvar.initialredirect:
-                            self.originPage = redirectTargetPage
-                            #XXX might not work if page.site != redirTar.site:
-                            # We are appending an item to 
-                            # self.pending[redirTar.site]
-                            # but we are iterating on self.pending at the same
-                            # time.
-                            # On the other hand... crosslanguage redirects?
-                            self.pending.add(redirectTargetPage)
-                            counter.plus(redirectTargetPage.site)
-                        else:
-                            # This is a redirect page to the origin. We don't need to
-                            # follow the redirection.
-                            # In this case we can also stop all hints!
-                            for site, count in self.todo.siteCounts():
-                                counter.minus(site, count)
-                            self.todo = PageTree()
-                    elif not globalvar.followredirect:
-                        wikipedia.output(u"NOTE: not following redirects.")
+
+
+            if not page.exists():
+                wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
+                if page == self.originPage:
+                    # The page we are working on is the page that does not exist.
+                    # No use in doing any work on it in that case.
+                    for site, count in self.todo.siteCounts():
+                        counter.minus(site, count)
+                    self.todo = PageTree()
+                    # In some rare cases it might be we already did check some 'automatic' links 
+                    self.done = PageTree() 
+
+            elif page.isRedirectPage():
+                redirectTargetPage = page.getRedirectTarget()
+                wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
+                if page == self.originPage:
+                    if globalvar.initialredirect:
+                        self.originPage = redirectTargetPage
+                        #XXX might not work if page.site != redirTar.site:
+                        # We are appending an item to 
+                        # self.pending[redirTar.site]
+                        # but we are iterating on self.pending at the same
+                        # time.
+                        # On the other hand... crosslanguage redirects?
+                        self.pending.add(redirectTargetPage)
+                        counter.plus(redirectTargetPage.site)
                     else:
-                        if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage, counter) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
-                            if self.addIfNew(redirectTargetPage, counter, page):
-                                if config.interwiki_shownew:
-                                    wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
-                except wikipedia.NoPage:
-                    wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
-                    if page == self.originPage:
-                        # The page we are working on is the page that does not exist.
-                        # No use in doing any work on it in that case.
+                        # This is a redirect page to the origin. We don't need to
+                        # follow the redirection.
+                        # In this case we can also stop all hints!
                         for site, count in self.todo.siteCounts():
                             counter.minus(site, count)
                         self.todo = PageTree()
-                        # In some rare cases it might be we already did check some 'automatic' links 
-                        self.done = PageTree() 
-                        pass
+                elif not globalvar.followredirect:
+                    wikipedia.output(u"NOTE: not following redirects.")
+                else:
+                    if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage, counter) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
+                        if self.addIfNew(redirectTargetPage, counter, page):
+                            if config.interwiki_shownew:
+                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
+
+            elif not page.section():
+                # Page exists, isnt a redirect, and is a plain link (no section)
+
+                try:
+                    iw = page.interwiki()
                 except wikipedia.NoSuchSite:
                     wikipedia.output(u"NOTE: site %s does not exist" % page.site())
-                #except wikipedia.SectionError:
-                #    wikipedia.output(u"NOTE: section %s does not exist" % page.aslink())
                 else:
                     (skip, alternativePage) = self.disambigMismatch(page, counter)
                     if skip:
@@ -976,6 +976,8 @@ class Subject(object):
                                 f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
                             f.write("\n")
                             f.close()
+                        # FIXME: What errors are we catching here? 
+                        # except: should be avoided!!
                         except:
                            #raise
                            wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
