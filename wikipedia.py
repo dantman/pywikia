@@ -1731,6 +1731,9 @@ not supported by PyWikipediaBot!"""
         interwiki links in the page text.
 
         """
+        if hasattr(self, "_interwikis"):
+            return self._interwikis
+
         result = []
         ll = getLanguageLinks(self.get(), insite=self.site(),
                               pageLink=self.aslink())
@@ -1754,6 +1757,8 @@ not supported by PyWikipediaBot!"""
                 output(
     u"ERROR: link from %s to [[%s:%s]] is improperly formatted?"
                         % (self.aslink(), newSite, newTitle))
+
+        self._interwikis = result
         return result
 
     def categories(self, get_redirect=False):
