@@ -1330,86 +1330,89 @@ class Subject(object):
 
         if not mods:
             wikipedia.output(u'No changes needed' )
-        else:
-            wikipedia.output(u"Changes to be made: %s" % mods)
-            oldtext = page.get()
-            newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site())
-            if globalvar.debug:
-                wikipedia.showDiff(oldtext, newtext)
-            if newtext != oldtext:
-                # wikipedia.output(u"NOTE: Replace %s" % page.aslink())
-                # Determine whether we need permission to submit
-                ask = False
-                if removing and removing != [page.site()]:   # Allow for special case of a self-pointing interwiki link
-                    self.problem('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
-                    ask = True
-                if globalvar.force:
-                    ask = False
-                if globalvar.confirm:
-                    ask = True
-                # If we need to ask, do so
-                if ask:
-                    if globalvar.autonomous:
-                        # If we cannot ask, deny permission
-                        answer = 'n'
-                    else:
-                        answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No', 'Give up'], ['y', 'n', 'g'])
-                else:
-                    # If we do not need to ask, allow
-                    answer = 'y'
-                # If we got permission to submit, do so
-                if answer == 'y':
-                    # Check whether we will have to wait for wikipedia. If so, make
-                    # another get-query first.
-                    if bot:
-                        while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
-                            wikipedia.output(u"NOTE: Performing a recursive query first to save time....")
-                            qdone = bot.oneQuery()
-                            if not qdone:
-                                # Nothing more to do
-                                break
-                    wikipedia.output(u"NOTE: Updating live wiki...")
-                    timeout=60
-                    while 1:
-                        try:
-                            status, reason, data = page.put(newtext, comment = wikipedia.translate(page.site().lang, msg)[0] + mods)
-                        except wikipedia.LockedPage:
-                            wikipedia.output(u'Page %s is locked. Skipping.' % (page.title(),))
-                            raise SaveError
-                        except wikipedia.EditConflict:
-                            wikipedia.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
-                            raise SaveError
-                        except (wikipedia.SpamfilterError), error:
-                            wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % (error.url,))
-                            raise SaveError
-                        except (wikipedia.PageNotSaved), error:
-                            wikipedia.output(u'ERROR putting page: %s' % (error.args,))
-                            raise SaveError
-                        except (socket.error, IOError), error:
-                            if timeout>3600:
-                                raise
-                            wikipedia.output(u'ERROR putting page: %s' % (error.args,))
-                            wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
-                            timeout *= 2
-                            time.sleep(timeout)
-                        except wikipedia.ServerError:
-                            if timeout>3600:
-                                raise
-                            wikipedia.output(u'ERROR putting page: ServerError.')
-                            wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
-                            timeout *= 2
-                            time.sleep(timeout)
-                        else:
-                            break
-                    if str(status) == '302':
-                        return True
-                    else:
-                        wikipedia.output(u'%s %s' % (status, reason))
-                elif answer == 'g':
-                    raise GiveUpOnPage
-                else:
-                    raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
             return False
+
+        wikipedia.output(u"Changes to be made: %s" % mods)
+        oldtext = page.get()
+        newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site())
+        if newtext == oldtext:
+            return False
+        if globalvar.debug:
+            wikipedia.showDiff(oldtext, newtext)
+
+        # wikipedia.output(u"NOTE: Replace %s" % page.aslink())
+        # Determine whether we need permission to submit
+        ask = False
+        if removing and removing != [page.site()]:   # Allow for special case of a self-pointing interwiki link
+            self.problem('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
+            ask = True
+        if globalvar.force:
+            ask = False
+        if globalvar.confirm:
+            ask = True
+        # If we need to ask, do so
+        if ask:
+            if globalvar.autonomous:
+                # If we cannot ask, deny permission
+                answer = 'n'
+            else:
+                answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No', 'Give up'], ['y', 'n', 'g'])
+        else:
+            # If we do not need to ask, allow
+            answer = 'y'
+        # If we got permission to submit, do so
+        if answer == 'y':
+            # Check whether we will have to wait for wikipedia. If so, make
+            # another get-query first.
+            if bot:
+                while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
+                    wikipedia.output(u"NOTE: Performing a recursive query first to save time....")
+                    qdone = bot.oneQuery()
+                    if not qdone:
+                        # Nothing more to do
+                        break
+            wikipedia.output(u"NOTE: Updating live wiki...")
+            timeout=60
+            while 1:
+                try:
+                    status, reason, data = page.put(newtext, comment = wikipedia.translate(page.site().lang, msg)[0] + mods)
+                except wikipedia.LockedPage:
+                    wikipedia.output(u'Page %s is locked. Skipping.' % (page.title(),))
+                    raise SaveError
+                except wikipedia.EditConflict:
+                    wikipedia.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
+                    raise SaveError
+                except (wikipedia.SpamfilterError), error:
+                    wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % (error.url,))
+                    raise SaveError
+                except (wikipedia.PageNotSaved), error:
+                    wikipedia.output(u'ERROR putting page: %s' % (error.args,))
+                    raise SaveError
+                except (socket.error, IOError), error:
+                    if timeout>3600:
+                        raise
+                    wikipedia.output(u'ERROR putting page: %s' % (error.args,))
+                    wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
+                    timeout *= 2
+                    time.sleep(timeout)
+                except wikipedia.ServerError:
+                    if timeout>3600:
+                        raise
+                    wikipedia.output(u'ERROR putting page: ServerError.')
+                    wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
+                    timeout *= 2
+                    time.sleep(timeout)
+                else:
+                    break
+            if str(status) == '302':
+                return True
+            else:
+                wikipedia.output(u'%s %s' % (status, reason))
+                return False
+        elif answer == 'g':
+            raise GiveUpOnPage
+        else:
+            raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
 
     def reportBacklinks(self, new, updatedSites):
         """
