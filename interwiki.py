@@ -527,9 +527,16 @@ class PageTree(object):
     def add(self, page):
         site = page.site()
         if not site in self.tree:
-            self.tree[site] = []
-        self.tree[site].append(page)
+            self.tree[site] = {}
+        self.tree[site][page] = True
         self.size += 1
+
+    def remove(self, page):
+        try:
+            del self.tree[page.site()][page]
+            self.size -= 1
+        except KeyError:
+            pass
 
     def removeSite(self, site):
         """
@@ -951,7 +958,7 @@ class Subject(object):
             (skip, alternativePage) = self.disambigMismatch(page, counter)
             if skip:
                 wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
-                self.done = PageTree()
+                self.done.remove(page)
                 iw = ()
                 if alternativePage:
                     # add the page that was entered by the user
@@ -994,7 +1001,7 @@ class Subject(object):
             elif page.isEmpty() and not page.isCategory():
                 wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                 # Ignore the interwiki links
-                self.done = PageTree()
+                self.done.remove(page)
                 iw = ()
 
             for linkedPage in iw:
