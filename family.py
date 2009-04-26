@@ -3377,7 +3377,7 @@ class Family:
     def pagenamecodes(self,code):
         pos = ['PAGENAME']
         pos2 = []
-        if code in self.pagename.keys():
+        if code in self.pagename:
             pos = pos + self.pagename[code]
         elif code == 'als':
             return self.pagenamecodes('de')
@@ -3390,7 +3390,7 @@ class Family:
     def pagename2codes(self,code):
         pos = ['PAGENAME']
         pos2 = []
-        if code in self.pagenamee.keys():
+        if code in self.pagenamee:
             pos = pos + self.pagenamee[code]
         elif code == 'als':
             return self.pagename2codes('de')
