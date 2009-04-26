@@ -918,13 +918,7 @@ class Subject(object):
                 if page == self.originPage:
                     if globalvar.initialredirect:
                         self.originPage = redirectTargetPage
-                        #XXX might not work if page.site != redirTar.site:
-                        # We are appending an item to 
-                        # self.pending[redirTar.site]
-                        # but we are iterating on self.pending at the same
-                        # time.
-                        # On the other hand... crosslanguage redirects?
-                        self.pending.add(redirectTargetPage)
+                        self.todo.add(redirectTargetPage)
                         counter.plus(redirectTargetPage.site)
                     else:
                         # This is a redirect page to the origin. We don't need to
