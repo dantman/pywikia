@@ -1734,29 +1734,16 @@ not supported by PyWikipediaBot!"""
         if hasattr(self, "_interwikis"):
             return self._interwikis
 
-        result = []
-        ll = getLanguageLinks(self.get(), insite=self.site(),
-                              pageLink=self.aslink())
-        for newSite, newPage in ll.iteritems():
-            for pagenametext in self.site().family.pagenamecodes(
+        text = self.get()
+
+        # Replace {{PAGENAME}} by its value
+        for pagenametext in self.site().family.pagenamecodes(
                                                    self.site().language()):
-                newTitle = newPage.title().replace(
-                             "{{" + pagenametext + "}}", self.title())
-            try:
-                result.append(
-                        self.__class__(newSite, newTitle, insite=self.site()))
-            except UnicodeError:
-                output(
-    u"ERROR: link from %s to [[%s:%s]] is in an invalid encoding?!"
-                        % (self.aslink(), newSite, newTitle))
-            except ValueError:
-                output(
-    u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!"
-                        % (self.aslink(), newSite, newTitle))
-            except InvalidTitle:
-                output(
-    u"ERROR: link from %s to [[%s:%s]] is improperly formatted?"
-                        % (self.aslink(), newSite, newTitle))
+            text = text.replace(u"{{%s}}" % pagenametext, self.title())
+
+        ll = getLanguageLinks(text, insite=self.site(), pageLink=self.aslink())
+
+        result = ll.values()
 
         self._interwikis = result
         return result
