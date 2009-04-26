@@ -1941,7 +1941,7 @@ not supported by PyWikipediaBot!"""
                     continue
 
                 # {{DEFAULTSORT:...}}
-                if name.startswith('DEFAULTSORT'):
+                if name.startswith('DEFAULTSORT:'):
                     continue
 
                 try:
