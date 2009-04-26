@@ -1197,7 +1197,7 @@ class Subject(object):
             # XXX Do we really need to make an union here?
             # we should have sorted(languages_by_size) = sorted(langs) ?!
             langBySize = set(lclSite.family.languages_by_size)
-            allLangs = set(lcl.family.langs)
+            allLangs = set(lclSite.family.langs)
 
             langToCheck = (langBySize + allLangs).difference(lclSite.family.obsolete)
 
