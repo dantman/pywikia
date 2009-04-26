@@ -1939,6 +1939,11 @@ not supported by PyWikipediaBot!"""
                     continue
                 if self.site().isInterwikiLink(name):
                     continue
+
+                # {{DEFAULTSORT:...}}
+                if name.startswith('DEFAULTSORT'):
+                    continue
+
                 try:
                     name = Page(self.site(), name).title()
                 except InvalidTitle:
