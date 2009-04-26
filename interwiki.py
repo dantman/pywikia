@@ -1199,7 +1199,7 @@ class Subject(object):
             langBySize = set(lclSite.family.languages_by_size)
             allLangs = set(lclSite.family.langs)
 
-            langToCheck = (langBySize + allLangs).difference(lclSite.family.obsolete)
+            langToCheck = (langBySize | allLangs).difference(lclSite.family.obsolete)
 
             for siteCode in langToCheck:
                 site = wikipedia.getSite(code = siteCode)
