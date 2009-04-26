@@ -958,22 +958,24 @@ class Subject(object):
                     # add the page that was entered by the user
                     self.addIfNew(alternativePage, counter, None)
 
+            duplicate = None
+            for p in self.done.filter(page.site()):
+                if p != page and p.exists() and not p.isRedirectPage():
+                    duplicate = p
+                    break
+
             if self.originPage == page:
                 self.untranslated = (len(iw) == 0)
                 if globalvar.untranslatedonly:
                     # Ignore the interwiki links.
                     iw = ()
-            # FIXME: the filtered list generated in the condition is
-            # re-generated the lign after.
-            # And we only use the first item of that list.
-            elif globalvar.autonomous and [p for p in self.done.filter(page.site()) if p != page and p.exists() and not p.isRedirectPage()]:
+
+            elif globalvar.autonomous and duplicate:
                 
-                for p in self.done.filter(page.site()):
-                    if p != page and p.exists() and \
-                        not p.isRedirectPage():
-                        otherpage = p
-                        break
-                wikipedia.output(u"Stopping work on %s because duplicate pages %s and %s are found"%(self.originPage.aslink(),otherpage.aslink(True),page.aslink(True)))
+                wikipedia.output(u"Stopping work on %s because duplicate pages"\
+                    " %s and %s are found" % (self.originPage.aslink(), 
+                                              duplicate.aslink(True), 
+                                              page.aslink(True)))
                 self.makeForcedStop(counter)
                 try:
                     f = codecs.open(
