@@ -798,7 +798,7 @@ class PreloadingGenerator(object):
             traceback.print_exc()
             wikipedia.output(unicode(e))
 
-    def preload(self, page_list):
+    def preload(self, page_list, retry=False):
         try:
             while len(page_list) > 0:
                 # It might be that the pages are on different sites,
@@ -816,6 +816,9 @@ class PreloadingGenerator(object):
             # Can happen if the pages list is empty. Don't care.
             pass
         except wikipedia.SaxError:
+            if not retry:
+                # Retry once.
+                self.preload(page_list, retry=True)
             # Ignore this error, and get the pages the traditional way later.
             pass
 
