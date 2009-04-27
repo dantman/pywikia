@@ -237,9 +237,18 @@ class XmlDump(object):
     NOTE: This used to be done by a SAX parser, but the solution with regular
     expressions is about 10 to 20 times faster. The cElementTree version is
     again much, much faster than the regex solution.
+
+    @param allrevisions: boolean
+        Only available for cElementTree version:
+        If True, parse all revisions instead of only the latest one.
+        Default: False.
     """
-    def __init__(self, filename):
+    def __init__(self, filename, allrevisions=False):
         self.filename = filename
+        if allrevisions:
+            self._parse = self._parse_all
+        else:
+            self._parse = self._parse_only_latest
 
     def parse(self):
         """Return a generator that will yield XmlEntry objects"""
@@ -261,37 +270,59 @@ Consider installing the python-celementtree package.''')
             # assume it's an uncompressed XML file
             source = open(self.filename)
         context = iterparse(source, events=("start", "end", "start-ns"))
-        root = None
+        self.root = None
 
         for event, elem in context:
             if event == "start-ns" and elem[0] == "":
-                uri = elem[1]
+                self.uri = elem[1]
                 continue
-            if event == "start" and root is None:
-                root = elem
+            if event == "start" and self.root is None:
+                self.root = elem
                 continue
-            if event == "end" and elem.tag == "{%s}page" % uri:
-                title = elem.findtext("{%s}title" % uri)
-                pageid = elem.findtext("{%s}id" % uri)
-                restrictions = elem.findtext("{%s}restrictions" % uri)
-                revision = elem.find("{%s}revision" % uri)
-                revisionid = revision.findtext("{%s}id" % uri)
-                timestamp = revision.findtext("{%s}timestamp" % uri)
-                contributor = revision.find("{%s}contributor" % uri)
-                ipeditor = contributor.findtext("{%s}ip" % uri)
-                username = ipeditor or contributor.findtext("{%s}username" % uri)
-                # could get comment, minor as well
-                text = revision.findtext("{%s}text" % uri)
-                editRestriction, moveRestriction \
-                        = parseRestrictions(restrictions)
-                yield XmlEntry(title=title, id=pageid, text=text or u'',
-                               username=username, ipedit=bool(ipeditor),
-                               timestamp=timestamp,
-                               editRestriction=editRestriction,
-                               moveRestriction=moveRestriction,
-                               revisionid=revisionid
-                              )
-                root.clear()
+            for rev in self._parse(event, elem):
+                yield rev
+
+    def _parse_only_latest(self, event, elem):
+        """Parser that yields only the latest revision"""
+        if event == "end" and elem.tag == "{%s}page" % self.uri:
+            self._headers(elem)
+
+            revision = elem.find("{%s}revision" % self.uri)
+            yield self._create_revision(revision)
+            self.root.clear()
+
+    def _parse_all(self, event, elem):
+        """Parser that yields all revisions"""
+        if event == "start" and elem.tag == "{%s}revision" % self.uri:
+            self._headers(elem)
+
+        if event == "end" and elem.tag == "{%s}revision" % self.uri:
+            yield self._create_revision(elem)
+            self.root.clear()
+    
+    def _headers(self, elem):
+        self.title = elem.findtext("{%s}title" % self.uri)
+        self.pageid = elem.findtext("{%s}id" % self.uri)
+        self.restrictions = elem.findtext("{%s}restrictions" % self.uri)
+
+    def _create_revision(self, revision):
+        """Creates a Single revision"""
+        revisionid = revision.findtext("{%s}id" % self.uri)
+        timestamp = revision.findtext("{%s}timestamp" % self.uri)
+        contributor = revision.find("{%s}contributor" % self.uri)
+        ipeditor = contributor.findtext("{%s}ip" % self.uri)
+        username = ipeditor or contributor.findtext("{%s}username" % self.uri)
+        # could get comment, minor as well
+        text = revision.findtext("{%s}text" % self.uri)
+        editRestriction, moveRestriction \
+                = parseRestrictions(self.restrictions)
+        return XmlEntry(title=self.title, id=self.pageid, text=text or u'',
+                       username=username, ipedit=bool(ipeditor),
+                       timestamp=timestamp,
+                       editRestriction=editRestriction,
+                       moveRestriction=moveRestriction,
+                       revisionid=revisionid
+                      )
 
     def regex_parse(self):
         """
