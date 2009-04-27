@@ -2792,11 +2792,22 @@ class ImagePage(Page):
         # The part after the | is required for copying .ogg files from en:, as they do not
         # have a "full image link" div. This might change in the future; on commons, there
         # is a full image link for .ogg and .mid files.
-        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
-        m = urlR.search(self.getImagePageHtml())
+        #***********************
+        #change to API query: action=query&titles=File:wiki.jpg&prop=imageinfo&iiprop=url
+        params = {
+            'action'    :'query',
+            'prop'      :'imageinfo',
+            'titles'   :self.title(),
+            'iiprop'    :'url',
+        }
+        imagedata = query.GetData(params, useAPI = True, encodeTitle = False)
         try:
-            url = m.group('url') or m.group('url2')
-        except AttributeError:
+            url=imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
+#        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
+#        m = urlR.search(self.getImagePageHtml())
+
+#            url = m.group('url') or m.group('url2')
+        except KeyError:
             raise NoPage(u'Image file URL for %s not found.'
                          % self.aslink(forceInterwiki = True))
         return url
