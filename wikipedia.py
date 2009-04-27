@@ -5295,10 +5295,10 @@ your connection is down. Retrying in %i minutes..."""
             'letype'    :'upload',
             'lelimit'   :int(number),
             }
-        if lestart != None: params['lestart'] = lestart
-        if leend != None: params['leend'] = leend
-        if leend != None: params['leuser'] = leuser
-        if leend != None: params['letitle'] = letitle
+        if lestart is not None: params['lestart'] = lestart
+        if leend is not None: params['leend'] = leend
+        if leend is not None: params['leuser'] = leuser
+        if leend is not None: params['letitle'] = letitle
         while True:
             data = query.GetData(params,
                             useAPI = True, encodeTitle = False)
