@@ -1312,12 +1312,8 @@ class Subject(object):
 
         # Put interwiki links into a map
         old={}
-        try:
-            for page2 in interwikis:
-                old[page2.site()] = page2
-        except wikipedia.NoPage:
-            wikipedia.output(u"BUG>>> %s no longer exists?" % page.aslink(True))
-            raise SaveError
+        for page2 in interwikis:
+            old[page2.site()] = page2
 
         # Check what needs to get done
         mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
