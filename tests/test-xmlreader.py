@@ -8,10 +8,16 @@ sys.path.append('..')
 import xmlreader
 
 class XmlReaderTestCase(unittest.TestCase):
-    def test_XmlDump(self):
+    def test_XmlDumpAllRevs(self):
         pages = [r for r in xmlreader.XmlDump("article-pear.xml", allrevisions=True).parse()]
         self.assertEquals(4, len(pages))
         self.assertNotEquals("", pages[0].comment)
+
+    def test_XmlDumpFirstRev(self):
+        pages = [r for r in xmlreader.XmlDump("article-pear.xml").parse()]
+        self.assertEquals(1, len(pages))
+        self.assertNotEquals("", pages[0].comment)
+
     def test_MediaWikiXmlHandler(self):
         handler = xmlreader.MediaWikiXmlHandler()
         pages = []
