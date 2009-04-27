@@ -64,7 +64,7 @@ def refresh(site):
     #wikipedia.put_throttle() # It actually is a get, but a heavy one.
     watchlistHTML = site.getUrl(path)
 
-    wikipedia.ouput('Parsing watchlist')
+    wikipedia.output('Parsing watchlist')
     watchlist = []
     for itemR in [re.compile(r'<li><input type="checkbox" name="id\[\]" value="(.+?)" />'), re.compile(r'<li><input name="titles\[\]" type="checkbox" value="(.+?)" />')]:
         for m in itemR.finditer(watchlistHTML):
