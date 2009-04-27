@@ -508,6 +508,26 @@ class PageTree(object):
     Allows filtering efficiently by Site.
     """
     def __init__(self):
+        # self.tree :
+        # Dictionary: 
+        # keys: Site
+        # values: list of pages
+        # All pages found within Site are kept in
+        # self.tree[site]
+
+        # While using dict values would be faster for
+        # the remove() operation,
+        # keeping list values is important, because
+        # the order in which the pages were found matters:
+        # the earlier a page is found, the closer it is to the 
+        # Subject.originPage. Chances are that pages found within
+        # 2 interwiki distance from the originPage are more related
+        # to the original topic than pages found later on, after
+        # 3, 4, 5 or more interwiki hops.
+
+        # Keeping this order is hence important to display ordered
+        # list of pages to the user when he'll be asked to resolve
+        # conflicts.
         self.tree = {}
         self.size = 0
 
@@ -527,15 +547,15 @@ class PageTree(object):
     def add(self, page):
         site = page.site()
         if not site in self.tree:
-            self.tree[site] = {}
-        self.tree[site][page] = True
+            self.tree[site] = []
+        self.tree[site].append(page)
         self.size += 1
 
     def remove(self, page):
         try:
-            del self.tree[page.site()][page]
+            self.tree[page.site()].remove(page)
             self.size -= 1
-        except KeyError:
+        except ValueError:
             pass
 
     def removeSite(self, site):
@@ -556,8 +576,8 @@ class PageTree(object):
             yield site, len(d)
     
     def __iter__(self):
-        for site, d in self.tree.iteritems():
-            for page in d:
+        for site, plist in self.tree.iteritems():
+            for page in plist:
                 yield page
 
 class Subject(object):
