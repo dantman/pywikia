@@ -56,7 +56,7 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid):
+    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid, comment):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
@@ -67,6 +67,7 @@ class XmlEntry:
         self.editRestriction = editRestriction
         self.moveRestriction = moveRestriction
         self.revisionid = revisionid
+        self.comment = comment
 
 
 class XmlHeaderEntry:
@@ -130,6 +131,9 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.destination = 'username'  # store it in the username
             self.username = u''
             self.ipedit = True
+        elif name == 'comment':
+            self.destination = 'comment'
+            self.comment = u''
         elif name == 'restrictions':
             self.destination = 'restrictions'
             self.restrictions = u''
@@ -171,7 +175,11 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                          self.timestamp[17:19])
             self.title = self.title.strip()
             # Report back to the caller
-            entry = XmlEntry(self.title, self.id, text, self.username, self.ipedit, timestamp, self.editRestriction, self.moveRestriction, self.revisionid)
+            entry = XmlEntry(self.title, self.id, 
+                             text, self.username, 
+                             self.ipedit, timestamp, 
+                             self.editRestriction, self.moveRestriction, 
+                             self.revisionid, self.comment)
             self.inRevisionTag = False
             self.callback(entry)
         elif self.headercallback:
@@ -191,6 +199,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.id += data
         elif self.destination == 'revisionid':
             self.revisionid += data
+        elif self.destination == 'comment':
+            self.comment += data
         elif self.destination == 'restrictions':
             self.restrictions += data
         elif self.destination == 'title':
@@ -309,6 +319,7 @@ Consider installing the python-celementtree package.''')
         """Creates a Single revision"""
         revisionid = revision.findtext("{%s}id" % self.uri)
         timestamp = revision.findtext("{%s}timestamp" % self.uri)
+        comment = revision.findtext("{%s}comment" % self.uri)
         contributor = revision.find("{%s}contributor" % self.uri)
         ipeditor = contributor.findtext("{%s}ip" % self.uri)
         username = ipeditor or contributor.findtext("{%s}username" % self.uri)
@@ -321,7 +332,8 @@ Consider installing the python-celementtree package.''')
                        timestamp=timestamp,
                        editRestriction=editRestriction,
                        moveRestriction=moveRestriction,
-                       revisionid=revisionid
+                       revisionid=revisionid,
+                       comment=comment
                       )
 
     def regex_parse(self):
