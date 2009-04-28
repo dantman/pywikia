@@ -584,6 +584,59 @@ class Subject(object):
     """
     Class to follow the progress of a single 'subject' (i.e. a page with
     all its translations)
+
+
+    Subject is a transitive closure of the binary relation on Page:
+    "has_a_langlink_pointing_to".
+
+    A formal way to compute that closure would be:
+
+    With P a set of pages, NL ('NextLevel') a function on sets defined as:
+        NL(P) = { target | ∃ source ∈ P, target ∈ source.langlinks() }
+    pseudocode:
+        todo <- [originPage]
+        done <- []
+        while todo != []: 
+            pending <- todo
+            todo <-NL(pending) / done
+            done <- NL(pending) U done
+        return done
+
+
+    There is, however, one limitation that is induced by implementation:
+    to compute efficiently NL(P), one has to load the page contents of 
+    pages in P. 
+    (Not only the langlinks have to be parsed from each Page, but we also want
+     to know if the Page is a redirect, a disambiguation, etc...)
+
+    Because of this, the pages in pending have to be preloaded. 
+    However, because the pages in pending are likely to be in several sites
+    we cannot "just" preload them as a batch.
+
+    Instead of doing "pending <- todo" at each iteration, we have to elect a 
+    Site, and we put in pending all the pages from todo that belong to that 
+    Site:
+
+    Code becomes:
+        todo <- {originPage.site():[originPage]}
+        done <- []
+        while todo != {}: 
+            site <- electSite()
+            pending <- todo[site]
+
+            preloadpages(site, pending)
+
+            todo[site] <- NL(pending) / done
+            done <- NL(pending) U done
+        return done
+
+
+    Subject objects only operate on pages that should have been preloaded before.
+    In fact, at any time: 
+      * todo contains new Pages that have not been loaded yet
+      * done contains Pages that have been loaded, and that have been treated.
+      * If batch preloadings are successful, Page._get() is never called from 
+        this Object.
     """
 
     def __init__(self, originPage, hints = None):
@@ -683,11 +736,12 @@ class Subject(object):
         """
         return self.todo.siteCounts()
 
-    def willWorkOn(self, site):
+    def whatsNextPageBatch(self, site):
         """
         By calling this method, you 'promise' this instance that you will
-        work on any todo items for the wiki indicated by 'site'. This routine
-        will return a list of pages that can be treated.
+        preload all the 'site' Pages that are in the todo list. 
+
+        This routine will return a list of pages that can be treated.
         """
         # Bug-check: Isn't there any work still in progress? We can't work on
         # different sites at a time!
@@ -700,6 +754,7 @@ class Subject(object):
             result.append(page)
 
         self.todo.removeSite(site)
+
         # If there are any, return them. Otherwise, nothing is in progress.
         return result
 
@@ -896,10 +951,14 @@ class Subject(object):
                             if globalvar.hintsareright:
                                 self.hintedsites.add(page.site)
 
-    def workDone(self, counter):
+    def batchLoaded(self, counter):
         """
-        This is called by a worker to tell us that the promised work
-        was completed as far as possible. The only argument is an instance
+        This is called by a worker to tell us that the promised batch of
+        pages was loaded. 
+        In other words, all the pages in self.pending have already
+        been preloaded.
+
+        The only argument is an instance
         of a counter class, that has methods minus() and plus() to keep
         counts of the total work todo.
         """
@@ -1642,7 +1701,7 @@ class InterwikiBot(object):
         for subject in self.subjects:
             # Promise the subject that we will work on the site.
             # We will get a list of pages we can do.
-            pages = subject.willWorkOn(site)
+            pages = subject.whatsNextPageBatch(site)
             if pages:
                 pageGroup.extend(pages)
                 subjectGroup.append(subject)
@@ -1660,7 +1719,7 @@ class InterwikiBot(object):
             pass
         # Tell all of the subjects that the promised work is done
         for subject in subjectGroup:
-            subject.workDone(self)
+            subject.batchLoaded(self)
         return True
 
     def queryStep(self):
