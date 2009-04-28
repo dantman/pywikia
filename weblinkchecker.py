@@ -806,7 +806,7 @@ def main():
             HTTPignore.append(int(arg[8:]))
         elif arg.startswith('-day:'):
             global day
-            day = arg[5:]
+            day = int(arg[5:])
         else:
             if not genFactory.handleArg(arg):
                 singlePageTitle.append(arg)
