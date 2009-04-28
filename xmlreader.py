@@ -93,6 +93,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         # asked for
         self.id = u''
         self.revisionid = u''
+        self.comment = u''
 
     def setCallback(self, callback):
         self.callback = callback
