@@ -495,7 +495,7 @@ class Global(object):
     strictlimittwo = False
     needlimit = 0
     ignore = []
-    bracketonly = False
+    parenthesesonly = False
     rememberno = False
     followinterwiki = True
     minsubjects = config.interwiki_min_subjects
@@ -1546,7 +1546,7 @@ class InterwikiBot(object):
                         if dictName is not None:
                             wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
-                    if globalvar.bracketonly:
+                    if globalvar.parenthesesonly:
                         # Only yield pages that have ( ) in titles
                         if "(" not in page.title():
                             continue
@@ -1887,7 +1887,7 @@ if __name__ == "__main__":
                 # override configuration
                 config.interwiki_graph = True
             elif arg == '-bracket':
-                globalvar.bracketonly = True
+                globalvar.parenthesesonly = True
             elif arg == '-localright':
                 globalvar.followinterwiki = False
             elif arg == '-hintsareright':
