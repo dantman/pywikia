@@ -109,7 +109,7 @@ def getalternatives(string):
         simwords[i] = []
     for alt in knownwords.keys():
         if basetext:
-            if alt.lower().find(basetext) == -1:
+            if basetext not in alt.lower() == -1:
                 dothis = False
             else:
                 dothis = True
@@ -347,7 +347,7 @@ class Word(object):
         # the user
         if rep == self.derive():
             return self.word
-        if self.word.find(self.derive()) == -1:
+        if self.derive() not in self.word:
             return wikipedia.input(u"Please give the result of replacing %s by %s in %s:"%(self.derive(),rep,self.word))
         return self.word.replace(self.derive(),rep)
 

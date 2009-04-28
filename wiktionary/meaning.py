@@ -147,13 +147,20 @@ class Meaning:
                         partconsumed = True
                     cleanpart=part.replace("'",'').lower()
                     delim=''
+                    # XXX The following 3 tests look wrong:
+                    # find() returns either -1 if the substring is not found,
+                    # or the position of the substring in the string.
+                    # since bool(-1) = True, cleanpart.find(',') will always
+                    # be False, unless cleanpart[0] is ','
+                    #
+                    # the test "',' in cleanpart" might be the one to use.
                     if cleanpart.find(','):
                         delim=','
                     if cleanpart.find(';'):
                         delim=';'
                     if cleanpart.find('/'):
                         delim='/'
-                    if 0 <= part.find("'") <= 2 or part.find('{')!=-1:
+                    if 0 <= part.find("'") <= 2 or '{' in part:
                         if delim=='':
                             delim='|'
                             cleanpart=cleanpart+'|'
@@ -181,7 +188,7 @@ class Meaning:
                     if not partconsumed:
                         # This must be our term
                         termweareworkingon=part.replace("[",'').replace("]",'').lower()
-                        if termweareworkingon.find('#')!=-1 and termweareworkingon.find('|')!=-1:
+                        if '#' in termweareworkingon and '|' in termweareworkingon:
                             termweareworkingon=termweareworkingon.split('#')[0]
                 # Now we have enough information to create a term
                 # object for this translation and add it to our list

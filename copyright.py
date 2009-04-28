@@ -347,7 +347,7 @@ class URLExclusion:
 
     def check(self, url, verbose = False):
         for entry in self.URLlist:
-           if url.find(entry) != -1:
+           if entry in url:
                if verbose > 1:
                    warn('URL Excluded: %s\nReason: %s' % (url, entry))
                elif verbose:

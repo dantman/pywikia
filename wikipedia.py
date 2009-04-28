@@ -722,7 +722,7 @@ not supported by PyWikipediaBot!"""
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
 
-            if text.find("<title>Wiki does not exist</title>") != -1:
+            if "<title>Wiki does not exist</title>" in text:
                 raise NoSuchSite(u'Wiki %s does not exist yet' % self.site())
 
             # Extract the actual text from the textarea
@@ -734,13 +734,13 @@ not supported by PyWikipediaBot!"""
                 textareaFound = True
             else:
                 # search for messages with no "view source" (aren't used in new versions)
-                if text.find(self.site().mediawiki_message('whitelistedittitle')) != -1:
+                if self.site().mediawiki_message('whitelistedittitle') in text:
                     raise NoPage(u'Page editing is forbidden for anonymous users.')
-                elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
+                elif self.site().has_mediawiki_message('nocreatetitle') and self.site().mediawiki_message('nocreatetitle') in text:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 # Bad title
-                elif text.find('var wgPageName = "Special:Badtitle";') != -1 \
-                or text.find(self.site().mediawiki_message('badtitle')) != -1:
+                elif 'var wgPageName = "Special:Badtitle";' in text \
+                or self.site().mediawiki_message('badtitle') in text:
                     raise BadTitle('BadTitle: %s' % self)
                 # find out if the username or IP has been blocked
                 elif self.site().isBlocked():
@@ -748,17 +748,17 @@ not supported by PyWikipediaBot!"""
                 # If there is no text area and the heading is 'View Source'
                 # but user is not blocked, the page does not exist, and is
                 # locked
-                elif text.find(self.site().mediawiki_message('viewsource')) != -1:
+                elif self.site().mediawiki_message('viewsource') in text:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 # Some of the newest versions don't have a "view source" tag for
                 # non-existant pages
                 # Check also the div class because if the language is not english
                 # the bot can not seeing that the page is blocked.
-                elif text.find(self.site().mediawiki_message('badaccess')) != -1 or \
-                text.find("<div class=\"permissions-errors\">") != -1:
+                elif self.site().mediawiki_message('badaccess') in text or \
+                "<div class=\"permissions-errors\">" in text:
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 elif config.retry_on_fail:
-                    if text.find( "<title>Wikimedia Error</title>") > -1:
+                    if "<title>Wikimedia Error</title>" in text:
                         output( u"Wikimedia has technical problems; will retry in %i minutes." % retry_idle_time)
                     else:
                         output( unicode(text) )
@@ -2966,9 +2966,9 @@ class _GetAll(object):
                     elif dt < 360:
                         dt += 60
                 else:
-                    if data.find("<title>Wiki does not exist</title>") != -1:
+                    if "<title>Wiki does not exist</title>" in data:
                         raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
-                    elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
+                    elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
                         output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
                         time.sleep(dt)
                         if dt <= 60:
@@ -3030,7 +3030,7 @@ class _GetAll(object):
                     if m:
                         ## output(u"%s is a redirect" % page2.aslink())
                         redirectto = m.group(1)
-                        if section and redirectto.find("#") == -1:
+                        if section and not "#" in redirectto:
                             redirectto = redirectto+"#"+section
                         page2._getexception = IsRedirectPage
                         page2._redirarg = redirectto
@@ -4448,7 +4448,7 @@ class Site(object):
         try:
             text = self.getUrl(u'%saction=query&meta=userinfo&uiprop=blockinfo'
                                % self.api_address(), sysop=sysop)
-            return text.find('blockedby=') > -1
+            return 'blockedby=' in text
         except NotImplementedError:
             return False
 

@@ -241,7 +241,7 @@ def filterCountries(categories):
         #If cat contains the name of a country add it to the list
         else:
             for country in countries:
-                if not(cat.find(country)==-1):
+                if country in cat:
                     listCountries.append(country)
 
     if(len(listByCountry) > 0):

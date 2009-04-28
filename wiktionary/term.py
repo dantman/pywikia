@@ -28,17 +28,17 @@ class Term:
                 pos=len(wikiline)
             maybegender=wikiline[pos:].replace("'",'').replace('{','').replace('}','').strip()
             self.term=wikiline[:pos].replace("[",'').replace(']','').strip()
-            if maybegender.find('m')!=-1:
+            if 'm' in maybegender:
                 self.gender='m'
-            if maybegender.find('f')!=-1:
+            if 'f' in maybegender:
                 self.gender='f'
-            if maybegender.find('n')!=-1:
+            if 'n' in maybegender:
                 self.gender='n'
-            if maybegender.find('c')!=-1:
+            if 'c' in maybegender:
                 self.gender='c'
-            if maybegender.find('p')!=-1:
+            if 'p' in maybegender:
                 self.number=2
-            if maybegender.find('dim')!=-1:
+            if 'dim' in maybegender:
                 self.diminutive=True
 
     def __getitem__(self):
@@ -177,8 +177,7 @@ class Verb(Term):
         """ Returns a string with this term as a link in a format ready for Wiktionary
         """
         if wikilang=='en':
-            pos=self.term.lower().find('to ')
-            if pos==0:
+            if self.term.lower().startswith('to '):
                 return 'to [[' + self.term[3:] + ']]'
         return Term.wikiWrapForList(self, wikilang)
 

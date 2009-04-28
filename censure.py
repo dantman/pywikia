@@ -89,7 +89,7 @@ def checkPage(title, onlyLastDiff = False):
     report = False
     wordsIn = []
     for badWord in ownWordList:
-        if text.find(' ' + badWord + ' ') != -1:
+        if (' ' + badWord + ' ') in text:
             wordsIn.append(badWord)
             report = True
     if report:

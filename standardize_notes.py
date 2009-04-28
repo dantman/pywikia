@@ -245,7 +245,7 @@ class ReplacePageGenerator:
                             skip_page = True
                             break
                     else:
-                        if entry.text.find(exception) != -1:
+                        if exception in entry.text:
                             skip_page = True
                             break
             if not skip_page:
@@ -256,7 +256,7 @@ class ReplacePageGenerator:
                             yield wikipedia.Page(mysite, entry.full_title())
                             break
                     else:
-                        if entry.text.find(old) != -1:
+                        if old in entry.text:
                             yield wikipedia.Page(mysite, entry.full_title())
                             break
 

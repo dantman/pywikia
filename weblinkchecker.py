@@ -275,7 +275,7 @@ class InternetArchiveConsulter:
             # the decompression for us, so we have to do it ourselves.
             import gzip, StringIO
             data = gzip.GzipFile(fileobj=StringIO.StringIO(data)).read()
-        if data.find("Search Results for ") != -1:
+        if "Search Results for " in data:
             return archiveURL
         else:
             return None

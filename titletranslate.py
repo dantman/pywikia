@@ -21,7 +21,7 @@ def translate(page, hints = None, auto = True, removebrackets = False):
     site = page.site()
     if hints:
         for h in hints:
-            if h.find(':') == -1:
+            if ':' not in h:
                 # argument given as -hint:xy where xy is a language code
                 codes = h
                 newname = ''

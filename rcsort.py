@@ -55,19 +55,19 @@ Rnumber = re.compile('tabindex=\"(\d*)\"')
 count = 0
 for line in text:
     if rcoptions:
-        if line.find('gesch') > -1:
+        if 'gesch' in line:
             try:
                 user = Ruser.search(line).group(1)
             except AttributeError:
                 user = None
             count += 1
             lines.append((user,count,line))
-    elif line.find('rcoptions') > -1:
+    elif 'rcoptions' in line:
         print line.replace(mysite.path() + "?title=Speciaal:RecenteWijzigingen&amp;","rcsort.py?")
         rcoptions = True
-    elif newbies and line.find('Nieuwste') > -1:
+    elif newbies and 'Nieuwste' in line:
         line =  line.replace(mysite.path() + "?title=Speciaal:Bijdragen&amp;","rcsort.py?").replace("target=newbies","newbies=true")
-        if line.find('</fieldset>') > -1:
+        if '</fieldset>' in line:
             line = line[line.find('</fieldset>')+11:]
         print line
         rcoptions = True

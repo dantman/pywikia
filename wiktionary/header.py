@@ -43,7 +43,7 @@ class Header(object):
         if line.count('=')>1:
             self.level = line.count('=') // 2 # integer floor division without fractional part
             self.header = line.replace('=','')
-        elif not line.find('{{')==-1:
+        elif '{{' in line:
             self.header = line.replace('{{-','').replace('-}}','')
 
         self.header = self.header.replace('{{','').replace('}}','').strip().lower()

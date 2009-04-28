@@ -328,17 +328,18 @@ class WiktionaryPage:
  #           print line
             # Let's get rid of line breaks and extraneous white space
             line=line.replace('\n','').strip()
+            lower = line.lower()
             # Let's start by looking for general stuff, that provides information which is
             # interesting to store at the page level
-            if line.lower().find('{wikipedia}')!=-1:
+            if '{wikipedia}' in lower:
                 self.addLink('wikipedia')
                 continue
-            if line.lower().find('[[category:')!=-1:
+            if '[[category:' in lower:
                 category=line.split(':')[1].replace(']','')
                 self.addCategory(category)
 #                print 'category: ', category
                 continue
-            if line.find('|')==-1:
+            if '|' not in line:
                 bracketspos=line.find('[[')
                 colonpos=line.find(':')
                 if bracketspos!=-1 and colonpos!=-1 and bracketspos < colonpos:
@@ -356,7 +357,7 @@ class WiktionaryPage:
                 templist.append(line)
                 continue
 #        print 'line0:',line[0], 'line-2:',line[-2],'|','stripped line-2',line.rstrip()[-2]
-            if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
+            if line.strip()[0]=='='and line.rstrip()[-2]=='=' or '{{-' in line and '-}}' in line:
                 # When a new header is encountered, it is necessary to store the information
                 # encountered under the previous header.
                 if templist:
@@ -385,16 +386,17 @@ class WiktionaryPage:
                     # Under the translations header there is quite a bit of stuff
                     # that's only needed for formatting, we can just skip that
                     # and go on processing the next line
-                    if line.lower().find('{top}')!=-1: continue
-                    if line.lower().find('{mid}')!=-1: continue
-                    if line.lower().find('{bottom}')!=-1: continue
-                    if line.find('|-')!=-1: continue
-                    if line.find('{|')!=-1: continue
-                    if line.find('|}')!=-1: continue
-                    if line.lower().find('here-->')!=-1: continue
-                    if line.lower().find('width=')!=-1: continue
-                    if line.lower().find('<!--left column')!=-1: continue
-                    if line.lower().find('<!--right column')!=-1: continue
+                    lower = line.lower()
+                    if '{top}' in lower: continue
+                    if '{mid}' in lower: continue
+                    if '{bottom}' in lower: continue
+                    if '|-' in line: continue
+                    if '{|' in line: continue
+                    if '|}' in line: continue
+                    if 'here-->' in lower: continue
+                    if 'width=' in lower: continue
+                    if '<!--left column' in lower: continue
+                    if '<!--right column' in lower: continue
 
                 templist.append(line)
 
@@ -1010,7 +1012,7 @@ class Header:
         if line.count('=')>1:
             self.level = line.count('=') // 2 # integer floor division without fractional part
             self.header = line.replace('=','')
-        elif not line.find('{{')==-1:
+        elif '{{' in line:
             self.header = line.replace('{{-','').replace('-}}','')
 
         self.header = self.header.replace('{{','').replace('}}','').strip().lower()

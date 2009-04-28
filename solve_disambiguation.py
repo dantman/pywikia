@@ -393,7 +393,7 @@ def correctcap(link, text):
     # If text links to a page with title link uncapitalized, uncapitalize link, otherwise capitalize it
     linkupper = link.title()
     linklower = linkupper[0].lower() + linkupper[1:]
-    if text.find("[[%s]]"%linklower) > -1 or text.find("[[%s|"%linklower) > -1:
+    if "[[%s]]"%linklower in text or "[[%s|"%linklower in text:
         return linklower
     else:
         return linkupper

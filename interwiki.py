@@ -1547,7 +1547,8 @@ class InterwikiBot(object):
                             wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
                     if globalvar.bracketonly:
-                        if page.title().find("(") == -1:
+                        # Only yield pages that have ( ) in titles
+                        if "(" not in page.title():
                             continue
                     break
 
