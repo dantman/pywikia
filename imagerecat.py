@@ -110,19 +110,25 @@ def getCommonshelperCats(imagepage):
     parameters = urllib.urlencode({'i' : imagepage.titleWithoutNamespace().encode('utf-8'), 'r' : 'on', 'go-clean' : 'Find+Categories', 'p' : search_wikis, 'cl' : hint_wiki})
     commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usagenum>(\d)+)\)\s(?P<usage>(.*))\s#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)\s(?P<gals>(.*))\s(.*)#EOF$', re.MULTILINE + re.DOTALL)
 
-    gotInfo = False;
-
+    gotInfo = False
+    maxtries = 10
+    tries = 0
+    
     while(not gotInfo):
         try:
-            commonsHelperPage = urllib.urlopen("http://toolserver.org/~daniel/WikiSense/CommonSense.php?%s" % parameters)
-            matches = commonsenseRe.search(commonsHelperPage.read().decode('utf-8'))
-            gotInfo = True
+            if ( tries < maxtries ):
+                tries = tries + 1
+                commonsHelperPage = urllib.urlopen("http://toolserver.org/~daniel/WikiSense/CommonSense.php?%s" % parameters)
+                matches = commonsenseRe.search(commonsHelperPage.read().decode('utf-8'))
+                gotInfo = True
+            else:
+                break
         except IOError:
             wikipedia.output(u'Got an IOError, let\'s try again')
         except socket.timeout:
             wikipedia.output(u'Got a timeout, let\'s try again')
 
-    if matches:
+    if (matches and gotInfo):
         if(matches.group('usagenum') > 0):
             used = matches.group('usage').splitlines()
             for use in used:
