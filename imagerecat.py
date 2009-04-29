@@ -111,6 +111,7 @@ def getCommonshelperCats(imagepage):
     commonsenseRe = re.compile('^#COMMONSENSE(.*)#USAGE(\s)+\((?P<usagenum>(\d)+)\)\s(?P<usage>(.*))\s#KEYWORDS(\s)+\((?P<keywords>(\d)+)\)(.*)#CATEGORIES(\s)+\((?P<catnum>(\d)+)\)\s(?P<cats>(.*))\s#GALLERIES(\s)+\((?P<galnum>(\d)+)\)\s(?P<gals>(.*))\s(.*)#EOF$', re.MULTILINE + re.DOTALL)
 
     gotInfo = False
+    matches = None
     maxtries = 10
     tries = 0
     
