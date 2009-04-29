@@ -137,7 +137,7 @@ import htmlentitydefs
 import warnings
 import unicodedata
 import xmlreader
-from BeautifulSoup import *
+from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup, SoupStrainer
 import weakref
 
 # Set the locale to system default. This will ensure correct string
