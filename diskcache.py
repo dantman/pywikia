@@ -80,12 +80,8 @@ class CachedReadOnlyDictI(object):
             raise KeyError(key)
 
         if index < 'a':
-            if index < '0' or index > '9':
-                raise KeyError(key)
             i = ord(index) - 48 + 26 # Numeric
         else:
-            if index > 'z':
-                raise KeyError(key)
             i = ord(index) - 97
 
         for k, v in self.cache:
