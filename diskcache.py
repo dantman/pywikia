@@ -58,6 +58,9 @@ class CachedReadOnlyDictI(object):
             self.cache_file.write('%02x%s%06x%s' % (len(key), key, len(value), value))
 
         self.lookup = lookup
+
+        self.cache_file.close()
+        self.cache_file = open(self.cache_path, 'rb')
         self.cache_file.seek(0)
         self.cache = []
 
