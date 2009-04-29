@@ -92,6 +92,13 @@ class CachedReadOnlyDictI(object):
                 self.cache.remove((k, v))
                 self.cache.append((k, v))
 
+        try:
+            k, v = self.cache[-1]
+            if k == key:
+                return v
+        except IndexError:
+            pass
+
         self.cache_file.seek(self.lookup[i])
         while True:
             length = int(self.read(2, key), 16)
