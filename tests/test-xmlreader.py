@@ -9,12 +9,12 @@ import xmlreader
 
 class XmlReaderTestCase(unittest.TestCase):
     def test_XmlDumpAllRevs(self):
-        pages = [r for r in xmlreader.XmlDump("article-pear.xml", allrevisions=True).parse()]
+        pages = [r for r in xmlreader.XmlDump("data/article-pear.xml", allrevisions=True).parse()]
         self.assertEquals(4, len(pages))
         self.assertNotEquals("", pages[0].comment)
 
     def test_XmlDumpFirstRev(self):
-        pages = [r for r in xmlreader.XmlDump("article-pear.xml").parse()]
+        pages = [r for r in xmlreader.XmlDump("data/article-pear.xml").parse()]
         self.assertEquals(1, len(pages))
         self.assertNotEquals("", pages[0].comment)
 
@@ -24,7 +24,7 @@ class XmlReaderTestCase(unittest.TestCase):
         def pageDone(page):
             pages.append(page)
         handler.setCallback(pageDone)
-        xml.sax.parse("article-pear.xml", handler)
+        xml.sax.parse("data/article-pear.xml", handler)
         self.assertEquals(4, len(pages))
         self.assertNotEquals("", pages[0].comment)
 
