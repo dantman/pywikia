@@ -462,6 +462,7 @@ msg = {
     'uz': (u'Bot', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
+    'war':(u'robot ', u'Gindugngan', u'Gintanggal', u'Ginliwat'),
     'yi': (u'באט ', u'צוגעלייגט', u'אראפגענומען', u'געענדערט'),
     'yue': (u'機械人 ', u'加', u'減', u'改'),
     'zh': (u'機器人 ', u'新增', u'移除', u'修改'),
