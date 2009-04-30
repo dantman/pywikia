@@ -712,7 +712,7 @@ class Subject(object):
         """Constructor. Takes as arguments the Page on the home wiki
            plus optionally a list of hints for translation"""
 
-        if globarvar.contentsondisk:
+        if globalvar.contentsondisk:
             originPage = StoredPage(originPage)
 
         # Remember the "origin page"
@@ -858,7 +858,7 @@ class Subject(object):
                 self.makeForcedStop(counter)
                 return False
 
-        if globarvar.contentsondisk:
+        if globalvar.contentsondisk:
             page = StoredPage(page)
 
         if page in self.foundIn:
