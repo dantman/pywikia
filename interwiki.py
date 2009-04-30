@@ -1432,7 +1432,8 @@ class Subject(object):
                 # foundIn can contain either Page or StoredPage objects
                 # calling the destructor on _contents will delete the
                 # disk records if necessary
-                del page._contents
+                if hasattr(page, '_contents'):
+                    del page._contents
 
     def replaceLinks(self, page, newPages, bot):
         """
