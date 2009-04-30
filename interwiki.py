@@ -310,6 +310,7 @@ except NameError:
 
 import wikipedia, config, pagegenerators, catlib
 import titletranslate, interwiki_graph
+import webbrowser
 
 docuReplacements = {
     '&pagegenerators_help;': pagegenerators.parameterHelp
@@ -1546,7 +1547,16 @@ class Subject(object):
                 # If we cannot ask, deny permission
                 answer = 'n'
             else:
-                answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No', 'Give up'], ['y', 'n', 'g'])
+                answer = wikipedia.inputChoice(u'Submit?', 
+                            ['Yes', 'No', 'open in Browser', 'Give up'], 
+                            ['y', 'n', 'b', 'g'])
+                if choice == 'b':
+                    webbrowser.open("http://%s%s" % (
+                        page.site().hostname(),
+                        page.site().nice_get_address(page.title())
+                    ))
+                    wikipedia.input("Press Enter when finished in browser.")
+                    return True
         else:
             # If we do not need to ask, allow
             answer = 'y'
