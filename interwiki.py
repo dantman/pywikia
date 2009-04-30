@@ -1410,6 +1410,7 @@ class Subject(object):
         if config.interwiki_backlink:
             self.reportBacklinks(new, updatedSites)
 
+    def clean(self):
         """
         Delete the contents that are stored on disk for this Subject.
 
@@ -1822,6 +1823,7 @@ class InterwikiBot(object):
             subj = self.subjects[i]
             if subj.isDone():
                 subj.finish(self)
+                subj.clean()
                 del self.subjects[i]
 
     def isDone(self):
