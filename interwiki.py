@@ -211,7 +211,7 @@ multiple languages, and specify on which sites the bot should modify pages:
     -localonly     only work on the local wiki, not on other wikis in the family
                    I have a login at. (note: without ending colon)
 
-    -limittwo      only update two pages - one in the local wiki (if loged-in),
+    -limittwo      only update two pages - one in the local wiki (if logged-in)
                    and one in the top available one.
                    For example, if the local page has links to de and fr,
                    this option will make sure that only local and de: (larger)
@@ -1352,14 +1352,7 @@ class Subject(object):
             lclSiteDone = False
             frgnSiteDone = False
 
-            # XXX Do we really need to make an union here?
-            # we should have sorted(languages_by_size) = sorted(langs) ?!
-            langBySize = set(lclSite.family.languages_by_size)
-            allLangs = set(lclSite.family.langs)
-
-            langToCheck = (langBySize | allLangs).difference(lclSite.family.obsolete)
-
-            for siteCode in langToCheck:
+            for siteCode in lclSite.family.languages_by_size:
                 site = wikipedia.getSite(code = siteCode)
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and site in new):
                     if site == lclSite:
