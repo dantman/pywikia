@@ -393,17 +393,17 @@ def LinkedPageGenerator(linkingPage):
     for page in linkingPage.linkedPages():
         yield page
 
-def RandomPageGenerator(number = 100, repeat = False, site = None):
+def RandomPageGenerator(number = 100, site = None):
     if site is None:
         site = wikipedia.getSite()
-    for page in site.randompages(number=number, repeat=repeat):
-        yield page
+    for i in range(number):
+        yield site.randompage()
 
-def RandomRedirectPageGenerator(number = 100, repeat = False, site = None):
+def RandomRedirectPageGenerator(number = 100, site = None):
     if site is None:
         site = wikipedia.getSite()
-    for page in site.randomredirectpages(number=number, repeat=repeat):
-        yield page
+    for i in range(number):
+        yield site.randomredirectpage()
 
 def TextfilePageGenerator(filename=None, site=None):
     '''

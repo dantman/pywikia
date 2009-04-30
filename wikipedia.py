@@ -4270,8 +4270,8 @@ class Site(object):
             ImagePage objects)
         unusedcategories(): Special:Unusuedcategories (yields Category)
         unusedfiles(): Special:Unusedimages (yields ImagePage)
-        randompages: Special:Random
-        randomredirectpages: Special:Random
+        randompage: Special:Random
+        randomredirectpage: Special:RandomRedirect
         withoutinterwiki: Special:Withoutinterwiki
         linksearch: Special:Linksearch
 
@@ -5434,55 +5434,19 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def randompages(self, number=1, repeat=False, randomredirect=False):
-        """Yield random pages via Special:Random, or Special:RandomRedirect."""
-        seen = set()
-        if randomredirect:
-            path = self.randomredirect_address()
-        else:
-            path = self.random_address()
-        entryR = re.compile('var wgPageName = "(?P<title>.+?)";')
-        while True:
-            for ignored in range(number):
-                # MediaWiki advances its random pages only every second.
-                time.sleep(1)
-                html = self.getUrl(path)
-                # output(u' html=%s' % (html))
-                m = entryR.search(html)
-                if m is not None:
-                    title = m.group('title')
-                    # output(u' title=%s' % ( title ))
-                    if title not in seen:
-                        seen.add(title)
-                        yield Page(self, title)
-            if not repeat:
-                break
+    def randompage(self):
+        """Yield random page via Special:Random"""
+        html = self.getUrl(self.random_address())
+        m = re.search('var wgPageName = "(?P<title>.+?)";', html)
+        if m is not None:
+            return Page(self, m.group('title'))
 
-    def randomredirectpages(self, number=1, repeat=False, randomredirect=True):
-        """Yield random pages via Special:Random, or Special:RandomRedirect."""
-        seen = set()
-        if randomredirect:
-            path = self.randomredirect_address()
-        else:
-            path = self.random_address()
-        entryR = re.compile('var wgPageName = "(?P<title>.+?)";')
-        while True:
-            for ignored in range(number):
-                # MediaWiki advances its random pages only every second.
-                time.sleep(1)
-                html = self.getUrl(path)
-                # output(u' html=%s' % (html))
-                m = entryR.search(html)
-                if m is not None:
-                    title = m.group('title')
-                    # output(u' title=%s' % ( title ))
-                    if title not in seen:
-                        seen.add(title)
-                        page = Page(self, title)
-                        yield page
-            if not repeat:
-                break
-
+    def randomredirectpage(self):
+        """Yield random redirect page via Special:RandomRedirect."""
+        html = self.getUrl(self.randomredirect_address())
+        m = re.search('var wgPageName = "(?P<title>.+?)";', html)
+        if m is not None:
+            return Page(self, m.group('title'))
 
     def allpages(self, start='!', namespace=None, includeredirects=True,
                  throttle=True):
