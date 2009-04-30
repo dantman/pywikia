@@ -2974,7 +2974,7 @@ class _GetAll(object):
                 else:
                     if "<title>Wiki does not exist</title>" in data:
                         raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
-                    elif "</mediawiki>" not in data:
+                    elif "</mediawiki>" not in data[-20:]:
                         # HTML error Page got thrown because of an internal
                         # error when fetching a revision.
                         output(u'Remote site has a problem, it probably ' \
