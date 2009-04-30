@@ -382,8 +382,7 @@ class URLExclusion:
             list2 += entry.split("and ")
         for entry in list2:
             # Remove unnecessary part of URL
-            entry = re.sub("http://", "", entry)
-            entry = re.sub("www\.", "", entry)
+            entry = re.sub("(http://|www\.)", "", entry)
             entry = re.sub("</?nowiki>", "", entry)
             if entry:
                 if '/' in entry:
@@ -399,8 +398,8 @@ class URLExclusion:
                             cut_comment = True, cut_newlines = True
                        ).splitlines()
 
-        for i in range(len(result_list)):
-            cleaned = re.sub('\s+$', '', result_list[i])
+        for item in result_list:
+            cleaned = item.strip()
             if cleaned:
                 self.URLlist.add(cleaned)
 
