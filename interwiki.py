@@ -270,13 +270,14 @@ next time.
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
 # (C) Yuri Astrakhan, 2005-2006
+# (C) Pywikipedia bot team, 2007-2009
 #
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
 #
 
-import sys, copy, re
+import sys, copy, re, os
 import time
 import codecs
 import socket
@@ -501,6 +502,73 @@ class Global(object):
     minsubjects = config.interwiki_min_subjects
     nobackonly = False
     hintsareright = False
+    contentsondisk = config.interwiki_contents_on_disk
+
+class StoredPage(wikipedia.Page):
+    """
+    Store the Page contents on disk to avoid sucking too much
+    memory when a big number of Page objects will be loaded
+    at the same time.
+    """
+    
+    # Please prefix the class members names by SP
+    # to avoid possible name clashes with wikipedia.Page
+
+    # path to the shelve
+    SPpath = None
+    # shelve
+    SPstore = None
+
+    # attributes created by wikipedia.Page.__init__
+    SPcopy = [ '_editrestriction', 
+               '_site', 
+               '_namespace',
+               '_section',
+               '_title',
+               'editRestriction',
+               'moveRestriction',
+               '_permalink',
+               '_userName',
+               '_ipedit',
+               '_editTime',
+               '_startTime',
+               '_revisionId',
+               '_deletedRevs' ]
+                 
+    def SPdeleteStore():
+        del StoredPage.SPstore
+        os.unlink(StoredPage.SPpath)
+    SPdeleteStore = staticmethod(SPdeleteStore)
+
+    def __init__(self, page):
+        for attr in StoredPage.SPcopy:
+            setattr(self, attr, getattr(page, attr))
+
+        if not StoredPage.SPpath:
+            import shelve
+            index = 1
+            while True:
+                path = config.datafilepath('cache', 'pagestore' + str(index))       
+                if not os.path.exists(path): break
+                index += 1
+            StoredPage.SPpath = path
+            StoredPage.SPstore = shelve.open(path)
+
+        self.SPkey = self.aslink().encode('utf-8')
+        self.SPcontentSet = False
+
+    def SPgetContents(self):
+        return StoredPage.SPstore[self.SPkey]
+
+    def SPsetContents(self, contents):
+        self.SPcontentSet = True
+        StoredPage.SPstore[self.SPkey] = contents
+
+    def SPdelContents(self):
+        if self.SPcontentSet:
+            del StoredPage.SPstore[self.SPkey]
+
+    _contents = property(SPgetContents, SPsetContents, SPdelContents)
 
 class PageTree(object):
     """
@@ -642,6 +710,10 @@ class Subject(object):
     def __init__(self, originPage, hints = None):
         """Constructor. Takes as arguments the Page on the home wiki
            plus optionally a list of hints for translation"""
+
+        if globarvar.contentsondisk:
+            originPage = StoredPage(originPage)
+
         # Remember the "origin page"
         self.originPage = originPage
         # todo is a list of all pages that still need to be analyzed.
@@ -784,6 +856,10 @@ class Subject(object):
                 wikipedia.output("%s has a backlink from %s."%(page,linkingPage))
                 self.makeForcedStop(counter)
                 return False
+
+        if globarvar.contentsondisk:
+            page = StoredPage(page)
+
         if page in self.foundIn:
             # not new
             self.foundIn[page].append(linkingPage)
@@ -1332,6 +1408,22 @@ class Subject(object):
         # don't report backlinks for pages we already changed
         if config.interwiki_backlink:
             self.reportBacklinks(new, updatedSites)
+
+        """
+        Delete the contents that are stored on disk for this Subject.
+
+        We cannot afford to define this in a StoredPage destructor because
+        StoredPage instances can get referenced cyclicly: that would stop the 
+        garbage collector from destroying some of those objects.
+
+        It's also not necessary to set theses line as a Subject destructor:
+        deleting all stored content one entry by one entry when bailing out
+        after a KeyboardInterrupt for example is redundant, because the 
+        whole storage file will be eventually removed.
+        """
+        if globalvar.contentsondisk:
+            for storedPage in self.foundIn:
+                storedPage.SPdelContents()
 
     def replaceLinks(self, page, newPages, bot):
         """
@@ -2034,6 +2126,9 @@ if __name__ == "__main__":
         except:
             bot.dump()
             raise
+        finally:
+            if globalvar.contentsondisk:
+                StoredPage.SPdeleteStore()
 
     finally:
         wikipedia.stopme()

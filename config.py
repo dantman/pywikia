@@ -234,6 +234,11 @@ interwiki_graph_url = None
 # Save file with local articles without interwikis.
 without_interwiki = False
 
+# Experimental feature:
+# Store the page contents on disk (/cache/ directory) instead of loading
+# them in RAM.
+interwiki_contents_on_disk = False
+
 ############## SOLVE_DISAMBIGUATION SETTINGS ############
 #
 # Set disambiguation_comment[FAMILY][LANG] to a non-empty string to override
