@@ -343,8 +343,9 @@ class Delinker(threadpool.Thread):
     def get_summary(self, site, image, admin, reason, replacement):
         """ Get the summary template and substitute the 
         correct values."""
-        # FIXME: Don't insert commons: on local delink
         # FIXME: Hardcode is EVIL
+        if site.lang != 'commons':
+            reason = reason.replace('[[', '[[commons:')
         if replacement:
             tlp = self.CommonsDelinker.SummaryCache.get(site, 'replace-I18n')
         else:
@@ -354,10 +355,10 @@ class Delinker(threadpool.Thread):
         if replacement:
             tlp = tlp.replace('$2', replacement)
             tlp = tlp.replace('$3', unicode(admin))
-            tlp = tlp.replace('$4', unicode(reason).replace('[[', '[[commons:'))
+            tlp = tlp.replace('$4', unicode(reason))
         else:
             tlp = tlp.replace('$2', unicode(admin))
-            tlp = tlp.replace('$3', reason.replace('[[', '[[commons:'))
+            tlp = tlp.replace('$3', unicode(reason))
         
         return tlp
         
