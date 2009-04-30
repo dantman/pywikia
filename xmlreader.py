@@ -304,7 +304,7 @@ Consider installing the python-celementtree package.''')
 
     def _parse_all(self, event, elem):
         """Parser that yields all revisions"""
-        if event == "start" and elem.tag == "{%s}revision" % self.uri:
+        if event == "start" and elem.tag == "{%s}page" % self.uri:
             self._headers(elem)
 
         if event == "end" and elem.tag == "{%s}revision" % self.uri:
