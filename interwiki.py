@@ -860,14 +860,14 @@ class Subject(object):
                 self.makeForcedStop(counter)
                 return False
 
-        if globalvar.contentsondisk:
-            page = StoredPage(page)
 
         if page in self.foundIn:
             # not new
             self.foundIn[page].append(linkingPage)
             return False
         else:
+            if globalvar.contentsondisk:
+                page = StoredPage(page)
             self.foundIn[page] = [linkingPage]
             self.todo.add(page)
             counter.plus(page.site())
@@ -899,9 +899,6 @@ class Subject(object):
             if globalvar.autonomous:
                 wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()))
                 # Fill up foundIn, so that we will not write this notice
-                if globalvar.contentsondisk:
-                    linkedPage = StoredPage(linkedPage)
-
                 self.foundIn[linkedPage] = [linkingPage]
                 return True
             else:
@@ -913,9 +910,6 @@ class Subject(object):
                     choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'Add an alternative', 'give up'], ['y', 'n', 'a', 'g'])
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
-                        if globalvar.contentsondisk:
-                            linkedPage = StoredPage(linkedPage)
-
                         self.foundIn[linkedPage] = [linkingPage]
                         if choice == 'g':
                             self.makeForcedStop(counter)
@@ -1081,6 +1075,8 @@ class Subject(object):
                 wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
                 if page == self.originPage:
                     if globalvar.initialredirect:
+                        if globalvar.contentsondisk:
+                            redirectTargetPage = StoredPage(redirectTargetPage)
                         self.originPage = redirectTargetPage
                         self.todo.add(redirectTargetPage)
                         counter.plus(redirectTargetPage.site)
@@ -1432,8 +1428,11 @@ class Subject(object):
         whole storage file will be eventually removed.
         """
         if globalvar.contentsondisk:
-            for storedPage in self.foundIn:
-                storedPage.SPdelContents()
+            for page in self.foundIn:
+                # foundIn can contain either Page or StoredPage objects
+                # calling the destructor on _contents will delete the
+                # disk records if necessary
+                del page._contents
 
     def replaceLinks(self, page, newPages, bot):
         """
