@@ -796,6 +796,8 @@ class Subject(object):
             pages = titletranslate.translate(self.originPage, hints = hints, auto = globalvar.auto, removebrackets
 = globalvar.hintnobracket)
         for page in pages:
+            if globalvar.contentsondisk:
+                page = StoredPage(page)
             self.todo.add(page)
             self.foundIn[page] = [None]
             if keephintedsites:
@@ -897,6 +899,9 @@ class Subject(object):
             if globalvar.autonomous:
                 wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()))
                 # Fill up foundIn, so that we will not write this notice
+                if globalvar.contentsondisk:
+                    linkedPage = StoredPage(linkedPage)
+
                 self.foundIn[linkedPage] = [linkingPage]
                 return True
             else:
@@ -908,6 +913,9 @@ class Subject(object):
                     choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'Add an alternative', 'give up'], ['y', 'n', 'a', 'g'])
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
+                        if globalvar.contentsondisk:
+                            linkedPage = StoredPage(linkedPage)
+
                         self.foundIn[linkedPage] = [linkingPage]
                         if choice == 'g':
                             self.makeForcedStop(counter)
