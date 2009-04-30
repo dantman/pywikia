@@ -11,7 +11,7 @@ These command line parameters can be used to specify which pages to work on:
 Furthermore, the following command line parameters are supported:
 
 -page               Use a page as generator
--text               Define which text add
+-text               Define which text add. "\n" are interpreted as newlines.
 -summary            Define the summary to use
 -except             Use a regex to understand if the template is already in the page
 -excepturl          Use the html page as text where you want to see if there's the text, not the wiki-page.
@@ -174,6 +174,8 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         #nn got a message between the categories and the iw's and they want to keep it there, first remove it
         if (site.language()==u'nn'):
             newtext = newtext.replace(nn_iw_msg, '')
+        # Translating the \\n into binary \n
+        addText = addText.replace('\\n', '\n')
         # Adding the text
         newtext += u"\n%s" % addText
         # Reputting the categories
