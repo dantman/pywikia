@@ -536,8 +536,9 @@ class StoredPage(wikipedia.Page):
                '_deletedRevs' ]
                  
     def SPdeleteStore():
-        del StoredPage.SPstore
-        os.unlink(StoredPage.SPpath)
+        if StoredPage.SPpath:
+            del StoredPage.SPstore
+            os.unlink(StoredPage.SPpath)
     SPdeleteStore = staticmethod(SPdeleteStore)
 
     def __init__(self, page):
