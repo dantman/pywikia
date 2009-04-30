@@ -2974,6 +2974,13 @@ class _GetAll(object):
                 else:
                     if "<title>Wiki does not exist</title>" in data:
                         raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
+                    elif "</mediawiki>" not in data:
+                        # HTML error Page got thrown because of an internal
+                        # error when fetching a revision.
+                        output(u'Remote site has a problem, it probably ' \
+                            'exited our query with an internal Error. ' \
+                            'Sleeping for %d seconds...' % self.sleeptime)
+                        self.sleep()
                     elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
                         output(u'Got incorrect export page. ' \
                             'Sleeping for %d seconds...' % self.sleeptime)
