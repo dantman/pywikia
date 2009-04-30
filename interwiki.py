@@ -1967,7 +1967,7 @@ if __name__ == "__main__":
             site = wikipedia.getSite()
             mainpagename = site.mediawiki_message('mainpage')
             globalvar.skip.add(wikipedia.Page(site, mainpagename))
-        except:
+        except wikipedia.Error:
             wikipedia.output(u'Missing main page name')
 
         if newPages is not None:
