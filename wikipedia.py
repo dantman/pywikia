@@ -2945,6 +2945,7 @@ class _GetAll(object):
         self.pages = []
         self.throttle = throttle
         self.force = force
+        self.sleeptime = 15
 
         for page in pages:
             if (not hasattr(page, '_contents') and not hasattr(page, '_getexception')) or force:
@@ -2952,8 +2953,14 @@ class _GetAll(object):
             elif verbose:
                 output(u"BUGWARNING: %s already done!" % page.aslink())
 
+    def sleep(self):
+        time.sleep(self.sleeptime)
+        if self.sleeptime <= 60:
+            self.sleeptime += 15
+        elif self.sleeptime < 360:
+            self.sleeptime += 60
+
     def run(self):
-        dt=15
         if self.pages:
             while True:
                 try:
@@ -2961,22 +2968,16 @@ class _GetAll(object):
                 except (socket.error, httplib.BadStatusLine, ServerError):
                     # Print the traceback of the caught exception
                     output(u''.join(traceback.format_exception(*sys.exc_info())))
-                    output(u'DBG> got network error in _GetAll.run. Sleeping for %d seconds...' % dt)
-                    time.sleep(dt)
-                    if dt <= 60:
-                        dt += 15
-                    elif dt < 360:
-                        dt += 60
+                    output(u'DBG> got network error in _GetAll.run. ' \
+                            'Sleeping for %d seconds...' % self.sleeptime)
+                    self.sleep()
                 else:
                     if "<title>Wiki does not exist</title>" in data:
                         raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
                     elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
-                        output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
-                        time.sleep(dt)
-                        if dt <= 60:
-                            dt += 15
-                        elif dt < 360:
-                            dt += 60
+                        output(u'Got incorrect export page. ' \
+                            'Sleeping for %d seconds...' % self.sleeptime)
+                        self.sleep()
                     else:
                         break
             R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
