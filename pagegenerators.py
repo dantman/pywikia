@@ -125,12 +125,12 @@ parameterHelp = """\
 
 -random           Work on random pages returned by [[Special:Random]].
                   Can also be given as "-random:n" where n is the number
-                  of pages to be returned, else 100 pages are returned.
+                  of pages to be returned, else 10 pages are returned.
 
 -randomredirect   Work on random redirect target pages returned by
                   [[Special:Randomredirect]].  Can also be given as
                   "-randomredirect:n" where n is the number of pages to be
-                  returned, else 100 pages are returned.
+                  returned, else 10 pages are returned.
 
 -gorandom         Specifies that the robot should starting at the random pages 
                   returned by [[Special:Random]].
@@ -393,13 +393,13 @@ def LinkedPageGenerator(linkingPage):
     for page in linkingPage.linkedPages():
         yield page
 
-def RandomPageGenerator(number = 100, site = None):
+def RandomPageGenerator(number = 10, site = None):
     if site is None:
         site = wikipedia.getSite()
     for i in range(number):
         yield site.randompage()
 
-def RandomRedirectPageGenerator(number = 100, site = None):
+def RandomRedirectPageGenerator(number = 10, site = None):
     if site is None:
         site = wikipedia.getSite()
     for i in range(number):
