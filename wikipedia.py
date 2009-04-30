@@ -442,13 +442,15 @@ not supported by PyWikipediaBot!"""
                     break
 
             sectionStart = t.find(u'#')
-            if sectionStart >= 0:
+            if sectionStart > 0:
                 self._section = t[sectionStart+1 : ].lstrip(" ")
                 self._section = sectionencode(self._section,
                                               self.site().encoding())
                 if not self._section:
                     self._section = None
                 t = t[ : sectionStart].rstrip(" ")
+            elif sectionStart == 0:
+                raise InvalidTitle(u"Invalid title starting with a #: '%s'" % t)
             else:
                 self._section = None
 
