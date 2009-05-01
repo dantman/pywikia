@@ -1135,7 +1135,7 @@ class Subject(object):
             elif globalvar.autonomous and duplicate:
                 
                 wikipedia.output(u"Stopping work on %s because duplicate pages"\
-                    " %s and %s are found" % (self.originPage.aslink(), 
+                    " %s and %s are found" % (self.originPage.aslink(True), 
                                               duplicate.aslink(True), 
                                               page.aslink(True)))
                 self.makeForcedStop(counter)
@@ -1177,7 +1177,7 @@ class Subject(object):
                                 if prevPage != linkedPage and prevPage.site() == lpsite:
                                     # Still, this could be "no problem" as either may be a
                                     # redirect to the other. No way to find out quickly!
-                                    wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                    wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(True), page.aslink(True), linkedPage.aslink(True)))
                                     break
                             else:
                                 if config.interwiki_shownew:
