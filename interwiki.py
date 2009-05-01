@@ -1417,7 +1417,7 @@ class Subject(object):
         StoredPage instances can get referenced cyclicly: that would stop the 
         garbage collector from destroying some of those objects.
 
-        It's also not necessary to set theses line as a Subject destructor:
+        It's also not necessary to set these lines as a Subject destructor:
         deleting all stored content one entry by one entry when bailing out
         after a KeyboardInterrupt for example is redundant, because the 
         whole storage file will be eventually removed.
