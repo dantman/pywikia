@@ -1543,7 +1543,7 @@ class Subject(object):
                 answer = wikipedia.inputChoice(u'Submit?', 
                             ['Yes', 'No', 'open in Browser', 'Give up'], 
                             ['y', 'n', 'b', 'g'])
-                if choice == 'b':
+                if answer == 'b':
                     webbrowser.open("http://%s%s" % (
                         page.site().hostname(),
                         page.site().nice_get_address(page.title())
