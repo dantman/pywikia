@@ -874,9 +874,11 @@ class Family:
             },
             4: {
                 '_default': u'Project',
+                'cs': u'Wikizdroje',
             },
             5: {
                 '_default': u'Project talk',
+                'cs': u'Wikizdroje diskuse',
                 'gan': u'Wikipedia talk',
             },
             6: {
@@ -1056,7 +1058,6 @@ class Family:
                 'yi': [u'טעקע', u'בילד'],
                 'yo': u'Àwòrán',
                 'za': u'文件',
-                'zea': u'Plaetje',
                 'zea': [u'File', u'Image', u'文件', u'图像', u'圖像'],
             },
             7: {
