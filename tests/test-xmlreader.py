@@ -1,9 +1,6 @@
 import unittest
+import test_utils
 import xml.sax
-
-import sys
-# get the xmlreader module one level under
-sys.path.append('..')
 
 import xmlreader
 
