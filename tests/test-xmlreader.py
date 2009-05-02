@@ -1,6 +1,7 @@
+import xml.sax
+
 import unittest
 import test_utils
-import xml.sax
 
 import xmlreader
 
@@ -31,6 +32,7 @@ class XmlReaderTestCase(unittest.TestCase):
         xml.sax.parse("data/article-pear.xml", handler)
         self.assertEquals(4, len(pages))
         self.assertNotEquals("", pages[0].comment)
+
 
 if __name__ == '__main__':
     unittest.main()
