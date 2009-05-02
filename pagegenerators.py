@@ -97,8 +97,6 @@ parameterHelp = """\
 
 -prefixindex      Work on pages commencing with a common prefix.
 
--regex            Obsolete, use -titleregex
-
 -titleregex       Work on titles that match the given regular expression.
 
 -transcludes      Work on all pages that use a certain template.
