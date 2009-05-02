@@ -452,21 +452,17 @@ for _filename in _fns:
             print "WARNING: Skipped '%s': owned by someone else."%_filename
 
 # Test for obsoleted and/or unknown variables.
-for _key in globals().keys():
-    if _key[0]=='_':
+for _key, _val in globals().items():
+    if _key.startswith('_'):
         pass
     elif _key in _gl:
-        nt=type(globals()[_key])
-        ot=_tp[_key]
-        if nt==ot or nt==type(None) or ot==type(None):
+        nt = type(_val)
+        ot = _tp[_key]
+        if nt == ot or _val is None or ot == type(None):
             pass
-        elif nt==type(1) and ot==type(1.0):
+        elif nt is int and (ot is float or ot is bool):
             pass
-        elif ot==type(1) and nt==type(1.0):
-            pass
-        elif nt==type(1) and ot==type(True):
-            pass
-        elif ot==type(1) and nt==type(True):
+        elif ot is int and (nt is float or nt is bool):
             pass
         else:
             print "WARNING: Type of '%s' changed"%_key
