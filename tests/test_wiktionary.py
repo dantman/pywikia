@@ -4,8 +4,10 @@
 """Unit tests for Wiktionary.py"""
 __version__ = '$Id$'
 
-import wiktionary
 import unittest
+import test_utils
+
+import wiktionary
 
 class KnownValues(unittest.TestCase):
     knownValues = (
