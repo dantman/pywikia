@@ -66,7 +66,6 @@ class CachedReadOnlyDictI(object):
     def delete(self):
         self.cache_file.close()
         os.unlink(self.cache_path)
-        os = None
 
     def __getitem__(self, key):
         key = key.lower()
