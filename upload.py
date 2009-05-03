@@ -23,8 +23,8 @@ and for a description.
 #
 __version__='$Id$'
 
-import os, sys, re, time
-import urllib, httplib
+import os, sys, time
+import urllib
 import wikipedia, config
 
 def post_multipart(site, address, fields, files, cookies):

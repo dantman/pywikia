@@ -33,9 +33,9 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
-import wikipedia, config
-import replace, pagegenerators, catlib
-import re, sys, string, time
+import wikipedia
+import pagegenerators, catlib
+import time
 
 class SpeedyRobot:
     """

@@ -24,9 +24,9 @@ python unlink.py Foo bar -namespace:0 -namespace:6
 
 __version__='$Id$'
 
-import wikipedia, pagegenerators, catlib
+import wikipedia, pagegenerators
 import editarticle
-import re, sys
+import re
 
 # Summary messages in different languages
 msg = {

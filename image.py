@@ -34,9 +34,9 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
-import wikipedia, config
+import wikipedia
 import replace, pagegenerators
-import re, sys, string
+import re
 
 class ImageRobot:
     """

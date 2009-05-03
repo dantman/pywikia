@@ -175,7 +175,7 @@ __version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 
 import wikipedia, config, string, locale, query
 import time, re, cPickle, os, urllib
-import codecs, sys
+import codecs
 from datetime import timedelta
 
 locale.setlocale(locale.LC_ALL, '')

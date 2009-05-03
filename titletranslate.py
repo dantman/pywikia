@@ -9,7 +9,7 @@ __version__ = '$Id$'
 #
 import re
 
-import wikipedia, date, time
+import wikipedia, date
 
 def translate(page, hints = None, auto = True, removebrackets = False):
     """

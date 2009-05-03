@@ -80,7 +80,7 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
-import os, re, sys, pickle, bz2
+import os, re, pickle, bz2
 import wikipedia, catlib, config, pagegenerators
 
 # This is required for the text that is shown when you run this script

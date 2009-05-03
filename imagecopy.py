@@ -85,7 +85,7 @@ __version__='$Id$'
 from Tkinter import *
 import os, sys, re, codecs
 import urllib, httplib, urllib2
-import catlib, thread, webbrowser
+import webbrowser
 import time, threading
 import wikipedia, config, socket
 import pagegenerators, add_text

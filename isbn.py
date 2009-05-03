@@ -38,7 +38,7 @@ Furthermore, the following command line parameters are supported:
 
 __version__='$Id$'
 
-import wikipedia, pagegenerators, catlib, config
+import wikipedia, pagegenerators
 import sys, re
 
 docuReplacements = {

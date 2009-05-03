@@ -17,7 +17,7 @@ to the older method using regular expressions.
 """
 __version__='$Id$'
 
-import threading, time
+import threading
 import xml.sax
 import codecs, re
 import wikipedia

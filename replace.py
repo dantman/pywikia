@@ -114,7 +114,7 @@ talk about HTTP, where the typo has become part of the standard:
 
 from __future__ import generators
 import sys, re, time
-import wikipedia, pagegenerators, catlib, config
+import wikipedia, pagegenerators
 import editarticle
 import webbrowser
 
