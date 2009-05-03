@@ -2,7 +2,6 @@ __version__ = '$Id$'
 
 import random
 import config
-import sys
 import os
 
 # http://mail.python.org/pipermail/python-list/2006-March/375280.html
@@ -66,7 +65,6 @@ class CachedReadOnlyDictI(object):
 
     def delete(self):
         self.cache_file.close()
-        import os
         os.unlink(self.cache_path)
         os = None
 
