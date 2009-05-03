@@ -64,8 +64,25 @@ class CachedReadOnlyDictI(object):
         self.cache = []
 
     def delete(self):
-        self.cache_file.close()
-        os.unlink(self.cache_path)
+        """
+        Method is called from wikipedia._flush, on Python exit
+        Some modules might already have been unloaded, and some
+        objects might already have been freed:
+        1) We have to reload all modules used
+        2) We have to dereference the loaded modules after usage
+        3) Strange errors can be raised here, we don't care.
+        """
+        try:
+            self.cache_file.close()
+        except IOError:
+            pass
+        try:
+            import os
+            os.unlink(self.cache_path)
+        except OSError:
+            pass
+        finally:
+            os = None
 
     def __getitem__(self, key):
         key = key.lower()
