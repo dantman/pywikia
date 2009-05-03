@@ -1632,7 +1632,7 @@ def checkbot():
             try:
                 textRegex = pageRegex.get()
             except wikipedia.NoPage:
-                wikipedia.output(u"%s doesn't exist!" % page.title())
+                wikipedia.output(u"%s doesn't exist!" % pageRegex.title())
                 textRegex = '' # No source, so the bot will quit later.
         # If generator is the regex' one, use your own Generator using an url or page and a regex.
         if generator == 'regex' and regexGen == True:
