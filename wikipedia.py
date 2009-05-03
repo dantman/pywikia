@@ -6788,7 +6788,7 @@ Global arguments available for all bots:
 -verbose          Have the bot provide additional output that may be useful in
 -v                debugging.
 '''
-    output(globalHelp)
+    output(globalHelp, toStdout = True)
     try:
         exec('import %s as module' % moduleName)
         helpText = module.__doc__.decode('utf-8')
