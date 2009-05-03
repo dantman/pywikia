@@ -1073,7 +1073,13 @@ class Subject(object):
                 continue
 
             elif page.isRedirectPage():
-                redirectTargetPage = page.getRedirectTarget()
+                try:
+                    redirectTargetPage = page.getRedirectTarget()
+                except wikipedia.InvalidTitle:
+                    # MW considers #redirect [[en:#foo]] as a redirect page,
+                    # but we can't do anything useful with such pages
+                    wikipedia.output(u"NOTE: %s redirects to an invalid title" % page.aslink(True))
+                    continue
                 wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
                 if page == self.originPage:
                     if globalvar.initialredirect:
