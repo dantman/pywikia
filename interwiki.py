@@ -1524,7 +1524,7 @@ class Subject(object):
 
         wikipedia.output(u"Changes to be made: %s" % mods)
         oldtext = page.get()
-        newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site())
+        newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site(), template = (page.namespace() == 10) )
         if newtext == oldtext:
             return False
         if globalvar.debug:

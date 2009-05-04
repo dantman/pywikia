@@ -3658,7 +3658,7 @@ def removeLanguageLinksAndSeparator(text, site = None, marker = '', separator = 
     else:
         return removeLanguageLinks(text, site, marker)
 
-def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
+def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = False):
     """Replace interlanguage links in the text with a new set of links.
 
     'new' should be a dict with the Site objects as keys, and Page objects
@@ -3698,7 +3698,19 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False):
                 s2 = removeCategoryLinksAndSeparator(s2.replace(marker,'',cseparatorstripped).strip(), site) + separator + s
                 newtext = replaceCategoryLinks(s2, cats, site=site, addOnly=True)
             else:
-                newtext = s2.replace(marker,'').strip() + separator + s
+                if template:
+                    # Do we have a noinclude at the end of the template?
+                    parts = '</noinclude>'.split(s2)
+                    lastpart = parts[-1]
+                    if re.match('\s*%s' % marker, lastpart):
+                        # Put the langlinks back into the noinclude's
+                        regexp = re.compile('</noinclude>\s*%s' % marker)
+                        newtext = regexp.sub(s + '</noinclude>', s2)
+                    else:
+                        # Put the langlinks at the end, inside noinclude's
+                        newtext = s2.replace(marker,'').strip() + separator + u'<noinclude>\n%s</noinclude>\n' % s
+                else:
+                    newtext = s2.replace(marker,'').strip() + separator + s
     else:
         newtext = s2.replace(marker,'')
     return newtext
