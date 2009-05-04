@@ -2977,8 +2977,7 @@ class _GetAll(object):
                     elif "</mediawiki>" not in data[-20:]:
                         # HTML error Page got thrown because of an internal
                         # error when fetching a revision.
-                        output(u'Remote site has a problem, it probably ' \
-                            'exited our query with an internal Error. ' \
+                        output(u'Received incomplete XML data. ' \
                             'Sleeping for %d seconds...' % self.sleeptime)
                         self.sleep()
                     elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
