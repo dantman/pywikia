@@ -157,7 +157,7 @@ ignoreTemplates = {
     'af' : [u'commonscat', u'commons'],
     'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'],
     'cs' : [u'Commons', u'commons cat', u'Sestřičky', u'Sisterlinks'],
-    'da' : [u'Commons', u'Commons left', u'Commons2', u'Commons3', u'Commonsbilleder', u'Commonscat left', u'Commonscat2', u'Commonsmedia', u'GalleriCommons', u'Søsterlinks'],
+    'da' : [u'Commons', u'Commons left', u'Commons2', u'Commonsbilleder', u'Commonscat left', u'Commonscat2', u'GalleriCommons', u'Søsterlinks'],
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'fr' : [u'Commons', u'Commons cat'],
     'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
