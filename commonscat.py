@@ -159,8 +159,9 @@ ignoreTemplates = {
     'cs' : [u'Commons', u'commons cat', u'Sestřičky', u'Sisterlinks'],
     'da' : [u'Commons', u'Commons left', u'Commons2', u'Commonsbilleder', u'Commonscat left', u'Commonscat2', u'GalleriCommons', u'Søsterlinks'],
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
+    'eo' : [u'commons', (u'Projekto/box', 'commons='), (u'Projekto', 'commons='), (u'Projektoj', 'commons='), (u'Projektoj', 'commonscat=') 
     'fr' : [u'Commons', u'Commons cat'],
-    'it' : [(u'Ip', 'commons='), ('Interprogetto', 'commons=')],
+    'it' : [(u'Ip', 'commons='), (u'Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS', u'Commons cat', u'SisterlinksN', u'Interwikicat'],
     'nl' : [u'Commons', u'Commonsklein', u'Commonscatklein', u'Catbeg', u'Catsjab', u'Catwiki'],
 }
