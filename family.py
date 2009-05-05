@@ -3580,7 +3580,7 @@ class Family:
                     # add all namespaces
                     namespaces = self.namespaces.keys()
                 for i in namespaces:
-                    if i > 0:
+                    if i >= 0:
                         namespace_params = namespace_params + '&ns%d=1' % i
 
         return "%s?title=%s:Search&search=%s&limit=%d%s&fulltext=1&useskin=monobook" % (self.path(code),

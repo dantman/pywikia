@@ -5052,14 +5052,14 @@ your connection is down. Retrying in %i minutes..."""
     def search(self, query, number = 10, namespaces = None):
         """Yield search results (using Special:Search page) for query."""
         throttle = True
-        path = self.search_address(urllib.quote_plus(query),
+        path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
                                    n=number, ns=namespaces)
         get_throttle()
         html = self.getUrl(path)
 
-        entryR = re.compile(ur'<li[^>]*><a href=".+?" title="(?P<title>.+?)">.+?</a>'
-                              '<br />(?P<match>.*?)<span style="color[^>]*>.+?: '
-                              '(?P<relevance>[0-9.]+)% - '
+        entryR = re.compile(ur'<li><a href=".+?" title="(?P<title>.+?)">.+?</a>'
+#                              '<br />(?P<match>.*?)<span style="color[^>]*>.+?: '
+#                              '(?P<relevance>[0-9.]+)% - '
 #                              '(?P<size>[0-9.]*) '
 #                              '(?P<sizeunit>[A-Za-z]) '
 #                              '\((?P<words>.+?) \w+\) - '
@@ -5068,8 +5068,8 @@ your connection is down. Retrying in %i minutes..."""
 
         for m in entryR.finditer(html):
             page = Page(self, m.group('title'))
-            match = m.group('match')
-            relevance = m.group('relevance')
+            #match = m.group('match')
+            #relevance = m.group('relevance')
             #size = m.group('size')
             ## sizeunit appears to always be "KB"
             #words = m.group('words')
@@ -5078,7 +5078,7 @@ your connection is down. Retrying in %i minutes..."""
             #print "%s - %s %s (%s words) - %s" % (relevance, size, sizeunit, words, date)
 
             #yield page, match, relevance, size, words, date
-            yield page, match, relevance, '', '', ''
+            yield page, '', '', '', '', ''
 
     # TODO: avoid code duplication for the following methods
     def newpages(self, number = 10, get_redirect = False, repeat = False, namespace = 0):
