@@ -154,7 +154,8 @@ commonscatTemplates = {
 }
 
 ignoreTemplates = {
-    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'],
+    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'],,
+    'cs' : [u'Commons', u'Sestřičky', u'Sisterlinks'],
     'da' : [u'Commons', u'Commons left', u'Commons2', u'Commons3', u'Commonsbilleder', u'Commonscat left', u'Commonscat2', u'Commonsmedia', u'GalleriCommons', u'Søsterlinks'],
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'fr' : [u'Commons', u'Commons cat'],
@@ -239,8 +240,8 @@ def addCommonscat (page = None, summary = None, always = False):
             if (commonscatLink!=u''):
                 changeCommonscat (page, currentCommonscat, commonscatLink)
             #else
-            #Should i remove the commonscat link?            
-            
+            #Should i remove the commonscat link?
+
     elif skipPage(page):
         wikipedia.output("Found a template in the skip list. Skipping " + page.title());
     else:
@@ -249,7 +250,7 @@ def addCommonscat (page = None, summary = None, always = False):
             textToAdd = u'{{' + getTemplate(page.site().language()) + u'|' + commonscatLink + u'}}'
             (success, always) = add_text.add_text(page, textToAdd, summary, None, None, always);
             return (True, always);
-                               
+
     return (True, always);
 
 def changeCommonscat (page = None, oldcat = u'', newcat = u''):
@@ -257,7 +258,7 @@ def changeCommonscat (page = None, oldcat = u'', newcat = u''):
     #print u'{{' +  + u'|' + oldcat + u'}}'
     #print u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}'
     #newtext = newtext.replace(u'{{' + getTemplate(page.site().language()) + u'|' + oldcat + u'}}',
-    #                u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}')   
+    #                u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}')
     newtext = re.sub(u'(?i)\{\{' + getTemplate(page.site().language()) + u'\|?[^}]*\}\}',  u'{{' + getTemplate(page.site().language()) + u'|' + newcat + u'}}', page.get())
     comment = u'Changing commonscat link from [[:Commons:Category:' + oldcat + u'|' + oldcat + u']] to [[:Commons:Category:' + newcat + u'|' + newcat + u']]'
     wikipedia.showDiff(page.get(), newtext)
@@ -273,7 +274,7 @@ def findCommonscatLink (page=None):
                     wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + checkedCommonscat + ".")
                     return checkedCommonscat
     return u''
-    
+
 
 def getCommonscatLink (wikipediaPage=None):
     #See if commonscat is present
@@ -342,7 +343,7 @@ def main():
         elif arg.startswith('-checkcurrent'):
             checkcurrent = True
             generator = pagegenerators.NamespaceFilterPageGenerator(pagegenerators.ReferringPageGenerator(wikipedia.Page(wikipedia.getSite(), u'Template:' + getTemplate(wikipedia.getSite().language())), onlyTemplateInclusion=True), ns)
-            
+
         elif arg == '-always':
             always = True
         else:
