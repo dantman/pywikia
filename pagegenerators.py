@@ -42,8 +42,9 @@ parameterHelp = """\
 -uncatfiles       Work on all files which are not categorised.
 
 -file             Read a list of pages to treat from the named text file.
-                  Page titles in the file must be enclosed with [[brackets]].
-                  Argument can also be given as "-file:filename".
+                  Page titles in the file must be enclosed with [[brackets]]
+                  or separated by newlines. Argument can also be given as
+                  "-file:filename".
 
 -filelinks        Work on all pages that use a certain image/media file.
                   Argument can also be given as "-filelinks:filename".
@@ -405,9 +406,10 @@ def RandomRedirectPageGenerator(number = 10, site = None):
 
 def TextfilePageGenerator(filename=None, site=None):
     '''
-    Read a file of page links between double-square-brackets, and return
-    them as a list of Page objects. filename is the name of the file that
-    should be read. If no name is given, the generator prompts the user.
+    Read a file of page links between double-square-brackets or, in
+    alternative, separated by newlines, and return them as a list of Page
+    objects. filename is the name of the file that should be read. If no
+    name is given, the generator prompts the user.
     '''
     if filename is None:
         filename = wikipedia.input(u'Please enter the filename:')
@@ -415,6 +417,7 @@ def TextfilePageGenerator(filename=None, site=None):
         site = wikipedia.getSite()
     f = codecs.open(filename, 'r', config.textfile_encoding)
     R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # title ends either before | or before ]]
+    pageTitle = None
     for pageTitle in R.findall(f.read()):
         # If the link doesn't refer to this site, the Page constructor
         # will automatically choose the correct site.
@@ -422,6 +425,12 @@ def TextfilePageGenerator(filename=None, site=None):
         # text file, but also could be dangerous because you might
         # inadvertently change pages on another wiki!
         yield wikipedia.Page(site, pageTitle)
+    if pageTitle is None:
+        f.seek(0)
+        for title in f:
+            title = title.strip()
+            if title:
+                yield wikipedia.Page(site, title)
     f.close()
 
 def PagesFromTitlesGenerator(iterable, site = None):
