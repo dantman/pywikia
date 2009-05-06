@@ -3414,8 +3414,8 @@ class Family:
         """
         if config.SSL_connection and self.name in config.available_ssl_project:
             return 'https'
-        else:
-            return 'http'
+
+        return 'http'
 
     def hostname(self, code):
         return self.langs[code]
@@ -3434,8 +3434,8 @@ class Family:
         """
         if config.SSL_connection and self.name in config.available_ssl_project:
             return '/%s/%s/w' % (self.name, code)
-        else:
-            return '/w'
+
+        return '/w'
 
     def path(self, code):
         return '%s/index.php' % self.scriptpath(code)
@@ -3449,8 +3449,8 @@ class Family:
     def nicepath(self, code):
         if config.SSL_connection and self.name in config.available_ssl_project:
             return '/%s/%s/wiki/' % (self.name, code)
-        else:
-            return '/wiki/'
+        
+        return '/wiki/'
 
     def dbName(self, code):
         # returns the name of the MySQL database

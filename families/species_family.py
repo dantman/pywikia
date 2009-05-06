@@ -2,7 +2,7 @@
 
 __version__ = '$Id$'
 
-import family
+import family, config
 
 # The wikispecies family
 
@@ -13,6 +13,8 @@ class Family(family.Family):
         self.langs = {
             'species': 'species.wikimedia.org',
         }
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            self.langs['species'] = 'secure.wikimedia.org'
 
         self.namespaces[4] = {
             '_default': [u'Wikispecies', self.namespaces[4]['_default']],
@@ -24,7 +26,13 @@ class Family(family.Family):
         self.interwiki_forward = 'wikipedia'
 
     def version(self,code):
-        return '1.13alpha'
+        return '1.15alpha'
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    def scriptpath(self, code):
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            return '/wikipedia/species/w'
+
+        return '/w'

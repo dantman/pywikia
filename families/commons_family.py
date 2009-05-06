@@ -2,7 +2,7 @@
 
 __version__ = '$Id$'
 
-import family
+import family, config
 
 # The Wikimedia Commons family
 
@@ -13,6 +13,8 @@ class Family(family.Family):
         self.langs = {
             'commons': 'commons.wikimedia.org',
         }
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            self.langs['commons'] = 'secure.wikimedia.org'
 
         self.namespaces[4] = {
             '_default': [u'Commons', self.namespaces[4]['_default']],
@@ -56,3 +58,9 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    def scriptpath(self, code):
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            return '/wikipedia/commons/w'
+
+        return '/w'

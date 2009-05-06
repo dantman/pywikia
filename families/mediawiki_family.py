@@ -2,7 +2,7 @@
 
 __version__ = '$Id$'
 
-import family
+import family, config
 
 # The MediaWiki family
 # user-config.py: usernames['mediawiki']['mediawiki'] = 'User name'
@@ -15,6 +15,8 @@ class Family(family.Family):
         self.langs = {
             'mediawiki': 'www.mediawiki.org',
         }
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            self.langs['mediawiki'] = 'secure.wikimedia.org'
 
         self.namespaces[4] = {
             '_default': [u'Project', self.namespaces[4]['_default']],
@@ -40,3 +42,9 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    def scriptpath(self, code):
+        if config.SSL_connection and self.name in config.available_ssl_project:
+            return '/wikipedia/mediawiki/w'
+        
+        return '/w'
