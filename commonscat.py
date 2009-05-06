@@ -298,27 +298,29 @@ def checkCommonscatLink (name = ""):
     If the page doesnt exists the function will return None
     '''
     #wikipedia.output("getCommonscat: " + name );
-    commonsPage = wikipedia.Page(wikipedia.getSite("commons", "commons"), "Category:" + name);
-    #This can throw a wikipedia.BadTitle, maybe convert this to catch
-    #wikipedia.BadTitle
-    #wikipedia.NoPage
-    #wikipedia.IsRedirectPage
-    if not commonsPage.exists():
-        #wikipedia.output("getCommonscat : The category doesnt exist.");
-        return u''
-    elif commonsPage.isRedirectPage():
-        #wikipedia.output("getCommonscat : The category is a redirect");
-        return checkCommonscatLink(commonsPage.getRedirectTarget().titleWithoutNamespace());
-    elif "Category redirect" in commonsPage.templates():
-        #wikipedia.output("getCommonscat : The category is a category redirect");
-        for template in commonsPage.templatesWithParams():
-            if ((template[0]=="Category redirect") and (len(template[1]) > 0)):
-                return checkCommonscatLink(template[1][0])
-    elif commonsPage.isDisambig():
-        #wikipedia.output("getCommonscat : The category is disambigu");
-        return u''
-    else:
-        return commonsPage.titleWithoutNamespace()
+    try:
+        #This can throw a wikipedia.BadTitle
+        commonsPage = wikipedia.Page(wikipedia.getSite("commons", "commons"), "Category:" + name);
+
+        if not commonsPage.exists():
+            #wikipedia.output("getCommonscat : The category doesnt exist.");
+            return u''
+        elif commonsPage.isRedirectPage():
+            #wikipedia.output("getCommonscat : The category is a redirect");
+            return checkCommonscatLink(commonsPage.getRedirectTarget().titleWithoutNamespace());
+        elif "Category redirect" in commonsPage.templates():
+            #wikipedia.output("getCommonscat : The category is a category redirect");
+            for template in commonsPage.templatesWithParams():
+                if ((template[0]=="Category redirect") and (len(template[1]) > 0)):
+                    return checkCommonscatLink(template[1][0])
+        elif commonsPage.isDisambig():
+            #wikipedia.output("getCommonscat : The category is disambigu");
+            return u''
+        else:
+            return commonsPage.titleWithoutNamespace()
+    except wikipedia.BadTitle:
+        #Funky title so not correct
+        return u''        
 
 def main():
     '''
