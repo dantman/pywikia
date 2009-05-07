@@ -55,6 +55,7 @@ msg = {
     'ko':u'봇: 이전에 없던 <references /> 추가',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'nl':u'Bot: toevoeging ontbrekende <references /> tag',
+    'pl':u'Robot dodaje szablon {{przypisy}}',
     'pt':u'Bot: Adicionando a tag <references />',
     'zh':u'機器人: 增加遺失的 <references /> 標籤',
     'fr':u'Robot: Ajout de la balise <references /> manquante',
@@ -130,6 +131,12 @@ placeBeforeSections = {
         u'Zie ook',
         u'Externe verwijzingen',
         u'Externe verwijzing',
+    ],
+    'pl': [
+        u'Źródła',
+        u'Bibliografia',
+        u'Zobacz też',
+        u'Linki zewnętrzne',
     ],
     'pt': [
         u'Ligações externas',
@@ -212,6 +219,9 @@ referencesSections = {
         u'Noten',
         u'Bronvermelding',
     ],
+    'pl': [
+        u'Przypisy',
+    ],
     'pt': [
         u'Ligações externas',
         u'Veja também',
@@ -251,6 +261,7 @@ referencesTemplates = {
                u'Referenties',u'Bron',u'Bronnen/noten/referenties',u'Bron2',
                u'Bron3',u'ref',u'references',u'appendix',
                u'Noot',u'FootnotesSmall'],
+        'pl': [u'przypisy', u'Przypisy'],
         'zh': [u'Reflist'],
     },
 }
