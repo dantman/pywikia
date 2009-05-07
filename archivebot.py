@@ -107,6 +107,13 @@ messages = {
             'ArchiveSummary': u'Arkiverar %(count)d trådar från [[%(from)s]].',
             'OlderThanSummary': u'äldre än',
             },
+        'fi': {
+            'ArchiveFull' : u'(ARCHIVE FULL)',
+            'InitialArchiveHeader': u'{{arkisto}}',
+            'PageSummary': u'Arkistoidaan %(count)d keskustelua (%(why)s) %(archives)s arkistoon.',
+            'ArchiveSummary': u'Arkistoidaan %(count)d keskutelua sivulta [[%(from)s]].',
+            'OlderThanSummary': u'vanhempi kuin',
+            },
 }
 
 def message(key, lang=Site.language()):
@@ -172,7 +179,7 @@ def int2month(num):
 
 def int2month_short(num):
     """Returns the locale's abbreviated name of month 'num' (1-12)."""
-    return locale.nl_langinfo(locale.ABMON_1+num-1).decode('utf-8')
+    return locale.nl_langinfo(locale.ABMON_1+num-1).replace('\xa0', '').decode('utf-8')
 
 
 def txt2timestamp(txt, format):
@@ -226,6 +233,9 @@ class DiscussionThread(object):
 # 4. nov 2006 kl. 20:46 (CET)
         if not TM:
             TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
+#3. joulukuuta 2008 kello 16.26 (EET)
+        if not TM:
+                TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kello \W*(\d\d).(\d\d) \(.*?\)', line)
         if TM:
 #            wikipedia.output(TM)
             TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")
@@ -243,6 +253,8 @@ class DiscussionThread(object):
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d %Y (%Z)")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%d. %Bta %Y kello %H.%M (%Z)")
             if TIME:
                 self.timestamp = max(self.timestamp,time.mktime(TIME))
 #                wikipedia.output(u'Time to be parsed: %s' % TM.group(0))
@@ -381,7 +393,7 @@ class PageArchiver(object):
     def key_ok(self):
         s = new_hash()
         s.update(self.salt+'\n')
-        s.update(self.Page.title+'\n')
+        s.update(self.Page.title.encode('utf8')+'\n')
         return self.get('key') == s.hexdigest()
 
     def loadConfig(self):
