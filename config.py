@@ -124,7 +124,10 @@ except:
     #we get "StdioOnnaStick instance has no attribute 'encoding'"
     console_encoding = None
 
-# The encoding in which textfiles are stored, which contain lists of page titles.
+# The encoding in which textfiles are stored, which contain lists of page
+# titles. The most used is: 'utf-8', 'utf-8-sig' recognizes BOM but it is
+# available on Python 2.5 or higher). For a complete list please see:
+# http://docs.python.org/library/codecs.html#standard-encodings
 textfile_encoding = 'utf-8'
 
 # tkinter isn't yet ready
