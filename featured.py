@@ -17,9 +17,9 @@ This script understands various command-line arguments:
 
 * -top               : using -top if you want moving {{Link FA|lang}} to top of interwiki.
                        DEFAULT: placing {{Link FA|lang}} right next to corresponding interwiki.
-* -count             : Only counts how many featured articles of an languages (using "-fromlang" argument) 
-                       or all wikipedias (using "-fromall" argument). (merge /archive/featuredcount.py) like: 
-                           featured.py -fromlang:en,he -count  
+* -count             : Only counts how many featured articles of an languages (using "-fromlang" argument)
+                       or all wikipedias (using "-fromall" argument). (merge /archive/featuredcount.py) like:
+                           featured.py -fromlang:en,he -count
                        (give counts how many featured articles of en and he wp)
 
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
@@ -51,6 +51,7 @@ msg = {
     'als': u'Bötli: [[%s:%s]] isch en bsunders glungener Artikel',
     'ar': u'بوت: [[%s:%s]] هي مقالة مختارة',
     'bat-smg': u'robots: Pavīzdėnė straipsnė nūruoda [[%s:%s]]',
+    'be-x-old': u'Робат: [[%s:%s]] — абраны артыкул',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'cs': u'Bot: Nejlepší článek: [[%s:%s]]',
     'cy': u'Robot: Mae [[%s:%s]] yn erthygl ddethol',
