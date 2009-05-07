@@ -566,6 +566,7 @@ class CategoryRemoveRobot:
         'en':u'Robot: Removing from %s',
         'es':u'Bot: Eliminada de la %s',
         'fi':u'Botti poisti luokasta %s',
+        'fr':u'Robot : Retiré depuis %s',
         'he':u'בוט: מסיר את הדף מהקטגוריה %s',
         'ia':u'Robot: Eliminate de %s',
         'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',

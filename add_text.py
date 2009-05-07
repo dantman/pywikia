@@ -58,6 +58,7 @@ docuReplacements = {
 msg = {
     'ar': u'بوت: إضافة %s',
     'en': u'Bot: Adding %s',
+    'fr': u'Robot : Ajoute %s',
     'he': u'בוט: מוסיף %s',
     'it': u'Bot: Aggiungo %s',
     'ja': u'ロボットによる: 追加 %s',

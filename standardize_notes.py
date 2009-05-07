@@ -66,7 +66,7 @@ msg = {
        'de':u'Bot: Automatisierte Textersetzung %s',
        'en':u'Robot: Automated reference processing %s',
        'es':u'Robot: Reemplazo automático de texto %s',
-       'fr':u'Bot : Remplacement de texte automatisé %s',
+       'fr':u'Robot : Remplacement de texte automatisé %s',
        'he':u'בוט: הופך את הערת השוליים %s לאוטומטית',
        'hu':u'Robot: Automatikus szövegcsere %s',
        'ia':u'Robot: Reimplaciamento automatic de texto %s',
@@ -86,6 +86,7 @@ fixes = {
         'msg': {
                'en':u'Robot: Adding/sorting references.',
                'ar':u'روبوت: إضافة/ترتيب المراجع.',
+               'fr':u'Robot : Ajoute/trie les références.',
                'he':u'בוט: מוסיף/מסדר הערות שוליים',
                'ia':u'Robot: Addition/assortimento de referentias',
                'nl':u'Bot: referenties toegevoegd/gesorteerd',

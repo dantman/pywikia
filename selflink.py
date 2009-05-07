@@ -42,7 +42,7 @@ msg = {
     'ar':u'روبوت: إزالة وصلات ذاتية',
     'de':u'Bot: Entferne Selbstlinks',
     'en':u'Robot: Removing selflinks',
-    'fr':u'Bot: Enlève autoliens',
+    'fr':u'Robot: Enlève autoliens',
     'he':u'בוט: מסיר קישורים של הדף לעצמו',
     'ksh':u'Bot: Ene Lengk vun de Sigg op sesch sellver, erus jenumme.',
     'nl':u'Bot: verwijzingen naar pagina zelf verwijderd',

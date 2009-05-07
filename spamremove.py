@@ -37,13 +37,13 @@ def main():
         'en': u'Removing links to spamming site %s',
         'es': u'Removiendo enlaces a sitio publicitario %s',
         'he': u'מסיר קישורים לאתר ספאם %s',
+        'fr': u'Suppression du lien blacklisté %s'
         'it': u'Rimuovo link contenuto nella Spam-Blacklist %s',
         'ja': u'ロボットによる: 迷惑リンク削除 %s',
         'nl': u'Links naar gespamde site: %s verwijderd',
         'pt': u'Removendo links de spam do site %s',
         'ta': u'எரிதமாக இணைக்கப்பட்ட %s இணையத்தளம் நீக்கப்பட்டது',
         'zh': u'機器人: 移除廣告黑名單連結 %s',
-        'fr': u'Suppression du lien blacklisté %s'
     }
     spamSite = ''
     for arg in wikipedia.handleArgs():

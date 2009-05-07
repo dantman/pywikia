@@ -43,7 +43,7 @@ msg = {
      'ar': u'روبوت: إنشاء تحويلة إلى [[%s]]',
      'de': u'Bot: Weiterleitung angelegt auf [[%s]]',
      'en': u'Robot: Create redirect to [[%s]]',
-     'fr': u'robot: créez redirect à [[%s]]',
+     'fr': u'robot: Créer redirection à [[%s]]',
      'he': u'בוט: יוצר הפניה לדף [[%s]]',
      'ja': u'ロボットによる: リダイレクト作成 [[%s]]',
      'ksh': u'Bot: oemleidung aanjelaat op [[%s]]',

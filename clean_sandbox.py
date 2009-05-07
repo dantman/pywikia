@@ -74,6 +74,7 @@ sandboxTitle = {
     'da': u'Wikipedia:Sandkassen',
     'de': u'Wikipedia:Spielwiese',
     'en': u'Wikipedia:Sandbox',
+    'fr': u'Wikipédia:Bac à sable',
     'fi': u'Wikipedia:Hiekkalaatikko',
     'he': u'ויקיפדיה:ארגז חול',
     'id': u'Wikipedia:Bak pasir',

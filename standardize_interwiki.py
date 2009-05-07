@@ -25,7 +25,7 @@ comment = {
     'ar':u'روبوت: توحيد قياسي للإنترويكي',
     'de':u'Bot: Interwikilinks standardisieren',
     'en':u'Robot: Interwiki standardization',
-    'fr':u'Bot : Standardisation des interwikis',
+    'fr':u'Robot : Standardisation des interwikis',
     'he':u'בוט: מסדר את האינטרוויקי',
     'it':u'Bot: Standardizzo interwiki',
     'ja':u'ロボットによる: 言語間リンクを標準化',

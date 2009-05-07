@@ -20,6 +20,7 @@ import sys
 summary_msg = {
     'ar': u'إزالة',
     'en': u'Removing',
+    'fr': u'Retiré',
     'it': u'Rimozione',
 }
 

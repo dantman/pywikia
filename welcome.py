@@ -277,7 +277,7 @@ summary2 = {
     'de':u'Aktualisiere Logdatei',
     'en':u'Updating log',
     'fa':u'به روز رسانی سیاهه',
-    'fr':u'Mise a jour du log',
+    'fr':u'Mise a jour du journal',
     'ga':u'Log a thabhairt suas chun dáta',
     'it':u'Aggiorno il log',
     'ja':u'更新記録',
