@@ -38,6 +38,7 @@ msg = {
     'no': u'Robot: Retter omdirigeringer',
     'pt': u'Bot: Arrumando redirects',
     'sv': u'Bot: Rättar omdirigeringar',
+    'vi': u'Robot: Sửa đổi hướng',
     'zh': u'機器人: 修復重定向',
 }
 
@@ -55,6 +56,7 @@ featured_articles = {
     'no': u'Wikipedia:Anbefalte artikler',
     'pt': u'Wikipedia:Os_melhores_artigos',
     'sv': u'Wikipedia:Utvalda_artiklar',
+    'vi': u'Wikipedia:Bài_viết_chọn_lọc',
     'zh': u'Wikipedia:特色条目',
 }
 
