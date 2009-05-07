@@ -103,6 +103,7 @@ msg_double={
     'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน',
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
     'uk': u'Робот: виправлення подвійного перенаправлення',
+    'war': u'Robot: Gin-ayad in nagduduha nga redirek',
     'yi': u'באט: פארראכטן פארטאפלטע ווייטערפירונג',
     'zh': u'機器人:修正雙重重定向',
     'zh-yue': u'機械人：拉直連串跳轉 ',
@@ -136,6 +137,7 @@ reason_broken={
     'sr': u'Бот: Преусмерење не постоји',
     'th': u'โรบอต: หน้าเปลี่ยนทางเสีย',
     'tr': u'Bot değişikliği: Var olmayan sayfaya olan yönlendirme',
+    'war': u'Robot: Waray dida an karadto-an han redirek',
     'zh': u'機器人:該重定向的目標不存在',
     'zh-yue': u'機械人：跳轉目標唔存在',
 }
@@ -148,6 +150,7 @@ sd_tagging_sum = {
     'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
     'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
     'nl': u'Bot: gemarkeerd voor snelle verwijdering',
+    'war': u'Robot: Nautod o nagbinalikbalik nga redirek',
     'zh':u'機器人: 將損壞的重定向提報快速刪除',
 }
 
@@ -158,6 +161,7 @@ sd_template = {
     'ja':u'{{即時削除|壊れたリダイレクト}}',
     'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~',
     'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~',
+    'war': u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~',
     'zh':u'{{delete|R1}}',
 }
 
@@ -258,7 +262,7 @@ class RedirectGenerator:
             site = wikipedia.getSite()
         if namespaces == []:
             namespaces = [ 0 ]
-        apiQ0 = site.api_address() 
+        apiQ0 = site.api_address()
         apiQ0 += 'action=query'
         apiQ0 += '&list=allpages'
         apiQ0 += '&apfilterredir=redirects'
@@ -331,7 +335,7 @@ class RedirectGenerator:
                  2..maxlen - start of a redirect chain of that many redirects
                              (currently, the API seems not to return sufficient data
                              to make these return values possible, but that may change)
-                  maxlen+1 - start of an even longer chain, or a loop 
+                  maxlen+1 - start of an even longer chain, or a loop
                              (currently, the API seems not to return sufficient data
                              to allow this return vaules, but that may change)
                       None - start of a redirect chain of unknown length, or loop
@@ -348,7 +352,7 @@ class RedirectGenerator:
             site = wikipedia.getSite()
         if namespaces == []:
             namespaces = [ 0 ]
-        apiQ1 = site.api_address() 
+        apiQ1 = site.api_address()
         apiQ1 += 'action=query'
         apiQ1 += '&redirects'
         apiQ1 += '&format=xml'
