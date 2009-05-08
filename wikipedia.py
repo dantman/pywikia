@@ -4995,7 +4995,7 @@ your connection is down. Retrying in %i minutes..."""
                     else:
                         tree = BeautifulStoneSoup(xml)
                         self._mediawiki_messages = _dict([(tag.get('name').lower(), html2unicode(tag.string))
-                                for tag in tree.findAll('message')])
+                                for tag in tree.findAll('message') if tag.string])
 
                 if not self._mediawiki_messages:
                     # No messages could be added.
