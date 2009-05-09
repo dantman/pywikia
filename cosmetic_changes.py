@@ -79,7 +79,7 @@ msg_standalone = {
     'tl': u'robot Kosmetiko pagbabago',
     'tr': u'Bot Kozmetik değişiklikler',
     'uk': u'робот косметичні зміни',
-    'vi': u'robot mỹ phẩm thay đổi',
+    'vi': u'robot: Sửa cách trình bày',
     'war': u'Robot: Kosmetiko nga mga pagbag-o',
     'zh': u'機器人: 細部更改',
 }
@@ -125,7 +125,7 @@ msg_append = {
     'tl': u'; Kosmetiko pagbabago',
     'tr': u'; Kozmetik değişiklikler',
     'uk': u'; косметичні зміни',
-    'vi': u'; mỹ phẩm thay đổi',
+    'vi': u'; sửa cách trình bày',
     'war': u'; kosmetiko nga mga pagbag-o',
     'zh': u'; 細部更改',
 }
