@@ -11,7 +11,7 @@ Furthermore, the following command line parameters are supported:
 
 -from and -to     The page to move from and the page to move to.
 
--del              After moving the page, delete the redirect or mark it for deletion.
+-noredirect       Leave no redirect behind.
 
 -prefix           Move pages by adding a namespace prefix to the names of the pages.
                   (Will remove the old namespace prefix if any)
@@ -65,29 +65,11 @@ summary={
     'zh': u'機器人:移動頁面',
 }
 
-deletesummary={
-    'ar': u'روبوت: حذف التحويلة بعد نقل الصفحة',
-    'de': u'Bot: Lösche nach Seitenverschiebung nicht benötigte Umleitung',
-    'en': u'Robot: Deleting redirect after page has been moved',
-    'el': u'Διαγραφή ανακατεύθυνσης μετά μετεκίνησης σελίδας',
-    'fi': u'Botti poisti ohjauksen siirrettyyn sivuun',
-    'fr': u'Page de redirection supprimée après renommage',
-    'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
-    'ja': u'ロボットによる: ページの移動後のリダイレクトページの削除',
-    'nl': u'Bot: doorverwijzing verwijderd na hernoemen van pagina',
-    'nn': u'robot: slettar omdirigering etter at ei sida har vorten flytta',
-    'pt': u'Bot: Página apagada depois de movida',
-    'ru': u'Робот: удаление перенаправления после переименования страницы',
-    'zh': u'機器人:刪除頁面移動後的重定向',
-    # These are too unspecific:
-    #'pl': u'Usunięcie artykułu przez robota',
-}
-
 class MovePagesBot:
-    def __init__(self, generator, addprefix, delete, always, skipredirects, summary):
+    def __init__(self, generator, addprefix, noredirect, always, skipredirects, summary):
         self.generator = generator
         self.addprefix = addprefix
-        self.delete = delete
+        self.noredirect = noredirect
         self.always = always
         self.skipredirects = skipredirects
         self.summary = summary
@@ -98,9 +80,7 @@ class MovePagesBot:
             if not msg:
                 msg = wikipedia.translate(wikipedia.getSite(), summary)
             wikipedia.output(u'Moving page %s to [[%s]]' % (page.aslink(), newPageTitle))
-            if page.move(newPageTitle, msg, throttle=True) and self.delete:
-                deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
-                page.delete(deletemsg, mark=True)
+            page.move(newPageTitle, msg, throttle=True, leaveRedirect=self.noredirect)
         except wikipedia.NoPage:
             wikipedia.output(u'Page %s does not exist!' % page.title())
         except wikipedia.IsRedirectPage:
@@ -217,7 +197,7 @@ def main():
     prefix = None
     oldName = None
     newName = None
-    delete = False
+    noredirect = True
     always = False
     skipredirects = False
     summary = None
@@ -243,8 +223,8 @@ def main():
                     oldName1 = page.title()
             if oldName1:
                 wikipedia.output(u'WARNING: file %s contains odd number of links' % filename)
-        elif arg == '-del':
-            delete = True
+        elif arg == '-noredirect':
+            noredirect = False
         elif arg == '-always':
             always = True
         elif arg == '-skipredirects':
@@ -276,14 +256,14 @@ def main():
         wikipedia.output(u'WARNING: -from:%s without -to:' % oldName)
     for pair in fromToPairs:
         page = wikipedia.Page(wikipedia.getSite(), pair[0])
-        bot = MovePagesBot(None, prefix, delete, always, skipredirects, summary)
+        bot = MovePagesBot(None, prefix, noredirect, always, skipredirects, summary)
         bot.moveOne(page, pair[1])
 
     if not gen:
         gen = genFactory.getCombinedGenerator()
     if gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = MovePagesBot(preloadingGen, prefix, delete, always, skipredirects, summary)
+        bot = MovePagesBot(preloadingGen, prefix, noredirect, always, skipredirects, summary)
         bot.run()
     elif not fromToPairs:
         wikipedia.showHelp('movepages')
