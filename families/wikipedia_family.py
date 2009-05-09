@@ -1083,7 +1083,7 @@ class Family(family.Family):
         # returns the name of the MySQL database
         # for historic reasons, the databases are called xxwiki instead of
         # xxwikipedia for Wikipedias.
-        return '%swiki' % code
+        return '%swiki_p' % code
 
     def code2encodings(self, code):
         """Return a list of historical encodings for a specific language
