@@ -162,6 +162,7 @@ ignoreTemplates = {
     'eo' : [u'Commons', (u'Projekto/box', 'commons='), (u'Projekto', 'commons='), (u'Projektoj', 'commons='), (u'Projektoj', 'commonscat=')],
     'es' : [u'Commons', u'IprCommonscat'],
     'eu' : [u'Commonscat', u'Commons'],
+    'fi' : [u'Commonscat-rivi', u'Commons-rivi', u'Commons'],
     'fr' : [u'Commons', u'Commons cat', u'CommonsCat', u'Commons-inline', (u'Autres projets', 'commons=')],
     'it' : [(u'Ip', 'commons='), (u'Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS', u'Commons cat', u'SisterlinksN', u'Interwikicat'],
