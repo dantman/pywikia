@@ -1027,7 +1027,7 @@ class CheckRobot:
                 continue
             except wikipedia.IsRedirectPage:
                 newpage = page.getRedirectTarget()
-                wikipedia.output(u'Page %s redirect to \'%s\'' % (page.aslink(), newpage.title()))
+                wikipedia.output(u'Page %s redirects to \'%s\'' % (page.aslink(), newpage.title()))
                 bot = CheckRobot(iter([newpage,]))
                 bot.run()
                 continue
