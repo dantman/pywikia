@@ -35,12 +35,12 @@ def listchoice(clist = [], message = None, default = None):
         try:
             return clist[int(choice) - 1]
         except:
-            print "Invalid response"
+            print("Invalid response")
     return response
 
 def file_exists(filename):
     if os.path.exists(filename):
-        print "'%s' already exists." % filename
+        print("'%s' already exists." % filename)
         return True
     return False
 
@@ -67,10 +67,10 @@ def create_user_config():
                                             "SEARCH ENGINE|"
                                             "COPYRIGHT|"
                                             "FURTHER) SETTINGS .*?)^(?=#####|# =====)", cpy, re.MULTILINE | re.DOTALL)
-        config_text = u'\n'.join(res)
+        config_text = '\n'.join(res)
 
         f = codecs.open(_fnc, "w", "utf-8")
-        f.write(u"""# -*- coding: utf-8  -*-
+        f.write("""# -*- coding: utf-8  -*-
 
 # This is an automatically generated file. You can find more configuration parameters in 'config.py' file.
 
@@ -89,13 +89,13 @@ usernames['%s']['%s'] = u'%s'
 
 %s""" % (fam, mylang, fam, mylang, username, config_text))
         f.close()
-        print "'%s' written." % _fnc
+        print("'%s' written." % _fnc)
 
 def create_user_fixes():
     _fnf = os.path.join(base_dir, "user-fixes.py")
     if not file_exists(_fnf):
         f = codecs.open(_fnf, "w", "utf-8")
-        f.write(ur"""# -*- coding: utf-8  -*-
+        f.write(r"""# -*- coding: utf-8  -*-
 
 #
 # This is only an example. Don't use it.
@@ -113,13 +113,13 @@ fixes['example'] = {
 
 """)
         f.close()
-        print "'%s' written." % _fnf
+        print("'%s' written." % _fnf)
 
 if __name__ == "__main__":
-    print "1: Create user_config.py file"
-    print "2: Create user_fixes.py file"
-    print "3: The two files"
-    choice = raw_input(u"What do you do? ")
+    print("1: Create user_config.py file")
+    print("2: Create user_fixes.py file")
+    print("3: The two files")
+    choice = raw_input("What do you do? ")
     if choice == "1":
         create_user_config()
     if choice == "2":
@@ -128,4 +128,4 @@ if __name__ == "__main__":
         create_user_config()
         create_user_fixes()
     if not choice in ["1", "2", "3"]:
-        print "Nothing to do"
+        print("Nothing to do")
