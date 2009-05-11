@@ -20,11 +20,8 @@ def listchoice(clist = [], message = None, default = None):
 
     message += ": "
 
-    n = 0
-
-    for i in clist:
-        n += 1
-        print ("%d: %s" % (n, i))
+    for n, i in enumerate(clist):
+        print ("%d: %s" % (n + 1, i))
 
     while True:
         choice = raw_input(message)
