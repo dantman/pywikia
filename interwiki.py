@@ -2141,12 +2141,13 @@ if __name__ == "__main__":
             bot.add(singlePage, hints = hints)
 
         try:
-            bot.run()
-        except KeyboardInterrupt:
-            bot.dump()
-        except:
-            bot.dump()
-            raise
+            try:
+                bot.run()
+            except KeyboardInterrupt:
+                bot.dump()
+            except:
+                bot.dump()
+                raise
         finally:
             if globalvar.contentsondisk:
                 StoredPage.SPdeleteStore()
