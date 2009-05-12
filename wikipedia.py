@@ -1125,21 +1125,28 @@ not supported by PyWikipediaBot!"""
 
         """
         if not hasattr(self, "_isDisambig"):
-            if not hasattr(self.site(), "_disambigtemplates"):
-                self.site()._disambigtemplates = self.site().family.disambig(self.site().lang)
-                if self.site()._disambigtemplates is None:
+            
+            if not hasattr(self._site, "_disambigtemplates"):
+                distl = self._site.family.disambig(self._site.lang)
+                if distl is None:
                     try:
-                        disambigpages = Page(self.site(),
+                        disambigpages = Page(self._site,
                                              "MediaWiki:Disambiguationspage")
-                        self.site()._disambigtemplates = [
+                        self._site._disambigtemplates = [
                             link.titleWithoutNamespace()
                             for link in disambigpages.linkedPages()
                             if link.namespace() == 10
                         ]
                     except NoPage:
-                        self.site()._disambigtemplates = ['Disambig']
+                        self._site._disambigtemplates = ['Disambig']
+                else:
+                    # Normalize template capitalization
+                    self._site._disambigtemplates = [
+                        t[0].upper() + t[1:]
+                        for t in distl
+                    ]
             for t in self.templates():
-                if t in self.site()._disambigtemplates:
+                if t in self._site._disambigtemplates:
                     self._isDisambig = True
                     break
             else:
