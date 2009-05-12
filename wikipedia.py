@@ -1909,7 +1909,7 @@ not supported by PyWikipediaBot!"""
         inside = {}
         count = 0
         Rtemplate = re.compile(
-                    ur'{{(msg:)?(?!#)(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
+                    ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
         Rlink = re.compile(ur'\[\[[^\]]+\]\]')
         Rmath = re.compile(ur'<math>[^<]+</math>')
         Rmarker = re.compile(ur'%s(\d+)%s' % (marker, marker))
@@ -1949,8 +1949,8 @@ not supported by PyWikipediaBot!"""
                 if self.site().isInterwikiLink(name):
                     continue
 
-                # {{DEFAULTSORT:...}}
-                if name.startswith('DEFAULTSORT:'):
+                # {{DEFAULTSORT:...}} or {{#if: }}
+                if name.startswith('DEFAULTSORT:') or name.startswith('#'):
                     continue
 
                 try:
