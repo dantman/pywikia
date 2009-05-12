@@ -739,7 +739,7 @@ class Family(family.Family):
             'rmy': [u'Dudalipen'],
             'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis', u'Dez'],
             'ru':  [u'Disambig', u'Неоднозначность', u'неоднозначность',
-                    u'Многозначность'],
+                    u'Многозначность', u'Фамилия'],
             'scn': [u'Disambigua', u'Disambig', u'Sigla2', u'Sigla3'],
             'simple': [u'Disambig', u'Disambiguation', u'3CC',u'2CC'],
             'sh': [u'Višeznačna odrednica', u'Disambig', u'Razdvojba',
