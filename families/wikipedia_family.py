@@ -964,6 +964,7 @@ class Family(family.Family):
                 'als': [104], 
                 'en': [12],
                 'es': [104], 
+                'fi': [4],
                 'fr': [104],
                 'hr': [102],
                 'lt': [104],
@@ -975,10 +976,17 @@ class Family(family.Family):
                 'als': [105], 
                 'en': [13],
                 'es': [105],
+                'fi': [5],
                 'fr': [105],
                 'hr': [103],
                 'lt': [105],
             },
+        }
+        self.crossnamespace[4] = {
+            'fi': {'_default': [0]}
+        }
+        self.crossnamespace[5] = {
+            'fi': {'_default': [1]}
         }
         self.crossnamespace[102] = {
             'pt': {
