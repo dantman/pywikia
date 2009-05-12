@@ -1230,7 +1230,7 @@ class Family:
                 'vls': u'Discuusje ofbeeldienge',
                 'vo': [u'Ragivibespik', u'Magodibespik'],
                 'wa': u'Imådje copene',
-                'wo': [u'Waxtaani dencukaay', u'Dencukaay'],
+                'wo': [u'Waxtaani dencukaay'],
                 'wuu': u'文件讨论',
                 'xal': u'Зургин тускар ухалвр',
                 'yi': [u'טעקע רעדן', u'בילד רעדן'],
