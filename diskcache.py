@@ -77,10 +77,11 @@ class CachedReadOnlyDictI(object):
         except IOError:
             pass
         try:
-            import os
-            os.unlink(self.cache_path)
-        except OSError:
-            pass
+            try:
+                import os
+                os.unlink(self.cache_path)
+            except OSError:
+                pass
         finally:
             os = None
 
