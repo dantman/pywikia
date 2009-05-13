@@ -3313,10 +3313,14 @@ class Family:
         'hy': [u'վերահղում'],
         'id': [u'alih'],
         'is': [u'tilvísun'],
+        'it': [u'rinvia', u'rinvio'],
         'ja': [u'転送', u'リダイレクト'],
         'jv': [u'alih'],
         'ka': [u'გადამისამართება'],
         'kk': [u'айдау'],
+        'km': [u'\u1794\u1789\u17d2\u1787\u17bc\u1793\u1794\u1793\u17d2\u178f',
+               u'\u1794\u17d2\u178f\u17bc\u179a\u1791\u17b8\u178f\u17b6\u17c6\u1784',
+               u'\u1794\u17d2\u178a\u17bc\u179a\u1785\u17c6\u178e\u1784\u1787\u17be\u1784'],
         'ko': [u'넘겨주기'],
         'ksh': [u'ömleidung'],
         'li': [u'doorverwijzing'],
@@ -3329,23 +3333,26 @@ class Family:
         'mzn': [u'تغییرمسیر'],
         'nah': [u'redirección'],
         'nds': [u'wiederleiden'],
-        'nds-nl': [u'deurverwiezing'],
+        'nds-nl': [u'deurverwiezing', u"doorverwijzing"],
         'new': [u'पुनर्निर्देश'],
         'nl': [u'doorverwijzing'],
         'nn': [u'omdiriger'],
         'oc': [u'redireccion'],
+        'os': [u"рарвыст", u"перенаправление", u"перенаправление", u"перенапр"],
         'pdc': [u'weiterleitung'],
         'pl': [u'redirect', u'patrz', u'tam', u'przekieruj'],
+        'pt-br': [u"redirecionamento"],
         'qu': [u'redirección'],
         'ro': [u'redirecteaza'],
         'ru': [u'redirect', u'перенаправление', u'перенапр'],
         'sa': [u'#पुनर्निदेशन'],
         'sah': [u'перенаправление'],
+        'sd': [u"چوريو"],
         'si': [u'යළියොමුව'],
         'sk': [u'presmeruj'],
         'sq': [u'ridrejto'],
         'sr': [u'преусмери', u'преусмери'],
-        'srn': [u'stir'],
+        'srn': [u'stir', u"doorverwijzing"],
         'stq': [u'weiterleitung'],
         'su': [u'redirected', u'alih'],
         'sv': [u'omdirigering'],
@@ -3357,8 +3364,8 @@ class Family:
         'tt': [u'yünältü'],
         'uk': [u'перенаправлення', u'перенапр'],
         'vi': [u'đổi', u'đổi'],
-        'vro': [u'saadaq'],
-        'yi': [u'ווייטערפירן']
+        'vro': [u'saadaq', u"suuna"],
+        'yi': [u'ווייטערפירן', u"הפניה"]
     }
 
     # So can be pagename code
@@ -3366,7 +3373,7 @@ class Family:
         'bg': [u'СТРАНИЦА'],
         'he': [u'שם הדף'],
         'kk': [u'БЕТАТАУЫ'],
-        'nn': ['SIDENAMN','SIDENAVN'],
+        'nn': ['SIDENAMN', 'SIDENAVN'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ'],
         'sr': [u'СТРАНИЦА'],
         'tt': [u'BİTİSEME']
@@ -3375,7 +3382,7 @@ class Family:
     pagenamee = {
         'he': [u'שם הדף מקודד'],
         'kk': [u'БЕТАТАУЫ2'],
-        'nn': ['SIDENAMNE','SIDENAVNE'],
+        'nn': ['SIDENAMNE', 'SIDENAVNE'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ2'],
         'sr': [u'СТРАНИЦЕ']
     }
