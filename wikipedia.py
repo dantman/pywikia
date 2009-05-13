@@ -1132,25 +1132,21 @@ not supported by PyWikipediaBot!"""
                     try:
                         disambigpages = Page(self._site,
                                              "MediaWiki:Disambiguationspage")
-                        self._site._disambigtemplates = [
+                        self._site._disambigtemplates = set(
                             link.titleWithoutNamespace()
                             for link in disambigpages.linkedPages()
                             if link.namespace() == 10
-                        ]
+                        )
                     except NoPage:
-                        self._site._disambigtemplates = ['Disambig']
+                        self._site._disambigtemplates = set(['Disambig'])
                 else:
                     # Normalize template capitalization
-                    self._site._disambigtemplates = [
+                    self._site._disambigtemplates = set(
                         t[0].upper() + t[1:]
                         for t in distl
-                    ]
-            for t in self.templates():
-                if t in self._site._disambigtemplates:
-                    self._isDisambig = True
-                    break
-            else:
-                self._isDisambig = False
+                    )
+            disambigInPage = self._site._disambigtemplates.intersection(self.templates())
+            self._isDisambig = len(disambigInPage) > 0
         return self._isDisambig
 
     def getReferences(self,
