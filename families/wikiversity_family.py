@@ -18,12 +18,13 @@ class Family(family.Family):
         self.langs = {
             'beta': 'beta.wikiversity.org',
         }
+        for lang in self.languages_by_size:
+            self.langs[lang] = '%s.wikiversity.org' % lang
+        
         if config.SSL_connection and self.name in config.available_ssl_project:
             for lang in self.languages_by_size:
                 self.langs[lang] = 'secure.wikimedia.org'
-        else:
-            for lang in self.languages_by_size:
-                self.langs[lang] = '%s.wikiversity.org' % lang
+            self.langs['beta'] = 'secure.wikimedia.org'
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
