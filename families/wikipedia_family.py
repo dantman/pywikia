@@ -776,7 +776,7 @@ class Family(family.Family):
             'yi':  [u'באדייטען'],
             'zea': [u'dp', u'Deurverwiespagina'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页', u'消歧義'],
-            'zh-classical':  [u'Disambig', u'釋義', u'消歧義', u''],
+            'zh-classical':  [u'Disambig', u'釋義', u'消歧義'],
             'zh-min-nan': [u'Khu-pia̍t-ia̍h', 'KhPI', u'Disambig'],
             'zh-yue': [u'搞清楚', u'Disambig'],
         }
