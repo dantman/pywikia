@@ -3092,9 +3092,7 @@ class _GetAll(object):
         for id in ids:
             nshdr = header.namespaces[id]
             if self.site.family.isDefinedNSLanguage(id, lang):
-                ns = self.site.namespace(id)
-                if ns is None:
-                    ns = u''
+                ns = self.site.namespace(id) or u''
                 if ns != nshdr:
                     try:
                         dflt = self.site.family.namespace('_default', id)
