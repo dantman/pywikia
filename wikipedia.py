@@ -3097,8 +3097,8 @@ class _GetAll(object):
                     try:
                         dflt = self.site.family.namespace('_default', id)
                     except KeyError:
-                        dflt = None
-                    if dflt is None:
+                        dflt = u''
+                    if not ns and not dflt:
                         flag = u"is not set, but should be '%s'" % nshdr
                     elif dflt == ns:
                         flag = u"is set to default ('%s'), but should be '%s'" % (ns, nshdr)
