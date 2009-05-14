@@ -3096,8 +3096,13 @@ class _GetAll(object):
                 if ns is None:
                     ns = u''
                 if ns != nshdr:
-                    dflt = self.site.family.namespace('_default', id)
-                    if dflt == ns:
+                    try:
+                        dflt = self.site.family.namespace('_default', id)
+                    except KeyError:
+                        dflt = None
+                    if dflt is None:
+                        flag = u"is not set, but should be '%s'" % nshdr
+                    elif dflt == ns:
                         flag = u"is set to default ('%s'), but should be '%s'" % (ns, nshdr)
                     elif dflt == nshdr:
                         flag = u"is '%s', but should be removed (default value '%s')" % (ns, nshdr)
