@@ -427,7 +427,7 @@ class Family(family.Family):
             'he': u'שיחת פורטל',
             'hi': u'प्रवेशद्वार वार्ता',
             'hr': u'Razgovor o portalu',
-            'hu': u'Portál vita',
+            'hu': u'Portálvita',
             'ia': u'Discussion Portal',
             'id': u'Pembicaraan Portal',
             'is': u'Gáttaspjall',
