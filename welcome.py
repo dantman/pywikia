@@ -304,6 +304,7 @@ report_page = {
     'ru': u'Участник:LatitudeBot/Рапорт',
     'sq': u'User:EagleBot/Report',
     'sr': u'User:SashatoBot/Записи',
+    'zh': u'User:Welcomebot/report',
     }
 # The edit summary for reporting a possibly bad username.
 comment = {
@@ -335,6 +336,7 @@ bad_pag = {
     'ru': u'Участник:LatitudeBot/Чёрный список',
     'sq': u'User:Eagleal/Bad_names',
     'sr': u'Додавање корисника за проверу',
+    'zh': u'User:Welcomebot/badname',
     }
 
 timeselected = u' ~~~~~' # Defining the time used after the signature
