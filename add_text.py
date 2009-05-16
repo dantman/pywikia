@@ -60,6 +60,7 @@ msg = {
     'en': u'Bot: Adding %s',
     'fr': u'Robot : Ajoute %s',
     'he': u'בוט: מוסיף %s',
+    'fa': u'ربات: افزودن %s',
     'it': u'Bot: Aggiungo %s',
     'ja': u'ロボットによる: 追加 %s',
     'ksh': u'Bot: dobeijedonn: %s',
