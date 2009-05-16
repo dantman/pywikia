@@ -155,13 +155,14 @@ commonscatTemplates = {
 
 ignoreTemplates = {
     'af' : [u'commonscat', u'commons'],
-    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat'],
+    'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commonscat', u'Commons'],
     'cs' : [u'Commons', u'commons cat', u'Sestřičky', u'Sisterlinks'],
     'da' : [u'Commons', u'Commons left', u'Commons2', u'Commonsbilleder', u'Commonscat left', u'Commonscat2', u'GalleriCommons', u'Søsterlinks'],
     'en' : [u'Category redirect', u'Commons', u'Commonscat', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'eo' : [u'Commons', (u'Projekto/box', 'commons='), (u'Projekto', 'commons='), (u'Projektoj', 'commons='), (u'Projektoj', 'commonscat=')],
     'es' : [u'Commons', u'IprCommonscat'],
     'eu' : [u'Commonscat', u'Commons'],
+    'fa' : [u'Commonscat', u'Commons', u'ویکی‌انبار'],
     'fi' : [u'Commonscat-rivi', u'Commons-rivi', u'Commons'],
     'fr' : [u'Commons', u'Commons cat', u'CommonsCat', u'Commons-inline', (u'Autres projets', 'commons=')],
     'it' : [(u'Ip', 'commons='), (u'Interprogetto', 'commons=')],
