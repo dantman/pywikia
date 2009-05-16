@@ -165,6 +165,7 @@ ignoreTemplates = {
     'fa' : [u'Commonscat', u'Commons', u'ویکی‌انبار'],
     'fi' : [u'Commonscat-rivi', u'Commons-rivi', u'Commons'],
     'fr' : [u'Commons', u'Commons cat', u'CommonsCat', u'Commons-inline', (u'Autres projets', 'commons=')],
+    'fy' : [u'Commons', u'CommonsLyts'],
     'it' : [(u'Ip', 'commons='), (u'Interprogetto', 'commons=')],
     'ja' : [u'CommonscatS', u'Commons cat', u'SisterlinksN', u'Interwikicat'],
     'nds-nl' : [u'Commons'],
