@@ -182,7 +182,7 @@ class Family(family.Family):
             }
 
         self.disambiguationTemplates = {
-            '_default': [u''],
+            '_default': [],
             'ka':       [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
             'pt':       [u'Desambiguação'],
             }
