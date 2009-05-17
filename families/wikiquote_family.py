@@ -183,6 +183,7 @@ class Family(family.Family):
 
         self.disambiguationTemplates = {
             '_default': [],
+            'fr': ['Homonymie'],
             'ka':       [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
             'pt':       [u'Desambiguação'],
             }
