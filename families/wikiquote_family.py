@@ -184,8 +184,8 @@ class Family(family.Family):
         self.disambiguationTemplates = {
             '_default': [],
             'fr': ['Homonymie'],
-            'ka':       [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
-            'pt':       [u'Desambiguação'],
+            'ka': [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
+            'pt': [u'Desambiguação'],
             }
 
         # attop is a list of languages that prefer to have the interwiki

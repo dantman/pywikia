@@ -1125,7 +1125,6 @@ not supported by PyWikipediaBot!"""
 
         """
         if not hasattr(self, "_isDisambig"):
-            
             if not hasattr(self._site, "_disambigtemplates"):
                 distl = self._site.family.disambig(self._site.lang)
                 if distl is None:
