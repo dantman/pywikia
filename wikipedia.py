@@ -1142,8 +1142,7 @@ not supported by PyWikipediaBot!"""
                 else:
                     # Normalize template capitalization
                     self._site._disambigtemplates = set(
-                        t[0].upper() + t[1:]
-                        for t in distl
+                        t.capitalize() for t in distl
                     )
             disambigInPage = self._site._disambigtemplates.intersection(self.templates())
             self._isDisambig = len(disambigInPage) > 0
