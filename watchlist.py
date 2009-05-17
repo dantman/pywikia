@@ -41,7 +41,7 @@ def get(site = None):
             file_age = time.time() - os.path.getmtime(fn)
             # if it's older than 1 month, reload it
             if file_age > 30 * 24 * 60 * 60:
-                wikipedia.output('Copy of watchlist is one month old, reloading')
+                wikipedia.output(u'Copy of watchlist is one month old, reloading')
                 refresh(site)
         except OSError:
             # no saved watchlist exists yet, retrieve one
@@ -60,11 +60,11 @@ def isWatched(pageName, site=None):
 def refresh(site):
     # get watchlist special page's URL
     path = site.watchlist_address()
-    wikipedia.output('Retrieving watchlist for %s' % repr(site))
+    wikipedia.output(u'Retrieving watchlist for %s' % repr(site))
     #wikipedia.put_throttle() # It actually is a get, but a heavy one.
     watchlistHTML = site.getUrl(path)
 
-    wikipedia.output('Parsing watchlist')
+    wikipedia.output(u'Parsing watchlist')
     watchlist = []
     for itemR in [re.compile(r'<li><input type="checkbox" name="id\[\]" value="(.+?)" />'), re.compile(r'<li><input name="titles\[\]" type="checkbox" value="(.+?)" />')]:
         for m in itemR.finditer(watchlistHTML):
