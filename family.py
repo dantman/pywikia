@@ -3269,7 +3269,12 @@ class Family:
     def category_namespaces(self, code):
         return self.namespace(code, 14, all = True)
 
-    # Redirect code can be translated.
+    # Localised magic words for language code 'xyz' can be found in
+    # the MediaWiki source code in the file
+    # /mediawiki/trunk/phase3/languages/messages/MessagesXyz.php
+    # in the 'magicwords' array
+    
+    # Localised redirect codes
 
     # Note that redirect codes are case-insensitive, so it is enough
     # to enter the code in lowercase here.
@@ -3313,6 +3318,8 @@ class Family:
         'hy': [u'վերահղում'],
         'id': [u'alih'],
         'is': [u'tilvísun'],
+#       'it': magic words "RINVIA" and "RINVIO" appear in the MediaWiki
+#             source code, BUT DO NOT WORK
         'ja': [u'転送', u'リダイレクト'],
         'jv': [u'alih'],
         'ka': [u'გადამისამართება'],
@@ -3337,6 +3344,8 @@ class Family:
         'nl': [u'doorverwijzing'],
         'nn': [u'omdiriger'],
         'oc': [u'redireccion'],
+#       'os': magic word u"рарвыст" appears in the MediaWiki source code,
+#             BUT DOES NOT WORK
         'os': [u"перенаправление", u"перенапр"],
         'pdc': [u'weiterleitung'],
         'pl': [u'redirect', u'patrz', u'tam', u'przekieruj'],
