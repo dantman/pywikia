@@ -3329,6 +3329,7 @@ class Family:
                u'\u1794\u17d2\u178a\u17bc\u179a\u1785\u17c6\u178e\u1784\u1787\u17be\u1784'],
         'ko': [u'넘겨주기'],
         'ksh': [u'ömleidung'],
+        'kv': [u'перенаправление'],
         'li': [u'doorverwijzing'],
         'lt': [u'peradresavimas'],
         'mk': [u'пренасочување', u'види'],
