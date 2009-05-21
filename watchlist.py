@@ -12,6 +12,7 @@ Syntax: python watchlist [-all]
 Command line options:
     -all  -  Reloads watchlists for all wikis where a watchlist is already
              present
+    -new  -  Load watchlists for all wikis where accounts is setting in user-config.py
 """
 
 # (C) Daniel Herding, 2005
@@ -78,27 +79,44 @@ def refresh(site):
     pickle.dump(watchlist, f)
     f.close()
 
-def refresh_all():
-    import dircache, time
-    filenames = dircache.listdir(wikipedia.config.datafilepath('watchlists'))
-    watchlist_filenameR = re.compile('watchlist-([a-z\-:]+).dat')
-    for filename in filenames:
-        match = watchlist_filenameR.match(filename)
-        if match:
-            arr = match.group(1).split('-')
-            family = arr[0]
-            lang = '-'.join(arr[1:])
-            site = wikipedia.getSite(code = lang, fam = family)
-            refresh(site)
+def refresh_all(new = False):
+    if new:
+        import config
+        wikipedia.output('Downloading All watchlists for your accounts in user-config.py');
+        for family in config.usernames:
+            for lang in config.usernames[family]:
+                site = wikipedia.getSite(code=lang, fam = family)
+                refresh(site)
+        for family in config.sysopnames:
+            for lang in config.sysopnames[family]:
+                site = wikipedia.getSite(code=lang, fam = family)
+                refresh(site)
+
+    else:
+        import dircache, time
+        filenames = dircache.listdir(wikipedia.config.datafilepath('watchlists'))
+        watchlist_filenameR = re.compile('watchlist-([a-z\-:]+).dat')
+        for filename in filenames:
+            match = watchlist_filenameR.match(filename)
+            if match:
+                arr = match.group(1).split('-')
+                family = arr[0]
+                lang = '-'.join(arr[1:])
+                site = wikipedia.getSite(code = lang, fam = family)
+                refresh(site)
 
 def main():
     all = False
+    new = False
     for arg in wikipedia.handleArgs():
-        if arg == '-all':
+        if arg == '-all' or arg == '-update':
             all = True
-
+        elif arg == '-new':
+            new = True
     if all:
         refresh_all()
+    elif new:
+        refresh_all(new)
     else:
         refresh(wikipedia.getSite())
 
