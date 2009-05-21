@@ -658,7 +658,7 @@ class Family(family.Family):
             'br':  [u'Hvlstumm', u'Digejañ', u'Digejañ anvioù-badez'],
             'bs':  [u'Čvor'],
             'ca':  [u'Desambiguació', u'Disambig', u'Desambigua', 
-                    u'acrònim'],
+                    u'acrònim', u'onomàstica'],
             'ceb': [u'Giklaro'],
             'cdo': [u'Gì-ngiê'],
             'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení',
