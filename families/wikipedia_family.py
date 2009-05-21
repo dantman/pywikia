@@ -696,7 +696,7 @@ class Family(family.Family):
             'ia':  [u'Disambiguation', u'Disambig'],
             'id':  [u'Disingkat',u'Disambig', u'Disambig nama', u'Disambig tempat', u'Disambig-bandara', u'Disambiguasi', u'Disambig suku'],
             'io':  [u'Homonimo', u'Disambig'],
-            'is':  [u'Aðgreining', u'Disambig'],
+            'is':  None,
             'it':  [u'Disambigua', u'Sigla2', u'Sigla3', u'Sigla4', u'Cogni'],
             'ja':  [u'Aimai', u'Dab', u'曖昧さ回避', u'Disambig'],
             'ka':  [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
