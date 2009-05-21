@@ -743,7 +743,7 @@ class Family(family.Family):
                   u'Homograf',
                   u'Radzvojba', u'Čvor'],
             'sk':  [u'Disambig', u'Rozlišovacia stránka', u'Disambiguation'],
-            'sl':  [u'Disambig', u'Razločitev', u'Disambig-ship', u'Disambig-unit'],
+            'sl':  None,
             'sq':  [u'Kthjellim', u'Disambig'],
             'sr':  [u'Вишезначна одредница', u'Disambig', u'Вишезначна',
                     u'Višeznačna odrednica'],
