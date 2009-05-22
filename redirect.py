@@ -691,10 +691,10 @@ class RedirectRobot:
                             # Delete the two redirects
                             content = wikipedia.translate(targetPage.site().lang,
                                                           sd_template)+"\n"+content
-                            summary = wikipedia.translate(targetPage.site().lang,
+                            summ = wikipedia.translate(targetPage.site().lang,
                                                           sd_tagging_sum)
-                            targetPage.put(content, summary)
-                            redir.put(content, summary)
+                            targetPage.put(content, summ)
+                            redir.put(content, summ)
                         else:
                             break # TODO Better implement loop redirect
                     else:
@@ -711,7 +711,7 @@ class RedirectRobot:
                 wikipedia.showDiff(oldText, text)
                 if self.prompt(u'Do you want to accept the changes?'):
                     try:
-                        redir.put(text)
+                        redir.put(text, summary)
                     except wikipedia.LockedPage:
                         wikipedia.output(u'%s is locked.' % redir.title())
                     except wikipedia.SpamfilterError, error:
