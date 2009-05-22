@@ -39,6 +39,12 @@ class Family(family.Family):
         self.namespaces[1103] = {
             '_default': [u'Translating talk'],
         }
+        self.namespaces[1198] = {
+            '_default': [u'Translations'],
+        }
+        self.namespaces[1199] = {
+            '_default': [u'Translations talk'],
+        }
         self.namespaces[1200] = {
             '_default': [u'Voctrain'],
         }
@@ -74,6 +80,12 @@ class Family(family.Family):
         }
         self.namespaces[1215] = {
             '_default': [u'Commonist talk'],
+        }
+        self.namespaces[1216] = {
+            '_default': [u'OpenLayers'],
+        }
+        self.namespaces[1217] = {
+            '_default': [u'OpenLayers talk'],
         }
 
     def version(self, code):
