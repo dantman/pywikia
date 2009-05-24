@@ -5492,15 +5492,19 @@ your connection is down. Retrying in %i minutes..."""
                 yield page
             return
 
-        while True:
-            api_url = self.api_address()
-            startEncoded = urllib.quote(start.encode(self.encoding()))
-            api_url += 'action=query&format=xml&list=allpages&apfrom=%s&aplimit=%i&apnamespace=%i' % (startEncoded, config.special_page_limit, namespace)
+        api_url_basename = "%saction=query&format=xml&list=allpages" \
+                           "&aplimit=%i&apnamespace=%i" % \
+                           (self.api_address(), config.special_page_limit,
+                           namespace)
 
-            if not includeredirects:
-                api_url += '&apfilterredir=nonredirects'
-            elif includeredirects == 'only':
-                api_url += '&apfilterredir=redirects'
+        if not includeredirects:
+           api_url_basename += '&apfilterredir=nonredirects'
+        elif includeredirects == 'only':
+           api_url_basename += '&apfilterredir=redirects'
+
+        while True:
+            startEncoded = urllib.quote(start.encode(self.encoding()))
+            api_url = '%s&apfrom=%s' % (api_url_basename, startEncoded)
 
             if throttle:
                 get_throttle()
