@@ -3329,6 +3329,7 @@ class Family:
                u'\u1794\u17d2\u178a\u17bc\u179a\u1785\u17c6\u178e\u1784\u1787\u17be\u1784'],
         'ko': [u'넘겨주기'],
         'ksh': [u'ömleidung'],
+        'lb': [u'weiterleitung'],
         'kv': [u'перенаправление'],
         'li': [u'doorverwijzing'],
         'lt': [u'peradresavimas'],
@@ -3340,7 +3341,7 @@ class Family:
         'mzn': [u'تغییرمسیر'],
         'nah': [u'redirección'],
         'nds': [u'wiederleiden'],
-        'nds-nl': [u'deurverwiezing', u"doorverwijzing"],
+        'nds-nl': [u'deurverwiezing', u'doorverwijzing'],
         'new': [u'पुनर्निर्देश'],
         'nl': [u'doorverwijzing'],
         'nn': [u'omdiriger'],
@@ -3465,7 +3466,7 @@ class Family:
     def nicepath(self, code):
         if config.SSL_connection and self.name in config.available_ssl_project:
             return '/%s/%s/wiki/' % (self.name, code)
-        
+
         return '/wiki/'
 
     def dbName(self, code):
