@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config
+import family, config, wikipedia
 
 __version__ = '$Id$'
 
@@ -20,15 +20,15 @@ class Family(family.Family):
             'gl', 'zh-min-nan', 'fo',
         ]
 
-        self.langs = {
-            '-': 'wikisource.org',
-        }
+        self.langs['-'] = 'wikisource.org'
         if config.SSL_connection and self.name in config.available_ssl_project:
             for lang in self.languages_by_size:
                 self.langs[lang] = 'secure.wikimedia.org'
+            self.langs['-'] = 'secure.wikimedia.org'
         else:
             for lang in self.languages_by_size:
                 self.langs[lang] = '%s.wikisource.org' % lang
+            self.langs['-'] = 'wikisource.org'
 
         # Override defaults
         self.namespaces[2]['pl'] = 'Wikiskryba'
@@ -345,6 +345,9 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic
         }
+    if config.SSL_connection and wikipedia.default_code == '-':
+        def scriptpath(self, code):
+            return '/wikipedia/sources/w'
 
     def version(self, code):
         return '1.15alpha'

@@ -789,9 +789,9 @@ def main(*args):
     number = None
     always = False
     for arg in wikipedia.handleArgs(*args):
-        if arg == 'double':
+        if arg == 'double' or arg == 'do':
             action = 'double'
-        elif arg == 'broken':
+        elif arg == 'broken' or arg == 'br':
             action = 'broken'
         elif arg == 'both':
             action = 'both'

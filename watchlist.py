@@ -84,13 +84,11 @@ def refresh_all(new = False):
         import config
         wikipedia.output('Downloading All watchlists for your accounts in user-config.py');
         for family in config.usernames:
-            for lang in config.usernames[family]:
-                site = wikipedia.getSite(code=lang, fam = family)
-                refresh(site)
+            for lang in config.usernames[ family ]:
+                refresh(wikipedia.getSite( code = lang, fam = family ) )
         for family in config.sysopnames:
-            for lang in config.sysopnames[family]:
-                site = wikipedia.getSite(code=lang, fam = family)
-                refresh(site)
+            for lang in config.sysopnames[ family ]:
+                refresh(wikipedia.getSite( code = lang, fam = family ) )
 
     else:
         import dircache, time
@@ -102,8 +100,7 @@ def refresh_all(new = False):
                 arr = match.group(1).split('-')
                 family = arr[0]
                 lang = '-'.join(arr[1:])
-                site = wikipedia.getSite(code = lang, fam = family)
-                refresh(site)
+                refresh(wikipedia.getSite(code = lang, fam = family))
 
 def main():
     all = False
@@ -123,7 +120,7 @@ def main():
         watchlist = get(wikipedia.getSite())
         wikipedia.output(u'%i pages in the watchlist.' % len(watchlist))
         for pageName in watchlist:
-            wikipedia.output(pageName, toStdout = True)
+            wikipedia.output( pageName, toStdout = True )
 
 if __name__ == "__main__":
     try:

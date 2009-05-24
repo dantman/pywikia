@@ -227,9 +227,9 @@ class LoginManager:
         for line in file:
             if not line.strip(): continue
             entry = eval(line)
-            if len(entry) == 2:
+            if len(entry) == 2:   #for default userinfo
                 if entry[0] == self.username: self.password = entry[1]
-            elif len(entry) == 4:
+            elif len(entry) == 4: #for userinfo included code and family
                 if entry[0] == self.site.lang and \
                   entry[1] == self.site.family.name and \
                   entry[2] == self.username:
