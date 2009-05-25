@@ -5503,8 +5503,8 @@ your connection is down. Retrying in %i minutes..."""
            api_url_basename += '&apfilterredir=redirects'
 
         while True:
-            startEncoded = urllib.quote(start.encode(self.encoding()))
-            api_url = '%s&apfrom=%s' % (api_url_basename, startEncoded)
+            api_url = '%s&apfrom=%s' % (api_url_basename,
+                      urllib.quote(start.encode(self.encoding())))
 
             if throttle:
                 get_throttle()
