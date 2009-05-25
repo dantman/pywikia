@@ -4689,7 +4689,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             sysop       - If True, the sysop account's cookie will be used.
             data        - An optional dict providing extra post request parameters.
             cookie_only - Only return the cookie the server sent us back
-            no_hostname - Open the URL given, don't add the hostname before.
 
            Returns the HTML text of the page converted to unicode.
         """
