@@ -14,7 +14,7 @@ Way:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: deledpimage.py,v 1.21 2008-03-14T21:59:00 Shizhao $'
+__version__ = '$Id$'
 #
 
 """
