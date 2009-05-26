@@ -2,8 +2,9 @@
 # -*- coding: utf-8  -*-
 """
 This is a Bot written by Filnik to add a text at the end of the page but above categories,
-interwiki and template for the stars of the interwiki.
+interwiki and template for the stars of the interwiki (default).
 
+Alternatively it may also add a text at the top of the page.
 These command line parameters can be used to specify which pages to work on:
 
 &params;
@@ -11,19 +12,21 @@ These command line parameters can be used to specify which pages to work on:
 Furthermore, the following command line parameters are supported:
 
 -page               Use a page as generator
--text               Define which text add. "\n" are interpreted as newlines.
+-text               Define which text to add. "\n" are interpreted as newlines.
 -summary            Define the summary to use
--except             Use a regex to understand if the template is already in the page
+-except             Use a regex to check if the text is already in the page
 -excepturl          Use the html page as text where you want to see if there's the text, not the wiki-page.
 -newimages          Add text in the new images
 -untagged           Add text in the images that don't have any license template
 -always             If used, the bot won't ask if it should add the text specified
--up                 If used, put the text above and not below
+-up                 If used, put the text at the top of the page
 
 --- Example ---
-
+1.
+# This is a script to add a template to the top of the pages with category:catname
 python add_text.py -cat:catname -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{([Tt]emplate:|)[Ss]omething" -up
 
+2.
 # Command used on it.wikipedia to put the template in the page without any category.
 # But warning! Put it in a line, otherwise it won't work correctly.
 
