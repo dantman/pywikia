@@ -22,7 +22,9 @@ fixes = {
         'regex': True,
         'msg': {
             'ar':u'روبوت: تحويل/تصليح HTML',
+            'be':u'Бот: карэкцыя HTML',
             'en':u'Robot: Converting/fixing HTML',
+            'eo':u'Bot: koredtado de HTMLa teksto',
             'de':u'Bot: konvertiere/korrigiere HTML',
             'fr':u'Robot: convertit/fixe HTML',
             'he':u'בוט: ממיר/מתקן HTML',
@@ -32,8 +34,10 @@ fixes = {
             'nl':u'Bot: conversie/reparatie HTML',
             'pl':u'Robot konwertuje/naprawia HTML',
             'pt':u'Bot: Corrigindo HTML',
+            'ru':u'Бот: коррекция HTML',            
             'sr':u'Бот: Поправка HTML-а',
             'sv': u'Bot: Konverterar/korrigerar HTML',
+            'uk':u'Бот: корекцiя HTML',
             'zh':u'機器人: 轉換HTML',
         },
         'replacements': [
@@ -156,8 +160,10 @@ fixes = {
         'regex': True,
         'msg': {
             'ar':u'بوت: تصليح تهيئة الويكي',
+            'be':u'Бот: Карэкцыя вiкi-сiнтаксiсу',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
+            'eo':u'Bot: Korektado de vikia sintakso',
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
@@ -166,7 +172,9 @@ fixes = {
             'nl':u'Bot: reparatie wikisyntaxis',
             'pl':u'Robot poprawia wiki-składnię',
             'pt':u'Bot: Corrigindo sintaxe wiki',
+            'ru':u'Бот: Коррекция вики синтаксиса',
             'sr':u'Бот: Поправка вики синтаксе',
+            'uk':u'Бот: Корекцiя вiкi-синтаксису',
             'zh':u'機器人: 修正wiki語法',
         },
         'replacements': [
@@ -226,8 +234,10 @@ fixes = {
         'regex': True,
         'msg': {
             'ar':u'بوت: تصليح تهيئة الويكي',
+            'be':u'Бот: Карэкцыя вiкi-сiнтаксiсу',            
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
+            'eo':u'Bot: Korektado de vikia sintakso',            
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
@@ -236,7 +246,9 @@ fixes = {
             'nl':u'Bot: reparatie wikisyntaxis',
             'pl':u'Robot poprawia wiki-składnię',
             'pt':u'Bot: Corrigindo sintaxe wiki',
+            'ru':u'Бот: Коррекция вики синтаксиса',            
             'sr':u'Бот: Поправка вики синтаксе',
+            'uk':u'Бот: Корекцiя вiкi-синтаксису',            
             'zh':u'機器人: 修正wiki語法',
         },
         'replacements': [
@@ -376,11 +388,15 @@ fixes = {
         'regex': True,
         'msg': {
             'ar': u'روبوت: تصليح صيغة ISBN',
+            'be': u'Бот: Карэкцыя ISBN фармату',
             'de': u'Bot: Korrigiere ISBN-Format',
             'en': u'Robot: Fixing ISBN format',
             'es': u'Arreglando formato ISBN',
+            'eo': u'Bot: Korekto de teksto en ISBN-formato',
             'he': u'בוט: מתקן פורמט ISBN',
             'ja': u'ロボットによる: ISBNフォーマット修正',
+            'ru': u'Бот: Коррекция ISBN формата',
+            'uk': u'Бот: Корекція ISBN формату',
             'zh': u'機器人: 修正ISBN格式',
         },
         'replacements': [
