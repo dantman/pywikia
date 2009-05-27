@@ -36,7 +36,7 @@ fixes = {
             'pt':u'Bot: Corrigindo HTML',
             'ru':u'Бот: коррекция HTML',            
             'sr':u'Бот: Поправка HTML-а',
-            'sv': u'Bot: Konverterar/korrigerar HTML',
+            'sv':u'Bot: Konverterar/korrigerar HTML',
             'uk':u'Бот: корекцiя HTML',
             'zh':u'機器人: 轉換HTML',
         },
