@@ -71,8 +71,8 @@ class CategoryRedirectBot(object):
         self.redir_templates = {
             'wikipedia': {
                 'ar': (u"تحويل تصنيف",
-+                       u"Category redirect",
-+                       u"تحويلة تصنيف"),
+                       u"Category redirect",
+                       u"تحويلة تصنيف"),
                 'da': ("Kategoriomdirigering",),
                 'en': ("Category redirect",
                        "Category redirect3",
