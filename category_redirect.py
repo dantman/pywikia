@@ -201,9 +201,9 @@ aanjepaß krijje:
 
         self.edit_request_item = wikipedia.translate(self.site.lang,
             {
-		'en': u"* %s is in %s, which is a redirect to %s",
-		'fr': u"* %s est dans %s, qui est une redirection vers %s",
-            	'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",
+        'en': u"* %s is in %s, which is a redirect to %s",
+        'fr': u"* %s est dans %s, qui est une redirection vers %s",
+                'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",
             })
 
     def change_category(self, article, oldCat, newCat, comment=None,
