@@ -52,7 +52,7 @@ class CategoryRedirectBot(object):
         # Category that contains all redirected category pages
         self.cat_redirect_cat = {
             'wikipedia': {
-                'ar': "تصنيف:تحويلات تصنيفات ويكيبيديا",
+                'ar': u"تصنيف:تحويلات تصنيفات ويكيبيديا",
                 'da': "Kategori:Omdirigeringskategorier",
                 'en': "Category:Wikipedia category redirects",
                 'hu': "Kategória:Kategóriaátirányítások",
@@ -70,9 +70,9 @@ class CategoryRedirectBot(object):
         # (put the most preferred form first)
         self.redir_templates = {
             'wikipedia': {
-                'ar': ("تحويل تصنيف",
-                       "Category redirect",
-                       "تحويلة تصنيف"),
+                'ar': (u"تحويل تصنيف",
++                       u"Category redirect",
++                       u"تحويلة تصنيف"),
                 'da': ("Kategoriomdirigering",),
                 'en': ("Category redirect",
                        "Category redirect3",
