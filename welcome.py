@@ -827,7 +827,7 @@ def main(settingsBot):
         if offset_variable != 0:
             URL += "&offset=%d" % offset_variable
         log = wsite.getUrl(URL)
-        wikipedia.output(u'Loading latest %s new users from %s...\n' % (limit, wsite.hostname()))
+        wikipedia.output(u'Loading latest %s new users from %s:%s...\n' % (limit, wikipedia.default_family,wikipedia.default_code))
         # Determine which signature to use
         if random:
             try:

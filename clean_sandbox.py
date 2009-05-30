@@ -122,7 +122,7 @@ class SandboxBot:
                 wikipedia.output(u'\nDone.')
                 return
             else:
-                wikipedia.output(u'\nSleeping %s hours, now %s' % (self.hours, now))
+                wikipedia.output('\nSleeping %s hours, now %s' % (self.hours, now) )
                 time.sleep(self.hours * 60 * 60)
 
 def main():
