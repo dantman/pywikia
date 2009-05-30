@@ -116,7 +116,7 @@ class SpeedyRobot:
                 u'_default':      u'Usuwanie artykułu zgodnie z zasadami [[Wikipedia:Ekspresowe kasowanko|ekspresowego kasowania]]',
                 },
             'it': {
-                u'_default':      u'Bot: Cancello pagine taggate come [[Aiuto:Cancella subito|cancella subito]].',
+                u'_default':      u'Rimuovo pagina che rientra nei casi di [[Wikipedia:IMMEDIATA|cancellazione immediata]].',
                 },
             'zh':{
                 u'_default':u'[[WP:CSD]]',
@@ -140,7 +140,7 @@ class SpeedyRobot:
         'en':u'Orphaned talk page',
         'fr':u'Page de discussion orpheline',
         'he':u'דף שיחה של ערך שנמחק',
-        'it':u'Bot: Cancello pagina discussione di una pagina già cancellata',
+        'it':u'Rimuovo pagina di discussione di una pagina già cancellata',
         'pl':u'Osierocona strona dyskusji',
         'pt':u'Página de discussão órfã',
         'zh':u'[[WP:CSD#O1|CSD O1 O2 O6]] 沒有在使用的討論頁',
@@ -164,12 +164,12 @@ class SpeedyRobot:
             'wg':    u'Wiedergänger (wurde bereits zuvor gelöscht)',
             },
         'it': {
-            'test': u'Bot: Cancello pagina in seguito ad un test.',
-            'vandalismo': u'Bot: Cancello pagina vandalica',
-            'copyviol': 'Bot: Cancello copyviol',
-            'redirect': 'Bot: Cancello redirect rotto o inutile',
-            'spam': 'Bot: Cancello pagina piena di spam',
-            'promo': 'Bot: Cancello pagina promozionale',
+            'test': u'Si tratta di un test',
+            'vandalismo': u'Caso di vandalismo',
+            'copyviol': 'Violazione di copyright',
+            'redirect': 'Redirect rotto o inutile',
+            'spam': 'Spam',
+            'promo': 'Pagina promozionale',
             },
         'ja':{
             'cont':u'[[WP:CSD]] 全般1 意味不明な内容のページ',
