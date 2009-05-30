@@ -18,16 +18,6 @@ is on you to avoid making these mistakes.
 
 NOTE: This script currently only works for the Wikipedia project.
 
-Syntax: python speedy-delete.py
-
-Command line options:
-
-    none yet
-
-Examples:
-
-    none needed yet
-
 """
 __version__ = '$Id$'
 #
