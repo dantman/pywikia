@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-This bot is used to quickly trawl through candidates for speedy deletion in a fast
-and semi-automated fashion.  The bot displays the contents of each page one at a
-time and provides a prompt for the user to skip or delete the page.  Of course, this
-will require a sysop account.
+This bot is used to quickly trawl through candidates for speedy deletion in a
+fast and semi-automated fashion.  The bot displays the contents of each page
+one at a time and provides a prompt for the user to skip or delete the page.
+Of course, this will require a sysop account.
 
-Future upcoming options include the ability to untag a page as not being eligible
-for speedy deletion, as well as the option to commute its sentence to Proposed
-Deletion (see [[en:WP:PROD]] for more details).  Also, if the article text is long,
-to prevent terminal spamming, it might be a good idea to truncate it just to the
-first so many bytes.
+Future upcoming options include the ability to untag a page as not being
+eligible for speedy deletion, as well as the option to commute its sentence to
+Proposed Deletion (see [[en:WP:PROD]] for more details).  Also, if the article
+text is long, to prevent terminal spamming, it might be a good idea to truncate
+it just to the first so many bytes.
 
-WARNING: This tool shows the contents of the top revision only.  It is possible that
-a vandal has replaced a perfectly good article with nonsense, which has subsequently
-been tagged by someone who didn't realize it was previously a good article.  The onus
-is on you to avoid making these mistakes.
+WARNING: This tool shows the contents of the top revision only.  It is possible
+that a vandal has replaced a perfectly good article with nonsense, which has
+subsequently been tagged by someone who didn't realize it was previously a good
+article.  The onus is on you to avoid making these mistakes.
 
 NOTE: This script currently only works for the Wikipedia project.
 
