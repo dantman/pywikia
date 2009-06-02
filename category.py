@@ -190,10 +190,16 @@ deletion_reason_move = {
     }
 
 cfd_templates = {
-    'en':['cfd', 'cfr', 'cfru', 'cfr-speedy', 'cfm', 'cfdu'],
-    'fi':['roskaa', 'poistettava', 'korjattava/nimi', u'yhdistettäväLuokka'],
-    'he':[u'הצבעת מחיקה', u'למחוק'],
+    'wikipedia' : {
+        'en':[u'cfd', u'cfr', u'cfru', u'cfr-speedy', u'cfm', u'cfdu'],
+        'fi':[u'roskaa', u'poistettava', u'korjattava/nimi', u'yhdistettäväLuokka'],
+        'he':[u'הצבעת מחיקה', u'למחוק'],
+        'nl':[u'categorieweg', u'catweg', u'wegcat', u'weg2']
+    },
+    'commons' : {
+        'commons':[u'cfd', u'move']
     }
+}
 
 class CategoryDatabase:
     '''
