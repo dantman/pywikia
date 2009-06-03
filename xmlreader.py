@@ -161,10 +161,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
         elif name == 'revision':
             # All done for this.
-            text = self.text
             # Remove trailing newlines and spaces
-            while text and text[-1] in '\n ':
-                text = text[:-1]
+            text = self.text.rstrip('\n ')
             # Replace newline by cr/nl
             text = u'\r\n'.join(text.split('\n'))
             # Decode the timestamp
