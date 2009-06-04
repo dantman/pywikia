@@ -2060,10 +2060,7 @@ not supported by PyWikipediaBot!"""
             path = site.family.version_history_address(self.site().language(), self.urlname(), revCount)
 
             if reverseOrder:
-                if len(self._versionhistoryearliest) >= revCount:
-                    path += '&dir=prev'
-                else:
-                    path += '&go=first'
+                path += '&dir=prev'
 
             if startFromPage:
                 path += '&offset=' + startFromPage
