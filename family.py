@@ -1058,7 +1058,7 @@ class Family:
                 'yi': [u'טעקע', u'בילד'],
                 'yo': u'Àwòrán',
                 'za': u'文件',
-                'zea': [u'File', u'Image', u'文件', u'图像', u'圖像'],
+                'zea': [u'Plaetje', u'File', u'Image', u'文件', u'图像', u'圖像'],
             },
             7: {
                 '_default': [u'File talk', u'Image talk'],
