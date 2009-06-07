@@ -5318,8 +5318,8 @@ your connection is down. Retrying in %i minutes..."""
             }
         if lestart is not None: params['lestart'] = lestart
         if leend is not None: params['leend'] = leend
-        if leend is not None: params['leuser'] = leuser
-        if leend is not None: params['letitle'] = letitle
+        if leuser is not None: params['leuser'] = leuser
+        if letitle is not None: params['letitle'] = letitle
         while True:
             data = query.GetData(params,
                             useAPI = True, encodeTitle = False)
