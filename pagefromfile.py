@@ -23,7 +23,13 @@ Specific arguments:
                 beginning of page title
 -titleend:xxx   Use xxx in place of ''' for identifying the
                 end of page title
--summary:xxx    Use xxx as the summary for the upload
+-notitle        do not include the title, including titlestart, and
+                titleend, in the page
+-summary:xxx    Use xxx as the edit summary for the upload - if
+                a page exists, standard messages are appended
+                after xxx for appending, prepending, or replacement
+-autosummary    Use MediaWikis autosummary when creating a new page,
+                overrides -summary in this case
 -minor          set minor edit flag on page edits
 -debug          Do not really upload pages, just check and report
                 messages
@@ -33,7 +39,6 @@ If the page to be uploaded already exists:
 -appendtop      add the text to the top of it
 -appendbottom   add the text to the bottom of it
 -force          overwrite the existing page
--notitle        do not include the title line in the page
 """
 #
 # (C) Andre Engels, 2004
@@ -67,7 +72,7 @@ class PageFromFileRobot:
         'id': u'Impor artikel automatis',
         'it': u'Caricamento automatico',
         'ja': u'ロボットによる: 記事の作成',
-        'ksh': u'Automatesch aanjelaat',
+        'ksh': u'Bot: automatesch huhjelaade',
         'nl': u'Geautomatiseerde import',
         'no': u'bot: Automatisk import',
         'pl': u'Automatyczny import artykułów',
@@ -85,7 +90,7 @@ class PageFromFileRobot:
         'id': u'ditambahkan di atas',
         'it': u'aggiungo in cima',
         'ja': u'ロボットによる: 冒頭への追加',
-        'ksh': u'Automatesch füürjesaz',
+        'ksh': u'un dofüürjesaz',
         'nl': u'bovenaan toegevoegd',
         'no': u'legger til øverst',
         'pl': u'dodaj na górze',
@@ -102,7 +107,7 @@ class PageFromFileRobot:
         'id': u'ditambahkan di bawah',
         'it': u'aggiungo in fondo',
         'ja': u'ロボットによる: 末尾への追加',
-        'ksh': u'Automatesch aanjehange',
+        'ksh': u'un aanjehange',
         'nl': u'onderaan toegevoegd',
         'no': u'legger til nederst',
         'pl': u'dodaj na dole',
@@ -119,7 +124,7 @@ class PageFromFileRobot:
         'id': u'menimpa teks yang ada',
         'it': u'sovrascritto il testo esistente',
         'ja': u'ロボットによる: ページの置換',
-        'ksh': u'Automatesch ußjetuusch',
+        'ksh': u'un komplët ußjetuusch',
         'nl': u'bestaande tekst overschreven',
         'no': u'erstatter eksisterende tekst',
         'pl': u'aktualny tekst nadpisany',
