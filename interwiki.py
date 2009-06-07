@@ -1381,7 +1381,7 @@ class Subject(object):
                     except wikipedia.NoPage:
                         wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
-                    mods, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
+                    mods, mcomment, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
                     if (len(removing) > 0 and not globalvar.autonomous) or (len(modifying) > 0 and self.problemfound) or len(old) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
                         try:
                             if self.replaceLinks(new[site], new, bot):
@@ -1498,7 +1498,7 @@ class Subject(object):
             old[page2.site()] = page2
 
         # Check what needs to get done
-        mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
+        mods, mcomment, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
         # When running in autonomous mode without -force switch, make sure we don't remove any items, but allow addition of the new ones
         if globalvar.autonomous and not globalvar.force and len(removing) > 0:
@@ -1516,7 +1516,7 @@ class Subject(object):
                         new[rmsite] = old[rmsite]
                         wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
             # Re-Check what needs to get done
-            mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
+            mods, mcomment, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
         if not mods:
             wikipedia.output(u'No changes needed' )
@@ -1574,7 +1574,7 @@ class Subject(object):
             timeout=60
             while 1:
                 try:
-                    status, reason, data = page.put(newtext, comment = wikipedia.translate(page.site().lang, msg)[0] + mods)
+                    status, reason, data = page.put(newtext, comment = mcomment)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Page %s is locked. Skipping.' % (page.title(),))
                     raise SaveError
@@ -1877,7 +1877,8 @@ def compareLanguages(old, new, insite):
     removing = sorted(oldiw - newiw)
     modifying = sorted(site for site in oldiw & newiw if old[site] != new[site])
 
-    mods = ""
+    mcomment = u''
+    mods = u''
 
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
@@ -1886,15 +1887,25 @@ def compareLanguages(old, new, insite):
         # Use short format, just the language code
         fmt = lambda d, site: site.lang
 
-    _, add, rem, mod = wikipedia.translate(insite.lang, msg)
+    colon = u': '
+    comma = u', '
+
+    head, add, rem, mod = wikipedia.translate(insite.lang, msg)
+
+    addtrail = u''
+    remtrail = u''
+    modtrail = u''
+    trail = u''
 
     if adding:
-        mods += " %s: %s" % (add, ", ".join([fmt(new, x) for x in adding]))
+        mods += (add + colon + comma.join([fmt(new, x) for x in adding]) + addtrail)
     if removing:
-        mods += " %s: %s" % (rem, ", ".join([fmt(old, x) for x in removing]))
+        mods += (rem + colon + comma.join([fmt(old, x) for x in removing]) + remtrail)
     if modifying:
-        mods += " %s: %s" % (mod, ", ".join([fmt(new, x) for x in modifying]))
-    return mods, adding, removing, modifying
+        mods += (mod + colon + comma.join([fmt(new, x) for x in modifying]) + modtrail)
+    if mods:
+        mcomment = head + mods + trail
+    return mods, mcomment, adding, removing, modifying
 
 def readWarnfile(filename, bot):
     import warnfile
