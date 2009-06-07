@@ -4274,6 +4274,7 @@ class Site(object):
         deadendpages(): Special:Deadendpages
         ancientpages(): Special:Ancientpages
         lonelypages(): Special:Lonelypages
+        recentchanges(): Special:Recentchanges
         unwatchedpages(): Special:Unwatchedpages (sysop accounts only)
         uncategorizedcategories(): Special:Uncategorizedcategories (yields
             Category objects)
@@ -5339,6 +5340,76 @@ your connection is down. Retrying in %i minutes..."""
                 logid = imageData['logid']
                 user = imageData['user']
                 yield ImagePage(self, title), timestamp, user, comment
+            if not repeat:
+                break
+
+    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', repeat = False):
+        """
+        Yield ImagePages from APIs, call: action=query&list=recentchanges&rctype=edit|new&rclimit=500
+
+        Options directly from APIs:
+        ---
+        Parameters:
+          rcstart        - The timestamp to start enumerating from.
+          rcend          - The timestamp to end enumerating.
+          rcdir          - In which direction to enumerate.
+                           One value: newer, older
+                           Default: older
+          rcprop         - Include additional pieces of information
+                           Values (separate with '|'):
+                           user, comment, flags, timestamp, title, ids, sizes,
+                           redirect, patrolled, loginfo
+                           Default: title|timestamp|ids
+          rctoken        - Which tokens to obtain for each change
+                           Values (separate with '|'): patrol
+          rcshow         - Show only items that meet this criteria.
+                           For example, to see only minor edits done by
+                           logged-in users, set show=minor|!anon
+                           Values (separate with '|'):
+                           minor, !minor, bot, !bot, anon, !anon,
+                           redirect, !redirect, patrolled, !patrolled
+          rclimit        - How many total changes to return.
+                           No more than 500 (5000 for bots) allowed.
+                           Default: 10
+          rctype         - Which types of changes to show.
+                           Values (separate with '|'): edit, new, log
+        """
+        if rctype is None:
+            rctype = 'edit|new'
+        params = {
+            'action'    : 'query',
+            'list'      : 'recentchanges',
+            'rctype'    : rctype,
+            'rcprop'    : 'user|comment|timestamp|title|ids|loginfo',    #|flags|sizes|redirect|patrolled'
+            'rclimit'   : int(number),
+            }
+        if rcstart is not None: params['rcstart'] = rcstart
+        if rcend is not None: params['rcend'] = rcend
+        if rcshow is not None: params['rcshow'] = rcshow
+        if rctype is not None: params['rctype'] = rctype
+        while True:
+            data = query.GetData(params,
+                            useAPI = True, encodeTitle = False)
+            try:
+                rcData = data['query']['recentchanges']
+            except KeyError:
+                raise ServerError("The APIs don't return data, the site may be down")
+
+            for rcItem in rcData:
+                try:
+                    comment = rcItem['comment']
+                except KeyError:
+                    comment = ''
+                try:
+                    loginfo = rcItem['loginfo']
+                except KeyError:
+                    loginfo = ''
+                # pageid = rcItem['pageid']
+                title = rcItem['title']
+                timestamp = rcItem['timestamp']
+                # logid = rcItem['logid']
+                user = rcItem['user']
+                yield Page(self, title), timestamp, user, comment, loginfo
             if not repeat:
                 break
 

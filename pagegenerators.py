@@ -133,6 +133,10 @@ parameterHelp = """\
 
 -gorandom         Specifies that the robot should starting at the random pages 
                   returned by [[Special:Random]].
+
+-recentchanges    Work on new and edited pages returned by [[Special:Recentchanges]].
+                  Can also be given as "-recentchanges:n" where n is the number
+                  of pages to be returned, else 100 pages are returned.
 """
 
 
@@ -403,6 +407,12 @@ def RandomRedirectPageGenerator(number = 10, site = None):
         site = wikipedia.getSite()
     for i in range(number):
         yield site.randomredirectpage()
+ 
+def RecentchangesPageGenerator(number = 100, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.recentchanges(number=number):
+        yield page[0]
 
 def TextfilePageGenerator(filename=None, site=None):
     '''
@@ -954,6 +964,11 @@ class GeneratorFactory:
                 gen = RandomPageGenerator()
             else:
                 gen = RandomPageGenerator(number = int(arg[8:]))
+        elif arg.startswith('-recentchanges'):
+            if len(arg) == 14:
+                gen = RecentchangesPageGenerator()
+            else:
+                gen = RecentchangesPageGenerator(number = int(arg[15:]))
         elif arg.startswith('-file'):
             textfilename = arg[6:]
             if not textfilename:
