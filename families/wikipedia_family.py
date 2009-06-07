@@ -448,7 +448,7 @@ class Family(family.Family):
             'mk': u'Разговор за Портал',
             'ml': u'കവാടത്തിന്റെ സംവാദം',
             'mr': u'दालन चर्चा',
-            'ms': [u''Perbualan Portal', u'Portal talk'],
+            'ms': [u'Perbualan Portal', u'Portal talk'],
             'mt': u'Diskussjoni portal',
             'nds': u'Portal Diskuschoon',
             'new': u'दबू खँलाबँला',
