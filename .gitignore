@@ -1,4 +1,5 @@
 *~
+*.pyc
 /user-config.py
 logs/
 login-data/
