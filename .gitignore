@@ -1,0 +1,16 @@
+*~
+/user-config.py
+logs/
+login-data/
+interwiki-dumps/
+interwiki-graphs/
+featured/
+mediawiki-messages/
+watchlists/
+!logs/README
+!login-data/README
+!interwiki-dumps/README
+!interwiki-graphs/README
+!featured/README
+!mediawiki-messages/README
+!watchlists/README
