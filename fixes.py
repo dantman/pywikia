@@ -13,6 +13,12 @@ help = """
                                        run this in automatic mode.
                        * case-de     - fix upper/lower case errors in German
                        * grammar-de  - fix grammar and typography in German
+                       * vonbis      - Ersetze Binde-/Gedankenstrich durch "bis" in German
+                       * music       - Links auf Begriffsklärungen in German
+                       * datum       - specific date formats in German
+                       * correct-ar  - Corrections for Arabic Wikipedia and any Arabic wiki.
+                       * yu-tld      - the yu top-level domain will soon be disabled, see
+                                       http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
 """
 
 fixes = {
@@ -29,6 +35,7 @@ fixes = {
             'fr':u'Robot: convertit/fixe HTML',
             'he':u'בוט: ממיר/מתקן HTML',
             'ja':u'ロボットによる: HTML転換',
+            'ksh':u'Bot: vun HTML en Wikikood wandelle',
             'ia':u'Robot: conversion/reparation de HTML',
             'lt':u'robotas: konvertuojamas/taisomas HTML',
             'nl':u'Bot: conversie/reparatie HTML',
@@ -565,6 +572,7 @@ fixes = {
             'de': u'Bot: Ersetze Links auf .yu-Domains',
             'en': u'Robot: Replacing links to .yu domains',
             'fr': u'Robot: Correction des liens pointant vers le domaine .yu, qui expire en 2009',
+            'ksh': u'Bot: de ahle .yu-Domains loufe us, dröm ußjetuusch',
          },
          'replacements': [
             (u'www.budva.cg.yu',             u'www.budva.rs'),
