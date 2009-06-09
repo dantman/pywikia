@@ -4885,12 +4885,12 @@ your connection is down. Retrying in %i minutes..."""
                 globalRights = globalRights.split('","')
                 self._rights[index] = globalRights
                 if self._isLoggedIn[index]:
-                    if 'Global_bot' in globalRights: # This account had global bot flag, no need to check local flags.
+                    if 'Global_bot' in globalRights: # This account has the global bot flag, no need to check local flags.
                         checkLocal = False
                     else:
-                        output(u'Your bot account does not have global bot flag, checking local flag.')
+                        output(u'Your bot account does not have global the bot flag, checking local flag.')
         else:
-            if verbose: output(u'Note:this language does not allowed global bot.')
+            if verbose: output(u'Note: this language does not allow global bots.')
         if m and checkLocal:
             rights = m.group(1)
             rights = rights.split('", "')
@@ -5358,7 +5358,7 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', repeat = False):
+    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
         """
         Yield ImagePages from APIs, call: action=query&list=recentchanges&rctype=edit|new&rclimit=500
 
@@ -5370,6 +5370,9 @@ your connection is down. Retrying in %i minutes..."""
           rcdir          - In which direction to enumerate.
                            One value: newer, older
                            Default: older
+          rcnamespace    - Filter log entries to only this namespace(s)
+                           Values (separate with '|'):
+                           0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
           rcprop         - Include additional pieces of information
                            Values (separate with '|'):
                            user, comment, flags, timestamp, title, ids, sizes,
