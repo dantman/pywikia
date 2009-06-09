@@ -370,6 +370,10 @@ class Family(family.Family):
         # letter on ALL Wiktionaries.
         self.nocapitalize = self.langs.keys()
 
+        self.cross_allowed = [
+            'ang','bg','bn','eo','fa','fy','gd','ia','ie','jv','ka','lt','mk',
+            'nl','no','sk','th','ti','ts','uk','vo','za','zh-min-nan','zh',
+        ]
         self.obsolete = {
             'aa': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Afar_Wiktionary
             'ab': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Abkhaz_Wiktionary

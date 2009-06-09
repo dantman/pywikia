@@ -62,6 +62,7 @@ class Family(family.Family):
             'sk': u'Wikicitáty',
             'sl': u'Wikinavedek',
             'tr': u'Vikisöz',
+            'uk': u'Вікіцитати',
             'ur': u'وکی اقتباسات',
             'uz': u'Vikiiqtibos',
         }
@@ -135,7 +136,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องWikiquote',
             'tr': u'Vikisöz tartışma',
             'tt': u'Wikiquote bäxäse',
-            'uk': u'Обговорення Wikiquote',
+            'uk': u'Обговорення Вікіцитатей',
             'ur': u'تبادلۂ خیال وکی اقتباسات',
             'uz': u'Vikiiqtibos munozarasi',
             'vi': u'Thảo luận Wikiquote',
@@ -202,6 +203,11 @@ class Family(family.Family):
         # List of languages that want the category on_one_line.
         self.category_on_one_line = []
 
+
+        self.cross_allowed = [
+            'af','am','ang','ar','ast','az','da','fa','it',
+            'ka','ko','la','nn','no','ro','simple','sv','zh'
+        ]
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in

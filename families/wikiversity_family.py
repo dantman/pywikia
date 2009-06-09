@@ -110,10 +110,15 @@ class Family(family.Family):
         }
         self.namespaces[110] = {
             'fr': u'Transwiki',
+            'ja': u'Transwiki',
         }
         self.namespaces[111] = {
             'fr': u'Discussion Transwiki',
+            'ja': u'Transwiki‐ノート',
         }
+        self.cross_allowed = [
+            'ja',
+        ]
 
     def version(self,code):
         return '1.15alpha'

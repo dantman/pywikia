@@ -120,6 +120,7 @@ class SpeedyRobot:
                 },
             'zh':{
                 u'_default':u'[[WP:CSD]]',
+				u'Db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
                 u'Notchinese':u'[[WP:CSD#G7|CSD G7]]: 非中文條目且長時間未翻譯',
                 u'No source':u'[[WP:CSD#I3|CSD I3]]: 沒有來源連結，無法確認來源與版權資訊',
                 u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',

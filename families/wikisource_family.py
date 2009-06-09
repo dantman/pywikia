@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 import urllib
-import family, config, wikipedia
+import family, config
 
 __version__ = '$Id$'
 
@@ -20,7 +20,6 @@ class Family(family.Family):
             'gl', 'zh-min-nan', 'fo',
         ]
 
-        self.langs['-'] = 'wikisource.org'
         if config.SSL_connection and self.name in config.available_ssl_project:
             for lang in self.languages_by_size:
                 self.langs[lang] = 'secure.wikimedia.org'
@@ -60,6 +59,7 @@ class Family(family.Family):
             'hu': u'Wikiforrás',
             'hy': u'Վիքիդարան',
             'is': u'Wikiheimild',
+            'ko': u'위키문헌',
             'la': u'Vicifons',
             'li': u'Wikibrónne',
             'lt': u'Vikišaltiniai',
@@ -105,7 +105,7 @@ class Family(family.Family):
             'it': u'Discussioni Wikisource',
             'ja': u'Wikisource‐ノート',
             'kn': u'Wikisource ಚರ್ಚೆ',
-            'ko': u'Wikisource토론',
+            'ko': u'위키문헌토론',
             'la': u'Disputatio Vicifontis',
             'li': u'Euverlèk Wikibrónne',
             'lt': u'Vikišaltiniai aptarimas',
@@ -345,10 +345,19 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic
         }
-    if config.SSL_connection and wikipedia.default_code == '-':
-        def scriptpath(self, code):
-            return '/wikipedia/sources/w'
-
+        self.cross_allowed = [
+            'el','fa','it','ko','no','zh'
+        ]
+    
+    def scriptpath(self, code):
+        if config.SSL_connection:
+            if code == '-':
+                return '/wikipedia/sources/w'
+            else:
+                return '/%s/%s/w' % (self.name, code)
+        else:
+            return '/w'
+    
     def version(self, code):
         return '1.15alpha'
 

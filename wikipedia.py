@@ -4876,7 +4876,22 @@ your connection is down. Retrying in %i minutes..."""
         # Check user groups, if possible (introduced in 1.10)
         groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
         m = groupsR.search(text)
-        if m:
+        checkLocal = True
+        if default_code in self.family.cross_allowed: # if current languages in cross allowed list, check global bot flag.
+            globalgroupsR = re.compile(r'var wgGlobalGroups = \[\"(.+)\"\];')
+            mg = globalgroupsR.search(text)
+            if mg: # the account had global permission
+                globalRights = mg.group(1)
+                globalRights = globalRights.split('","')
+                self._rights[index] = globalRights
+                if self._isLoggedIn[index]:
+                    if 'Global_bot' in globalRights: # This account had global bot flag, no need to check local flags.
+                        checkLocal = False
+                    else:
+                        output(u'Your bot account does not have global bot flag, checking local flag.')
+        else:
+            if verbose: output(u'Note:this language does not allowed global bot.')
+        if m and checkLocal:
             rights = m.group(1)
             rights = rights.split('", "')
             if '*' in rights:
@@ -6441,8 +6456,8 @@ def handleArgs(*args):
             # about it.
             nonGlobalArgs.append(arg)
     if verbose:
-      output(u'Pywikipediabot %s' % (version.getversion()))
-      output(u'Python %s' % (sys.version))
+      output('Pywikipediabot %s' % (version.getversion()))
+      output('Python %s' % (sys.version))
     return nonGlobalArgs
 
 #########################
@@ -6604,7 +6619,7 @@ def translate(code, xdict):
     if hasattr(code,'lang'):
         code = code.lang
 
-    if 'wikipedia' in xdict:
+    if 'wikipedia' in xdict: # If xdict attribute is wikipedia, define the xdite had multiple projects
         if default_family in xdict:
             xdict = xdict[default_family]
         else:
@@ -6615,7 +6630,9 @@ def translate(code, xdict):
     for alt in altlang(code):
         if alt in xdict:
             return xdict[alt]
-    if 'en' in xdict:
+    if '_default' in xdict:
+        return xdict['_default']
+    elif 'en' in xdict:
         return xdict['en']
     return xdict.values()[0]
 
@@ -6759,7 +6776,7 @@ def output(text, decoder = None, newline = True, toStdout = False):
         if decoder:
             text = unicode(text, decoder)
         elif type(text) is not unicode:
-            if verbose:
+            if verbose and sys.platform != 'win32':
                 print "DBG> BUG: Non-unicode (%s) passed to wikipedia.output without decoder!" % type(text)
                 print traceback.print_stack()
                 print "DBG> Attempting to recover, but please report this problem"

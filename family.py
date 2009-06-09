@@ -875,11 +875,15 @@ class Family:
             4: {
                 '_default': u'Project',
                 'cs': u'Wikizdroje',
+                'ko': u'위키문헌',
+                'uk': u'Вікіцитати',
             },
             5: {
                 '_default': u'Project talk',
                 'cs': u'Wikizdroje diskuse',
                 'gan': u'Wikipedia talk',
+                'ko': u'위키문헌토론',
+                'uk': u'Обговорення Вікіцитатей',
             },
             6: {
                 '_default': [u'File', u'Image'],
@@ -2946,7 +2950,8 @@ class Family:
         self.disambiguationTemplates = {
             '_default': []
         }
-
+        # A list with the name in the cross-language flag permissions
+        self.cross_allowed = []
         # A list with the name of the category containing disambiguation
         # pages for the various languages. Only one category per language,
         # and without the namespace, so add things like:

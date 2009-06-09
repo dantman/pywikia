@@ -37,7 +37,7 @@ def main():
         'en': u'Removing links to spamming site %s',
         'es': u'Removiendo enlaces a sitio publicitario %s',
         'he': u'מסיר קישורים לאתר ספאם %s',
-        'fr': u'Suppression du lien blacklisté %s'
+        'fr': u'Suppression du lien blacklisté %s',
         'it': u'Rimuovo link contenuto nella Spam-Blacklist %s',
         'ja': u'ロボットによる: 迷惑リンク削除 %s',
         'nl': u'Links naar gespamde site: %s verwijderd',

@@ -44,6 +44,7 @@ usernames = {}
 sysopnames = {}
 disambiguation_comment = {}
 gdab_namespaces = {}
+account_global = False
 
 # Solve captchas in the webbrowser. Setting this to False will result in the
 # exception CaptchaError be thrown if a captcha is encountered.
@@ -63,11 +64,7 @@ solve_captcha = True
 # 2. You must use the hostname of the site, not its family/language pair
 authenticate = {}
 
-#
 #    Security Connection for Wikimedia Projects
-#
-#
-#
 SSL_connection = False
 
 # Available security projects
@@ -75,11 +72,6 @@ available_ssl_project = [
     u'wikipedia',u'wikinews',u'wikisource',u'wiktionary',u'wikibooks',u'wikiquote',u'wikiversity',
     u'meta',u'mediawiki',u'commons',u'species',u'incubator'
 ]
-#]
-#
-#
-#
-#
 	
 # password_file = ".passwd"
 # A password file with default passwords. For more information, please
@@ -547,6 +539,7 @@ if __name__=="__main__":
             if not type(globals()[_name]) in [types.FunctionType, types.ModuleType]:
                 if _all or _glv[_name]!=globals()[_name]:
                     print _name,"=",repr(globals()[_name])
+
 
 # cleanup all locally-defined variables
 
