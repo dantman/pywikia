@@ -208,6 +208,9 @@ class LongPageError(PageNotSaved):
         self.length = arg
         self.limit = arg2,
 
+class MaxTriesExceededError(PageNotSaved):
+    """Saving the page has failed because the maximum number of attempts has been reached"""
+
 class ServerError(Error):
     """Got unexpected server response"""
 
@@ -1359,7 +1362,7 @@ not supported by PyWikipediaBot!"""
                             force, callback))
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
-            force=False, sysop=False, botflag=True):
+            force=False, sysop=False, botflag=True, maxTries=-1):
         """Save the page with the contents of the first argument as the text.
 
         Optional parameters:
@@ -1369,6 +1372,7 @@ not supported by PyWikipediaBot!"""
                         watchlist (if None, leave watchlist status unchanged)
           minorEdit: mark this edit as minor if True
           force: ignore botMayEdit() setting.
+          maxTries: the maximum amount of save attempts. -1 for infinite.
         """
         # Login
         try:
@@ -1417,7 +1421,7 @@ not supported by PyWikipediaBot!"""
             comment = encodeEsperantoX(comment)
 
         return self._putPage(newtext, comment, watchArticle, minorEdit,
-                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, botflag=botflag)
+                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, botflag=botflag, maxTries=maxTries)
 
     def _encodeArg(self, arg, msgForError):
         """Encode an ascii string/Unicode string to the site's encoding"""
@@ -1435,7 +1439,7 @@ not supported by PyWikipediaBot!"""
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
-                captcha=None, botflag=True):
+                captcha=None, botflag=True, maxTries=-1):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1490,6 +1494,9 @@ not supported by PyWikipediaBot!"""
         retry_attempt = 1
         dblagged = False
         while True:
+            if (maxTries == 0):
+                raise MaxTriesExceededError()
+            maxTries -= 1
             # Check whether we are not too quickly after the previous
             # putPage, and wait a bit until the interval is acceptable
             if not dblagged:
