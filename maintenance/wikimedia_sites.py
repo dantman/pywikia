@@ -6,7 +6,7 @@ import sys, re
 sys.path.append('..')
 import wikipedia
 
-families = ['wikipedia', 'wiktionary', 'wikiquote', 'wikisource', 'wikibooks', 'wikinews']
+families = ['wikipedia', 'wiktionary', 'wikiquote', 'wikisource', 'wikibooks', 'wikinews', 'wikiversity']
 familiesDict = {
     'wikipedia':  'wikipedias_wiki.php',
     'wiktionary': 'wiktionaries_wiki.php',
@@ -14,11 +14,12 @@ familiesDict = {
     'wikisource': 'wikisources_wiki.php',
     'wikibooks':  'wikibooks_wiki.php',
     'wikinews':   'wikinews_wiki.php',
+    'wikiversity':   'wikiversity_wiki.php',
 }
 exceptions = ['www']
 
 for family in families:
-    print 'Checking family %s:' % family
+    wikipedia.output('Checking family %s:' % family)
 
     original = wikipedia.Family(family).languages_by_size
     obsolete = wikipedia.Family(family).obsolete
