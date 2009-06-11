@@ -224,7 +224,7 @@ class LoginManager:
         ("en", "wikipedia", "my_en_user", "my_en_pass")
         """
         import wikipediatools 
-        file = open("%s\\%s" % (wikipediatools.get_base_dir(), config.password_file) )
+        file = open("%s/%s" % (wikipediatools.get_base_dir(), config.password_file) )
         for line in file:
             if not line.strip(): continue
             entry = eval(line)
