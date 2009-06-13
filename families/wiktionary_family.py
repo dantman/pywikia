@@ -232,6 +232,7 @@ class Family(family.Family):
             'it': u'Appendice',
             'ko': u'부록',
             'lt': u'Sąrašas',
+            'no': u'Tillegg',
             'oc': u'Annèxa',
             'pl': u'Aneks',
             'pt': u'Apêndice',
@@ -256,6 +257,7 @@ class Family(family.Family):
             'it': u'Discussioni appendice',
             'ko': u'부록 토론',
             'lt': u'Sąrašo aptarimas',
+            'no': u'Tilleggdiskusjon',
             'oc': u'Discussion Annèxa',
             'pl': u'Dyskusja aneksu',
             'pt': u'Apêndice Discussão',
@@ -344,10 +346,14 @@ class Family(family.Family):
 
         self.namespaces[110] = {
             'en': u'Wikisaurus',
+            'is': u'Samheitasafn',
+            'ko': u'미주알고주알',
         }
 
         self.namespaces[111] = {
             'en': u'Wikisaurus talk',
+            'is': u'Samheitasafnsspjall',
+            'ko': u'미주알고주알 토론',
         }
 
         self.namespaces[112] = {
@@ -370,6 +376,7 @@ class Family(family.Family):
         # letter on ALL Wiktionaries.
         self.nocapitalize = self.langs.keys()
 
+        # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
             'ang','bg','bn','eo','fa','fy','gd','ia','ie','jv','ka','lt','mk',
             'nl','no','sk','th','ti','ts','uk','vo','za','zh-min-nan','zh',

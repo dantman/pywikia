@@ -127,6 +127,7 @@ class Family(family.Family):
         }
 
         self.interwiki_forward = 'wikipedia'
+        self.cross_allowed = ['meta',]
 
     def version(self,code):
         return '1.15alpha'

@@ -345,6 +345,7 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic
         }
+        # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
             'el','fa','it','ko','no','zh'
         ]

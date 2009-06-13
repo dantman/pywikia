@@ -338,6 +338,8 @@ class Family(family.Family):
             'pl': alphabetic,
             'simple': alphabetic
         }
+        # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
+        self.cross_allowed = ['fa','fy','it','ru','simple','zh']
 
     def version(self, code):
         return '1.15alpha'
