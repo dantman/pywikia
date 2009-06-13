@@ -23,7 +23,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.5.4"  #The MediaWiki version used. Not very important in most cases.
+        return "1.6.10"  #The MediaWiki version used. Not very important in most cases.
 
     def scriptpath(self, code):
         return '/beta' #The value of {{SCRIPTPATH}} on this wiki

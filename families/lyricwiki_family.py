@@ -12,7 +12,7 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'lyricwiki'
         self.langs = {
-            'en': 'www.lyricwiki.org',
+            'en': 'lyricwiki.org',
            }
 
         self.namespaces[4] = {
@@ -23,7 +23,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.7.1"
+        return "1.14.0"
 
     def scriptpath(self, code):
         return ''

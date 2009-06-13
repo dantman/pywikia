@@ -851,20 +851,21 @@ class Family(family.Family):
             'zh-min-nan': u'Khu-pia̍t-ia̍h',
             }
 
+        # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ab','af','ak','am','ang','arc','arz','as','av','ay','az','ba','bcl',
+            'ab','af','ak','am','ang','arc','arz','as','av','ay','az','ba','bar','bcl',
             'be-x-old','be','bg','bh','bi','bm','bo','bpy','bug','bxr','cbk-zam',
             'cdo','ce','ch','chy','co','crh','cr','csb','cu','diq','dsb','dz',
             'ee','eml','eu','ext','fa','ff','fj','fo','frp','fur','gan','ga','glk',
             'gn','got','gu','gv','ha','hak','haw','hif','hi','hsb','ht','hu','hy',
-            'ia','ie','ig','ik','ilo','iow','iu','jbo','kaa','kab','ka','kg','ki',
+            'ia','id','ie','ig','ik','ilo','iow','is','iu','jbo','jv','kaa','kab','ka','kg','ki',
             'kl','km','kn','ko','ks','ku','kv','kw','ky','lad','lbe','lg','li','lij',
-            'lmo','ln','lo','map-bms','mdf','mg','mk','mn','myv','my','mzn','nah',
-            'na','nds-nl','new','nl','nov','nrm','nv','ny','om','or','os','pam','pap',
+            'lmo','ln','lo','lv','map-bms','mdf','mg','mk','mn','mt','myv','my','mzn','nah',
+            'na','nap','nds-nl','ne','new','nl','nov','nrm','nv','ny','om','or','os','pam','pap',
             'pa','pdc','pnt','ps','qu','rm','rmy','rn','roa-rup','roa-tara','sah',
             'sa','sc','sco','sd','se','sg','sh','simple','si','sk','sm','sn','so',
             'srn','stq','st','su','sw','szl','ta','te','tet','tg','ti','tn','to',
-            'tpi','ts','tt','tum','tw','ty','ug','uz','ve','wa','war','wo','wuu',
+            'tpi','ts','tt','tum','tw','ty','ug','uz','ve','vls','wa','war','wo','wuu',
             'xal','xh','yi','yo','za','zh','zu'
         ]
         # On most Wikipedias page names must start with a capital letter, but some

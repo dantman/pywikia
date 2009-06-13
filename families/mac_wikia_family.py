@@ -4,7 +4,7 @@ import family, config
 class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
-        self.name = 'mac.wikia'
+        self.name = 'mac_wikia'
 
         self.langs = {
             'de':'de.mac.wikia.com',

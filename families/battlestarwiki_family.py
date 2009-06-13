@@ -9,14 +9,10 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'battlestarwiki'
     
-        self.langs = {
-            'de': None,
-            'en': None,
-            'es': None,
-            'fr': None,
-            'tr': None,
-            'zh': None,
-            }
+        self.languages_by_size = ['en', 'de', 'fr', 'zh', 'es', 'ms', 'tr', 'simple']
+		
+        for lang in self.languages_by_size:
+            self.langs[lang] = '%s.battlestarwiki.org' % lang
 
         # Most namespaces are inherited from family.
         
@@ -28,6 +24,7 @@ class Family(family.Family):
             'de': u'Battlestar Wiki Diskussion',
             'es': u'Battlestar Wiki Discusión',
             'fr': u'Discussion Battlestar Wiki',
+            'ms': u'Perbincangan Battlestar Wiki',
             'tr': u'Battlestar Wiki tartışma',
         }
 
@@ -46,7 +43,6 @@ class Family(family.Family):
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these
         # for another wiki family.
-        self.languages_by_size = ['en', 'de']
         
         alphabetic = ['de', 'en', 'es', 'fr', 'tr', 'zh']
 
@@ -54,4 +50,4 @@ class Family(family.Family):
         return '%s.battlestarwiki.org' % code
 
     def version(self, code):
-        return "1.9"
+        return "1.14.0"

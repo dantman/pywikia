@@ -402,83 +402,81 @@ class Family(family.Family):
         }
 
         self.namespaces[18] = {
-          '_default': '',
-          'fi': u'Hikinews',
-          'got': u'𐌰𐍂𐌼𐌰𐌹𐍉',
-#      'ko': u'백괴나라',
-          'meta': u'UnSpecies',
-          'nl': u'OnNieuws',
-          'pt': u'Fatos',
-          'th': u'ไร้ข่าว',
-          'zh-hk': u'偽基辭典',
-          'zh-tw': u'偽基辭典'
+            '_default': '',
+            'fi': u'Hikinews',
+            'got': u'���df30���df42���df3c���df30���df39���df49',
+            'ko': u'백괴나라',
+            'meta': u'UnSpecies',
+            'nl': u'OnNieuws',
+            'pt': u'Fatos',
+            'th': u'ไร้ข่าว',
+            'zh-hk': u'偽基辭典',
         }
 
         self.namespaces[19] = {
-          '_default': '',
-          'fi': u'Keskustelu Hikinewseistä',
-          'got': u'𐌰𐍂𐌼𐌰𐌹𐍉 𐌲𐌰𐍅𐌰𐌿𐍂𐌳𐌾𐌰',
-#      'ko': u'백괴나라토론',
-          'meta': u'UnSpecies talk',
-          'nl': u'Overleg OnNieuws',
-          'pt': u'Fatos Discussão',
-          'th': u'คุยเรื่องไร้ข่าว',
-          'zh-hk': u'偽基辭典討論',
-          'zh-tw': u'偽基辭典討論'
+            '_default': '',
+            'fi': u'Keskustelu Hikinewseistä',
+            'got': u'���df30���df42���df3c���df30���df39���df49 ���df32���df30���df45���df30���df3f���df42���df33���df3e���df30',
+            'ko': u'백괴나라토론',
+            'meta': u'UnSpecies talk',
+            'nl': u'Overleg OnNieuws',
+            'pt': u'Fatos Discussão',
+            'th': u'คุยเรื่องไร้ข่าว',
+            'zh-hk': u'偽基辭典討論',
         }
 
         self.namespaces[20] = {
-          '_default': '',
-          'fi': u'Hiktionary',
-          'got': u'𐍆𐌰𐌹𐌰𐌽𐍅𐌰𐌿𐍂𐌳𐌰𐌱𐍉𐌺𐌰',
-          'meta': u'Namespace',
-          'nl': u'Onwoordenboek',
-          'pt': u'Forum',
-          'th': u'ไร้วิทยาลัย',
-          'zh-hk': u'動漫遊戲',
-          'zh-tw': u'動漫遊戲'
+            '_default': '',
+            'fi': u'Hiktionary',
+            'got': u'���df46���df30���df39���df30���df3d���df45���df30���df3f���df42���df33���df30���df31���df49���df3a���df30',
+            'meta': u'Namespace',
+            'nl': u'Onwoordenboek',
+            'pt': u'Forum',
+            'th': u'ไร้วิทยาลัย',
+            'zh-hk': u'動漫遊戲',
         }
 
         self.namespaces[21] = {
-          '_default': '',
-          'fi': u'Keskustelu Hiktionarysta',
-          'got': u'𐍆𐌰𐌹𐌰𐌽𐍅𐌰𐌿𐍂𐌳𐌰𐌱𐍉𐌺𐌰 𐌲𐌰𐍅𐌰𐌿𐍂𐌳𐌾𐌰',
-          'meta': u'Namespace talk',
-          'nl': u'Overleg Onwoordenboek',
-          'pt': u'Forum Discussão',
-          'th': u'คุยเรื่องไร้วิทยาลัย',
-          'zh-hk': u'動漫遊戲討論',
-          'zh-tw': u'動漫遊戲討論'
+            '_default': '',
+            'fi': u'Keskustelu Hiktionarysta',
+            'got': u'���df46���df30���df39���df30���df3d���df45���df30���df3f���df42���df33���df30���df31���df49���df3a���df30 ���df32���df30���df45���df30���df3f���df42���df33���df3e���df30',
+            'meta': u'Namespace talk',
+            'nl': u'Overleg Onwoordenboek',
+            'pt': u'Forum Discussão',
+            'th': u'คุยเรื่องไร้วิทยาลัย',
+            'zh-hk': u'動漫遊戲討論',
         }
 
         self.namespaces[22] = {
-          'fi': u'Hikikirjasto',
-          'nl': u'OnBoeken',
-          'th': u'ไร้พจนานุกรม',
-          'zh-hk': u'春心蕩漾',
-          'zh-tw': u'春心蕩漾'
+            'fi': u'Hikikirjasto',
+            'meta': u'UnN',
+            'nl': u'OnBoeken',
+            'th': u'ไร้พจนานุกรม',
+            'zh-hk': u'偽基文庫',
+            'zh-tw': u'偽基文庫',
         }
 
         self.namespaces[23] = {
-          'fi': u'Keskustelu hikikirjasta',
-          'nl': u'Overleg OnBoeken',
-          'th': u'คุยเรื่องไร้พจนานุกรม',
-          'zh-hk': u'春心蕩漾討論',
-          'zh-tw': u'春心蕩漾討論'
+            'fi': u'Keskustelu hikikirjasta',
+            'meta': u'UnN talk',
+            'nl': u'Overleg OnBoeken',
+            'th': u'คุยเรื่องไร้พจนานุกรม',
+            'zh-hk': u'偽基文庫討論',
+            'zh-tw': u'偽基文庫討論',
         }
 
         self.namespaces[24] = {
-          'fi': u'Hikisitaatit',
-          'th': u'ไร้ชีวประวัติ',
-          'zh-hk': u'主題展館',
-          'zh-tw': u'主題展館'
+            'fi': u'Hikisitaatit',
+            'meta': u'Forum',
+            'th': u'ไร้ชีวประวัติ',
+            'zh-hk': u'主題展館',
         }
 
         self.namespaces[25] = {
-          'fi': u'Keskustelu hikisitaatista',
-          'th': u'คุยเรื่องไร้ชีวประวัติ',
-          'zh-hk': u'主題展館討論',
-          'zh-tw': u'主題展館討論'
+            'fi': u'Keskustelu hikisitaatista',
+            'meta': u'Forum talk',
+            'th': u'คุยเรื่องไร้ชีวประวัติ',
+            'zh-hk': u'主題展館討論',
         }
 
         self.namespaces[26] = {
@@ -553,211 +551,237 @@ class Family(family.Family):
         }
 
         self.namespaces[36] = {
-          'zh-hk': u'偽基書籍',
-          'zh-tw': u'偽基書籍'
+            'th': u'สถานีย่อย',
+            'zh-hk': u'偽基書籍',
         }
 
         self.namespaces[37] = {
-          'zh-hk': u'偽基書籍討論',
-          'zh-tw': u'偽基書籍討論'
+            'th': u'คุยเรื่องสถานีย่อย',
+            'zh-hk': u'偽基書籍討論',
         }
 
         self.namespaces[100] = {
-          'de': u'UnNews',
-          'nn': u'Ikkenytt',
-          'no': u'Ikkenytt',
-          'pl': u'Cytaty',
-          'sv': u'PsykNyheter',
-          'tr': u'YanSözlük'
+            'de': u'UnNews',
+            'he': u'איןציטוט',
+            'ko': u'백괴게임',
+            'nn': u'Ikkenytt',
+            'no': u'Ikkenytt',
+            'pl': u'Cytaty',
+            'sv': u'PsykNyheter',
         }
 
         self.namespaces[101] = {
-          'de': u'UnNews Diskussion',
-          'nn': u'Ikkenytt-diskusjon',
-          'no': u'Ikkenytt-diskusjon',
-          'pl': u'Dyskusja cytatów',
-          'sv': u'PsykNyheter diskussion',
-          'tr': u'YanSözlük tartışma'
+            'de': u'UnNews Diskussion',
+            'he': u'שיחת איןציטוט',
+            'ko': u'백괴게임토론',
+            'nn': u'Ikkenytt-diskusjon',
+            'no': u'Ikkenytt-diskusjon',
+            'pl': u'Dyskusja cytatów',
+            'sv': u'PsykNyheter diskussion',
         }
 
         self.namespaces[102] = {
-          'de': u'Undictionary',
-          'en': u'UnNews',
-          'ja': u'UnNews',
-          'nn': u'Ikktionary',
-          'no': u'Ikktionary',
-          'pl': u'NonNews',
-          'sv': u'Forum',
-          'tr': u'YanHaber',
-          }
+            'de': u'Undictionary',
+            'en': u'UnNews',
+            'ja': u'UnNews',
+            'ko': u'포럼',
+            'nn': u'Ikktionary',
+            'no': u'Ikktionary',
+            'pl': u'NonNews',
+            'sv': u'Forum',
+            'tr': u'YanHaber',
+        }
 
         self.namespaces[103] = {
-          'de': u'Undictionary Diskussion',
-          'en': u'UnNews talk',
-          'ja': u'UnNews talk',
-          'nn': u'Ikktionary-diskusjon',
-          'no': u'Ikktionary-diskusjon',
-          'pl': u'Dyskusja NonNews',
-          'sv': u'Forumdiskussion',
-          'tr': u'YanHaber tartışma'
+            'de': u'Undictionary Diskussion',
+            'en': u'UnNews talk',
+            'ja': u'UnNews talk',
+            'ko': u'포럼토론',
+            'nn': u'Ikktionary-diskusjon',
+            'no': u'Ikktionary-diskusjon',
+            'pl': u'Dyskusja NonNews',
+            'sv': u'Forumdiskussion',
         }
 
         self.namespaces[104] = {
-          'de': u'UnBooks',
-          'en': u'Undictionary',
-          'pl': u'Nonźródła',
-          'sv': u'Psyktionary'
+            'de': u'UnBooks',
+            'en': u'Undictionary',
+            'ja': u'Undictionary',
+            'ko': u'백괴뉴스',
+            'pl': u'Nonźródła',
         }
 
         self.namespaces[105] = {
-          'de': u'UnBooks Diskussion',
-          'en': u'Undictionary talk',
-          'pl': u'Dyskusja nonźródeł',
-          'sv': u'Psyktionary diskussion'
+            'de': u'UnBooks Diskussion',
+            'en': u'Undictionary talk',
+            'ja': u'Undictionary talk',
+            'ko': u'백괴뉴스토론',
+            'pl': u'Dyskusja nonźródeł',
         }
 
         self.namespaces[106] = {
-          '_default':'',
-          'en': u'Game',
-          'ja': u'Game',
-          'pl': u'Słownik',
-          'pt': u'Desnotícias',
-          'sv': u'PsykCitat'
+            '_default': '',
+            'en': u'Game',
+            'ja': u'Game',
+            'ko': u'백괴낱말사전',
+            'pl': u'Słownik',
+            'pt': u'Desnotícias',
         }
 
         self.namespaces[107] = {
-          'en': u'Game talk',
-          'ja': u'Game talk',
-          'pl': u'Dyskusja słownika',
-          'pt': u'Desnotícias Discussão',
-          'sv': u'PsykCitat diskussion'
+            'en': u'Game talk',
+            'ja': u'Game talk',
+            'ko': u'백괴낱말사전토론',
+            'pl': u'Dyskusja słownika',
+            'pt': u'Desnotícias Discussão',
         }
 
         self.namespaces[108] = {
-          'en': u'Babel',
-          'pl': u'Gra',
-          'pt': u'Jogo',
-          'sv': u'Spel'
+            'en': u'Babel',
+            'ko': u'해설',
+            'pl': u'Gra',
+            'pt': u'Jogo',
         }
 
         self.namespaces[109] = {
-          'en': u'Babel talk',
-          'pl': u'Dyskusja gry',
-          'pt': u'Jogo Discussão',
-          'sv': u'Speldiskussion'
+            'en': u'Babel talk',
+            'ko': u'해설토론',
+            'pl': u'Dyskusja gry',
+            'pt': u'Jogo Discussão',
         }
 
         self.namespaces[110] = {
-          'ar': u'Forum',
-          'ast': u'Forum',
-          'ca': u'Forum',
-          'cs': u'Forum',
-          'da': u'Forum',
-          'de': u'Forum',
-          'el': u'Forum',
-          'en': u'Forum',
-          'eo': u'Forum',
-          'es': u'Forum',
-          'fr': u'Forum',
-          'he': u'Forum',
-          'id': u'Forum',
-          'it': u'Forum',
-          'ja': u'Forum',
-          'jv': u'Forum',
-          'la': u'Forum',
-          'nn': u'Forum',
-          'no': u'Forum',
-          'pl': u'Forum',
-          'pt': u'Descionário',
-          'ru': u'Форум',
-          'sk': u'Forum',
-          'su': u'Forum',
-          'sv': u'PsykBöcker',
-          'tr': u'Astroloji',
-          'yi': u'Forum',
-          'zh': u'Forum'
+            'ar': u'Forum',
+            'ast': u'Forum',
+            'ca': u'Forum',
+            'cs': u'Forum',
+            'da': u'Forum',
+            'de': u'Forum',
+            'el': u'Forum',
+            'en': u'Forum',
+            'eo': u'Forum',
+            'es': u'Forum',
+            'fr': u'Forum',
+            'he': u'בית קפה',
+            'id': u'Forum',
+            'it': u'Forum',
+            'ja': u'Forum',
+            'jv': u'Forum',
+            'ko': u'백괴식당',
+            'la': u'Forum',
+            'nn': u'Forum',
+            'no': u'Forum',
+            'pl': u'Forum',
+            'pt': u'Descionário',
+            'ru': u'Форум',
+            'sk': u'Forum',
+            'su': u'Forum',
+            'sv': u'PsykBöcker',
+            'tr': u'Astroloji',
+            'yi': u'Forum',
         }
 
         self.namespaces[111] = {
-          'ar': u'Forum talk',
-          'ast': u'Forum talk',
-          'ca': u'Forum talk',
-          'cs': u'Forum talk',
-          'da': u'Forumdiskussion',
-          'de': u'Forum talk',
-          'el': u'Forum talk',
-          'en': u'Forum talk',
-          'eo': u'Forum talk',
-          'es': u'Forum talk',
-          'fr': u'Discussion Forum',
-          'he': u'Forum talk',
-          'id': u'Forum talk',
-          'it': u'Forum talk',
-          'ja': u'Forum talk',
-          'jv': u'Forum talk',
-          'la': u'Forum talk',
-          'nn': u'Forum-diskusjon',
-          'no': u'Forum-diskusjon',
-          'pl': u'Dyskusja forum',
-          'pt': u'Descionário Discussão',
-          'ru': u'Обсуждение форума',
-          'sk': u'Forum talk',
-          'su': u'Forum talk',
-          'sv': u'PsykBöckerdiskussion',
-          'tr': u'Astroloji tartışma',
-          'yi': u'Forum talk',
-          'zh': u'Forum talk'
+            'ar': u'Forum talk',
+            'ast': u'Forum talk',
+            'ca': u'Forum talk',
+            'cs': u'Forum talk',
+            'da': u'Forumdiskussion',
+            'de': u'Forum talk',
+            'el': u'Forum talk',
+            'en': u'Forum talk',
+            'eo': u'Forum talk',
+            'es': u'Forum talk',
+            'fr': u'Discussion Forum',
+            'he': u'שיחת בית קפה',
+            'id': u'Forum talk',
+            'it': u'Forum talk',
+            'ja': u'Forum talk',
+            'jv': u'Forum talk',
+            'ko': u'백괴식당토론',
+            'la': u'Forum talk',
+            'nn': u'Forum-diskusjon',
+            'no': u'Forum-diskusjon',
+            'pl': u'Dyskusja forum',
+            'pt': u'Descionário Discussão',
+            'ru': u'Обсуждение форума',
+            'sk': u'Forum talk',
+            'su': u'Forum talk',
+            'sv': u'PsykBöckerdiskussion',
+            'tr': u'Astroloji tartışma',
+            'yi': u'Forum talk',
         }
 
         self.namespaces[112] = {
-          'en': u'UnTunes',
-          'es': u'Incinoticias',
-          'fr': u'Désinformation',
-          'ja': u'UnTunes',
-          'nn': u'Hvordan',
-          'no': u'Hvordan',
-          'pl': u'Portal',
-          'tr': u'Forum'
+            'cs': u'Regál',
+            'en': u'UnTunes',
+            'es': u'Incinoticias',
+            'fr': u'Désinformation',
+            'he': u'איןספר',
+            'it': u'NonNotizie',
+            'ja': u'UnTunes',
+            'ko': u'백괴우주',
+            'nn': u'Hvordan',
+            'no': u'Hvordan',
+            'pl': u'Portal',
+            'zh': u'伪基新闻',
         }
 
         self.namespaces[113] = {
-          'en': u'UnTunes talk',
-          'es': u'Incinoticias Discusión',
-          'fr': u'Discussion Désinformation',
-          'ja': u'UnTunes talk',
-          'no': u'Hvordan-diskusjon',
-          'pl': u'Dyskusja portalu',
-          'tr': u'Forum tartışma'
+            'cs': u'Regál diskuse',
+            'en': u'UnTunes talk',
+            'es': u'Incinoticias Discusión',
+            'fr': u'Discussion Désinformation',
+            'he': u'שיחת איןספר',
+            'it': u'Discussioni NonNotizie',
+            'ja': u'UnTunes talk',
+            'ko': u'백괴우주토론',
+            'nn': u'Hvordan-diskusjon',
+            'no': u'Hvordan-diskusjon',
+            'pl': u'Dyskusja portalu',
+            'zh': u'伪基新闻 talk',
         }
 
         self.namespaces[114] = {
-          'es': u'Incitables',
-          'no': u'Hvorfor',
-          'pl': u'Poradnik'
+            'cs': u'Necykloverzita',
+            'es': u'Incitables',
+            'fr': u'Portail',
+            'he': u'איןחדש',
+            'nn': u'Hvorfor',
+            'no': u'Hvorfor',
+            'zh': u'伪基文库',
         }
 
         self.namespaces[115] = {
-          'es': u'Incitables Discusión',
-          'no': u'Hvorfor-diskusjon',
-          'pl': u'Dyskusja poradnika'
+            'cs': u'Necykloverzita diskuse',
+            'es': u'Incitables Discusión',
+            'fr': u'Discussion Portail',
+            'he': u'שיחת איןחדש',
+            'nn': u'Hvorfor-diskusjon',
+            'no': u'Hvorfor-diskusjon',
+            'zh': u'伪基文库 talk',
         }
 
         self.namespaces[120] = {
-          'pt': u'Privado',
-          'tr': u'YanMagazin'
+            'he': u'איןמילון',
+            'it': u'NonCitazioni',
+            'pt': u'Privado',
         }
 
         self.namespaces[121] = {
-          'pt': u'Privado Discussão',
-          'tr': u'YanMagazin tartışma'
+            'he': u'שיחת איןמילון',
+            'it': u'Discussioni NonCitazioni',
+            'pt': u'Privado Discussão',
         }
 
         self.namespaces[122] = {
-          'pt': u'Regra'
+            'he': u'איןמינים',
+            'it': u'NonDizionario',
         }
 
         self.namespaces[123] = {
-          'pt': u'Regra Discussão'
+            'he': u'שיחת איןמינים',
+            'it': u'Discussioni NonDizionario',
         }
 
         # A few selected big languages for things that we do not want to loop over

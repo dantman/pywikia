@@ -203,10 +203,10 @@ class Family(family.Family):
         # List of languages that want the category on_one_line.
         self.category_on_one_line = []
 
-
+        # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'af','am','ang','ar','ast','az','da','fa','it',
-            'ka','ko','la','nn','no','ro','simple','sv','zh'
+            'af','am','ang','ar','ast','az','ca','da','fa','it',
+            'ka','ko','la','nn','no','ro','simple','sv','vi','zh'
         ]
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
