@@ -3391,7 +3391,7 @@ class Family:
         'new': [u'पुनर्निर्देश'],
         'nl': [u'doorverwijzing'],
         'nn': [u'omdiriger'],
-        'no': [u'omdirigering']
+        'no': [u'omdirigering'],
         'oc': [u'redireccion'],
         'os': [u'рарвыст', u'перенаправление', u'перенапр'],
         'pdc': [u'weiterleitung'],
