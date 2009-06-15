@@ -448,7 +448,7 @@ class Family(family.Family):
         self.interwiki_attop = ['pl']
 
     def version(self, code):
-        return '1.15alpha'
+        return '1.16alpha'
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
