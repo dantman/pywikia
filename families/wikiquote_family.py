@@ -11,7 +11,6 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikiquote'
 
-The lists don't match, the new list is:
         self.languages_by_size = [
             'en', 'it', 'de', 'pl', 'pt', 'sk', 'ru', 'bg', 'es', 'bs',
             'sl', 'tr', 'he', 'lt', 'fr', 'cs', 'zh', 'uk', 'hu', 'id',
