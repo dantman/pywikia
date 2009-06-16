@@ -13,31 +13,31 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'de', 'fr', 'pl', 'ja', 'it', 'nl', 'pt', 'es', 'ru',
-            'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'tr', 'cs', 'ro', 'hu',
-            'vo', 'eo', 'sk', 'da', 'id', 'ko', 'ar', 'he', 'lt', 'vi',
-            'sl', 'sr', 'bg', 'et', 'fa', 'simple', 'hr', 'ht', 'new', 'nn',
-            'gl', 'th', 'te', 'el', 'eu', 'ceb', 'ms', 'ka', 'hi', 'la',
-            'bs', 'lb', 'mk', 'is', 'br', 'bpy', 'mr', 'sq', 'cy', 'az',
-            'sh', 'tl', 'lv', 'pms', 'bn', 'jv', 'be-x-old', 'oc', 'ta', 'io',
-            'be', 'su', 'nds', 'scn', 'an', 'nap', 'ku', 'ast', 'af', 'wa',
-            'sw', 'fy', 'zh-yue', 'qu', 'ksh', 'ur', 'cv', 'ml', 'tg', 'bat-smg',
-            'ga', 'vec', 'roa-tara', 'uz', 'gd', 'mi', 'kn', 'yo', 'pam', 'yi',
-            'nah', 'co', 'hsb', 'lmo', 'als', 'zh-min-nan', 'li', 'roa-rup', 'ia', 'hy',
-            'sa', 'nds-nl', 'tt', 'wuu', 'fo', 'war', 'nrm', 'vls', 'kk', 'am',
-            'rm', 'map-bms', 'pag', 'gu', 'glk', 'sah', 'os', 'dv', 'se', 'ne',
-            'diq', 'fur', 'sco', 'lij', 'nov', 'fiu-vro', 'gv', 'mn', 'bh', 'bar',
-            'ilo', 'mt', 'pi', 'gan', 'zh-classical', 'arz', 'km', 'frp', 'lad', 'csb',
-            'pdc', 'haw', 'ang', 'kw', 'to', 'mzn', 'bcl', 'si', 'ps', 'sc',
-            'ie', 'tk', 'szl', 'kv', 'gn', 'ln', 'mg', 'stq', 'crh', 'jbo',
-            'wo', 'my', 'tpi', 'hif', 'cbk-zam', 'ty', 'ky', 'zea', 'arc', 'ug',
-            'srn', 'ay', 'myv', 'ext', 'eml', 'hak', 'ig', 'or', 'pap', 'kg',
-            'kab', 'so', 'rmy', 'lo', 'pa', 'ba', 'ks', 'ce', 'udm', 'av',
-            'sm', 'kaa', 'tet', 'cu', 'sd', 'mdf', 'iu', 'dsb', 'got', 'na',
-            'nv', 'bm', 'bo', 'cdo', 'ee', 'chr', 'om', 'as', 'zu', 'pnt',
-            'ti', 'ts', 'pih', 'ab', 'ss', 'kl', 'bi', 'cr', 've', 'ch',
-            'xh', 'dz', 'ha', 'tn', 'bug', 'ik', 'bxr', 'st', 'rw', 'xal',
-            'chy', 'tw', 'za', 'ak', 'ny', 'fj', 'ff', 'sg', 'rn', 'lbe',
-            'ki', 'sn', 'lg', 'tum', 'ng',
+            'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'tr', 'cs', 'hu', 'ro',
+            'vo', 'eo', 'da', 'sk', 'id', 'ar', 'ko', 'he', 'lt', 'vi',
+            'sl', 'sr', 'bg', 'et', 'fa', 'hr', 'simple', 'new', 'ht', 'nn',
+            'gl', 'th', 'te', 'el', 'ms', 'eu', 'ceb', 'hi', 'mk', 'ka',
+            'la', 'bs', 'lb', 'br', 'is', 'az', 'bpy', 'mr', 'sq', 'cy',
+            'sh', 'tl', 'lv', 'pms', 'be-x-old', 'bn', 'jv', 'oc', 'ta', 'io',
+            'be', 'an', 'nds', 'su', 'scn', 'nap', 'ku', 'af', 'ast', 'fy',
+            'sw', 'wa', 'zh-yue', 'bat-smg', 'qu', 'ur', 'cv', 'ml', 'ksh', 'tg',
+            'ga', 'vec', 'roa-tara', 'war', 'uz', 'gd', 'pam', 'kn', 'mi', 'gu',
+            'yi', 'yo', 'glk', 'lmo', 'nah', 'co', 'zh-min-nan', 'hsb', 'als', 'roa-rup',
+            'ia', 'li', 'hy', 'gan', 'kk', 'sah', 'tt', 'tk', 'sa', 'wuu',
+            'nds-nl', 'fo', 'os', 'vls', 'nrm', 'fiu-vro', 'am', 'rm', 'map-bms', 'pag',
+            'arz', 'dv', 'mn', 'se', 'diq', 'ne', 'gv', 'fur', 'sco', 'lij',
+            'bar', 'nov', 'bh', 'mt', 'ilo', 'pi', 'zh-classical', 'mzn', 'km','frp',
+            'csb', 'lad', 'ug', 'si', 'pdc', 'kw', 'ang', 'haw', 'bcl', 'sc',
+            'to', 'kv', 'mg', 'pa', 'ps', 'szl', 'ie', 'gn', 'my', 'ln',
+            'hif', 'stq', 'wo', 'jbo', 'crh', 'arc', 'tpi', 'ty', 'ext', 'cbk-zam',
+            'ky', 'eml', 'zea', 'srn', 'ay', 'myv', 'hak', 'ig', 'kg', 'pap',
+            'so', 'or', 'kab', 'lo', 'rmy', 'ba', 'ce', 'sm', 'udm', 'av',
+            'ks', 'cu', 'got', 'kaa', 'tet', 'dsb', 'sd', 'mdf', 'bo', 'iu',
+            'nv', 'na', 'bm', 'cdo', 'chr', 'as', 'ee', 'om', 'pnt', 'pih',
+            'zu', 'ab', 'ti', 'kl', 'ts', 'ss', 'bi', 'cr', 'dz', 've',
+            'za', 'ch', 'ha', 'xh', 'tn', 'bug', 'xal', 'st', 'rw', 'ik',
+            'bxr', 'chy', 'tw', 'ak', 'ny', 'fj', 'ff', 'sn', 'sg', 'lbe',
+            'rn', 'ki', 'lg', 'tum', 'ng',
         ]
 
         if config.SSL_connection and self.name in config.available_ssl_project:
@@ -283,9 +283,10 @@ class Family(family.Family):
             'ru': u'Обсуждение Википедии',
             'sa': u'विकिपीडियासंभाषणं',
             'sah': u'Бикипиидийэ ырытыыта',
-            'sc': u'Wikipedia discussioni',
+            'sc': u'Cuntierra Wikipedia',
             'scn': u'Discussioni Wikipedia',
             'sd': u'Wikipedia بحث',
+            'sg': u'Discussion Wikipedia',
             'si': u'Wikipedia සාකච්ඡාව',
             'sk': u'Diskusia k Wikipédii',
             'sl': u'Pogovor o Wikipediji',
@@ -639,7 +640,7 @@ class Family(family.Family):
                        u'分類彈去',
                        u'分類跳轉',),
         }
-        
+
         self.disambiguationTemplates = {
             # set value to None, instead of a list, to retrieve names from
             # the live wiki ([[MediaWiki:Disambiguationspage]]
@@ -659,13 +660,13 @@ class Family(family.Family):
             'bn':  [u'দ্ব্যর্থতা নিরসন', u'Disambig'],
             'br':  [u'Hvlstumm', u'Digejañ', u'Digejañ anvioù-badez'],
             'bs':  [u'Čvor'],
-            'ca':  [u'Desambiguació', u'Disambig', u'Desambigua', 
+            'ca':  [u'Desambiguació', u'Disambig', u'Desambigua',
                     u'acrònim', u'onomàstica'],
             'ceb': [u'Giklaro'],
             'cdo': [u'Gì-ngiê'],
             'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení',
                     u'Rozcestník - místopisné jméno', u'Disambig', u'Rozcestník - příjmení',
-                    u'Rozcestník - sakrální stavba', u'Rozcestník - kostel', 
+                    u'Rozcestník - sakrální stavba', u'Rozcestník - kostel',
                     u'Rozcestník - 3 znaky'],
             'cu':  [u'Мъногосъмыслиѥ', u'Disambig'],
             'cy':  [u'Anamrwysedd', u'Disambig', u'Gwahaniaethu'],
@@ -972,10 +973,10 @@ class Family(family.Family):
 
         self.crossnamespace[0] = {
             '_default': {
-                'pt': [102], 
-                'als': [104], 
+                'pt': [102],
+                'als': [104],
                 'en': [12],
-                'es': [104], 
+                'es': [104],
                 'fi': [4],
                 'fr': [104],
                 'hr': [102],
@@ -985,7 +986,7 @@ class Family(family.Family):
         self.crossnamespace[1] = {
             '_default': {
                 'pt': [103],
-                'als': [105], 
+                'als': [105],
                 'en': [13],
                 'es': [105],
                 'fi': [5],
@@ -1003,16 +1004,16 @@ class Family(family.Family):
         self.crossnamespace[102] = {
             'pt': {
                 '_default': [0],
-                'als': [0, 104], 
-                'es': [0, 104], 
-                'fr': [0, 104], 
+                'als': [0, 104],
+                'es': [0, 104],
+                'fr': [0, 104],
                 'lt': [0, 104]
             },
             'hr': {
                 '_default': [0],
-                'als': [0, 104], 
-                'es': [0, 104], 
-                'fr': [0, 104], 
+                'als': [0, 104],
+                'es': [0, 104],
+                'fr': [0, 104],
                 'lt': [0, 104]
             },
         }
@@ -1038,7 +1039,7 @@ class Family(family.Family):
                 'pt': [0, 102],
                 'hr': [0, 102],
             },
-            'es': { 
+            'es': {
                 '_default': [0],
                 'pt': [0, 102],
                 'hr': [0, 102],
@@ -1048,7 +1049,7 @@ class Family(family.Family):
                 'pt': [0, 102],
                 'hr': [0, 102],
             },
-            'lt': { 
+            'lt': {
                 '_default': [0],
                 'pt': [0, 102],
                 'hr': [0, 102],

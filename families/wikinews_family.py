@@ -13,8 +13,8 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'pl', 'de', 'it', 'sr', 'fr', 'pt', 'es', 'zh', 'sv',
-            'ja', 'ru', 'nl', 'he', 'fi', 'sd', 'cs', 'no', 'uk', 'ca',
-            'ar', 'hu', 'ro', 'bs', 'th', 'bg', 'ta',
+            'ja', 'ru', 'nl', 'he', 'fi', 'sd', 'ar', 'cs', 'no', 'uk',
+            'ca', 'hu', 'ro', 'th', 'bs', 'bg', 'ta',
         ]
 
         if config.SSL_connection and self.name in config.available_ssl_project:
@@ -186,7 +186,7 @@ class Family(family.Family):
             'he': ['en'],
             'pl': self.alphabetic,
         }
-        
+
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = ['cs','hu',]
 

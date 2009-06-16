@@ -12,21 +12,21 @@ class Family(family.Family):
         self.name = 'wiktionary'
 
         self.languages_by_size = [
-            'fr', 'en', 'tr', 'vi', 'ru', 'io', 'el', 'pl', 'lt', 'zh',
-            'fi', 'hu', 'ta', 'it', 'sv', 'de', 'ko', 'pt', 'nl', 'ku',
-            'lo', 'es', 'ja', 'id', 'te', 'gl', 'bg', 'ro', 'vo', 'ar',
-            'et', 'no', 'li', 'ca', 'sr', 'is', 'fa', 'af', 'uk', 'scn',
-            'br', 'th', 'fy', 'oc', 'he', 'sl', 'simple', 'hy', 'sq', 'tt',
-            'cs', 'la', 'zh-min-nan', 'da', 'ast', 'sw', 'ur', 'kk', 'hsb', 'ky',
-            'ml', 'hr', 'ang', 'eo', 'hi', 'gn', 'az', 'ia', 'co', 'ga',
-            'sk', 'csb', 'st', 'ms', 'nds', 'kl', 'wo', 'sd', 'ug', 'ti',
-            'mk', 'tl', 'an', 'my', 'gu', 'km', 'ka', 'cy', 'ts', 'qu',
-            'bs', 'fo', 'rw', 'am', 'mr', 'kn', 'eu', 'su', 'tk', 'chr',
-            'lv', 'mn', 'nah', 'ie', 'yi', 'wa', 'be', 'om', 'gd', 'zu',
-            'mg', 'iu', 'pa', 'bn', 'si', 'nn', 'mi', 'tpi', 'dv', 'mt',
-            'ps', 'jv', 'so', 'tg', 'roa-rup', 'ha', 'ik', 'gv', 'sh', 'ss',
-            'kw', 'sa', 'ay', 'uz', 'na', 'ne', 'jbo', 'tn', 'sg', 'lb',
-            'ks', 'fj', 'ln', 'sm', 'za', 'dz', 'als',
+            'fr', 'en', 'tr', 'lt', 'vi', 'ru', 'io', 'el', 'pl', 'zh',
+            'fi', 'no', 'hu', 'it', 'ta', 'sv', 'de', 'ko', 'lo', 'pt',
+            'nl', 'ku', 'es', 'ja', 'id', 'te', 'et', 'ro', 'gl', 'bg',
+            'vo', 'ar', 'uk', 'ca', 'is', 'sr', 'fa', 'af', 'li', 'scn',
+            'sw', 'fy', 'th', 'br', 'oc', 'he', 'simple', 'cs', 'sl', 'hy',
+            'sq', 'tt', 'la', 'zh-min-nan', 'da', 'ast', 'ur', 'kk', 'ml', 'hsb',
+            'ky', 'hr', 'wo', 'ang', 'eo', 'hi', 'tk', 'gn', 'ia', 'ga',
+            'az', 'co', 'sk', 'csb', 'st', 'ms', 'nds', 'kl', 'sd', 'ug',
+            'ti', 'mk', 'tl', 'an', 'my', 'gu', 'kn', 'ka', 'km', 'lv',
+            'ts', 'cy', 'qu', 'wa', 'fo', 'bs', 'am', 'rw', 'mr', 'eu',
+            'su', 'chr', 'mn', 'nah', 'ie', 'yi', 'om', 'be', 'gd', 'mg',
+            'sh', 'zu', 'iu', 'bn', 'nn', 'pa', 'si', 'mt', 'mi', 'tpi',
+            'dv', 'ps', 'jv', 'tg', 'so', 'roa-rup', 'ik', 'ha', 'gv', 'ss',
+            'kw', 'sa', 'ay', 'uz', 'na', 'ne', 'jbo', 'tn', 'sm', 'sg',
+            'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
 
         if config.SSL_connection and self.name in config.available_ssl_project:
