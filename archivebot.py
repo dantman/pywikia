@@ -37,7 +37,7 @@ __version__ = '$Id$'
 import wikipedia, pagegenerators
 Site = wikipedia.getSite()
 
-import os, re, time, locale, traceback, string
+import os, re, time, locale, traceback, string, urllib, simplejson
 
 try: #Get a constructor for the MD5 hash object
     import hashlib
@@ -194,6 +194,31 @@ def txt2timestamp(txt, format):
         except:
             pass
         return None
+
+
+def generateTransclusions(Site, template, namespaces=[], eicontinue=''):
+    qdata = {
+        'action' : 'query',
+        'list' : 'embeddedin',
+        'eititle' : template,
+        'einamespace' : '|'.join(namespaces),
+        'eilimit' : '100',
+        'format' : 'json',
+        }
+    if eicontinue:
+        qdata['eicontinue'] = eicontinue
+    
+    wikipedia.output(u'Fetching template transclusions...')
+    response, data = Site.postData(Site.apipath(), urllib.urlencode(qdata))
+    result = simplejson.loads(data)
+    
+    for page_d in result['query']['embeddedin']:
+        yield wikipedia.Page(Site, page_d['title'])
+    
+    if result.has_key('query-continue'):
+        eicontinue = result['query-continue']['embeddedin']['eicontinue']
+        for page in generateTransclusions(Site, template, namespaces, eicontinue):
+            yield page
 
 
 class DiscussionThread(object):
@@ -540,7 +565,12 @@ def main():
     for a in args:
         pagelist = []
         if not options.filename and not options.pagename:
-            for pg in wikipedia.Page(Site,a).getReferences(follow_redirects=False,onlyTemplateInclusion=True):
+            #for pg in wikipedia.Page(Site,a).getReferences(follow_redirects=False,onlyTemplateInclusion=True):
+            if not options.namespace == None:
+                ns = [str(options.namespace)]
+            else:
+                ns = []
+            for pg in generateTransclusions(Site, a, ns):
                 pagelist.append(pg)
         if options.filename:
             for pg in file(options.filename,'r').readlines():
@@ -549,8 +579,8 @@ def main():
             pagelist.append(wikipedia.Page(Site,options.pagename))
 
         pagelist = sorted(pagelist)
-        if not options.namespace == None:
-            pagelist = [pg for pg in pagelist if pg.namespace()==options.namespace]
+        #if not options.namespace == None:
+        #    pagelist = [pg for pg in pagelist if pg.namespace()==options.namespace]
 
         for pg in pagelist:
             try: #Catching exceptions, so that errors in one page do not bail out the entire process
