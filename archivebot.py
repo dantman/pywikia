@@ -335,7 +335,7 @@ class DiscussionPage(object):
         state = 0 #Reading header
         curThread = None
         for line in lines:
-            threadHeader = re.search('^== *([^=].*?) *==$',line)
+            threadHeader = re.search('^== *([^=].*?) *== *$',line)
             if threadHeader:
                 state = 1 #Reading threads now
                 if curThread:
