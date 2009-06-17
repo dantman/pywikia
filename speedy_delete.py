@@ -175,6 +175,7 @@ class SpeedyRobot:
             'zu': u'Category:Candidates for speedy deletion',
         },
         'wikinews':{
+		    'ar': u'تصنيف:صفحات حذف سريع',
             'en': u'Category:Speedy deletion',
             'ja': u'Category:即時削除',
             'zh': u'Category:快速删除候选',
@@ -200,6 +201,7 @@ class SpeedyRobot:
             'pt': u'Categoria:!Páginas para eliminação rápida',
         },
         'wikiquote':{
+		    'ar': u'تصنيف:صفحات للحذف السريع',
             'cs': u'Kategorie:Údržba:Stránky ke smazání',
             'en': u'Category:Candidates for speedy deletion',
             'fi': u'Luokka:Roskaa',
@@ -209,6 +211,7 @@ class SpeedyRobot:
             'zh': u'Category:快速删除候选',
         },
         'wiktionary':{
+		    'ar': u'تصنيف:صفحات حذف سريع',
             'en': u'Category:Candidates for speedy deletion',
             'fi': u'Luokka:Roskaa',
             'fr': u'Catégorie:Pages à supprimer rapidement',
@@ -218,6 +221,7 @@ class SpeedyRobot:
             'zh': u'Category:快速删除候选',
         },
         'wikibooks':{
+		    'ar': u'تصنيف:صفحات حذف سريع',
             'ca': u'Categoria:Elements a eliminar',
             'en': u'Category:Candidates for speedy deletion',
             'es': u'Categoría:Wikilibros:Borrar',
