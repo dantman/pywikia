@@ -180,7 +180,7 @@ class SpeedyRobot:
             'zh': u'Category:快速删除候选',
         },
         'wikisource':{
-            'ar': u'تصنيف:صفحات تخضع لنقاش الحذف',
+            'ar': u'تصنيف:صفحات حذف سريع',
             'id': u'Kategori:Usulan penghapusan',
             'ja': u'Category:即時削除',
             'no': u'Kategori:Sider som er foreslått raskt slettet',
