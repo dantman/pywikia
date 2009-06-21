@@ -32,8 +32,13 @@ def getversiondict():
             import wikipedia
             d = wikipedia.__version__.split(' ')
             tag = ''
-            date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
-            rev = d[2] + ' (wikipedia.py)'
+            if d == '$Id$':
+                # wikipedia.py got imported without using svn
+                date = 'date unknown'
+                rev = '-1 (rev unknown)' 
+            else:
+                date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
+                rev = d[2] + ' (wikipedia.py)'
     datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
     cache = {'tag': tag, 'rev': rev, 'date': datestring}
     return cache
