@@ -37,12 +37,12 @@ def getversiondict():
                 cache = dict(tag='', rev='-1 (unknown)', date='0 (unknown)')
                 return cache
 
-            d = version.split(' ')
+            id, file, rev, date, time, author, dollar = version.split(' ')
             tag = ''
-            date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
-            rev = d[2] + ' (wikipedia.py)'
+            date = time.strptime('%sT%s' % (date, time), '%Y-%m-%dT%H:%M:%SZ')
+            rev += ' (wikipedia.py)'
     datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
-    cache = {'tag': tag, 'rev': rev, 'date': datestring}
+    cache = dict(tag=tag, rev=rev, date=datestring)
     return cache
 
 def getversion_svn():
