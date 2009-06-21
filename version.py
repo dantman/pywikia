@@ -74,7 +74,7 @@ def getversion_nightly():
     return (tag, rev, date)
     
 def syscall(command):
-    return subprocess.Popen(command, stdout=subprocess.PIPE, shell=True).communicate()[0].strip()
+    return subprocess.Popen(command, stdout=subprocess.PIPE, shell=True).communicate()[0].strip().splitlines()[0]
     
 def getversion_git():
     date = time.gmtime(int(syscall('git show --pretty=format:%ct HEAD')))
