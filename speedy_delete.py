@@ -36,37 +36,204 @@ class SpeedyRobot:
 
     csd_cat={
         'wikipedia':{
-            'als': u'Kategorie:Wikipedia:Schnelllöschen',
+            'ab': u'Категория:Candidates for speedy deletion',
+            'ak': u'Category:Candidates for speedy deletion',
+            'ang': u'Flocc:Candidates for speedy deletion',
             'ar': u'تصنيف:صفحات للحذف السريع',
-            'be': u'Катэгорыя:Вікіпэдыя:Кандыдатуры на выдаленьне',
+            'arc': u'Category:Candidates for speedy deletion',
+            'av': u'Категория:Candidates for speedy deletion',
+            'ay': u'Categoría:Candidates for speedy deletion',
+            'az': u'Kateqoriya:Vikipediya:Silinəcək səhifələr',
+            'ba': u'Категория:Delete',
+            'bar': u'Kategorie:Wikipedia:Schnelllöschen',
+            'bat-smg': u'Kateguorėjė:Kandėdatā skobē trintė',
+            'be': u'Катэгорыя:Артыкулы да выдалення',
+            'be-x-old': u'Катэгорыя:Вікіпэдыя:Кандыдатуры на выдаленьне',
+            'bh': u'Category:Candidates for speedy deletion',
+            'bi': u'Category:Candidates for speedy deletion',
+            'bn': u'বিষয়শ্রেণী:Candidates for speedy deletion',
+            'bo': u'Category:Candidates for speedy deletion',
+            'br': u'Rummad:Candidates for speedy deletion',
+            'bug': u'Kategori:Candidates for speedy deletion',
+            'bxr': u'Category:Candidates for speedy deletion',
+            'ca': u'Categoria:Sol·licituds de supressió immediata',
+            'cbk-zam': u'Categoría:Candidates for speedy deletion',
+            'ce': u'Тоба:Candidates for speedy deletion',
+            'ch': u'Katigoria:Candidates for speedy deletion',
+            'chy': u'Category:Candidates for speedy deletion',
+            'chr': u'Category:Candidates for speedy deletion',
+            'cr': u'Category:Candidates for speedy deletion',
             'cs': u'Kategorie:Stránky ke smazání',
+            'cu': u'Катигорі́ꙗ:Страни́цѧ ничьжє́ниꙗ дѣлꙗ́',
+            'cv': u'Категори:Тӳрех кăларса пăрахмалли статьясем',
             'de': u'Kategorie:Wikipedia:Schnelllöschen',
+            'diq': u'Category:Candidates for speedy deletion',
+            'dsb': u'Kategorija:Boki k malsnemu lašowanju',
+            'dv': u'ޤިސްމު:Candidates for speedy deletion',
+            'ee': u'Category:Candidates for speedy deletion',
             'en': u'Category:Candidates for speedy deletion',
             'es': u'Categoría:Wikipedia:Borrar (definitivo)',
             'fa': u'رده:مقالات نامزد حذف سریع',
+            'ff': u'Catégorie:Candidates for speedy deletion',
+            'fj': u'Category:Candidates for speedy deletion',
             'fi': u'Luokka:Roskaa',
             'fr': u'Catégorie:Wikipédia:Suppression immédiate demandée',
+            'frp': u'Catègorie:Candidates for speedy deletion',
+            'gd': u'Category:Candidates for speedy deletion',
+            'gn': u'Ñemohenda:Candidates for speedy deletion',
+            'gu': u'શ્રેણી:Candidates for speedy deletion',
+            'glk': u'رده:Candidates for speedy deletion',
+            'ha': u'Category:Candidates for speedy deletion',
+            'hak': u'Category:Candidates for speedy deletion',
+            'haw': u'Māhele:Candidates for speedy deletion',
             'he': u'קטגוריה:ויקיפדיה: למחיקה מהירה',
             'hsb': u'Kategorija:Strony k spěšnemu wušmórnjenju',
+            'ht': u'Kategori:Candidates for speedy deletion',
             'ia': u'Categoria:Wikipedia:Eliminar',
-            'it': 'Categoria:Da_cancellare_subito',
-            'ja': u'Category:即時削除',
+            'ie': u'Category:Candidates for speedy deletion',
+            'ig': u'Category:Candidates for speedy deletion',
+            'ik': u'Category:Candidates for speedy deletion',
+            'ilo': u'Category:Candidates for speedy deletion',
+            'it': u'Categoria:Da cancellare subito',
+            'iu': u'Category:Candidates for speedy deletion',
+            'ja': u'Category:即時削除対象のページ',
+            'jbo': u'Category:Candidates for speedy deletion',
+            'kg': u'Category:Candidates for speedy deletion',
+            'ki': u'Category:Candidates for speedy deletion',
+            'kl': u'Kategori:Candidates for speedy deletion',
+            'ko': u'분류:삭제 신청 문서',
             'ks': u'Category:Candidates for speedy deletion',
-            'nah': u'Categoría:Huiquipedia:Borrar (definitivo)',
+            'kw': u'Category:Candidates for speedy deletion',
+            'lad': u'Categoría:Candidates for speedy deletion',
+            'lg': u'Category:Candidates for speedy deletion',
+            'lij': u'Categorîa:Candidates for speedy deletion',
+            'ln': u'Catégorie:Candidates for speedy deletion',
+            'lt': u'Kategorija:Kandidatai skubiai trinti',
+            'mg': u'Sokajy:Candidates for speedy deletion',
+            'mk': u'Категорија:Страници за брзо бришење',
+            'ml': u'വര്‍ഗ്ഗം:Candidates for speedy deletion',
+            'na': u'Category:Candidates for speedy deletion',
+            'nah': u'Neneuhcāyōtl:Huiquipedia:Borrar (definitivo)',
+            'nds': u'Kategorie:Wikipedia:Gauweg',
+            'ng': u'Category:Candidates for speedy deletion',
             'nl': u'Categorie:Wikipedia:Nuweg',
             'no': u'Kategori:Sider som er foreslått raskt slettet',
+            'nov': u'Category:Candidates for speedy deletion',
+            'nrm': u'Category:Candidates for speedy deletion',
+            'nv': u'T\'ááłáhági át\'éego:Candidates for speedy deletion',
+            'ny': u'Category:Candidates for speedy deletion',
+            'om': u'Category:Wikipedia:Candidates for speedy deletion',
+            'or': u'Category:Candidates for speedy deletion',
+            'pa': u'ਸ਼੍ਰੇਣੀ:Delete',
+            'pag': u'Category:Candidates for speedy deletion',
+            'pam': u'Category:Candidates for speedy deletion',
+            'pdc': u'Kategorie:Wikipedia:Lösche',
             'pl': u'Kategoria:Ekspresowe kasowanko',
+            'pih': u'Category:Candidates for speedy deletion',
             'pt': u'Categoria:Páginas para eliminação rápida',
+            'rn': u'Category:Candidates for speedy deletion',
+            'ro': u'Categorie:Pagini de şters rapid',
+            'roa-tara': u'Category:Candidates for speedy deletion',
             'ru': u'Категория:Википедия:К быстрому удалению',
+            'rw': u'Category:Candidates for speedy deletion',
+            'sa': u'वर्गः:Candidates for speedy deletion',
+            'sco': u'Category:Candidates for speedy deletion',
+            'sd': u'زمرو:ترت ڊاٺ جا اميدوار',
+            'simple': u'Category:Quick deletion requests',
+            'sl': u'Kategorija:Predlogi za hitro brisanje',
+            'sm': u'Category:Candidates for speedy deletion',
+            'sn': u'Category:Candidates for speedy deletion',
+            'ss': u'Category:Candidates for speedy deletion',
+            'st': u'Category:Candidates for speedy deletion',
+            'stq': u'Kategorie:Candidates for speedy deletion',
             'sv': u'Kategori:Snabba raderingar',
+            'sw': u'Jamii:Deleteme',
+            'szl': u'Kategoria:Rychue wyćepywańy',
+            'te': u'వర్గం:Candidates for speedy deletion',
+            'th': u'หมวดหมู่:หน้าที่ถูกแจ้งลบ',
+            'ti': u'Category:Candidates for speedy deletion',
+            'tr': u'Kategori:Vikipedi silinecek sayfalar',
+            'ts': u'Category:Candidates for speedy deletion',
+            'tt': u'Törkem:Candidates for speedy deletion',
+            'tum': u'Category:Candidates for speedy deletion',
+            'tw': u'Category:Candidates for speedy deletion',
             'uk': u'Категорія:Статті до швидкого вилучення',
+            'ug': u'Category:Candidates for speedy deletion',
+            've': u'Category:Candidates for speedy deletion',
+            'vo': u'Klad:Pads moükabik',
             'vi': u'Thể loại:Chờ xoá',
+            'vec': u'Categoria:Da cancełare subito',
+            'vls': u'Categorie:Wikipedia:Nuweg',
+            'war': u'Category:Candidates for speedy deletion',
+            'xal': u'Янз:Candidates for speedy deletion',
+            'xh': u'Category:Candidates for speedy deletion',
+            'yo': u'Ẹ̀ka:Candidates for speedy deletion',
+            'za': u'分类:Candidates for speedy deletion',
             'zh': u'Category:快速删除候选',
+            'zh-classical': u'Category:速刪候',
             'zh-yue': u'Category:快速刪除候選',
+            'zu': u'Category:Candidates for speedy deletion',
         },
         'wikinews':{
+		    'ar': u'تصنيف:صفحات حذف سريع',
+            'en': u'Category:Speedy deletion',
+            'ja': u'Category:即時削除',
             'zh': u'Category:快速删除候选',
         },
+        'wikisource':{
+            'ar': u'تصنيف:صفحات حذف سريع',
+            'id': u'Kategori:Usulan penghapusan',
+            'ja': u'Category:即時削除',
+            'no': u'Kategori:Sider som er foreslått raskt slettet',
+            'pt': u'Categoria:!Páginas para eliminação rápida',
+            'ro': u'Categorie:Propuneri pentru ştergere',
+            'zh': u'Category:快速删除候选',
+        },
+        'wikiversity':{
+            'beta': u'Category:Candidates for speedy deletion',
+            'cs': u'Kategorie:Stránky ke smazání',
+            'de': u'Kategorie:Wikiversity:Löschen',
+            'el': u'Κατηγορία:Σελίδες για γρήγορη διαγραφή',
+            'en': u'Category:Candidates for speedy deletion',
+            'es': u'Categoría:Wikiversidad:Borrar (definitivo)',
+            'it': u'Categoria:Da cancellare subito',
+            'ja': u'Category:Candidates for speedy deletion',
+            'pt': u'Categoria:!Páginas para eliminação rápida',
+        },
+        'wikiquote':{
+		    'ar': u'تصنيف:صفحات للحذف السريع',
+            'cs': u'Kategorie:Údržba:Stránky ke smazání',
+            'en': u'Category:Candidates for speedy deletion',
+            'fi': u'Luokka:Roskaa',
+            'ja': u'Category:即時削除',
+            'ru': u'Категория:Викицитатник:К быстрому удалению',
+            'simple': u'Category:Quick deletion requests',
+            'zh': u'Category:快速删除候选',
+        },
+        'wiktionary':{
+		    'ar': u'تصنيف:صفحات حذف سريع',
+            'en': u'Category:Candidates for speedy deletion',
+            'fi': u'Luokka:Roskaa',
+            'fr': u'Catégorie:Pages à supprimer rapidement',
+            'ja': u'Category:即時削除',
+            'simple': u'Category:Quick deletion requests',
+            'tt': u'Törkem:Candidates for speedy deletion',
+            'zh': u'Category:快速删除候选',
+        },
+        'wikibooks':{
+		    'ar': u'تصنيف:صفحات حذف سريع',
+            'ca': u'Categoria:Elements a eliminar',
+            'en': u'Category:Candidates for speedy deletion',
+            'es': u'Categoría:Wikilibros:Borrar',
+            'it': u'Categoria:Da cancellare subito',
+            'ja': u'Category:即時削除',
+            'pl': u'Kategoria:Ekspresowe kasowanko',
+            'zh': u'Category:快速删除候选',
+        },
+        'meta':{'meta': u'Category:Deleteme',},
+        'commons':{'commons':u'Category:Candidates for speedy deletion',},
+        'incubator':{'incubator': u'Category:Maintenance:Delete',},
+        'mediawiki':{'mediawiki': u'Category:Candidates for deletion',},
     }
 
     # If the site has several templates for speedy deletion, it might be
@@ -107,7 +274,7 @@ class SpeedyRobot:
                 u'גם בוויקישיתוף': u'הקובץ זמין כעת בוויקישיתוף.',
                 },
             'ja':{
-                u'_default':u'[[WP:CSD|即時削除の方針]]に基づい削除',
+                u'_default':      u'[[WP:CSD|即時削除の方針]]に基づい削除',
                 },
             'pt': {
                 u'_default':      u'Apagando página por [[Wikipedia:Páginas para eliminar|eliminação rápida]]',
@@ -120,6 +287,7 @@ class SpeedyRobot:
                 },
             'zh':{
                 u'_default':u'[[WP:CSD]]',
+                u'Db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
                 u'Notchinese':u'[[WP:CSD#G7|CSD G7]]: 非中文條目且長時間未翻譯',
                 u'No source':u'[[WP:CSD#I3|CSD I3]]: 沒有來源連結，無法確認來源與版權資訊',
                 u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
@@ -131,85 +299,109 @@ class SpeedyRobot:
                 u'Advert':u'[[WP:CSD#G11|CSD G11]]: [[WP:NOT#維基百科不是宣傳工具|廣告、宣傳頁面]]',
                 },
         },
+        'wikinews':{
+            'en':{
+                u'_default': u'[[WN:CSD]]',
+            },
+            'zh':{
+                u'_default': u'[[WN:CSD]]',
+            },
+        },
     }
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
-        'ar':u'صفحة نقاش يتيمة',
-        'de':u'Verwaiste Diskussionsseite',
-        'en':u'Orphaned talk page',
-        'fr':u'Page de discussion orpheline',
-        'he':u'דף שיחה של ערך שנמחק',
-        'it':u'Rimuovo pagina di discussione di una pagina già cancellata',
-        'pl':u'Osierocona strona dyskusji',
-        'pt':u'Página de discussão órfã',
-        'zh':u'[[WP:CSD#O1|CSD O1 O2 O6]] 沒有在使用的討論頁',
+        'wikipedia':{
+            'ar':u'صفحة نقاش يتيمة',
+            'de':u'Verwaiste Diskussionsseite',
+            'en':u'Orphaned talk page',
+            'fr':u'Page de discussion orpheline',
+            'he':u'דף שיחה של ערך שנמחק',
+            'it':u'Rimuovo pagina di discussione di una pagina già cancellata',
+            'pl':u'Osierocona strona dyskusji',
+            'pt':u'Página de discussão órfã',
+            'zh':u'[[WP:CSD#O1|CSD O1 O2 O6]] 沒有在使用的討論頁',
+        },
+        'wikinews':{
+            'en':u'Orphaned talk page',
+            'zh':u'[[WN:CSD#O1|CSD O1 O2 O6]] 沒有在使用的討論頁',
+        }
     }
 
     # A list of often-used reasons for deletion. Shortcuts are keys, and
     # reasons are values. If the user enters a shortcut, the associated reason
     # will be used.
     delete_reasons = {
-        'de': {
-            'asdf':  u'Tastaturtest',
-            'egal':  u'Eindeutig irrelevant',
-            'ka':    u'Kein Artikel',
-            'mist':  u'Unsinn',
-            'move':  u'Redirectlöschung, um Platz für Verschiebung zu schaffen',
-            'nde':   u'Nicht in deutscher Sprache verfasst',
-            'pfui':  u'Beleidigung',
-            'redir': u'Unnötiger Redirect',
-            'spam':  u'Spam',
-            'web':   u'Nur ein Weblink',
-            'wg':    u'Wiedergänger (wurde bereits zuvor gelöscht)',
-            },
-        'it': {
-            'test': u'Si tratta di un test',
-            'vandalismo': u'Caso di vandalismo',
-            'copyviol': 'Violazione di copyright',
-            'redirect': 'Redirect rotto o inutile',
-            'spam': 'Spam',
-            'promo': 'Pagina promozionale',
-            },
-        'ja':{
-            'cont':u'[[WP:CSD]] 全般1 意味不明な内容のページ',
-            'test':u'[[WP:CSD]] 全般2 テスト投稿',
-            'vand':u'[[WP:CSD]] 全般3 荒らしand/orいたずら',
-            'ad':u'[[WP:CSD]] 全般4 宣伝',
-            'rep':u'[[WP:CSD]] 全般5 削除されたページの改善なき再作成',
-            'cp':u'[[WP:CSD]] 全般6 コピペ移動or分割',
-            'sh':u'[[WP:CSD]] 記事1 短すぎ',
-            'nd':u'[[WP:CSD]] 記事1 定義なし',
-            'auth':u'[[WP:CSD]] 記事3 投稿者依頼or初版立項者による白紙化',
-            'nr':u'[[WP:CSD]] リダイレクト1 無意味なリダイレクト',
-            'nc':u'[[WP:CSD]] リダイレクト2 [[WP:NC]]違反',
-            'ren':u'[[WP:CSD]] リダイレクト3 改名提案を経た曖昧回避括弧付きの移動の残骸',
-            'commons':u'[[WP:CSD]] マルチメディア7 コモンズの画像ページ',
-            'tmp':u'[[WP:CSD]] テンプレート1 初版投稿者依頼',
-            'uau':u'[[WP:CSD]] 利用者ページ1 本人希望',
-            'nuu':u'[[WP:CSD]] 利用者ページ2 利用者登録されていない利用者ページ',
-            'ipu':u'[[WP:CSD]] 利用者ページ3 IPユーザの利用者ページ',
-            },
-        'zh':{
-            'empty':u'[[WP:CSD#G1|CSD G1]]: 沒有實際内容或歷史記錄的文章。',
-            'test':u'[[WP:CSD#G2|CSD G2]]: 測試頁',
-            'vand':u'[[WP:CSD#G3|CSD G3]]: 純粹破壞',
-            'cont':u'[[WP:CSD#G4|CSD G4]]: 非常短，而且沒有定義或內容。',
-            'rep':u'[[WP:CSD#G5|CSD G5]]: 重新建立的內容',
-            'text':u'[[WP:CSD#G9|CSD G9]]: 只有相關連結、項目的頁面',
-            'auth':u'[[WP:CSD#G10|CSD G10]]: 原作者請求',
-            'ad':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
-            'bio':u'[[WP:CSD#G12|CSD G12]]: 生者傳記',
-            'br':u'[[WP:CSD#R1|CSD R1]]: 損壞的重定向',
-            'wr':u'[[WP:CSD#R3|CSD R3]]: 錯誤重定向',
-            'repi':u'[[WP:CSD#I1|CSD I1]]: 重複的圖片',
-            'lssd':u'[[WP:CSD#I3|CSD I3]]: 沒有版權或來源資訊，無法確認圖片是否符合方針要求',
-            'nls':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
-            'ui':u'[[WP:CSD#I6|CSD I6]]: 圖片未使用且不自由',
-            'uc':u'[[WP:CSD#O4|CSD O4 O5]]: 空類別',
-            'mactra':u'[[WP:CSD#G7|CSD G7]]: 機器翻譯',
-            'tmp':u'[[WP:CSD]]: 臨時頁面',
-            },
+        'wikipedia': {
+            'de': {
+                'asdf':  u'Tastaturtest',
+                'egal':  u'Eindeutig irrelevant',
+                'ka':    u'Kein Artikel',
+                'mist':  u'Unsinn',
+                'move':  u'Redirectlöschung, um Platz für Verschiebung zu schaffen',
+                'nde':   u'Nicht in deutscher Sprache verfasst',
+                'pfui':  u'Beleidigung',
+                'redir': u'Unnötiger Redirect',
+                'spam':  u'Spam',
+                'web':   u'Nur ein Weblink',
+                'wg':    u'Wiedergänger (wurde bereits zuvor gelöscht)',
+                },
+            'it': {
+                'test': u'Si tratta di un test',
+                'vandalismo': u'Caso di vandalismo',
+                'copyviol': 'Violazione di copyright',
+                'redirect': 'Redirect rotto o inutile',
+                'spam': 'Spam',
+                'promo': 'Pagina promozionale',
+                },
+            'ja':{
+                'cont':u'[[WP:CSD]] 全般1 意味不明な内容のページ',
+                'test':u'[[WP:CSD]] 全般2 テスト投稿',
+                'vand':u'[[WP:CSD]] 全般3 荒らしand/orいたずら',
+                'ad':u'[[WP:CSD]] 全般4 宣伝',
+                'rep':u'[[WP:CSD]] 全般5 削除されたページの改善なき再作成',
+                'cp':u'[[WP:CSD]] 全般6 コピペ移動or分割',
+                'sh':u'[[WP:CSD]] 記事1 短すぎ',
+                'nd':u'[[WP:CSD]] 記事1 定義なし',
+                'auth':u'[[WP:CSD]] 記事3 投稿者依頼or初版立項者による白紙化',
+                'nr':u'[[WP:CSD]] リダイレクト1 無意味なリダイレクト',
+                'nc':u'[[WP:CSD]] リダイレクト2 [[WP:NC]]違反',
+                'ren':u'[[WP:CSD]] リダイレクト3 改名提案を経た曖昧回避括弧付きの移動の残骸',
+                'commons':u'[[WP:CSD]] マルチメディア7 コモンズの画像ページ',
+                'tmp':u'[[WP:CSD]] テンプレート1 初版投稿者依頼',
+                'uau':u'[[WP:CSD]] 利用者ページ1 本人希望',
+                'nuu':u'[[WP:CSD]] 利用者ページ2 利用者登録されていない利用者ページ',
+                'ipu':u'[[WP:CSD]] 利用者ページ3 IPユーザの利用者ページ',
+                },
+            'zh':{
+                'empty':u'[[WP:CSD#G1|CSD G1]]: 沒有實際內容或歷史記錄的文章。',
+                'test':u'[[WP:CSD#G2|CSD G2]]: 測試頁',
+                'vand':u'[[WP:CSD#G3|CSD G3]]: 純粹破壞',
+                'cont':u'[[WP:CSD#G4|CSD G4]]: 非常短，而且沒有定義或內容。',
+                'rep':u'[[WP:CSD#G5|CSD G5]]: 重新建立的內容',
+                'text':u'[[WP:CSD#G9|CSD G9]]: 只有相關連結、項目的頁面',
+                'auth':u'[[WP:CSD#G10|CSD G10]]: 原作者請求',
+                'ad':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
+                'bio':u'[[WP:CSD#G12|CSD G12]]: 生者傳記',
+                'br':u'[[WP:CSD#R1|CSD R1]]: 損壞的重定向',
+                'wr':u'[[WP:CSD#R3|CSD R3]]: 錯誤重定向',
+                'repi':u'[[WP:CSD#I1|CSD I1]]: 重複的圖片',
+                'lssd':u'[[WP:CSD#I3|CSD I3]]: 沒有版權或來源資訊，無法確認圖片是否符合方針要求',
+                'nls':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
+                'ui':u'[[WP:CSD#I6|CSD I6]]: 圖片未使用且不自由',
+                'uc':u'[[WP:CSD#O4|CSD O4 O5]]: 空類別',
+                'mactra':u'[[WP:CSD#G7|CSD G7]]: 機器翻譯',
+                'tmp':u'[[WP:CSD]]: 臨時頁面',
+                },
+        },
+        #'wikinews':{
+        #    'en': {
+        #        'test': u'abcdefg',
+        #    },
+        #    'zh': {
+        #        'test': u'',
+        #    },
+        #},
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should
         # enter it manually.
@@ -253,15 +445,18 @@ class SpeedyRobot:
 
         # We don't use wikipedia.translate() here because for some languages the
         # entry is intentionally left out.
-        if self.delete_reasons.has_key(page.site().lang):
-            localReasons = self.delete_reasons[page.site().lang]
-            wikipedia.output(u'')
-            for key, reason in localReasons.iteritems():
-                wikipedia.output((key + ':').ljust(8) + reason)
-            wikipedia.output(u'')
-            reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
-            if localReasons.has_key(reason.strip()):
-                reason = localReasons[reason]
+        if self.delete_reasons.has_key(self.mySite.family.name):
+            if self.delete_reasons[self.mySite.family.name].has_key(page.site().lang):
+                localReasons = wikipedia.translate(page.site().lang, self.delete_reasons)
+                wikipedia.output(u'')
+                for key, reason in     localReasons.iteritems():
+                    wikipedia.output((key + ':').ljust(8) + reason)
+                wikipedia.output(u'')
+                reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
+                if localReasons.has_key(reason.strip()):
+                    reason = localReasons[reason]
+            else:
+                reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the suggested message:')
         else:
             reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the suggested message:')
 
@@ -312,8 +507,11 @@ class SpeedyRobot:
                 startFromBeginning = True
             if count == 0:
                 if startFromBeginning:
-                    wikipedia.output(u'There are no pages to delete. Waiting for 30 seconds...')
-                    time.sleep(30)
+                    wikipedia.output(u'There are no pages to delete.\nWaiting for 30 seconds or press Ctrl+C to quit...')
+                    try:
+                        time.sleep(30)
+                    except KeyboardInterrupt:
+                        keepGoing = False
                 else:
                     startFromBeginning = True
         wikipedia.output(u'Quitting program.')

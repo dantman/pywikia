@@ -131,7 +131,8 @@ def get_stats():
 
         gnt += gn ; ynt += yn ; mnt += mn ; ent += en ; snt += sn
 
-        output += u"|%s||%s||%s KB||%s||%s||%s\n|-\n" % (page.aslink(), en, sn / 1024, gn, yn, mn)
+        if en > 0:
+            output += u"|%s||%s||%s KB||%s||%s||%s\n|-\n" % (page.aslink(), en, sn / 1024, gn, yn, mn)
 
     output += u"""|&nbsp;||||||||
 |-

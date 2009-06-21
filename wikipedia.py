@@ -208,6 +208,9 @@ class LongPageError(PageNotSaved):
         self.length = arg
         self.limit = arg2,
 
+class MaxTriesExceededError(PageNotSaved):
+    """Saving the page has failed because the maximum number of attempts has been reached"""
+
 class ServerError(Error):
     """Got unexpected server response"""
 
@@ -1359,7 +1362,7 @@ not supported by PyWikipediaBot!"""
                             force, callback))
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
-            force=False, sysop=False, botflag=True):
+            force=False, sysop=False, botflag=True, maxTries=-1):
         """Save the page with the contents of the first argument as the text.
 
         Optional parameters:
@@ -1369,6 +1372,7 @@ not supported by PyWikipediaBot!"""
                         watchlist (if None, leave watchlist status unchanged)
           minorEdit: mark this edit as minor if True
           force: ignore botMayEdit() setting.
+          maxTries: the maximum amount of save attempts. -1 for infinite.
         """
         # Login
         try:
@@ -1417,7 +1421,7 @@ not supported by PyWikipediaBot!"""
             comment = encodeEsperantoX(comment)
 
         return self._putPage(newtext, comment, watchArticle, minorEdit,
-                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, botflag=botflag)
+                             newPage, self.site().getToken(sysop = sysop), sysop = sysop, botflag=botflag, maxTries=maxTries)
 
     def _encodeArg(self, arg, msgForError):
         """Encode an ascii string/Unicode string to the site's encoding"""
@@ -1435,7 +1439,7 @@ not supported by PyWikipediaBot!"""
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
-                captcha=None, botflag=True):
+                captcha=None, botflag=True, maxTries=-1):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1490,6 +1494,9 @@ not supported by PyWikipediaBot!"""
         retry_attempt = 1
         dblagged = False
         while True:
+            if (maxTries == 0):
+                raise MaxTriesExceededError()
+            maxTries -= 1
             # Check whether we are not too quickly after the previous
             # putPage, and wait a bit until the interval is acceptable
             if not dblagged:
@@ -4876,7 +4883,22 @@ your connection is down. Retrying in %i minutes..."""
         # Check user groups, if possible (introduced in 1.10)
         groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
         m = groupsR.search(text)
-        if m:
+        checkLocal = True
+        if default_code in self.family.cross_allowed: # if current languages in cross allowed list, check global bot flag.
+            globalgroupsR = re.compile(r'var wgGlobalGroups = \[\"(.+)\"\];')
+            mg = globalgroupsR.search(text)
+            if mg: # the account had global permission
+                globalRights = mg.group(1)
+                globalRights = globalRights.split('","')
+                self._rights[index] = globalRights
+                if self._isLoggedIn[index]:
+                    if 'Global_bot' in globalRights: # This account has the global bot flag, no need to check local flags.
+                        checkLocal = False
+                    else:
+                        output(u'Your bot account does not have global the bot flag, checking local flag.')
+        else:
+            if verbose: output(u'Note: this language does not allow global bots.')
+        if m and checkLocal:
             rights = m.group(1)
             rights = rights.split('", "')
             if '*' in rights:
@@ -5343,7 +5365,7 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', repeat = False):
+    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
         """
         Yield ImagePages from APIs, call: action=query&list=recentchanges&rctype=edit|new&rclimit=500
 
@@ -5355,6 +5377,9 @@ your connection is down. Retrying in %i minutes..."""
           rcdir          - In which direction to enumerate.
                            One value: newer, older
                            Default: older
+          rcnamespace    - Filter log entries to only this namespace(s)
+                           Values (separate with '|'):
+                           0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
           rcprop         - Include additional pieces of information
                            Values (separate with '|'):
                            user, comment, flags, timestamp, title, ids, sizes,
@@ -6441,8 +6466,8 @@ def handleArgs(*args):
             # about it.
             nonGlobalArgs.append(arg)
     if verbose:
-      output(u'Pywikipediabot %s' % (version.getversion()))
-      output(u'Python %s' % (sys.version))
+      output('Pywikipediabot %s' % (version.getversion()))
+      output('Python %s' % (sys.version))
     return nonGlobalArgs
 
 #########################
@@ -6604,7 +6629,7 @@ def translate(code, xdict):
     if hasattr(code,'lang'):
         code = code.lang
 
-    if 'wikipedia' in xdict:
+    if 'wikipedia' in xdict: # If xdict attribute is wikipedia, define the xdite had multiple projects
         if default_family in xdict:
             xdict = xdict[default_family]
         else:
@@ -6615,7 +6640,9 @@ def translate(code, xdict):
     for alt in altlang(code):
         if alt in xdict:
             return xdict[alt]
-    if 'en' in xdict:
+    if '_default' in xdict:
+        return xdict['_default']
+    elif 'en' in xdict:
         return xdict['en']
     return xdict.values()[0]
 
@@ -6759,7 +6786,7 @@ def output(text, decoder = None, newline = True, toStdout = False):
         if decoder:
             text = unicode(text, decoder)
         elif type(text) is not unicode:
-            if verbose:
+            if verbose and sys.platform != 'win32':
                 print "DBG> BUG: Non-unicode (%s) passed to wikipedia.output without decoder!" % type(text)
                 print traceback.print_stack()
                 print "DBG> Attempting to recover, but please report this problem"

@@ -223,7 +223,7 @@ class LoginManager:
         ("my_sysop_user", "my_sysop_password")
         ("en", "wikipedia", "my_en_user", "my_en_pass")
         """
-        file = open(config.password_file)
+        file = open(wikipedia.config.datafilepath(config.password_file))
         for line in file:
             if not line.strip(): continue
             entry = eval(line)
@@ -298,7 +298,7 @@ def main():
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
                 try:
-                    site = wikipedia.getSite(code=lang, fam=familyName)
+                    site = wikipedia.getSite( code=lang, fam=familyName )
                     if not forceLogin and site.loggedInAs(sysop = sysop) is not None:
                         wikipedia.output(u'Already logged in on %s' % site)
                     else:
