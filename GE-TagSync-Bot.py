@@ -58,7 +58,7 @@ class GETagSyncBot(GESyncBot):
 			wikipedia.output(u'\03{lightpurple}>\03{default} \03{lightaqua}Doing \03{lightpurple}%s\03{default}' % syncPage.aslink())
 			try:
 				r = re.compile(u'{{[Tt]agSync\|(?P<params>.*?)}}', re.UNICODE | re.DOTALL)
-				pageText = syncPage.get(force=True,nofollow_redirects=True)
+				pageText = syncPage.get(force=True,get_redirect=True)
 				m = r.search(pageText)
 				if not m:
 					wikipedia.output(u'\03{lightpurple}>>\03{default} \03{lightyellow}Skipping page, no visible template inclusion.\03{default}')
@@ -110,7 +110,7 @@ class GETagSyncBot(GESyncBot):
 			pageText = syncPage.get(force=True)
 			syncText = u'<noinclude>{{TagSyncPage}}\n</noinclude>'+pageText
 		except wikipedia.IsRedirectPage:
-			pageText = syncPage.get(force=True,nofollow_redirects=True)
+			pageText = syncPage.get(force=True,get_redirect=True)
 			syncText = pageText+u'<noinclude>\n{{TagSyncPage}}</noinclude>'
 		except wikipedia.NoPage:
 			return
@@ -121,7 +121,7 @@ class GETagSyncBot(GESyncBot):
 			localPage  = wikipedia.Page(site, syncPage.titleWithoutNamespace(), None, syncPage.namespace())
 			doSync = False
 			try:
-				localText = localPage.get(nofollow_redirects=True)
+				localText = localPage.get(get_redirect=True)
 				if localText != syncText:
 					wikipedia.output(u'\03{lightpurple}>>>\03{default} \03{lightred}%s does not match %s.\03{default}' % (localPage.aslink(forceInterwiki=True),syncPage.aslink()))
 					doSync = True
