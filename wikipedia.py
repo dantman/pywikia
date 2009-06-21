@@ -1811,6 +1811,9 @@ not supported by PyWikipediaBot!"""
         # from text before processing
         thistxt = removeDisabledParts(thistxt)
 
+        # resolve {{ns:-1}} or {{ns:Help}}
+        thistxt = self.site().resolvemagicwords(thistxt)
+
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
             title = title.replace("_", " ").strip(" ")
@@ -5897,6 +5900,32 @@ your connection is down. Retrying in %i minutes..."""
         return re.compile(prefix + '#' + redirKeywordsR
                                  + '\s*:?\s*\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
+
+    def resolvemagicwords(self, wikitext):
+        """Replace the {{ns:xx}} marks in a wikitext with the namespace names"""
+
+        defaults = []
+        for namespace in self.family.namespaces.itervalues():
+            value = namespace.get('_default', None)
+            if value:    
+                if isinstance(value, list):
+                    defaults += value
+                else:
+                    defaults.append(value)
+
+        named = re.compile(u'{{ns:(' + '|'.join(defaults) + ')}}', re.I)
+
+        def replacenamed(match):
+            return self.normalizeNamespace(match.group(1))
+
+        wikitext = named.sub(replacenamed, wikitext)
+
+        numbered = re.compile('{{ns:(-?\d{1,2})}}', re.I)
+
+        def replacenumbered(match):
+            return self.namespace(int(match.group(1)))
+        
+        return named.sub(replacenumbered, wikitext)
 
     # The following methods are for convenience, so that you can access
     # methods of the Family class easier.
