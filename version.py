@@ -37,9 +37,9 @@ def getversiondict():
                 cache = dict(tag='', rev='-1 (unknown)', date='0 (unknown)')
                 return cache
 
-            id, file, rev, date, time, author, dollar = version.split(' ')
+            id, file, rev, date, ts, author, dollar = version.split(' ')
             tag = ''
-            date = time.strptime('%sT%s' % (date, time), '%Y-%m-%dT%H:%M:%SZ')
+            date = time.strptime('%sT%s' % (date, ts), '%Y-%m-%dT%H:%M:%SZ')
             rev += ' (wikipedia.py)'
     datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
     cache = dict(tag=tag, rev=rev, date=datestring)
