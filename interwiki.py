@@ -1892,19 +1892,19 @@ def compareLanguages(old, new, insite):
 
     head, add, rem, mod = wikipedia.translate(insite.lang, msg)
 
-    addtrail = u''
-    remtrail = u''
-    modtrail = u''
-    trail = u''
+    sep = u''
 
     if adding:
-        mods += (add + colon + comma.join([fmt(new, x) for x in adding]) + addtrail)
+        mods += (add + colon + comma.join([fmt(new, x) for x in adding]))
+        sep = u' '
     if removing:
-        mods += (rem + colon + comma.join([fmt(old, x) for x in removing]) + remtrail)
+        mods += (sep + rem + colon + comma.join([fmt(old, x) for x in removing]))
+        sep = u' '
     if modifying:
-        mods += (mod + colon + comma.join([fmt(new, x) for x in modifying]) + modtrail)
+        mods += (sep + mod + colon + comma.join([fmt(new, x) for x in modifying]))
+        sep = u' '
     if mods:
-        mcomment = head + mods + trail
+        mcomment = head + mods
     return mods, mcomment, adding, removing, modifying
 
 def readWarnfile(filename, bot):
