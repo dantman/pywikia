@@ -30,15 +30,17 @@ def getversiondict():
             (tag, rev, date) = getversion_nightly()
         except Exception, e:
             import wikipedia
-            d = wikipedia.__version__.split(' ')
+            version = wikipedia.__version__
+            if len(version) == 4:
+                # the value is most likely '$Id' + '$', it means that
+                # wikipedia.py got imported without using svn at all
+                cache = dict(tag='', rev='-1 (unknown)', date='0 (unknown)')
+                return cache
+
+            d = version.split(' ')
             tag = ''
-            if d == '$Id$':
-                # wikipedia.py got imported without using svn
-                date = 'date unknown'
-                rev = '-1 (rev unknown)' 
-            else:
-                date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
-                rev = d[2] + ' (wikipedia.py)'
+            date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
+            rev = d[2] + ' (wikipedia.py)'
     datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
     cache = {'tag': tag, 'rev': rev, 'date': datestring}
     return cache
