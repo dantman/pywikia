@@ -17,16 +17,16 @@ class Family(family.Family):
             self.langs['commons'] = 'secure.wikimedia.org'
 
         self.namespaces[4] = {
-            '_default': [u'Commons', self.namespaces[4]['_default']],
+            '_default': [u'Commons', 'Project'],
         }
         self.namespaces[5] = {
-            '_default': [u'Commons talk', self.namespaces[5]['_default']],
+            '_default': [u'Commons talk', 'Project talk'],
         }
         self.namespaces[100] = {
-            '_default': [u'Creator', self.namespaces[5]['_default']],
+            '_default': [u'Creator', 'Project'],
         }
         self.namespaces[101] = {
-            '_default': [u'Creator talk', self.namespaces[5]['_default']],
+            '_default': [u'Creator talk', 'Project talk'],
         }
 
         self.interwiki_forward = 'wikipedia'
