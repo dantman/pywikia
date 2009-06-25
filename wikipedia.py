@@ -5925,7 +5925,7 @@ your connection is down. Retrying in %i minutes..."""
         def replacenumbered(match):
             return self.namespace(int(match.group(1)))
         
-        return named.sub(replacenumbered, wikitext)
+        return numbered.sub(replacenumbered, wikitext)
 
     # The following methods are for convenience, so that you can access
     # methods of the Family class easier.
