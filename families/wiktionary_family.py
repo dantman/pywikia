@@ -191,6 +191,7 @@ class Family(family.Family):
             'sc': u'Wiktionary discussioni',
             'scn': u'Discussioni Wikizziunariu',
             'sd': u'Wiktionary بحث',
+            'sg': u'Discussion Wiktionary',
             'si': u'Wiktionary සාකච්ඡාව',
             'sk': u'Diskusia k Wikislovníku',
             'sl': u'Pogovor o Wikislovarju',

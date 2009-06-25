@@ -127,7 +127,7 @@ class Family(family.Family):
             'rmy': u'Vikipidiya',
             'ru': u'Википедия',
             'sa': u'विकिपीडिया',
-            'sah': u'Бикипиидийэ',
+            'sah': u'Бикипиэдьийэ',
             'sk': u'Wikipédia',
             'sl': u'Wikipedija',
             'sr': u'Википедија',
@@ -282,7 +282,7 @@ class Family(family.Family):
             'ro': u'Discuţie Wikipedia',
             'ru': u'Обсуждение Википедии',
             'sa': u'विकिपीडियासंभाषणं',
-            'sah': u'Бикипиидийэ ырытыыта',
+            'sah': u'Бикипиэдьийэ ырытыыта',
             'sc': u'Cuntierra Wikipedia',
             'scn': u'Discussioni Wikipedia',
             'sd': u'Wikipedia بحث',
@@ -529,6 +529,7 @@ class Family(family.Family):
 
         self.namespaces[104] = {
             'als': u'Wort',
+            'ar': u'ملحق',
             'es': u'Anexo',
             'fr': u'Référence',
             'lt': u'Sąrašas',
@@ -536,6 +537,7 @@ class Family(family.Family):
 
         self.namespaces[105] = {
             'als': u'Wort Diskussion',
+            'ar': u'نقاش الملحق',
             'es': u'Anexo Discusión',
             'fr': u'Discussion Référence',
             'lt': u'Sąrašo aptarimas',
