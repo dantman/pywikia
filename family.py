@@ -3333,6 +3333,7 @@ class Family:
         'ay': [u'redirección'],
         'ba': [u'перенаправление', u'перенапр'],
         'bar': [u'weiterleitung'],
+        'bat-smg': [u'peradresavimas'],
         'bcc': [u'تغییرمسیر'],
         'be-tarask': [u'перанакіраваньне'],
         'be-x-old': [u'перанакіраваньне'],
