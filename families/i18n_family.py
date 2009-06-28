@@ -63,6 +63,12 @@ class Family(family.Family):
         self.namespaces[1205] = {
             '_default': [u'Nocc talk'],
         }
+        self.namespaces[1206] = {
+            '_default': [u'Wikimedia'],
+        }
+        self.namespaces[1207] = {
+            '_default': [u'Wikimedia talk'],
+        }
         self.namespaces[1210] = {
             '_default': [u'Mantis'],
         }
