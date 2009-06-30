@@ -113,7 +113,7 @@ class Family(family.Family):
             'oc': u'Mèdia',
             'ru': u'Медиа',
             'sk': u'Médiá',
-            'sr': u'Медија',
+            'sr': u'Medija',
             'su': u'Média',
             'th': u'สื่อ',
             'uk': u'Медіа',
@@ -172,7 +172,7 @@ class Family(family.Family):
             'ru': u'Служебная',
             'sk': u'Špeciálne',
             'sl': u'Posebno',
-            'sr': u'Посебно',
+            'sr': u'Posebno',
             'su': u'Husus',
             'sv': u'Special',
             'th': u'พิเศษ',
@@ -237,7 +237,7 @@ class Family(family.Family):
             'ru': u'Обсуждение',
             'sk': u'Diskusia',
             'sl': u'Pogovor',
-            'sr': u'Разговор',
+            'sr': u'Razgovor',
             'su': u'Obrolan',
             'sv': u'Diskussion',
             'th': u'พูดคุย',
@@ -299,7 +299,7 @@ class Family(family.Family):
             'ru': u'Участник',
             'sk': u'Redaktor',
             'sl': u'Uporabnik',
-            'sr': u'Корисник',
+            'sr': u'Korisnik',
             'su': u'Pamaké',
             'sv': u'Användare',
             'th': u'ผู้ใช้',
@@ -358,7 +358,7 @@ class Family(family.Family):
             'ru': u'Обсуждение участника',
             'sk': u'Diskusia s redaktorom',
             'sl': u'Uporabniški pogovor',
-            'sr': u'Разговор са корисником',
+            'sr': u'Razgovor sa korisnikom',
             'su': u'Obrolan pamaké',
             'sv': u'Användardiskussion',
             'th': u'คุยกับผู้ใช้',
@@ -484,7 +484,7 @@ class Family(family.Family):
             'ru': u'Обсуждение Абсурдопедии',
             'sk': u'Diskusia k Necyklopédia',
             'sl': u'Pogovor o Butalopedija',
-            'sr': u'Разговор о Нециклопедија',
+            'sr': u'Razgovor o Нециклопедија',
             'su': u'Obrolan Goblogpedia Wiki',
             'sv': u'Psyklopedindiskussion',
             'th': u'คุยเรื่องไร้สาระนุกรม',
@@ -549,7 +549,7 @@ class Family(family.Family):
             'ru': u'Файл',
             'sk': u'Súbor',
             'sl': u'Slika',
-            'sr': u'Слика',
+            'sr': u'Slika',
             'su': u'Gambar',
             'sv': u'Bild',
             'th': u'ภาพ',
@@ -614,7 +614,7 @@ class Family(family.Family):
             'ru': u'Обсуждение файла',
             'sk': u'Diskusia k súboru',
             'sl': u'Pogovor o sliki',
-            'sr': u'Разговор о слици',
+            'sr': u'Razgovor o slici',
             'su': u'Obrolan gambar',
             'sv': u'Bilddiskussion',
             'th': u'คุยเรื่องภาพ',
@@ -641,7 +641,7 @@ class Family(family.Family):
             'ko': u'미디어위키',
             'lo': u'ມີເດຍວິກິ',
             'mk': u'МедијаВики',
-            'sr': u'МедијаВики',
+            'sr': u'MedijaViki',
             'su': u'MédiaWiki',
             'th': u'มีเดียวิกิ',
             'tr': u'MedyaViki',
@@ -697,9 +697,9 @@ class Family(family.Family):
             'ru': u'Обсуждение MediaWiki',
             'sk': u'Diskusia k MediaWiki',
             'sl': u'Pogovor o MediaWiki',
-            'sr': u'Разговор о МедијаВикију',
+            'sr': u'Razgovor o MedijaVikiju',
             'su': u'Obrolan MédiaWiki',
-            'sv': u'MediaWikidiskussion',
+            'sv': u'MediaWiki diskussion',
             'th': u'คุยเรื่องมีเดียวิกิ',
             'tr': u'MedyaViki tartışma',
             'uk': u'Обговорення MediaWiki',
@@ -753,7 +753,7 @@ class Family(family.Family):
             'ru': u'Шаблон',
             'sk': u'Šablóna',
             'sl': u'Predloga',
-            'sr': u'Шаблон',
+            'sr': u'Šablon',
             'su': u'Citakan',
             'sv': u'Mall',
             'th': u'แม่แบบ',
@@ -813,7 +813,7 @@ class Family(family.Family):
             'ru': u'Обсуждение шаблона',
             'sk': u'Diskusia k šablóne',
             'sl': u'Pogovor o predlogi',
-            'sr': u'Разговор о шаблону',
+            'sr': u'Razgovor o šablonu',
             'su': u'Obrolan citakan',
             'sv': u'Malldiskussion',
             'th': u'คุยเรื่องแม่แบบ',
@@ -871,7 +871,7 @@ class Family(family.Family):
             'ru': u'Справка',
             'sk': u'Pomoc',
             'sl': u'Pomoč',
-            'sr': u'Помоћ',
+            'sr': u'Pomoć',
             'su': u'Pitulung',
             'sv': u'Hjälp',
             'th': u'วิธีใช้',
@@ -928,7 +928,7 @@ class Family(family.Family):
             'ru': u'Обсуждение справки',
             'sk': u'Diskusia k pomoci',
             'sl': u'Pogovor o pomoči',
-            'sr': u'Разговор о помоћи',
+            'sr': u'Razgovor o pomoći',
             'su': u'Obrolan pitulung',
             'sv': u'Hjälpdiskussion',
             'th': u'คุยเรื่องวิธีใช้',
@@ -984,7 +984,7 @@ class Family(family.Family):
             'ru': u'Категория',
             'sk': u'Kategória',
             'sl': u'Kategorija',
-            'sr': u'Категорија',
+            'sr': u'Kategorija',
             'su': u'Kategori',
             'sv': u'Kategori',
             'th': u'หมวดหมู่',
@@ -1042,7 +1042,7 @@ class Family(family.Family):
             'ru': u'Обсуждение категории',
             'sk': u'Diskusia ku kategórii',
             'sl': u'Pogovor o kategoriji',
-            'sr': u'Разговор о категорији',
+            'sr': u'Razgovor o kategoriji',
             'su': u'Obrolan kategori',
             'sv': u'Kategoridiskussion',
             'th': u'คุยเรื่องหมวดหมู่',
@@ -1196,17 +1196,19 @@ class Family(family.Family):
         }
 
         self.namespaces[30] = {
+            'fi': u'Hikiopisto',
             'pt': u'Deslivros',
             'th': u'ไร้ซอร์ซ',
             'zh-hk': u'臺語',
-            'zh-tw': u'臺語'
+            'zh-tw': u'臺語',
         }
 
         self.namespaces[31] = {
+            'fi': u'Keskustelu Hikiopistosta',
             'pt': u'Deslivros Discussão',
             'th': u'คุยเรื่องไร้ซอร์ซ',
             'zh-hk': u'臺語討論',
-            'zh-tw': u'臺語討論'
+            'zh-tw': u'臺語討論',
         }
 
         self.namespaces[32] = {
@@ -1509,9 +1511,6 @@ class Family(family.Family):
             'sv','th','tl','tr','uk','yi','zh-hk','zh-tw','zh','zombie',
         ]
 
-
-    def hostname(self,code):
-        return self.langs[code]
 
     def path(self, code):
         if code == 'ko' and code == 'nl':

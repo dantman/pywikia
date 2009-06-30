@@ -7,17 +7,19 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'memoryalpha'
-
+        self.languages_by_size = ['en', 'de', 'es', 'nl', 'sv', 'fr', 'eo', 'pl', 'zh-cn']
         self.langs = {
-            'de': None,
-            'en': None,
-            'eo': None,
-            'es': None,
-            'fr': None,
-            'nl': None,
-            'pl': None,
-            'sv': None,
-            }
+            'de':'de',
+            'en':'en',
+            'eo':'eo',
+            'es':'es',
+            'fr':'fr',
+            'nl':'nl',
+            'pl':'pl',
+            'sv':'sv',
+            'zh-cn':'zh-cn',
+        }
+
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Użytkownik'
@@ -50,15 +52,24 @@ class Family(family.Family):
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these
         # for another wiki family.
-        self.languages_by_size = ['en', 'de', 'es', 'nl', 'sv', 'fr', 'eo', 'pl']
 
-        alphabetic = ['de', 'en', 'es', 'eo', 'fr', 'nl', 'pl', 'sv']
+        self.alphabetic_revised = ['de', 'en', 'es', 'eo', 'fr', 'nl', 'pl', 'sv']
+
+        self.obsolete = { 'zh':'zh-cn',}
+
 
     def hostname(self,code):
-        return 'www.memory-alpha.org'
+        return 'memory-alpha.org'
 
     def scriptpath(self, code):
         return '/%s' % code
+
+
+    def path(self, code):
+        return '/index.php'
+
+    def apipath(self, code):
+        return '/api.php'
 
     def version(self, code):
         return "1.12alpha"
