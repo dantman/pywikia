@@ -175,7 +175,7 @@ class SpeedyRobot:
             'zu': u'Category:Candidates for speedy deletion',
         },
         'wikinews':{
-		    'ar': u'تصنيف:صفحات حذف سريع',
+            'ar': u'تصنيف:صفحات حذف سريع',
             'en': u'Category:Speedy deletion',
             'ja': u'Category:即時削除',
             'zh': u'Category:快速删除候选',
@@ -201,7 +201,7 @@ class SpeedyRobot:
             'pt': u'Categoria:!Páginas para eliminação rápida',
         },
         'wikiquote':{
-		    'ar': u'تصنيف:صفحات للحذف السريع',
+            'ar': u'تصنيف:صفحات للحذف السريع',
             'cs': u'Kategorie:Údržba:Stránky ke smazání',
             'en': u'Category:Candidates for speedy deletion',
             'fi': u'Luokka:Roskaa',
@@ -211,7 +211,7 @@ class SpeedyRobot:
             'zh': u'Category:快速删除候选',
         },
         'wiktionary':{
-		    'ar': u'تصنيف:صفحات حذف سريع',
+            'ar': u'تصنيف:صفحات حذف سريع',
             'en': u'Category:Candidates for speedy deletion',
             'fi': u'Luokka:Roskaa',
             'fr': u'Catégorie:Pages à supprimer rapidement',
@@ -221,7 +221,7 @@ class SpeedyRobot:
             'zh': u'Category:快速删除候选',
         },
         'wikibooks':{
-		    'ar': u'تصنيف:صفحات حذف سريع',
+            'ar': u'تصنيف:صفحات حذف سريع',
             'ca': u'Categoria:Elements a eliminar',
             'en': u'Category:Candidates for speedy deletion',
             'es': u'Categoría:Wikilibros:Borrar',
@@ -287,7 +287,8 @@ class SpeedyRobot:
                 },
             'zh':{
                 u'_default':u'[[WP:CSD]]',
-                u'Db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
+                u'db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
+                u'db-rediruser':u'[[WP:CSD#O1|CSD O6]] 沒有在使用的討論頁',
                 u'Notchinese':u'[[WP:CSD#G7|CSD G7]]: 非中文條目且長時間未翻譯',
                 u'No source':u'[[WP:CSD#I3|CSD I3]]: 沒有來源連結，無法確認來源與版權資訊',
                 u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
