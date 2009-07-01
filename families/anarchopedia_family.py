@@ -52,8 +52,12 @@ class Family(family.Family):
                 if self.namespaces[ns].has_key(interface):
                     self.namespaces[ns][code] = self.namespaces[ns][interface]
 
+        self.namespaces[1]['fr'] = u'Discuter'
+
+        self.namespaces[3]['fr'] = u'Discussion Utilisateur'
+
         self.namespaces[4] = {
-            '_default': [u'Anarchopedia', self.namespaces[4]['_default']],
+            '_default': u'Anarchopedia',
             'ar': u'أنارشوبيديا',
             'el': u'Αναρχοπαίδεια',
             'eo': u'Anarĥopedio',
@@ -74,7 +78,7 @@ class Family(family.Family):
             'zh': u'安那其百科',
         }
         self.namespaces[5] = {
-            '_default': [u'Anarchopedia talk', self.namespaces[5]['_default']],
+            '_default': u'Anarchopedia talk',
             'ar': u'نقاش أنارشوبيديا',
             'bs': u'Разговор о Anarchopedia',
             'da': u'Anarchopedia-diskussion',
@@ -105,6 +109,27 @@ class Family(family.Family):
             'tr': u'Anarşipedi tartışma',
             'zh': u'安那其百科 talk',
         }
+
+        self.namespaces[6]['tr'] = u'Resim'
+        self.namespaces[6]['da'] = u'Billede'
+        self.namespaces[6]['sq'] = u'Figura'
+
+        self.namespaces[7]['da'] = u'Billeddiskussion'
+        self.namespaces[7]['fr'] = u'Discussion Fichier'
+        self.namespaces[7]['sq'] = u'Figura diskutim'
+        self.namespaces[7]['tr'] = u'Resim tartışma'
+
+
+        self.namespaces[11]['fr'] = u'Discussion Modèle'
+
+        self.namespaces[13]['fr'] = u'Discussion Aide'
+
+        self.namespaces[14]['sq'] = u'Kategori'
+
+        self.namespaces[15]['fr'] = u'Discussion Catégorie'
+        self.namespaces[15]['sq'] = u'Kategori Diskutim'
+
+
 
         self.nocapitalize = self.langs.keys()
 
@@ -154,6 +179,8 @@ class Family(family.Family):
     def scriptpath(self, code):
         return ''
 
-    def api_address(self, code):
-        raise NotImplementedError('Anarchopedia has not activated the API')
-        
+    def path(self, code):
+        return '%s/index.php' % self.scriptpath(code)
+
+    def apipath(self, code):
+        return '%s/api.php' % self.scriptpath(code)

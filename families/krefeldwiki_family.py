@@ -15,11 +15,19 @@ class Family(family.Family):
         }
 
         self.namespaces[4] = {
-            '_default': [u'Krefeld Wiki', self.namespaces[4]['_default']],
+            '_default': u'Krefeld Wiki',
         }
 
         self.namespaces[5] = {
-            '_default': [u'Krefeld Wiki Diskussion', self.namespaces[5]['_default']],
+            '_default': u'Krefeld Wiki Diskussion',
+        }
+
+        self.namespaces[6] = {
+            '_default': u'Bild',
+        }
+
+        self.namespaces[7] = {
+            '_default': u'Bild Diskussion',
         }
 
         self.namespaces[106] = {
@@ -55,7 +63,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.10.1"
+        return "1.12alpha"
 
     def scriptpath(self, code):
         return '/w'
