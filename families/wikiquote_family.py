@@ -136,7 +136,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องWikiquote',
             'tr': u'Vikisöz tartışma',
             'tt': u'Wikiquote bäxäse',
-            'uk': u'Обговорення Вікіцитатей',
+            'uk': u'Обговорення Вікіцитат',
             'ur': u'تبادلۂ خیال وکی اقتباسات',
             'uz': u'Vikiiqtibos munozarasi',
             'vi': u'Thảo luận Wikiquote',
