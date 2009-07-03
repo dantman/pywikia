@@ -11,9 +11,8 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'omegawiki'
-        self.langs = {
-            'en': 'omegawiki.org',
-        }
+        self.langs['omegawiki'] = 'www.omegawiki.org'
+
         self.namespaces[4] = {
             '_default': [u'OmegaWiki'],
         }
@@ -74,6 +73,17 @@ class Family(family.Family):
 
         self.nocapitalize = self.langs.keys()
 
+    def hostname(self,code):
+        return 'www.omegawiki.org'
+
     def version(self, code):
         return "1.10alpha"
 
+    def scriptpath(self, code):
+        return ''
+
+    def path(self, code):
+        return '/index.php'
+
+    def apipath(self, code):
+        return '/api.php'

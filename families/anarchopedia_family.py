@@ -8,49 +8,12 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'anarchopedia'
 
-        interface_lang = {
-            'ara': 'ar',
-            'bos': 'sr',
-            'dan': 'da',
-            'deu': 'de',
-            'dut': 'nl',
-            'ell': 'el',
-            'eng': 'en',
-            'epo': 'en',
-            'fas': 'fa',
-            'fin': 'fi',
-            'fra': 'fr',
-            'heb': 'he',
-            'hrv': 'sr',
-            'hye': 'hy',
-            'ind': 'id',
-            'ita': 'it',
-            'jpn': 'ja',
-            'kor': 'ko',
-            'lav': 'lv',
-            'lit': 'lit',
-            'nor': 'no',
-            'nsh': 'sr',
-            'pol': 'pl',
-            'por': 'pt',
-            'rum': 'ro',
-            'rus': 'ru',
-            'spa': 'es',
-            'sqi': 'sq',
-            'srp': 'sr',
-            'swe': 'sv',
-            'tur': 'tr',
-            'zho': 'zh',
-        }
-
-        for lang in interface_lang.values():
-            self.langs[lang] = '%s.anarchopedia.org' % lang
-
-        copy = [-2, -1, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-        for code, interface in interface_lang.items():
-            for ns in copy:
-                if self.namespaces[ns].has_key(interface):
-                    self.namespaces[ns][code] = self.namespaces[ns][interface]
+        self.languages_by_size = [
+            'ar','sr','da','de','nl','el','en','fa','fi','fr','he','sr','hy','id','it','ja',
+            'ko','lv','lit','no','sr','pl','pt','ro','ru','es','sq','sr','sv','tr','zh',
+        ]
+        for l in self.languages_by_size:
+            self.langs[l] = '%s.anarchopedia.org' % l
 
         self.namespaces[1]['fr'] = u'Discuter'
 
@@ -180,7 +143,7 @@ class Family(family.Family):
         return ''
 
     def path(self, code):
-        return '%s/index.php' % self.scriptpath(code)
+        return '/index.php'
 
     def apipath(self, code):
-        return '%s/api.php' % self.scriptpath(code)
+        return '/api.php'
