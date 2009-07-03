@@ -156,6 +156,7 @@ featured_name = {
     'fi': (CAT, u"Suositellut sivut"),
     'fo': (CAT, u"Mánaðargrein"),
     'fr': (CAT, u"Article de qualité"),
+    'gv': (CAT, u"Artyn reiht"),
     'he': (CAT, u"ערכים מומלצים"),
     'hi': (BACK, u"निर्वाचित लेख"),
     'hr': (CAT, u"Izabrani članci"),
