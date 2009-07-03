@@ -53,7 +53,7 @@ msg = {
     'bat-smg': u'robots: Pavīzdėnė straipsnė nūruoda [[%s:%s]]',
     'be-x-old': u'Робат: [[%s:%s]] — абраны артыкул',
     'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
-    'cs': u'Bot: Nejlepší článek: [[%s:%s]]',
+    'cs': u'Robot přidal nejlepší článek: [[%s:%s]]',
     'cy': u'Robot: Mae [[%s:%s]] yn erthygl ddethol',
     'de': u'Bot: [[%s:%s]] ist ein ausgezeichneter Artikel',
     'dsb': u'Bot: [[%s:%s]] jo wuběrny nastawk',

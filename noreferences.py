@@ -46,6 +46,7 @@ docuReplacements = {
 # Summary messages in different languages
 msg = {
     'ar':u'روبوت: إضافة وسم <references /> مفقود',
+    'cs':u'Robot doplnil chybějící <references />',
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
@@ -72,6 +73,10 @@ placeBeforeSections = {
         u'وصلات خارجية',
         u'انظر أيضا',
         u'ملاحظات'
+    ],
+    'cs': [
+        u'Reference',
+        u'Poznámky',
     ],
     'de': [              # no explicit policy on where to put the references
         u'Literatur',

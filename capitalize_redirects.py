@@ -41,6 +41,7 @@ import wikipedia, pagegenerators, catlib
 
 msg = {
      'ar': u'روبوت: إنشاء تحويلة إلى [[%s]]',
+     'cs': u'Robot vytvořil přesměrování na [[%s]]',
      'de': u'Bot: Weiterleitung angelegt auf [[%s]]',
      'en': u'Robot: Create redirect to [[%s]]',
      'fr': u'robot: Créer redirection à [[%s]]',

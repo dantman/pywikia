@@ -30,6 +30,7 @@ class BasicBot:
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
         'ar': u'روبوت: تغيير ...',
+        'cs': u'Robot změnil ...',
         'de': u'Bot: Ändere ...',
         'en': u'Robot: Changing ...',
         'fr': u'Robot: Changé ...',

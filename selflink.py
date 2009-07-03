@@ -40,6 +40,7 @@ docuReplacements = {
 # in fixes.py.
 msg = {
     'ar':u'روبوت: إزالة وصلات ذاتية',
+    'cs':u'Robot odstranil odkaz na název článku',
     'de':u'Bot: Entferne Selbstlinks',
     'en':u'Robot: Removing selflinks',
     'fr':u'Robot: Enlève autoliens',
