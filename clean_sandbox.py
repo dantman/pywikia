@@ -26,6 +26,7 @@ import time
 
 content = {
     'ar': u'{{من فضلك اترك هذا السطر ولا تعدله (عنوان ساحة التجربة)}}\n<!-- مرحبا! خذ راحتك في تجربة مهارتك في التنسيق والتحرير أسفل هذا السطر. هذه الصفحة لتجارب التعديل ، سيتم تفريغ هذه الصفحة كل 6 ساعات. -->',
+    'cs': u'{{subst:/uhrabat}}',
     'da': u'{{subst:Sandkasse tekst}}',
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
     'en': u'{{Please leave this line alone (sandbox heading)}}\n<!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
@@ -50,6 +51,7 @@ content = {
 
 msg = {
     'ar': u'روبوت: هذه الصفحة سيتم تفريغها تلقائيا',
+    'cs': u'Uhrabání pískoviště',
     'da': u'Bot: Nyt sand (fra[[Skabelon:Sandkasse tekst]])',
     'de': u'Bot: Setze Seite zurück.',
     'en': u'Robot: Automatically cleaned',
@@ -73,6 +75,7 @@ msg = {
 
 sandboxTitle = {
     'ar': u'ويكيبيديا:ساحة التجربة',
+    'cs': u'Wikipedie:Pískoviště',
     'da': u'Wikipedia:Sandkassen',
     'de': u'Wikipedia:Spielwiese',
     'en': u'Wikipedia:Sandbox',

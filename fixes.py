@@ -29,6 +29,7 @@ fixes = {
         'msg': {
             'ar':u'روبوت: تحويل/تصليح HTML',
             'be':u'Бот: карэкцыя HTML',
+            'cs':u'převod/oprava HTML',
             'en':u'Robot: Converting/fixing HTML',
             'eo':u'Bot: koredtado de HTMLa teksto',
             'de':u'Bot: konvertiere/korrigiere HTML',
@@ -168,6 +169,7 @@ fixes = {
         'msg': {
             'ar':u'بوت: تصليح تهيئة الويكي',
             'be':u'Бот: Карэкцыя вiкi-сiнтаксiсу',
+            'cs':u'Oprava wikisyntaxe',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'eo':u'Bot: Korektado de vikia sintakso',
@@ -241,7 +243,8 @@ fixes = {
         'regex': True,
         'msg': {
             'ar':u'بوت: تصليح تهيئة الويكي',
-            'be':u'Бот: Карэкцыя вiкi-сiнтаксiсу',            
+            'be':u'Бот: Карэкцыя вiкi-сiнтаксiсу',
+            'cs':u'Oprava wikisyntaxe',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'eo':u'Bot: Korektado de vikia sintakso',            
@@ -396,6 +399,7 @@ fixes = {
         'msg': {
             'ar': u'روبوت: تصليح صيغة ISBN',
             'be': u'Бот: Карэкцыя ISBN фармату',
+            'cs': u'Oprava formátu ISBN',
             'de': u'Bot: Korrigiere ISBN-Format',
             'en': u'Robot: Fixing ISBN format',
             'es': u'Arreglando formato ISBN',

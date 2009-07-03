@@ -244,6 +244,9 @@ class SpeedyRobot:
             'ar': {
                 u'_default': u'حذف مرشح للحذف السريع حسب [[ويكيبيديا:حذف سريع|معايير الحذف السريع]]',
                 },
+            'cs': {
+                u'_default': u'Bylo označeno k [[Wikipedie:Rychlé smazání|rychlému smazání]]',
+                },
             'de': {
                 u'_default': u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
                 },
@@ -314,6 +317,7 @@ class SpeedyRobot:
     talk_deletion_msg={
         'wikipedia':{
             'ar':u'صفحة نقاش يتيمة',
+            'cs':u'Osiřelá diskusní stránka',
             'de':u'Verwaiste Diskussionsseite',
             'en':u'Orphaned talk page',
             'fr':u'Page de discussion orpheline',
