@@ -71,6 +71,7 @@ __version__='$Id$'
 msg_double={
     'ar': u'روبوت: تصليح تحويلة مزدوجة',
     'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
+    'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня',
     'br': u'Kempennet adkas doubl gant robot',
     'de': u'Bot: Korrigiere doppelten Redirect',
     'en': u'Robot: Fixing double redirect',
@@ -113,6 +114,7 @@ msg_double={
 # Reason for deleting broken redirects
 reason_broken={
     'ar': u'روبوت: هدف التحويلة غير موجود',
+    'be-x-old': u'Робат: мэта перанакіраваньня не існуе',
     'de': u'Bot: Weiterleitungsziel existiert nicht',
     'en': u'Robot: Redirect target doesn\'t exist',
     'es': u'Robot: La página a la que redirige no existe',
