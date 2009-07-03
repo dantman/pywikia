@@ -35,7 +35,7 @@ import pagegenerators
 # Summary messages for deleting from a category.
 msg_simple_delete = {
     'ar': u'بوت: حذف قائمة من الملفات.',
-    'cs': u'',
+    'cs': u'Robot smazal podle seznamu',
     'en': u'Bot: Deleting a list of files.',
     'fr': u'Robot: Suppression d’une liste de fichiers.',
     'he': u'בוט: מוחק רשימת דפים מתוך קובץ.',
@@ -46,7 +46,7 @@ msg_simple_delete = {
 }
 msg_delete_category = {
     'ar': u'روبوت - حذف كل الصفحات من التصنيف %s',
-    'cs': u'',
+    'cs': u'Robot smazal obsah kategorie %s',
     'de': u'Bot: Lösche alle Seiten in Kategorie %s',
     'en': u'Robot - Deleting all pages from category %s',
     'fr': u'Robot - Suppresion de toutes les pages de la actégorie %s',
@@ -60,7 +60,7 @@ msg_delete_category = {
 }
 msg_delete_links = {
     'ar': u'روبوت - حذف كل الصفحات الموصولة من %s',
-    'cs': u'',
+    'cs': u'Robot smazal vše odkazované z %s',
     'de': u'Bot: Lösche alle Seiten in %s verlinkten Seiten',
     'en': u'Robot - Deleting all pages linked from %s',
     'fr': u'Robot : Supprime toutes les pages liées depuis %s',
@@ -73,7 +73,7 @@ msg_delete_links = {
 }
 msg_delete_ref = {
     'ar': u'روبوت - حذف كل الصفحات الراجعة من %s',
-    'cs': u'',
+    'cs': u'Robot smazal vše odkazující na %s',
     'de': u'Bot: Lösche alle auf %s linkenden Seiten',
     'en': u'Robot - Deleting all pages referring from %s',
     'fr': u'Robot : Supprime toutes les pages référant à %s',
@@ -85,7 +85,7 @@ msg_delete_ref = {
 }
 msg_delete_images = {
     'ar': u'روبوت -حذف كل الصور في الصفحة %s',
-    'cs': u'',
+    'cs': u'Robot smazal všechny obrázky z %s',
     'en': u'Robot - Deleting all images on page %s',
     'fr': u'Robot : Supprime tous les fichiers sur la page %s',
     'he': u'בוט: מוחק את כל התמונות בדף %s.',
