@@ -6495,8 +6495,8 @@ def handleArgs(*args):
             # about it.
             nonGlobalArgs.append(arg)
     if verbose:
-      output('Pywikipediabot %s' % (version.getversion()))
-      output('Python %s' % (sys.version))
+      output(u'Pywikipediabot %s' % (version.getversion()))
+      output(u'Python %s' % (sys.version))
     return nonGlobalArgs
 
 #########################
