@@ -101,6 +101,7 @@ msg = {
     'ru': u'Разрешение значений с помощью бота: %s - Changed link(s) to %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Changed link(s) to %s',
     'sv': u'Länkar direkt till rätt artikel för: %s - Bytte länk(ar) till %s',
+    'uk': u'Виправлення посилання на багатозначність за допомогою бота: %s змінено на %s',
     }
 
 # Summary message when working on disambiguation pages and the link is removed
@@ -126,6 +127,7 @@ msg_unlink = {
     'ru': u'Разрешение значений с помощью бота: %s - Removed link(s)',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
     'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
+    'uk': u'Виправлення посилання на багатозначність за допомогою бота: %s вилучено',
     }
 
 # Summary message when working on redirects
@@ -151,6 +153,7 @@ msg_redir = {
     'ru': u'Разрешение значений с помощью бота: %s - Changed link(s) to %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Changed link(s) to %s',
     'sv': u'Länkar direkt till rätt artikel för: %s - Bytte länk(ar) till %s',
+    'uk': u'Виправлення посилання на багатозначність за допомогою бота: %s змінено на %s',
     }
 
 # Summary message when working on redirects and the link is removed
@@ -176,6 +179,7 @@ msg_redir_unlink = {
     'ru': u'Разрешение значений с помощью бота: %s - Removed link(s)',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
     'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
+    'uk': u'Виправлення посилання на багатозначність за допомогою бота: %s вилучено',
     }
 
 # Summary message to (unknown)
@@ -209,6 +213,7 @@ primary_topic_format = {
     'ru': u'%s_(значения)',
     'sr': u'%s_(вишезначна одредница)',
     'sv': u'%s_(olika betydelser)',
+    'uk': u'%s_(значення)',
     }
 
 # List pages that will be ignored if they got a link to a disambiguation
