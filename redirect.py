@@ -148,7 +148,7 @@ reason_broken={
 sd_tagging_sum = {
     'ar': u'روبوت: وسم للحذف السريع',
     'en': u'Robot: Tagging for speedy deletion',
-	'it': u'Bot: +Da cancellare subito',
+    'it': u'Bot: +Da cancellare subito',
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
     'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
     'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
@@ -161,7 +161,7 @@ sd_tagging_sum = {
 sd_template = {
     'ar':u'{{شطب|تحويلة مكسورة}}',
     'en':u'{{db-r1}}',
-	'it':u'{{Cancella subito|9}}',
+    'it':u'{{Cancella subito|9}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
     'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~',
     'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~',
