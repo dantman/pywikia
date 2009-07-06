@@ -116,6 +116,8 @@ placeBeforeSections = {
         u'Riferimenti',
     ],
     'ja':[
+        u'関連項目',
+        u'参考文献',
         u'外部リンク',
     ],
     'ko':[               # no explicit policy on where to put the references
