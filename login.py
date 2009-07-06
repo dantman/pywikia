@@ -100,7 +100,7 @@ class LoginManager:
         the policy on the respective wiki.
         """
         if self.site.family.name in botList and self.site.language() in botList[self.site.family.name]:
-            botListPageTitle = botList[self.site.family.name][self.site.language()]
+            botListPageTitle = wikipedia.translate(self.site.language(), botList)
             botListPage = wikipedia.Page(self.site, botListPageTitle)
             for linkedPage in botListPage.linkedPages():
                 if linkedPage.titleWithoutNamespace() == self.username:
@@ -110,7 +110,7 @@ class LoginManager:
             # No bot policies on other
             return True
 
-    def getCookie(self, remember=True, captcha = None):
+    def getCookie(self, api = config.use_api_login, remember=True, captcha = None):
         """
         Login to the site.
 
@@ -119,7 +119,7 @@ class LoginManager:
 
         Returns cookie data if succesful, None otherwise.
         """
-        if config.use_api_login:
+        if api:
             predata = {
                 'action': 'login',
                 'lgname': self.username.encode(self.site.encoding()),
@@ -191,7 +191,7 @@ class LoginManager:
             elif not captcha:
                 solve = self.site.solveCaptcha(data)
                 if solve:
-                    return self.getCookie(remember = remember, captcha = solve)
+                    return self.getCookie(api = api, remember = remember, captcha = solve)
             return None
 
     def storecookiedata(self, data):
@@ -236,7 +236,7 @@ class LoginManager:
                     self.password = entry[3]
         file.close()
 
-    def login(self, retry = False):
+    def login(self, api = config.use_api_login, retry = False):
         if not self.password:
             # As we don't want the password to appear on the screen, we set
             # password = True
@@ -245,7 +245,7 @@ class LoginManager:
         self.password = self.password.encode(self.site.encoding())
 
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
-        cookiedata = self.getCookie()
+        cookiedata = self.getCookie(api = api)
         if cookiedata:
             self.storecookiedata(cookiedata)
             wikipedia.output(u"Should be logged in now")
@@ -255,9 +255,13 @@ class LoginManager:
             return True
         else:
             wikipedia.output(u"Login failed. Wrong password or CAPTCHA answer?")
+            if api:
+                wikipedia.output(u"API login failed, retrying using standard webpage.")
+                return self.login(api = False, retry = retry)
+            
             if retry:
                 self.password = None
-                return self.login(retry = True)
+                return self.login(api = api, retry = True)
             else:
                 return False
 
