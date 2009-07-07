@@ -7,8 +7,14 @@ from wikipedia import output
 import simplejson
 
 def check_namespaces(site):
-    if not site.apipath():
-        output(u'Warning! %s has no apipath() defined!' % site)
+    try:
+        if not site.apipath():
+            output(u'Warning! %s has no apipath() defined!' % site)
+            return
+    except NotImplementedError:
+#     TODO: If use Special:Export to get XML file and parse details in <namespaces></namespaces>,
+#     we can get the namespace names without API.
+        output(u'Warning! %s is not support API!' % site)
         return
     predata = { 'action': 'query',
                 'meta': 'siteinfo',
