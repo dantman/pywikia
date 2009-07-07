@@ -12,18 +12,16 @@ class Family(family.Family):
         self.name = 'wikiversity'
 
         self.languages_by_size = [
-            'en', 'fr', 'de', 'cs', 'es', 'it', 'pt', 'el', 'fi',
+            'en', 'fr', 'de', 'beta', 'cs', 'es', 'it', 'pt', 'el', 'fi',
             'ja',
         ]
 
         if config.SSL_connection and self.name in config.available_ssl_project:
             for lang in self.languages_by_size:
                 self.langs[lang] = 'secure.wikimedia.org'
-            self.langs['beta'] = 'secure.wikimedia.org'
         else:
             for lang in self.languages_by_size:
                 self.langs[lang] = '%s.wikiversity.org' % lang
-            self.langs['beta'] = 'beta.wikiversity.org'
 
 
         # Most namespaces are inherited from family.Family.

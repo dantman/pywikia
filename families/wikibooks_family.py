@@ -12,14 +12,14 @@ class Family(family.Family):
         self.name = 'wikibooks'
 
         self.languages_by_size = [
-            'en', 'de', 'fr', 'hu', 'pt', 'es', 'ja', 'nl', 'it', 'pl',
-            'sq', 'he', 'fi', 'vi', 'ru', 'cs', 'hr', 'da', 'zh', 'sv',
-            'mk', 'tr', 'th', 'sr', 'fa', 'tl', 'id', 'is', 'ca', 'ta',
+            'en', 'de', 'fr', 'hu', 'pt', 'ja', 'es', 'nl', 'it', 'pl',
+            'he', 'sq', 'fi', 'vi', 'ru', 'cs', 'hr', 'th', 'zh', 'da',
+            'sv', 'mk', 'tr', 'sr', 'fa', 'tl', 'id', 'is', 'ca', 'ta',
             'ar', 'no', 'ko', 'eo', 'ka', 'simple', 'bg', 'gl', 'lt', 'ro',
             'sk', 'la', 'el', 'ia', 'ang', 'sl', 'et', 'mr', 'cv', 'ur',
-            'oc', 'ml', 'ms', 'uk', 'eu', 'fy', 'lv', 'ie', 'hi', 'tg',
-            'bn', 'hy', 'af', 'az', 'te', 'bs', 'ky', 'pa', 'be', 'sa',
-            'zh-min-nan', 'ast', 'cy', 'mg', 'tt', 'km', 'si', 'ku', 'co', 'sw',
+            'oc', 'ml', 'uk', 'ms', 'eu', 'fy', 'lv', 'hi', 'ie', 'tg',
+            'bn', 'hy', 'af', 'az', 'te', 'pa', 'bs', 'ky', 'be', 'sa',
+            'zh-min-nan', 'ast', 'cy', 'tt', 'mg', 'km', 'si', 'ku', 'co', 'sw',
             'tk', 'ne', 'als', 'uz', 'vo', 'su', 'na', 'mn', 'lb', 'kn',
             'ps', 'xh', 'kk', 'za', 'nds', 'wa', 'zu', 'my',
         ]
