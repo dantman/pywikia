@@ -245,7 +245,12 @@ class LoginManager:
         self.password = self.password.encode(self.site.encoding())
 
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
-        cookiedata = self.getCookie(api = api)
+        try:
+            cookiedata = self.getCookie(api = api)
+        except NotImplementedError:
+            wikipedia.output('API disabled because this site does not support.')
+            config.use_api_login = api = False
+            cookiedata = self.getCookie(api = api)
         if cookiedata:
             self.storecookiedata(cookiedata)
             wikipedia.output(u"Should be logged in now")
