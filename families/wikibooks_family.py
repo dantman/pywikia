@@ -286,16 +286,16 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-        alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
-                      'ca','chr','co','cs','cy','da','de','als','et',
-                      'el','en','es','eo','eu','fa','fr','fy','gv',
-                      'gd','gl','ko','hi','hr','io','id','ia','is','it',
-                      'he','jv','ka','csb','sw','la','lv','lt','hu',
-                      'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
-                      'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
-                      'sa','st','sq','si','simple','sk','sl','sr','su',
-                      'fi','sv','ta','tt','th','ur','vi',
-                      'tpi','tr','uk','vo','yi','za','zh','zh-cn',
+        alphabetic = ['af', 'ar', 'roa-rup', 'om', 'bg', 'be', 'bn', 'bs',
+                      'ca', 'chr', 'co', 'cs', 'cy', 'da', 'de', 'als', 'et',
+                      'el', 'en', 'es', 'eo', 'eu', 'fa', 'fr', 'fy', 'gv',
+                      'gd', 'gl', 'ko', 'hi', 'hr', 'io', 'id', 'ia', 'is', 'it',
+                      'he', 'jv', 'ka', 'csb', 'sw', 'la', 'lv', 'lt', 'hu',
+                      'mk', 'mg', 'ml', 'mi', 'mr', 'ms', 'zh-cfr', 'mn', 'nah', 'na',
+                      'nl', 'ja', 'no', 'nb', 'oc', 'nds', 'pl', 'pt', 'ro', 'ru',
+                      'sa', 'st', 'sq', 'si', 'simple', 'sk', 'sl', 'sr', 'su',
+                      'fi', 'sv', 'ta', 'tt', 'th', 'ur', 'vi',
+                      'tpi', 'tr', 'uk', 'vo', 'yi', 'za', 'zh', 'zh-cn',
                       'zh-tw']
 
         self.obsolete = {
@@ -340,7 +340,7 @@ class Family(family.Family):
             'simple': alphabetic
         }
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
-        self.cross_allowed = ['fa','fy','it','ru','simple','zh']
+        self.cross_allowed = ['fa', 'fy', 'it', 'ru', 'simple', 'zh']
 
     def version(self, code):
         return '1.16alpha'

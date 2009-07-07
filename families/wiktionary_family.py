@@ -379,8 +379,8 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ang','bg','bn','eo','fa','fy','gd','ia','ie','jv','ka','lt','mk',
-            'nl','no','sk','th','ti','ts','uk','vo','za','zh-min-nan','zh',
+            'ang', 'ast', 'bg', 'bn', 'eo', 'es', 'fa', 'fy', 'ga', 'gd', 'ia', 'ie', 'jv', 'ka', 'lt', 'mk',
+            'nl', 'no', 'sk', 'tg', 'th', 'ti', 'ts', 'ug', 'uk', 'vo', 'za', 'zh-min-nan', 'zh',
         ]
         self.obsolete = {
             'aa': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Afar_Wiktionary

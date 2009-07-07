@@ -26,7 +26,7 @@ class Family(family.Family):
             'ia', 'li', 'hy', 'gan', 'kk', 'sah', 'tt', 'tk', 'sa', 'wuu',
             'nds-nl', 'fo', 'os', 'vls', 'nrm', 'fiu-vro', 'am', 'rm', 'map-bms', 'pag',
             'arz', 'dv', 'mn', 'se', 'diq', 'ne', 'gv', 'fur', 'sco', 'lij',
-            'bar', 'nov', 'bh', 'mt', 'ilo', 'pi', 'zh-classical', 'mzn', 'km','frp',
+            'bar', 'nov', 'bh', 'mt', 'ilo', 'pi', 'zh-classical', 'mzn', 'km', 'frp',
             'csb', 'lad', 'ug', 'si', 'pdc', 'kw', 'ang', 'haw', 'bcl', 'sc',
             'to', 'kv', 'mg', 'pa', 'ps', 'szl', 'ie', 'gn', 'my', 'ln',
             'hif', 'stq', 'wo', 'jbo', 'crh', 'arc', 'tpi', 'ty', 'ext', 'cbk-zam',
@@ -856,20 +856,20 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ab','af','ak','am','ang','arc','arz','as','av','ay','az','ba','bar','bcl',
-            'be-x-old','be','bg','bh','bi','bm','bo','bpy','bug','bxr','cbk-zam',
-            'cdo','ce','ch','chy','co','crh','cr','csb','cu','diq','dsb','dz',
-            'ee','eml','eu','ext','fa','ff','fj','fo','frp','fur','gan','ga','glk',
-            'gn','got','gu','gv','ha','hak','haw','hif','hi','hsb','ht','hu','hy',
-            'ia','id','ie','ig','ik','ilo','iow','is','iu','jbo','jv','kaa','kab','ka','kg','ki',
-            'kl','km','kn','ko','ks','ku','kv','kw','ky','lad','lbe','lg','li','lij',
-            'lmo','ln','lo','lv','map-bms','mdf','mg','mk','mn','mt','myv','my','mzn','nah',
-            'na','nap','nds-nl','ne','new','nl','nov','nrm','nv','ny','om','or','os','pam','pap',
-            'pa','pdc','pnt','ps','qu','rm','rmy','rn','roa-rup','roa-tara','sah',
-            'sa','sc','sco','sd','se','sg','sh','simple','si','sk','sm','sn','so',
-            'srn','stq','st','su','sw','szl','ta','te','tet','tg','ti','tn','to',
-            'tpi','ts','tt','tum','tw','ty','ug','uz','ve','vls','wa','war','wo','wuu',
-            'xal','xh','yi','yo','za','zh','zu'
+            'ab', 'af', 'ak', 'am', 'ang', 'arc', 'arz', 'as', 'ast,', 'av', 'ay', 'az',
+            'ba', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
+            'cbk-zam', 'cdo', 'ce', 'ch', 'chr', 'chy', 'co', 'crh', 'cr', 'csb', 'cu', 'cv', 'cy',
+            'diq', 'dsb', 'dz', 'ee', 'eml', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
+            'gan', 'ga', 'glk', 'gn', 'got', 'gu', 'gv', 'ha', 'hak', 'haw', 'hif', 'hi', 'hsb', 'ht', 'hu', 'hy',
+            'ia', 'id', 'ie', 'ig', 'ik', 'ilo', 'iow', 'is', 'iu', 'jbo', 'jv',
+            'kaa', 'kab', 'ka', 'kg', 'ki', 'kl', 'km', 'kn', 'ko', 'ks', 'ku', 'kv', 'kw', 'ky',
+            'lad', 'lbe', 'lg', 'li', 'lij', 'lmo', 'ln', 'lo', 'lv', 'map-bms', 'mdf', 'mg', 'mk', 'mn', 'mt', 'myv', 'my', 'mzn',
+            'nah', 'na', 'nap', 'nds-nl', 'ne', 'new', 'ng', 'nl', 'nov', 'nrm', 'nv', 'ny', 'om', 'or', 'os',
+            'pam', 'pap', 'pa', 'pdc', 'pnt', 'ps', 'qu', 'rm', 'rmy', 'rn', 'roa-rup', 'roa-tara', 'rw',
+            'sah', 'sa', 'sc', 'sco', 'sd', 'se', 'sg', 'sh', 'simple', 'si', 'sk', 'sm', 'sn', 'so', 'srn', 'stq', 'st', 'su', 'sw', 'szl',
+            'ta', 'te', 'tet', 'tg', 'ti', 'tk', 'tn', 'to', 'tpi', 'ts', 'tt', 'tum', 'tw', 'ty',
+            'udm', 'ug', 'uz', 've', 'vls', 'wa', 'war', 'wo', 'wuu',
+            'xal', 'xh', 'yi', 'yo', 'za', 'zh', 'zh-classic', 'zh-min-nan', 'zu',
         ]
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
@@ -934,14 +934,14 @@ class Family(family.Family):
             'hu': ['en'],
             'lb': self.alphabetic,
             'ms': self.alphabetic_revised,
-            'nds': ['nds-nl','pdt'] + self.alphabetic, # Note: as of 2008-02-24, pdt: (Plautdietsch) is still in the Incubator.
-            'nn': ['no','nb','sv','da'] + self.alphabetic,
+            'nds': ['nds-nl', 'pdt'] + self.alphabetic, # Note: as of 2008-02-24, pdt: (Plautdietsch) is still in the Incubator.
+            'nn': ['no', 'nb', 'sv', 'da'] + self.alphabetic,
             'no': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
-            'te': ['en','hi', 'kn', 'ta', 'ml'],
+            'te': ['en', 'hi', 'kn', 'ta', 'ml'],
             'vi': self.alphabetic_revised,
-            'yi': ['en','he','de']
+            'yi': ['en', 'he', 'de']
         }
 
         self.obsolete = {
