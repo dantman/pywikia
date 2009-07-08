@@ -20,10 +20,10 @@ class Family(family.Family):
             'sk', 'zh-min-nan', 'fo',
         ]
 
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             for lang in self.languages_by_size:
-                self.langs[lang] = 'secure.wikimedia.org'
-            self.langs['-'] = 'secure.wikimedia.org'
+                self.langs[lang] = None
+            self.langs['-'] = None
         else:
             for lang in self.languages_by_size:
                 self.langs[lang] = '%s.wikisource.org' % lang
@@ -354,14 +354,17 @@ class Family(family.Family):
         if config.SSL_connection:
             if code == '-':
                 return '/wikipedia/sources/w'
-            else:
-                return '/%s/%s/w' % (self.name, code)
-        else:
-            return '/w'
+            
+            return '/%s/%s/w' % (self.name, code)
+        
+        return '/w'
+
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
 
     def version(self, code):
         return '1.16alpha'
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
-

@@ -40,9 +40,9 @@ class Family(family.Family):
             'rn', 'ki', 'lg', 'tum', 'ng',
         ]
 
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             for lang in self.languages_by_size:
-                self.langs[lang] = 'secure.wikimedia.org'
+                self.langs[lang] = None
         else:
             for lang in self.languages_by_size:
                 self.langs[lang] = '%s.wikipedia.org' % lang
@@ -1122,3 +1122,7 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'

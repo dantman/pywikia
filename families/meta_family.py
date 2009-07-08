@@ -14,7 +14,7 @@ class Family(family.Family):
             'meta': 'meta.wikimedia.org',
         }
         
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             self.langs ['meta'] = 'secure.wikimedia.org'
         
         self.namespaces[4] = {
@@ -136,7 +136,7 @@ class Family(family.Family):
         return ('commons', 'commons')
 
     def scriptpath(self, code):
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             return '/wikipedia/meta/w'
 
         return '/w'

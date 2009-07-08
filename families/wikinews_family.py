@@ -17,9 +17,9 @@ class Family(family.Family):
             'ca', 'hu', 'ro', 'th', 'bs', 'bg', 'ta',
         ]
 
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             for lang in self.languages_by_size:
-                self.langs[lang] = 'secure.wikimedia.org'
+                self.langs[lang] = None
         else:
             for lang in self.languages_by_size:
                 self.langs[lang] = '%s.wikinews.org' % lang
@@ -192,6 +192,10 @@ class Family(family.Family):
 
     def code2encoding(self, code):
         return 'utf-8'
+
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
 
     def version(self, code):
         return '1.16alpha'

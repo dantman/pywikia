@@ -13,7 +13,7 @@ class Family(family.Family):
         self.langs = {
             'incubator': 'incubator.wikimedia.org',
         }
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             self.langs['incubator'] = 'secure.wikimedia.org'
 
         self.namespaces[4] = {
@@ -36,7 +36,7 @@ class Family(family.Family):
         return ('commons', 'commons')
 
     def scriptpath(self, code):
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             return '/wikipedia/incubator/w'
         
         return '/w'
