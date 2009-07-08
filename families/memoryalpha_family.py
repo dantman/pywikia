@@ -138,12 +138,5 @@ class Family(family.Family):
     def scriptpath(self, code):
         return '/%s' % code
 
-
-    def path(self, code):
-        return '%s/index.php' % self.scriptpath(code)
-
-    def apipath(self, code):
-        return '%s/api.php' % self.scriptpath(code)
-
     def version(self, code):
         return "1.12alpha"
