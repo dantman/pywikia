@@ -66,12 +66,6 @@ authenticate = {}
 
 #    Security Connection for Wikimedia Projects
 SSL_connection = False
-
-# Available security projects
-available_ssl_project = [
-    u'wikipedia',u'wikinews',u'wikisource',u'wiktionary',u'wikibooks',u'wikiquote',u'wikiversity',
-    u'meta',u'mediawiki',u'commons',u'species',u'incubator'
-]
     
 # password_file = ".passwd"
 # A password file with default passwords. For more information, please
