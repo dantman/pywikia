@@ -4388,6 +4388,8 @@ class Site(object):
             if self.lang == 'zh-classic' and 'zh-classical' in self.languages():
                 self.lang = 'zh-classical'
                 # ev0l database hack (database is varchar[10] -> zh-classical is cut to zh-classic.
+            elif self.family.name in self.family.langs.keys() or len(self.family.langs) == 1:
+                self.lang = self.family.name
             else:
                 raise NoSuchSite("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
