@@ -26,7 +26,7 @@ class Family(family.Family):
             'ca': 'valenciclopedia.wikia.com',
             'common': 'commons.uncyclomedia.org',
             'cs': 'necyklopedie.wikia.com',
-            'cy': 'cy.uncyclopedia.org.uk',
+            #'cy': 'cy.uncyclopedia.org.uk',
             'da': 'spademanns.wikia.com',
             'de': 'de.uncyclopedia.org',
             'el': 'frikipaideia.wikia.com',
@@ -37,7 +37,7 @@ class Family(family.Family):
             'fa': 'fa.uncyc.org',
             'fi': 'hikipedia.info',
             'fr': 'desencyclopedie.wikia.com',
-            'ga': 'ga.uncycl.org',
+            'ga': 'ga.uncyc.org',
             'got':'unsaiklopedia.org',
             'he': 'eincyclopedia.wikia.com',
             'hr': 'hr.neciklopedija.org',
@@ -66,7 +66,7 @@ class Family(family.Family):
             'no': 'ikkepedia.org',
             'oc': 'oisquipedia.org',
             'pl': 'nonsensopedia.wikia.com',
-            'pt': 'desciclopedia.ws',
+            'pt': 'desciclopedia.org',
             'ro': 'uncyclopedia.ro',
             'ru': 'absurdopedia.wikia.com',
             'sk': 'necyklopedia.wikia.com',
@@ -99,9 +99,10 @@ class Family(family.Family):
             'et': u'Meedia',
             'fa': u'مدیا',
             'fr': u'Média',
+            'ga': u'Meán',
             'he': u'מדיה',
             'hr': u'Mediji',
-            'hu': u'Media',
+            'hu': u'Média',
             'ka': u'მედია',
             'km': u'មេឌា',
             'ko': u'미디어',
@@ -142,6 +143,7 @@ class Family(family.Family):
             'fa': u'ویژه',
             'fi': u'Toiminnot',
             'fr': u'Spécial',
+            'ga': u'Speisialta',
             'got': u'Special',
             'he': u'מיוחד',
             'hr': u'Posebno',
@@ -149,7 +151,7 @@ class Family(family.Family):
             'id': u'Istimewa',
             'info': u'Special',
             'it': u'Speciale',
-            'ja': u'Special',
+            'ja': u'特別',
             'jv': u'Astamiwa',
             'ka': u'სპეციალური',
             'km': u'ពិសេស',
@@ -168,6 +170,7 @@ class Family(family.Family):
             'no': u'Spesial',
             'oc': u'Especial',
             'pl': u'Specjalna',
+            'pt': u'Especial',
             'ro': u'Special',
             'ru': u'Служебная',
             'sk': u'Špeciálne',
@@ -206,6 +209,7 @@ class Family(family.Family):
             'fa': u'بحث',
             'fi': u'Keskustelu',
             'fr': u'Discuter',
+            'ga': u'Plé',
             'got': u'Talk',
             'he': u'שיחה',
             'hr': u'Razgovor',
@@ -213,7 +217,7 @@ class Family(family.Family):
             'id': u'Pembicaraan',
             'info': u'Talk',
             'it': u'Discussione',
-            'ja': u'Talk',
+            'ja': u'ノート',
             'jv': u'Dhiskusi',
             'ka': u'განხილვა',
             'km': u'ការពិភាក្សា',
@@ -233,6 +237,7 @@ class Family(family.Family):
             'no': u'Diskusjon',
             'oc': u'Discutir',
             'pl': u'Dyskusja',
+            'pt': u'Discussão',
             'ro': u'Discuţie',
             'ru': u'Обсуждение',
             'sk': u'Diskusia',
@@ -271,9 +276,10 @@ class Family(family.Family):
             'fa': u'کاربر',
             'fi': u'Käyttäjä',
             'fr': u'Utilisateur',
+            'ga': u'Úsáideoir',
             'he': u'משתמש',
             'hr': u'Suradnik',
-            'hu': u'User',
+            'hu': u'Szerkesztő',
             'id': u'Pengguna',
             'it': u'Utente',
             'ja': u'利用者',
@@ -295,6 +301,7 @@ class Family(family.Family):
             'no': u'Bruker',
             'oc': u'Utilizaire',
             'pl': u'Użytkownik',
+            'pt': u'Usuário',
             'ro': u'Utilizator',
             'ru': u'Участник',
             'sk': u'Redaktor',
@@ -330,8 +337,10 @@ class Family(family.Family):
             'fa': u'بحث کاربر',
             'fi': u'Keskustelu käyttäjästä',
             'fr': u'Discussion Utilisateur',
+            'ga': u'Plé úsáideora',
             'he': u'שיחת משתמש',
             'hr': u'Razgovor sa suradnikom',
+            'hu': u'Szerkesztővita',
             'id': u'Pembicaraan Pengguna',
             'info': u'User talk',
             'it': u'Discussioni utente',
@@ -354,6 +363,7 @@ class Family(family.Family):
             'no': u'Brukerdiskusjon',
             'oc': u'Discussion Utilizaire',
             'pl': u'Dyskusja użytkownika',
+            'pt': u'Usuário Discussão',
             'ro': u'Discuţie Utilizator',
             'ru': u'Обсуждение участника',
             'sk': u'Diskusia s redaktorom',
@@ -388,6 +398,7 @@ class Family(family.Family):
             'fa': u'نانشنامه',
             'fi': u'Hikipedia',
             'fr': u'Désencyclopédie',
+            'ga': u'Frithchiclipéid',
             'got': u'Unsaiklopedia',
             'he': u'איןציקלופדיה',
             'hr': u'Neciklopedija',
@@ -452,13 +463,15 @@ class Family(family.Family):
             'fa': u'بحث نانشنامه',
             'fi': u'Keskustelu Hikipediasta',
             'fr': u'Discussion Désencyclopédie',
+            'ga': u'Plé Frithchiclipéid',
             'got': u'Unsaiklopedia talk',
             'he': u'שיחת איןציקלופדיה',
             'hr': u'Razgovor Neciklopedija',
-            'hu': u'Unciklopédia vita',
+            'hu': u'Unciklopédia-vita',
             'id': u'Pembicaraan Tolololpedia',
-            'info': u'Uncyclopædia talk',
+            'info': u'Uncyclopaedia talk',
             'it': u'Discussioni Nonciclopedia',
+            'ja': u'Uncyclopedia‐ノート',
             'jv': u'Dhiskusi Ndhablek',
             'ka': u'Anciklopedia განხილვა',
             'km': u'ការពិភាក្សាអំពីUncyclopedia',
@@ -518,14 +531,15 @@ class Family(family.Family):
             'fa': u'تصویر',
             'fi': u'Kuva',
             'fr': u'Fichier',
+            'ga': u'Íomhá',
             'got': u'Image',
             'he': u'קובץ',
             'hr': u'Slika',
             'hu': u'Kép',
             'id': u'Berkas',
-            'info': u'File',
+            'info': u'Image',
             'it': u'File',
-            'ja': u'Image',
+            'ja': u'画像',
             'jv': u'Gambar',
             'ka': u'სურათი',
             'km': u'រូបភាព',
@@ -545,6 +559,7 @@ class Family(family.Family):
             'no': u'Bilde',
             'oc': u'Imatge',
             'pl': u'Plik',
+            'pt': u'Imagem',
             'ro': u'Imagine',
             'ru': u'Файл',
             'sk': u'Súbor',
@@ -583,12 +598,13 @@ class Family(family.Family):
             'fa': u'بحث تصویر',
             'fi': u'Keskustelu kuvasta',
             'fr': u'Discussion Fichier',
+            'ga': u'Plé íomhá',
             'got': u'Image talk',
             'he': u'שיחת קובץ',
             'hr': u'Razgovor o slici',
-            'hu': u'Kep vita',
+            'hu': u'Képvita',
             'id': u'Pembicaraan Berkas',
-            'info': u'File talk',
+            'info': u'Image talk',
             'it': u'Discussioni file',
             'ja': u'画像‐ノート',
             'jv': u'Dhiskusi Gambar',
@@ -610,6 +626,7 @@ class Family(family.Family):
             'no': u'Bildediskusjon',
             'oc': u'Discussion Imatge',
             'pl': u'Dyskusja pliku',
+            'pt': u'Imagem Discussão',
             'ro': u'Discuţie Imagine',
             'ru': u'Обсуждение файла',
             'sk': u'Diskusia k súboru',
@@ -635,6 +652,7 @@ class Family(family.Family):
             'bs': u'MedijaViki',
             'cy': u'MediaWici',
             'fa': u'مدیاویکی',
+            'fi': u'MediaWiki',
             'he': u'מדיה ויקי',
             'ka': u'მედიავიკი',
             'km': u'មេឌាវិគី',
@@ -669,8 +687,10 @@ class Family(family.Family):
             'fa': u'بحث مدیاویکی',
             'fi': u'Keskustelu MediaWiki',
             'fr': u'Discussion MediaWiki',
+            'ga': u'Plé MediaWiki',
             'he': u'שיחת מדיה ויקי',
             'hr': u'MediaWiki razgovor',
+            'hu': u'MediaWiki-vita',
             'id': u'Pembicaraan MediaWiki',
             'it': u'Discussioni MediaWiki',
             'ja': u'MediaWiki‐ノート',
@@ -693,13 +713,14 @@ class Family(family.Family):
             'no': u'MediaWiki-diskusjon',
             'oc': u'Discussion MediaWiki',
             'pl': u'Dyskusja MediaWiki',
+            'pt': u'MediaWiki Discussão',
             'ro': u'Discuţie MediaWiki',
             'ru': u'Обсуждение MediaWiki',
             'sk': u'Diskusia k MediaWiki',
             'sl': u'Pogovor o MediaWiki',
             'sr': u'Разговор о МедијаВикију',
             'su': u'Obrolan MédiaWiki',
-            'sv': u'MediaWiki diskussion',
+            'sv': u'MediaWiki-diskussion',
             'th': u'คุยเรื่องมีเดียวิกิ',
             'tr': u'MedyaViki tartışma',
             'uk': u'Обговорення MediaWiki',
@@ -727,6 +748,7 @@ class Family(family.Family):
             'fa': u'الگو',
             'fi': u'Malline',
             'fr': u'Modèle',
+            'ga': u'Teimpléad',
             'he': u'תבנית',
             'hr': u'Predložak',
             'hu': u'Sablon',
@@ -749,6 +771,7 @@ class Family(family.Family):
             'no': u'Mal',
             'oc': u'Modèl',
             'pl': u'Szablon',
+            'pt': u'Predefinição',
             'ro': u'Format',
             'ru': u'Шаблон',
             'sk': u'Šablóna',
@@ -784,9 +807,10 @@ class Family(family.Family):
             'fa': u'بحث الگو',
             'fi': u'Keskustelu mallineesta',
             'fr': u'Discussion Modèle',
+            'ga': u'Plé teimpléid',
             'he': u'שיחת תבנית',
             'hr': u'Razgovor o predlošku',
-            'hu': u'Sablon vita',
+            'hu': u'Sablonvita',
             'id': u'Pembicaraan Templat',
             'it': u'Discussioni template',
             'ja': u'Template‐ノート',
@@ -809,6 +833,7 @@ class Family(family.Family):
             'no': u'Maldiskusjon',
             'oc': u'Discussion Modèl',
             'pl': u'Dyskusja szablonu',
+            'pt': u'Predefinição Discussão',
             'ro': u'Discuţie Format',
             'ru': u'Обсуждение шаблона',
             'sk': u'Diskusia k šablóne',
@@ -843,6 +868,7 @@ class Family(family.Family):
             'fa': u'راهنما',
             'fi': u'Ohje',
             'fr': u'Aide',
+            'ga': u'Cabhair',
             'got': u'Help',
             'he': u'מדריך',
             'hr': u'Pomoć',
@@ -867,6 +893,7 @@ class Family(family.Family):
             'no': u'Hjelp',
             'oc': u'Ajuda',
             'pl': u'Pomoc',
+            'pt': u'Ajuda',
             'ro': u'Ajutor',
             'ru': u'Справка',
             'sk': u'Pomoc',
@@ -900,9 +927,10 @@ class Family(family.Family):
             'fa': u'بحث راهنما',
             'fi': u'Keskustelu ohjeesta',
             'fr': u'Discussion Aide',
+            'ga': u'Plé cabhrach',
             'he': u'שיחת מדריך',
             'hr': u'Razgovor o pomoći',
-            'hu': u'Segítség vita',
+            'hu': u'Segítségvita',
             'id': u'Pembicaraan Bantuan',
             'it': u'Discussioni aiuto',
             'ja': u'Help‐ノート',
@@ -924,6 +952,7 @@ class Family(family.Family):
             'no': u'Hjelpdiskusjon',
             'oc': u'Discussion Ajuda',
             'pl': u'Dyskusja pomocy',
+            'pt': u'Ajuda Discussão',
             'ro': u'Discuţie Ajutor',
             'ru': u'Обсуждение справки',
             'sk': u'Diskusia k pomoci',
@@ -957,6 +986,7 @@ class Family(family.Family):
             'fa': u'رده',
             'fi': u'Luokka',
             'fr': u'Catégorie',
+            'ga': u'Catagóir',
             'he': u'קטגוריה',
             'hr': u'Kategorija',
             'hu': u'Kategória',
@@ -980,6 +1010,7 @@ class Family(family.Family):
             'no': u'Kategori',
             'oc': u'Categoria',
             'pl': u'Kategoria',
+            'pt': u'Categoria',
             'ro': u'Categorie',
             'ru': u'Категория',
             'sk': u'Kategória',
@@ -1014,9 +1045,10 @@ class Family(family.Family):
             'fa': u'بحث رده',
             'fi': u'Keskustelu luokasta',
             'fr': u'Discussion Catégorie',
+            'ga': u'Plé catagóire',
             'he': u'שיחת קטגוריה',
             'hr': u'Razgovor o kategoriji',
-            'hu': u'Kategória vita',
+            'hu': u'Kategóriavita',
             'id': u'Pembicaraan Kategori',
             'it': u'Discussioni categoria',
             'ja': u'Category‐ノート',
@@ -1038,6 +1070,7 @@ class Family(family.Family):
             'no': u'Kategoridiskusjon',
             'oc': u'Discussion Categoria',
             'pl': u'Dyskusja kategorii',
+            'pt': u'Categoria Discussão',
             'ro': u'Discuţie Categorie',
             'ru': u'Обсуждение категории',
             'sk': u'Diskusia ku kategórii',
@@ -1134,6 +1167,7 @@ class Family(family.Family):
             'fi': u'Hikikirjasto',
             'meta': u'UnN',
             'nl': u'OnBoeken',
+            'pt': u'Descitações',
             'th': u'ไร้พจนานุกรม',
             'zh-hk': u'偽基文庫',
             'zh-tw': u'偽基文庫',
@@ -1144,6 +1178,7 @@ class Family(family.Family):
             'fi': u'Keskustelu hikikirjasta',
             'meta': u'UnN talk',
             'nl': u'Overleg OnBoeken',
+            'pt': u'Descitações Discussão',
             'th': u'คุยเรื่องไร้พจนานุกรม',
             'zh-hk': u'偽基文庫討論',
             'zh-tw': u'偽基文庫討論',
@@ -1153,6 +1188,7 @@ class Family(family.Family):
             '_default': u'',
             'fi': u'Hikisitaatit',
             'meta': u'Forum',
+            'pt': u'Uiquipédia',
             'th': u'ไร้ชีวประวัติ',
             'zh-hk': u'主題展館',
             'zh-tw': u'主題展館',
@@ -1161,6 +1197,7 @@ class Family(family.Family):
         self.namespaces[25] = {
             'fi': u'Keskustelu hikisitaatista',
             'meta': u'Forum talk',
+            'pt': u'Uiquipédia Discussão',
             'th': u'คุยเรื่องไร้ชีวประวัติ',
             'zh-hk': u'主題展館討論',
             'zh-tw': u'主題展館討論',
@@ -1204,7 +1241,7 @@ class Family(family.Family):
         }
 
         self.namespaces[31] = {
-            'fi': u'Keskustelu Hikiopistosta',
+            'fi': u'Keskustelu hikikurssista',
             'pt': u'Deslivros Discussão',
             'th': u'คุยเรื่องไร้ซอร์ซ',
             'zh-hk': u'臺語討論',
@@ -1212,19 +1249,19 @@ class Family(family.Family):
         }
 
         self.namespaces[32] = {
+            'fi': u'Hikiaineisto',
             'ja': u'Portal',
             'pt': u'Desentrevistas',
             'th': u'ไร้คำคม',
             'zh-hk': u'香港語',
-            'zh-tw': u'香港語'
         }
 
         self.namespaces[33] = {
+            'fi': u'Keskustelu hikiaineistosta',
             'ja': u'Portal talk',
             'pt': u'Desentrevistas Discussão',
             'th': u'คุยเรื่องไร้คำคม',
             'zh-hk': u'香港語討論',
-            'zh-tw': u'香港語討論'
         }
 
         self.namespaces[34] = {
@@ -1470,12 +1507,14 @@ class Family(family.Family):
             '_default': u'',
             'he': u'איןמינים',
             'it': u'NonDizionario',
+            'pt': u'Regra',
         }
 
         self.namespaces[123] = {
             '_default': u'',
             'he': u'שיחת איןמינים',
             'it': u'Discussioni NonDizionario',
+            'pt': u'Regra Discussão',
         }
 
         self.namespaces[400] = {
@@ -1490,6 +1529,26 @@ class Family(family.Family):
             '_default': u'',
             'zh': u'Video Template',
         }
+
+        self.namespaces[500] = {
+            '_default': u'User blog',
+            'de': u'Benutzer Blog',
+        }
+
+        self.namespaces[501] = {
+            '_default': u'User blog comment',
+            'de': u'Benutzer Blog Kommentare',
+        }
+
+        self.namespaces[502] = {
+            '_default': u'Blog',
+        }
+
+        self.namespaces[503] = {
+            '_default': u'Blog talk',
+            'de': u'Blog Diskussion',
+        }
+
 
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so
@@ -1512,18 +1571,13 @@ class Family(family.Family):
         ]
 
 
-    def path(self, code):
-        if code == 'ko' and code == 'nl':
-           return '/w/index.php'
-        return '/index.php'
+    def scriptpath(self, code):
+        if code in ['ko', 'nl']:
+            return '/w'
+        return ''
 
     def version(self, code):
         return '1.12'
-
-    def apipath(self, code):
-        if code == 'ko' and code == 'nl':
-           return '/w/api.php'
-        return '/api.php'
 
     def code2encoding(self,code):
         return 'utf-8'
