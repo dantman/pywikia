@@ -166,7 +166,7 @@ class LoginManager:
             response, data = self.site.postData(address, self.site.urlEncode(predata))
             if self.verbose:
                 fakepredata = predata
-                fakepredata['wpPassword'] = u'XXXXX'
+                fakepredata['wpPassword'] = fakepredata['lgpassword'] = u'XXXXX'
                 wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
                 fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
                 wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
