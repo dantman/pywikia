@@ -41,7 +41,7 @@ def getversiondict():
             tag = ''
             date = time.strptime('%sT%s' % (date, ts), '%Y-%m-%dT%H:%M:%SZ')
             rev += ' (wikipedia.py)'
-    datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
+    datestring = time.strftime('%Y/%m/%d, %H:%M:%S', date)
     cache = dict(tag=tag, rev=rev, date=datestring)
     return cache
 
