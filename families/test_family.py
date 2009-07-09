@@ -1,6 +1,8 @@
 # -*- coding: utf-8  -*-
 
-import family
+__version__ = '$Id$'
+
+import family, config
 
 # The test wikipedia family
 
@@ -11,6 +13,9 @@ class Family(family.Family):
         self.langs = {
             'test': 'test.wikipedia.org',
         }
+        if config.SSL_connection:
+            self.langs['test'] = None
+
 
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
@@ -126,3 +131,16 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
+
+        def protocol(self, code):
+            return 'https'
+
+        def scriptpath(self, code):
+            return '/wikipedia/test/w'
+
+        def nicepath(self, code):
+            return '/wikipedia/test/wiki/'

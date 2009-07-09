@@ -14,7 +14,7 @@ class Family(family.Family):
             'species': 'species.wikimedia.org',
         }
         if config.SSL_connection:
-            self.langs['species'] = 'secure.wikimedia.org'
+            self.langs['species'] = None
 
         self.namespaces[4] = {
             '_default': [u'Wikispecies', self.namespaces[4]['_default']],
@@ -31,8 +31,15 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    def scriptpath(self, code):
-        if config.SSL_connection:
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
+
+        def protocol(self, code):
+            return 'https'
+
+        def scriptpath(self, code):
             return '/wikipedia/species/w'
 
-        return '/w'
+        def nicepath(self, code):
+            return '/wikipedia/species/wiki/'

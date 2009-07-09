@@ -14,7 +14,7 @@ class Family(family.Family):
             'incubator': 'incubator.wikimedia.org',
         }
         if config.SSL_connection:
-            self.langs['incubator'] = 'secure.wikimedia.org'
+            self.langs['incubator'] = None
 
         self.namespaces[4] = {
             '_default': [u'Incubator', self.namespaces[4]['_default']],
@@ -35,8 +35,16 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    def scriptpath(self, code):
-        if config.SSL_connection:
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
+
+        def protocol(self, code):
+            return 'https'
+
+        def scriptpath(self, code):
             return '/wikipedia/incubator/w'
-        
-        return '/w'
+
+        def nicepath(self, code):
+            return '/wikipedia/incubator/wiki/'
+

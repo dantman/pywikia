@@ -1,5 +1,4 @@
 # -*- coding: utf-8  -*-
-import urllib
 import family, config
 
 __version__ = '$Id$'
@@ -263,10 +262,6 @@ class Family(family.Family):
             'zh-cn': 'zh'
         }
 
-    if config.SSL_connection:
-        def hostname(self, code):
-            return 'secure.wikimedia.org'
-
     def version(self, code):
         return '1.16alpha'
 
@@ -283,3 +278,16 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
+
+        def protocol(self, code):
+            return 'https'
+
+        def scriptpath(self, code):
+            return '/%s/%s/w' % (self.name, code)
+
+        def nicepath(self, code):
+            return '/%s/%s/wiki/' % (self.name, code)
