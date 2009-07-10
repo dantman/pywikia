@@ -3079,7 +3079,7 @@ class Family:
             'cyril': [
                 'ab', 'av', 'ba', 'be', 'be-x-old', 'bg', 'bxr', 'ce', 'cu', 'cv', 'kv',
                 'ky', 'mk', 'lbe', 'mdf', 'mn', 'mo', 'myv', 'os', 'ru', 'sah', 'tg',
-                'tk', 'udm', 'uk', 'xal',
+                'tk', 'udm', 'uk', 'xal', 'mhr',
                 # languages using multiple scripts, including cyrillic
                 'ha', 'kk', 'sh', 'sr', 'tt'
             ],
