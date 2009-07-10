@@ -36,7 +36,7 @@ class Family(family.Family):
             'kl', 'zu', 'ab', 'ti', 'ts', 'ss', 'za', 'bi', 'cr', 'dz',
             'xal', 've', 'ch', 'ha', 'xh', 'tn', 'bug', 'st', 'bxr', 'ik',
             'rw', 'chy', 'tw', 'ak', 'fj', 'ny', 'ff', 'sn', 'sg', 'lbe',
-            'rn', 'ki', 'lg', 'tum', 'ng',
+            'rn', 'ki', 'lg', 'tum', 'ng', 'mhr',
         ]
 
         if config.SSL_connection:
@@ -250,6 +250,7 @@ class Family(family.Family):
             'map-bms': u'Dhiskusi Wikipedia',
             'mdf': u'Википедиесь корхнема',
             'mg': u'Dinika amin\'ny Wikipedia',
+            'mhr': u'Обсуждение Wikipedia',
             'mk': u'Разговор за Википедија',
             'ml': u'വിക്കിപീഡിയ സംവാദം',
             'mn': u'Wikipedia-н хэлэлцүүлэг',
@@ -884,9 +885,9 @@ class Family(family.Family):
             'bh', 'bcl', 'bi', 'bar', 'bo', 'bs', 'br', 'bug', 'bg', 'bxr',
             'ca', 'ceb', 'cv', 'cs', 'ch', 'cbk-zam', 'ny', 'sn', 'tum', 'cho',
             'co', 'cy', 'da', 'dk', 'pdc', 'de', 'dv', 'nv', 'dsb', 'na', 'dz',
-            'mh', 'et', 'el', 'eml', 'en', 'myv', 'es', 'eo', 'ext', 'eu', 'ee',
-            'fa', 'hif', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd',
-            'gl', 'gan', 'ki', 'glk', 'gu', 'got', 'hak', 'xal', 'ko', 'ha',
+            'mh', 'mhr', 'et', 'el', 'eml', 'en', 'myv', 'es', 'eo', 'ext', 'eu',
+            'ee','fa', 'hif', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm',
+            'gd','gl', 'gan', 'ki', 'glk', 'gu', 'got', 'hak', 'xal', 'ko', 'ha',
             'haw', 'hy', 'hi', 'ho', 'hsb', 'hr', 'io', 'ig', 'ilo', 'bpy',
             'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it', 'he', 'kl',
             'kn', 'kr', 'pam', 'ka', 'ks', 'csb', 'kk', 'kw', 'rw', 'ky', 'rn',
