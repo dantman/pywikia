@@ -163,9 +163,9 @@ sd_template = {
     'en':u'{{db-r1}}',
     'it':u'{{Cancella subito|9}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
-    'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~',
-    'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~',
-    'war': u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~',
+    'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~\n\n',
+    'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~\n\n',
+    'war': u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~\n\n',
     'zh':u'{{delete|R1}}',
 }
 
