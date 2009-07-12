@@ -54,7 +54,7 @@ class TextEditor:
             line = column = 0
         # Linux editors. We use startswith() because some users might use parameters.
         if config.editor.startswith('kate'):
-            command += " -l %i -c %i" % (line, column)
+            command += " -l %i -c %i" % (line + 1, column + 1)
         elif config.editor.startswith('gedit'):
             command += " +%i" % (line + 1) # seems not to support columns
         elif config.editor.startswith('emacs'):
