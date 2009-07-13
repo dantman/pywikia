@@ -519,7 +519,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u"Saving page %s failed: %s"
                              % (article.aslink(), error.message))
 
-def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
+def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = [], site = None):
     #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
     """
     Category to load all the elements in a category using the APIs. Limit: 5000 elements.
@@ -533,8 +533,9 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
         'cmtitle'   :CatName,
         }
 
-    data = query.GetData(params,
+    data = query.GetData(params, site = site, 
                     useAPI = True, encodeTitle = False)
+    print data
     categories_parsed.append(CatName)
     try:
         members = data['query']['categorymembers']
@@ -564,13 +565,15 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
         results.append(member)
     return (results, categories_parsed)
 
-def categoryAllPageObjectsAPI(CatName):
+def categoryAllPageObjectsAPI(CatName, cmlimit = 5000, categories_parsed = [], site = None):
     """
     From a list of dictionaries, return a list of page objects.
     """
     final = list()
-    for element in categoryAllElementsAPI(CatName)[0]:
-        final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
+    if site == None:
+        site = wikipedia.getSite()
+    for element in categoryAllElementsAPI(CatName, cmlimit, categories_parsed, site)[0]:
+        final.append(wikipedia.Page(site, element['title']))
     return final
 
 def test():
