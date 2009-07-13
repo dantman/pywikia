@@ -50,7 +50,7 @@ __version__ = '$Id: add_text.py,v 1.5 2008/04/25 17:08:30 filnik Exp$'
 #
 
 import re, pagegenerators, urllib2, urllib
-import wikipedia, catlib
+import wikipedia
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
