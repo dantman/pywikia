@@ -59,6 +59,8 @@ class Replacer(object):
             
         
     def read_replace_log(self):
+        """ The actual worker method """
+        
         # FIXME: Make sqlite3 compatible
         insert = """INSERT INTO %s (timestamp, old_image, new_image, 
             status, user, comment) VALUES (%%s, %%s, %%s,
@@ -80,6 +82,7 @@ class Replacer(object):
             username = None
             
         try:
+            # Fetch revision history
             revisions = self.get_history(page.title(), since, username)
             # Fetch the page any way, to prevent editconflicts
             old_text = text = page.get()
@@ -93,38 +96,58 @@ class Replacer(object):
             #self.site.conn.connect()
             return time.sleep(self.config['timeout'])
         
+        # We're being killed
         if '{{stop}}' in text.lower():
             output(u'Found {{stop}} on command page. Not replacing anything.')
             return time.sleep(self.config['timeout'])
         
+        # Sort oldest first
         revisions.sort(key = lambda rev: rev['timestamp'])
+        
+        # Find all commands
         replacements = self.template.finditer(text)
         
         remove_from_list = []
         count = 0
         for replacement in replacements:
             if count == self.config.get('replacer_rate_limit', -1): break
+            # Find out who's to blame
             res = self.examine_revision_history(
                 revisions, replacement, username)
             if res and self.allowed_replacement(replacement) and \
                     replacement.group(1) != replacement.group(2):
+                # Insert replace command into database
                 self.cursor.execute(insert, res)
+                # Tag line for removal
                 remove_from_list.append(replacement.group(0))
                 output('Replacing %s by %s: %s' % replacement.groups())
             count += 1
+        
+        # Save all replaces to database
         self.database.commit()
         
         if remove_from_list and self.config.get('clean_list', False):
+            # Cleanup the command page
             while True:
                 try:
                     for remove in remove_from_list:
                         text = text.replace(remove, u'')
+                    # Kill the freaky CommonsDupes
+                    text = text.replacer('== Dummy section, heading can be deleted (using [http://tools.wikimedia.de/~magnus/commons_dupes.php CommonsDupes]) ==', '')
+                    # Kill the freaky whitespace
+                    text = text.replace('\r', '')
+                    while '\n\n\n' in text:
+                        text = text.replace('\n\n\n', '\n')
+                    # Save the page
                     page.put(text.strip(), comment = 'Removing images being processed')
                     return
                 except wikipedia.EditConflict:
+                    # Try again
                     text = page.get()
                     
     def get_history(self, title, since, username):
+        """ Fetch the last 50 revisions using the API """
+        
         address = self.site.api_address()
         predata = [
             ('action', 'query'),
@@ -149,6 +172,8 @@ class Replacer(object):
         return page.get('revisions', [])
         
     def examine_revision_history(self, revisions, replacement, username):
+        """ Find out who is to blame for a replacement """
+        
         for revision in revisions:
             if replacement.group(0) in revision['*']:
                 db_time = db_timestamp(revision['timestamp'])
@@ -163,6 +188,9 @@ class Replacer(object):
         return
         
     def read_finished_replacements(self):
+        """ Find out which replacements have been completed and add them to 
+            the reporters queue. """
+        
         self.cursor.execute('START TRANSACTION WITH CONSISTENT SNAPSHOT')
         self.cursor.execute("""SELECT old_image, new_image, user, comment FROM
             %s WHERE status = 'done' AND timestamp >= %i""" % \
@@ -198,6 +226,8 @@ class Replacer(object):
             time.sleep(self.config['timeout'] * 2)
             
     def allowed_replacement(self, replacement):
+        """ Method to prevent World War III """
+        
         for source, target in self.disallowed_replacements:
             if source.search(replacement.group(1)) and \
                     target.search(replacement.group(2)):
@@ -205,6 +235,8 @@ class Replacer(object):
         return True
 
 class Reporter(threadpool.Thread):
+    """ Asynchronous worker to report finished replacements to file pages. """
+    
     def __init__(self, pool, site, config):
         self.site = wikipedia.getSite(site.lang, site.family,
             site.user, True)
