@@ -535,7 +535,6 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = [], site
 
     data = query.GetData(params, site = site, 
                     useAPI = True, encodeTitle = False)
-    print data
     categories_parsed.append(CatName)
     try:
         members = data['query']['categorymembers']
