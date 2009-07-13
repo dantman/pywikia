@@ -304,7 +304,7 @@ def main():
         raise NoEnoughData('You have to specify the generator you want to use for the script!')
     # Main Loop
     for page in generator:
-        (status, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
+        (text, newtext, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
 
 if __name__ == "__main__":
     try:
