@@ -69,10 +69,18 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
 
     lastError = None
     retry_idle_time = 5
+    postAC = [
+        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
+        'block', 'unblock', 'move', 'emailuser','import', 'userrights',
+    ]
+
     while retryCount >= 0:
         try:
             jsontext = "Nothing received"
-            jsontext = site.getUrl( path, retry=True, data=data )
+            if params['action'] in postAC:
+                res, jsontext = site.postData(path, urllib.urlencode(params.items()))
+            else:
+                jsontext = site.getUrl( path, retry=True, data=data )
 
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
