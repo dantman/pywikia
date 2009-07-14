@@ -2762,14 +2762,15 @@ not supported by PyWikipediaBot!"""
             'rvlimit'   :limit,
             'titles'    :self.title(),
             }
-        data = query.GetData(params, useAPI = True, encodeTitle = False)
         try:
-            # We don't know the page's id, if any other better idea please change it
-            pageid = data['query']['pages'].keys()[0]
-            nickdata = data['query']['pages'][pageid][u'revisions']
-            return nickdata
+            data = query.GetData(params, useAPI = True, encodeTitle = False)['query']['pages']
         except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
+
+        # We don't know the page's id, if any other better idea please change it
+        pageid = data.keys()[0]
+        nickdata = data[pageid][u'revisions']
+        return nickdata
 
 class ImagePage(Page):
     """A subclass of Page representing an image descriptor wiki page.
@@ -2823,7 +2824,7 @@ class ImagePage(Page):
         params = {
             'action'    :'query',
             'prop'      :'imageinfo',
-            'titles'   :self.title(),
+            'titles'    :self.title(),
             'iiprop'    :'url',
         }
         imagedata = query.GetData(params, useAPI = True, encodeTitle = False)
@@ -6397,8 +6398,7 @@ your connection is down. Retrying in %i minutes..."""
             'list'      :'allimages',
             'aisha1'    :hash_found,
         }
-        data = query.GetData(params, site = getSite(self.lang, self.family), useAPI = True, encodeTitle = False)
-        allimages = data['query']['allimages']
+        allimages = query.GetData(params, site = getSite(self.lang, self.family), useAPI = True, encodeTitle = False)['query']['allimages']
         files = list()
         for imagedata in allimages:
             image = imagedata[u'name']
