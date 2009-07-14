@@ -92,7 +92,7 @@ def test_data(_test_data):
         return True
     return True
     
-def check_and_update(families, update_main):
+def check_and_update(families, update_main = False):
     for family in families:
         family = wikipedia.Family(family)
         result = family_check.check_family(family)
