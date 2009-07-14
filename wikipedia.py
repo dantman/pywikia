@@ -1339,12 +1339,11 @@ not supported by PyWikipediaBot!"""
                 raise Error("BUG> API problem.")
             if text[pageid]['protection'] != []: 
                 #if titles:
-                #    restrictions[ pageid ] = { 'edit': None, 'move': None }
-                #    for detail in text[pageid]['protection']:
-                #        restrictions[ pageid ][ detail[ 'type' ] ] = [ detail[ 'level' ], detail[ 'expiry'] ]
+                #    restrictions = dict([ detail['type'], [ detail['level'], detail['expiry'] ] ]
+                #        for detail in text[pageid]['protection'])
                 #else:
-                for detail in text[pageid]['protection']:
-                    restrictions[ detail[ 'type' ] ] = [ detail[ 'level' ], detail['expiry'] ]
+                restrictions = dict([ detail['type'], [ detail['level'], detail['expiry'] ] ]
+                    for detail in text[pageid]['protection'])
 
         return restrictions
 
@@ -5012,7 +5011,21 @@ your connection is down. Retrying in %i minutes..."""
 
             retry_idle_time = 1
             while True:
-                if usePHP:
+                if config.use_api:
+                    params = {
+                        'action':'query',
+                        'meta':'allmessages',
+                    }
+                    try:
+                        datas = query.GetData(params, useAPI = True)['query']['allmessages']
+                    except KeyError:
+                        raise ServerError("The APIs don't return data, the site may be down")
+                    except NotImplementedError:
+                        config.use_api = False
+                        continue
+                    self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
+                            for tag in datas])
+                elif usePHP:
                     phppage = self.getUrl(self.get_address("Special:Allmessages")
                                       + "&ot=php")
                     Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
