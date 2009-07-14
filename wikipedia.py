@@ -1308,27 +1308,43 @@ not supported by PyWikipediaBot!"""
                 ('autoconfirmed' or 'sysop')
             * expiry is the expiration time of the restriction
         """
+        #, titles = None
+        #if titles:
+        #    restrictions = {}
+        #else:
         restrictions = { 'edit': None, 'move': None }
         try:
             api_url = self.site().api_address()
         except NotImplementedError:
             return restrictions
-        api_url += 'action=query&prop=info&inprop=protection&format=xml&titles=%s' % self.urlname()
-        text = self.site().getUrl(api_url)
-        if 'missing=""' in text:
-            self._getexception = NoPage
-            raise NoPage('Page %s does not exist' % self.aslink())
-        elif not 'pageid="' in text:
-            # I don't know what may happen here.
-            # We may want to have better error handling
-            raise Error("BUG> API problem.")
-        match = re.findall(r'<protection>(.*?)</protection>', text)
-
-        if match:
-            text = match[0] # If there's the block "protection" take the settings inside it.
-            api_found = re.compile(r'<pr type="(.*?)" level="(.*?)" expiry="(.*?)" />')
-            for entry in api_found.findall(text):
-                restrictions[ entry[0] ] = [ entry[1], entry[2] ]
+        
+        predata = {
+            'action': 'query',
+            'prop': 'info',
+            'inprop': 'protection',
+            'titles': self.title(),
+        }
+        #if titles:
+        #    predata['titles'] = query.ListToParam(titles)
+        
+        text = query.GetData(predata, useAPI = True)['query']['pages']
+        
+        for pageid in text:
+            if text[pageid].has_key('missing'):
+                self._getexception = NoPage
+                raise NoPage('Page %s does not exist' % self.aslink())
+            elif not text[pageid].has_key('pageid'):
+                # Don't know what may happen here.
+                # We may want to have better error handling
+                raise Error("BUG> API problem.")
+            if text[pageid]['protection'] != []: 
+                #if titles:
+                #    restrictions[ pageid ] = { 'edit': None, 'move': None }
+                #    for detail in text[pageid]['protection']:
+                #        restrictions[ pageid ][ detail[ 'type' ] ] = [ detail[ 'level' ], detail[ 'expiry'] ]
+                #else:
+                for detail in text[pageid]['protection']:
+                    restrictions[ detail[ 'type' ] ] = [ detail[ 'level' ], detail['expiry'] ]
 
         return restrictions
 
