@@ -4497,9 +4497,13 @@ class Site(object):
     def _getBlock(self, sysop = False):
         """Get user block data from the API."""
         try:
-            text = self.getUrl(u'%saction=query&meta=userinfo&uiprop=blockinfo'
-                               % self.api_address(), sysop=sysop)
-            return 'blockedby=' in text
+            params = {
+                'action': 'query',
+                'meta': 'userinfo',
+                'uiprop': 'blockinfo',
+            }
+            data = query.GetData(params, self, useAPI = True)['query']['userinfo']
+            return data.has_key('blockby')
         except NotImplementedError:
             return False
 
@@ -5605,34 +5609,30 @@ your connection is down. Retrying in %i minutes..."""
                 yield page
             return
 
-        api_url_basename = "%saction=query&format=xml&list=allpages" \
-                           "&aplimit=%i&apnamespace=%i" % \
-                           (self.api_address(), config.special_page_limit,
-                           namespace)
+        params = {
+            'action'     : 'query',
+            'list'       : 'allpages',
+            'aplimit'   : config.special_page_limit,
+            'apnamespace': namespace,
+        }
 
         if not includeredirects:
-           api_url_basename += '&apfilterredir=nonredirects'
+            params['apfilterredir'] = 'nonredirects'
         elif includeredirects == 'only':
-           api_url_basename += '&apfilterredir=redirects'
+            params['apfilterredir'] = 'redirects'
 
         while True:
-            api_url = '%s&apfrom=%s' % (api_url_basename,
-                      urllib.quote(start.encode(self.encoding())))
-
+            params['apfrom'] = urllib.quote(start.encode(self.encoding()))
             if throttle:
                 get_throttle()
-            text = self.getUrl(api_url)
-
-            soup = BeautifulSoup(text,
-                                 convertEntities=BeautifulSoup.HTML_ENTITIES)
-
-            for p in soup.api.query.allpages:
+            data = query.GetData(params, useAPI = True)
+            
+            for p in data['query']['allpages']:
                 yield Page(self, p['title'])
+            
+            if data.has_key('query-continue'):
+                start = data['query-continue']['allpages']['apfrom']
 
-            if soup.api.find('query-continue') is None:
-                # Last page reached.
-                break
-            start = soup.api.find('query-continue').allpages['apfrom']
 
     def _allpagesOld(self, start='!', namespace=0, includeredirects=True,
                  throttle=True):
