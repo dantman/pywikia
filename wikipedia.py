@@ -1928,7 +1928,7 @@ not supported by PyWikipediaBot!"""
         inside = {}
         count = 0
         Rtemplate = re.compile(
-                    ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]+?))?}}')
+                    ur'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>[^{]*?))?}}')
         Rlink = re.compile(ur'\[\[[^\]]+\]\]')
         Rmath = re.compile(ur'<math>[^<]+</math>')
         Rmarker = re.compile(ur'%s(\d+)%s' % (marker, marker))
