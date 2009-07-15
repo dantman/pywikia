@@ -5823,8 +5823,7 @@ your connection is down. Retrying in %i minutes..."""
                     'eulimit': limit,
                     'euquery': url,
                 }
-                keepGo = True
-                while keepGo:
+                while True:
                     data = query.GetData(params, useAPI = True)
                     if data['query']['exturlusage'] == []:
                         break
