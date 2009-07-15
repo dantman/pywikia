@@ -5810,6 +5810,13 @@ your connection is down. Retrying in %i minutes..."""
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
+        #Check API can work
+        if config.use_api:
+            try:
+                d = self.api_address()
+                del d
+            except NotImplementedError:
+                config.use_api = False
 
         urlsToRetrieve = [siteurl]
         if not siteurl.startswith('*.'):
