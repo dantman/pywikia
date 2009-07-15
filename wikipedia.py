@@ -5829,13 +5829,8 @@ your connection is down. Retrying in %i minutes..."""
                     if data['query']['exturlusage'] == []:
                         break
                     
-                    if data.has_key(u'query-continue'):
-                            params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
-                    else:
-                            keepGo = False
 
-                    data = data['query']['exturlusage']
-                    for pages in data:
+                    for pages in data['query']['exturlusage']:
                         if not siteurl in pages['title']:
                             # the links themselves have similar form
                             if pages['title'] in cache:
@@ -5843,6 +5838,10 @@ your connection is down. Retrying in %i minutes..."""
                             else:
                                 cache.append(pages['title'])
                                 yield Page(self, pages['title'])
+                    if data.has_key(u'query-continue'):
+                            params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
+                    else:
+                            break
         else:
             output(u'Querying [[Special:Linksearch]]...')
             for url in urlsToRetrieve:
