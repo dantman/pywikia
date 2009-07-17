@@ -896,7 +896,7 @@ class Family(family.Family):
             'mk', 'mg', 'ml', 'mt', 'mi', 'mr', 'arz', 'mzn', 'cdo', 'mdf',
             'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nl', 'nds-nl', 'cr', 'ne',
             'new', 'ja', 'nap', 'ce', 'pih', 'no', 'nb', 'nn', 'nrm', 'nov',
-            'ii', 'oc', 'or', 'om', 'ng', 'hz', 'uz', 'pa', 'pi', 'pag', 'pap',
+            'ii', 'oc', 'mhr', 'or', 'om', 'ng', 'hz', 'uz', 'pa', 'pi', 'pag', 'pap',
             'ps', 'km', 'pms', 'nds', 'pl', 'pnt', 'pt', 'aa', 'kaa', 'crh',
             'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'sah', 'se', 'sa', 'sg',
             'sc', 'za', 'sco', 'stq', 'st', 'tn', 'sq', 'scn', 'si', 'simple',

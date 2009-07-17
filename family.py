@@ -27,7 +27,7 @@ class Family:
             'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mt', 'mi', 'mr',
             'arz', 'mzn', 'ms', 'cdo', 'mdf', 'mo', 'mn', 'mus', 'my', 'nah',
             'na', 'fj', 'nl', 'nds-nl', 'cr', 'ne', 'new', 'ja', 'nap', 'ce',
-            'pih', 'no', 'nb', 'nn', 'nrm', 'nov', 'ii', 'oc', 'or', 'om', 'ng',
+            'pih', 'no', 'nb', 'nn', 'nrm', 'nov', 'ii', 'oc', 'mhr', 'or', 'om', 'ng',
             'hz', 'uz', 'pa', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'tpi',
             'nds', 'pl', 'tokipona', 'tp', 'pnt', 'pt', 'aa', 'kaa', 'crh',
             'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'sah', 'se', 'sm', 'sa',
