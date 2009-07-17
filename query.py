@@ -78,7 +78,7 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
         try:
             jsontext = "Nothing received"
             if params['action'] in postAC:
-                res, jsontext = site.postData(path, urllib.urlencode(params.items()))
+                res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies())
             else:
                 jsontext = site.getUrl( path, retry=True, data=data )
 
