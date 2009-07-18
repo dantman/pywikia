@@ -753,6 +753,7 @@ class Family(family.Family):
             'sr':  [u'Вишезначна одредница', u'Disambig', u'Вишезначна',
                     u'Višeznačna odrednica'],
             'srn': [u'Dp'],
+            'stq': [u'Begriepskläärenge'],
             'su':  [u'Disambig'],
             'sv':  None,
             'sw':  [u'Maana'],
