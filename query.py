@@ -56,8 +56,16 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
             data = {'titles' : params['titles']}
             del params['titles']
 
+    postAC = [
+        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
+        'block', 'unblock', 'move', 'emailuser','import', 'userrights',
+    ]
     if useAPI:
-        path = site.api_address() + urllib.urlencode(params.items())
+        if params['action'] in postAC:
+            path = site.api_address()
+        else:
+            path = site.api_address() + urllib.urlencode(params.items())
+
     else:
         path = site.query_address() + urllib.urlencode(params.items())
 
@@ -69,10 +77,6 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
 
     lastError = None
     retry_idle_time = 5
-    postAC = [
-        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
-        'block', 'unblock', 'move', 'emailuser','import', 'userrights',
-    ]
 
     while retryCount >= 0:
         try:
