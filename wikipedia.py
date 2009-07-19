@@ -4708,7 +4708,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         return response, data
 
     def getUrl(self, path, retry = None, sysop = False, data = None,
-               compress = True, no_hostname = False, cookie_only=False):
+               compress = True, no_hostname = False, cookie_only=False, back_response=False):
         """
         Low-level routine to get a URL from the wiki.
 
@@ -4744,7 +4744,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 # Blub.
                 self.conn.close()
                 self.conn.connect()
-                return self.getUrl(path, retry, sysop, data, compress)
+                return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
 
             text = response.read()
             headers = dict(response.getheaders())
@@ -4815,7 +4815,7 @@ your connection is down. Retrying in %i minutes..."""
             if False: #self.persistent_http
                 self.conn.close()
                 self.conn.connect()
-            return self.getUrl(path, retry, sysop, data, compress)
+            return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
 
         if compress and contentEncoding == 'gzip':
             text = decompress_gzip(text)
@@ -4846,7 +4846,10 @@ your connection is down. Retrying in %i minutes..."""
         # If a wiki page, get user data
         self._getUserData(text, sysop = sysop)
 
-        return text
+        if back_response:
+            return response, text
+        else:
+            return text
 
     def _getUserData(self, text, sysop = False, force = True):
         """
