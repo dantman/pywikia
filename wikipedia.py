@@ -5639,7 +5639,7 @@ your connection is down. Retrying in %i minutes..."""
             params['apfilterredir'] = 'redirects'
 
         while True:
-            params['apfrom'] = urllib.quote(start.encode(self.encoding()))
+            params['apfrom'] = start
             if throttle:
                 get_throttle()
             data = query.GetData(params, useAPI = True)
