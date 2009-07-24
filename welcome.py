@@ -966,7 +966,11 @@ def main(settingsBot):
             else:
                 strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
             wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
-            time.sleep(time_variable)
+            try:
+                time.sleep(time_variable)
+            except KeyboardInterrupt:
+                recursive = False
+                break
         # If not recursive, break.
         elif recursive == False:
             yield number_user
