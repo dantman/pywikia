@@ -5584,18 +5584,40 @@ your connection is down. Retrying in %i minutes..."""
                 break
 
     def randompage(self):
-        """Yield random page via Special:Random"""
-        html = self.getUrl(self.random_address())
-        m = re.search('var wgPageName = "(?P<title>.+?)";', html)
-        if m is not None:
-            return Page(self, m.group('title'))
+        if config.use_api:
+            params = {
+                'action': 'query',
+                'list': 'random',
+                #'rnnamespace': '0',
+                'rnlimit': '1',
+                #'': '',
+            }
+            data = query.GetData(params, useAPI = True)
+            return Page(self, data['query']['random'][0]['title'])
+        else:
+            """Yield random page via Special:Random"""
+            html = self.getUrl(self.random_address())
+            m = re.search('var wgPageName = "(?P<title>.+?)";', html)
+            if m is not None:
+                return Page(self, m.group('title'))
 
     def randomredirectpage(self):
-        """Yield random redirect page via Special:RandomRedirect."""
-        html = self.getUrl(self.randomredirect_address())
-        m = re.search('var wgPageName = "(?P<title>.+?)";', html)
-        if m is not None:
-            return Page(self, m.group('title'))
+        if config.use_api:
+            params = {
+                'action': 'query',
+                'list': 'random',
+                #'rnnamespace': '0',
+                'rnlimit': '1',
+                'rnredirect': '1',
+            }
+            data = query.GetData(params, useAPI = True)
+            return Page(self, data['query']['random'][0]['title'])
+        else:
+            """Yield random redirect page via Special:RandomRedirect."""
+            html = self.getUrl(self.randomredirect_address())
+            m = re.search('var wgPageName = "(?P<title>.+?)";', html)
+            if m is not None:
+                return Page(self, m.group('title'))
 
     def allpages(self, start='!', namespace=None, includeredirects=True,
                  throttle=True):
@@ -5837,8 +5859,6 @@ your connection is down. Retrying in %i minutes..."""
                     data = query.GetData(params, useAPI = True)
                     if data['query']['exturlusage'] == []:
                         break
-                    
-
                     for pages in data['query']['exturlusage']:
                         if not siteurl in pages['title']:
                             # the links themselves have similar form
