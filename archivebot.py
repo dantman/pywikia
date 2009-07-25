@@ -77,6 +77,14 @@ messages = {
             'ArchiveSummary': u'%(count)d szakasz archiválása a(z) [[%(from)s]] lapról.',
             'OlderThanSummary': u'régebbi, mint',
             },
+
+        'ksh': {
+            'ArchiveFull': u'(DAT ASCHIHV ES VOLL)',
+            'InitialArchiveHeader': u'{{Sigg weed aschiveet}}',
+            'PageSummary': u'* %(count)d Schtöe) (%(why)s) en et Aschif %(archives)s jedonn.',
+            'ArchiveSummary': u'* %(count)d Schtö) vun [[%(from)s]] noh heh en et Aschihf jedonn.',
+            'OlderThanSummary': u'äer wi',
+             },
         'no': {
             'ArchiveFull': u'(ARKIV FULLT)',
             'InitialArchiveHeader': u'{{arkiv}}',
