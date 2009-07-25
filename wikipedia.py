@@ -4600,20 +4600,20 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         return '&'.join(l)
 
     def solveCaptcha(self, data):
-        #if (type(data) == dict): # API Mode result
-        #    if data['result'].has_key("captcha"):
-        #        type = data['result']['captcha']['type']
-        #        id = data['result']['captcha']['id']
-        #        if type in ['simple', 'math', 'question']:
-        #            answer = input('What is the answer to the captcha "%s" ?' % data['result']['captcha']['question'])
-        #        elif type == 'image':
-        #            url = self.protocol() + '://' + self.hostname() + self.captcha_image_address(id)
-        #            answer = ui.askForCaptcha(url)
-        #        else: #no captcha id result, maybe ReCaptcha.
-        #            raise CaptchaError('We have been prompted for a ReCaptcha, but pywikipedia does not yet support ReCaptchas')
-        #        return {'id':id, 'answer':answer}
-        #    return None
-        #else:
+        if type(data) == dict: # API Mode result
+            if data['result'].has_key("captcha"):
+                captype = data['result']['captcha']['type']
+                id = data['result']['captcha']['id']
+                if captype in ['simple', 'math', 'question']:
+                    answer = input('What is the answer to the captcha "%s" ?' % data['result']['captcha']['question'])
+                elif captype == 'image':
+                    url = self.protocol() + '://' + self.hostname() + self.captcha_image_address(id)
+                    answer = ui.askForCaptcha(url)
+                else: #no captcha id result, maybe ReCaptcha.
+                    raise CaptchaError('We have been prompted for a ReCaptcha, but pywikipedia does not yet support ReCaptchas')
+                return {'id':id, 'answer':answer}
+            return None
+        else:
             captchaW = re.compile('<label for="wpCaptchaWord">(?P<question>[^<]*)</label>')
             captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
             match = captchaR.search(data)
