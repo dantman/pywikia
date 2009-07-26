@@ -137,6 +137,15 @@ parameterHelp = """\
 -recentchanges    Work on new and edited pages returned by [[Special:Recentchanges]].
                   Can also be given as "-recentchanges:n" where n is the number
                   of pages to be returned, else 100 pages are returned.
+
+-redirectonly     Work on redirect pages only, not their target pages.
+                  The robot goes alphabetically through all redirect pages
+                  on the wiki, starting at the named page. The
+                  argument can also be given as "-redirectonly:pagetitle".
+
+                  You can also include a namespace. For example,
+                  "-redirectonly:Template:!" will make the bot work on
+                  all redirect pages in the template namespace.
 """
 
 
@@ -1058,6 +1067,16 @@ class GeneratorFactory:
                                  firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
                                         includeredirects=False)
+        elif arg.startswith('-redirectonly'):
+            firstPageTitle = arg[15:]
+            if not firstPageTitle:
+                firstPageTitle = wikipedia.input(
+                    u'At which page do you want to start?')
+            namespace = wikipedia.Page(site, firstPageTitle).namespace()
+            firstPageTitle = wikipedia.Page(site,
+                                 firstPageTitle).titleWithoutNamespace()
+            gen = AllpagesPageGenerator(firstPageTitle, namespace,
+                                        includeredirects='only')
         elif arg.startswith('-prefixindex'):
             prefix = arg[13:]
             namespace = None
