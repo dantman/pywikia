@@ -299,9 +299,15 @@ class SpeedyRobot:
                 },
             'zh':{
                 u'_default':u'[[WP:CSD]]',
-                u'db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
-                u'db-rediruser':u'[[WP:CSD#O1|CSD O6]] 沒有在使用的討論頁',
+                u'Db-blanked': 'auth',
+                u'Db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
+                u'Db-rediruser':u'[[WP:CSD#O1|CSD O6]] 沒有在使用的討論頁',
                 u'Notchinese':u'[[WP:CSD#G7|CSD G7]]: 非中文條目且長時間未翻譯',
+                u'Db-vandalism': 'vand',
+                u'翻译': 'oprj',
+                u'翻譯': 'oprj',
+                u'NotChinese': 'oprj',
+                u'NotMandarin': 'oprj',
                 u'No source':u'[[WP:CSD#I3|CSD I3]]: 沒有來源連結，無法確認來源與版權資訊',
                 u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
                 u'Unknown':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
@@ -388,23 +394,34 @@ class SpeedyRobot:
                 'ipu':u'[[WP:CSD]] 利用者ページ3 IPユーザの利用者ページ',
                 },
             'zh':{
-                'empty':u'[[WP:CSD#G1|CSD G1]]: 沒有實際內容或歷史記錄的文章。',
-                'test':u'[[WP:CSD#G2|CSD G2]]: 測試頁',
-                'vand':u'[[WP:CSD#G3|CSD G3]]: 純粹破壞',
-                'cont':u'[[WP:CSD#G4|CSD G4]]: 非常短，而且沒有定義或內容。',
-                'rep':u'[[WP:CSD#G5|CSD G5]]: 重新建立的內容',
-                'text':u'[[WP:CSD#G9|CSD G9]]: 只有相關連結、項目的頁面',
-                'auth':u'[[WP:CSD#G10|CSD G10]]: 原作者請求',
-                'ad':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
-                'bio':u'[[WP:CSD#G12|CSD G12]]: 生者傳記',
-                'br':u'[[WP:CSD#R1|CSD R1]]: 損壞的重定向',
-                'wr':u'[[WP:CSD#R3|CSD R3]]: 錯誤重定向',
-                'repi':u'[[WP:CSD#I1|CSD I1]]: 重複的圖片',
-                'lssd':u'[[WP:CSD#I3|CSD I3]]: 沒有版權或來源資訊，無法確認圖片是否符合方針要求',
-                'nls':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
-                'ui':u'[[WP:CSD#I6|CSD I6]]: 圖片未使用且不自由',
-                'uc':u'[[WP:CSD#O4|CSD O4 O5]]: 空類別',
-                'mactra':u'[[WP:CSD#G7|CSD G7]]: 機器翻譯',
+                'empty':u'[[WP:CSD#G1]]: 沒有實際內容或歷史記錄的文章。',
+                'test':u'[[WP:CSD#G2]]: 測試頁',
+                'vand':u'[[WP:CSD#G3]]: 純粹破壞',
+                'cont':u'[[WP:CSD#G4]]: 非常短，而且沒有定義或內容。',
+                'rep':u'[[WP:CSD#G5]]: 重新建立的內容',
+                'oprj':u'[[WP:CSD#G7]]: 內容來自其他中文計劃',
+                'text':u'[[WP:CSD#G9]]: 只有相關連結、項目的頁面',
+                'auth':u'[[WP:CSD#G10]]: 原作者請求',
+                'ad':u'[[WP:CSD#G11]]: 明顯的以廣告宣傳為目而建立的頁面',
+                'adc':u'[[WP:CSD#G11]]: 只有條目名稱中的人物或團體之聯絡資訊',
+                'bio':u'[[WP:CSD#G12]]: 未列明來源及語調負面的生者傳記',
+                'mactra':u'[[WP:CSD#G13]]: 明顯的機器翻譯',
+                'notrans': u'[[WP:CSD#G14]]: 超過2周沒有做任何翻譯的非現代標準漢語條目',
+                'isol':u'[[WP:CSD#G15]]: 孤立頁面',
+                'isol-f':u'[[WP:CSD#G15]]: 孤立頁面-沒有對應檔案的檔案頁面',
+                'isol-sub':u'[[WP:CSD#G15]]: 孤立頁面-沒有對應母頁面的子頁面',
+                'br':u'[[WP:CSD#R1]]: 損壞的重定向',
+                'wr':u'[[WP:CSD#R3]]: 錯誤重定向',
+                'vdr':u'[[WP:CSD#R4]]: 故意破壞的結果',
+                'slr':u'[[WP:CSD#R5]]: 指向本身的重定向或循環的重定向',
+                'repi':u'[[WP:CSD#I1]]: 重複的檔案',
+                'lssd':u'[[WP:CSD#I3]]: 沒有版權或來源資訊，無法確認圖片是否符合方針要求',
+                'nls':u'[[WP:CSD#I3]]: 沒有版權模板，無法確認版權資訊',
+                'svg':u'[[WP:CSD#I5]]: 被高解析度與SVG檔案取代的圖片',
+                'ui':u'[[WP:CSD#I6]]: 圖片未使用且不自由',
+                'urs':u'[[WP:CSD#O1]]: 用戶請求刪除自己的用戶頁子頁面',
+                'anou':u'[[WP:CSD#O3]]: 匿名用戶的用戶討論頁，其中的內容不再有用',
+                'uc':u'[[WP:CSD#O4]]: 空類別',
                 'tmp':u'[[WP:CSD]]: 臨時頁面',
                 },
         },
@@ -445,8 +462,12 @@ class SpeedyRobot:
             reasons = wikipedia.translate(self.mySite, self.deletion_messages)
 
             for templateName in templateNames:
-                if templateName in reasons.keys():
-                    reason = reasons[templateName]
+                if reasons.has_key(templateName):
+                    if type(reasons[templateName]) is not unicode:
+                        #Make alias to delete_reasons
+                        reason = wikipedia.translate(self.mySite, self.delete_reasons)[reasons[templateName]]
+                    else:
+                        reason = reasons[templateName]
                     break
         if not reason:
             # Unsuccessful in guessing the reason. Use a default message.
