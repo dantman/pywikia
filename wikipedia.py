@@ -1680,7 +1680,7 @@ not supported by PyWikipediaBot!"""
 
             # We might have been prompted for a captcha if the
             # account is not autoconfirmed, checking....
-            output('%s' % data)
+            ## output('%s' % data) # WHY?
             solve = self.site().solveCaptcha(data)
             if solve:
                 return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
