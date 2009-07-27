@@ -860,17 +860,18 @@ class Family(family.Family):
             'ab', 'af', 'ak', 'am', 'ang', 'arc', 'arz', 'as', 'ast,', 'av', 'ay', 'az',
             'ba', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
             'cbk-zam', 'cdo', 'ce', 'ch', 'chr', 'chy', 'co', 'crh', 'cr', 'csb', 'cu', 'cv', 'cy',
-            'diq', 'dsb', 'dz', 'ee', 'eml', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
-            'gan', 'ga', 'glk', 'gn', 'got', 'gu', 'gv', 'ha', 'hak', 'haw', 'hif', 'hi', 'hsb', 'ht', 'hu', 'hy',
-            'ia', 'id', 'ie', 'ig', 'ik', 'ilo', 'iow', 'is', 'iu', 'jbo', 'jv',
+            'diq', 'dsb', 'dz', 'ee', 'el', 'eml', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
+            'ga', 'gan', 'glk', 'gn', 'got', 'gu', 'gv', 'ha', 'hak', 'haw', 'hif', 'hi', 'hsb', 'ht', 'hu', 'hy',
+            'ia', 'id', 'ie', 'ig', 'ik', 'ilo', 'iow', 'is', 'iu', 'ja', 'jbo', 'jv',
             'kaa', 'kab', 'ka', 'kg', 'ki', 'kl', 'km', 'kn', 'ko', 'ks', 'ku', 'kv', 'kw', 'ky',
-            'lad', 'lbe', 'lg', 'li', 'lij', 'lmo', 'ln', 'lo', 'lv', 'map-bms', 'mdf', 'mg', 'mk', 'mn', 'mt', 'myv', 'my', 'mzn',
+            'lad', 'lb', 'lbe', 'lg', 'li', 'lij', 'lmo', 'ln', 'lo', 'lv',
+            'map-bms', 'mdf', 'mg', 'mhr', 'mk', 'mn', 'ms', 'mt', 'myv', 'my', 'mzn',
             'nah', 'na', 'nap', 'nds-nl', 'ne', 'new', 'ng', 'nl', 'nov', 'nrm', 'nv', 'ny', 'om', 'or', 'os',
             'pam', 'pap', 'pa', 'pdc', 'pnt', 'ps', 'qu', 'rm', 'rmy', 'rn', 'roa-rup', 'roa-tara', 'rw',
             'sah', 'sa', 'sc', 'sco', 'sd', 'se', 'sg', 'sh', 'simple', 'si', 'sk', 'sm', 'sn', 'so', 'srn', 'stq', 'st', 'su', 'sw', 'szl',
             'ta', 'te', 'tet', 'tg', 'ti', 'tk', 'tn', 'to', 'tpi', 'ts', 'tt', 'tum', 'tw', 'ty',
             'udm', 'ug', 'uz', 've', 'vls', 'wa', 'war', 'wo', 'wuu',
-            'xal', 'xh', 'yi', 'yo', 'za', 'zh', 'zh-classic', 'zh-min-nan', 'zu',
+            'xal', 'xh', 'yi', 'yo', 'za', 'zea', 'zh', 'zh-classic', 'zh-min-nan', 'zu',
         ]
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
