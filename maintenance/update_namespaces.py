@@ -3,7 +3,7 @@ Check the family files against the live site, and updates
 both the generic family.py and the site-specific family.
 
 options:
-    -nomain        Don't modify the main family.py
+    -upmain        Modify the main family.py, too.
     -wikimedia     Update all the wikimedia families
 """
 #
@@ -103,11 +103,11 @@ def check_and_update(families, update_main = False):
     
 if __name__ == '__main__':
     try:
-        update_main_family = True
+        update_main_family = False
         update_wikimedia = False
         for arg in wikipedia.handleArgs():
-            if  arg == '-nomain':
-                update_main_family = False
+            if  arg == '-upmain':
+                update_main_family = True
             elif arg == '-wikimedia':
                 update_wikimedia = True
 
