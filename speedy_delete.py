@@ -398,7 +398,7 @@ class SpeedyRobot:
                 'test':u'[[WP:CSD#G2]]: 測試頁',
                 'vand':u'[[WP:CSD#G3]]: 純粹破壞',
                 'cont':u'[[WP:CSD#G4]]: 非常短，而且沒有定義或內容。',
-                'rep':u'[[WP:CSD#G5]]: 重新建立的內容',
+                'rep':u'[[WP:CSD#G5]]: 重複的條目或是重新建立的內容',
                 'oprj':u'[[WP:CSD#G7]]: 內容來自其他中文計劃',
                 'text':u'[[WP:CSD#G9]]: 只有相關連結、項目的頁面',
                 'auth':u'[[WP:CSD#G10]]: 原作者請求',
