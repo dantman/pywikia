@@ -979,6 +979,7 @@ class Family(family.Family):
             '_default': {
                 'pt': [102],
                 'als': [104],
+		'ar': [104],
                 'en': [12],
                 'es': [104],
                 'fi': [4],
