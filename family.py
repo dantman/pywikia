@@ -3445,7 +3445,7 @@ class Family:
         'pl': [u'patrz', u'przekieruj', u'tam'],
         'pms': [u'rinvia', u'rinvio'],
         'pt-br': [u'redirecionamento'],
-        'qu': [u'redirección'],
+        'qu': [u'pusapuna', u'redirección'],
         'rmy': [u'redirecteaza'],
         'ro': [u'redirecteaza'],
         'ru': [u'перенаправление', u'перенапр'],
