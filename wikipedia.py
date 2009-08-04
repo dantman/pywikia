@@ -2868,7 +2868,7 @@ class ImagePage(Page):
 
         """
         result = []
-        history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
+        history = re.search('(?s)<table class="wikitable filehistory">.+?</table>', self.getImagePageHtml())
         if history:
             lineR = re.compile(r'<tr>(?:<td>.*?</td>){1,2}<td.*?><a href=".+?">(?P<datetime>.+?)</a></td><td>.*?(?P<resolution>\d+\xd7\d+) <span.*?>\((?P<filesize>.+?)\)</span></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?:.*?<span class="comment">\((?P<comment>.*?)\)</span>)?</td></tr>')
             if not lineR.search(history.group()):
