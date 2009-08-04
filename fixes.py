@@ -2,7 +2,7 @@
 """ File containing all standard fixes """
 __version__ = '$Id$'
 
-help = """
+help = u"""
                        * HTML       -  Convert HTML tags to wiki syntax, and
                                        fix XHTML.
                        * isbn        - Fix badly formatted ISBNs.
