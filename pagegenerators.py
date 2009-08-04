@@ -164,6 +164,13 @@ import urllib, urllib2, time
 import wikipedia, date, catlib
 import config
 
+# For python 2.4 compatibility
+# see http://www.mail-archive.com/python-dev@python.org/msg12668.html
+try:
+  GeneratorExit
+except NameError:
+  class GeneratorExit(Exception): pass
+
 
 class ThreadedGenerator(threading.Thread):
     """Look-ahead generator class.
