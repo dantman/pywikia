@@ -1075,7 +1075,7 @@ class GeneratorFactory:
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
                                         includeredirects=False)
         elif arg.startswith('-redirectonly'):
-            firstPageTitle = arg[15:]
+            firstPageTitle = arg[14:]
             if not firstPageTitle:
                 firstPageTitle = wikipedia.input(
                     u'At which page do you want to start?')
