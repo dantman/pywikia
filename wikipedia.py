@@ -1499,6 +1499,7 @@ not supported by PyWikipediaBot!"""
             predata['wpWatchthis'] = '1'
         # Give the token, but only if one is supplied.
         if token:
+            ##output(token) # for debug use only
             predata['wpEditToken'] = token
 
         # Sorry, single-site exception...
@@ -1630,6 +1631,7 @@ not supported by PyWikipediaBot!"""
                 except NoUsername:
                     raise LockedPage()
             if not newToken and "<textarea" in data:
+                ##if "<textarea" in data: # for debug use only, if badtoken still happen
                 # We might have been using an outdated token
                 output(u"Changing page has failed. Retrying.")
                 return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
@@ -4519,6 +4521,7 @@ class Site(object):
         else:
             self._load(sysop = sysop)
             index = self._userIndex(sysop)
+            ##output('%s' % self._rights[index]) #for debug use
             return right in self._rights[index]
 
     def server_time(self):
@@ -4874,126 +4877,209 @@ your connection is down. Retrying in %i minutes..."""
         * text - the page text
         * sysop - is the user a sysop?
         """
-        if '<div id="globalWrapper">' not in text:
-            # Not a wiki page
-            return
 
         index = self._userIndex(sysop)
 
-        # Check for blocks - but only if version is 1.11 (userinfo is available)
-        # and the user data was not yet loaded
-        if self.versionnumber() >= 11 and (not self._userData[index] or force):
-            blocked = self._getBlock(sysop = sysop)
-            if blocked and not self._isBlocked[index]:
+        if type(text) == dict: #text is dict, query from API
+            # Check for blocks - but only if version is 1.11 (userinfo is available)
+            # and the user data was not yet loaded
+            if text.has_key('blockedby') and not self._isBlocked[index]:
                 # Write a warning if not shown earlier
                 if sysop:
                     account = 'Your sysop account'
                 else:
                     account = 'Your account'
                 output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
-            self._isBlocked[index] = blocked
+            self._isBlocked[index] = text.has_key('blockedby')
 
-        # Check for new messages
-        if '<div class="usermessage">' in text:
-            if not self._messages[index]:
-                # User has *new* messages
-                if sysop:
-                    output(u'NOTE: You have new messages in your sysop account on %s' % self)
-                else:
-                    output(u'NOTE: You have new messages on %s' % self)
-            self._messages[index] = True
-        else:
-            self._messages[index] = False
-
-        # Don't perform other checks if the data was already loaded
-        if self._userData[index] and not force:
-            return
-
-        # Search for the the user page link at the top.
-        # Note that the link of anonymous users (which doesn't exist at all
-        # in Wikimedia sites) has the ID pt-anonuserpage, and thus won't be
-        # found here.
-        userpageR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
-        m = userpageR.search(text)
-        if m:
-            self._isLoggedIn[index] = True
-            self._userName[index] = m.group('username')
-        else:
-            self._isLoggedIn[index] = False
-            # No idea what is the user name, and it isn't important
-            self._userName[index] = None
-
-        # Check user groups, if possible (introduced in 1.10)
-        groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
-        m = groupsR.search(text)
-        checkLocal = True
-        if default_code in self.family.cross_allowed: # if current languages in cross allowed list, check global bot flag.
-            globalgroupsR = re.compile(r'var wgGlobalGroups = \[\"(.+)\"\];')
-            mg = globalgroupsR.search(text)
-            if mg: # the account had global permission
-                globalRights = mg.group(1)
-                globalRights = globalRights.split('","')
-                self._rights[index] = globalRights
-                if self._isLoggedIn[index]:
-                    if 'Global_bot' in globalRights: # This account has the global bot flag, no need to check local flags.
-                        checkLocal = False
-                    else:
-                        output(u'Your bot account does not have global the bot flag, checking local flag.')
-        else:
-            if verbose: output(u'Note: this language does not allow global bots.')
-        if m and checkLocal:
-            rights = m.group(1)
-            rights = rights.split('", "')
-            if '*' in rights:
-                rights.remove('*')
-            self._rights[index] = rights
-            # Warnings
-            # Don't show warnings for not logged in users, they will just fail to
-            # do any action
-            if self._isLoggedIn[index]:
-                if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
-                    # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
+            # Check for new messages, show key 'messages' in dict.
+            if text.has_key('messages'):
+                if not self._messages[index]:
+                    # User has *new* messages
                     if sysop:
-                        output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
+                        output(u'NOTE: You have new messages in your sysop account on %s' % self)
                     else:
-                        output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
-                if sysop and 'sysop' not in self._rights[index]:
-                    output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
-        else:
-            # We don't have wgUserGroups, and can't check the rights
-            self._rights[index] = []
-            if self._isLoggedIn[index]:
-                # Logged in user
-                self._rights[index].append('user')
-                # Assume bot, and thus autoconfirmed
-                self._rights[index].extend(['bot', 'autoconfirmed'])
-                if sysop:
-                    # Assume user reported as a sysop indeed has the sysop rights
-                    self._rights[index].append('sysop')
-        # Assume the user has the default rights
-        self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
-        if 'bot' in self._rights[index] or 'sysop' in self._rights[index]:
-            self._rights[index].append('apihighlimits')
-        if 'sysop' in self._rights[index]:
-            self._rights[index].extend(['delete', 'undelete', 'block', 'protect', 'import', 'deletedhistory', 'unwatchedpages'])
+                        output(u'NOTE: You have new messages on %s' % self)
+                self._messages[index] = True
+            else:
+                self._messages[index] = False
 
-        # Search for a token
-        tokenR = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-        tokenloc = tokenR.search(text)
-        if tokenloc:
-            self._token[index] = tokenloc.group(1)
-            if self._rights[index] is not None:
-                # In this case, token and rights are loaded - user data is now loaded
-                self._userData[index] = True
-        else:
-            # Token not found
-            # Possible reason for this is the user is blocked, don't show a
-            # warning in this case, otherwise do show a warning
-            # Another possible reason is that the page cannot be edited - ensure
-            # there is a textarea and the tab "view source" is not shown
-            if u'<textarea' in text and u'<li id="ca-viewsource"' not in text and not self._isBlocked[index]:
-                # Token not found
+            # Don't perform other checks if the data was already loaded
+            if self._userData[index] and not force:
+                return
+
+            # Get username.
+            # anonymous mode will show key 'anon'
+            if not text.has_key('anon'): 
+                self._isLoggedIn[index] = True
+                self._userName[index] = text['name']
+            else:
+                self._isLoggedIn[index] = False
+                # No idea what is the user name, and it isn't important
+                self._userName[index] = None
+
+            # Check user groups and rights
+            if text.has_key('groups') and text['groups'] != []:
+                self._rights[index] = text['groups']
+                self._rights[index].extend(text['rights'])
+                # Warnings
+                # Don't show warnings for not logged in users, they will just fail to
+                # do any action
+                if self._isLoggedIn[index]:
+                    if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
+                        # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
+                        if sysop:
+                            output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
+                        else:
+                            output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
+                    if sysop and 'sysop' not in self._rights[index]:
+                        output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
+            else:
+                # key groups is not exists, setup a default rights
+                self._rights[index] = []
+                if self._isLoggedIn[index]:
+                    # Logged in user
+                    self._rights[index].append('user')
+                    # Assume bot, and thus autoconfirmed
+                    self._rights[index].extend(['bot', 'autoconfirmed'])
+                    if sysop:
+                        # Assume user reported as a sysop indeed has the sysop rights
+                        self._rights[index].append('sysop')
+            # Assume the user has the default rights if API not query back
+            self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
+            #remove Duplicate rights
+            self._rights[index] = list(set(self._rights[index]))
+
+            # Search for a token
+            if text.has_key('preferencestoken') and len(text['preferencestoken']) > 2:
+                # anonymous token is '+\\', check len('+\\') = 2
+                # if preferencestoken > 2, it must be loggedin.
+                self._token[index] = text['preferencestoken']
+                if self._rights[index] is not None:
+                    # In this case, token and rights are loaded - user data is now loaded
+                    self._userData[index] = True
+            else:
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+        else:
+            #ordinary mode to get data from edit page HTMLs and JavaScripts
+            
+            if '<div id="globalWrapper">' not in text:
+                # Not a wiki page
+                return
+            # Check for blocks - but only if version is 1.11 (userinfo is available)
+            # and the user data was not yet loaded
+            if self.versionnumber() >= 11 and (not self._userData[index] or force):
+                blocked = self._getBlock(sysop = sysop)
+                if blocked and not self._isBlocked[index]:
+                    # Write a warning if not shown earlier
+                    if sysop:
+                        account = 'Your sysop account'
+                    else:
+                        account = 'Your account'
+                    output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
+                self._isBlocked[index] = blocked
+
+            # Check for new messages
+            if '<div class="usermessage">' in text:
+                if not self._messages[index]:
+                    # User has *new* messages
+                    if sysop:
+                        output(u'NOTE: You have new messages in your sysop account on %s' % self)
+                    else:
+                        output(u'NOTE: You have new messages on %s' % self)
+                self._messages[index] = True
+            else:
+                self._messages[index] = False
+
+            # Don't perform other checks if the data was already loaded
+            if self._userData[index] and not force:
+                return
+
+            # Search for the the user page link at the top.
+            # Note that the link of anonymous users (which doesn't exist at all
+            # in Wikimedia sites) has the ID pt-anonuserpage, and thus won't be
+            # found here.
+            userpageR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
+            m = userpageR.search(text)
+            if m:
+                self._isLoggedIn[index] = True
+                self._userName[index] = m.group('username')
+            else:
+                self._isLoggedIn[index] = False
+                # No idea what is the user name, and it isn't important
+                self._userName[index] = None
+
+            # Check user groups, if possible (introduced in 1.10)
+            groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
+            m = groupsR.search(text)
+            checkLocal = True
+            if default_code in self.family.cross_allowed: # if current languages in cross allowed list, check global bot flag.
+                globalgroupsR = re.compile(r'var wgGlobalGroups = \[\"(.+)\"\];')
+                mg = globalgroupsR.search(text)
+                if mg: # the account had global permission
+                    globalRights = mg.group(1)
+                    globalRights = globalRights.split('","')
+                    self._rights[index] = globalRights
+                    if self._isLoggedIn[index]:
+                        if 'Global_bot' in globalRights: # This account has the global bot flag, no need to check local flags.
+                            checkLocal = False
+                        else:
+                            output(u'Your bot account does not have global the bot flag, checking local flag.')
+            else:
+                if verbose: output(u'Note: this language does not allow global bots.')
+            if m and checkLocal:
+                rights = m.group(1)
+                rights = rights.split('", "')
+                if '*' in rights:
+                    rights.remove('*')
+                self._rights[index] = rights
+                # Warnings
+                # Don't show warnings for not logged in users, they will just fail to
+                # do any action
+                if self._isLoggedIn[index]:
+                    if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
+                        # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
+                        if sysop:
+                            output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
+                        else:
+                            output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
+                    if sysop and 'sysop' not in self._rights[index]:
+                        output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
+            else:
+                # We don't have wgUserGroups, and can't check the rights
+                self._rights[index] = []
+                if self._isLoggedIn[index]:
+                    # Logged in user
+                    self._rights[index].append('user')
+                    # Assume bot, and thus autoconfirmed
+                    self._rights[index].extend(['bot', 'autoconfirmed'])
+                    if sysop:
+                        # Assume user reported as a sysop indeed has the sysop rights
+                        self._rights[index].append('sysop')
+            # Assume the user has the default rights
+            self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
+            if 'bot' in self._rights[index] or 'sysop' in self._rights[index]:
+                self._rights[index].append('apihighlimits')
+            if 'sysop' in self._rights[index]:
+                self._rights[index].extend(['delete', 'undelete', 'block', 'protect', 'import', 'deletedhistory', 'unwatchedpages'])
+
+            # Search for a token
+            tokenR = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+            tokenloc = tokenR.search(text)
+            if tokenloc:
+                self._token[index] = tokenloc.group(1)
+                if self._rights[index] is not None:
+                    # In this case, token and rights are loaded - user data is now loaded
+                    self._userData[index] = True
+            else:
+                # Token not found
+                # Possible reason for this is the user is blocked, don't show a
+                # warning in this case, otherwise do show a warning
+                # Another possible reason is that the page cannot be edited - ensure
+                # there is a textarea and the tab "view source" is not shown
+                if u'<textarea' in text and u'<li id="ca-viewsource"' not in text and not self._isBlocked[index]:
+                    # Token not found
+                    output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
 
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
@@ -5121,10 +5207,26 @@ your connection is down. Retrying in %i minutes..."""
 
         if verbose:
             output(u'Getting information for site %s' % self)
-
+        
+        try:
+            api_url = self.api_address()
+            del api_url
+        except NotImplementedError:
+            config.use_api = False
+        
         # Get data
-        url = self.edit_address('Non-existing_page')
-        text = self.getUrl(url, sysop = sysop)
+        if config.use_api and self.versionnumber() >= 11:
+            #Query userinfo
+            params = {
+                'action': 'query',
+                'meta': 'userinfo',
+                'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits|preferencestoken',
+            }
+            text = query.GetData(params, site = self, useAPI = True, sysop=sysop)['query']['userinfo']
+            ##output('%s' % text) # for debug use only
+        else:
+            url = self.edit_address('Non-existing_page')
+            text = self.getUrl(url, sysop = sysop)
 
         # Parse data
         self._getUserData(text, sysop = sysop, force = force)
@@ -5862,7 +5964,7 @@ your connection is down. Retrying in %i minutes..."""
         if not siteurl.startswith('*.'):
             urlsToRetrieve.append('*.' + siteurl)
         if config.use_api:
-            output(u'Querying API...')
+            output(u'Querying API exturlusage...')
             for url in urlsToRetrieve:
                 params = {
                     'action': 'query',
