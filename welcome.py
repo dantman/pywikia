@@ -506,8 +506,7 @@ def blocked(username):
         'usprop'    :'blockinfo',
         }
 
-    data = query.GetData(params,
-                    useAPI = True, encodeTitle = False)
+    data = query.GetData(params, encodeTitle = False)
     # If there's not the blockedby parameter (that means the user isn't blocked), it will return False otherwise True.
     try:
         blockedBy = data['query']['users'][0]['blockedby']

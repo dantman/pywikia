@@ -200,14 +200,14 @@ class CaseChecker( object ):
             wlpage = self.whitelists[self.site.lang]
             wikipedia.output(u'Loading whitelist from %s' % wlpage)
             wlparams = {
-                        'action'    : 'query',
-                        'prop'      : 'links',
-                        'titles'    : wlpage,
-                        'redirects' : '',
-                        'indexpageids' : '',
-                        }
+                'action'    : 'query',
+                'prop'      : 'links',
+                'titles'    : wlpage,
+                'redirects' : '',
+                'indexpageids' : '',
+            }
 
-            data = query.GetData(self.site.lang, wlparams, wikipedia.verbose, useAPI=True, encodeTitle=False)
+            data = query.GetData(wlparams, wikipedia.getSite(self.site.lang), wikipedia.verbose, encodeTitle=False)
             if len(data['query']['pageids']) == 1:
                 pageid = data['query']['pageids'][0]
                 links = data['query']['pages'][pageid]['links']

@@ -919,8 +919,7 @@ not supported by PyWikipediaBot!"""
             'prop'      :'info',
             'titles'    :self.title(),
             }
-        data = query.GetData(params,
-                        useAPI = True, encodeTitle = False)        
+        data = query.GetData(params, encodeTitle = False)        
         pageid = data['query']['pages'].keys()[0]
         if data['query']['pages'][pageid].keys()[0] == 'lastrevid':
             return data['query']['pages'][pageid]['lastrevid'] # if ok,
@@ -952,8 +951,7 @@ not supported by PyWikipediaBot!"""
             'tllimit'   :tllimit,
             }
 
-        data = query.GetData(params,
-                        useAPI = True, encodeTitle = False)
+        data = query.GetData(params, encodeTitle = False)
         try:
             pageid = data['query']['pages'].keys()[0]
         except KeyError:
@@ -1327,7 +1325,7 @@ not supported by PyWikipediaBot!"""
         #if titles:
         #    predata['titles'] = query.ListToParam(titles)
         
-        text = query.GetData(predata, useAPI = True)['query']['pages']
+        text = query.GetData(predata)['query']['pages']
         
         for pageid in text:
             if text[pageid].has_key('missing'):
@@ -2765,7 +2763,7 @@ not supported by PyWikipediaBot!"""
             'titles'    :self.title(),
             }
         try:
-            data = query.GetData(params, useAPI = True, encodeTitle = False)['query']['pages']
+            data = query.GetData(params, encodeTitle = False)['query']['pages']
         except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
 
@@ -2829,7 +2827,7 @@ class ImagePage(Page):
             'titles'    :self.title(),
             'iiprop'    :'url',
         }
-        imagedata = query.GetData(params, useAPI = True, encodeTitle = False)
+        imagedata = query.GetData(params, encodeTitle = False)
         try:
             url=imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
 #        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
@@ -2899,7 +2897,7 @@ class ImagePage(Page):
             'prop'      :'imageinfo',
             'titles'    :self.title(),
             }
-        data = query.GetData(params, useAPI = True, encodeTitle = False)
+        data = query.GetData(params, encodeTitle = False)
         try:
             # We don't know the page's id, if any other better idea please change it
             pageid = data['query']['pages'].keys()[0]
@@ -2921,7 +2919,7 @@ class ImagePage(Page):
                 'iiprop'    :'sha1',
                 }
             # First of all we need the Hash that identify an image
-            data = query.GetData(params, useAPI = True, encodeTitle = False)
+            data = query.GetData(params, encodeTitle = False)
             pageid = data['query']['pages'].keys()[0]
             try:
                 hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
@@ -4505,7 +4503,7 @@ class Site(object):
                 'meta': 'userinfo',
                 'uiprop': 'blockinfo',
             }
-            data = query.GetData(params, self, useAPI = True)['query']['userinfo']
+            data = query.GetData(params, self)['query']['userinfo']
             return data.has_key('blockby')
         except NotImplementedError:
             return False
@@ -5121,7 +5119,7 @@ your connection is down. Retrying in %i minutes..."""
                         'meta':'allmessages',
                     }
                     try:
-                        datas = query.GetData(params, useAPI = True)['query']['allmessages']
+                        datas = query.GetData(params)['query']['allmessages']
                     except KeyError:
                         raise ServerError("The APIs don't return data, the site may be down")
                     except NotImplementedError:
@@ -5222,7 +5220,7 @@ your connection is down. Retrying in %i minutes..."""
                 'meta': 'userinfo',
                 'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits|preferencestoken',
             }
-            text = query.GetData(params, site = self, useAPI = True, sysop=sysop)['query']['userinfo']
+            text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
             ##output('%s' % text) # for debug use only
         else:
             url = self.edit_address('Non-existing_page')
@@ -5503,8 +5501,7 @@ your connection is down. Retrying in %i minutes..."""
         if leuser is not None: params['leuser'] = leuser
         if letitle is not None: params['letitle'] = letitle
         while True:
-            data = query.GetData(params,
-                            useAPI = True, encodeTitle = False)
+            data = query.GetData(params, encodeTitle = False)
             try:
                 imagesData = data['query']['logevents']
             except KeyError:
@@ -5572,8 +5569,7 @@ your connection is down. Retrying in %i minutes..."""
         if rcshow is not None: params['rcshow'] = rcshow
         if rctype is not None: params['rctype'] = rctype
         while True:
-            data = query.GetData(params,
-                            useAPI = True, encodeTitle = False)
+            data = query.GetData(params, encodeTitle = False)
             try:
                 rcData = data['query']['recentchanges']
             except KeyError:
@@ -5709,7 +5705,7 @@ your connection is down. Retrying in %i minutes..."""
                 'rnlimit': '1',
                 #'': '',
             }
-            data = query.GetData(params, useAPI = True)
+            data = query.GetData(params)
             return Page(self, data['query']['random'][0]['title'])
         else:
             """Yield random page via Special:Random"""
@@ -5727,7 +5723,7 @@ your connection is down. Retrying in %i minutes..."""
                 'rnlimit': '1',
                 'rnredirect': '1',
             }
-            data = query.GetData(params, useAPI = True)
+            data = query.GetData(params)
             return Page(self, data['query']['random'][0]['title'])
         else:
             """Yield random redirect page via Special:RandomRedirect."""
@@ -5781,7 +5777,7 @@ your connection is down. Retrying in %i minutes..."""
             params['apfrom'] = start
             if throttle:
                 get_throttle()
-            data = query.GetData(params, useAPI = True)
+            data = query.GetData(params)
             
             for p in data['query']['allpages']:
                 yield Page(self, p['title'])
@@ -5973,7 +5969,7 @@ your connection is down. Retrying in %i minutes..."""
                     'euquery': url,
                 }
                 while True:
-                    data = query.GetData(params, useAPI = True)
+                    data = query.GetData(params)
                     if data['query']['exturlusage'] == []:
                         break
                     for pages in data['query']['exturlusage']:
@@ -6586,7 +6582,7 @@ your connection is down. Retrying in %i minutes..."""
             'list'      :'allimages',
             'aisha1'    :hash_found,
         }
-        allimages = query.GetData(params, site = getSite(self.lang, self.family), useAPI = True, encodeTitle = False)['query']['allimages']
+        allimages = query.GetData(params, getSite(self.lang, self.family), encodeTitle = False)['query']['allimages']
         files = list()
         for imagedata in allimages:
             image = imagedata[u'name']

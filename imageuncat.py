@@ -1243,7 +1243,7 @@ def uploadedYesterday(site = None):
         'leend'     :today.strftime(dateformat)
         }
 
-    data = query.GetData(params, site, useAPI = True, encodeTitle = False)
+    data = query.GetData(params, site, encodeTitle = False)
     try:
         for item in data['query']['logevents']:
             result.append(item['title'])
@@ -1279,7 +1279,7 @@ def recentChanges(site = None, delay=60, block=70):
         'rctype'    :'edit|log',
         }
 
-    data = query.GetData(params, site, useAPI = True, encodeTitle = False)
+    data = query.GetData(params, site, encodeTitle = False)
     try:
         for item in data['query']['recentchanges']:
             result.append(item['title'])

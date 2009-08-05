@@ -17,7 +17,7 @@ def check_namespaces(site):
                 'meta': 'siteinfo',
                 'siprop': 'namespaces'}
     try:
-        data = query.GetData(predata, site = site, useAPI = True)['query']['namespaces']
+        data = query.GetData(predata, site)['query']['namespaces']
     except wikipedia.ServerError, e:
         wikipedia.output(u'Warning! %s: %s' % (site, e))
         return
