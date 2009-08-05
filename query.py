@@ -14,8 +14,7 @@ This module allow you to use the API in a simple and easy way.
         'rvprop'    :'user|timestamp|content',
         }
 
-    print query.GetData(params,
-                        useAPI = True, encodeTitle = False)
+    print query.GetData(params, encodeTitle = False)
 
 """
 #
@@ -28,7 +27,7 @@ __version__ = '$Id$'
 
 import wikipedia, simplejson, urllib, time
 
-def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
+def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
     """Get data from the query api, and convert it into a data object
     """
     if site is None:
