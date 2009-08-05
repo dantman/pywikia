@@ -28,7 +28,7 @@ __version__ = '$Id$'
 
 import wikipedia, simplejson, urllib, time
 
-def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True, back_response = False):
+def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
     """Get data from the query api, and convert it into a data object
     """
     if site is None:
@@ -82,12 +82,12 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
         try:
             jsontext = "Nothing received"
             if params['action'] in postAC:
-                res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies())
+                res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies(), sysop=sysop)
             else:
                 if back_response:
-                    res, jsontext = site.getUrl( path, retry=True, data=data, back_response=True)
+                    res, jsontext = site.getUrl( path, retry=True, data=data, sysop=sysop, back_response=True)
                 else:
-                    jsontext = site.getUrl( path, retry=True, data=data)
+                    jsontext = site.getUrl( path, retry=True, sysop=sysop, data=data)
 
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
