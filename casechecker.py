@@ -232,7 +232,7 @@ class CaseChecker( object ):
                 while True:
                     # Get data
                     self.params['gapfrom'] = self.apfrom
-                    data = query.GetData(self.site.lang, self.params, wikipedia.verbose, True)
+                    data = query.GetData(self.params, self.site, wikipedia.verbose, True)
                     try:
                         self.apfrom = data['query-continue']['allpages']['gapfrom']
                     except:
