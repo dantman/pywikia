@@ -175,6 +175,7 @@ featured_name = {
     'ko': (CAT, u"알찬 글"),
     'ksh': (CAT, u"Exzälenter Aatikkel"),
     'la': (CAT, u"Paginae mensis"),
+    'li': (CAT, u"Wikipedia:Sjterartikele"),
     'lmo': (CAT, u"Articol ben faa"),
     'lo': (CAT, u"ບົດຄວາມດີເດັ່ນ"),
     'lt': (CAT, u"Vikipedijos pavyzdiniai straipsniai"),

@@ -652,6 +652,7 @@ class Family(family.Family):
             'an':  [u'Desambig', u'Disambig'],
             'ar':  [u'Disambig', u'توضيح'],
             'arc': [u'ܕ'],
+            'arz': [u'توضيح'],
             'ast': [u'Dixebra'],
             'av':  [u'Неоднозначность'],
             'az':  [u'Dəqiqləşdirmə'],
