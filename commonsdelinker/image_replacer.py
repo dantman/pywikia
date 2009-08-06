@@ -133,7 +133,7 @@ class Replacer(object):
                     for remove in remove_from_list:
                         text = text.replace(remove, u'')
                     # Kill the freaky CommonsDupes
-                    text = text.replacer('== Dummy section, heading can be deleted (using [http://tools.wikimedia.de/~magnus/commons_dupes.php CommonsDupes]) ==', '')
+                    text = text.replace('== Dummy section, heading can be deleted (using [http://tools.wikimedia.de/~magnus/commons_dupes.php CommonsDupes]) ==', '')
                     # Kill the freaky whitespace
                     text = text.replace('\r', '')
                     while '\n\n\n' in text:
