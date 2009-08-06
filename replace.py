@@ -62,6 +62,9 @@ Furthermore, the following command line parameters are supported:
                   the bot will check every regex without waiting using all the
                   resources. This will slow it down between a regex and another
                   in order not to waste too much CPU.
+ 
+-query:           The maximum number of pages that the bot will load at once.
+                  Default value is 60. Ignored when reading an XML file.
 
 -fix:XYZ          Perform one of the predefined replacements tasks, which are
                   given in the dictionary 'fixes' defined inside the file
@@ -495,6 +498,8 @@ def main(*args):
     allowoverlap = False
     # Do not recurse replacement
     recursive = False
+    # This is the maximum number of pages to load per query    
+    maxquerysize = 60
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
@@ -561,6 +566,8 @@ def main(*args):
             summary_commandline = True
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
+        elif arg.startswith('-query:'):
+            maxquerysize = int(arg[7:])
         else:
             if not genFactory.handleArg(arg):
                 commandline_replacements.append(arg)
@@ -696,7 +703,7 @@ LIMIT 200""" % (whereClause, exceptClause)
         preloadingGen = pagegenerators.PreloadingGenerator(gen,
                                             pageNumber=20, lookahead=100)
     else:
-        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=60)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=maxquerysize)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep, editSummary)
     bot.run()
 
