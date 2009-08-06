@@ -5133,7 +5133,7 @@ your connection is down. Retrying in %i minutes..."""
 
             retry_idle_time = 1
             while True:
-                if config.use_api:
+                if config.use_api and self.versionnumber() >= 12:
                     params = {
                         'action':'query',
                         'meta':'allmessages',
@@ -5718,7 +5718,7 @@ your connection is down. Retrying in %i minutes..."""
                 break
 
     def randompage(self):
-        if config.use_api:
+        if config.use_api and self.versionnumber() >= 12:
             params = {
                 'action': 'query',
                 'list': 'random',
@@ -5736,7 +5736,7 @@ your connection is down. Retrying in %i minutes..."""
                 return Page(self, m.group('title'))
 
     def randomredirectpage(self):
-        if config.use_api:
+        if config.use_api and self.versionnumber() >= 12:
             params = {
                 'action': 'query',
                 'list': 'random',
@@ -5980,7 +5980,7 @@ your connection is down. Retrying in %i minutes..."""
         urlsToRetrieve = [siteurl]
         if not siteurl.startswith('*.'):
             urlsToRetrieve.append('*.' + siteurl)
-        if config.use_api:
+        if config.use_api and self.versionnumber() >= 11:
             output(u'Querying API exturlusage...')
             for url in urlsToRetrieve:
                 params = {
@@ -6593,6 +6593,9 @@ your connection is down. Retrying in %i minutes..."""
 
             NOTE 2: it returns the image WITHOUT the image namespace.
         """
+        if self.versionnumber() < 12:
+            return None
+        
         if hash_found is None: # If the hash is none return None and not continue
             return None
         # Now get all the images with the same hash
