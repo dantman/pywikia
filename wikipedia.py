@@ -2396,49 +2396,70 @@ not supported by PyWikipediaBot!"""
                 answer = 'y'
                 self.site()._noDeletePrompt = True
         if answer == 'y':
-            host = self.site().hostname()
-            address = self.site().delete_address(self.urlname())
-
-            reason = reason.encode(self.site().encoding())
+            
             token = self.site().getToken(self, sysop = True)
-            predata = {
-                'wpDeleteReasonList': 'other',
-                'wpReason': reason,
-                'wpComment': reason,
-                'wpConfirm': '1',
-                'wpConfirmB': '1'
-            }
-            if token:
-                predata['wpEditToken'] = token
-            if self.site().hostname() in config.authenticate.keys():
-                predata['Content-type'] = 'application/x-www-form-urlencoded'
-                predata['User-agent'] = useragent
-                data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-                data = u''
-            else:
-                response, data = self.site().postForm(address, predata, sysop = True)
-            if data:
-                self.site().checkBlocks(sysop = True)
-                if self.site().mediawiki_message('actioncomplete') in data:
+            
+            if config.use_api and self.site().versionnumber() >= 12:
+                params = {
+                    'action': 'delete',
+                    'title': self.title(),
+                    'token': token,
+                    'reason': reason,
+                }
+                datas = query.GetData(params, self.site(), sysop = True)
+                if datas.has_key('delete'):
                     output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
                     return True
-                elif self.site().mediawiki_message('cannotdelete') in data:
-                    output(u'Page %s could not be deleted - it doesn\'t exist' % self.aslink(forceInterwiki = True))
-                    return False
                 else:
-                    output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
-                    try:
-                        ibegin = data.index('<!-- start content -->') + 22
-                        iend = data.index('<!-- end content -->')
-                    except ValueError:
-                        # if begin/end markers weren't found, show entire HTML file
-                        output(data)
+                    if datas['error']['code'] == 'missingtitle':
+                        output(u'Page %s could not be deleted - it doesn\'t exist' % self.aslink(forceInterwiki = True))
+                        return False
                     else:
-                        # otherwise, remove the irrelevant sections
-                        data = data[ibegin:iend]
-                    output(data)
-                    return False
+                        output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
+                        output('%s' % datas)
+            else:
+                host = self.site().hostname()
+                address = self.site().delete_address(self.urlname())
+
+                reason = reason.encode(self.site().encoding())
+                predata = {
+                    'wpDeleteReasonList': 'other',
+                    'wpReason': reason,
+                    'wpComment': reason,
+                    'wpConfirm': '1',
+                    'wpConfirmB': '1'
+                }
+                if token:
+                    predata['wpEditToken'] = token
+                if self.site().hostname() in config.authenticate.keys():
+                    predata['Content-type'] = 'application/x-www-form-urlencoded'
+                    predata['User-agent'] = useragent
+                    data = self.site().urlEncode(predata)
+                    response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
+                    data = u''
+                else:
+                    response, data = self.site().postForm(address, predata, sysop = True)
+                if data:
+                    self.site().checkBlocks(sysop = True)
+                    if self.site().mediawiki_message('actioncomplete') in data:
+                        output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
+                        return True
+                    elif self.site().mediawiki_message('cannotdelete') in data:
+                        output(u'Page %s could not be deleted - it doesn\'t exist' % self.aslink(forceInterwiki = True))
+                        return False
+                    else:
+                        output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
+                        try:
+                            ibegin = data.index('<!-- start content -->') + 22
+                            iend = data.index('<!-- end content -->')
+                        except ValueError:
+                            # if begin/end markers weren't found, show entire HTML file
+                            output(data)
+                        else:
+                            # otherwise, remove the irrelevant sections
+                            data = data[ibegin:iend]
+                        output(data)
+                        return False
 
     def loadDeletedRevisions(self):
         """Retrieve all deleted revisions for this Page from Special/Undelete.
@@ -4879,8 +4900,7 @@ your connection is down. Retrying in %i minutes..."""
         index = self._userIndex(sysop)
 
         if type(text) == dict: #text is dict, query from API
-            # Check for blocks - but only if version is 1.11 (userinfo is available)
-            # and the user data was not yet loaded
+            # Check for blocks
             if text.has_key('blockedby') and not self._isBlocked[index]:
                 # Write a warning if not shown earlier
                 if sysop:
@@ -4890,7 +4910,7 @@ your connection is down. Retrying in %i minutes..."""
                 output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
             self._isBlocked[index] = text.has_key('blockedby')
 
-            # Check for new messages, show key 'messages' in dict.
+            # Check for new messages, the data must had key 'messages' in dict.
             if text.has_key('messages'):
                 if not self._messages[index]:
                     # User has *new* messages
@@ -4907,16 +4927,16 @@ your connection is down. Retrying in %i minutes..."""
                 return
 
             # Get username.
-            # anonymous mode will show key 'anon'
+            # The data in anonymous mode had key 'anon'
+            # if 'anon' exist, username is IP address, not to collect it right now
             if not text.has_key('anon'): 
                 self._isLoggedIn[index] = True
                 self._userName[index] = text['name']
             else:
                 self._isLoggedIn[index] = False
-                # No idea what is the user name, and it isn't important
                 self._userName[index] = None
 
-            # Check user groups and rights
+            # Get user groups and rights
             if text.has_key('groups') and text['groups'] != []:
                 self._rights[index] = text['groups']
                 self._rights[index].extend(text['rights'])
@@ -4933,7 +4953,7 @@ your connection is down. Retrying in %i minutes..."""
                     if sysop and 'sysop' not in self._rights[index]:
                         output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
             else:
-                # key groups is not exists, setup a default rights
+                # 'groups' is not exists, set default rights
                 self._rights[index] = []
                 if self._isLoggedIn[index]:
                     # Logged in user
@@ -4948,13 +4968,13 @@ your connection is down. Retrying in %i minutes..."""
             #remove Duplicate rights
             self._rights[index] = list(set(self._rights[index]))
 
-            # Search for a token
+            # Get token
             if text.has_key('preferencestoken') and len(text['preferencestoken']) > 2:
                 # anonymous token is '+\\', check len('+\\') = 2
                 # if preferencestoken > 2, it must be loggedin.
                 self._token[index] = text['preferencestoken']
                 if self._rights[index] is not None:
-                    # In this case, token and rights are loaded - user data is now loaded
+                    # Token and rights are loaded - user data is now loaded
                     self._userData[index] = True
             else:
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
@@ -5213,6 +5233,7 @@ your connection is down. Retrying in %i minutes..."""
             config.use_api = False
         
         # Get data
+        # API Userinfo is available from version 1.11
         if config.use_api and self.versionnumber() >= 11:
             #Query userinfo
             params = {
