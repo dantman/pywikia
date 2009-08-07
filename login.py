@@ -279,15 +279,13 @@ class LoginManager:
             if query.GetData({'action':'logout'}, self.site) == []:
                 flushCk = True
         else:
-            logout_address = self.site.get_address("Special:Version")
-            text = self.site.getUrl(logout_address)
-            if wikipedia.mediawiki_message('logouttext') in text: #confirm loggedout
+            text = self.site.getUrl(self.site.get_address("Special:UserLogout"))
+            if self.site.mediawiki_message('logouttext') in text: #confirm loggedout
                 flushCk = True
         
         if flushCk:
             filename = wikipedia.config.datafilepath('login-data',
-                       '%s-%s-%s-login.data'
-                       % (self.site.family.name, self.site.lang, self.username))
+                       '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username))
             try:
                 os.remove(filename)
             except:
