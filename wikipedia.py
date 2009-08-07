@@ -4490,6 +4490,7 @@ class Site(object):
         """Log the user in if not already logged in."""
         if not self.loggedInAs(sysop = sysop):
             loginMan = login.LoginManager(site = self, sysop = sysop)
+            #loginMan.logout()
             if loginMan.login(retry = True):
                 index = self._userIndex(sysop)
                 self._isLoggedIn[index] = True
@@ -4623,9 +4624,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def solveCaptcha(self, data):
         if type(data) == dict: # API Mode result
-            if data['result'].has_key("captcha"):
-                captype = data['result']['captcha']['type']
-                id = data['result']['captcha']['id']
+            if data.has_key("captcha"):
+                captype = data['captcha']['type']
+                id = data['captcha']['id']
                 if captype in ['simple', 'math', 'question']:
                     answer = input('What is the answer to the captcha "%s" ?' % data['result']['captcha']['question'])
                 elif captype == 'image':
@@ -4969,15 +4970,14 @@ your connection is down. Retrying in %i minutes..."""
             self._rights[index] = list(set(self._rights[index]))
 
             # Get token
-            if text.has_key('preferencestoken') and len(text['preferencestoken']) > 2:
-                # anonymous token is '+\\', check len('+\\') = 2
-                # if preferencestoken > 2, it must be loggedin.
+            if text.has_key('preferencestoken'):
                 self._token[index] = text['preferencestoken']
                 if self._rights[index] is not None:
                     # Token and rights are loaded - user data is now loaded
                     self._userData[index] = True
             else:
-                output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+                if not self._isBlocked[index]:
+                    output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
         else:
             #ordinary mode to get data from edit page HTMLs and JavaScripts
             
@@ -5209,6 +5209,7 @@ your connection is down. Retrying in %i minutes..."""
 
     def has_mediawiki_message(self, key):
         """Return True iff this site defines a MediaWiki message for 'key'."""
+        #return self._mediawiki_messages.has_key(key)
         try:
             v = self.mediawiki_message(key)
             return True
