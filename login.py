@@ -251,9 +251,9 @@ class LoginManager:
         try:
             cookiedata = self.getCookie(api)
         except NotImplementedError:
-            wikipedia.output('API disabled because this site does not support.')
+            wikipedia.output('API disabled because this site does not support.\nRetrying by ordinary way...')
             api = False
-            cookiedata = self.getCookie(api)
+            return self.login(False, retry)
         if cookiedata:
             self.storecookiedata(cookiedata)
             wikipedia.output(u"Should be logged in now")
@@ -269,7 +269,7 @@ class LoginManager:
             
             if retry:
                 self.password = None
-                return self.login(api = api, retry = True)
+                return self.login(api, True)
             else:
                 return False
     
