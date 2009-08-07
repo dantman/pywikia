@@ -3,13 +3,14 @@ __version__ = '$Id$'
 import re
 
 class DummyReplacement(object):
+    # only overrides delinks inside <gallery> tags.
     hook = 'gallery_replace'
     def __init__(self, CommonsDelinker):
         self.CommonsDelinker = CommonsDelinker
     def __call__(self, page, summary, image, replacement, match, groups):
         site = page.site()
         if (site.lang, site.family.name) == ('nl', 'wikipedia') and replacement.get() is None:
-            # Do not delink from pages in categories mentioned in [[User:CommonsDelinker/DummyReplacements]]
+            # Do not delink inside galleries of pages in categories mentioned in [[User:CommonsDelinker/DummyReplacements]]
             # but replace the target file with another file (used in for example flag or coat of arms galleries).
             # Format of the configuration page (see example on http://nl.wikipedia.org/wiki/Gebruiker:CommonsDelinker/DummyReplacements):
             # <!--begin-dummyreplace Sin escudo.svg-->
