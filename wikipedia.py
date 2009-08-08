@@ -5327,8 +5327,7 @@ your connection is down. Retrying in %i minutes..."""
                     'rcshow': '!bot|!redirect',
                     #'': '',
                 }
-                try:
-                    data = query.GetData(params, self)['query']['recentchanges']
+                data = query.GetData(params, self)['query']['recentchanges']
                 
                 for np in data:
                     date = np['timestamp']
