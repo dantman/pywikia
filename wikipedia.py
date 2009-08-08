@@ -2398,6 +2398,11 @@ not supported by PyWikipediaBot!"""
         if answer == 'y':
             
             token = self.site().getToken(self, sysop = True)
+            try:
+                d = self.site().api_address()
+                del d
+            except NotImplementedError:
+                config.use_api = False
             
             if config.use_api and self.site().versionnumber() >= 12:
                 params = {
@@ -2413,10 +2418,11 @@ not supported by PyWikipediaBot!"""
                 else:
                     if datas['error']['code'] == 'missingtitle':
                         output(u'Page %s could not be deleted - it doesn\'t exist' % self.aslink(forceInterwiki = True))
-                        return False
                     else:
                         output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
                         output('%s' % datas)
+                    
+                    return False
             else:
                 host = self.site().hostname()
                 address = self.site().delete_address(self.urlname())
@@ -5559,11 +5565,15 @@ your connection is down. Retrying in %i minutes..."""
         if leuser is not None: params['leuser'] = leuser
         if letitle is not None: params['letitle'] = letitle
         while True:
-            data = query.GetData(params, self, encodeTitle = False)
             try:
-                imagesData = data['query']['logevents']
-            except KeyError:
+                if self.versionnumber() >= 11:
+                    imagesData = query.GetData(params, self, encodeTitle = False)['query']['logevents']
+                else:
+                    raise NotImplementedError("The site version is not support this action.")
+            except KeyError: #no 'query' or 'logevents', error occured
                 raise ServerError("The APIs don't return the data, the site may be down")
+            except NotImplementedError:
+                raise ServerError("The site version is not support this action.")
 
             for imageData in imagesData:
                 try:
@@ -5573,7 +5583,7 @@ your connection is down. Retrying in %i minutes..."""
                 pageid = imageData['pageid']
                 title = imageData['title']
                 timestamp = imageData['timestamp']
-                logid = imageData['logid']
+                ##logid = imageData['logid'] #no use current now
                 user = imageData['user']
                 yield ImagePage(self, title), timestamp, user, comment
             if not repeat:
@@ -5814,6 +5824,7 @@ your connection is down. Retrying in %i minutes..."""
             start = page.titleWithoutNamespace()        
         try:
             api_url = self.api_address()
+            del api_url
         except NotImplementedError:
             for page in self._allpagesOld(start, namespace, includeredirects, throttle):
                 yield page
@@ -5842,7 +5853,8 @@ your connection is down. Retrying in %i minutes..."""
             
             if data.has_key('query-continue'):
                 start = data['query-continue']['allpages']['apfrom']
-
+            else:
+                break
 
     def _allpagesOld(self, start='!', namespace=0, includeredirects=True,
                  throttle=True):
