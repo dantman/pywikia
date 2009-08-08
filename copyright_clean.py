@@ -9,7 +9,7 @@ __version__ = '$Id$'
 # Distributed under the terms of the MIT license.
 #
 
-import httplib, socket, simplejson, re, time
+import httplib, socket, re, time
 import config, wikipedia, catlib, pagegenerators, query
 
 from urllib import urlencode
@@ -33,39 +33,21 @@ next_headC = re.compile("(?m)^=+.*?=+")
 rev_templateC = re.compile("(?m)^(?:{{/t\|.*?}}\n?)?{{(?:/box|botbox)\|.*?\|(.*?)\|")
 
 def query_api(data):
-    predata = [
-          ('format', 'json'),
-          ('action', 'query'),
-          ('prop', 'revisions'),
-          data]
-    data = urlencode(predata)
-    host = wikipedia.getSite().hostname()
-    address = wikipedia.getSite().api_address()
-    conn = httplib.HTTPConnection(host)
-    conn.request("GET", address + data)
-    response = conn.getresponse()
-    data = response.read()
-    conn.close()
-    return data
+    predata = {
+        'action': 'query',
+        'prop': 'revisions',
+    }
+    predata = query.CombineParams(predata, data)
+    return query.GetData(predata)
 
 def query_old_api(data):
 
-    predata = [
-          ('format', 'json'),
-          ('what', 'revisions'),
-          ('rvlimit', '1'),
-          data]
-
-    data = urlencode(predata)
-    host = wikipedia.getSite().hostname()
-    address = wikipedia.getSite().query_address()
-    conn = httplib.HTTPConnection(host)
-    conn.request("GET", address + data)
-    response = conn.getresponse()
-    data = response.read()
-    conn.close()
-
-    return data
+    predata = {
+        'what': 'revisions',
+        'rvlimit': '1',
+    }
+    predata = query.CombineParams(predata, data)
+    return query.GetData(predata, useAPI = False)
 
 def old_page_exist(title):
     for pageobjs in query_results_titles:
@@ -135,9 +117,9 @@ for page in gen:
 
     # No more of 50 titles at a time using API
     for s in mysplit(query.ListToParam(titles), 50, "|"):
-        query_results_titles.append(simplejson.loads(query_api(('titles', s))))
+        query_results_titles.append(query_api({'titles': s,}))
     for s in mysplit(query.ListToParam(revids), 50, "|"):
-        query_results_revids.append(simplejson.loads(query_api(('revids', s))))
+        query_results_revids.append(query_api({'revids': ,}))
 
     comment_entry = list()
     add_separator = False

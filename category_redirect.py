@@ -14,9 +14,7 @@ are taken into account.
 """
 __version__ = '$Id$'
 
-import wikipedia, catlib
-import pagegenerators
-import simplejson
+import wikipedia, catlib, query, pagegenerators
 import cPickle
 import math
 import re
@@ -302,11 +300,9 @@ aanjepaß krijje:
 
     def query_results(self, **data):
         """Iterate results from API action=query, using data as parameters."""
-        addr = self.site.apipath()
         querydata = {'action': 'query',
-                     'format': 'json',
                      'maxlag': str(wikipedia.config.maxlag)}
-        querydata.update(data)
+        querydata = query.CombineParams(querydata, data)
         if not querydata.has_key("action")\
                 or not querydata['action'] == 'query':
             raise ValueError(
@@ -314,19 +310,18 @@ aanjepaß krijje:
                 )
         waited = 0
         while True:
-            response, data = self.site.postForm(addr, querydata)
-            if response.status != 200:
-                # WARNING: if the server is down, this could
-                # cause an infinite loop
-                wikipedia.output(u"HTTP error %i received; retrying..."
-                                  % response.status)
-                time.sleep(5)
-                continue
-            if data.startswith(u"unknown_action"):
-                e = {'code': data[:14], 'info': data[16:]}
-                raise APIError(e)
             try:
-                result = simplejson.loads(data)
+                response, result = query.GetData(predata, self,site back_response = True)
+                if response.status != 200:
+                    # WARNING: if the server is down, this could
+                    # cause an infinite loop
+                    wikipedia.output(u"HTTP error %i received; retrying..."
+                                      % response.status)
+                    time.sleep(5)
+                    continue
+                if data.startswith(u"unknown_action"):
+                    e = {'code': data[:14], 'info': data[16:]}
+                    raise APIError(e)
             except ValueError:
                 # if the result isn't valid JSON, there must be a server
                 # problem.  Wait a few seconds and try again

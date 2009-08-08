@@ -10,7 +10,7 @@ Please refer to delinker.txt for full documentation.
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
-import config, wikipedia, simplejson
+import config, wikipedia, query
 import re, time
 import threadpool
 import sys, os, signal, traceback
@@ -149,21 +149,19 @@ class Replacer(object):
         """ Fetch the last 50 revisions using the API """
         
         address = self.site.api_address()
-        predata = [
-            ('action', 'query'),
-            ('prop', 'revisions'),
-            ('titles', title.encode('utf-8')),
-            ('rvprop', 'timestamp|user|comment|content'),
-            ('rvlimit', '50'),
-            ('format', 'json'),
-        ]
+        predata = {
+            'action': 'query',
+            'prop': 'revisions',
+            'titles': title.encode('utf-8'),
+            'rvprop': 'timestamp|user|comment|content',
+            'rvlimit': '50',
+        }
         if username:
-            predata.append(('rvexcludeuser', username.encode('utf-8')))
+            predata['rvexcludeuser'] = username.encode('utf-8')
         if since:
-            predata.append(('rvend', since))
-        response, data = self.site.postForm(address, predata)
-        data = simplejson.loads(data)
-        if 'error' in data:
+            predata['rvend'] = since
+        response, data = query.GetData(predata, self.site, back_response = True)
+        if data.has_key('error'):
             raise RuntimeError(data['error'])
 
         page = data['query']['pages'].values()[0]

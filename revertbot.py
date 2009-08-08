@@ -1,5 +1,4 @@
-import wikipedia
-import simplejson
+import wikipedia, query
 
 __version__ = '$Id$'
 
@@ -18,7 +17,6 @@ class BaseRevertBot(object):
         self.comment = comment
 
     def get_contributions(self, max = -1, ns = None):
-        address = self.site.api_address()
         predata = {
             'action': 'query',
             'list': 'usercontribs',
@@ -37,12 +35,11 @@ class BaseRevertBot(object):
                 item = iterator.next()
             except StopIteration:
                 self.log(u'Fetching new batch of contributions')
-                response, data = self.site.postForm(address, predata)
-                data = simplejson.loads(data)
-                if 'error' in data:
+                response, data = query.GetData(predata, self.site, back_response = True)
+                if data.has_key('error'):
                     raise RuntimeError(data['error'])
-                if 'usercontribs' in data.get('query-continue', ()):
-                    predata.update(data['query-continue']['usercontribs'])
+                if data.has_key('query-continue'):
+                    predata['uccontinue'] = data['query-continue']['usercontribs']
                 else:
                     never_continue = True
                 iterator = iter(data['query']['usercontribs'])
@@ -81,10 +78,9 @@ class BaseRevertBot(object):
             'rvstart': item['timestamp'],
             'format': 'json'
         }
-        response, data = self.site.postForm(self.site.api_address(), predata)
-        data = simplejson.loads(data)
+        response, data = query.GetData(predata, self.site, back_response = True)
 
-        if 'error' in data:
+        if data.has_key('error'):
             raise RuntimeError(data['error'])
 
         pages = data['query'].get('pages', ())

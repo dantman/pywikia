@@ -34,10 +34,10 @@ Options:
 #
 __version__ = '$Id$'
 #
-import wikipedia, pagegenerators
+import wikipedia, pagegenerators, query
 Site = wikipedia.getSite()
 
-import os, re, time, locale, traceback, string, urllib, simplejson
+import os, re, time, locale, traceback, string, urllib
 
 try: #Get a constructor for the MD5 hash object
     import hashlib
@@ -217,8 +217,7 @@ def generateTransclusions(Site, template, namespaces=[], eicontinue=''):
         qdata['eicontinue'] = eicontinue
     
     wikipedia.output(u'Fetching template transclusions...')
-    response, data = Site.postData(Site.apipath(), urllib.urlencode(qdata))
-    result = simplejson.loads(data)
+    response, result = query.GetData(qdata, Site, back_response = True)
     
     for page_d in result['query']['embeddedin']:
         yield wikipedia.Page(Site, page_d['title'])
