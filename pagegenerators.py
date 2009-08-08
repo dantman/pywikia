@@ -161,7 +161,7 @@ import threading, Queue, traceback
 import urllib, urllib2, time
 
 # Application specific imports
-import wikipedia, date, catlib
+import wikipedia, date, catlib, query
 import config
 
 # For python 2.4 compatibility
@@ -488,26 +488,29 @@ def UserContributionsGenerator(username, number = 250, namespaces = [], site = N
     if number > 500:
         # the api does not allow more than 500 results for anonymous users
         number = 500
-    apiQ = site.api_address() + 'action=query&list=usercontribs&ucuser='
-    apiQ += urllib.quote(username.encode(site.encoding()))
-    apiQ += '&ucprop=title&uclimit=%s&format=xml' % number
+    params = {
+        'action': 'query',
+        'list': 'usercontribs',
+        'ucuser': username,
+        'ucprop': 'title',
+        'uclimit': int(number),
+        'ucdir': 'newer',
+    }
+    
+    
     if namespaces:
-        apiQ += '&ucnamespace=%s' % '|'.join(map(str, namespaces))
-    titlesRe = re.compile('title="(.*?)"')
-    ucstartRe = re.compile('ucstart="(.*?)"')
-    ucstart = ''
+        params['ucnamespace'] = '|'.join(map(str, namespaces))
     # An user is likely to contribute on several pages,
     # keeping track of titles
     titleList = []
     while True:
-        result = site.getUrl(apiQ + ucstart)
-        for title in titlesRe.findall(result):
-            if not title in titleList:
-                titleList.append(title)
-                yield wikipedia.Page(site, title)
-        m = ucstartRe.search(result)
-        if m:
-            ucstart = '&ucstart=' + m.group(1)
+        result = query.GetData(params, site)
+        for contr in result['query']['usercontribs']:
+            if not contr['title'] in titleList:
+                titleList.append(contr['title'])
+                yield wikipedia.Page(site, contr['title'])
+        if result.has_key('query-continue'):
+            params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
         else:
             break
 
