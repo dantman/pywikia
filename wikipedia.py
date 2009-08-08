@@ -5309,30 +5309,62 @@ your connection is down. Retrying in %i minutes..."""
         #       option to fetch older rather than newer pages
         # TODO: extract and return edit comment.
         seen = set()
-        while True:
-            path = self.newpages_address(n=number, namespace=namespace)
-            # The throttling is important here, so always enabled.
-            get_throttle()
-            html = self.getUrl(path)
+        try:
+            d = self.apipath()
+            del d
+        except NotImplementedError:
+            config.use_api = False
 
-            entryR = re.compile(
+        while True:
+            if config.use_api and self.versionnumber() >= 10:
+                params = {
+                    'action': 'query',
+                    'list': 'recentchanges',
+                    'rctype': 'new',
+                    'rcnamespace': namespace,
+                    'rclimit': int(number),
+                    'rcprop': 'title|timestamp|sizes|user|comment',
+                    'rcshow': '!bot|!redirect',
+                    #'': '',
+                }
+                try:
+                    data = query.GetData(params, self)['query']['recentchanges']
+                
+                for np in data:
+                    date = np['timestamp']
+                    title = np['title']
+                    length = np['newlen']
+                    username = np['user']
+                    loggedIn = u''
+                    comment = np['comment']
+                    if title not in seen:
+                        seen.add(title)
+                        page = Page(self, title)
+                        yield page, date, length, loggedIn, username, comment
+            else:
+                path = self.newpages_address(n=number, namespace=namespace)
+                # The throttling is important here, so always enabled.
+                get_throttle()
+                html = self.getUrl(path)
+
+                entryR = re.compile(
 '<li[^>]*>(?P<date>.+?) \S*?<a href=".+?"'
 ' title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]]'
 ' .?<a href=".+?" title=".+?:(?P<username>.+?)">'
-                                )
-            for m in entryR.finditer(html):
-                date = m.group('date')
-                title = m.group('title')
-                title = title.replace('&quot;', '"')
-                length = int(re.sub("[,.]", "", m.group('length')))
-                loggedIn = u''
-                username = m.group('username')
-                comment = u''
+                                    )
+                for m in entryR.finditer(html):
+                    date = m.group('date')
+                    title = m.group('title')
+                    title = title.replace('&quot;', '"')
+                    length = int(re.sub("[,.]", "", m.group('length')))
+                    loggedIn = u''
+                    username = m.group('username')
+                    comment = u''
 
-                if title not in seen:
-                    seen.add(title)
-                    page = Page(self, title)
-                    yield page, date, length, loggedIn, username, comment
+                    if title not in seen:
+                        seen.add(title)
+                        page = Page(self, title)
+                        yield page, date, length, loggedIn, username, comment
             if not repeat:
                 break
 
