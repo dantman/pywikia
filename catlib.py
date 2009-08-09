@@ -198,10 +198,10 @@ class Category(wikipedia.Page):
                 'cmprop': 'title',#|ids|sortkey|timestamp',
                 #'': '',
             }
-            if config.special_page_limit > 500:
+            if wikipedia.config.special_page_limit > 500:
                 params['cmlimit'] = 500
             else:
-                params['cmlimit'] = config.special_page_limit
+                params['cmlimit'] = wikipedia.config.special_page_limit
 
             
             if currentPageOffset:
