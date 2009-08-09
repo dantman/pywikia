@@ -223,7 +223,7 @@ class Category(wikipedia.Page):
                 if isCatTitle(memb['title'], self.site()):
                     yield SUBCATEGORY, Category(self.site(), memb['title'])
                 elif memb['ns'] == 6 and self.site().image_namespace() in memb['title']:
-                    yield ARTICLE, wikipedia.ImagePage(self.site(), title)
+                    yield ARTICLE, wikipedia.ImagePage(self.site(), memb['title'])
                 else:
                     yield ARTICLE, wikipedia.Page(self.site(), memb['title'])
             # try to find a link to the next list page
