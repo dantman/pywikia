@@ -196,9 +196,14 @@ class Category(wikipedia.Page):
                 'list': 'categorymembers',
                 'cmtitle': self.title(),
                 'cmprop': 'title',#|ids|sortkey|timestamp',
-                #'cmlimit': config.special_page_limit,
                 #'': '',
             }
+            if config.special_page_limit > 500:
+                params['cmlimit'] = 500
+            else:
+                params['cmlimit'] = config.special_page_limit
+
+            
             if currentPageOffset:
                 params['cmcontinue'] = currentPageOffset
                 wikipedia.output('Getting [[%s]] list from %s by API...'
