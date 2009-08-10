@@ -179,7 +179,7 @@ class Category(wikipedia.Page):
         This should not be used outside of this module.
         """
         try:
-            if self.site().versionnumber() >= 11:
+            if wikipedia.config.use_api and self.site().versionnumber() >= 11:
                 api_url = self.site().api_address()
                 del api_url
             else:
@@ -206,14 +206,14 @@ class Category(wikipedia.Page):
             
             if currentPageOffset:
                 params['cmcontinue'] = currentPageOffset
-                wikipedia.output('Getting [[%s]] list from %s by API...'
+                wikipedia.output('Getting [[%s]] list from %s...'
                                  % (self.title(), currentPageOffset[:-1])) # cmcontinue last key is '|'
             elif startFrom:
                 params['cmstart'] = startFrom
-                wikipedia.output('Getting [[%s]] list starting at %s by API...'
+                wikipedia.output('Getting [[%s]] list starting at %s...'
                                  % (self.title(), startFrom))
             else:
-                wikipedia.output('Getting [[%s]] by API...' % self.title())
+                wikipedia.output('Getting [[%s]]...' % self.title())
             
             wikipedia.get_throttle()
             data = query.GetData(params, self.site())

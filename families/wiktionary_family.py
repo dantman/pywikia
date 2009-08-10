@@ -300,7 +300,7 @@ class Family(family.Family):
         self.namespaces[104] = {
             'bs': u'Dodatak',
             'cy': u'WiciSawrws',
-            'de': u'WikiSaurus',
+            'de': u'Thesaurus',
             'en': u'Index',
             'fr': u'Portail',
             'pl': u'Portal',
@@ -312,7 +312,7 @@ class Family(family.Family):
         self.namespaces[105] = {
             'bs': u'Razgovor o Dodatku',
             'cy': u'Sgwrs WiciSawrws',
-            'de': u'WikiSaurus Diskussion',
+            'de': u'Thesaurus Diskussion',
             'en': u'Index talk',
             'fr': u'Discussion Portail',
             'pl': u'Dyskusja portalu',
