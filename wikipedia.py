@@ -1625,7 +1625,7 @@ not supported by PyWikipediaBot!"""
                     continue
                 elif errorCode == 'contenttoobig':
                     # 'contenttoobig':"The content you supplied exceeds the article size limit of \$1 kilobytes",
-                    raise LongPageError(len(params['text']), int(data['error']['indo'][59:-10]))
+                    raise LongPageError(len(params['text']), int(data['error']['info'][59:-10]))
                 elif errorCode in ['protectedpage', 'customcssjsprotected', 'cascadeprotected', 'protectednamespace', 'protectednamespace-interface']:
                     # 'protectedpage':"The ``\$1'' right is required to edit this page"
                     # 'cascadeprotected':"The page you're trying to edit is protected because it's included in a cascade-protected page"
