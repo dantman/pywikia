@@ -3081,7 +3081,8 @@ class ImagePage(Page):
         }
         imagedata = query.GetData(params, self.site(), encodeTitle = False)
         try:
-            return imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
+            url = imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
+            return url
 #        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
 #        m = urlR.search(self.getImagePageHtml())
 
