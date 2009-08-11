@@ -1453,6 +1453,233 @@ not supported by PyWikipediaBot!"""
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
                 captcha=None, botflag=True, maxTries=-1):
+        """Upload 'text' as new content of Page by API
+
+        Don't use this directly, use put() instead.
+
+        """
+        try:
+            if config.use_api and self.site().versionnumber() >= 13:
+                apitest = self.site().api_address()
+                del apitest
+            else:
+                raise NotImplementedError #No enable api or version not support
+        except NotImplementedError:
+            return self._putPageOld(text, comment, watchArticle, minorEdit,
+                newPage, token, newToken, sysop, captcha, botflag, maxTries)
+        
+        retry_attempt = 1
+        retry_delay = 1
+        dblagged = False
+        params = {
+            'action': 'edit',
+            'title': self.title(),
+            'text': self._encodeArg(text, 'text'),
+            'summary': self._encodeArg(comment, 'summary'),
+        }
+        
+        if token:
+            params['token'] = token
+        else:
+            params['token'] = self.site().getToken(sysop = sysop)
+        
+        # Add server lag parameter (see config.py for details)
+        if config.maxlag:
+            params['maxlag'] = str(config.maxlag)
+
+        if self._editTime:
+            params['basetimestamp'] = self._editTime
+        else:
+            params['basetimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+        
+        if self._startTime:
+            params['starttimestamp'] = self._startTime
+        else:
+            params['starttimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+        
+        if botflag:
+            params['bot'] = 1
+        
+        if minorEdit:
+            params['minor'] = 1
+        else:
+            params['notminor'] = 1
+        
+        if watchArticle:
+            params['watch'] = 1
+        #else:
+        #    params['unwatch'] = 1
+        
+        if captcha:
+            params['captchaid'] = captcha['id']
+            params['captchaword'] = captcha['answer']
+        
+        while True:
+            if (maxTries == 0):
+                raise MaxTriesExceededError()
+            maxTries -= 1
+            # Check whether we are not too quickly after the previous
+            # putPage, and wait a bit until the interval is acceptable
+            if not dblagged:
+                put_throttle()
+            # Which web-site host are we submitting to?
+            if newPage:
+                output(u'Creating page %s' % self.aslink())
+            else:
+                output(u'Updating page %s' % self.aslink())
+            # Submit the prepared information
+            try:
+                response, data = query.GetData(params, self.site(), back_response = True)
+                if query.IsString(data):
+                    raise KeyError
+            except httplib.BadStatusLine, line:
+                raise PageNotSaved('Bad status line: %s' % line.line)
+            except ServerError:
+                output(u''.join(traceback.format_exception(*sys.exc_info())))
+                retry_attempt += 1
+                if retry_attempt > config.maxretries:
+                    raise
+                output(u'Got a server error when putting %s; will retry in %i minute%s.' % (self.aslink(), retry_delay, retry_delay != 1 and "s" or ""))
+                time.sleep(60 * retry_delay)
+                retry_delay *= 2
+                if retry_delay > 30:
+                    retry_delay = 30
+                continue
+            # If it has gotten this far then we should reset dblagged
+            dblagged = False
+            # Check blocks
+            self.site().checkBlocks(sysop = sysop)
+            # A second text area means that an edit conflict has occured.
+            if response.status == 500:
+                output(u"Server error encountered; will retry in %i minute%s."
+                       % (retry_delay, retry_delay != 1 and "s" or ""))
+                time.sleep(60 * retry_delay)
+                retry_delay *= 2
+                if retry_delay > 30:
+                    retry_delay = 30
+                continue
+            if data.has_key('error'):
+                #All available error key in edit mode: (from ApiBase.php)
+                # 'noimageredirect-anon':"Anonymous users can't create image redirects",
+                # 'noimageredirect':"You don't have permission to create image redirects",
+                # 'filtered':"The filter callback function refused your edit",
+                # 'noedit-anon':"Anonymous users can't edit pages",
+                # 'noedit':"You don't have permission to edit pages",
+                # 'emptypage':"Creating new, empty pages is not allowed",
+                # 'badmd5':"The supplied MD5 hash was incorrect",
+                # 'notext':"One of the text, appendtext, prependtext and undo parameters must be set",
+                # 'emptynewsection':'Creating empty new sections is not possible.',
+                # 'revwrongpage':"r\$1 is not a revision of ``\$2''",
+                # 'undofailure':'Undo failed due to conflicting intermediate edits',
+
+                #for debug only
+                #------------------------
+                if verbose:
+                    output("error occured, result:%s\nstatus:%s\nresponse:%s" % (data, response.status, response.reason))
+                    faked = params
+                    del faked['text'], faked['format']
+                    output("OriginalData:%s" % faked)
+                    del faked
+                #------------------------
+                errorCode = data['error']['code']
+                #cannot handle longpageerror and PageNoSave yet
+                if errorCode == 'maxlag' or response.status == 503:
+                        # server lag; Mediawiki recommends waiting 5 seconds
+                        # and retrying
+                    if verbose:
+                        output(data, newline=False)
+                    output(u"Pausing 5 seconds due to database server lag.")
+                    dblagged = True
+                    time.sleep(5)
+                    continue
+                elif errorCode == 'editconflict':
+                    # 'editconflict':"Edit conflict detected",
+                    raise EditConflict(u'An edit conflict has occured.')
+                elif errorCode == 'spamdetected':
+                    # 'spamdetected':"Your edit was refused because it contained a spam fragment: ``\$1''",
+                    raise SpamfilterError(data['error']['info'][62:-2])
+                elif errorCode == 'pagedeleted':
+                    # 'pagedeleted':"The page has been deleted since you fetched its timestamp",
+                    # Make sure your system clock is correct if this error occurs
+                    # without any reason!
+                    # raise EditConflict(u'Someone deleted the page.')
+                    # No raise, simply define these variables and retry:
+                    if self._editTime:
+                        params['basetimestamp'] = self._editTime
+                    else:
+                        params['basetimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                    
+                    if self._startTime:
+                        params['starttimestamp'] = self._startTime
+                    else:
+                        params['starttimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                    continue
+                elif errorCode == 'readonly':
+                    # 'readonly':"The wiki is currently in read-only mode"
+                    output(u"The database is currently locked for write access; will retry in %i minute%s."
+                           % (retry_delay, retry_delay != 1 and "s" or ""))
+                    time.sleep(60 * retry_delay)
+                    retry_delay *= 2
+                    if retry_delay > 30:
+                        retry_delay = 30
+                    continue
+                elif errorCode == 'contenttoobig':
+                    # 'contenttoobig':"The content you supplied exceeds the article size limit of \$1 kilobytes",
+                    raise LongPageError(len(params['text']), int(data['error']['indo'][59:-10]))
+                elif errorCode in ['protectedpage', 'customcssjsprotected', 'cascadeprotected', 'protectednamespace', 'protectednamespace-interface']:
+                    # 'protectedpage':"The ``\$1'' right is required to edit this page"
+                    # 'cascadeprotected':"The page you're trying to edit is protected because it's included in a cascade-protected page"
+                    # 'customcssjsprotected': "You're not allowed to edit custom CSS and JavaScript pages"
+                    # 'protectednamespace': "You're not allowed to edit pages in the ``\$1'' namespace"
+                    # 'protectednamespace-interface':"You're not allowed to edit interface messages"
+                    # 
+                    # The page is locked. This should have already been
+                    # detected when getting the page, but there are some
+                    # reasons why this didn't work, e.g. the page might be
+                    # locked via a cascade lock.
+                    try:
+                        # Page is locked - try using the sysop account, unless we're using one already
+                        if sysop:# Unknown permissions error
+                            raise LockedPage()
+                        else:
+                            self.site().forceLogin(sysop = True)
+                            output(u'Page is locked, retrying using sysop account.')
+                            return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = True), sysop = True)
+                    except NoUsername:
+                        raise LockedPage()
+                elif errorCode == 'badtoken':
+                    if newToken:
+                        output(u"Edit token has failed. Giving up.")
+                    else:
+                        # We might have been using an outdated token
+                        output(u"Edit token has failed. Retrying.")
+                        return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop), newToken = True, sysop = sysop)
+                # I think the error message title was changed from "Wikimedia Error"
+                # to "Wikipedia has a problem", but I'm not sure. Maybe we could
+                # just check for HTTP Status 500 (Internal Server Error)?                    
+                else:
+                    output("Unknown Error. API Error code:%s" % data['error']['code'] )
+                    output("Information:%s" %data['error']['info'])
+            else:
+                if data['edit']['result'] == u"Success":
+                    #
+                    # The status code for update page completed in ordinary mode is 302 - Found
+                    # But API is always 200 - OK because it only send "success" back in string.
+                    # if the page update is successed, we need to return code 302 for cheat script who 
+                    # using status code
+                    #
+                    return 302, response.reason, data
+            
+            solve = self.site().solveCaptcha(data)
+            if solve:
+                return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
+            
+            return response.status, response.reason, data
+        
+
+    def _putPageOld(self, text, comment=None, watchArticle=False, minorEdit=True,
+                newPage=False, token=None, newToken=False, sysop=False,
+                captcha=None, botflag=True, maxTries=-1):
         """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
@@ -1625,14 +1852,14 @@ not supported by PyWikipediaBot!"""
                     else:
                         self.site().forceLogin(sysop = True)
                         output(u'Page is locked, retrying using sysop account.')
-                        return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = True), sysop = True)
+                        return self._putPageOld(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = True), sysop = True)
                 except NoUsername:
                     raise LockedPage()
             if not newToken and "<textarea" in data:
                 ##if "<textarea" in data: # for debug use only, if badtoken still happen
                 # We might have been using an outdated token
                 output(u"Changing page has failed. Retrying.")
-                return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
+                return self._putPageOld(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
             # I think the error message title was changed from "Wikimedia Error"
             # to "Wikipedia has a problem", but I'm not sure. Maybe we could
             # just check for HTTP Status 500 (Internal Server Error)?
@@ -1683,7 +1910,7 @@ not supported by PyWikipediaBot!"""
             ## output('%s' % data) # WHY?
             solve = self.site().solveCaptcha(data)
             if solve:
-                return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
+                return self._putPageOld(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
             if data.strip() != u"":
@@ -2795,9 +3022,7 @@ not supported by PyWikipediaBot!"""
             raise NoPage(u'API Error, nothing found in the APIs')
 
         # We don't know the page's id, if any other better idea please change it
-        pageid = data.keys()[0]
-        nickdata = data[pageid][u'revisions']
-        return nickdata
+        return data[data.keys()[0]][u'revisions']
 
 class ImagePage(Page):
     """A subclass of Page representing an image descriptor wiki page.
@@ -2856,7 +3081,7 @@ class ImagePage(Page):
         }
         imagedata = query.GetData(params, self.site(), encodeTitle = False)
         try:
-            url=imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
+            return imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
 #        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
 #        m = urlR.search(self.getImagePageHtml())
 
@@ -5152,7 +5377,8 @@ your connection is down. Retrying in %i minutes..."""
                         self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
                                 for tag in datas])
                     except KeyError:
-                        output('API get messages had some error, retrying by ordinary.')
+                        if verbose:
+                            output('API get messages had some error, retrying by ordinary.')
                         api = False
                         continue
                     except NotImplementedError:
@@ -5207,8 +5433,7 @@ your connection is down. Retrying in %i minutes..."""
 
         key = key.lower()
         try:
-            value = self._mediawiki_messages[key]
-            return value
+            return self._mediawiki_messages[key]
         except KeyError:
             raise KeyError("MediaWiki key '%s' does not exist on %s"
                            % (key, self))
