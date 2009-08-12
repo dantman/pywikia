@@ -25,7 +25,13 @@ This module allow you to use the API in a simple and easy way.
 __version__ = '$Id$'
 #
 
-import wikipedia, simplejson, urllib, time
+import wikipedia, urllib, time
+try:
+    #For Python 2.6 newer
+    import json
+except ImportError:
+    import simplejson as json
+    
 
 def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
     """Get data from the query api, and convert it into a data object
@@ -91,15 +97,15 @@ def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5,
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
             if back_response:
-                return res, simplejson.loads( jsontext )
+                return res, json.loads( jsontext )
             else:
-                return simplejson.loads( jsontext )
+                return json.loads( jsontext )
 
         except ValueError, error:
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
-            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s' % path, jsontext)
+            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s\n%s' % (site.hostname(), path), jsontext)
             lastError = error
             if retryCount >= 0:
                 wikipedia.output(u"Retrying in %i seconds..." % retry_idle_time)
