@@ -165,6 +165,15 @@ class LoginManager:
         else:
             if api:
                 response, data = query.GetData(predata, self.site, back_response = True)
+                if data['login']['result'] != "Success":
+                    faildInfo = data['login']['result']
+                    #if faildInfo == "NotExists":
+                    #    
+                    #elif faildInfo == "WrongPass":
+                    #    
+                    #elif faildInfo == "Throttled":
+                    #    
+                    return False
             else:
                 response, data = self.site.postData(address, self.site.urlEncode(predata))
                 if self.verbose:
@@ -290,6 +299,7 @@ class LoginManager:
                 os.remove(filename)
             except:
                 pass
+            wikipedia.output('%s is logged out.' % self.site)
             return True
         
         return False
@@ -303,6 +313,7 @@ def main():
     logall = False
     forceLogin = False
     verbose = False
+    cleanAll = clean = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith("-pass"):
@@ -310,6 +321,8 @@ def main():
                 password = wikipedia.input(u'Password for all accounts:', password = True)
             else:
                 password = arg[6:]
+        elif arg == "-clean":
+            clean = True
         elif arg == "-sysop":
             sysop = True
         elif arg == "-all":
@@ -333,17 +346,30 @@ def main():
             for lang in namedict[familyName].iterkeys():
                 try:
                     site = wikipedia.getSite(lang, familyName)
-                    if not forceLogin and site.loggedInAs(sysop = sysop):
-                        wikipedia.output(u'Already logged in on %s' % site)
+                    loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
+                    if clean:
+                        if os.path.exists(wikipedia.config.datafilepath('login-data',
+                          '%s-%s-%s-login.data' % (familyName, lang, namedict[familyName][lang]))):
+                            loginMan.logout()
                     else:
-                        loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
-                        loginMan.login()
+                        if not forceLogin and site.loggedInAs(sysop = sysop):
+                            wikipedia.output(u'Already logged in on %s' % site)
+                        else:
+                            loginMan.login()
                 except wikipedia.NoSuchSite:
                     wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
 
     else:
-        loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
-        loginMan.login()
+        if clean:
+            try:
+                site = wikipedia.getSite()
+                lgm = LoginManager(site = site)
+                lgm.logout()
+            except wikipedia.NoSuchSite:
+                pass
+        else:
+            loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
+            loginMan.login()
 
 if __name__ == "__main__":
     try:
