@@ -11,9 +11,9 @@ class Family(family.Family):
         self.name = 'wikinews'
 
         self.languages_by_size = [
-            'en', 'pl', 'de', 'sr', 'it', 'fr', 'pt', 'es', 'zh', 'sv',
-            'ja', 'ru', 'nl', 'he', 'fi', 'sd', 'ar', 'cs', 'no', 'uk',
-            'ca', 'hu', 'ro', 'th', 'bs', 'bg', 'ta', 'tr'
+            'en', 'sr', 'pl', 'it', 'de', 'fr', 'pt', 'es', 'zh', 'sv',
+            'ja', 'ru', 'nl', 'he', 'fi', 'ar', 'sd', 'cs', 'no', 'uk',
+            'hu', 'ca', 'ro', 'th', 'bs', 'bg', 'ta', 'tr'
         ]
 
         if config.SSL_connection:
