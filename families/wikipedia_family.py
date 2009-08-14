@@ -739,7 +739,7 @@ class Family(family.Family):
             'pt':  [u'Desambiguação', u'Disambig', u'Desambig'],
             'qu':  [u"Sut'ichana qillqa", u'Disambig', u'SJM'],
             'rmy': [u'Dudalipen'],
-            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis', u'Dez'],
+            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis', u'Dez', u'Dezamb'],
             'ru':  [u'Disambig', u'Неоднозначность', u'неоднозначность',
                     u'Многозначность', u'Фамилия'],
             'scn': [u'Disambigua', u'Disambig', u'Sigla2', u'Sigla3'],
