@@ -147,6 +147,7 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikipedia talk', self.namespaces[5]['_default']],
             'ab': u'Обсуждение Wikipedia',
+            'ace': u'Pembicaraan Wikipedia',
             'af': u'Wikipediabespreking',
             'als': u'Wikipedia Diskussion',
             'am': u'Wikipedia ውይይት',
@@ -257,6 +258,7 @@ class Family(family.Family):
             'mr': u'विकिपीडिया चर्चा',
             'ms': u'Perbincangan Wikipedia',
             'mt': [u'Wikipedija diskussjoni', u'Wikipedija diskuti'],
+            'mwl': u'Wikipedia cumbersa',
             'myv': u'Википедиясь кортамось',
             'mzn': u'بحث Wikipedia',
             'nah': [u'Wikipedia tēixnāmiquiliztli', u'Wikipedia Discusión'],
