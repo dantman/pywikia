@@ -943,6 +943,7 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic,
             'te': ['en', 'hi', 'kn', 'ta', 'ml'],
+            'ur': ['ar', 'fa', 'en'],
             'vi': self.alphabetic_revised,
             'yi': ['en', 'he', 'de']
         }
