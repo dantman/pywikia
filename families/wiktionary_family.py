@@ -10,23 +10,23 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wiktionary'
 
-       self.languages_by_size = [
-           'fr', 'en', 'tr', 'lt', 'vi', 'ru', 'io', 'zh', 'el', 'pl',
-           'fi', 'no', 'hu', 'it', 'ta', 'sv', 'de', 'ko', 'lo', 'pt',
-           'nl', 'ku', 'ja', 'es', 'id', 'te', 'ro', 'et', 'gl', 'bg',
-           'ca', 'ar', 'vo', 'uk', 'fa', 'is', 'sr', 'af', 'sw', 'scn',
-           'fy', 'th', 'br', 'oc', 'simple', 'li', 'cs', 'he', 'sl', 'hy',
-           'sq', 'tt', 'la', 'zh-min-nan', 'da', 'ast', 'tk', 'ur', 'wa', 'hsb'
-           'kk', 'ml', 'ky', 'hr', 'wo', 'kn', 'ang', 'eo', 'hi', 'gn',
-           'ga', 'ia', 'az', 'co', 'sk', 'csb', 'st', 'ms', 'nds', 'kl',
-           'sd', 'ug', 'ti', 'tl', 'mk', 'ka', 'an', 'my', 'gu', 'km',
-           'lv', 'cy', 'ts', 'qu', 'eu', 'fo', 'bs', 'am', 'rw', 'mr',
-           'su', 'chr', 'mn', 'nah', 'om', 'ie', 'yi', 'be', 'iu', 'mg',
-           'sh', 'gd', 'nn', 'bn', 'zu', 'si', 'pa', 'mt', 'dv', 'tpi',
-           'mi', 'roa-rup', 'jv', 'tg', 'ps', 'ik', 'so', 'uz', 'ha', 'gv',
-           'ss', 'kw', 'sa', 'ay', 'na', 'jbo', 'ne', 'tn', 'sm', 'sg',
-           'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
-       ]
+        self.languages_by_size = [
+            'fr', 'en', 'tr', 'lt', 'vi', 'ru', 'io', 'zh', 'el', 'pl',
+            'fi', 'no', 'hu', 'it', 'ta', 'sv', 'de', 'ko', 'lo', 'pt',
+            'nl', 'ku', 'ja', 'es', 'id', 'te', 'ro', 'et', 'gl', 'bg',
+            'ca', 'ar', 'vo', 'uk', 'fa', 'is', 'sr', 'af', 'sw', 'scn',
+            'fy', 'th', 'br', 'oc', 'simple', 'li', 'cs', 'he', 'sl', 'hy',
+            'sq', 'tt', 'la', 'zh-min-nan', 'da', 'ast', 'tk', 'ur', 'wa', 'hsb'
+            'kk', 'ml', 'ky', 'hr', 'wo', 'kn', 'ang', 'eo', 'hi', 'gn',
+            'ga', 'ia', 'az', 'co', 'sk', 'csb', 'st', 'ms', 'nds', 'kl',
+            'sd', 'ug', 'ti', 'tl', 'mk', 'ka', 'an', 'my', 'gu', 'km',
+            'lv', 'cy', 'ts', 'qu', 'eu', 'fo', 'bs', 'am', 'rw', 'mr',
+            'su', 'chr', 'mn', 'nah', 'om', 'ie', 'yi', 'be', 'iu', 'mg',
+            'sh', 'gd', 'nn', 'bn', 'zu', 'si', 'pa', 'mt', 'dv', 'tpi',
+            'mi', 'roa-rup', 'jv', 'tg', 'ps', 'ik', 'so', 'uz', 'ha', 'gv',
+            'ss', 'kw', 'sa', 'ay', 'na', 'jbo', 'ne', 'tn', 'sm', 'sg',
+            'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
+        ]
 
         if config.SSL_connection:
             for lang in self.languages_by_size:
