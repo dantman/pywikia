@@ -13,7 +13,7 @@ class Family(family.Family):
         self.languages_by_size = [
             'en', 'pl', 'de', 'sr', 'it', 'fr', 'pt', 'es', 'zh', 'sv',
             'ja', 'ru', 'nl', 'he', 'fi', 'sd', 'ar', 'cs', 'no', 'uk',
-            'ca', 'hu', 'ro', 'th', 'bs', 'bg', 'ta',
+            'ca', 'hu', 'ro', 'th', 'bs', 'bg', 'ta', 'tr'
         ]
 
         if config.SSL_connection:
@@ -53,6 +53,7 @@ class Family(family.Family):
             'ru': u'Викиновости',
             'sr': u'Викивести',
             'th': u'วิกิข่าว',
+            'tr': u'Vikihaber',
             'uk': u'ВікіНовини',
         }
         self.namespaces[5] = {
@@ -81,6 +82,7 @@ class Family(family.Family):
             'sv': u'Wikinewsdiskussion',
             'ta': u'Wikinews பேச்சு',
             'th': u'คุยเรื่องวิกิข่าว',
+            'tr': u'Vikihaber tartışma',
             'uk': u'Обговорення ВікіНовини',
         }
 

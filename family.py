@@ -11,7 +11,7 @@ class Family:
         self.name = None
             # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
-            'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc', 'roa-rup',
+            'af', 'ak', 'ace', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc', 'roa-rup',
             'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'bm', 'bn',
             'zh-min-nan', 'nan', 'map-bms', 'ba', 'be', 'be-x-old', 'bh', 'bcl',
             'bi', 'bar', 'bo', 'bs', 'br', 'bg', 'bxr', 'ca', 'cv', 'ceb', 'cs',
@@ -25,14 +25,14 @@ class Family:
             'ks', 'csb', 'kk', 'kw', 'rw', 'ky', 'rn', 'sw', 'kv', 'kg', 'ht',
             'ku', 'kj', 'lad', 'lbe', 'lo', 'la', 'lv', 'lb', 'lt', 'lij', 'li',
             'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mt', 'mi', 'mr',
-            'arz', 'mzn', 'ms', 'cdo', 'mdf', 'mo', 'mn', 'mus', 'my', 'nah',
+            'arz', 'mzn', 'ms', 'cdo', 'mwl', 'mdf', 'mo', 'mn', 'mus', 'my', 'nah',
             'na', 'fj', 'nl', 'nds-nl', 'cr', 'ne', 'new', 'ja', 'nap', 'ce',
             'pih', 'no', 'nb', 'nn', 'nrm', 'nov', 'ii', 'oc', 'mhr', 'or', 'om', 'ng',
-            'hz', 'uz', 'pa', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'tpi',
+            'hz', 'uz', 'pa', 'pnb', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'tpi',
             'nds', 'pl', 'tokipona', 'tp', 'pnt', 'pt', 'aa', 'kaa', 'crh',
             'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'sah', 'se', 'sm', 'sa',
             'sg', 'sc', 'za', 'sco', 'stq', 'st', 'tn', 'sq', 'scn', 'si',
-            'simple', 'sd', 'ss', 'sk', 'cu', 'sl', 'szl', 'so', 'srn', 'sr',
+            'simple', 'sd', 'ss', 'sk', 'cu', 'sl', 'szl', 'so', 'ckb', 'srn', 'sr',
             'sh', 'su', 'fi', 'sv', 'tl', 'ta', 'kab', 'roa-tara', 'tt', 'te',
             'tet', 'th', 'ti', 'tg', 'to', 'chr', 'chy', 've', 'tr', 'tk',
             'tw', 'udm', 'bug', 'uk', 'ur', 'ug', 'vec', 'vi', 'vo', 'fiu-vro',
