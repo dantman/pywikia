@@ -87,10 +87,9 @@ def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5,
         try:
             jsontext = "Nothing received"
             if site.hostname() in wikipedia.config.authenticate.keys():
-                predata["Content-type"] = "application/x-www-form-urlencoded"
-                predata["User-agent"] = useragent
-                data = site.urlEncode(params)
-                res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, data))
+                params["Content-type"] = "application/x-www-form-urlencoded"
+                params["User-agent"] = useragent
+                res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
                 jsontext = res.read()
             elif params['action'] in postAC:
                 res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies(sysop=sysop), sysop=sysop)
