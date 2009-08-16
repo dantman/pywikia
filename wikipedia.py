@@ -1545,6 +1545,14 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
+            except ValueError: # API result cannot decode
+                output(u"Server error encountered; will retry in %i minute%s."
+                       % (retry_delay, retry_delay != 1 and "s" or ""))
+                time.sleep(60 * retry_delay)
+                retry_delay *= 2
+                if retry_delay > 30:
+                    retry_delay = 30
+                continue
             # If it has gotten this far then we should reset dblagged
             dblagged = False
             # Check blocks
