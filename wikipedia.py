@@ -1653,7 +1653,7 @@ not supported by PyWikipediaBot!"""
                     else:
                         # We might have been using an outdated token
                         output(u"Edit token has failed. Retrying.")
-                        return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop), newToken = True, sysop = sysop)
+                        return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
                 # I think the error message title was changed from "Wikimedia Error"
                 # to "Wikipedia has a problem", but I'm not sure. Maybe we could
                 # just check for HTTP Status 500 (Internal Server Error)?                    
