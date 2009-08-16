@@ -93,6 +93,12 @@ class Family(family.Family):
         self.namespaces[1217] = {
             '_default': [u'OpenLayers talk'],
         }
+        self.namespaces[1218] = {
+            '_default': [u'FUDforum'],
+        }
+        self.namespaces[1219] = {
+            '_default': [u'FUDforum talk'],
+        }
 
     def version(self, code):
         return "1.16alpha"
