@@ -59,6 +59,7 @@ class Family(family.Family):
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
             'ar': u'ويكيبيديا',
+            'arc': u'ܘܝܩܝܦܕܝܐ',
             'arz': u'ويكيبيديا',
             'ast': u'Uiquipedia',
             'az': u'Vikipediya',
@@ -153,6 +154,7 @@ class Family(family.Family):
             'am': u'Wikipedia ውይይት',
             'an': u'Descusión Wikipedia',
             'ar': u'نقاش ويكيبيديا',
+            'arc': u'ܘܝܩܝܦܕܝܐ talk',
             'arz': u'نقاش ويكيبيديا',
             'as': u'Wikipedia বার্তা',
             'ast': u'Uiquipedia alderique',
@@ -860,7 +862,7 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ab', 'ace', 'af', 'ak', 'am', 'ang', 'arc', 'arz', 'as', 'ast,', 'av', 'ay', 'az',
+            'ab', 'ace', 'af', 'ak', 'als', 'am', 'ang', 'arc', 'arz', 'as', 'ast,', 'av', 'ay', 'az',
             'ba', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
             'cbk-zam', 'cdo', 'ce', 'ch', 'chr', 'chy', 'ckb', 'co', 'crh', 'cr', 'csb', 'cu', 'cv', 'cy',
             'diq', 'dsb', 'dz', 'ee', 'el', 'eml', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
@@ -874,7 +876,7 @@ class Family(family.Family):
             'sah', 'sa', 'sc', 'sco', 'sd', 'se', 'sg', 'sh', 'simple', 'si', 'sk', 'sm', 'sn', 'so', 'srn', 'stq', 'st', 'su', 'sw', 'szl',
             'ta', 'te', 'tet', 'tg', 'ti', 'tk', 'tn', 'to', 'tpi', 'ts', 'tt', 'tum', 'tw', 'ty',
             'udm', 'ug', 'uz', 've', 'vls', 'wa', 'war', 'wo', 'wuu',
-            'xal', 'xh', 'yi', 'yo', 'za', 'zea', 'zh', 'zh-classic', 'zh-min-nan', 'zu',
+            'xal', 'xh', 'yi', 'yo', 'za', 'zea', 'zh', 'zh-classical', 'zh-min-nan', 'zu',
         ]
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
@@ -982,7 +984,7 @@ class Family(family.Family):
             '_default': {
                 'pt': [102],
                 'als': [104],
-		'ar': [104],
+                'ar': [104],
                 'en': [12],
                 'es': [104],
                 'fi': [4],

@@ -894,12 +894,14 @@ class Family:
             },
             4: {
                 '_default': u'Project',
+                'arc': u'ܘܝܩܝܦܕܝܐ',
                 'cs': u'Wikizdroje',
                 'ko': u'위키문헌',
                 'uk': u'Вікіцитати',
             },
             5: {
                 '_default': u'Project talk',
+                'arc': u'ܘܝܩܝܦܕܝܐ talk',
                 'cs': u'Wikizdroje diskuse',
                 'gan': u'Wikipedia talk',
                 'ko': u'위키문헌토론',
