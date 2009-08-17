@@ -1525,8 +1525,10 @@ not supported by PyWikipediaBot!"""
             # Which web-site host are we submitting to?
             if newPage:
                 output(u'Creating page %s' % self.aslink())
+                params['createonly'] = 1
             else:
                 output(u'Updating page %s' % self.aslink())
+                params['nocreate'] = 1
             # Submit the prepared information
             try:
                 response, data = query.GetData(params, self.site(), back_response = True)
@@ -1612,6 +1614,7 @@ not supported by PyWikipediaBot!"""
                     # without any reason!
                     # raise EditConflict(u'Someone deleted the page.')
                     # No raise, simply define these variables and retry:
+                    params['recreate'] = 1
                     if self._editTime:
                         params['basetimestamp'] = self._editTime
                     else:
