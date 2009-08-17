@@ -1531,7 +1531,7 @@ not supported by PyWikipediaBot!"""
                 params['nocreate'] = 1
             # Submit the prepared information
             try:
-                response, data = query.GetData(params, self.site(), back_response = True)
+                response, data = query.GetData(params, self.site(), sysop=sysop, back_response = True)
                 if query.IsString(data):
                     raise KeyError
             except httplib.BadStatusLine, line:
