@@ -2614,6 +2614,7 @@ class Family:
            'he': u'[a-zא-ת]*',
            'it': u'[a-zàèéìòù]*',
            'kk': u'[a-zäçéğıïñöşüýа-яёәғіқңөұүһʺʹ]*',
+           'ksh': u'[äöüėëĳßəğåůæœça-z]*',
            'nl': u'[a-zäöüïëéèéàç]*',
            'pt': u'[a-záâàãéêíóôõúüç]*',
            'ru': u'[a-zа-я]*',
@@ -3093,9 +3094,9 @@ class Family:
         self.language_groups = {
             # languages using the arabic script (incomplete)
             'arab' : [
-                'ar', 'arz', 'ps', 'sd', 'ur',
+                'ar', 'arz', 'ps', 'sd', 'ur', 'ckb',
                 # languages using multiple scripts, including arabic
-                'kk', 'ku', 'tt', 'ug'
+                'kk', 'ku', 'tt', 'ug', 'pnb'
             ],
             # languages that use chinese symbols
             'chinese': [
@@ -3111,9 +3112,14 @@ class Family:
                 # languages using multiple scripts, including cyrillic
                 'ha', 'kk', 'sh', 'sr', 'tt'
             ],
+            # languages that use a greek script
+            'grec': [
+                'el', 'grc', 'pnt'
+                # languages using multiple scripts, including greek
+            ],
             # languages that use the latin alphabet
             'latin': [
-                'aa', 'af', 'ak', 'als', 'an', 'ang', 'ast', 'ay', 'bar', 'bat-smg',
+                'aa', 'ace', 'af', 'ak', 'als', 'an', 'ang', 'ast', 'ay', 'bar', 'bat-smg',
                 'bcl', 'bi', 'bm', 'br', 'bs', 'ca', 'cbk-zam', 'cdo', 'ceb', 'ch',
                 'cho', 'chy', 'co', 'crh', 'cs', 'csb', 'cy', 'da', 'de', 'diq', 'dsb',
                 'ee', 'eml', 'en', 'eo', 'es', 'et', 'eu', 'ext', 'ff', 'fi', 'fiu-vro',
@@ -3122,7 +3128,7 @@ class Family:
                 'ie', 'ig', 'ik', 'ilo', 'io', 'is', 'it', 'jbo', 'jv', 'kaa', 'kab',
                 'kg', 'ki', 'kj', 'kl', 'kr', 'ksh', 'kw', 'la', 'lad', 'lb', 'lg',
                 'li', 'lij', 'lmo', 'ln', 'lt', 'lv', 'map-bms', 'mg', 'mh', 'mi', 'ms',
-                'mt', 'mus', 'na', 'nah', 'nap', 'nds', 'nds-nl', 'ng', 'nl', 'nn',
+                'mt', 'mus', 'mwl', 'na', 'nah', 'nap', 'nds', 'nds-nl', 'ng', 'nl', 'nn',
                 'no', 'nov', 'nrm', 'nv', 'ny', 'oc', 'om', 'pag', 'pam', 'pap', 'pdc',
                 'pih', 'pl', 'pms', 'pt', 'qu', 'rm', 'rn', 'ro', 'roa-rup', 'roa-tara',
                 'rw', 'sc', 'scn', 'sco', 'se', 'sg', 'simple', 'sk', 'sl', 'sm', 'sn',
@@ -3131,11 +3137,12 @@ class Family:
                 'vec', 'vi', 'vls', 'vo', 'wa', 'war', 'wo', 'xh', 'yo', 'zea',
                 'zh-min-nan', 'zu',
                 # languages using multiple scripts, including latin
-                'az', 'chr', 'ha', 'iu', 'kk', 'ku', 'rmy', 'sh', 'sr', 'tt', 'ug', 'za'
+                'az', 'chr', 'ckb', 'ha', 'iu', 'kk', 'ku', 'rmy', 'sh', 'sr', 'tt',
+                'ug', 'za'
             ],
             # Scandinavian languages
             'scand': [
-                'da', 'fo', 'is', 'no', 'sv'
+                'da', 'fo', 'is', 'nb', 'nn', 'no', 'sv'
             ],
         }
 
