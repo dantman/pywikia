@@ -285,7 +285,7 @@ class Reporter(threadpool.Thread):
             return
         except wikipedia.IsRedirectPage:
             output(u'Warning! %s is a redirect; not reporting replacement!' % old_image)
-            
+            return
         try:
             page.put(u'%s\n%s' % (template, text), 
                 comment = u'This image has been replaced by ' + new_image)
