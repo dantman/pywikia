@@ -14,10 +14,10 @@ class Family(family.Family):
         self.langs['omegawiki'] = 'www.omegawiki.org'
 
         self.namespaces[4] = {
-            '_default': [u'OmegaWiki'],
+            '_default': [u'Meta'],
         }
         self.namespaces[5] = {
-            '_default': [u'OmegaWiki talk'],
+            '_default': [u'Meta talk'],
         }
         self.namespaces[6] = {
             '_default': [u'File'],
@@ -30,18 +30,6 @@ class Family(family.Family):
         }
         self.namespaces[17] = {
             '_default': [u'Expression talk'],
-        }
-        self.namespaces[18] = {
-            '_default': [u'Collection'],
-        }
-        self.namespaces[19] = {
-            '_default': [u'Collection talk'],
-        }
-        self.namespaces[20] = {
-            '_default': [u'Relation'],
-        }
-        self.namespaces[21] = {
-            '_default': [u'Relation talk'],
         }
         self.namespaces[22] = {
             '_default': [u'Portal'],
@@ -67,6 +55,12 @@ class Family(family.Family):
         self.namespaces[29] = {
             '_default': [u'NeedsTranslationTo talk'],
         }
+        self.namespaces[30] = {
+            '_default': [u'Partner'],
+        }
+        self.namespaces[31] = {
+            '_default': [u'Partner talk'],
+        }
 
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
@@ -77,7 +71,7 @@ class Family(family.Family):
         return 'www.omegawiki.org'
 
     def version(self, code):
-        return "1.10alpha"
+        return "1.16alpha"
 
     def scriptpath(self, code):
         return ''
