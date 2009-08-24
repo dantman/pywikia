@@ -55,11 +55,11 @@ def isAllowedLicense(photoInfo=None):
     '''
     license = photoInfo.find('photo').attrib['license']
     if (license=='4' or license=='5'):
-    #Is cc-by or cc-by-sa
-    return True
+        #Is cc-by or cc-by-sa
+        return True
     else:
-    #We don't accept other licenses
-    return False
+        #We don't accept other licenses
+        return False
 
 def getTags(photoInfo=None):
     '''
