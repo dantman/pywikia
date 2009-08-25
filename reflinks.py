@@ -45,7 +45,7 @@ import subprocess, tempfile, os
 
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
-            'it':u'Utente:Màrço27Bot/EditThisPageToStopMe',
+            'it':u'Utente:Marco27Bot/EditThisPageToStopMe',
             'ko':u'사용자:GrassnBreadRefBot/EditThisPageToStopMe1',
             'hu':'User:Damibot/EditThisPageToStopMe',
             'en':u'User:DumZiBoT/EditThisPageToStopMe',
