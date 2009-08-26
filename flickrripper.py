@@ -67,7 +67,8 @@ def getTags(photoInfo=None):
     '''
     result = []
     for tag in photoInfo.find('photo').find('tags').findall('tag'):
-    result.append(tag.text.lower())
+        result.append(tag.text.lower())
+
     return result
 
 def getFlinfoDescription(photo_id=0):
@@ -88,9 +89,9 @@ def getFilename(photoInfo=None):
     username = photoInfo.find('photo').find('owner').attrib['username']
     title = photoInfo.find('photo').find('title').text
     if title:
-    title =  cleanUpTitle(title)
+        title =  cleanUpTitle(title)
     else:
-    title = u''
+        title = u''
 
     return u'Flickr - %s - %s.jpg' % (username, title)
 
@@ -123,7 +124,7 @@ def getPhotoUrl(photoSizes=None):
     url = ''
     # The assumption is that the largest image is last
     for size in photoSizes.find('sizes').findall('size'):
-    url = size.attrib['source']
+        url = size.attrib['source']
     return url
 
 def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', override=u''):
@@ -181,7 +182,7 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
         print photo_id
         (photoInfo, photoSizes) = getPhoto(flickr=flickr, photo_id=photo_id)
     if (isAllowedLicense(photoInfo=photoInfo) or override):
-            # Tags not needed atm
+        # Tags not needed atm
         #tags=getTags(photoInfo=photoInfo)
 
         flinfoDescription = getFlinfoDescription(photo_id=photo_id)
@@ -190,10 +191,10 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
         #print filename
         photoUrl = getPhotoUrl(photoSizes=photoSizes)
         #print photoUrl
-            photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override)
-            #wikipedia.output(photoDescription)
-            (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photoUrl, filename).run()
-            #wikipedia.output(newPhotoDescription)
+        photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override)
+        #wikipedia.output(photoDescription)
+        (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photoUrl, filename).run()
+        #wikipedia.output(newPhotoDescription)
         #if (wikipedia.Page(title=u'File:'+ filename, site=wikipedia.getSite()).exists()):
         # I should probably check if the hash is the same and if not upload it under a different name
         #wikipedia.output(u'File:' + filename + u' already exists!')
@@ -202,8 +203,8 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
             #Would be nice to check before I upload if the file is already at Commons
             #Not that important for this program, but maybe for derived programs
         if not skip:
-                bot = upload.UploadRobot(url=photoUrl, description=newPhotoDescription, useFilename=newFilename, keepFilename=True, verifyDescription=False)
-                bot.upload_image(debug=False)
+            bot = upload.UploadRobot(url=photoUrl, description=newPhotoDescription, useFilename=newFilename, keepFilename=True, verifyDescription=False)
+            bot.upload_image(debug=False)
     return 0
 
 class Tkdialog:
