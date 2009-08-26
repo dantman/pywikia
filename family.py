@@ -895,6 +895,7 @@ class Family:
             4: {
                 '_default': u'Project',
                 'arc': u'ܘܝܩܝܦܕܝܐ',
+                'bn': u'উইকিপিডিয়া',
                 'cs': u'Wikizdroje',
                 'ko': u'위키문헌',
                 'uk': u'Вікіцитати',
@@ -902,6 +903,7 @@ class Family:
             5: {
                 '_default': u'Project talk',
                 'arc': u'ܘܝܩܝܦܕܝܐ talk',
+                'bn': u'উইকিপিডিয়া আলোচনা',
                 'cs': u'Wikizdroje diskuse',
                 'gan': u'Wikipedia talk',
                 'ko': u'위키문헌토론',

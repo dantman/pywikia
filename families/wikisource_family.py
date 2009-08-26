@@ -130,6 +130,7 @@ class Family(family.Family):
             'yi': [u'װיקיביבליאָטעק רעדן', u'וויקיביבליאטעק רעדן'],
         }
         self.namespaces[100] = {
+            'ar': u'بوابة',
             'bg': u'Автор',
             'bn': u'লেখক',
             'cs': u'Autor',
@@ -148,6 +149,7 @@ class Family(family.Family):
             'tr': u'Kişi',
         }
         self.namespaces[101] = {
+            'ar': u'نقاش البوابة',
             'bg': u'Автор беседа',
             'bn': u'লেখক আলাপ',
             'cs': u'Autor diskuse',
@@ -253,6 +255,7 @@ class Family(family.Family):
         }
 
         self.namespaces[106] = {
+            'ar': u'فهرس',
             'en': u'Index',
             'he': u'ביאור',
             'hu': u'Index',
@@ -267,6 +270,7 @@ class Family(family.Family):
         }
 
         self.namespaces[107] = {
+            'ar': u'نقاش الفهرس',
             'en': u'Index talk',
             'he': u'שיחת ביאור',
             'hu': u'Index vita',
