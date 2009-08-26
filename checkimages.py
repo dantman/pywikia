@@ -44,6 +44,8 @@ This script understands the following command-line arguments:
 
     -untagged[:#]       - Use daniel's tool as generator ( http://toolserver.org/~daniel/WikiSense/UntaggedImages.php )
 
+    -nologerror         - If given, this option will disable the error that is risen when the log is full.
+
 ---- Istructions for the real-time settings  ----
 * For every new block you have to add:
 
@@ -541,7 +543,7 @@ class EmailSender(wikipedia.Page):
 # Here there is the main class.
 class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
-                 duplicatesReport = False):
+                 duplicatesReport = False, logFullError = True):
         """ Constructor, define some global variable """
         self.site = site
         self.logFulNumber = logFulNumber
@@ -990,7 +992,10 @@ class main:
         except wikipedia.IsRedirectPage:            
             text_get = another_page.getRedirectTarget().get()
         if len(text_get) >= self.logFulNumber:
-            raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
+            if logFullError:
+                raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
+            else:
+                wikipedia.output(u"The log page (%s) is full! Please delete the old files reported. Skip!" % another_page.title())
         pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.DOTALL)
@@ -1497,6 +1502,7 @@ def checkbot():
     duplicatesActive = False # Use the duplicate option
     duplicatesReport = False # Use the duplicate-report option
     sendemailActive = False # Use the send-email
+    logFullError = True # Raise an error when the log is full
 
     # Here below there are the parameters.
     for arg in wikipedia.handleArgs():
@@ -1512,6 +1518,8 @@ def checkbot():
                 time_sleep = int(arg[6:])
         elif arg == '-break':
             repeat = False
+        elif arg == '-nologerror':
+            logFullError = False
         elif arg == '-commons':
             commonsActive = True
         elif arg.startswith('-duplicates'):
@@ -1623,7 +1631,8 @@ def checkbot():
     # Main Loop
     while 1:
         # Defing the Main Class.
-        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport)
+        mainClass = main(site, sendemailActive = sendemailActive,
+                         duplicatesReport = duplicatesReport, logFullError = logFullError)
         # Untagged is True? Let's take that generator
         if untagged == True:
             generator =  mainClass.untaggedGenerator(projectUntagged, limit)
