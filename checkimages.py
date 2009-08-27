@@ -953,7 +953,7 @@ class main:
                 if len(images_to_tag_list) != 0 and not only_report:
                     already_reported_in_past = self.countEdits(u'File:%s' % images_to_tag_list[-1], self.botolist)
                     image_to_resub = images_to_tag_list[-1]
-                    from_regex = r'\n\*\[\[:%s\]\]' % re.escape(self.image_namespace + image_to_resub)
+                    from_regex = r'\n\*\[\[:File:%s\]\]' % re.escape(self.convert_to_url(self.imageName))
                     # Delete the image in the list where we're write on
                     text_for_the_report = re.sub(from_regex, '', text_for_the_report)
                     # if you want only one edit, the edit found should be more than 0 -> num - 1
