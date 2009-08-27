@@ -546,6 +546,7 @@ class main:
                  duplicatesReport = False, logFullError = True):
         """ Constructor, define some global variable """
         self.site = site
+        self.logFullError = logFullError
         self.logFulNumber = logFulNumber
         self.settings = wikipedia.translate(self.site, page_with_settings)
         self.rep_page = wikipedia.translate(self.site, report_page)
@@ -992,10 +993,11 @@ class main:
         except wikipedia.IsRedirectPage:            
             text_get = another_page.getRedirectTarget().get()
         if len(text_get) >= self.logFulNumber:
-            if logFullError:
+            if self.logFullError:
                 raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
             else:
                 wikipedia.output(u"The log page (%s) is full! Please delete the old files reported. Skip!" % another_page.title())
+                return True # Don't report, but continue with the check (we don't now if this is the first time we check this file or not)
         pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.DOTALL)
