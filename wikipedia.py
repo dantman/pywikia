@@ -3028,7 +3028,7 @@ not supported by PyWikipediaBot!"""
             'titles'    :self.title(),
             }
         try:
-            data = query.GetData(params, self,site(), encodeTitle = False)['query']['pages']
+            data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages']
         except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
 
