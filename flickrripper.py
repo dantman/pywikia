@@ -211,7 +211,7 @@ class Tkdialog:
     def __init__(self, photoDescription, photoUrl, filename):
         self.root=Tk()
         #"%dx%d%+d%+d" % (width, height, xoffset, yoffset)
-        self.root.geometry("1600x1000+10-10")
+        self.root.geometry("%ix%i+10-10"%(config.tkhorsize, config.tkvertsize))
 
         self.root.title(filename)
         self.photoDescription = photoDescription
@@ -245,22 +245,23 @@ class Tkdialog:
         self.skipButton=Button(self.root, text="Skip", command=self.skipFile)
         
         ## Start grid
+
         # The image
         self.imagePanel.grid(row=0, column=0, rowspan=11, columnspan=4)
-        
+ 
+        # The buttons
+        self.okButton.grid(row=11, column=1, rowspan=2)
+        self.skipButton.grid(row=11, column=2, rowspan=2)
+       
         # The filename
-        self.filenameLabel.grid(row=11, column=0)
-        self.filenameField.grid(row=11, column=1, columnspan=3)
+        self.filenameLabel.grid(row=13, column=0)
+        self.filenameField.grid(row=13, column=1, columnspan=3)
 
         # The description
-        self.descriptionLabel.grid(row=12, column=0)
-        self.descriptionField.grid(row=12, column=1, columnspan=3)
-        self.descriptionScrollbar.grid(row=12, column=5)
+        self.descriptionLabel.grid(row=14, column=0)
+        self.descriptionField.grid(row=14, column=1, columnspan=3)
+        self.descriptionScrollbar.grid(row=14, column=5)
 
-        # The buttons
-        self.okButton.grid(row=13, column=1, rowspan=2)
-        self.skipButton.grid(row=13, column=2, rowspan=2)
-        
     def getImage(self, url, width, height):
         image=urllib.urlopen(url).read()
         output = StringIO.StringIO(image)
