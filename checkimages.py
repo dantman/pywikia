@@ -256,10 +256,10 @@ bot_list = {
             'de'     :[u'ABFbot'],
             'en'     :[u'OrphanBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
-            'ja'     :[u'alexbot'],
+            'ja'     :[u'Alexbot'],
             'ko'     :[u'Kwjbot IV'],
             'ta'     :[u'TrengarasuBOT'],
-            'zh'     :[u'alexbot'],
+            'zh'     :[u'Alexbot'],
             }
 
 # The message that the bot will add the second time that find another license problem.

@@ -39,7 +39,7 @@ import xml.etree.ElementTree
 from Tkinter import *
 from PIL import Image, ImageTk
 
-def getPhoto(flickr=None, photo_id=''):
+def getPhoto(flickr = None, photo_id = ''):
     '''
     Get the photo info and the photo sizes so we can use these later on
     '''
@@ -49,19 +49,19 @@ def getPhoto(flickr=None, photo_id=''):
     #xml.etree.ElementTree.dump(photoSizes)
     return (photoInfo, photoSizes)
 
-def isAllowedLicense(photoInfo=None):
+def isAllowedLicense(photoInfo = None):
     '''
     Check if the image contains the right license
     '''
     license = photoInfo.find('photo').attrib['license']
-    if (license=='4' or license=='5'):
+    if license == '4' or license == '5':
         #Is cc-by or cc-by-sa
         return True
     else:
         #We don't accept other licenses
         return False
 
-def getTags(photoInfo=None):
+def getTags(photoInfo = None):
     '''
     Get all the tags on a photo
     '''
@@ -71,7 +71,7 @@ def getTags(photoInfo=None):
 
     return result
 
-def getFlinfoDescription(photo_id=0):
+def getFlinfoDescription(photo_id = 0):
     '''
     Get the description from http://wikipedia.ramselehof.de/flinfo.php
     '''
@@ -321,7 +321,7 @@ def main():
     uploadedPhotos = 0
 
     # Do we mark the images as reviewed right away?
-    if(config.flickr['review']):
+    if config.flickr['review']:
         flickrreview = config.flickr['review']
     else:    
         flickrreview = False       
@@ -372,7 +372,7 @@ def main():
             else:
                 override = arg[10:]
 
-    if(user_id or group_id or photoset_id):
+    if user_id or group_id or photoset_id:
         for photo_id in getPhotos(flickr=flickr, user_id=user_id, group_id=group_id, photoset_id=photoset_id, tags=tags):
             uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override)
             totalPhotos = totalPhotos + 1
