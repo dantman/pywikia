@@ -461,6 +461,7 @@ msg = {
     'th': (u'โรบอต ', u'เพิ่ม', u'ลบ', u'แก้ไข'),
     'uk': (u'робот ', u'додав', u'видалив', u'змінив'),
     'uz': (u'Bot ', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
+    'vec': (u'Bot: ', u'Zonto', u'Cavo', u'Canbio'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
     'war':(u'robot ', u'Gindugngan', u'Gintanggal', u'Ginliwat'),
