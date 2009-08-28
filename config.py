@@ -330,6 +330,13 @@ yahoo_appid = ''
 # http://search.msn.com/developer
 msn_appid = ''
 
+# Using the Flickr api
+flickr = {
+    'api_key': None,  # Provide your key!
+    'review': False,  # Do we use automatically make our uploads reviewed?
+    'reviewer': None, # If so, under what reviewer name?
+    }
+
 ############## COPYRIGHT SETTINGS ##############
 
 # Enable/disable search engine in copyright.py script

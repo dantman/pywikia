@@ -34,10 +34,10 @@ __version__ = '$Id: upload_to_commons.py 69 2009-08-23 11:44:26Z multichill $'
 import sys, urllib, re,  StringIO
 import wikipedia, config, query, imagerecat, upload
 
-import flickrapi
+import flickrapi                  # see: http://stuvel.eu/projects/flickrapi
 import xml.etree.ElementTree
 from Tkinter import *
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk    # see: http://www.pythonware.com/products/pil/
 
 def getPhoto(flickr = None, photo_id = ''):
     '''
@@ -329,9 +329,10 @@ def main():
     # Set the Flickr reviewer
     if config.flickr['reviewer']:
         reviewer = config.flickr['reviewer']
-    elif config.sysopnames['commons']['commons']:
+    elif 'commons' in config.sysopnames['commons']:
+        print config.sysopnames['commons']
         reviewer = config.sysopnames['commons']['commons']
-    elif config.usernames['commons']['commons']:
+    elif 'commons' in config.usernames['commons']:
         reviewer = config.usernames['commons']['commons']
     else:
         reviewer = u''
