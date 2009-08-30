@@ -66,13 +66,7 @@ authenticate = {}
 
 #    Security Connection for Wikimedia Projects
 SSL_connection = False
-
-# Available security projects
-available_ssl_project = [
-    u'wikipedia',u'wikinews',u'wikisource',u'wiktionary',u'wikibooks',u'wikiquote',u'wikiversity',
-    u'meta',u'mediawiki',u'commons',u'species',u'incubator'
-]
-	
+    
 # password_file = ".passwd"
 # A password file with default passwords. For more information, please
 # see LoginManager.readPassword in login.py.
@@ -81,6 +75,10 @@ password_file = None
 
 # Login using the API. This is less likely to break.
 use_api_login = False
+
+# Enable data recieve from all avalible API.
+
+use_api = False
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
@@ -147,6 +145,11 @@ try:
     colorized_output = __sys.stdout.isatty()
 except:
     colorized_output = False
+
+# An indication of the size of your screen, or rather the size of the screen
+# to be shown, for flickrripper
+tkhorsize = 1600
+tkvertsize = 1000
 
 ############## EXTERNAL EDITOR SETTINGS ##############
 # The command for the editor you want to use. If set to None, a simple Tkinter
@@ -331,6 +334,13 @@ yahoo_appid = ''
 # To use Windows Live Search web service you must get an AppID from
 # http://search.msn.com/developer
 msn_appid = ''
+
+# Using the Flickr api
+flickr = {
+    'api_key': None,  # Provide your key!
+    'review': False,  # Do we use automatically make our uploads reviewed?
+    'reviewer': None, # If so, under what reviewer name?
+    }
 
 ############## COPYRIGHT SETTINGS ##############
 

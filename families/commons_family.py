@@ -13,20 +13,20 @@ class Family(family.Family):
         self.langs = {
             'commons': 'commons.wikimedia.org',
         }
-        if config.SSL_connection and self.name in config.available_ssl_project:
-            self.langs['commons'] = 'secure.wikimedia.org'
+        if config.SSL_connection:
+            self.langs['commons'] = None
 
         self.namespaces[4] = {
-            '_default': [u'Commons', self.namespaces[4]['_default']],
+            '_default': [u'Commons', 'Project'],
         }
         self.namespaces[5] = {
-            '_default': [u'Commons talk', self.namespaces[5]['_default']],
+            '_default': [u'Commons talk', 'Project talk'],
         }
         self.namespaces[100] = {
-            '_default': [u'Creator', self.namespaces[5]['_default']],
+            '_default': [u'Creator', 'Project'],
         }
         self.namespaces[101] = {
-            '_default': [u'Creator talk', self.namespaces[5]['_default']],
+            '_default': [u'Creator talk', 'Project talk'],
         }
 
         self.interwiki_forward = 'wikipedia'
@@ -54,7 +54,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return '1.16alpha'
+        return '1.16alpha-wmf'
 
     def dbName(self, code):
         return 'commonswiki_p'
@@ -62,8 +62,15 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    def scriptpath(self, code):
-        if config.SSL_connection and self.name in config.available_ssl_project:
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
+
+        def protocol(self, code):
+            return 'https'
+
+        def scriptpath(self, code):
             return '/wikipedia/commons/w'
 
-        return '/w'
+        def nicepath(self, code):
+            return '/wikipedia/commons/wiki/'

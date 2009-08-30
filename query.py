@@ -14,8 +14,7 @@ This module allow you to use the API in a simple and easy way.
         'rvprop'    :'user|timestamp|content',
         }
 
-    print query.GetData(params,
-                        useAPI = True, encodeTitle = False)
+    print query.GetData(params, encodeTitle = False)
 
 """
 #
@@ -26,9 +25,15 @@ This module allow you to use the API in a simple and easy way.
 __version__ = '$Id$'
 #
 
-import wikipedia, simplejson, urllib, time
+import wikipedia, urllib, time
+try:
+    #For Python 2.6 newer
+    import json
+except ImportError:
+    import simplejson as json
+    
 
-def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True):
+def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
     """Get data from the query api, and convert it into a data object
     """
     if site is None:
@@ -56,8 +61,16 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
             data = {'titles' : params['titles']}
             del params['titles']
 
+    postAC = [
+        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
+        'block', 'unblock', 'move', 'emailuser','import', 'userrights',
+    ]
     if useAPI:
-        path = site.api_address() + urllib.urlencode(params.items())
+        if params['action'] in postAC:
+            path = site.api_address()
+        else:
+            path = site.api_address() + urllib.urlencode(params.items())
+
     else:
         path = site.query_address() + urllib.urlencode(params.items())
 
@@ -69,20 +82,35 @@ def GetData(params, site = None, verbose = False, useAPI = False, retryCount = 5
 
     lastError = None
     retry_idle_time = 5
+
     while retryCount >= 0:
         try:
             jsontext = "Nothing received"
-            jsontext = site.getUrl( path, retry=True, data=data )
+            if site.hostname() in wikipedia.config.authenticate.keys():
+                params["Content-type"] = "application/x-www-form-urlencoded"
+                params["User-agent"] = useragent
+                res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
+                jsontext = res.read()
+            elif params['action'] in postAC:
+                res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies(sysop=sysop), sysop=sysop)
+            else:
+                if back_response:
+                    res, jsontext = site.getUrl( path, retry=True, data=data, sysop=sysop, back_response=True)
+                else:
+                    jsontext = site.getUrl( path, retry=True, sysop=sysop, data=data)
 
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
-            return simplejson.loads( jsontext )
+            if back_response:
+                return res, json.loads( jsontext )
+            else:
+                return json.loads( jsontext )
 
         except ValueError, error:
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
-            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s' % path, jsontext)
+            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s\n%s' % (site.hostname(), path), jsontext)
             lastError = error
             if retryCount >= 0:
                 wikipedia.output(u"Retrying in %i seconds..." % retry_idle_time)

@@ -66,42 +66,45 @@ def main():
     pages = list(set(mysite.linksearch(spamSite)))
     if namespaces:
         pages = list(set(pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)))
-    wikipedia.getall(mysite, pages)
-    for p in pages:
-        text = p.get()
-        if not spamSite in text:
-            continue
-        # Show the title of the page we're working on.
-        # Highlight the title in purple.
-        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % p.title())
-        lines = text.split('\n')
-        newpage = []
-        lastok = ""
-        for line in lines:
-            if spamSite in line:
-                if lastok:
-                    wikipedia.output(lastok)
-                wikipedia.output('\03{lightred}%s\03{default}' % line)
-                lastok = None
+    if len(pages) == 0:
+        wikipedia.output('No page found.')
+    else:
+        wikipedia.getall(mysite, pages)
+        for p in pages:
+            text = p.get()
+            if not spamSite in text:
+                continue
+            # Show the title of the page we're working on.
+            # Highlight the title in purple.
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % p.title())
+            lines = text.split('\n')
+            newpage = []
+            lastok = ""
+            for line in lines:
+                if spamSite in line:
+                    if lastok:
+                        wikipedia.output(lastok)
+                    wikipedia.output('\03{lightred}%s\03{default}' % line)
+                    lastok = None
+                else:
+                    newpage.append(line)
+                    if line.strip():
+                        if lastok is None:
+                            wikipedia.output(line)
+                        lastok = line
+            if automatic:
+                answer = "y"
             else:
-                newpage.append(line)
-                if line.strip():
-                    if lastok is None:
-                        wikipedia.output(line)
-                    lastok = line
-        if automatic:
-            answer = "y"
-        else:
-            answer = wikipedia.inputChoice(u'\nDelete the red lines?',  ['yes', 'no', 'edit'], ['y', 'N', 'e'], 'n')
-        if answer == "n":
-            continue
-        elif answer == "e":
-            editor = editarticle.TextEditor()
-            newtext = editor.edit(text, highlight = spamSite, jumpIndex = text.find(spamSite))
-        else:
-            newtext = "\n".join(newpage)
-        if newtext != text:
-            p.put(newtext, wikipedia.translate(mysite, msg) % spamSite)
+                answer = wikipedia.inputChoice(u'\nDelete the red lines?',  ['yes', 'no', 'edit'], ['y', 'N', 'e'], 'n')
+            if answer == "n":
+                continue
+            elif answer == "e":
+                editor = editarticle.TextEditor()
+                newtext = editor.edit(text, highlight = spamSite, jumpIndex = text.find(spamSite))
+            else:
+                newtext = "\n".join(newpage)
+            if newtext != text:
+                p.put(newtext, wikipedia.translate(mysite, msg) % spamSite)
 
 try:
     main()

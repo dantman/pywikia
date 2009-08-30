@@ -166,6 +166,74 @@ class Category(wikipedia.Page):
 
     def _parseCategory(self, purge=False, startFrom=None):
         """
+        Yields all articles and subcategories that are in this category by API.
+
+        Set startFrom to a string which is the title of the page to start from.
+
+        Yielded results are tuples in the form (tag, page) where tag is one
+        of the constants ARTICLE and SUBCATEGORY, and title is the Page or Category
+        object.
+
+        Note that results of this method need not be unique.
+
+        This should not be used outside of this module.
+        """
+        try:
+            if wikipedia.config.use_api and self.site().versionnumber() >= 11:
+                api_url = self.site().api_address()
+                del api_url
+            else:
+                raise NotImplementedError # version not support
+        except NotImplementedError:
+            for tag, page in self._oldParseCategory(purge, startFrom):
+                yield tag, page
+            return
+        
+        currentPageOffset = None
+        while True:
+            params = {
+                'action': 'query',
+                'list': 'categorymembers',
+                'cmtitle': self.title(),
+                'cmprop': 'title',#|ids|sortkey|timestamp',
+                #'': '',
+            }
+            if wikipedia.config.special_page_limit > 500:
+                params['cmlimit'] = 500
+            else:
+                params['cmlimit'] = wikipedia.config.special_page_limit
+
+            
+            if currentPageOffset:
+                params['cmcontinue'] = currentPageOffset
+                wikipedia.output('Getting [[%s]] list from %s...'
+                                 % (self.title(), currentPageOffset[:-1])) # cmcontinue last key is '|'
+            elif startFrom:
+                params['cmstart'] = startFrom
+                wikipedia.output('Getting [[%s]] list starting at %s...'
+                                 % (self.title(), startFrom))
+            else:
+                wikipedia.output('Getting [[%s]]...' % self.title())
+            
+            wikipedia.get_throttle()
+            data = query.GetData(params, self.site())
+            
+            for memb in data['query']['categorymembers']:
+                # For MediaWiki versions where subcats look like articles
+                if isCatTitle(memb['title'], self.site()):
+                    yield SUBCATEGORY, Category(self.site(), memb['title'])
+                elif memb['ns'] == 6 and self.site().image_namespace() in memb['title']:
+                    yield ARTICLE, wikipedia.ImagePage(self.site(), memb['title'])
+                else:
+                    yield ARTICLE, wikipedia.Page(self.site(), memb['title'])
+            # try to find a link to the next list page
+            if data.has_key('query-continue'):
+                currentPageOffset = data['query-continue']['categorymembers']['cmcontinue']
+            else:
+                break
+
+    def _oldParseCategory(self, purge=False, startFrom=None):
+        """
         Yields all articles and subcategories that are in this category.
 
         Set purge to True to instruct MediaWiki not to serve a cached version.
@@ -247,16 +315,14 @@ class Category(wikipedia.Page):
                     pass
                 # For MediaWiki versions where subcats look like articles
                 elif isCatTitle(title, self.site()):
-                    ncat = Category(self.site(), title)
-                    yield SUBCATEGORY, ncat
+                    yield SUBCATEGORY, Category(self.site(), title)
                 else:
                     yield ARTICLE, wikipedia.Page(self.site(), title)
             if Rsubcat:
                 # For MediaWiki versions where subcats look differently
                 for titleWithoutNamespace in Rsubcat.findall(txt):
                     title = 'Category:%s' % titleWithoutNamespace
-                    ncat = Category(self.site(), title)
-                    yield SUBCATEGORY, ncat
+                    yield SUBCATEGORY, Category(self.site(), title)
             if Rimage:
                 # For MediaWiki versions where images work through galleries
                 for title in Rimage.findall(txt):
@@ -519,7 +585,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u"Saving page %s failed: %s"
                              % (article.aslink(), error.message))
 
-def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
+def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = [], site = None):
     #action=query&list=categorymembers&cmlimit=500&cmtitle=Category:License_tags
     """
     Category to load all the elements in a category using the APIs. Limit: 5000 elements.
@@ -533,8 +599,7 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
         'cmtitle'   :CatName,
         }
 
-    data = query.GetData(params,
-                    useAPI = True, encodeTitle = False)
+    data = query.GetData(params, site, encodeTitle = False)
     categories_parsed.append(CatName)
     try:
         members = data['query']['categorymembers']
@@ -564,13 +629,15 @@ def categoryAllElementsAPI(CatName, cmlimit = 5000, categories_parsed = []):
         results.append(member)
     return (results, categories_parsed)
 
-def categoryAllPageObjectsAPI(CatName):
+def categoryAllPageObjectsAPI(CatName, cmlimit = 5000, categories_parsed = [], site = None):
     """
     From a list of dictionaries, return a list of page objects.
     """
     final = list()
-    for element in categoryAllElementsAPI(CatName)[0]:
-        final.append(wikipedia.Page(wikipedia.getSite(), element['title']))
+    if site == None:
+        site = wikipedia.getSite()
+    for element in categoryAllElementsAPI(CatName, cmlimit, categories_parsed, site)[0]:
+        final.append(wikipedia.Page(site, element['title']))
     return final
 
 def test():

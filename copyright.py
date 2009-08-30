@@ -155,6 +155,7 @@ wikipedia_names = {
     'az': u'Vikipediya',
     'bat-smg': u'Vikipedėjė',
     'be': u'Вікіпэдыя',
+    'be-x-old': u'Вікіпэдыя',
     'bg': u'Уикипедия',
     'bn': u'উইকিপিডিয়া',
     'bpy': u'উইকিপিডিয়া',

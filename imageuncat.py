@@ -85,7 +85,6 @@ ignoreTemplates = [ u'1000Bit',
                     u'Ay',
                     u'Az',
                     u'Ba',
-                    u'Bad name',
                     u'BadJPEG',
                     u'Bar',
                     u'BArch-License',
@@ -453,10 +452,12 @@ ignoreTemplates = [ u'1000Bit',
                     u'Iu',
                     u'Ja',
                     u'Ja2',
+                    u'James K. Lindsey permission',
                     u'Jbo',
                     u'Jean-PolGRANDMONTCredit',
                     u'JewishEncyclopedia',
                     u'Joergens.mi licence',
+                    u'JPEG version of PNG',
                     u'Jv',
                     u'Ka',
                     u'Kaa',
@@ -586,7 +587,9 @@ ignoreTemplates = [ u'1000Bit',
                     u'Nv',
                     u'Ny',
                     u'NYC Subway map',
+                    u'NYPL-image-full',
                     u'OAL',
+                    u'Object location',
                     u'Oc',
                     u'OldOS',
                     u'Olessi Copyright Ogg',
@@ -821,6 +824,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'PD-Saudi Arabia',
                     u'PD-SBH',
                     u'PD-scan',
+                    u'PD-Scan',
                     u'PD-SCGGov',
                     u'PD-ScottForesman',
                     u'PD-ScottForesman-raw',
@@ -1029,6 +1033,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'Pl icon',
                     u'PLoS',
                     u'Pms',
+                    u'PNG with JPEG version',
                     u'Pnt',
                     u'Polish coats of arms by Tadeusz Gajl',
                     u'PolishPresidentCopyright',
@@ -1238,7 +1243,7 @@ def uploadedYesterday(site = None):
         'leend'     :today.strftime(dateformat)
         }
 
-    data = query.GetData(params, site, useAPI = True, encodeTitle = False)
+    data = query.GetData(params, site, encodeTitle = False)
     try:
         for item in data['query']['logevents']:
             result.append(item['title'])
@@ -1274,7 +1279,7 @@ def recentChanges(site = None, delay=60, block=70):
         'rctype'    :'edit|log',
         }
 
-    data = query.GetData(params, site, useAPI = True, encodeTitle = False)
+    data = query.GetData(params, site, encodeTitle = False)
     try:
         for item in data['query']['recentchanges']:
             result.append(item['title'])

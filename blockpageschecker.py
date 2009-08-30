@@ -54,7 +54,7 @@ python blockpageschecker.py -debug -protectedpages:4
 """
 #
 # (C) Monobi a.k.a. Wikihermit, 2007
-# (C) Filnik, 2007-2008
+# (C) Filnik, 2007-2008-2009
 # (C) NicDumZ, 2008
 #
 # Distributed under the terms of the MIT license.
@@ -75,9 +75,6 @@ docuReplacements = {
 #--------------------- PREFERENCES -------------------#
 ################### -- Edit below! -- #################
 
-# Added a new feature! Please update and add the settings in order
-# to improve the intelligence of this script ;-)
-# Regex to get the semi-protection template
 templateSemiProtection = {
             'en': None,
             'it':[r'\{\{(?:[Tt]emplate:|)[Aa]vvisobloccoparziale(?:|[ _]scad\|.*?|\|.*?)\}\}',
@@ -110,12 +107,21 @@ templateTotalMoveProtection = {
             'ja':[ur'(?<!\<nowiki\>)\{\{(?:[Tt]emplate:|)移動保護(?:[Ss]|)(?:\|.+|)\}\}(?!\<\/nowiki\>)\s*(?:\r\n|)*'],
             'zh':[ur'\{\{(?:[Tt]emplate:|)Protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Mini-protected|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)',ur'\{\{(?:[Tt]emplate:|)Protected-logo|(?:[Mm]|[Mm]ove|移[動动])(?:\|.+|)\}\}(\n+?|)'],
             }
-# Array: 0 => Semi-block, 1 => Total Block, 2 => Semi-Move, 3 => Total-Move
+
+# If you use only one template for all the type of protection, put it here.
+# You may use only one template or an unique template and some other "old" template that the
+# script should still check (as on it.wikipedia)
+templateUnique =  {
+            'en': None,
+            'it': [r'\{\{(?:[Tt]emplate:|)[Pp]rotetta\}\}'],
+}
+    
+# Array: 0 => Semi-block, 1 => Total Block, 2 => Semi-Move, 3 => Total-Move, 4 => template-unique
 templateNoRegex = {
-            'it':['{{Avvisobloccoparziale}}', '{{Avvisoblocco}}', None, None],
-            'fr':['{{Semi-protection}}', '{{Protection}}', None, None],
-            'ja':[u'{{半保護}}', u'{{保護}}', u'{{移動半保護}}', u'{{移動保護}}'],
-            'zh':[u'{{Protected/semi}}',u'{{Protected}}',u'{{Protected/ms}}',u'{{Protected/move}}'],
+            'it':['{{Avvisobloccoparziale}}', '{{Avvisoblocco}}', None, None, '{{Protetta}}'],
+            'fr':['{{Semi-protection}}', '{{Protection}}', None, None, None],
+            'ja':[u'{{半保護}}', u'{{保護}}', u'{{移動半保護}}', u'{{移動保護}}', None],
+            'zh':[u'{{Protected/semi}}',u'{{Protected}}',u'{{Protected/ms}}',u'{{Protected/move}}', None],
             }
 
 # Category where the bot will check
@@ -124,7 +130,7 @@ categoryToCheck = {
             'ar':[u'تصنيف:محتويات محمية'],
             'fr':[u'Category:Page semi-protégée', u'Category:Page protégée', u'Catégorie:Article protégé'],
             'he':[u'קטגוריה:ויקיפדיה: דפים מוגנים', u'קטגוריה:ויקיפדיה: דפים מוגנים חלקית'],
-            'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci_protette'],
+            'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci protette', u'Categoria:Pagine protette - scadute'],
             'ja':[u'Category:編集保護中の記事',u'Category:編集半保護中の記事',
                 u'Category:移動保護中の記事',],
             'pt':[u'Category:!Páginas protegidas', u'Category:!Páginas semiprotegidas'],
@@ -149,7 +155,7 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 #------------------ END PREFERENCES ------------------#
 ################## -- Edit above! -- ##################
 
-def understandBlock(text, TTP, TSP, TSMP, TTMP):
+def understandBlock(text, TTP, TSP, TSMP, TTMP, TU):
     """ Understand if the page is blocked and if it has the right template """
     for catchRegex in TTP: # TTP = templateTotalProtection
         resultCatch = re.findall(catchRegex, text)
@@ -159,6 +165,10 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP):
         resultCatch = re.findall(catchRegex, text)
         if resultCatch:
             return ('autoconfirmed-total', catchRegex)
+    for catchRegex in TU:
+        resultCatch = re.findall(catchRegex, text)
+        if resultCatch:
+            return ('unique', catchRegex)        
     if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
         for catchRegex in TTMP:
             resultCatch = re.findall(catchRegex, text)
@@ -235,6 +245,7 @@ def main():
     TSMP = wikipedia.translate(site, templateSemiMoveProtection)
     TTMP = wikipedia.translate(site, templateTotalMoveProtection)
     TNR = wikipedia.translate(site, templateNoRegex)
+    TU = wikipedia.translate(site, templateUnique)
 
     category = wikipedia.translate(site, categoryToCheck)
     commentUsed = wikipedia.translate(site, comment)
@@ -285,7 +296,7 @@ def main():
 
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
-        TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP)
+        TemplateInThePage = understandBlock(text, TTP, TSP, TSMP, TTMP, TU)
         # Only to see if the text is the same or not...
         oldtext = text
         # keep track of the changes for each step (edit then move)
@@ -294,31 +305,37 @@ def main():
         if not editRestr:
             # page is not edit-protected
             # Deleting the template because the page doesn't need it.
-            replaceToPerform = u'|'.join(TTP + TSP)
+            replaceToPerform = u'|'.join(TTP + TSP + TU)
             text, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
             wikipedia.output(u'The page is editable for all, deleting the template...')
 
         elif editRestr[0] == 'sysop':
             # total edit protection
-            if TemplateInThePage[0] == 'sysop-total' and TTP != None:
+            if (TemplateInThePage[0] == 'sysop-total' and TTP != None) or (TemplateInThePage[0] == 'unique' and TU != None):
                 msg = 'The page is protected to the sysop'
                 if not moveBlockCheck:
                     msg += ', skipping...'
                 wikipedia.output(msg)
             else:
                 wikipedia.output(u'The page is protected to the sysop, but the template seems not correct. Fixing...')
-                text, changes = re.subn(TemplateInThePage[1], TNR[1], text)
+                if TU != None:
+                    text, changes = re.subn(TemplateInThePage[1], TNR[4], text)
+                else:
+                    text, changes = re.subn(TemplateInThePage[1], TNR[1], text)
 
-        elif TSP != None:
+        elif TSP != None or TU != None:
             # implicitely editRestr[0] = 'autoconfirmed', edit-Semi-protection
-            if TemplateInThePage[0] == 'autoconfirmed-total':
+            if TemplateInThePage[0] == 'autoconfirmed-total' or TemplateInThePage[0] == 'unique':
                 msg = 'The page is editable only for the autoconfirmed users'
                 if not moveBlockCheck:
                     msg += ', skipping...'
                 wikipedia.output(msg)
             else:
                 wikipedia.output(u'The page is editable only for the autoconfirmed users, but the template seems not correct. Fixing...')
-                text, changes = re.subn(TemplateInThePage[1], TNR[0], text)
+                if TU != None:
+                    text, changes = re.subn(TemplateInThePage[1], TNR[4], text)
+                else:
+                    text, changes = re.subn(TemplateInThePage[1], TNR[0], text)
 
         if changes == 0:
             # We tried to fix edit-protection templates, but it did not work.
@@ -332,23 +349,29 @@ def main():
             if not moveRestr:
                 wikipedia.output(u'The page is movable for all, deleting the template...')
                 # Deleting the template because the page doesn't need it.
-                replaceToPerform = u'|'.join(TSMP + TTMP)
+                replaceToPerform = u'|'.join(TSMP + TTMP + TU)
                 text, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
 
             elif moveRestr[0] == 'sysop':
                 # move-total-protection
-                if TemplateInThePage[0] == 'sysop-move' and TTMP != None:
+                if (TemplateInThePage[0] == 'sysop-move' and TTMP != None) or (TemplateInThePage[0] == 'unique' and TU != None):
                     wikipedia.output(u'The page is protected from moving to the sysop, skipping...')
                 else:
                     wikipedia.output(u'The page is protected from moving to the sysop, but the template seems not correct. Fixing...')
+                if TU != None:
+                    text, changes = re.subn(TemplateInThePage[1], TNR[4], text)
+                else:
                     text, changes = re.subn(TemplateInThePage[1], TNR[3], text)
 
-            elif TSMP != None:
+            elif TSMP != None or TU != None:
                 # implicitely moveRestr[0] = 'autoconfirmed', move-semi-protection
-                if TemplateInThePage[0] == 'autoconfirmed-move':
+                if TemplateInThePage[0] == 'autoconfirmed-move' or TemplateInThePage[0] == 'unique':
                     wikipedia.output(u'The page is movable only for the autoconfirmed users, skipping...')
                 else:
                     wikipedia.output(u'The page is movable only for the autoconfirmed users, but the template seems not correct. Fixing...')
+                if TU != None:
+                    text, changes = re.subn(TemplateInThePage[1], TNR[4], text)
+                else:
                     text, changes = re.subn(TemplateInThePage[1], TNR[2], text)
 
             if changes == 0:

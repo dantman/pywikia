@@ -343,8 +343,8 @@ class Delinker(threadpool.Thread):
     def get_summary(self, site, image, admin, reason, replacement):
         """ Get the summary template and substitute the 
         correct values."""
-        # FIXME: Hardcode is EVIL
-        if site.lang != 'commons':
+        # FIXME: Hardcode is EVIL, but now only the global bot uses this
+        if (site.lang != 'commons' and self.CommonsDelinker.config['global']):
             reason = reason.replace('[[', '[[commons:')
         if replacement:
             tlp = self.CommonsDelinker.SummaryCache.get(site, 'replace-I18n')

@@ -155,7 +155,7 @@ standardize_notes.py   : Converts external links and notes/references to
                        : Footnote3 ref/note format.  Rewrites References.
 table2wiki.py          : Semi-automatic converting HTML-tables to wiki-tables.
 templatecount.py       : Display the list of pages transcluding a given list
-				 of templates.
+                         of templates.
 template.py            : change one template (that is {{...}}) into another.
 touch.py               : Bot goes over all pages of the home wiki, and edits
                          them without changing.

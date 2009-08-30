@@ -11,7 +11,7 @@ class Family:
         self.name = None
             # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
-            'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc', 'roa-rup',
+            'af', 'ak', 'ace', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc', 'roa-rup',
             'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'bm', 'bn',
             'zh-min-nan', 'nan', 'map-bms', 'ba', 'be', 'be-x-old', 'bh', 'bcl',
             'bi', 'bar', 'bo', 'bs', 'br', 'bg', 'bxr', 'ca', 'cv', 'ceb', 'cs',
@@ -25,14 +25,14 @@ class Family:
             'ks', 'csb', 'kk', 'kw', 'rw', 'ky', 'rn', 'sw', 'kv', 'kg', 'ht',
             'ku', 'kj', 'lad', 'lbe', 'lo', 'la', 'lv', 'lb', 'lt', 'lij', 'li',
             'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mt', 'mi', 'mr',
-            'arz', 'mzn', 'ms', 'cdo', 'mdf', 'mo', 'mn', 'mus', 'my', 'nah',
+            'arz', 'mzn', 'ms', 'cdo', 'mwl', 'mdf', 'mo', 'mn', 'mus', 'my', 'nah',
             'na', 'fj', 'nl', 'nds-nl', 'cr', 'ne', 'new', 'ja', 'nap', 'ce',
-            'pih', 'no', 'nb', 'nn', 'nrm', 'nov', 'ii', 'oc', 'or', 'om', 'ng',
-            'hz', 'uz', 'pa', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'tpi',
+            'pih', 'no', 'nb', 'nn', 'nrm', 'nov', 'ii', 'oc', 'mhr', 'or', 'om', 'ng',
+            'hz', 'uz', 'pa', 'pnb', 'pi', 'pag', 'pap', 'ps', 'km', 'pms', 'tpi',
             'nds', 'pl', 'tokipona', 'tp', 'pnt', 'pt', 'aa', 'kaa', 'crh',
             'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'sah', 'se', 'sm', 'sa',
             'sg', 'sc', 'za', 'sco', 'stq', 'st', 'tn', 'sq', 'scn', 'si',
-            'simple', 'sd', 'ss', 'sk', 'cu', 'sl', 'szl', 'so', 'srn', 'sr',
+            'simple', 'sd', 'ss', 'sk', 'cu', 'sl', 'szl', 'so', 'ckb', 'srn', 'sr',
             'sh', 'su', 'fi', 'sv', 'tl', 'ta', 'kab', 'roa-tara', 'tt', 'te',
             'tet', 'th', 'ti', 'tg', 'to', 'chr', 'chy', 've', 'tr', 'tk',
             'tw', 'udm', 'bug', 'uk', 'ur', 'ug', 'vec', 'vi', 'vo', 'fiu-vro',
@@ -114,6 +114,7 @@ class Family:
                 'lt': u'Medija',
                 'mdf': u'Медиа',
                 'mg': u'Rakitra',
+                'mhr': u'Медиа',
                 'mk': u'Медија',
                 'ml': u'മീഡിയ',
                 'mn': u'Медиа',
@@ -167,6 +168,7 @@ class Family:
             -1: {
                 '_default': u'Special',
                 'ab': u'Служебная',
+                'ace': u'Istimewa',
                 'af': u'Spesiaal',
                 'als': u'Spezial',
                 'am': u'ልዩ',
@@ -267,6 +269,7 @@ class Family:
                 'map-bms': u'Astamiwa',
                 'mdf': u'Башка',
                 'mg': u'Manokana',
+                'mhr': u'Служебная',
                 'mk': u'Специјални',
                 'ml': u'പ്രത്യേകം',
                 'mn': u'Тусгай',
@@ -344,6 +347,7 @@ class Family:
             1: {
                 '_default': u'Talk',
                 'ab': u'Обсуждение',
+                'ace': u'Pembicaraan',
                 'af': u'Bespreking',
                 'als': u'Diskussion',
                 'am': u'ውይይት',
@@ -446,12 +450,14 @@ class Family:
                 'map-bms': u'Dhiskusi',
                 'mdf': u'Корхнема',
                 'mg': [u'Dinika', u'Discuter'],
+                'mhr': u'Обсуждение',
                 'mk': u'Разговор',
                 'ml': u'സംവാദം',
                 'mn': u'Хэлэлцүүлэг',
                 'mr': u'चर्चा',
                 'ms': u'Perbincangan',
                 'mt': u'Diskussjoni',
+                'mwl': u'Cumbersa',
                 'myv': u'Кортамо',
                 'mzn': u'بحث',
                 'nah': [u'Tēixnāmiquiliztli', u'Discusión'],
@@ -524,6 +530,7 @@ class Family:
             2: {
                 '_default': u'User',
                 'ab': u'Участник',
+                'ace': u'Pengguna',
                 'af': u'Gebruiker',
                 'als': u'Benutzer',
                 'am': u'አባል',
@@ -625,12 +632,14 @@ class Family:
                 'map-bms': u'Panganggo',
                 'mdf': u'Тиись',
                 'mg': [u'Mpikambana', u'Utilisateur'],
+                'mhr': u'Участник',
                 'mk': u'Корисник',
                 'ml': u'ഉപയോക്താവ്',
                 'mn': u'Хэрэглэгч',
                 'mr': u'सदस्य',
                 'ms': u'Pengguna',
                 'mt': u'Utent',
+                'mwl': u'Outelizador',
                 'myv': u'Теиця',
                 'mzn': u'کاربر',
                 'nah': [u'Tlatequitiltilīlli', u'Usuario'],
@@ -704,6 +713,7 @@ class Family:
             3: {
                 '_default': u'User talk',
                 'ab': u'Обсуждение участника',
+                'ace': u'Pembicaraan Pengguna',
                 'af': u'Gebruikerbespreking',
                 'als': u'Benutzer Diskussion',
                 'am': u'አባል ውይይት',
@@ -804,12 +814,14 @@ class Family:
                 'map-bms': u'Dhiskusi Panganggo',
                 'mdf': u'Тиись корхнема',
                 'mg': [u'Dinika amin\'ny mpikambana', u'Discussion Utilisateur'],
+                'mhr': u'Обсуждение участника',
                 'mk': u'Разговор со корисник',
                 'ml': u'ഉപയോക്താവിന്റെ സംവാദം',
                 'mn': u'Хэрэглэгчийн яриа',
                 'mr': u'सदस्य चर्चा',
                 'ms': u'Perbincangan Pengguna',
                 'mt': u'Diskussjoni utent',
+                'mwl': u'Cumbersa outelizador',
                 'myv': u'Теицянь кортамось',
                 'mzn': u'بحث کاربر',
                 'nah': [u'Tlatequitiltilīlli tēixnāmiquiliztli', u'Usuario Discusión'],
@@ -882,15 +894,20 @@ class Family:
             },
             4: {
                 '_default': u'Project',
+                'arc': u'ܘܝܩܝܦܕܝܐ',
+                'bn': u'উইকিপিডিয়া',
                 'cs': u'Wikizdroje',
                 'ko': u'위키문헌',
                 'uk': u'Вікіцитати',
             },
             5: {
                 '_default': u'Project talk',
+                'arc': u'ܘܝܩܝܦܕܝܐ talk',
+                'bn': u'উইকিপিডিয়া আলোচনা',
                 'cs': u'Wikizdroje diskuse',
                 'gan': u'Wikipedia talk',
                 'ko': u'위키문헌토론',
+                'mhr': u'Обсуждение Wikipedia',
                 'sc': u'Cuntierra Wikipedia',
                 'sg': u'Discussion Wikipedia',
                 'uk': u'Обговорення Вікіцитатей',
@@ -898,6 +915,7 @@ class Family:
             6: {
                 '_default': [u'File', u'Image'],
                 'ab': [u'Файл', u'Изображение'],
+                'ace': u'Berkas',
                 'af': [u'Lêer', u'Beeld'],
                 'als': [u'Datei', u'Bild'],
                 'am': u'ስዕል',
@@ -1001,12 +1019,14 @@ class Family:
                 'map-bms': u'Gambar',
                 'mdf': u'Няйф',
                 'mg': u'Sary',
+                'mhr': u'Файл',
                 'mk': [u'Податотека', u'Слика'],
                 'ml': u'പ്രമാണം',
                 'mn': u'Зураг',
                 'mr': u'चित्र',
                 'ms': [u'Fail', u'Imej'],
                 'mt': u'Stampa',
+                'mwl': u'Fexeiro',
                 'myv': u'Артовкс',
                 'mzn': [u'پرونده', u'تصویر'],
                 'nah': [u'Īxiptli', u'Imagen'],
@@ -1079,6 +1099,7 @@ class Family:
             7: {
                 '_default': [u'File talk', u'Image talk'],
                 'ab': [u'Обсуждение файла', u'Обсуждение изображения'],
+                'ace': u'Pembicaraan Berkas',
                 'af': [u'Lêerbespreking', u'Beeldbespreking'],
                 'als': [u'Datei Diskussion', u'Bild Diskussion'],
                 'am': u'ስዕል ውይይት',
@@ -1181,12 +1202,14 @@ class Family:
                 'map-bms': u'Dhiskusi Gambar',
                 'mdf': u'Няйф корхнема',
                 'mg': [u'Dinika amin\'ny sary', u'Discussion Image'],
+                'mhr': u'Обсуждение файла',
                 'mk': [u'Разговор за податотека', u'Разговор за слика'],
                 'ml': u'പ്രമാണത്തിന്റെ സംവാദം',
                 'mn': u'Зургийн хэлэлцүүлэг',
                 'mr': u'चित्र चर्चा',
                 'ms': [u'Perbincangan Fail', u'Perbincangan Imej'],
                 'mt': u'Diskussjoni stampa',
+                'mwl': u'Cumbersa fexeiro',
                 'myv': u'Артовксто кортамось',
                 'mzn': [u'بحث پرونده', u'بحث تصویر'],
                 'nah': [u'Īxiptli tēixnāmiquiliztli', u'Imagen Discusión'],
@@ -1293,6 +1316,7 @@ class Family:
                 'ml': u'മീഡിയവിക്കി',
                 'mn': u'МедиаВики',
                 'mr': u'मिडियाविकी',
+                'mwl': u'Biqui',
                 'mzn': u'مدیاویکی',
                 'nah': u'Huiquimedia',
                 'new': u'मिडियाविकि',
@@ -1316,6 +1340,7 @@ class Family:
             9: {
                 '_default': u'MediaWiki talk',
                 'ab': u'Обсуждение MediaWiki',
+                'ace': u'Pembicaraan MediaWiki',
                 'af': u'MediaWikibespreking',
                 'als': u'MediaWiki Diskussion',
                 'am': u'መልዕክት ውይይት',
@@ -1416,12 +1441,14 @@ class Family:
                 'map-bms': u'Dhiskusi MediaWiki',
                 'mdf': u'МедиаВики корхнема',
                 'mg': [u'Dinika amin\'ny MediaWiki', u'Discussion MediaWiki'],
+                'mhr': u'Обсуждение MediaWiki',
                 'mk': u'Разговор за МедијаВики',
                 'ml': u'മീഡിയവിക്കി സംവാദം',
                 'mn': u'МедиаВикигийн хэлэлцүүлэг',
                 'mr': u'मिडियाविकी चर्चा',
                 'ms': u'Perbincangan MediaWiki',
                 'mt': u'Diskussjoni MediaWiki',
+                'mwl': u'Cumbersa Biqui',
                 'myv': u'MediaWiki-нь кортамось',
                 'mzn': u'بحث مدیاویکی',
                 'nah': [u'Huiquimedia tēixnāmiquiliztli', u'MediaWiki Discusión'],
@@ -1493,6 +1520,7 @@ class Family:
             10: {
                 '_default': u'Template',
                 'ab': u'Шаблон',
+                'ace': u'Templat',
                 'af': u'Sjabloon',
                 'als': u'Vorlage',
                 'am': u'መልጠፊያ',
@@ -1564,7 +1592,7 @@ class Family:
                 'hy': u'Կաղապար',
                 'ia': u'Patrono',
                 'id': u'Templat',
-                'io': [u'Modelo', u'Shablono'],
+                'io': [u'Shablono', u'Modelo'],
                 'is': u'Snið',
                 'jv': u'Cithakan',
                 'ka': u'თარგი',
@@ -1590,12 +1618,14 @@ class Family:
                 'map-bms': u'Cithakan',
                 'mdf': u'Шаблон',
                 'mg': [u'Endrika', u'Modèle'],
+                'mhr': u'Шаблон',
                 'mk': u'Шаблон',
                 'ml': u'ഫലകം',
                 'mn': u'Загвар',
                 'mr': u'साचा',
                 'ms': u'Templat',
                 'mt': u'Mudell',
+                'mwl': u'Modelo',
                 'myv': u'ЛопаПарцун',
                 'mzn': u'الگو',
                 'nah': [u'Nemachiyōtīlli', u'Plantilla'],
@@ -1663,6 +1693,7 @@ class Family:
             11: {
                 '_default': u'Template talk',
                 'ab': u'Обсуждение шаблона',
+                'ace': u'Pembicaraan Templat',
                 'af': u'Sjabloonbespreking',
                 'als': u'Vorlage Diskussion',
                 'am': u'መልጠፊያ ውይይት',
@@ -1734,7 +1765,7 @@ class Family:
                 'hy': u'Կաղապարի քննարկում',
                 'ia': u'Discussion Patrono',
                 'id': u'Pembicaraan Templat',
-                'io': [u'Modelo Debato', u'Shablono Debato'],
+                'io': [u'Shablono Debato', u'Modelo Debato'],
                 'is': u'Sniðaspjall',
                 'it': u'Discussioni template',
                 'ja': u'Template‐ノート',
@@ -1764,12 +1795,14 @@ class Family:
                 'map-bms': u'Dhiskusi Cithakan',
                 'mdf': u'Шаблон корхнема',
                 'mg': [u'Dinika amin\'ny endrika', u'Discussion Modèle'],
+                'mhr': u'Обсуждение шаблона',
                 'mk': u'Разговор за шаблон',
                 'ml': u'ഫലകത്തിന്റെ സംവാദം',
                 'mn': u'Загварын хэлэлцүүлэг',
                 'mr': u'साचा चर्चा',
                 'ms': u'Perbincangan Templat',
                 'mt': u'Diskussjoni mudell',
+                'mwl': u'Cumbersa Modelo',
                 'myv': u'ЛопаПарцундо кортамось',
                 'mzn': u'بحث الگو',
                 'nah': [u'Nemachiyōtīlli tēixnāmiquiliztli', u'Plantilla Discusión'],
@@ -1841,6 +1874,7 @@ class Family:
             12: {
                 '_default': u'Help',
                 'ab': u'Справка',
+                'ace': u'Bantuan',
                 'af': u'Hulp',
                 'als': u'Hilfe',
                 'am': u'እርዳታ',
@@ -1941,12 +1975,14 @@ class Family:
                 'map-bms': u'Pitulung',
                 'mdf': u'Лезкс',
                 'mg': [u'Fanampiana', u'Aide'],
+                'mhr': u'Справка',
                 'mk': u'Помош',
                 'ml': u'സഹായം',
                 'mn': u'Тусламж',
                 'mr': [u'सहाय्य', u'साहाय्य'],
                 'ms': u'Bantuan',
                 'mt': [u'Għajnuna', u'Ghajnuna'],
+                'mwl': u'Ajuda',
                 'myv': u'Лезкс',
                 'mzn': u'راهنما',
                 'nah': [u'Tēpalēhuiliztli', u'Ayuda'],
@@ -2018,6 +2054,7 @@ class Family:
             13: {
                 '_default': u'Help talk',
                 'ab': u'Обсуждение справки',
+                'ace': u'Pembicaraan Bantuan',
                 'af': u'Hulpbespreking',
                 'als': u'Hilfe Diskussion',
                 'am': u'እርዳታ ውይይት',
@@ -2120,12 +2157,14 @@ class Family:
                 'map-bms': u'Dhiskusi Pitulung',
                 'mdf': u'Лезкс корхнема',
                 'mg': [u'Dinika amin\'ny fanampiana', u'Discussion Aide'],
+                'mhr': u'Обсуждение справки',
                 'mk': u'Разговор за помош',
                 'ml': u'സഹായത്തിന്റെ സംവാദം',
                 'mn': u'Тусламжийн хэлэлцүүлэг',
                 'mr': [u'सहाय्य चर्चा', u'साहाय्य चर्चा'],
                 'ms': u'Perbincangan Bantuan',
                 'mt': [u'Diskussjoni għajnuna', u'Diskussjoni ghajnuna'],
+                'mwl': u'Cumbersa ajuda',
                 'myv': u'Лезкстэ кортамось',
                 'mzn': u'بحث راهنما',
                 'nah': [u'Tēpalēhuiliztli tēixnāmiquiliztli', u'Ayuda Discusión'],
@@ -2198,6 +2237,7 @@ class Family:
             14: {
                 '_default': u'Category',
                 'ab': u'Категория',
+                'ace': u'Kategori',
                 'af': u'Kategorie',
                 'als': u'Kategorie',
                 'am': u'መደብ',
@@ -2299,12 +2339,14 @@ class Family:
                 'map-bms': [u'Kategori', u'Kategorija'],
                 'mdf': u'Категорие',
                 'mg': [u'Sokajy', u'Catégorie'],
+                'mhr': u'Категория',
                 'mk': u'Категорија',
                 'ml': u'വര്‍ഗ്ഗം',
                 'mn': u'Ангилал',
                 'mr': u'वर्ग',
                 'ms': u'Kategori',
                 'mt': u'Kategorija',
+                'mwl': u'Catadorie',
                 'myv': u'Категория',
                 'mzn': u'رده',
                 'nah': [u'Neneuhcāyōtl', u'Categoría'],
@@ -2378,6 +2420,7 @@ class Family:
             15: {
                 '_default': u'Category talk',
                 'ab': u'Обсуждение категории',
+                'ace': u'Pembicaraan Kategori',
                 'af': u'Kategoriebespreking',
                 'als': u'Kategorie Diskussion',
                 'am': u'መደብ ውይይት',
@@ -2480,12 +2523,14 @@ class Family:
                 'map-bms': u'Dhiskusi Kategori',
                 'mdf': u'Категорие корхнема',
                 'mg': [u'Dinika amin\'ny sokajy', u'Dinika amini\'ny sokajy', u'Discussion Catégorie'],
+                'mhr': u'Обсуждение категории',
                 'mk': u'Разговор за категорија',
                 'ml': u'വര്‍ഗ്ഗത്തിന്റെ സംവാദം',
                 'mn': u'Ангиллын хэлэлцүүлэг',
                 'mr': u'वर्ग चर्चा',
                 'ms': u'Perbincangan Kategori',
                 'mt': u'Diskussjoni kategorija',
+                'mwl': u'Cumbersa catadorie',
                 'myv': u'Категориядо кортамось',
                 'mzn': u'بحث رده',
                 'nah': [u'Neneuhcāyōtl tēixnāmiquiliztli', u'Categoría Discusión'],
@@ -2571,6 +2616,7 @@ class Family:
            'he': u'[a-zא-ת]*',
            'it': u'[a-zàèéìòù]*',
            'kk': u'[a-zäçéğıïñöşüýа-яёәғіқңөұүһʺʹ]*',
+           'ksh': u'[äöüėëĳßəğåůæœça-z]*',
            'nl': u'[a-zäöüïëéèéàç]*',
            'pt': u'[a-záâàãéêíóôõúüç]*',
            'ru': u'[a-zа-я]*',
@@ -3050,9 +3096,9 @@ class Family:
         self.language_groups = {
             # languages using the arabic script (incomplete)
             'arab' : [
-                'ar', 'arz', 'ps', 'sd', 'ur',
+                'ar', 'arz', 'ps', 'sd', 'ur', 'ckb',
                 # languages using multiple scripts, including arabic
-                'kk', 'ku', 'tt', 'ug'
+                'kk', 'ku', 'tt', 'ug', 'pnb'
             ],
             # languages that use chinese symbols
             'chinese': [
@@ -3064,13 +3110,18 @@ class Family:
             'cyril': [
                 'ab', 'av', 'ba', 'be', 'be-x-old', 'bg', 'bxr', 'ce', 'cu', 'cv', 'kv',
                 'ky', 'mk', 'lbe', 'mdf', 'mn', 'mo', 'myv', 'os', 'ru', 'sah', 'tg',
-                'tk', 'udm', 'uk', 'xal',
+                'tk', 'udm', 'uk', 'xal', 'mhr',
                 # languages using multiple scripts, including cyrillic
                 'ha', 'kk', 'sh', 'sr', 'tt'
             ],
+            # languages that use a greek script
+            'grec': [
+                'el', 'grc', 'pnt'
+                # languages using multiple scripts, including greek
+            ],
             # languages that use the latin alphabet
             'latin': [
-                'aa', 'af', 'ak', 'als', 'an', 'ang', 'ast', 'ay', 'bar', 'bat-smg',
+                'aa', 'ace', 'af', 'ak', 'als', 'an', 'ang', 'ast', 'ay', 'bar', 'bat-smg',
                 'bcl', 'bi', 'bm', 'br', 'bs', 'ca', 'cbk-zam', 'cdo', 'ceb', 'ch',
                 'cho', 'chy', 'co', 'crh', 'cs', 'csb', 'cy', 'da', 'de', 'diq', 'dsb',
                 'ee', 'eml', 'en', 'eo', 'es', 'et', 'eu', 'ext', 'ff', 'fi', 'fiu-vro',
@@ -3079,7 +3130,7 @@ class Family:
                 'ie', 'ig', 'ik', 'ilo', 'io', 'is', 'it', 'jbo', 'jv', 'kaa', 'kab',
                 'kg', 'ki', 'kj', 'kl', 'kr', 'ksh', 'kw', 'la', 'lad', 'lb', 'lg',
                 'li', 'lij', 'lmo', 'ln', 'lt', 'lv', 'map-bms', 'mg', 'mh', 'mi', 'ms',
-                'mt', 'mus', 'na', 'nah', 'nap', 'nds', 'nds-nl', 'ng', 'nl', 'nn',
+                'mt', 'mus', 'mwl', 'na', 'nah', 'nap', 'nds', 'nds-nl', 'ng', 'nl', 'nn',
                 'no', 'nov', 'nrm', 'nv', 'ny', 'oc', 'om', 'pag', 'pam', 'pap', 'pdc',
                 'pih', 'pl', 'pms', 'pt', 'qu', 'rm', 'rn', 'ro', 'roa-rup', 'roa-tara',
                 'rw', 'sc', 'scn', 'sco', 'se', 'sg', 'simple', 'sk', 'sl', 'sm', 'sn',
@@ -3088,11 +3139,12 @@ class Family:
                 'vec', 'vi', 'vls', 'vo', 'wa', 'war', 'wo', 'xh', 'yo', 'zea',
                 'zh-min-nan', 'zu',
                 # languages using multiple scripts, including latin
-                'az', 'chr', 'ha', 'iu', 'kk', 'ku', 'rmy', 'sh', 'sr', 'tt', 'ug', 'za'
+                'az', 'chr', 'ckb', 'ha', 'iu', 'kk', 'ku', 'rmy', 'sh', 'sr', 'tt',
+                'ug', 'za'
             ],
             # Scandinavian languages
             'scand': [
-                'da', 'fo', 'is', 'no', 'sv'
+                'da', 'fo', 'is', 'nb', 'nn', 'no', 'sv'
             ],
         }
 
@@ -3333,6 +3385,7 @@ class Family:
         'ay': [u'redirección'],
         'ba': [u'перенаправление', u'перенапр'],
         'bar': [u'weiterleitung'],
+        'bat-smg': [u'peradresavimas'],
         'bcc': [u'تغییرمسیر'],
         'be-tarask': [u'перанакіраваньне'],
         'be-x-old': [u'перанакіраваньне'],
@@ -3429,7 +3482,7 @@ class Family:
         'pl': [u'patrz', u'przekieruj', u'tam'],
         'pms': [u'rinvia', u'rinvio'],
         'pt-br': [u'redirecionamento'],
-        'qu': [u'redirección'],
+        'qu': [u'pusapuna', u'redirección'],
         'rmy': [u'redirecteaza'],
         'ro': [u'redirecteaza'],
         'ru': [u'перенаправление', u'перенапр'],
@@ -3524,9 +3577,6 @@ class Family:
         Can be overridden to return 'https'.
         Other protocols are not supported.
         """
-        if config.SSL_connection and self.name in config.available_ssl_project:
-            return 'https'
-
         return 'http'
 
     def hostname(self, code):
@@ -3544,9 +3594,6 @@ class Family:
         uses a different value.
 
         """
-        if config.SSL_connection and self.name in config.available_ssl_project:
-            return '/%s/%s/w' % (self.name, code)
-
         return '/w'
 
     def path(self, code):
@@ -3559,9 +3606,6 @@ class Family:
         return '%s/api.php' % self.scriptpath(code)
 
     def nicepath(self, code):
-        if config.SSL_connection and self.name in config.available_ssl_project:
-            return '/%s/%s/wiki/' % (self.name, code)
-
         return '/wiki/'
 
     def dbName(self, code):
@@ -3593,7 +3637,7 @@ class Family:
 
     # The URL to get a page, in the format indexed by Google.
     def nice_get_address(self, code, name):
-        return '/wiki/%s' % (name)
+        return '%s%s' % (self.nicepath(code), name)
 
     def edit_address(self, code, name):
         return '%s?title=%s&action=edit&useskin=monobook' % (self.path(code), name)

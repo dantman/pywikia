@@ -50,7 +50,7 @@ subdirectory.
 #
 __version__='$Id$'
 
-import re
+import re, os, query
 import urllib2
 import wikipedia, config
 
@@ -100,7 +100,7 @@ class LoginManager:
         the policy on the respective wiki.
         """
         if self.site.family.name in botList and self.site.language() in botList[self.site.family.name]:
-            botListPageTitle = botList[self.site.family.name][self.site.language()]
+            botListPageTitle = wikipedia.translate(self.site.language(), botList)
             botListPage = wikipedia.Page(self.site, botListPageTitle)
             for linkedPage in botListPage.linkedPages():
                 if linkedPage.titleWithoutNamespace() == self.username:
@@ -110,7 +110,7 @@ class LoginManager:
             # No bot policies on other
             return True
 
-    def getCookie(self, remember=True, captcha = None):
+    def getCookie(self, api = config.use_api_login, remember=True, captcha = None):
         """
         Login to the site.
 
@@ -119,10 +119,10 @@ class LoginManager:
 
         Returns cookie data if succesful, None otherwise.
         """
-        if config.use_api_login:
+        if api:
             predata = {
                 'action': 'login',
-                'lgname': self.username.encode(self.site.encoding()),
+                'lgname': self.username,
                 'lgpassword': self.password,
                 'lgdomain': self.site.family.ldapDomain,
             }
@@ -163,14 +163,26 @@ class LoginManager:
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
-            response, data = self.site.postData(address, self.site.urlEncode(predata))
-            if self.verbose:
-                fakepredata = predata
-                fakepredata['wpPassword'] = u'XXXXX'
-                wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
-                fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
-                wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
-                wikipedia.output(u"%s" % data)
+            if api:
+                response, data = query.GetData(predata, self.site, back_response = True)
+                if data['login']['result'] != "Success":
+                    faildInfo = data['login']['result']
+                    #if faildInfo == "NotExists":
+                    #    
+                    #elif faildInfo == "WrongPass":
+                    #    
+                    #elif faildInfo == "Throttled":
+                    #    
+                    return False
+            else:
+                response, data = self.site.postData(address, self.site.urlEncode(predata))
+                if self.verbose:
+                    fakepredata = predata
+                    fakepredata['wpPassword'] = fakepredata['lgpassword'] = u'XXXXX'
+                    wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
+                    fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
+                    wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
+                    wikipedia.output(u"%s" % data)
             Reat=re.compile(': (.*?);')
             L = []
     
@@ -191,7 +203,7 @@ class LoginManager:
             elif not captcha:
                 solve = self.site.solveCaptcha(data)
                 if solve:
-                    return self.getCookie(remember = remember, captcha = solve)
+                    return self.getCookie(api = api, remember = remember, captcha = solve)
             return None
 
     def storecookiedata(self, data):
@@ -236,7 +248,7 @@ class LoginManager:
                     self.password = entry[3]
         file.close()
 
-    def login(self, retry = False):
+    def login(self, api = config.use_api_login, retry = False):
         if not self.password:
             # As we don't want the password to appear on the screen, we set
             # password = True
@@ -245,7 +257,12 @@ class LoginManager:
         self.password = self.password.encode(self.site.encoding())
 
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
-        cookiedata = self.getCookie()
+        try:
+            cookiedata = self.getCookie(api)
+        except NotImplementedError:
+            wikipedia.output('API disabled because this site does not support.\nRetrying by ordinary way...')
+            api = False
+            return self.login(False, retry)
         if cookiedata:
             self.storecookiedata(cookiedata)
             wikipedia.output(u"Should be logged in now")
@@ -255,21 +272,48 @@ class LoginManager:
             return True
         else:
             wikipedia.output(u"Login failed. Wrong password or CAPTCHA answer?")
+            if api:
+                wikipedia.output(u"API login failed, retrying using standard webpage.")
+                return self.login(False, retry)
+            
             if retry:
                 self.password = None
-                return self.login(retry = True)
+                return self.login(api, True)
             else:
                 return False
+    
+    def logout(self, api = config.use_api):
+        flushCk = False
+        if api and self.site.versionnumber() >= 12:
+            if query.GetData({'action':'logout'}, self.site) == []:
+                flushCk = True
+        else:
+            text = self.site.getUrl(self.site.get_address("Special:UserLogout"))
+            if self.site.mediawiki_message('logouttext') in text: #confirm loggedout
+                flushCk = True
+        
+        if flushCk:
+            filename = wikipedia.config.datafilepath('login-data',
+                       '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username))
+            try:
+                os.remove(filename)
+            except:
+                pass
+            wikipedia.output('%s is logged out.' % self.site)
+            return True
+        
+        return False
 
     def showCaptchaWindow(self, url):
         pass
-
+    
 def main():
     username = password = None
     sysop = False
     logall = False
     forceLogin = False
     verbose = False
+    cleanAll = clean = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith("-pass"):
@@ -277,6 +321,8 @@ def main():
                 password = wikipedia.input(u'Password for all accounts:', password = True)
             else:
                 password = arg[6:]
+        elif arg == "-clean":
+            clean = True
         elif arg == "-sysop":
             sysop = True
         elif arg == "-all":
@@ -295,21 +341,35 @@ def main():
             namedict = config.sysopnames
         else:
             namedict = config.usernames
+
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
                 try:
-                    site = wikipedia.getSite( code=lang, fam=familyName )
-                    if not forceLogin and site.loggedInAs(sysop = sysop) is not None:
-                        wikipedia.output(u'Already logged in on %s' % site)
+                    site = wikipedia.getSite(lang, familyName)
+                    loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
+                    if clean:
+                        if os.path.exists(wikipedia.config.datafilepath('login-data',
+                          '%s-%s-%s-login.data' % (familyName, lang, namedict[familyName][lang]))):
+                            loginMan.logout()
                     else:
-                        loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
-                        loginMan.login()
+                        if not forceLogin and site.loggedInAs(sysop = sysop):
+                            wikipedia.output(u'Already logged in on %s' % site)
+                        else:
+                            loginMan.login()
                 except wikipedia.NoSuchSite:
                     wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
 
     else:
-        loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
-        loginMan.login()
+        if clean:
+            try:
+                site = wikipedia.getSite()
+                lgm = LoginManager(site = site)
+                lgm.logout()
+            except wikipedia.NoSuchSite:
+                pass
+        else:
+            loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
+            loginMan.login()
 
 if __name__ == "__main__":
     try:

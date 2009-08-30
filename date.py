@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -460,6 +460,7 @@ formats = {
             'ka' :      lambda v: slh( v, [u"იანვარი", u"თებერვალი", u"მარტი", u"აპრილი", u"მაისი", u"ივნისი", u"ივლისი", u"აგვისტო", u"სექტემბერი", u"ოქტომბერი", u"ნოემბერი", u"დეკემბერი"] ),
             'kn' :      lambda v: slh( v, [u"ಜನವರಿ", u"ಫೆಬ್ರವರಿ", u"ಮಾರ್ಚಿ", u"ಎಪ್ರಿಲ್", u"ಮೇ", u"ಜೂನ", u"ಜುಲೈ", u"ಆಗಸ್ಟ್", u"ಸೆಪ್ಟೆಂಬರ್", u"ಅಕ್ಟೋಬರ್", u"ನವೆಂಬರ್", u"ಡಿಸೆಂಬರ್"] ),
             'ko' :      lambda v: slh( v, makeMonthList( u"%d월" )),
+            'ksh':      lambda v: slh( v, [u'Jannowaa', u'Febrowaa', u'Mä', u'Apprill', u'Meij', u'Juuni', u'Juuli', u'Aujuß', u'Sepptäber', u'Oktoober', u'Novemmber', u'Dezemmber'] ),
             'ku' :      lambda v: slh( v, [u"rêbendan", u"reşemî", u"adar", u"avrêl", u"gulan", u"pûşper", u"tîrmeh", u"gelawêj (meh)", u"rezber", u"kewçêr", u"sermawez", u"berfanbar"] ),
             'kw' :      lambda v: slh( v, [u"Mys Genver", u"Mys Whevrer", u"Mys Merth", u"Mys Ebrel", u"Mys Me", u"Mys Metheven", u"Mys Gortheren", u"Mys Est", u"Mys Gwyngala", u"Mys Hedra", u"Mys Du", u"Mys Kevardhu"] ),
             'la' :      lambda v: slh( v, [u"Ianuarius", u"Februarius", u"Martius", u"Aprilis", u"Maius", u"Iunius", u"Iulius", u"Augustus (mensis)", u"September", u"October", u"November", u"December"] ),
@@ -467,6 +468,7 @@ formats = {
             'li' :      lambda v: slh( v, [u"jannewarie", u"fibberwarie", u"miert", u"april", u"mei", u"juni", u"juli", u"augustus (maond)", u"september", u"oktober", u"november", u"december"] ),
             'lt' :      lambda v: slh( v, [u"Sausis", u"Vasaris", u"Kovas", u"Balandis", u"Gegužė", u"Birželis", u"Liepa", u"Rugpjūtis", u"Rugsėjis", u"Spalis", u"Lapkritis", u"Gruodis"] ),
             'lv' :      lambda v: slh( v, [u"Janvāris", u"Februāris", u"Marts", u"Aprīlis", u"Maijs", u"Jūnijs", u"Jūlijs", u"Augusts", u"Septembris", u"Oktobris", u"Novembris", u"Decembris"] ),
+            'mhr':      lambda v: slh( v, [ u"шорыкйол", u"пургыж", u"ӱярня", u"вӱдшор", u"ага", u"пеледыш", u"сӱрем", u"сорла", u"идым", u"шыжа", u"кылме", u"декабрь"] ),
             'mi' :      lambda v: slh( v, [u"Kohi-tātea", u"Hui-tanguru", u"Poutū-te-rangi", u"Paenga-whāwhā", u"Haratua", u"Pipiri", u"Hōngongoi", u"Here-turi-kōkā", u"Mahuru", u"Whiringa-ā-nuku", u"Whiringa-ā-rangi", u"Hakihea"] ),
             'ml' :      lambda v: slh( v, [u"ജനുവരി", u"ഫെബ്രുവരി", u"മാര്ച്", u"ഏപ്രില്", u"മേയ്", u"ജൂണ്‍", u"ജൂലൈ", u"ആഗസ്റ്റ്‌", u"സപ്തന്പര്", u"ഒക്ടോബര്", u"നവന്പര്", u"ഡിസന്പര്"] ),
             'mr' :      lambda v: slh( v, [u"जानेवारी", u"फेब्रुवारी", u"मार्च", u"एप्रिल", u"मे", u"जून", u"जुलै", u"ऑगस्ट", u"सप्टेंबर", u"ऑक्टोबर", u"नोव्हेंबर", u"डिसेंबर"] ),
@@ -514,6 +516,8 @@ formats = {
         'ar' :      lambda v: dh_number( v, u'%d (عدد)' ),
         'be' :      lambda v: dh_number( v, u'%d (лік)' ),
         'bg' :      lambda v: dh_number( v, u'%d (число)' ),
+        'bs' :      lambda v: dh_number( v, u'%d (broj)' ),
+        'cs' :      lambda v: dh_number( v, u'%d (číslo)' ),
         'da' :      lambda v: dh_number( v, u'%d (tal)' ),
         'en' :      lambda v: dh_number( v, u'%d (number)' ),
         'fi' :      lambda v: dh_number( v, u'%d (luku)' ),
@@ -523,6 +527,7 @@ formats = {
         'ia' :      lambda v: dh_number( v, u'%d (numero)' ),
         'ja' :      lambda v: dh_number( v, u'%d' ),
         'ko' :      lambda v: dh_number( v, u'%d' ),
+        'ksh':      lambda v: dh_number( v, u'%d (Zahl)' ),
         'la' :      lambda v: dh_number( v, u'%d' ),
         'lt' :      lambda v: dh_number( v, u'%d (skaičius)' ),
         'nds':      lambda v: dh_number( v, u'%d (Tall)' ),
@@ -581,7 +586,7 @@ formats = {
         'gu' :      lambda v: dh_yearAD( v, u'%G' ),
         'he' :      dh_simpleYearAD,
         'hi' :      lambda v: dh_yearAD( v, u'%H' ),
-        'hr' :      dh_simpleYearAD,
+        'hr' :      lambda v: dh_yearAD( v, u'%d.' ),
         'hu' :      dh_simpleYearAD,
         'hy' :      dh_simpleYearAD,
         'ia' :      dh_simpleYearAD,
@@ -596,6 +601,7 @@ formats = {
         'ka' :      dh_simpleYearAD,
         'kn' :      lambda v: dh_yearAD( v, u'%K' ),
         'ko' :      lambda v: dh_yearAD( v, u'%d년' ),
+        'ksh':      lambda v: dh_yearAD( v, u'Joohr %d' ),
         'ku' :      dh_simpleYearAD,
         'kw' :      dh_simpleYearAD,
         'la' :      dh_simpleYearAD,
@@ -604,6 +610,7 @@ formats = {
         'lt' :      dh_simpleYearAD,
         'lv' :      dh_simpleYearAD,
         'mi' :      dh_simpleYearAD,
+        'mhr':      dh_simpleYearAD,
         'mk' :      dh_simpleYearAD,
         'ml' :      dh_simpleYearAD,
         'mo' :      dh_simpleYearAD,
@@ -622,7 +629,7 @@ formats = {
         'rm' :      dh_simpleYearAD,
         'ro' :      dh_simpleYearAD,
         'roa-rup' : dh_simpleYearAD,
-        'ru' :      dh_simpleYearAD,
+        'ru' :      lambda v: dh_yearAD( v, u'%d год' ),
         'sco':      dh_simpleYearAD,
         'scn':      dh_simpleYearAD,
         'se' :      dh_simpleYearAD,
@@ -657,16 +664,19 @@ formats = {
 
     'YearBC': {
         'af' :      lambda v: dh_yearBC( v, u'%d v.C.' ),
+        'ast':      lambda v: dh_yearBC( v, u'%d edC' ),
         'be' :      lambda v: dh_yearBC( v, u'%d да н.э.' ),
         'bg' :      lambda v: dh_yearBC( v, u'%d г. пр.н.е.' ),
-        'bs' :      lambda v: dh_yearBC( v, u'%d p.ne.' ),
+        'bs' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
         'ca' :      lambda v: dh_yearBC( v, u'%d aC' ),
         'cs' :      lambda v: dh_yearBC( v, u'%d př. n. l.' ),
+        'cy' :      lambda v: dh_yearBC( v, u'%d CC' ),
         'da' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
         'de' :      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
+        'el' :      lambda v: dh_yearBC( v, u'%d π.Χ.' ),
         'en' :      lambda v: dh_yearBC( v, u'%d BC' ),
         'eo' :      lambda v: dh_yearBC( v, u'-%d' ),
-        'es' :      lambda v: dh_yearBC( v, u'%d adC' ),
+        'es' :      lambda v: dh_yearBC( v, u'%d a. C.' ),
         'et' :      lambda v: dh_yearBC( v, u'%d eKr' ),
         'eu' :      lambda v: dh_yearBC( v, u'K. a. %d' ),
         'fi' :      lambda v: dh_yearBC( v, u'%d eaa.' ),
@@ -674,7 +684,7 @@ formats = {
         'fr' :      lambda v: dh_yearBC( v, u'-%d' ),
         'gl' :      lambda v: dh_yearBC( v, u'-%d' ),
         'he' :      lambda v: dh_yearBC( v, u'%d לפני הספירה' ),
-        'hr' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
+        'hr' :      lambda v: dh_yearBC( v, u'%d. pr. Kr.' ),
         'hu' :      lambda v: dh_yearBC( v, u'I. e. %d' ),
         'id' :      lambda v: dh_yearBC( v, u'%d SM' ),
         'io' :      lambda v: dh_yearBC( v, u'%d aK' ),
@@ -682,35 +692,45 @@ formats = {
         'it' :      lambda v: dh_yearBC( v, u'%d a.C.' ),
         'ka' :      lambda v: dh_yearBC( v, u'ძვ. წ. %d' ),
         'ko' :      lambda v: dh_yearBC( v, u'기원전 %d년' ),
+        'ksh':      lambda v: dh_yearBC( v,u'Joohr %d füür Krėßtůß'),
         'la' :      lambda v: dh_yearBC( v, u'%d a.C.n.' ),
         'lb' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'lt' :      lambda v: dh_yearBC( v, u'%d m. pr. m. e.'),
+        'lv' :      lambda v: dh_yearBC( v, u'%d p.m.ē.'),
+        'mk' :      lambda v: dh_yearBC( v, u'%d п.н.е.'),
         'ms' :      lambda v: dh_yearBC( v, u'%d SM' ),
         'nap':      lambda v: dh_yearBC( v, u'%d AC' ),
         'nds':      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
         'nl' :      lambda v: dh_yearBC( v, u'%d v.Chr.' ),
         'nn' :      lambda v: dh_yearBC( v, u'-%d' ),
         'no' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
+        'oc' :      lambda v: dh_yearBC( v, u'-%d' ),
         'pl' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
         'pt' :      lambda v: dh_yearBC( v, u'%d a.C.' ),
         'ro' :      lambda v: dh_yearBC( v, u'%d î.Hr.' ),
-        'ru' :      lambda v: dh_yearBC( v, u'%d до н. э.' ),
+        'ru' :      lambda v: dh_yearBC( v, u'%d год до н. э.' ),
         'scn':      lambda v: dh_yearBC( v, u'%d a.C.' ),
         'simple' :  lambda v: dh_yearBC( v, u'%d BC' ),
         'sk' :      lambda v: dh_yearBC( v, u'%d pred Kr.' ),
         'sl' :      lambda v: dh_yearBC( v, u'%d pr. n. št.' ),
         'sq' :      lambda v: dh_yearBC( v, u'%d p.e.s.' ),
-        'sr' :      lambda v: dh_yearBC( v, u'%d. пне.' ),
+        'sr' :      lambda v: dh_yearBC( v, u'%d. п. н. е.' ),
         'sv' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
+        'sw' :      lambda v: dh_yearBC( v, u'%d KK' ),
         'ta' :      lambda v: dh_yearBC( v, u'கி.மு %d' ),
+        'tr' :      lambda v: dh_yearBC( v, u'M.Ö. %d' ),
         'tt' :      lambda v: dh_yearBC( v, u'MA %d' ),
-        'uk' :      lambda v: dh_yearBC( v, u'%d до Р.Х.' ),
-        'uz' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'uk' :      lambda v: dh_yearBC( v, u'%d до н. е.' ),
+        'uz' :      lambda v: dh_yearBC( v, u'Mil. av. %d' ),
         'vec':      lambda v: dh_yearBC( v, u'%d a.C.' ),
+        'vo' :      lambda v: dh_yearBC( v, u'%d b.K.' ),
         'zh' :      lambda v: dh_yearBC( v, u'前%d年' ),
     },
 
     'DecadeAD': {
         'als':      lambda v: dh_decAD( v, u'%der' ),
+        'ar' :      lambda v: dh_decAD( v, u'%d عقد' ),
+        'ast':      lambda v: dh_decAD( v, u'Años %d' ),
         'ang':      lambda v: dh_decAD( v, u'%de' ),
         'ast':      lambda v: dh_decAD( v, u'Años %d' ),
         'bg' :      lambda v: dh_decAD( v, u'%d-те' ),
@@ -721,6 +741,11 @@ formats = {
         'ca' :      lambda m: multi( m, [
             (lambda v: dh_decAD( v, u'Dècada de %d' ),  lambda p: p == 1970),
             (lambda v: dh_decAD( v, u'Dècada del %d' ), alwaysTrue)]),
+         
+         #1970s => '1970-1979'
+        'cs' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 1, u'1-9'),                                              lambda p: p == 1),
+            (lambda v: dh( v, u'%d-%d', lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),     alwaysTrue)]),
 
         'cy' :      lambda v: dh_decAD( v, u'%dau' ),
         'da' :      lambda v: dh_decAD( v, u"%d'erne" ),
@@ -739,7 +764,8 @@ formats = {
 
         'fo' :      lambda v: dh_decAD( v, u'%d-árini' ),
         'fr' :      lambda v: dh_decAD( v, u'Années %d' ),
-        'ga' :      lambda v: dh_decAD( v, u'%dí' ),
+        'ga' :      lambda v: dh_decAD( v, u'%didí' ),
+        'gan':      lambda v: dh_decAD( v, u'%d年代' ),
         'he' :      lambda m: multi( m, [
             (lambda v: dh( v, u'שנות ה־%d', lambda i: encDec0(i)%100, lambda ii: 1900 + ii[0] ), lambda p: p >= 1900 and p < 2000),
             # This is a dummy value, just to avoid validation testing.
@@ -765,6 +791,7 @@ formats = {
         'ja' :      lambda v: dh_decAD( v, u'%d年代' ),
         'ka' :      lambda v: dh_decAD( v, u'%d-ები‎' ),
         'ko' :      lambda v: dh_decAD( v, u'%d년대' ),
+        'ksh':      lambda v: dh_decAD( v, u'%d-er Joohre' ),
 
         #1970s => 'Decennium 198' (1971-1980)
         'la' :      lambda v: dh( v, u'Decennium %d',            lambda i: encDec1(i)/10+1, lambda ii: (ii[0]-1)*10 ),
@@ -776,6 +803,8 @@ formats = {
 
         #1970s => 'Ngahurutanga 198' (1971-1980)
         'mi' :      lambda v: dh( v, u'Ngahurutanga %d',         lambda i: encDec0(i)/10+1, lambda ii: (ii[0]-1)*10 ),
+
+        'mhr':      lambda v: dh_decAD( v, u'%d ийла' ),
 
         #1970s => '1970-1979'
         'nl' :      lambda m: multi( m, [
@@ -853,6 +882,7 @@ formats = {
         'it' :      lambda v: dh_decBC( v, u'Anni %d a.C.' ),
 
         'ka' :      lambda v: dh_decBC( v, u'ძვ. წ. %d-ები' ),
+        'ksh':      lambda v: dh_decBC( v, u'%d-er Joohre füür Krėßtůß'), # uncertain if that's right. might go to redirect.
 
         # '19-10 v. Chr.'
         'nl' :      lambda m: multi( m, [
@@ -952,6 +982,7 @@ formats = {
             (lambda v: dh_centuryAD( v, u'%des kansblydhen' ),  lambda p: p == 5),
             (lambda v: dh_centuryAD( v, u'%dns kansblydhen' ),  lambda p: p >= 20),
             (lambda v: dh_centuryAD( v, u'%dves kansblydhen' ), alwaysTrue)]),
+        'ksh':      lambda v: dh_centuryAD( v, u'%d. Joohunndot'), 
         'la' :      lambda v: dh_centuryAD( v, u'Saeculum %d' ),
         'lb' :      lambda v: dh_centuryAD( v, u'%d. Joerhonnert' ),
 
@@ -1033,6 +1064,7 @@ formats = {
         'ja' :      lambda v: dh_centuryBC( v, u'紀元前%d世紀' ),
         'ka' :      lambda v: dh_centuryBC( v, u'ძვ. წ. %R საუკუნე' ),
         'ko' :      lambda v: dh_centuryBC( v, u'기원전 %d세기' ),
+        'ksh':      lambda v: dh_centuryBC( v, u'%d. Joohunndot füür Kreůßtůß'), # uncertain if that's right. might go to redirect.
         'la' :      lambda v: dh_centuryBC( v, u'Saeculum %d a.C.n.' ),
         'lb' :      lambda v: dh_centuryBC( v, u'%d. Joerhonnert v. Chr.' ),
         'nl' :      lambda v: dh_centuryBC( v, u'%de eeuw v.Chr.' ),
@@ -1061,18 +1093,23 @@ formats = {
     },
 
     'CenturyAD_Cat':{
+        'cs' :      lambda v: dh_centuryAD( v, u'%d. století' ),
         'da' :      lambda v: dh_centuryAD( v, u'%d. århundrede' ),
         'no' :      lambda v: dh( v, u'%d-tallet', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
+        'ksh':      lambda v: dh_constVal( v, 1, u'Joohunndot' ),
     },
 
     'CenturyBC_Cat':{
+        'cs' :      lambda v: dh_centuryBC( v, u'%d. století př. n. l.' ),
         'de' :      lambda v: dh_centuryBC( v, u'Jahr (%d. Jh. v. Chr.)' ),
         'no' :      lambda v: dh( v, u'%d-tallet f.Kr.', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
+        'ksh':      lambda v: dh_constVal( v, 1, u'Joohunndot' ),
     },
 
     'MillenniumAD': {
         'bg' :      lambda v: dh_millenniumAD( v, u'%d хилядолетие' ),
         'ca' :      lambda v: dh_millenniumAD( v, u'Mil·lenni %R' ),
+        'cs' :      lambda v: dh_millenniumAD( v, u'%d. tisíciletí' ),
         'de' :      lambda v: dh_millenniumAD( v, u'%d. Jahrtausend' ),
         'el' :      lambda v: dh_millenniumAD( v, u'%dη χιλιετία' ),
         'en' :      lambda m: multi( m, [
@@ -1109,7 +1146,15 @@ formats = {
         'it' :      lambda v: dh_millenniumAD( v, u'%R millennio' ),
         'ja' :      lambda v: dh_millenniumAD( v, u'%d千年紀' ),
         'ka' :      lambda v: dh_millenniumAD( v, u'%R ათასწლეული' ),
+        'ksh':      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 1, u'Eetße Johdousend'),                lambda p: p == 1),
+            (lambda v: dh_constVal( v, 2, u'Zweijte Johdousend'),              lambda p: p == 2),
+            (lambda v: dh_constVal( v, 3, u'Drette Johdousend'),               lambda p: p == 3),
+            (lambda v: dh_constVal( v, 4, u'Veete Johdousend'),                lambda p: p == 4),
+            (lambda v: dh_constVal( v, 5, u'Föfte Johdousend'),                lambda p: p == 5),
+            (lambda v: dh_milleniumAD( v, u'%d. Johdousend'),			alwaysTrue)]),
         'lb' :      lambda v: dh_millenniumAD( v, u'%d. Joerdausend' ),
+        'mhr':      lambda v: dh_millenniumAD( v, u'%R. курым — ' ),
         'lt' :      lambda v: dh_millenniumAD( v, u'%d tūkstantmetis' ),
         'pt' :      lambda v: slh( v, [u'Primeiro milénio d.C.', u'Segundo milénio d.C.', u'Terceiro milénio d.C.', u'Quarto milénio d.C.'] ),
         'ro' :      lambda v: slh( v, [u'Mileniul I', u'Mileniul al II-lea', u'Mileniul III'] ),
@@ -1126,6 +1171,7 @@ formats = {
     'MillenniumBC': {
         'bg' :      lambda v: dh_millenniumBC( v, u'%d хилядолетие пр.н.е.' ),
         'ca' :      lambda v: dh_millenniumBC( v, u'Mil·lenni %R aC' ),
+        'cs' :      lambda v: dh_millenniumBC( v, u'%d. tisíciletí př. n. l.' ),
         'da' :      lambda v: dh_millenniumBC( v, u'%d. årtusinde f.Kr.' ),
         'de' :      lambda v: dh_millenniumBC( v, u'%d. Jahrtausend v. Chr.' ),
         'el' :      lambda v: dh_millenniumBC( v, u'%dη χιλιετία π.Χ.' ),
@@ -1162,6 +1208,7 @@ formats = {
     },
 
     'Cat_Year_MusicAlbums': {
+        'cs' :      lambda v: dh_yearAD( v, u'Alba roku %d' ),
         'en' :      lambda v: dh_yearAD( v, u'%d albums' ),
         'fi' :      lambda v: dh_yearAD( v, u'Vuoden %d albumit' ),
         'fr' :      lambda v: dh_yearAD( v, u'Album musical sorti en %d' ),
@@ -1178,7 +1225,7 @@ formats = {
         'be' :      lambda v: dh_singVal( v, u'Бягучыя падзеі' ),
         'bg' :      lambda v: dh_singVal( v, u'Текущи събития' ),
         'ca' :      lambda v: dh_singVal( v, u'Viquipèdia:Actualitat' ),
-        'cs' :      lambda v: dh_singVal( v, u'Aktuality' ),
+        'cs' :      lambda v: dh_singVal( v, u'Portál:Aktuality' ),
         'da' :      lambda v: dh_singVal( v, u'Aktuelle begivenheder' ),
         'de' :      lambda v: dh_singVal( v, u'Aktuelle Ereignisse' ),
         'el' :      lambda v: dh_singVal( v, u'Τρέχοντα γεγονότα' ),
@@ -1198,6 +1245,7 @@ formats = {
         'ja' :      lambda v: dh_singVal( v, u'最近の出来事' ),
         'ka' :      lambda v: dh_singVal( v, u'ახალი ამბები' ),
         'ko' :      lambda v: dh_singVal( v, u'요즘 화제' ),
+        'ksh':      lambda v: dh_singVal( v, u'Et Neuste' ),
         'ku' :      lambda v: dh_singVal( v, u'Bûyerên rojane' ),
         'la' :      lambda v: dh_singVal( v, u'Novissima' ),
         'lb' :      lambda v: dh_singVal( v, u'Aktualitéit' ),
@@ -1597,4 +1645,3 @@ def test(quick = False, showAll = False):
 #
 #
 test(quick=True)
-

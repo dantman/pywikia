@@ -1,5 +1,4 @@
 # -*- coding: utf-8  -*-
-import urllib
 import family, config
 
 __version__ = '$Id$'
@@ -12,37 +11,37 @@ class Family(family.Family):
         self.name = 'wikipedia'
 
         self.languages_by_size = [
-            'en', 'de', 'fr', 'pl', 'ja', 'it', 'nl', 'pt', 'es', 'ru',
-            'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'tr', 'cs', 'hu', 'ro',
-            'vo', 'eo', 'da', 'sk', 'id', 'ar', 'ko', 'he', 'lt', 'vi',
-            'sl', 'sr', 'bg', 'et', 'fa', 'hr', 'simple', 'new', 'ht', 'nn',
-            'gl', 'th', 'te', 'el', 'ms', 'eu', 'ceb', 'hi', 'mk', 'ka',
-            'la', 'bs', 'lb', 'br', 'is', 'az', 'bpy', 'mr', 'sq', 'cy',
-            'sh', 'tl', 'lv', 'pms', 'be-x-old', 'bn', 'jv', 'oc', 'ta', 'io',
-            'be', 'an', 'nds', 'su', 'scn', 'nap', 'ku', 'af', 'ast', 'fy',
-            'sw', 'wa', 'zh-yue', 'bat-smg', 'qu', 'ur', 'cv', 'ml', 'ksh', 'tg',
-            'ga', 'vec', 'roa-tara', 'war', 'uz', 'gd', 'pam', 'kn', 'mi', 'gu',
-            'yi', 'yo', 'glk', 'lmo', 'nah', 'co', 'zh-min-nan', 'hsb', 'als', 'roa-rup',
-            'ia', 'li', 'hy', 'gan', 'kk', 'sah', 'tt', 'tk', 'sa', 'wuu',
-            'nds-nl', 'fo', 'os', 'vls', 'nrm', 'fiu-vro', 'am', 'rm', 'map-bms', 'pag',
-            'arz', 'dv', 'mn', 'se', 'diq', 'ne', 'gv', 'fur', 'sco', 'lij',
-            'bar', 'nov', 'bh', 'mt', 'ilo', 'pi', 'zh-classical', 'mzn', 'km','frp',
-            'csb', 'lad', 'ug', 'si', 'pdc', 'kw', 'ang', 'haw', 'bcl', 'sc',
-            'to', 'kv', 'mg', 'pa', 'ps', 'szl', 'ie', 'gn', 'my', 'ln',
-            'hif', 'stq', 'wo', 'jbo', 'crh', 'arc', 'tpi', 'ty', 'ext', 'cbk-zam',
-            'ky', 'eml', 'zea', 'srn', 'ay', 'myv', 'hak', 'ig', 'kg', 'pap',
-            'so', 'or', 'kab', 'lo', 'rmy', 'ba', 'ce', 'sm', 'udm', 'av',
-            'ks', 'cu', 'got', 'kaa', 'tet', 'dsb', 'sd', 'mdf', 'bo', 'iu',
-            'nv', 'na', 'bm', 'cdo', 'chr', 'as', 'ee', 'om', 'pnt', 'pih',
-            'zu', 'ab', 'ti', 'kl', 'ts', 'ss', 'bi', 'cr', 'dz', 've',
-            'za', 'ch', 'ha', 'xh', 'tn', 'bug', 'xal', 'st', 'rw', 'ik',
-            'bxr', 'chy', 'tw', 'ak', 'ny', 'fj', 'ff', 'sn', 'sg', 'lbe',
-            'rn', 'ki', 'lg', 'tum', 'ng',
+            'en', 'de', 'fr', 'pl', 'ja', 'it', 'nl', 'es', 'pt', 'ru',
+            'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'hu', 'tr', 'cs', 'ro',
+            'vo', 'eo', 'da', 'sk', 'id', 'ko', 'ar', 'vi', 'he', 'lt',
+            'sr', 'sl', 'bg', 'et', 'fa', 'hr', 'simple', 'new', 'ht', 'nn',
+            'gl', 'th', 'ms', 'el', 'te', 'eu', 'ceb', 'hi', 'mk', 'ka',
+            'la', 'br', 'bs', 'lb', 'is', 'az', 'cy', 'sq', 'mr', 'sh',
+            'bpy', 'lv', 'tl', 'pms', 'be-x-old', 'jv', 'bn', 'oc', 'ta', 'io',
+            'be', 'an', 'scn', 'nds', 'su', 'nap', 'ku', 'sw', 'af', 'fy',
+            'ast', 'zh-yue', 'bat-smg', 'wa', 'war', 'ur', 'qu', 'ml', 'ksh', 'cv',
+            'tg', 'ga', 'vec', 'roa-tara', 'gu', 'gd', 'uz', 'pam', 'kn', 'yi',
+            'mi', 'lmo', 'yo', 'zh-min-nan', 'nah', 'glk', 'co', 'hsb', 'roa-rup', 'kk',
+            'als', 'ia', 'li', 'hy', 'sah', 'bcl', 'gan', 'tt', 'tk', 'sa',
+            'nds-nl', 'wuu', 'os', 'fo', 'vls', 'arz', 'fiu-vro', 'nrm', 'am', 'pag',
+            'rm', 'map-bms', 'dv', 'mn', 'gv', 'se', 'diq', 'fur', 'ne', 'sco',
+            'bar', 'lij', 'nov', 'bh', 'mt', 'ilo', 'pi', 'mzn', 'zh-classical', 'csb',
+            'ug', 'km', 'frp', 'lad', 'si', 'kw', 'ang', 'sc', 'pdc', 'haw',
+            'mg', 'to', 'kv', 'my', 'szl', 'pa', 'ps', 'myv', 'ie', 'gn',
+            'hif', 'ln', 'stq', 'jbo', 'wo', 'arc', 'crh', 'tpi', 'ty', 'ext',
+            'cbk-zam', 'ky', 'hak', 'eml', 'zea', 'srn', 'ay', 'pap', 'so', 'kg',
+            'ig', 'or', 'kab', 'lo', 'udm', 'rmy', 'ba', 'dsb', 'ce', 'sm',
+            'av', 'nv', 'cu', 'ks', 'tet', 'got', 'kaa', 'bo', 'sd', 'mdf',
+            'iu', 'na', 'bm', 'as', 'cdo', 'kl', 'pnt', 'chr', 'ee', 'om',
+            'pih', 'ab', 'zu', 'ti', 'ts', 'ss', 'za', 'bi', 'ha', 'cr',
+            'dz', 'xal', 've', 'ch', 'xh', 'tn', 'bug', 'ik', 'bxr', 'rw',
+            'st', 'tw', 'chy', 'ak', 'fj', 'ny', 'ff', 'sn', 'sg', 'lbe',
+            'lg', 'rn', 'ki', 'tum', 'ng', 'mhr', 'ckb', 'pnb', 'mwl', 'ace'
         ]
 
-        if config.SSL_connection and self.name in config.available_ssl_project:
+        if config.SSL_connection:
             for lang in self.languages_by_size:
-                self.langs[lang] = 'secure.wikimedia.org'
+                self.langs[lang] = None
         else:
             for lang in self.languages_by_size:
                 self.langs[lang] = '%s.wikipedia.org' % lang
@@ -60,6 +59,7 @@ class Family(family.Family):
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
             'ar': u'ويكيبيديا',
+            'arc': u'ܘܝܩܝܦܕܝܐ',
             'arz': u'ويكيبيديا',
             'ast': u'Uiquipedia',
             'az': u'Vikipediya',
@@ -67,7 +67,7 @@ class Family(family.Family):
             'be': u'Вікіпедыя',
             'be-x-old': u'Вікіпэдыя',
             'bg': u'Уикипедия',
-            'bn': u'উইকিপেডিয়া',
+            'bn': u'উইকিপিডিয়া',
             'bpy': u'উইকিপিডিয়া',
             'ca': u'Viquipèdia',
             'ce': u'Википедийа',
@@ -127,7 +127,7 @@ class Family(family.Family):
             'rmy': u'Vikipidiya',
             'ru': u'Википедия',
             'sa': u'विकिपीडिया',
-            'sah': u'Бикипиидийэ',
+            'sah': u'Бикипиэдьийэ',
             'sk': u'Wikipédia',
             'sl': u'Wikipedija',
             'sr': u'Википедија',
@@ -148,11 +148,13 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikipedia talk', self.namespaces[5]['_default']],
             'ab': u'Обсуждение Wikipedia',
+            'ace': u'Pembicaraan Wikipedia',
             'af': u'Wikipediabespreking',
             'als': u'Wikipedia Diskussion',
             'am': u'Wikipedia ውይይት',
             'an': u'Descusión Wikipedia',
             'ar': u'نقاش ويكيبيديا',
+            'arc': u'ܘܝܩܝܦܕܝܐ talk',
             'arz': u'نقاش ويكيبيديا',
             'as': u'Wikipedia বার্তা',
             'ast': u'Uiquipedia alderique',
@@ -167,7 +169,7 @@ class Family(family.Family):
             'be-x-old': u'Абмеркаваньне Вікіпэдыя',
             'bg': u'Уикипедия беседа',
             'bm': u'Discussion Wikipedia',
-            'bn': u'উইকিপেডিয়া আলোচনা',
+            'bn': u'উইকিপিডিয়া আলোচনা',
             'bpy': u'উইকিপিডিয়া য়্যারী',
             'br': [u'Kaozeadenn Wikipedia', u'Discussion Wikipedia'],
             'bs': u'Razgovor s Wikipediom',
@@ -251,12 +253,14 @@ class Family(family.Family):
             'map-bms': u'Dhiskusi Wikipedia',
             'mdf': u'Википедиесь корхнема',
             'mg': u'Dinika amin\'ny Wikipedia',
+            'mhr': u'Обсуждение Wikipedia',
             'mk': u'Разговор за Википедија',
             'ml': u'വിക്കിപീഡിയ സംവാദം',
             'mn': u'Wikipedia-н хэлэлцүүлэг',
             'mr': u'विकिपीडिया चर्चा',
             'ms': u'Perbincangan Wikipedia',
             'mt': [u'Wikipedija diskussjoni', u'Wikipedija diskuti'],
+            'mwl': u'Wikipedia cumbersa',
             'myv': u'Википедиясь кортамось',
             'mzn': u'بحث Wikipedia',
             'nah': [u'Wikipedia tēixnāmiquiliztli', u'Wikipedia Discusión'],
@@ -282,7 +286,7 @@ class Family(family.Family):
             'ro': u'Discuţie Wikipedia',
             'ru': u'Обсуждение Википедии',
             'sa': u'विकिपीडियासंभाषणं',
-            'sah': u'Бикипиидийэ ырытыыта',
+            'sah': u'Бикипиэдьийэ ырытыыта',
             'sc': u'Cuntierra Wikipedia',
             'scn': u'Discussioni Wikipedia',
             'sd': u'Wikipedia بحث',
@@ -529,6 +533,7 @@ class Family(family.Family):
 
         self.namespaces[104] = {
             'als': u'Wort',
+            'ar': u'ملحق',
             'es': u'Anexo',
             'fr': u'Référence',
             'lt': u'Sąrašas',
@@ -536,6 +541,7 @@ class Family(family.Family):
 
         self.namespaces[105] = {
             'als': u'Wort Diskussion',
+            'ar': u'نقاش الملحق',
             'es': u'Anexo Discusión',
             'fr': u'Discussion Référence',
             'lt': u'Sąrašo aptarimas',
@@ -648,11 +654,15 @@ class Family(family.Family):
             'af':  [u'Dubbelsinnig', u'Disambig'],
             'als': [u'Begriffsklärung', u'Disambig'],
             'an':  [u'Desambig', u'Disambig'],
+            'ang': [u'Disambig', u'Geodis'],
             'ar':  [u'Disambig', u'توضيح'],
             'arc': [u'ܕ'],
+            'arz': [u'توضيح'],
             'ast': [u'Dixebra'],
             'av':  [u'Неоднозначность'],
+            'ay':  [u'Desambiguación'],
             'az':  [u'Dəqiqləşdirmə'],
+            'ba':  [u'Күп мәғәнәлелек'],
             'bar': [u'Begriffsklärung'],
             'be':  [u'Неадназначнасць', u'Disambig'],
             'be-x-old':  [u'Неадназначнасць', u'Неадназначнасьць', u'Disambig'],
@@ -664,6 +674,7 @@ class Family(family.Family):
                     u'acrònim', u'onomàstica'],
             'ceb': [u'Giklaro'],
             'cdo': [u'Gì-ngiê'],
+            'crh': [u'Çoq manalı', u'Disambig'],
             'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení',
                     u'Rozcestník - místopisné jméno', u'Disambig', u'Rozcestník - příjmení',
                     u'Rozcestník - sakrální stavba', u'Rozcestník - kostel',
@@ -672,6 +683,7 @@ class Family(family.Family):
             'cy':  [u'Anamrwysedd', u'Disambig', u'Gwahaniaethu'],
             'da':  [u'Flertydig'],
             'de':  [u'Begriffsklärung', u'BKS', u'Disambig'],
+            'dsb': [u'Wěcejwóznamowosć'],
             'el':  [u'Disambig', u'Αποσαφ', u'Αποσαφήνιση'],
             'en':  None,
             'eo':  [u'Apartigilo', u'Disambig'],
@@ -681,11 +693,14 @@ class Family(family.Family):
             'ext': [u'Desambiguáncia'],
             'fa':  [u'ابهام‌زدایی',u'ابهام زدایی'],
             'fi':  [u'Täsmennyssivu', u'Disambig'],
+            'fiu-vro': [u'Täpsüstüslehekülg'],
             'fo':  [u'Fleiri týdningar'],
             'fr':  None,
             'frp': [u'Homonimos'],
+            'fur': [u'Disambiguazion', u'Disambig'],
             'fy':  [u'Tfs', u'Neibetsjuttings'],
             'ga':  [u'Idirdhealú', u'Disambig'],
+            'gan': [u'扤清楚', u'Disambig'],
             'gl':  [u'Homónimos', u'Disambig'],
             'gv':  [u'Reddaghey'],
             'haw': [u'Huaʻōlelo puana like'],
@@ -717,6 +732,7 @@ class Family(family.Family):
             'ln':  [u'Bokokani'],
             'lt':  None,
             'mk':  [u'Појаснување', u'Disambig', u'Geodis'],
+            'mn':  [u'Салаа утгатай', u'Салаа', u'Disambig'],
             'mo':  [u'Дезамбигуйзаре', u'Disambig'],
             'ms':  [u'Nyahkekaburan', u'Disambig'],
             'mt':  [u'Diżambigwazzjoni'],
@@ -736,7 +752,7 @@ class Family(family.Family):
             'pt':  [u'Desambiguação', u'Disambig', u'Desambig'],
             'qu':  [u"Sut'ichana qillqa", u'Disambig', u'SJM'],
             'rmy': [u'Dudalipen'],
-            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis', u'Dez'],
+            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis', u'Dez', u'Dezamb'],
             'ru':  [u'Disambig', u'Неоднозначность', u'неоднозначность',
                     u'Многозначность', u'Фамилия'],
             'scn': [u'Disambigua', u'Disambig', u'Sigla2', u'Sigla3'],
@@ -751,6 +767,7 @@ class Family(family.Family):
             'sr':  [u'Вишезначна одредница', u'Disambig', u'Вишезначна',
                     u'Višeznačna odrednica'],
             'srn': [u'Dp'],
+            'stq': [u'Begriepskläärenge'],
             'su':  [u'Disambig'],
             'sv':  None,
             'sw':  [u'Maana'],
@@ -759,6 +776,7 @@ class Family(family.Family):
             'tg':  [u'Ибҳомзудоӣ', u'Disambig', u'Рафъи ибҳом', u'Disambiguation'],
             'th':  [u'แก้กำกวม', u'Disambig', u'คำกำกวม'],
             'tl':  [u'Paglilinaw', u'Disambig'],
+            'to':  [u'Fakaʻuhingakehe'],
             'tr':  [u'Anlam ayrım', u'Disambig', u'Anlam ayrımı',
                     u'Kişi adları (anlam ayrımı)', u'Yerleşim yerleri (anlam ayrımı)',
                     u'kısaltmalar (anlam ayrımı)'],
@@ -769,6 +787,7 @@ class Family(family.Family):
             'vls': [u'Db', u'Dp', u'Dpintro'],
             'vo':  [u'Telplänov'],
             'wa':  [u'Omonimeye', u'Disambig'],
+            'wo':  [u'Bokktekki'],
             'yi':  [u'באדייטען'],
             'zea': [u'dp', u'Deurverwiespagina'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页', u'消歧義'],
@@ -854,51 +873,51 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ab','af','ak','am','ang','arc','arz','as','av','ay','az','ba','bar','bcl',
-            'be-x-old','be','bg','bh','bi','bm','bo','bpy','bug','bxr','cbk-zam',
-            'cdo','ce','ch','chy','co','crh','cr','csb','cu','diq','dsb','dz',
-            'ee','eml','eu','ext','fa','ff','fj','fo','frp','fur','gan','ga','glk',
-            'gn','got','gu','gv','ha','hak','haw','hif','hi','hsb','ht','hu','hy',
-            'ia','id','ie','ig','ik','ilo','iow','is','iu','jbo','jv','kaa','kab','ka','kg','ki',
-            'kl','km','kn','ko','ks','ku','kv','kw','ky','lad','lbe','lg','li','lij',
-            'lmo','ln','lo','lv','map-bms','mdf','mg','mk','mn','mt','myv','my','mzn','nah',
-            'na','nap','nds-nl','ne','new','nl','nov','nrm','nv','ny','om','or','os','pam','pap',
-            'pa','pdc','pnt','ps','qu','rm','rmy','rn','roa-rup','roa-tara','sah',
-            'sa','sc','sco','sd','se','sg','sh','simple','si','sk','sm','sn','so',
-            'srn','stq','st','su','sw','szl','ta','te','tet','tg','ti','tn','to',
-            'tpi','ts','tt','tum','tw','ty','ug','uz','ve','vls','wa','war','wo','wuu',
-            'xal','xh','yi','yo','za','zh','zu'
+            'ab', 'ace', 'af', 'ak', 'als', 'am', 'ang', 'arc', 'arz', 'as', 'ast,', 'av', 'ay', 'az',
+            'ba', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
+            'cbk-zam', 'cdo', 'ce', 'ch', 'chr', 'chy', 'ckb', 'co', 'crh', 'cr', 'csb', 'cu', 'cv', 'cy',
+            'diq', 'dsb', 'dz', 'ee', 'el', 'eml', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
+            'ga', 'gan', 'glk', 'gn', 'got', 'gu', 'gv', 'ha', 'hak', 'haw', 'hif', 'hi', 'hsb', 'ht', 'hu', 'hy',
+            'ia', 'id', 'ie', 'ig', 'ik', 'ilo', 'iow', 'is', 'iu', 'ja', 'jbo', 'jv',
+            'kaa', 'kab', 'ka', 'kg', 'ki', 'kl', 'km', 'kn', 'ko', 'ks', 'ku', 'kv', 'kw', 'ky',
+            'lad', 'lb', 'lbe', 'lg', 'li', 'lij', 'lmo', 'ln', 'lo', 'lv',
+            'map-bms', 'mdf', 'mg', 'mhr', 'mk', 'mn', 'ms', 'mt', 'mwl', 'myv', 'my', 'mzn',
+            'nah', 'na', 'nap', 'nds-nl', 'ne', 'new', 'ng', 'nl', 'nov', 'nrm', 'nv', 'ny', 'om', 'or', 'os',
+            'pam', 'pap', 'pa', 'pdc', 'pnb', 'pnt', 'ps', 'qu', 'rm', 'rmy', 'rn', 'roa-rup', 'roa-tara', 'rw',
+            'sah', 'sa', 'sc', 'sco', 'sd', 'se', 'sg', 'sh', 'simple', 'si', 'sk', 'sm', 'sn', 'so', 'srn', 'stq', 'st', 'su', 'sw', 'szl',
+            'ta', 'te', 'tet', 'tg', 'ti', 'tk', 'tn', 'to', 'tpi', 'ts', 'tt', 'tum', 'tw', 'ty',
+            'udm', 'ug', 'uz', 've', 'vls', 'wa', 'war', 'wo', 'wuu',
+            'xal', 'xh', 'yi', 'yo', 'za', 'zea', 'zh', 'zh-classical', 'zh-min-nan', 'zu',
         ]
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
 
         self.nocapitalize = ['jbo',]
 
-
         # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic_revised = [
-            'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc', 'roa-rup',
+            'af', 'ak', 'ace', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc', 'roa-rup',
             'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm', 'bn',
             'zh-min-nan', 'nan', 'map-bms', 'jv', 'su', 'ba', 'be', 'be-x-old',
             'bh', 'bcl', 'bi', 'bar', 'bo', 'bs', 'br', 'bug', 'bg', 'bxr',
             'ca', 'ceb', 'cv', 'cs', 'ch', 'cbk-zam', 'ny', 'sn', 'tum', 'cho',
             'co', 'cy', 'da', 'dk', 'pdc', 'de', 'dv', 'nv', 'dsb', 'na', 'dz',
-            'mh', 'et', 'el', 'eml', 'en', 'myv', 'es', 'eo', 'ext', 'eu', 'ee',
-            'fa', 'hif', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd',
-            'gl', 'gan', 'ki', 'glk', 'gu', 'got', 'hak', 'xal', 'ko', 'ha',
+            'mh', 'mhr', 'et', 'el', 'eml', 'en', 'myv', 'es', 'eo', 'ext', 'eu',
+            'ee','fa', 'hif', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm',
+            'gd','gl', 'gan', 'ki', 'glk', 'gu', 'got', 'hak', 'xal', 'ko', 'ha',
             'haw', 'hy', 'hi', 'ho', 'hsb', 'hr', 'io', 'ig', 'ilo', 'bpy',
             'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it', 'he', 'kl',
             'kn', 'kr', 'pam', 'ka', 'ks', 'csb', 'kk', 'kw', 'rw', 'ky', 'rn',
             'sw', 'kv', 'kg', 'ht', 'ku', 'kj', 'lad', 'lbe', 'lo', 'la', 'lv',
             'to', 'lb', 'lt', 'lij', 'li', 'ln', 'jbo', 'lg', 'lmo', 'hu',
-            'mk', 'mg', 'ml', 'mt', 'mi', 'mr', 'arz', 'mzn', 'cdo', 'mdf',
+            'mk', 'mg', 'ml', 'mt', 'mi', 'mr', 'arz', 'mzn', 'cdo', 'mwl', 'mdf',
             'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nl', 'nds-nl', 'cr', 'ne',
             'new', 'ja', 'nap', 'ce', 'pih', 'no', 'nb', 'nn', 'nrm', 'nov',
-            'ii', 'oc', 'or', 'om', 'ng', 'hz', 'uz', 'pa', 'pi', 'pag', 'pap',
+            'ii', 'oc', 'mhr', 'or', 'om', 'ng', 'hz', 'uz', 'pa', 'pnb', 'pi', 'pag', 'pap',
             'ps', 'km', 'pms', 'nds', 'pl', 'pnt', 'pt', 'aa', 'kaa', 'crh',
             'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu', 'ru', 'sah', 'se', 'sa', 'sg',
             'sc', 'za', 'sco', 'stq', 'st', 'tn', 'sq', 'scn', 'si', 'simple',
-            'sd', 'ss', 'sk', 'sl', 'cu', 'szl', 'so', 'srn', 'sr', 'sh', 'fi',
+            'sd', 'ss', 'sk', 'sl', 'cu', 'szl', 'so', 'ckb', 'srn', 'sr', 'sh', 'fi',
             'sv', 'tl', 'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi',
             'ti', 'tg', 'tpi', 'tokipona', 'tp', 'chr', 'chy', 've', 'tr',
             'tk', 'tw', 'udm', 'uk', 'ur', 'ug', 'vec', 'vo', 'fiu-vro', 'wa',
@@ -932,14 +951,15 @@ class Family(family.Family):
             'hu': ['en'],
             'lb': self.alphabetic,
             'ms': self.alphabetic_revised,
-            'nds': ['nds-nl','pdt'] + self.alphabetic, # Note: as of 2008-02-24, pdt: (Plautdietsch) is still in the Incubator.
-            'nn': ['no','nb','sv','da'] + self.alphabetic,
+            'nds': ['nds-nl', 'pdt'] + self.alphabetic, # Note: as of 2008-02-24, pdt: (Plautdietsch) is still in the Incubator.
+            'nn': ['no', 'nb', 'sv', 'da'] + self.alphabetic,
             'no': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
-            'te': ['en','hi', 'kn', 'ta', 'ml'],
+            'te': ['en', 'hi', 'kn', 'ta', 'ml'],
+            'ur': ['ar', 'fa', 'en'] + self.alphabetic,
             'vi': self.alphabetic_revised,
-            'yi': ['en','he','de']
+            'yi': ['en', 'he', 'de']
         }
 
         self.obsolete = {
@@ -975,6 +995,7 @@ class Family(family.Family):
             '_default': {
                 'pt': [102],
                 'als': [104],
+                'ar': [104],
                 'en': [12],
                 'es': [104],
                 'fi': [4],
@@ -1098,7 +1119,7 @@ class Family(family.Family):
             return self.known_families
 
     def version(self, code):
-        return '1.16alpha'
+        return '1.16alpha-wmf'
 
     def dbName(self, code):
         # returns the name of the MySQL database
@@ -1120,3 +1141,16 @@ class Family(family.Family):
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
+
+    if config.SSL_connection:
+        def hostname(self, code):
+            return 'secure.wikimedia.org'
+
+        def protocol(self, code):
+            return 'https'
+
+        def scriptpath(self, code):
+            return '/%s/%s/w' % (self.name, code)
+
+        def nicepath(self, code):
+            return '/%s/%s/wiki/' % (self.name, code)

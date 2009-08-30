@@ -31,6 +31,7 @@ docuReplacements = {
 
 msg = {
     'ar': u'بوت: إصلاح التحويلات',
+    'cs': u'Robot opravil přesměrování',
     'en': u'Bot: Fixing redirects',
     'he': u'בוט: מתקן הפניות',
     'ja': u'ロボットによる:リダイレクト回避',
@@ -44,6 +45,7 @@ msg = {
 
 featured_articles = {
     'ar': u'ويكيبيديا:مقالات مختارة',
+    'cs': u'Wikipedie:Nejlepší články',
     'de': u'Wikipedia:Exzellente_Artikel',
     'en': u'Wikipedia:Featured_articles',
     'es': u'Wikipedia:Artículos_destacados',

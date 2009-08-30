@@ -34,10 +34,10 @@ Options:
 #
 __version__ = '$Id$'
 #
-import wikipedia, pagegenerators
+import wikipedia, pagegenerators, query
 Site = wikipedia.getSite()
 
-import os, re, time, locale, traceback, string, urllib, simplejson
+import os, re, time, locale, traceback, string, urllib
 
 try: #Get a constructor for the MD5 hash object
     import hashlib
@@ -77,6 +77,14 @@ messages = {
             'ArchiveSummary': u'%(count)d szakasz archiválása a(z) [[%(from)s]] lapról.',
             'OlderThanSummary': u'régebbi, mint',
             },
+
+        'ksh': {
+            'ArchiveFull': u'(DAT ASCHIHV ES VOLL)',
+            'InitialArchiveHeader': u'{{Sigg weed aschiveet}}',
+            'PageSummary': u'* %(count)d Schtöe) (%(why)s) en et Aschif %(archives)s jedonn.',
+            'ArchiveSummary': u'* %(count)d Schtö) vun [[%(from)s]] noh heh en et Aschihf jedonn.',
+            'OlderThanSummary': u'äer wi',
+             },
         'no': {
             'ArchiveFull': u'(ARKIV FULLT)',
             'InitialArchiveHeader': u'{{arkiv}}',
@@ -209,8 +217,7 @@ def generateTransclusions(Site, template, namespaces=[], eicontinue=''):
         qdata['eicontinue'] = eicontinue
     
     wikipedia.output(u'Fetching template transclusions...')
-    response, data = Site.postData(Site.apipath(), urllib.urlencode(qdata))
-    result = simplejson.loads(data)
+    response, result = query.GetData(qdata, Site, back_response = True)
     
     for page_d in result['query']['embeddedin']:
         yield wikipedia.Page(Site, page_d['title'])

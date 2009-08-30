@@ -81,6 +81,11 @@ Additionaly, these arguments can be used to restrict the bot to certain pages:
     -skipauto      use to skip all pages that can be translated automatically,
                    like dates, centuries, months, etc. (note: without ending colon)
 
+    -lack:         used as -lack:xx with xx a language code: only work on pages
+                   without links to language xx. You can also add a number nn
+                   lick -lack:xx:nn, so that the bot only works on pages with
+                   at least n interwiki links (the default value for n is 1).
+                       
 These arguments are useful to provide hints to the bot:
 
     -hint:         used as -hint:de:Anweisung to give the robot a hint
@@ -461,6 +466,7 @@ msg = {
     'th': (u'โรบอต ', u'เพิ่ม', u'ลบ', u'แก้ไข'),
     'uk': (u'робот ', u'додав', u'видалив', u'змінив'),
     'uz': (u'Bot ', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
+    'vec': (u'Bot: ', u'Zonto', u'Cavo', u'Canbio'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
     'war':(u'robot ', u'Gindugngan', u'Gintanggal', u'Ginliwat'),
@@ -505,6 +511,8 @@ class Global(object):
     nobackonly = False
     hintsareright = False
     contentsondisk = config.interwiki_contents_on_disk
+    lacklanguage = None
+    minlinks = 0
 
 class StoredPage(wikipedia.Page):
     """
@@ -744,6 +752,7 @@ class Subject(object):
         self.untranslated = None
         self.hintsAsked = False
         self.forcedStop = False
+        self.workonme = True
 
     def getFoundDisambig(self, site):
         """
@@ -1006,6 +1015,9 @@ class Subject(object):
             f.close()
 
     def askForHints(self, counter):
+        if not self.workonme:
+            # Do not ask hints for pages that we don't work on anyway
+            return
         if (self.untranslated or globalvar.askhints) and not self.hintsAsked and not self.originPage.isRedirectPage():
             # Only once!
             self.hintsAsked = True
@@ -1137,6 +1149,13 @@ class Subject(object):
                 if globalvar.untranslatedonly:
                     # Ignore the interwiki links.
                     iw = ()
+                if globalvar.lacklanguage:
+                    if globalvar.lacklanguage in [link.site().language() for link in iw]:
+                        iw = ()
+                        self.workonme = False
+                if len(iw) < globalvar.minlinks:
+                    iw = ()
+                    self.workonme = False
 
             elif globalvar.autonomous and duplicate:
                 
@@ -1323,6 +1342,8 @@ class Subject(object):
            be told to make another get request first."""
         if not self.isDone():
             raise "Bugcheck: finish called before done"
+        if not self.workonme:
+            return
         if self.forcedStop:
             wikipedia.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
@@ -1892,19 +1913,19 @@ def compareLanguages(old, new, insite):
 
     head, add, rem, mod = wikipedia.translate(insite.lang, msg)
 
-    addtrail = u''
-    remtrail = u''
-    modtrail = u''
-    trail = u''
+    sep = u''
 
     if adding:
-        mods += (add + colon + comma.join([fmt(new, x) for x in adding]) + addtrail)
+        mods += (add + colon + comma.join([fmt(new, x) for x in adding]))
+        sep = u' '
     if removing:
-        mods += (rem + colon + comma.join([fmt(old, x) for x in removing]) + remtrail)
+        mods += (sep + rem + colon + comma.join([fmt(old, x) for x in removing]))
+        sep = u' '
     if modifying:
-        mods += (mod + colon + comma.join([fmt(new, x) for x in modifying]) + modtrail)
+        mods += (sep + mod + colon + comma.join([fmt(new, x) for x in modifying]))
+        sep = u' '
     if mods:
-        mcomment = head + mods + trail
+        mcomment = head + mods
     return mods, mcomment, adding, removing, modifying
 
 def readWarnfile(filename, bot):
@@ -2079,6 +2100,13 @@ if __name__ == "__main__":
                 globalvar.minsubjects = int(arg[7:])
             elif arg.startswith('-query:'):
                 globalvar.maxquerysize = int(arg[7:])
+            elif arg.startswith('-lack:'):
+                remainder = arg[6:].split(':')
+                globalvar.lacklanguage = remainder[0]
+                if len(remainder) > 1:
+                    globalvar.minlinks = int(remainder[1])
+                else:
+                    globalvar.minlinks = 1
             elif arg == '-back':
                 globalvar.nobackonly = True
             else:

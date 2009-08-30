@@ -44,6 +44,8 @@ This script understands the following command-line arguments:
 
     -untagged[:#]       - Use daniel's tool as generator ( http://toolserver.org/~daniel/WikiSense/UntaggedImages.php )
 
+    -nologerror         - If given, this option will disable the error that is risen when the log is full.
+
 ---- Istructions for the real-time settings  ----
 * For every new block you have to add:
 
@@ -254,10 +256,10 @@ bot_list = {
             'de'     :[u'ABFbot'],
             'en'     :[u'OrphanBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
-            'ja'     :[u'alexbot'],
+            'ja'     :[u'Alexbot'],
             'ko'     :[u'Kwjbot IV'],
             'ta'     :[u'TrengarasuBOT'],
-            'zh'     :[u'alexbot'],
+            'zh'     :[u'Alexbot'],
             }
 
 # The message that the bot will add the second time that find another license problem.
@@ -541,9 +543,10 @@ class EmailSender(wikipedia.Page):
 # Here there is the main class.
 class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
-                 duplicatesReport = False):
+                 duplicatesReport = False, logFullError = True):
         """ Constructor, define some global variable """
         self.site = site
+        self.logFullError = logFullError
         self.logFulNumber = logFulNumber
         self.settings = wikipedia.translate(self.site, page_with_settings)
         self.rep_page = wikipedia.translate(self.site, report_page)
@@ -950,7 +953,7 @@ class main:
                 if len(images_to_tag_list) != 0 and not only_report:
                     already_reported_in_past = self.countEdits(u'File:%s' % images_to_tag_list[-1], self.botolist)
                     image_to_resub = images_to_tag_list[-1]
-                    from_regex = r'\n\*\[\[:%s\]\]' % re.escape(self.image_namespace + image_to_resub)
+                    from_regex = r'\n\*\[\[:File:%s\]\]' % re.escape(self.convert_to_url(self.imageName))
                     # Delete the image in the list where we're write on
                     text_for_the_report = re.sub(from_regex, '', text_for_the_report)
                     # if you want only one edit, the edit found should be more than 0 -> num - 1
@@ -990,7 +993,11 @@ class main:
         except wikipedia.IsRedirectPage:            
             text_get = another_page.getRedirectTarget().get()
         if len(text_get) >= self.logFulNumber:
-            raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
+            if self.logFullError:
+                raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
+            else:
+                wikipedia.output(u"The log page (%s) is full! Please delete the old files reported. Skip!" % another_page.title())
+                return True # Don't report, but continue with the check (we don't now if this is the first time we check this file or not)
         pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.DOTALL)
@@ -1497,6 +1504,7 @@ def checkbot():
     duplicatesActive = False # Use the duplicate option
     duplicatesReport = False # Use the duplicate-report option
     sendemailActive = False # Use the send-email
+    logFullError = True # Raise an error when the log is full
 
     # Here below there are the parameters.
     for arg in wikipedia.handleArgs():
@@ -1512,6 +1520,8 @@ def checkbot():
                 time_sleep = int(arg[6:])
         elif arg == '-break':
             repeat = False
+        elif arg == '-nologerror':
+            logFullError = False
         elif arg == '-commons':
             commonsActive = True
         elif arg.startswith('-duplicates'):
@@ -1623,7 +1633,8 @@ def checkbot():
     # Main Loop
     while 1:
         # Defing the Main Class.
-        mainClass = main(site, sendemailActive = sendemailActive, duplicatesReport = duplicatesReport)
+        mainClass = main(site, sendemailActive = sendemailActive,
+                         duplicatesReport = duplicatesReport, logFullError = logFullError)
         # Untagged is True? Let's take that generator
         if untagged == True:
             generator =  mainClass.untaggedGenerator(projectUntagged, limit)

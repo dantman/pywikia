@@ -66,6 +66,7 @@ Template = {
             'ar':u'{{يتيمة|تاريخ={{نسخ:اسم_شهر}} {{نسخ:عام}}}}',
             'en':u'{{Orphan|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}',
             'it':u'{{O||mese={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}',
+            'ja':u'{{孤立|{{subst:DATE}}}}',
             'zh':u'{{subst:Orphan/auto}}',
             }
 
@@ -74,6 +75,7 @@ commento = {
             'ar':u'بوت: صفحة يتيمة، إضافة قالب',
             'en':u'Bot: Orphan page, add template',
             'it':u'Bot: Voce orfana, aggiungo template {{O}}',
+            'ja':u'ロボットによる: 孤立したページへのテンプレート貼付け',
             'zh':u'機器人: 本頁的鏈入頁面太少',
            }
 
@@ -83,6 +85,7 @@ commenttodisambig = {
            'ar':u'بوت: إضافة صفحة توضيح',
            'en':u'Bot: Adding a disambig page',
            'it':u'Bot: Aggiungo una disambigua',
+           'ja':u'ロボットによる: 曖昧さ回避の追加',
            'zh':u'機器人: 增加消歧義頁面',
            }
 
@@ -93,6 +96,7 @@ exception = {
             'ar': [ur'\{\{(?:قالب:|)(يتيمة)[\|\}]'],
             'en': [r'\{\{(?:template:|)(orphan)[\|\}]', r'\{\{(?:template:|)(wi)[\|\}]'],
             'it': [r'\{\{(?:template:|)(o)[\|\}]'],
+            'ja': [ur'\{\{(?:template:|)(孤立)[\|\}]'],
             'zh': [r'\{\{(?:template:|)(orphan)[\|\}]'],
             }
 

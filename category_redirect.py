@@ -14,9 +14,7 @@ are taken into account.
 """
 __version__ = '$Id$'
 
-import wikipedia, catlib
-import pagegenerators
-import simplejson
+import wikipedia, catlib, query, pagegenerators
 import cPickle
 import math
 import re
@@ -53,6 +51,7 @@ class CategoryRedirectBot(object):
         self.cat_redirect_cat = {
             'wikipedia': {
                 'ar': u"تصنيف:تحويلات تصنيفات ويكيبيديا",
+                'cs': u"Kategorie:Zastaralé kategorie",
                 'da': "Kategori:Omdirigeringskategorier",
                 'en': "Category:Wikipedia category redirects",
                 'hu': "Kategória:Kategóriaátirányítások",
@@ -73,6 +72,7 @@ class CategoryRedirectBot(object):
                 'ar': (u"تحويل تصنيف",
                        u"Category redirect",
                        u"تحويلة تصنيف"),
+                'cs': (u"Zastaralá kategorie"),
                 'da': ("Kategoriomdirigering",),
                 'en': ("Category redirect",
                        "Category redirect3",
@@ -115,47 +115,33 @@ class CategoryRedirectBot(object):
             }
 
         self.move_comment = {
-            'ar':
-u"روبوت: نقل الصفحات من تصنيف محول",
-            'da': 
-u"Robot: flytter sider ud af omdirigeringskategorien",
-            'en':
-u"Robot: moving pages out of redirected category",
-            'hu':
-u"Bot: Lapok automatikus áthelyezése átirányított kategóriából",
-            'ja':
-u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
-            'ksh':
-u"Bot: Sigk uß en ömjeleidt Saachjropp eruß jesammdt.",
-            'no':
-u"Robot: Flytter sider ut av omdirigeringskategori",
-            'commons':
-u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])',
-            'zh':
-u'机器人：改变已重定向分类中的页面的分类',
+            'ar': u"روبوت: نقل الصفحات من تصنيف محول",
+            'cs': u'Robot přesunul stránku ze zastaralé kategorie',
+            'da': u"Robot: flytter sider ud af omdirigeringskategorien",
+            'en': u"Robot: moving pages out of redirected category",
+            'hu': u"Bot: Lapok automatikus áthelyezése átirányított kategóriából",
+            'ja': u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
+            'ksh': u"Bot: Sigk uß en ömjeleidt Saachjropp eruß jesammdt.",
+            'no': u"Robot: Flytter sider ut av omdirigeringskategori",
+            'commons': u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])',
+            'zh': u'机器人：改变已重定向分类中的页面的分类',
         }
 
         self.redir_comment = {
-            'ar':
-u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
-            'da':
-u"Robot: tilføjer omdirigeringsskabelon for vedligeholdelse",
-            'en':
-u"Robot: adding category redirect template for maintenance",
-            'hu':
-u"Bot: kategóriaátirányítás sablon hozzáadása",
-            'ja':
-u"ロボットによる: 移行中のカテゴリとしてタグ付け",
-            'ksh':
-u"Bot: Ömleidungsschalbon dobeijedonn.",
-            'no':
-u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
-            'zh':
-u"机器人: 增加分类重定向模板，用于维护",
+            'ar':u"روبوت: إضافة قالب تحويل تصنيف للصيانة",
+            'cs':u'Robot označil kategorii jako zastaralou',
+            'da':u"Robot: tilføjer omdirigeringsskabelon for vedligeholdelse",
+            'en':u"Robot: adding category redirect template for maintenance",
+            'hu':u"Bot: kategóriaátirányítás sablon hozzáadása",
+            'ja':u"ロボットによる: 移行中のカテゴリとしてタグ付け",
+            'ksh':u"Bot: Ömleidungsschalbon dobeijedonn.",
+            'no':u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
+            'zh':u"机器人: 增加分类重定向模板，用于维护",
         }
 
         self.dbl_redir_comment = {
             'ar': u"روبوت: تصليح تحويلة مزدوجة",
+            'cs': u'Robot opravil dvojité přesměrování',
             'da': u"Robot: retter dobbelt omdirigering",
             'en': u"Robot: fixing double-redirect",
             'fr': u"Robot : Correction des redirections doubles",
@@ -168,6 +154,7 @@ u"机器人: 增加分类重定向模板，用于维护",
 
         self.maint_comment = {
             'ar': u"بوت صيانة تحويل التصنيف",
+            'cs': u'Údržba přesměrované kategorie',
             'da': u"Bot til vedligeholdelse af kategoromdirigeringer",
             'en': u"Category redirect maintenance bot",
             'fr': u"Robot de maintenance des redirection de catégorie",
@@ -313,11 +300,9 @@ aanjepaß krijje:
 
     def query_results(self, **data):
         """Iterate results from API action=query, using data as parameters."""
-        addr = self.site.apipath()
         querydata = {'action': 'query',
-                     'format': 'json',
                      'maxlag': str(wikipedia.config.maxlag)}
-        querydata.update(data)
+        querydata = query.CombineParams(querydata, data)
         if not querydata.has_key("action")\
                 or not querydata['action'] == 'query':
             raise ValueError(
@@ -325,19 +310,18 @@ aanjepaß krijje:
                 )
         waited = 0
         while True:
-            response, data = self.site.postForm(addr, querydata)
-            if response.status != 200:
-                # WARNING: if the server is down, this could
-                # cause an infinite loop
-                wikipedia.output(u"HTTP error %i received; retrying..."
-                                  % response.status)
-                time.sleep(5)
-                continue
-            if data.startswith(u"unknown_action"):
-                e = {'code': data[:14], 'info': data[16:]}
-                raise APIError(e)
             try:
-                result = simplejson.loads(data)
+                response, result = query.GetData(predata, self,site back_response = True)
+                if response.status != 200:
+                    # WARNING: if the server is down, this could
+                    # cause an infinite loop
+                    wikipedia.output(u"HTTP error %i received; retrying..."
+                                      % response.status)
+                    time.sleep(5)
+                    continue
+                if data.startswith(u"unknown_action"):
+                    e = {'code': data[:14], 'info': data[16:]}
+                    raise APIError(e)
             except ValueError:
                 # if the result isn't valid JSON, there must be a server
                 # problem.  Wait a few seconds and try again

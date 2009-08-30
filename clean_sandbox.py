@@ -26,6 +26,7 @@ import time
 
 content = {
     'ar': u'{{من فضلك اترك هذا السطر ولا تعدله (عنوان ساحة التجربة)}}\n<!-- مرحبا! خذ راحتك في تجربة مهارتك في التنسيق والتحرير أسفل هذا السطر. هذه الصفحة لتجارب التعديل ، سيتم تفريغ هذه الصفحة كل 6 ساعات. -->',
+    'cs': u'{{subst:/uhrabat}}',
     'da': u'{{subst:Sandkasse tekst}}',
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
     'en': u'{{Please leave this line alone (sandbox heading)}}\n<!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
@@ -41,6 +42,7 @@ content = {
     'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
     'commons': u'{{Sandbox}}\n<!-- Please edit only below this line. -->',
+    'ru': u'{{/Пишите ниже}}\n<!-- Не удаляйте, пожалуйста, эту строку, тестируйте ниже -->',
     'sr': u'{{песак}}\n<!-- Молимо, испробавајте испод ове линије. Хвала. -->',
     'sv': u'{{subst:Sandlådan}}',
     'th': u'{{กระบะทราย}}\n<!-- กรุณาอย่าแก้ไขบรรทัดนี้ ขอบคุณครับ/ค่ะ -- Please leave this line as they are. Thank you! -->',
@@ -49,6 +51,7 @@ content = {
 
 msg = {
     'ar': u'روبوت: هذه الصفحة سيتم تفريغها تلقائيا',
+    'cs': u'Uhrabání pískoviště',
     'da': u'Bot: Nyt sand (fra[[Skabelon:Sandkasse tekst]])',
     'de': u'Bot: Setze Seite zurück.',
     'en': u'Robot: Automatically cleaned',
@@ -63,6 +66,7 @@ msg = {
     'pl': u'Robot czyści brudnopis',
     'pt': u'Bot: Limpeza da página de testes',
     'commons': u'Bot: This page will automatically be cleaned.',
+    'ru': u'Бот: очистка песочницы',
     'sr': u'Чишћење песка',
     'sv': u'Robot krattar sandlådan.',
     'th': u'โรบอต: กำลังจะเก็บกวาดหน้านี้โดยอัตโนมัติ',
@@ -71,6 +75,7 @@ msg = {
 
 sandboxTitle = {
     'ar': u'ويكيبيديا:ساحة التجربة',
+    'cs': u'Wikipedie:Pískoviště',
     'da': u'Wikipedia:Sandkassen',
     'de': u'Wikipedia:Spielwiese',
     'en': u'Wikipedia:Sandbox',
@@ -86,6 +91,7 @@ sandboxTitle = {
     'pl': u'Wikipedia:Brudnopis',
     'pt': u'Wikipedia:Página de testes',
     'commons': u'Commons:Sandbox',
+    'ru': u'Википедия:Песочница',
     'sr': u'Википедија:Песак',
     'sv': u'Wikipedia:Sandlådan',
     'th': u'วิกิพีเดีย:ทดลองเขียน',

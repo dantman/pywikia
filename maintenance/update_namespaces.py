@@ -3,7 +3,7 @@ Check the family files against the live site, and updates
 both the generic family.py and the site-specific family.
 
 options:
-    -nomain        Don't modify the main family.py
+    -upmain        Modify the main family.py, too.
     -wikimedia     Update all the wikimedia families
 """
 #
@@ -23,6 +23,7 @@ import re
 
 r_namespace_section_main = r'(?s)self\.namespaces\s*\=\s*\{.*\s+%s\s*:\s*\{(.*?)\}'
 r_namespace_section_sub = r'(?s)self\.namespaces\[%s]\s*\=\s*\{(.*?)\}'
+r_namespace_section_once = r'(?s)self\.namespaces\[%s]\[\'%s\']\s*\=\s*\(.*?)'
 
 r_string = '[u]?[r]?[\'"].*?[\'"]'
 r_list = '\\[.*?\\]'
@@ -49,6 +50,7 @@ def update_family(family, changes):
             output(u'Setting namespace[%s] for %s to %s' % (namespace_id, lang, namespace_name))
             
             namespace_section = re.search(r_namespace_section % namespace_id, family_text)
+            #namespace_section2 = re.search(r_namespace_section_once % (namespace_id, lang) ,family_text)
             if not namespace_section:
                 continue
             namespace_section_text = namespace_section.group(1)
@@ -90,7 +92,7 @@ def test_data(_test_data):
         return True
     return True
     
-def check_and_update(families, update_main):
+def check_and_update(families, update_main = False):
     for family in families:
         family = wikipedia.Family(family)
         result = family_check.check_family(family)
@@ -101,17 +103,21 @@ def check_and_update(families, update_main):
     
 if __name__ == '__main__':
     try:
-        update_main_family = True
+        update_main_family = False
         update_wikimedia = False
         for arg in wikipedia.handleArgs():
-            if  arg == '-nomain':
-                update_main_family = False
+            if  arg == '-upmain':
+                update_main_family = True
             elif arg == '-wikimedia':
                 update_wikimedia = True
 
         if update_wikimedia:
-            families = ['wikipedia', 'wikinews', 'wikibooks', 'wikiquote', 
-                        'wikisource', 'wikiversity', 'wiktionary']
+            check_and_update( ['wikipedia'], True)
+            families = ['wiktionary', 'wikiquote','wikisource', 
+                'wikibooks', 'wikinews', 'wikiversity','meta', 'commons',
+                'mediawiki', 'species', 'incubator', 'test'
+            ]
+            update_main_family = False
         else:
             families = [ wikipedia.default_family ]
         check_and_update(families, update_main_family)

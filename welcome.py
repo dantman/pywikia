@@ -3,7 +3,7 @@
 """
 Script to welcome new users. This script works out of the box for Wikis that
 have been defined in the script. It is currently used on the Dutch, Norwegian,
-Arabian, Albanian, Italian Wikipedia, Wikimedia Commons and English Wikiquote.
+Albanian, Italian Wikipedia, Wikimedia Commons and English Wikiquote.
 
 Note: You can download the latest version available
 from here: http://botwiki.sno.cc/wiki/Python:Welcome.py
@@ -11,7 +11,6 @@ from here: http://botwiki.sno.cc/wiki/Python:Welcome.py
 Ensure you have community support before running this bot!
 
 URLs to current implementations:
-* Arabic Wikinews: http://ar.wikinews.org/wiki/ويكي_الأخبار:سجل_الترحيب
 * Wikimedia Commons: http://commons.wikimedia.org/wiki/Commons:Welcome_log
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
@@ -498,23 +497,16 @@ def blocked(username):
     #action=query&list=users&ususers=Filnik&usprop=blockinfo
     """
     Function that detects if a user is currently blocked or not.
-    """
-  
+    """  
     params = {
-        'action'    :'query',
-        'list'      :'users',
-        'ususers'   :username,
-        'usprop'    :'blockinfo',
-        }
+        'action': 'query',
+        'list': 'users',
+        'ususers': username,
+        'usprop': 'blockinfo',
+    }
 
-    data = query.GetData(params,
-                    useAPI = True, encodeTitle = False)
     # If there's not the blockedby parameter (that means the user isn't blocked), it will return False otherwise True.
-    try:
-        blockedBy = data['query']['users'][0]['blockedby']
-    except KeyError:
-        return False # No he's not
-    return True # Yes is blocked
+    return query.GetData(params, encodeTitle = False)['query']['users'][0].has_key('blockedby')
 
 def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
     """ Function to load the random signatures. """
@@ -967,7 +959,11 @@ def main(settingsBot):
             else:
                 strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
             wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
-            time.sleep(time_variable)
+            try:
+                time.sleep(time_variable)
+            except KeyboardInterrupt:
+                recursive = False
+                break
         # If not recursive, break.
         elif recursive == False:
             yield number_user

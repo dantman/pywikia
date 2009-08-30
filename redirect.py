@@ -71,6 +71,7 @@ __version__='$Id$'
 msg_double={
     'ar': u'روبوت: تصليح تحويلة مزدوجة',
     'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
+    'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня',
     'br': u'Kempennet adkas doubl gant robot',
     'de': u'Bot: Korrigiere doppelten Redirect',
     'en': u'Robot: Fixing double redirect',
@@ -113,6 +114,7 @@ msg_double={
 # Reason for deleting broken redirects
 reason_broken={
     'ar': u'روبوت: هدف التحويلة غير موجود',
+    'be-x-old': u'Робат: мэта перанакіраваньня не існуе',
     'de': u'Bot: Weiterleitungsziel existiert nicht',
     'en': u'Robot: Redirect target doesn\'t exist',
     'es': u'Robot: La página a la que redirige no existe',
@@ -146,7 +148,7 @@ reason_broken={
 sd_tagging_sum = {
     'ar': u'روبوت: وسم للحذف السريع',
     'en': u'Robot: Tagging for speedy deletion',
-	'it': u'Bot: +Da cancellare subito',
+    'it': u'Bot: +Da cancellare subito',
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
     'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
     'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
@@ -159,11 +161,11 @@ sd_tagging_sum = {
 sd_template = {
     'ar':u'{{شطب|تحويلة مكسورة}}',
     'en':u'{{db-r1}}',
-	'it':u'{{Cancella subito|9}}',
+    'it':u'{{Cancella subito|9}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
-    'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~',
-    'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~',
-    'war': u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~',
+    'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~\n\n',
+    'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~\n\n',
+    'war': u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~\n\n',
     'zh':u'{{delete|R1}}',
 }
 

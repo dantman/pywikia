@@ -198,7 +198,9 @@ nowCommonsMessage = {
     'nl': u'Dit bestand staat nu op [[w:nl:Wikimedia Commons|Wikimedia Commons]].',
     'pl': u'Plik jest teraz dostępny na Wikimedia Commons.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
+    'ru': u'Файл теперь доступен на Викискладе.',
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
+    'zh': u'檔案已存在於維基共享資源。',
 }
 
 moveToCommonsTemplate = {
@@ -224,6 +226,8 @@ imageMoveMessage = {
     'en': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
     'hu': u'[[:File:%s|Kép]] átmozgatva a [[:commons:Image:%s|Commons]]ba.',
     'nl': u'[[:File:%s|Bestand]] is verplaatst naar [[:commons:Image:%s|commons]].',
+    'ru': u'[[:File:%s|Файл]] перемещён на [[:commons:Image:%s|Викисклад]].',
+    'zh': u'[[:File:%s|本檔案]]已移至[[:commons:Image:%s|維基共享資源]]',
 }
 
 def pageTextPost(url,parameters):

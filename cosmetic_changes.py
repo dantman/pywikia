@@ -42,6 +42,7 @@ docuReplacements = {
 # Summary message when using this module as a stand-alone script
 msg_standalone = {
     'ar': u'روبوت: تغييرات تجميلية',
+    'be-x-old': u'Робат: касмэтычныя зьмены',
     'bg': u'Робот козметични промени',
     'ca': u'Robot: Canvis cosmètics',
     'da': u'Bot: Kosmetiske ændringer',
@@ -88,6 +89,7 @@ msg_standalone = {
 # cosmetic changes are made on the fly
 msg_append = {
     'ar': u'; تغييرات تجميلية',
+    'be-x-old': u'; касмэтычныя зьмены',
     'bg': u'; козметични промени',
     'ca': u'; canvis cosmètics',
     'da': u'; kosmetiske ændringer',

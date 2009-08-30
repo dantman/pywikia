@@ -45,7 +45,7 @@ import subprocess, tempfile, os
 
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
-            'it':u'Utente:Màrço27Bot/EditThisPageToStopMe',
+            'it':u'Utente:Marco27Bot/EditThisPageToStopMe',
             'ko':u'사용자:GrassnBreadRefBot/EditThisPageToStopMe1',
             'hu':'User:Damibot/EditThisPageToStopMe',
             'en':u'User:DumZiBoT/EditThisPageToStopMe',
@@ -57,7 +57,7 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
-        'it':u'Bot: Sistemo note con collegamenti esterni senza titolo ([[Utente:Màrço27Bot/refLinks.py|documentazione]])',
+        'it':u'Bot: Sistemo note con collegamenti esterni senza titolo ([[Utente:Marco27Bot/refLinks.py|documentazione]])',
         'en':u'Bot: Converting bare references, using ref names to avoid duplicates, see [[User:DumZiBoT/refLinks|FAQ]]',
 }
 

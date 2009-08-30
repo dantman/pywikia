@@ -1,1 +1,1 @@
-__version__ = '$Id: $'
+__version__ = '$Id$'

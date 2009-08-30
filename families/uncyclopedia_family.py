@@ -2,8 +2,6 @@
 import config, family, urllib
 
 #
-# uncyclopedia_family.py March 21, 2008 for pywikipediabot
-#
 # The Uncyclomedia family, assorted encyclopedi.as from the Uncyclopedia series.
 # This file contains a full set of (currently) fifty languages, excluding forks,
 # redirects and mirrors.
@@ -20,385 +18,1098 @@ class Family(family.Family):
         self.name = 'uncyclopedia'
 
         self.langs = {
-        'ar': 'beidipedia.wikia.com',
-        'ast':'nunyepedia.wikia.com',
-        'bn': 'bn.uncyc.org',
-        'bg': 'bg.oxypedia.net',
-        'bs': 'bs.neciklopedija.org',
-        'ca': 'valenciclopedia.wikia.com',
-        'common': 'commons.uncyclomedia.org',
-        'cs': 'necyklopedie.wikia.com',
-        'cy': 'cy.uncyclopedia.org.uk',
-        'da': 'spademanns.wikia.com',
-        'de': 'de.uncyclopedia.org',
-        'el': 'frikipaideia.wikia.com',
-        'en': 'uncyclopedia.org',
-        'eo': 'neciklopedio.wikia.com',
-        'es': 'inciclopedia.wikia.com',
-        'et': 'ebatsuklopeedia.org',
-        'fa': 'fa.uncyc.org',
-        'fi': 'hikipedia.info',
-        'fr': 'desencyclopedie.wikia.com',
-        'got':'unsaiklopedia.org',
-        'he': 'eincyclopedia.wikia.com',
-        'hr': 'hr.neciklopedija.org',
-        'hu': 'unciklopedia.org',
-        'id': 'tolololpedia.wikia.com',
-        'info': 'uncyclopedia.info',
-        'it': 'nonciclopedia.wikia.com',
-        'ja': 'ansaikuropedia.org',
-        'jv': 'ndhablek.wikia.com',
-        'ko': 'uncyclopedia.kr',
-        'la': 'uncapaedia.wikia.com',
-        'lb': 'kengencyclopedia.org',
-        'lt': 'juokopedija.org',
-        'lv': 'lv.neciklopedija.org',
-        'meta': 'meta.uncyclomedia.org',
-        'mg': 'hatsiklopedia.org',
-        'mk': 'mk.neciklopedija.org',
-        'nl': 'oncyclopedia.net',
-        'nn': 'ikkepedia.org',
-        'no': 'ikkepedia.org',
-        'pl': 'nonsensopedia.wikia.com',
-        'pt': 'desciclopedia.ws',
-        'ro': 'uncyclopedia.ro',
-        'ru': 'absurdopedia.wikia.com',
-        'sk': 'necyklopedia.wikia.com',
-        'sl': 'butalopedija.org',
-        'sr': 'sr.neciklopedija.org',
-        'su': 'su.goblogpedia.wikia.com',
-        'sv': 'psyklopedin.org',
-        'th': 'th.uncyclopedia.info',
-        'tr': 'yansiklopedi.org',
-        'uk': 'inciklopedia.org',
-        'yi': 'keinziklopedie.wikia.com',
-        'zh-hk': 'uncyclopedia.hk',
-        'zh-tw':'uncyclopedia.tw',
-        'zh': 'zh.uncyclopedia.wikia.com',
+            'ar': 'beidipedia.wikia.com',
+            'ast':'nunyepedia.wikia.com',
+            'bg': 'bg.oxypedia.net',
+            'bn': 'bn.uncyc.org',
+            'bs': 'bs.neciklopedija.org',
+            'ca': 'valenciclopedia.wikia.com',
+            'common': 'commons.uncyclomedia.org',
+            'cs': 'necyklopedie.wikia.com',
+            #'cy': 'cy.uncyclopedia.org.uk',
+            'da': 'spademanns.wikia.com',
+            'de': 'de.uncyclopedia.org',
+            'el': 'frikipaideia.wikia.com',
+            'en': 'uncyclopedia.wikia.com',
+            'eo': 'neciklopedio.wikia.com',
+            'es': 'inciclopedia.wikia.com',
+            'et': 'ebatsuklopeedia.org',
+            'fa': 'fa.uncyc.org',
+            'fi': 'hikipedia.info',
+            'fr': 'desencyclopedie.wikia.com',
+            'ga': 'ga.uncyc.org',
+            'got':'unsaiklopedia.org',
+            'he': 'eincyclopedia.wikia.com',
+            'hr': 'hr.neciklopedija.org',
+            'hu': 'unciklopedia.org',
+            'id': 'tolololpedia.wikia.com',
+            'info': 'uncyclopedia.info',
+            'it': 'nonciclopedia.wikia.com',
+            'ja': 'ansaikuropedia.org',
+            'jv': 'ndhablek.wikia.com',
+            'ka': 'anciklopedia.org',
+            'km': 'km.uncyclopedia.info',
+            'ko': 'uncyclopedia.kr',
+            'la': 'uncapaedia.wikia.com',
+            'lb': 'kengencyclopedia.org',
+            'li': 'kwatsjpedia.org',
+            'lo': 'lo.uncyclopedia.info',
+            'lt': 'juokopedija.org',
+            'lv': 'lv.neciklopedija.org',
+            'meta': 'meta.uncyclomedia.org',
+            'mg': 'hatsiklopedia.org',
+            'mk': 'mk.neciklopedija.org',
+            'mo': 'neciclopedia.org',
+            'ms': 'bodohpedia.org',
+            'nl': 'oncyclopedia.net',
+            'nn': 'ikkepedia.org',
+            'no': 'ikkepedia.org',
+            'oc': 'oisquipedia.org',
+            'pl': 'nonsensopedia.wikia.com',
+            'pt': 'desciclopedia.org',
+            'ro': 'uncyclopedia.ro',
+            'ru': 'absurdopedia.wikia.com',
+            'sk': 'necyklopedia.wikia.com',
+            'sl': 'butalopedija.org',
+            'sr': 'sr.neciklopedija.org',
+            'su': 'su.goblogpedia.wikia.com',
+            'sv': 'psyklopedin.org',
+            'th': 'th.uncyclopedia.info',
+            'tl': 'pekepedia.net',
+            'tr': 'yansiklopedi.org',
+            'uk': 'inciklopedia.org',
+            'yi': 'keinziklopedie.wikia.com',
+            'zh-hk': 'uncyclopedia.hk',
+            'zh-tw':'uncyclopedia.tw',
+            'zh': 'zh.uncyclopedia.wikia.com',
+            'zombie': 'zombie.pedia.ws',
         }
 
         #
         # project namespaces & custom namespace lists
         #
 
-        self.namespaces[-2]['ar'] = u'ملف'
-        self.namespaces[-2]['bs'] = u'Medija'
-        self.namespaces[-2]['he'] = u'מדיה'
-        self.namespaces[-2]['hu'] = u'Media'
-        self.namespaces[-2]['th'] = u'สื่อ'
-        self.namespaces[-2]['zh-hk'] = u'媒體'
-        self.namespaces[-2]['zh-tw'] = u'媒體'
+        self.namespaces[-2] = {
+            '_default': u'Media',
+            'ar': u'ميديا',
+            'bg': u'Медия',
+            'bs': u'Medija',
+            'cs': u'Média',
+            'el': u'Μέσο',
+            'et': u'Meedia',
+            'fa': u'مدیا',
+            'fr': u'Média',
+            'ga': u'Meán',
+            'he': u'מדיה',
+            'hr': u'Mediji',
+            'hu': u'Média',
+            'ka': u'მედია',
+            'km': u'មេឌា',
+            'ko': u'미디어',
+            'lo': u'ສື່ອ',
+            'lt': u'Medija',
+            'mk': u'Медија',
+            'nn': u'Medium',
+            'no': u'Medium',
+            'oc': u'Mèdia',
+            'ru': u'Медиа',
+            'sk': u'Médiá',
+            'sr': u'Медија',
+            'su': u'Média',
+            'th': u'สื่อ',
+            'uk': u'Медіа',
+            'yi': u'מעדיע',
+            'zh-hk': u'媒體',
+            'zh-tw': u'媒體',
+        }
 
-        self.namespaces[-1]['bs'] = u'Posebno'
-        self.namespaces[-1]['ja'] = u'Special'
-        self.namespaces[-1]['jv'] = u'Astamiwa'
-        self.namespaces[-1]['lb'] = u'Spezial'
-        self.namespaces[-1]['zh-hk'] = u'特殊'
-        self.namespaces[-1]['zh-tw'] = u'特殊'
+        self.namespaces[-1] = {
+            '_default': u'Special',
+            'ar': u'خاص',
+            'ast': u'Especial',
+            'bg': u'Специални',
+            'bn': u'বিশেষ',
+            'bs': u'Posebno',
+            'ca': u'Especial',
+            'common': u'Special',
+            'cs': u'Speciální',
+            'cy': u'Arbennig',
+            'da': u'Speciel',
+            'de': u'Spezial',
+            'el': u'Ειδικό',
+            'eo': u'Speciala',
+            'es': u'Especial',
+            'et': u'Eri',
+            'fa': u'ویژه',
+            'fi': u'Toiminnot',
+            'fr': u'Spécial',
+            'ga': u'Speisialta',
+            'got': u'Special',
+            'he': u'מיוחד',
+            'hr': u'Posebno',
+            'hu': u'Speciális',
+            'id': u'Istimewa',
+            'info': u'Special',
+            'it': u'Speciale',
+            'ja': u'特別',
+            'jv': u'Astamiwa',
+            'ka': u'სპეციალური',
+            'km': u'ពិសេស',
+            'ko': u'특수기능',
+            'la': u'Specialis',
+            'lb': u'Spezial',
+            'li': u'Speciaal',
+            'lo': u'ພິເສດ',
+            'lt': u'Specialus',
+            'meta': u'Special',
+            'mg': u'Special',
+            'mk': u'Специјални',
+            'mo': u'Special',
+            'ms': u'Khas',
+            'nn': u'Spesial',
+            'no': u'Spesial',
+            'oc': u'Especial',
+            'pl': u'Specjalna',
+            'pt': u'Especial',
+            'ro': u'Special',
+            'ru': u'Служебная',
+            'sk': u'Špeciálne',
+            'sl': u'Posebno',
+            'sr': u'Посебно',
+            'su': u'Husus',
+            'sv': u'Special',
+            'th': u'พิเศษ',
+            'tl': u'Special',
+            'tr': u'Özel',
+            'uk': u'Спеціальна',
+            'yi': u'באַזונדער',
+            'zh': u'Special',
+            'zh-hk': u'特殊',
+            'zh-tw': u'特殊',
+            'zombie': u'Special',
+        }
 
-        self.namespaces[1]['ast'] = u'Discusión'
-        self.namespaces[1]['bs'] = u'Razgovor'
-        self.namespaces[1]['id'] = u'Pembicaraan'
-        self.namespaces[1]['ja'] = u'Talk'
-        self.namespaces[1]['jv'] = u'Dhiskusi'
-        self.namespaces[1]['lb'] = u'Diskussioun'
-        self.namespaces[1]['lv'] = u'Diskusija'
-        self.namespaces[1]['mg'] = u'Discuter'
-        self.namespaces[1]['th'] = u'พูดคุย'
-        self.namespaces[1]['zh-hk'] = u'討論'
-        self.namespaces[1]['zh-tw'] = u'討論'
+        self.namespaces[1] = {
+            '_default': u'Talk',
+            'ar': u'نقاش',
+            'ast': u'Alderique',
+            'bg': u'Беседа',
+            'bn': u'আলাপ',
+            'bs': u'Razgovor',
+            'ca': u'Discussió',
+            'common': u'Talk',
+            'cs': u'Diskuse',
+            'cy': u'Sgwrs',
+            'da': u'Diskussion',
+            'de': u'Diskussion',
+            'el': u'Συζήτηση',
+            'eo': u'Diskuto',
+            'es': u'Discusión',
+            'et': u'Arutelu',
+            'fa': u'بحث',
+            'fi': u'Keskustelu',
+            'fr': u'Discuter',
+            'ga': u'Plé',
+            'got': u'Talk',
+            'he': u'שיחה',
+            'hr': u'Razgovor',
+            'hu': u'Vita',
+            'id': u'Pembicaraan',
+            'info': u'Talk',
+            'it': u'Discussione',
+            'ja': u'ノート',
+            'jv': u'Dhiskusi',
+            'ka': u'განხილვა',
+            'km': u'ការពិភាក្សា',
+            'ko': u'토론',
+            'la': u'Disputatio',
+            'lb': u'Diskussioun',
+            'li': u'Euverlèk',
+            'lo': u'ສົນທະນາ',
+            'lt': u'Aptarimas',
+            'lv': u'Diskusija',
+            'meta': u'Talk',
+            'mg': u'Discuter',
+            'mk': u'Разговор',
+            'mo': u'Discuţie',
+            'ms': u'Perbincangan',
+            'nn': u'Diskusjon',
+            'no': u'Diskusjon',
+            'oc': u'Discutir',
+            'pl': u'Dyskusja',
+            'pt': u'Discussão',
+            'ro': u'Discuţie',
+            'ru': u'Обсуждение',
+            'sk': u'Diskusia',
+            'sl': u'Pogovor',
+            'sr': u'Разговор',
+            'su': u'Obrolan',
+            'sv': u'Diskussion',
+            'th': u'พูดคุย',
+            'tl': u'Talk',
+            'tr': u'Tartışma',
+            'uk': u'Обговорення',
+            'yi': u'רעדן',
+            'zh': u'Talk',
+            'zh-hk': u'討論',
+            'zh-tw': u'討論',
+            'zombie': u'Talk',
+        }
 
-        self.namespaces[2]['bs'] = u'Korisnik'
-        self.namespaces[2]['jv'] = u'Panganggo'
-        self.namespaces[2]['lb'] = u'Benotzer'
-        self.namespaces[2]['lv'] = u'Lietotājs'
-        self.namespaces[2]['mg'] = u'Utilisateur'
-        self.namespaces[2]['pl'] = u'Użytkownik'
-        self.namespaces[2]['zh-hk'] = u'用戶'
-        self.namespaces[2]['zh-tw'] = u'用戶'
+        self.namespaces[2] = {
+            '_default': u'User',
+            'ar': u'مستخدم',
+            'ast': u'Usuariu',
+            'bg': u'Потребител',
+            'bn': u'ব্যবহারকারী',
+            'bs': u'Korisnik',
+            'ca': u'Usuari',
+            'common': u'User',
+            'cs': u'Uživatel',
+            'cy': u'Defnyddiwr',
+            'da': u'Bruger',
+            'de': u'Benutzer',
+            'el': u'Χρήστης',
+            'eo': u'Vikipediisto',
+            'es': u'Usuario',
+            'et': u'Kasutaja',
+            'fa': u'کاربر',
+            'fi': u'Käyttäjä',
+            'fr': u'Utilisateur',
+            'ga': u'Úsáideoir',
+            'he': u'משתמש',
+            'hr': u'Suradnik',
+            'hu': u'Szerkesztő',
+            'id': u'Pengguna',
+            'it': u'Utente',
+            'ja': u'利用者',
+            'jv': u'Panganggo',
+            'ka': u'მომხმარებელი',
+            'km': u'អ្នកប្រើប្រាស់',
+            'ko': u'사용자',
+            'la': u'Usor',
+            'lb': u'Benotzer',
+            'li': u'Gebroeker',
+            'lo': u'ຜູ້ໃຊ້',
+            'lt': u'Naudotojas',
+            'lv': u'Lietotājs',
+            'mg': u'Utilisateur',
+            'mk': u'Корисник',
+            'mo': u'Utilizator',
+            'ms': u'Pengguna',
+            'nn': u'Bruker',
+            'no': u'Bruker',
+            'oc': u'Utilizaire',
+            'pl': u'Użytkownik',
+            'pt': u'Usuário',
+            'ro': u'Utilizator',
+            'ru': u'Участник',
+            'sk': u'Redaktor',
+            'sl': u'Uporabnik',
+            'sr': u'Корисник',
+            'su': u'Pamaké',
+            'sv': u'Användare',
+            'th': u'ผู้ใช้',
+            'tr': u'Kullanıcı',
+            'uk': u'Користувач',
+            'yi': u'באַניצער',
+            'zh-hk': u'用戶',
+            'zh-tw': u'用戶',
+            'zombie': u'User',
+        }
 
-        self.namespaces[3]['ast'] = u'Usuariu discusión'
-        self.namespaces[3]['bs'] = u'Razgovor sa korisnikom'
-        self.namespaces[3]['da'] = u'Brugerdiskussion'
-        self.namespaces[3]['hu'] = u'User talk'
-        self.namespaces[3]['id'] = u'Pembicaraan Pengguna'
-        self.namespaces[3]['jv'] = u'Dhiskusi Panganggo'
-        self.namespaces[3]['lb'] = u'Benotzer Diskussioun'
-        self.namespaces[3]['lv'] = u'Lietotāja diskusija'
-        self.namespaces[3]['mg'] = u'Discussion Utilisateur'
-        self.namespaces[3]['mk'] = u'Разговор со корисник'
-        self.namespaces[3]['pl'] = u'Dyskusja użytkownika'
-        self.namespaces[3]['th'] = u'คุยกับผู้ใช้'
-        self.namespaces[3]['zh-hk'] = u'用戶討論'
-        self.namespaces[3]['zh-tw'] = u'用戶討論'
+        self.namespaces[3] = {
+            '_default': u'User talk',
+            'ar': u'نقاش المستخدم',
+            'ast': u'Usuariu alderique',
+            'bg': u'Потребител беседа',
+            'bn': u'ব্যবহারকারী আলাপ',
+            'bs': u'Razgovor sa korisnikom',
+            'ca': u'Usuari Discussió',
+            'cs': u'Uživatel diskuse',
+            'cy': u'Sgwrs Defnyddiwr',
+            'da': u'Brugerdiskussion',
+            'de': u'Benutzer Diskussion',
+            'el': u'Συζήτηση χρήστη',
+            'eo': u'Vikipediista diskuto',
+            'es': u'Usuario Discusión',
+            'et': u'Kasutaja arutelu',
+            'fa': u'بحث کاربر',
+            'fi': u'Keskustelu käyttäjästä',
+            'fr': u'Discussion Utilisateur',
+            'ga': u'Plé úsáideora',
+            'he': u'שיחת משתמש',
+            'hr': u'Razgovor sa suradnikom',
+            'hu': u'Szerkesztővita',
+            'id': u'Pembicaraan Pengguna',
+            'info': u'User talk',
+            'it': u'Discussioni utente',
+            'ja': u'利用者‐会話',
+            'jv': u'Dhiskusi Panganggo',
+            'ka': u'მომხმარებელი განხილვა',
+            'km': u'ការពិភាក្សារបស់អ្នកប្រើប្រាស់',
+            'ko': u'사용자토론',
+            'la': u'Disputatio Usoris',
+            'lb': u'Benotzer Diskussioun',
+            'li': u'Euverlèk gebroeker',
+            'lo': u'ສົນທະນາຂອງຜູ້ໃຊ້',
+            'lt': u'Naudotojo aptarimas',
+            'lv': u'Lietotāja diskusija',
+            'mg': u'Discussion Utilisateur',
+            'mk': u'Разговор со корисник',
+            'mo': u'Discuţie Utilizator',
+            'ms': u'Perbincangan Pengguna',
+            'nn': u'Brukerdiskusjon',
+            'no': u'Brukerdiskusjon',
+            'oc': u'Discussion Utilizaire',
+            'pl': u'Dyskusja użytkownika',
+            'pt': u'Usuário Discussão',
+            'ro': u'Discuţie Utilizator',
+            'ru': u'Обсуждение участника',
+            'sk': u'Diskusia s redaktorom',
+            'sl': u'Uporabniški pogovor',
+            'sr': u'Разговор са корисником',
+            'su': u'Obrolan pamaké',
+            'sv': u'Användardiskussion',
+            'th': u'คุยกับผู้ใช้',
+            'tr': u'Kullanıcı mesaj',
+            'uk': u'Обговорення користувача',
+            'yi': u'באַניצער רעדן',
+            'zh-hk': u'用戶討論',
+            'zh-tw': u'用戶討論',
+        }
 
-        self.namespaces[4]['ar'] = u'بيضيپيديا'
-        self.namespaces[4]['ast'] = u'Nunyepedia'
-        self.namespaces[4]['bg'] = u'Oxypedia'
-        self.namespaces[4]['bn'] = u'Uncyclopedia'
-        self.namespaces[4]['bs'] = u'Neciklopedija'
-        self.namespaces[4]['ca'] = u'Valenciclopèdia'
-        self.namespaces[4]['common'] = u'UnCommons'
-        self.namespaces[4]['cs'] = u'Necyklopedie'
-        self.namespaces[4]['cy'] = u'Celwyddoniadur'
-        self.namespaces[4]['da'] = u'Spademanns Leksikon'
-        self.namespaces[4]['de'] = u'Uncyclopedia'
-        self.namespaces[4]['el'] = u'Φρικηπαίδεια'
-        self.namespaces[4]['en'] = u'Uncyclopedia'
-        self.namespaces[4]['eo'] = u'Neciklopedio'
-        self.namespaces[4]['es'] = u'Inciclopedia'
-        self.namespaces[4]['et'] = u'Ebatsüklopeedia'
-        self.namespaces[4]['fa'] = u'Uncyclopedia'
-        self.namespaces[4]['fi'] = u'Hikipedia'
-        self.namespaces[4]['fr'] = u'Désencyclopédie'
-        self.namespaces[4]['got'] = u'Unsaiklopedia'
-        self.namespaces[4]['he'] = u'איןציקלופדיה'
-        self.namespaces[4]['hr'] = u'Neciklopedija'
-        self.namespaces[4]['hu'] = u'Unciklopédia'
-        self.namespaces[4]['id'] = u'Tolololpedia'
-        self.namespaces[4]['info'] = u'Uncyclopaedia'
-        self.namespaces[4]['it'] = u'Nonciclopedia'
-        self.namespaces[4]['ja'] = u'Uncyclopedia'
-        self.namespaces[4]['jv'] = u'Ndhablek'
-        self.namespaces[4]['ko'] = u'백괴사전'
-        self.namespaces[4]['la'] = u'Uncapaedia'
-        self.namespaces[4]['lb'] = u'Kengencyclopedia'
-        self.namespaces[4]['lt'] = u'Juokopediją'
-        self.namespaces[4]['lv'] = u'Neciklopēdija'
-        self.namespaces[4]['meta'] = u'UnMeta'
-        self.namespaces[4]['mg'] = u'Hatsiklopedia'
-        self.namespaces[4]['mk'] = u'Нециклопедий'
-        self.namespaces[4]['nl'] = u'Oncyclopedie'
-        self.namespaces[4]['nn'] = u'Ikkepedia'
-        self.namespaces[4]['no'] = u'Ikkepedia'
-        self.namespaces[4]['pl'] = u'Nonsensopedia'
-        self.namespaces[4]['pt'] = u'Desciclopédia'
-        self.namespaces[4]['ro'] = u'Unciclopedie'
-        self.namespaces[4]['ru'] = u'Абсурдопедия'
-        self.namespaces[4]['sk'] = u'Necyklopédia'
-        self.namespaces[4]['sl'] = u'Butalopedija'
-        self.namespaces[4]['sr'] = u'Нециклопедија'
-        self.namespaces[4]['su'] = u'Goblogpedia Wiki'
-        self.namespaces[4]['sv'] = u'Psyklopedin'
-        self.namespaces[4]['th'] = u'ไร้สาระนุกรม'
-        self.namespaces[4]['tr'] = u'Yansiklopedi'
-        self.namespaces[4]['uk'] = u'Інциклопедія'
-        self.namespaces[4]['yi'] = u'קיינציקלאָפעדיע'
-        self.namespaces[4]['zh'] = u'伪基百科'
-        self.namespaces[4]['zh-hk'] = u'偽基百科'
-        self.namespaces[4]['zh-tw'] = u'偽基百科'
+        self.namespaces[4] = {
+            '_default': u'Uncyclopedia',
+            'ar': u'بيضيپيديا',
+            'ast': u'Nunyepedia',
+            'bg': u'Oxypedia',
+            'bn': u'আনসাইক্লোপিডিয়া',
+            'bs': u'Neciklopedija',
+            'ca': u'Valenciclopèdia',
+            'common': u'UnCommons',
+            'cs': u'Necyklopedie',
+            'cy': u'Celwyddoniadur',
+            'da': u'Spademanns Leksikon',
+            'el': u'Φρικηπαίδεια',
+            'eo': u'Neciklopedio',
+            'es': u'Inciclopedia',
+            'et': u'Ebatsüklopeedia',
+            'fa': u'نانشنامه',
+            'fi': u'Hikipedia',
+            'fr': u'Désencyclopédie',
+            'ga': u'Frithchiclipéid',
+            'got': u'Unsaiklopedia',
+            'he': u'איןציקלופדיה',
+            'hr': u'Neciklopedija',
+            'hu': u'Unciklopédia',
+            'id': u'Tolololpedia',
+            'info': u'Uncyclopaedia',
+            'it': u'Nonciclopedia',
+            'jv': u'Ndhablek',
+            'ka': u'Anciklopedia',
+            'ko': u'백괴사전',
+            'la': u'Uncapaedia',
+            'lb': u'Kengencyclopedia',
+            'li': u'Kwatsjpedia',
+            'lt': u'Juokopediją',
+            'lv': u'Neciklopēdija',
+            'meta': u'UnMeta',
+            'mg': u'Hatsiklopedia',
+            'mk': u'Нециклопедий',
+            'mo': u'Neciclopedia',
+            'ms': u'Bodohpedia',
+            'nl': u'Oncyclopedie',
+            'nn': u'Ikkepedia',
+            'no': u'Ikkepedia',
+            'oc': u'Oisquipedia',
+            'pl': u'Nonsensopedia',
+            'pt': u'Desciclopédia',
+            'ro': u'Neciclopedie',
+            'ru': u'Абсурдопедия',
+            'sk': u'Necyklopédia',
+            'sl': u'Butalopedija',
+            'sr': u'Нециклопедија',
+            'su': u'Goblogpedia Wiki',
+            'sv': u'Psyklopedin',
+            'th': u'ไร้สาระนุกรม',
+            'tl': u'Pekepedia',
+            'tr': u'Yansiklopedi',
+            'uk': u'Інциклопедія',
+            'yi': u'קיינציקלאָפעדיע',
+            'zh': u'伪基百科',
+            'zh-hk': u'偽基百科',
+            'zh-tw': u'偽基百科',
+            'zombie': u'Zombiepedia',
+        }
 
-        self.namespaces[5]['ar'] = u'نقاش بيضيپيديا'
-        self.namespaces[5]['ast'] = u'Nunyepedia discusión'
-        self.namespaces[5]['bg'] = u'Oxypedia беседа'
-        self.namespaces[5]['bn'] = u'Uncyclopedia আলাপ'
-        self.namespaces[5]['bs'] = u'Razgovor s Neciklopedija'
-        self.namespaces[5]['ca'] = u'Valenciclopèdia Discussió'
-        self.namespaces[5]['common'] = u'UnCommon talk'
-        self.namespaces[5]['cs'] = u'Necyklopedie diskuse'
-        self.namespaces[5]['cy'] = u'Sgwrs Celwyddoniadur'
-        self.namespaces[5]['da'] = u'Spademanns Leksikon-diskussion'
-        self.namespaces[5]['de'] = u'Uncyclopedia Diskussion'
-        self.namespaces[5]['el'] = u'Φρικηπαίδεια συζήτηση'
-        self.namespaces[5]['en'] = u'Uncyclopedia talk'
-        self.namespaces[5]['eo'] = u'Neciklopedio diskuto'
-        self.namespaces[5]['es'] = u'Inciclopedia Discusión'
-        self.namespaces[5]['et'] = u'Ebatsüklopeedia arutelu'
-        self.namespaces[5]['fa'] = u'بحث Uncyclopedia'
-        self.namespaces[5]['fi'] = u'Keskustelu Hikipediasta'
-        self.namespaces[5]['fr'] = u'Discussion Désencyclopédie'
-        self.namespaces[5]['got'] = u'Unsaiklopedia talk'
-        self.namespaces[5]['he'] = u'שיחת איןציקלופדיה'
-        self.namespaces[5]['hr'] = u'Razgovor Neciklopedija'
-        self.namespaces[5]['hu'] = u'Unciklopédia vita'
-        self.namespaces[5]['id'] = u'Pembicaraan Tolololpedia'
-        self.namespaces[5]['info'] = u'Uncyclopædia talk'
-        self.namespaces[5]['it'] = u'Discussioni Nonciclopedia'
-        self.namespaces[5]['ja'] = u'Uncyclopedia talk'
-        self.namespaces[5]['jv'] = u'Dhiskusi Ndhablek'
-        self.namespaces[5]['ko'] = u'백괴사전토론'
-        self.namespaces[5]['la'] = u'Disputatio Uncapaediae'
-        self.namespaces[5]['lb'] = u'Kengencyclopedia Diskussioun'
-        self.namespaces[5]['lt'] = u'Juokopediją aptarimas'
-        self.namespaces[5]['lv'] = u'Neciklopēdija diskusija'
-        self.namespaces[5]['meta'] = u'UnMeta talk'
-        self.namespaces[5]['mg'] = u'Discussion Hatsiklopedia'
-        self.namespaces[5]['mk'] = u'Разговор за Нециклопедий'
-        self.namespaces[5]['nl'] = u'Overleg Oncyclopedie'
-        self.namespaces[5]['nn'] = u'Ikkepedia-diskusjon'
-        self.namespaces[5]['no'] = u'Ikkepedia-diskusjon'
-        self.namespaces[5]['pl'] = u'Dyskusja Nonsensopedia'
-        self.namespaces[5]['pt'] = u'Desciclopédia Discussão'
-        self.namespaces[5]['ro'] = u'Discuţie Unciclopedie'
-        self.namespaces[5]['ru'] = u'Обсуждение Абсурдопедии'
-        self.namespaces[5]['sk'] = u'Diskusia k Necyklopédia'
-        self.namespaces[5]['sl'] = u'Pogovor o Butalopedija'
-        self.namespaces[5]['sr'] = u'Разговор о Нециклопедија'
-        self.namespaces[5]['su'] = u'Obrolan Goblogpedia Wiki'
-        self.namespaces[5]['sv'] = u'Psyklopedindiskussion'
-        self.namespaces[5]['th'] = u'คุยเรื่องไร้สาระนุกรม'
-        self.namespaces[5]['tr'] = u'Yansiklopedi tartışma'
-        self.namespaces[5]['uk'] = u'Обговорення Інциклопедії'
-        self.namespaces[5]['yi'] = u'קיינציקלאָפעדיע רעדן'
-        self.namespaces[5]['zh'] = u'伪基百科 talk'
-        self.namespaces[5]['zh-hk'] = u'偽基百科討論'
-        self.namespaces[5]['zh-tw'] = u'偽基百科討論'
+        self.namespaces[5] = {
+            '_default': u'Uncyclopedia talk',
+            'ar': u'نقاش بيضيپيديا',
+            'ast': u'Nunyepedia alderique',
+            'bg': u'Oxypedia беседа',
+            'bn': u'আনসাইক্লোপিডিয়া আলাপ',
+            'bs': u'Razgovor s Neciklopedija',
+            'ca': u'Valenciclopèdia Discussió',
+            'common': u'UnCommon talk',
+            'cs': u'Necyklopedie diskuse',
+            'cy': u'Sgwrs Celwyddoniadur',
+            'da': u'Spademanns Leksikon-diskussion',
+            'de': u'Uncyclopedia Diskussion',
+            'el': u'Φρικηπαίδεια συζήτηση',
+            'eo': u'Neciklopedio diskuto',
+            'es': u'Inciclopedia Discusión',
+            'et': u'Ebatsüklopeedia arutelu',
+            'fa': u'بحث نانشنامه',
+            'fi': u'Keskustelu Hikipediasta',
+            'fr': u'Discussion Désencyclopédie',
+            'ga': u'Plé Frithchiclipéid',
+            'got': u'Unsaiklopedia talk',
+            'he': u'שיחת איןציקלופדיה',
+            'hr': u'Razgovor Neciklopedija',
+            'hu': u'Unciklopédia-vita',
+            'id': u'Pembicaraan Tolololpedia',
+            'info': u'Uncyclopaedia talk',
+            'it': u'Discussioni Nonciclopedia',
+            'ja': u'Uncyclopedia‐ノート',
+            'jv': u'Dhiskusi Ndhablek',
+            'ka': u'Anciklopedia განხილვა',
+            'km': u'ការពិភាក្សាអំពីUncyclopedia',
+            'ko': u'백괴사전토론',
+            'la': u'Disputatio Uncapaediae',
+            'lb': u'Kengencyclopedia Diskussioun',
+            'li': u'Euverlèk Kwatsjpedia',
+            'lo': u'ສົນທະນາກ່ຽວກັບUncyclopedia',
+            'lt': u'Juokopediją aptarimas',
+            'lv': u'Neciklopēdija diskusija',
+            'meta': u'UnMeta talk',
+            'mg': u'Discussion Hatsiklopedia',
+            'mk': u'Разговор за Нециклопедий',
+            'mo': u'Discuţie Neciclopedia',
+            'ms': u'Perbincangan Bodohpedia',
+            'nl': u'Overleg Oncyclopedie',
+            'nn': u'Ikkepedia-diskusjon',
+            'no': u'Ikkepedia-diskusjon',
+            'oc': u'Discussion Oisquipedia',
+            'pl': u'Dyskusja Nonsensopedia',
+            'pt': u'Desciclopédia Discussão',
+            'ro': u'Discuţie Neciclopedie',
+            'ru': u'Обсуждение Абсурдопедии',
+            'sk': u'Diskusia k Necyklopédia',
+            'sl': u'Pogovor o Butalopedija',
+            'sr': u'Разговор о Нециклопедија',
+            'su': u'Obrolan Goblogpedia Wiki',
+            'sv': u'Psyklopedindiskussion',
+            'th': u'คุยเรื่องไร้สาระนุกรม',
+            'tl': u'Pekepedia talk',
+            'tr': u'Yansiklopedi tartışma',
+            'uk': u'Обговорення Інциклопедії',
+            'yi': u'קיינציקלאָפעדיע רעדן',
+            'zh': u'伪基百科 talk',
+            'zh-hk': u'偽基百科討論',
+            'zh-tw': u'偽基百科討論',
+            'zombie': u'Zombiepedia talk',
+        }
 
-        self.namespaces[6]['ast'] = u'Imaxen'
-        self.namespaces[6]['bs'] = u'Slika'
-        self.namespaces[6]['id'] = u'Berkas'
-        self.namespaces[6]['info'] = u'File'
-        self.namespaces[6]['ja'] = u'Image'
-        self.namespaces[6]['jv'] = u'Gambar'
-        self.namespaces[6]['lb'] = u'Bild'
-        self.namespaces[6]['lv'] = u'Attēls'
-        self.namespaces[6]['zh-hk'] = u'圖像'
-        self.namespaces[6]['zh-tw'] = u'圖像'
+        self.namespaces[6] = {
+            '_default': u'File',
+            'ar': u'ملف',
+            'ast': u'Archivu',
+            'bg': u'Картинка',
+            'bn': u'চিত্র',
+            'bs': u'Slika',
+            'ca': u'Fitxer',
+            'common': u'Image',
+            'cs': u'Soubor',
+            'cy': u'Delwedd',
+            'da': u'Billede',
+            'de': u'Datei',
+            'el': u'Αρχείο',
+            'eo': u'Dosiero',
+            'es': u'Archivo',
+            'et': u'Pilt',
+            'fa': u'تصویر',
+            'fi': u'Kuva',
+            'fr': u'Fichier',
+            'ga': u'Íomhá',
+            'got': u'Image',
+            'he': u'קובץ',
+            'hr': u'Slika',
+            'hu': u'Kép',
+            'id': u'Berkas',
+            'info': u'Image',
+            'it': u'File',
+            'ja': u'画像',
+            'jv': u'Gambar',
+            'ka': u'სურათი',
+            'km': u'រូបភាព',
+            'ko': u'파일',
+            'la': u'Fasciculus',
+            'lb': u'Bild',
+            'li': u'Plaetje',
+            'lo': u'ຮູບ',
+            'lt': u'Vaizdas',
+            'lv': u'Attēls',
+            'meta': u'Image',
+            'mg': u'Image',
+            'mk': u'Слика',
+            'mo': u'Imagine',
+            'ms': u'Imej',
+            'nn': u'Bilde',
+            'no': u'Bilde',
+            'oc': u'Imatge',
+            'pl': u'Plik',
+            'pt': u'Imagem',
+            'ro': u'Imagine',
+            'ru': u'Файл',
+            'sk': u'Súbor',
+            'sl': u'Slika',
+            'sr': u'Слика',
+            'su': u'Gambar',
+            'sv': u'Bild',
+            'th': u'ภาพ',
+            'tl': u'Image',
+            'tr': u'Resim',
+            'uk': u'Зображення',
+            'yi': u'טעקע',
+            'zh': u'File',
+            'zh-hk': u'圖像',
+            'zh-tw': u'圖像',
+            'zombie': u'Image',
+        }
 
-        self.namespaces[7]['ast'] = u'Imaxen discusión'
-        self.namespaces[7]['bs'] = u'Razgovor o slici'
-        self.namespaces[7]['da'] = u'Billeddiskussion'
-        self.namespaces[7]['hu'] = u'Kep vita'
-        self.namespaces[7]['id'] = u'Pembicaraan Berkas'
-        self.namespaces[7]['info'] = u'File talk'
-        self.namespaces[7]['jv'] = u'Dhiskusi Gambar'
-        self.namespaces[7]['lb'] = u'Bild Diskussioun'
-        self.namespaces[7]['lv'] = u'Attēla diskusija'
-        self.namespaces[7]['mg'] = u'Discussion Image'
-        self.namespaces[7]['mk'] = u'Разговор за слика'
-        self.namespaces[7]['th'] = u'คุยเรื่องภาพ'
-        self.namespaces[7]['zh-hk'] = u'圖像討論'
-        self.namespaces[7]['zh-tw'] = u'圖像討論'
+        self.namespaces[7] = {
+            '_default': u'File talk',
+            'ar': u'نقاش الملف',
+            'ast': u'Archivu alderique',
+            'bg': u'Картинка беседа',
+            'bn': u'চিত্র আলাপ',
+            'bs': u'Razgovor o slici',
+            'ca': u'Fitxer Discussió',
+            'common': u'Image talk',
+            'cs': u'Soubor diskuse',
+            'cy': u'Sgwrs Delwedd',
+            'da': u'Billeddiskussion',
+            'de': u'Datei Diskussion',
+            'el': u'Συζήτηση αρχείου',
+            'eo': u'Dosiera diskuto',
+            'es': u'Archivo Discusión',
+            'et': u'Pildi arutelu',
+            'fa': u'بحث تصویر',
+            'fi': u'Keskustelu kuvasta',
+            'fr': u'Discussion Fichier',
+            'ga': u'Plé íomhá',
+            'got': u'Image talk',
+            'he': u'שיחת קובץ',
+            'hr': u'Razgovor o slici',
+            'hu': u'Képvita',
+            'id': u'Pembicaraan Berkas',
+            'info': u'Image talk',
+            'it': u'Discussioni file',
+            'ja': u'画像‐ノート',
+            'jv': u'Dhiskusi Gambar',
+            'ka': u'სურათი განხილვა',
+            'km': u'ការពិភាក្សាអំពីរូបភាព',
+            'ko': u'파일토론',
+            'la': u'Disputatio Fasciculi',
+            'lb': u'Bild Diskussioun',
+            'li': u'Euverlèk plaetje',
+            'lo': u'ສົນທະນາກ່ຽວກັບຮູບ',
+            'lt': u'Vaizdo aptarimas',
+            'lv': u'Attēla diskusija',
+            'meta': u'Image talk',
+            'mg': u'Discussion Image',
+            'mk': u'Разговор за слика',
+            'mo': u'Discuţie Imagine',
+            'ms': u'Perbincangan Imej',
+            'nn': u'Bildediskusjon',
+            'no': u'Bildediskusjon',
+            'oc': u'Discussion Imatge',
+            'pl': u'Dyskusja pliku',
+            'pt': u'Imagem Discussão',
+            'ro': u'Discuţie Imagine',
+            'ru': u'Обсуждение файла',
+            'sk': u'Diskusia k súboru',
+            'sl': u'Pogovor o sliki',
+            'sr': u'Разговор о слици',
+            'su': u'Obrolan gambar',
+            'sv': u'Bilddiskussion',
+            'th': u'คุยเรื่องภาพ',
+            'tl': u'Image talk',
+            'tr': u'Resim tartışma',
+            'uk': u'Обговорення зображення',
+            'yi': u'טעקע רעדן',
+            'zh': u'File talk',
+            'zh-hk': u'圖像討論',
+            'zh-tw': u'圖像討論',
+            'zombie': u'Image talk',
+        }
 
-        self.namespaces[8]['bs'] = u'MedijaViki'
-        self.namespaces[8]['fi'] = u'MediaWiki'
-        self.namespaces[8]['cy'] = u'MediaWici'
-        self.namespaces[8]['he'] = u'מדיה ויקי'
-        self.namespaces[8]['lb'] = u'MediaWiki'
-        self.namespaces[8]['th'] = u'มีเดียวิกิ'
-        self.namespaces[8]['zh-hk'] = u'媒體偽基'
-        self.namespaces[8]['zh-tw'] = u'媒體偽基'
+        self.namespaces[8] = {
+            '_default': u'MediaWiki',
+            'ar': u'ميدياويكي',
+            'bg': u'МедияУики',
+            'bs': u'MedijaViki',
+            'cy': u'MediaWici',
+            'fa': u'مدیاویکی',
+            'fi': u'MediaWiki',
+            'he': u'מדיה ויקי',
+            'ka': u'მედიავიკი',
+            'km': u'មេឌាវិគី',
+            'ko': u'미디어위키',
+            'lo': u'ມີເດຍວິກິ',
+            'mk': u'МедијаВики',
+            'sr': u'МедијаВики',
+            'su': u'MédiaWiki',
+            'th': u'มีเดียวิกิ',
+            'tr': u'MedyaViki',
+            'yi': u'מעדיעװיקי',
+            'zh-hk': u'媒體偽基',
+            'zh-tw': u'媒體偽基',
+        }
 
-        self.namespaces[9]['ast'] = u'MediaWiki discusión'
-        self.namespaces[9]['bn'] = u'MediaWiki আলাপ'
-        self.namespaces[9]['bs'] = u'Razgovor o MedijaVikiju'
-        self.namespaces[9]['cy'] = u'Sgwrs MediaWici'
-        self.namespaces[9]['da'] = u'MediaWiki-diskussion'
-        self.namespaces[9]['fi'] = u'Keskustelu MediaWiki'
-        self.namespaces[9]['he'] = u'שיחת מדיה ויקי'
-        self.namespaces[9]['hu'] = u'MediaWiki talk'
-        self.namespaces[9]['jv'] = u'Dhiskusi MediaWiki'
-        self.namespaces[9]['ko'] = u'MediaWiki토론'
-        self.namespaces[9]['lb'] = u'MediaWiki Diskussioun'
-        self.namespaces[9]['lv'] = u'MediaWiki diskusija'
-        self.namespaces[9]['mg'] = u'Discussion MediaWiki'
-        self.namespaces[9]['mk'] = u'Разговор за МедијаВики'
-        self.namespaces[9]['sv'] = u'MediaWiki diskussion'
-        self.namespaces[9]['th'] = u'คุยเรื่องมีเดียวิกิ'
-        self.namespaces[9]['zh-hk'] = u'媒體偽基討論'
-        self.namespaces[9]['zh-tw'] = u'媒體偽基討論'
+        self.namespaces[9] = {
+            '_default': u'MediaWiki talk',
+            'ar': u'نقاش ميدياويكي',
+            'ast': u'MediaWiki alderique',
+            'bg': u'МедияУики беседа',
+            'bn': u'MediaWiki আলাপ',
+            'bs': u'Razgovor o MedijaVikiju',
+            'ca': u'MediaWiki Discussió',
+            'cs': u'MediaWiki diskuse',
+            'cy': u'Sgwrs MediaWici',
+            'da': u'MediaWiki-diskussion',
+            'de': u'MediaWiki Diskussion',
+            'el': u'Συζήτηση MediaWiki',
+            'eo': u'MediaWiki diskuto',
+            'es': u'MediaWiki Discusión',
+            'et': u'MediaWiki arutelu',
+            'fa': u'بحث مدیاویکی',
+            'fi': u'Keskustelu MediaWiki',
+            'fr': u'Discussion MediaWiki',
+            'ga': u'Plé MediaWiki',
+            'he': u'שיחת מדיה ויקי',
+            'hr': u'MediaWiki razgovor',
+            'hu': u'MediaWiki-vita',
+            'id': u'Pembicaraan MediaWiki',
+            'it': u'Discussioni MediaWiki',
+            'ja': u'MediaWiki‐ノート',
+            'jv': u'Dhiskusi MediaWiki',
+            'ka': u'მედიავიკი განხილვა',
+            'km': u'ការពិភាក្សាអំពីមេឌាវិគី',
+            'ko': u'미디어위키토론',
+            'la': u'Disputatio MediaWiki',
+            'lb': u'MediaWiki Diskussioun',
+            'li': u'Euverlèk MediaWiki',
+            'lo': u'ສົນທະນາກ່ຽວກັບມີເດຍວິກິ',
+            'lt': u'MediaWiki aptarimas',
+            'lv': u'MediaWiki diskusija',
+            'meta': u'MediaWiki talk',
+            'mg': u'Discussion MediaWiki',
+            'mk': u'Разговор за МедијаВики',
+            'mo': u'Discuţie MediaWiki',
+            'ms': u'Perbincangan MediaWiki',
+            'nn': u'MediaWiki-diskusjon',
+            'no': u'MediaWiki-diskusjon',
+            'oc': u'Discussion MediaWiki',
+            'pl': u'Dyskusja MediaWiki',
+            'pt': u'MediaWiki Discussão',
+            'ro': u'Discuţie MediaWiki',
+            'ru': u'Обсуждение MediaWiki',
+            'sk': u'Diskusia k MediaWiki',
+            'sl': u'Pogovor o MediaWiki',
+            'sr': u'Разговор о МедијаВикију',
+            'su': u'Obrolan MédiaWiki',
+            'sv': u'MediaWiki-diskussion',
+            'th': u'คุยเรื่องมีเดียวิกิ',
+            'tr': u'MedyaViki tartışma',
+            'uk': u'Обговорення MediaWiki',
+            'yi': u'מעדיעװיקי רעדן',
+            'zh': u'MediaWiki talk',
+            'zh-hk': u'媒體偽基討論',
+            'zh-tw': u'媒體偽基討論',
+        }
 
-        self.namespaces[10]['ast'] = u'Plantilla'
-        self.namespaces[10]['bs'] = u'Šablon'
-        self.namespaces[10]['ca'] = u'Plantilla'
-        self.namespaces[10]['jv'] = u'Cithakan'
-        self.namespaces[10]['ko'] = u'틀'
-        self.namespaces[10]['lb'] = u'Schabloun'
-        self.namespaces[10]['lv'] = u'Veidne'
-        self.namespaces[10]['mg'] = u'Modèle'
-        self.namespaces[10]['mk'] = u'Шаблон'
-        self.namespaces[10]['th'] = u'แม่แบบ'
-        self.namespaces[10]['zh-hk'] = u'範本'
-        self.namespaces[10]['zh-tw'] = u'範本'
+        self.namespaces[10] = {
+            '_default': u'Template',
+            'ar': u'قالب',
+            'ast': u'Plantía',
+            'bg': u'Шаблон',
+            'bs': u'Šablon',
+            'ca': u'Plantilla',
+            'cs': u'Šablona',
+            'cy': u'Nodyn',
+            'da': u'Skabelon',
+            'de': u'Vorlage',
+            'el': u'Πρότυπο',
+            'eo': u'Ŝablono',
+            'es': u'Plantilla',
+            'et': u'Mall',
+            'fa': u'الگو',
+            'fi': u'Malline',
+            'fr': u'Modèle',
+            'ga': u'Teimpléad',
+            'he': u'תבנית',
+            'hr': u'Predložak',
+            'hu': u'Sablon',
+            'id': u'Templat',
+            'jv': u'Cithakan',
+            'ka': u'თარგი',
+            'km': u'ទំព័រគំរូ',
+            'ko': u'틀',
+            'la': u'Formula',
+            'lb': u'Schabloun',
+            'li': u'Sjabloon',
+            'lo': u'ແມ່ແບບ',
+            'lt': u'Šablonas',
+            'lv': u'Veidne',
+            'mg': u'Modèle',
+            'mk': u'Шаблон',
+            'mo': u'Format',
+            'ms': u'Templat',
+            'nn': u'Mal',
+            'no': u'Mal',
+            'oc': u'Modèl',
+            'pl': u'Szablon',
+            'pt': u'Predefinição',
+            'ro': u'Format',
+            'ru': u'Шаблон',
+            'sk': u'Šablóna',
+            'sl': u'Predloga',
+            'sr': u'Шаблон',
+            'su': u'Citakan',
+            'sv': u'Mall',
+            'th': u'แม่แบบ',
+            'tr': u'Şablon',
+            'uk': u'Шаблон',
+            'yi': u'מוסטער',
+            'zh-hk': u'範本',
+            'zh-tw': u'範本',
+        }
 
-        self.namespaces[11]['ar'] = u'نقاش قالب'
-        self.namespaces[11]['ast'] = u'Plantilla discusión'
-        self.namespaces[11]['bs'] = u'Razgovor o šablonu'
-        self.namespaces[11]['ca'] = u'Plantilla Discussió'
-        self.namespaces[11]['da'] = u'Skabelondiskussion'
-        self.namespaces[11]['jv'] = u'Dhiskusi Cithakan'
-        self.namespaces[11]['ko'] = u'틀토론'
-        self.namespaces[11]['lb'] = u'Schabloun Diskussioun'
-        self.namespaces[11]['lv'] = u'Veidnes diskusija'
-        self.namespaces[11]['mg'] = u'Discussion Modèle'
-        self.namespaces[11]['mk'] = u'Разговор за шаблон'
-        self.namespaces[11]['th'] = u'คุยเรื่องแม่แบบ'
-        self.namespaces[11]['zh-hk'] = u'範本討論'
-        self.namespaces[11]['zh-tw'] = u'範本討論'
+        self.namespaces[11] = {
+            '_default': u'Template talk',
+            'ar': u'نقاش القالب',
+            'ast': u'Plantía alderique',
+            'bg': u'Шаблон беседа',
+            'bs': u'Razgovor o šablonu',
+            'ca': u'Plantilla Discussió',
+            'common': u'Template talk',
+            'cs': u'Šablona diskuse',
+            'cy': u'Sgwrs Nodyn',
+            'da': u'Skabelondiskussion',
+            'de': u'Vorlage Diskussion',
+            'el': u'Συζήτηση προτύπου',
+            'en': u'Template talk',
+            'eo': u'Ŝablona diskuto',
+            'es': u'Plantilla Discusión',
+            'et': u'Malli arutelu',
+            'fa': u'بحث الگو',
+            'fi': u'Keskustelu mallineesta',
+            'fr': u'Discussion Modèle',
+            'ga': u'Plé teimpléid',
+            'he': u'שיחת תבנית',
+            'hr': u'Razgovor o predlošku',
+            'hu': u'Sablonvita',
+            'id': u'Pembicaraan Templat',
+            'it': u'Discussioni template',
+            'ja': u'Template‐ノート',
+            'jv': u'Dhiskusi Cithakan',
+            'ka': u'თარგი განხილვა',
+            'km': u'ការពិភាក្សាអំពីទំព័រគំរូ',
+            'ko': u'틀토론',
+            'la': u'Disputatio Formulae',
+            'lb': u'Schabloun Diskussioun',
+            'li': u'Euverlèk sjabloon',
+            'lo': u'ສົນທະນາກ່ຽວກັບແມ່ແບບ',
+            'lt': u'Šablono aptarimas',
+            'lv': u'Veidnes diskusija',
+            'meta': u'Template talk',
+            'mg': u'Discussion Modèle',
+            'mk': u'Разговор за шаблон',
+            'mo': u'Discuţie Format',
+            'ms': u'Perbincangan Templat',
+            'nn': u'Maldiskusjon',
+            'no': u'Maldiskusjon',
+            'oc': u'Discussion Modèl',
+            'pl': u'Dyskusja szablonu',
+            'pt': u'Predefinição Discussão',
+            'ro': u'Discuţie Format',
+            'ru': u'Обсуждение шаблона',
+            'sk': u'Diskusia k šablóne',
+            'sl': u'Pogovor o predlogi',
+            'sr': u'Разговор о шаблону',
+            'su': u'Obrolan citakan',
+            'sv': u'Malldiskussion',
+            'th': u'คุยเรื่องแม่แบบ',
+            'tr': u'Şablon tartışma',
+            'uk': u'Обговорення шаблону',
+            'yi': u'מוסטער רעדן',
+            'zh': u'Template talk',
+            'zh-hk': u'範本討論',
+            'zh-tw': u'範本討論',
+        }
 
-        self.namespaces[12]['ast'] = u'Ayuda'
-        self.namespaces[12]['bs'] = u'Pomoć'
-        self.namespaces[12]['cy'] = u'Cymorth'
-        self.namespaces[12]['jv'] = u'Pitulung'
-        self.namespaces[12]['lb'] = u'Hëllef'
-        self.namespaces[12]['lv'] = u'Palīdzība'
-        self.namespaces[12]['mg'] = u'Aide'
-        self.namespaces[12]['th'] = u'วิธีใช้'
-        self.namespaces[12]['zh-hk'] = u'協助'
-        self.namespaces[12]['zh-tw'] = u'協助'
+        self.namespaces[12] = {
+            '_default': u'Help',
+            'ar': u'مساعدة',
+            'ast': u'Aida',
+            'bg': u'Помощ',
+            'bs': u'Pomoć',
+            'ca': u'Ajuda',
+            'cs': u'Nápověda',
+            'cy': u'Cymorth',
+            'da': u'Hjælp',
+            'de': u'Hilfe',
+            'el': u'Βοήθεια',
+            'eo': u'Helpo',
+            'es': u'Ayuda',
+            'et': u'Juhend',
+            'fa': u'راهنما',
+            'fi': u'Ohje',
+            'fr': u'Aide',
+            'ga': u'Cabhair',
+            'got': u'Help',
+            'he': u'מדריך',
+            'hr': u'Pomoć',
+            'hu': u'Segítség',
+            'id': u'Bantuan',
+            'info': u'Help',
+            'it': u'Aiuto',
+            'jv': u'Pitulung',
+            'ka': u'დახმარება',
+            'km': u'ជំនួយ',
+            'ko': u'도움말',
+            'la': u'Auxilium',
+            'lb': u'Hëllef',
+            'lo': u'ຊ່ວຍເຫຼືອ',
+            'lt': u'Pagalba',
+            'lv': u'Palīdzība',
+            'mg': u'Aide',
+            'mk': u'Помош',
+            'mo': u'Ajutor',
+            'ms': u'Bantuan',
+            'nn': u'Hjelp',
+            'no': u'Hjelp',
+            'oc': u'Ajuda',
+            'pl': u'Pomoc',
+            'pt': u'Ajuda',
+            'ro': u'Ajutor',
+            'ru': u'Справка',
+            'sk': u'Pomoc',
+            'sl': u'Pomoč',
+            'sr': u'Помоћ',
+            'su': u'Pitulung',
+            'sv': u'Hjälp',
+            'th': u'วิธีใช้',
+            'tr': u'Yardım',
+            'uk': u'Довідка',
+            'yi': u'הילף',
+            'zh-hk': u'協助',
+            'zh-tw': u'協助',
+        }
 
-        self.namespaces[13]['ast'] = u'Ayuda discusión'
-        self.namespaces[13]['bs'] = u'Razgovor o pomoći'
-        self.namespaces[13]['cy'] = u'Sgwrs Cymorth'
-        self.namespaces[13]['da'] = u'Hjælp-diskussion'
-        self.namespaces[13]['jv'] = u'Dhiskusi Pitulung'
-        self.namespaces[13]['lb'] = u'Hëllef Diskussioun'
-        self.namespaces[13]['lv'] = u'Palīdzības diskusija'
-        self.namespaces[13]['mg'] = u'Discussion Aide'
-        self.namespaces[13]['mk'] = u'Разговор за помош'
-        self.namespaces[13]['sv'] = u'Hjälpdiskussion'
-        self.namespaces[13]['th'] = u'คุยเรื่องวิธีใช้'
-        self.namespaces[13]['zh-hk'] = u'協助討論'
-        self.namespaces[13]['zh-tw'] = u'協助討論'
+        self.namespaces[13] = {
+            '_default': u'Help talk',
+            'ar': u'نقاش المساعدة',
+            'ast': u'Aida alderique',
+            'bg': u'Помощ беседа',
+            'bs': u'Razgovor o pomoći',
+            'ca': u'Ajuda Discussió',
+            'cs': u'Nápověda diskuse',
+            'cy': u'Sgwrs Cymorth',
+            'da': u'Hjælp-diskussion',
+            'de': u'Hilfe Diskussion',
+            'el': u'Συζήτηση βοήθειας',
+            'eo': u'Helpa diskuto',
+            'es': u'Ayuda Discusión',
+            'et': u'Juhendi arutelu',
+            'fa': u'بحث راهنما',
+            'fi': u'Keskustelu ohjeesta',
+            'fr': u'Discussion Aide',
+            'ga': u'Plé cabhrach',
+            'he': u'שיחת מדריך',
+            'hr': u'Razgovor o pomoći',
+            'hu': u'Segítségvita',
+            'id': u'Pembicaraan Bantuan',
+            'it': u'Discussioni aiuto',
+            'ja': u'Help‐ノート',
+            'jv': u'Dhiskusi Pitulung',
+            'ka': u'დახმარება განხილვა',
+            'km': u'ការពិភាក្សាអំពីជំនួយ',
+            'ko': u'도움말토론',
+            'la': u'Disputatio Auxilii',
+            'lb': u'Hëllef Diskussioun',
+            'li': u'Euverlèk help',
+            'lo': u'ສົນທະນາກ່ຽວກັບຊ່ວຍເຫຼືອ',
+            'lt': u'Pagalbos aptarimas',
+            'lv': u'Palīdzības diskusija',
+            'mg': u'Discussion Aide',
+            'mk': u'Разговор за помош',
+            'mo': u'Discuţie Ajutor',
+            'ms': u'Perbincangan Bantuan',
+            'nn': u'Hjelpdiskusjon',
+            'no': u'Hjelpdiskusjon',
+            'oc': u'Discussion Ajuda',
+            'pl': u'Dyskusja pomocy',
+            'pt': u'Ajuda Discussão',
+            'ro': u'Discuţie Ajutor',
+            'ru': u'Обсуждение справки',
+            'sk': u'Diskusia k pomoci',
+            'sl': u'Pogovor o pomoči',
+            'sr': u'Разговор о помоћи',
+            'su': u'Obrolan pitulung',
+            'sv': u'Hjälpdiskussion',
+            'th': u'คุยเรื่องวิธีใช้',
+            'tr': u'Yardım tartışma',
+            'uk': u'Обговорення довідки',
+            'yi': u'הילף רעדן',
+            'zh-hk': u'協助討論',
+            'zh-tw': u'協助討論',
+        }
 
-        self.namespaces[14]['bs'] = u'Kategorija'
-        self.namespaces[14]['cy'] = u'Categori'
-        self.namespaces[14]['jv'] = u'Kategori'
-        self.namespaces[14]['lb'] = u'Kategorie'
-        self.namespaces[14]['lv'] = u'Kategorija'
-        self.namespaces[14]['mg'] = u'Catégorie'
-        self.namespaces[14]['th'] = u'หมวดหมู่'
-        self.namespaces[14]['zh-hk'] = u'分類'
-        self.namespaces[14]['zh-tw'] = u'分類'
+        self.namespaces[14] = {
+            '_default': u'Category',
+            'ar': u'تصنيف',
+            'ast': u'Categoría',
+            'bg': u'Категория',
+            'bs': u'Kategorija',
+            'ca': u'Categoria',
+            'cs': u'Kategorie',
+            'cy': u'Categori',
+            'da': u'Kategori',
+            'de': u'Kategorie',
+            'el': u'Κατηγορία',
+            'eo': u'Kategorio',
+            'es': u'Categoría',
+            'et': u'Kategooria',
+            'fa': u'رده',
+            'fi': u'Luokka',
+            'fr': u'Catégorie',
+            'ga': u'Catagóir',
+            'he': u'קטגוריה',
+            'hr': u'Kategorija',
+            'hu': u'Kategória',
+            'id': u'Kategori',
+            'it': u'Categoria',
+            'jv': u'Kategori',
+            'ka': u'კატეგორია',
+            'km': u'ចំណាត់ថ្នាក់ក្រុម',
+            'ko': u'분류',
+            'la': u'Categoria',
+            'lb': u'Kategorie',
+            'li': u'Categorie',
+            'lo': u'ໝວດ',
+            'lt': u'Kategorija',
+            'lv': u'Kategorija',
+            'mg': u'Catégorie',
+            'mk': u'Категорија',
+            'mo': u'Categorie',
+            'ms': u'Kategori',
+            'nn': u'Kategori',
+            'no': u'Kategori',
+            'oc': u'Categoria',
+            'pl': u'Kategoria',
+            'pt': u'Categoria',
+            'ro': u'Categorie',
+            'ru': u'Категория',
+            'sk': u'Kategória',
+            'sl': u'Kategorija',
+            'sr': u'Категорија',
+            'su': u'Kategori',
+            'sv': u'Kategori',
+            'th': u'หมวดหมู่',
+            'tr': u'Kategori',
+            'uk': u'Категорія',
+            'yi': u'קאַטעגאָריע',
+            'zh-hk': u'分類',
+            'zh-tw': u'分類',
+        }
 
-        self.namespaces[15]['ast'] = u'Categoría discusión'
-        self.namespaces[15]['bg'] = u'Категория беседа'
-        self.namespaces[15]['bs'] = u'Razgovor o kategoriji'
-        self.namespaces[15]['cy'] = u'Sgwrs Categori'
-        self.namespaces[15]['da'] = u'Kategoridiskussion'
-        self.namespaces[15]['jv'] = u'Dhiskusi Kategori'
-        self.namespaces[15]['lb'] = u'Kategorie Diskussioun'
-        self.namespaces[15]['lv'] = u'Kategorijas diskusija'
-        self.namespaces[15]['mg'] = u'Discussion Catégorie'
-        self.namespaces[15]['mk'] = u'Разговор за категорија'
-        self.namespaces[15]['th'] = u'คุยเรื่องหมวดหมู่'
-        self.namespaces[15]['zh-hk'] = u'分類討論'
-        self.namespaces[15]['zh-tw'] = u'分類討論'
+        self.namespaces[15] = {
+            '_default': u'Category talk',
+            'ar': u'نقاش التصنيف',
+            'ast': u'Categoría alderique',
+            'bg': u'Категория беседа',
+            'bs': u'Razgovor o kategoriji',
+            'ca': u'Categoria Discussió',
+            'common': u'Category talk',
+            'cs': u'Kategorie diskuse',
+            'cy': u'Sgwrs Categori',
+            'da': u'Kategoridiskussion',
+            'de': u'Kategorie Diskussion',
+            'el': u'Συζήτηση κατηγορίας',
+            'eo': u'Kategoria diskuto',
+            'es': u'Categoría Discusión',
+            'et': u'Kategooria arutelu',
+            'fa': u'بحث رده',
+            'fi': u'Keskustelu luokasta',
+            'fr': u'Discussion Catégorie',
+            'ga': u'Plé catagóire',
+            'he': u'שיחת קטגוריה',
+            'hr': u'Razgovor o kategoriji',
+            'hu': u'Kategóriavita',
+            'id': u'Pembicaraan Kategori',
+            'it': u'Discussioni categoria',
+            'ja': u'Category‐ノート',
+            'jv': u'Dhiskusi Kategori',
+            'ka': u'კატეგორია განხილვა',
+            'km': u'ការពិភាក្សាអំពីចំណាត់ថ្នាក់ក្រុម',
+            'ko': u'분류토론',
+            'la': u'Disputatio Categoriae',
+            'lb': u'Kategorie Diskussioun',
+            'li': u'Euverlèk categorie',
+            'lo': u'ສົນທະນາກ່ຽວກັບໝວດ',
+            'lt': u'Kategorijos aptarimas',
+            'lv': u'Kategorijas diskusija',
+            'mg': u'Discussion Catégorie',
+            'mk': u'Разговор за категорија',
+            'mo': u'Discuţie Categorie',
+            'ms': u'Perbincangan Kategori',
+            'nn': u'Kategoridiskusjon',
+            'no': u'Kategoridiskusjon',
+            'oc': u'Discussion Categoria',
+            'pl': u'Dyskusja kategorii',
+            'pt': u'Categoria Discussão',
+            'ro': u'Discuţie Categorie',
+            'ru': u'Обсуждение категории',
+            'sk': u'Diskusia ku kategórii',
+            'sl': u'Pogovor o kategoriji',
+            'sr': u'Разговор о категорији',
+            'su': u'Obrolan kategori',
+            'sv': u'Kategoridiskussion',
+            'th': u'คุยเรื่องหมวดหมู่',
+            'tr': u'Kategori tartışma',
+            'uk': u'Обговорення категорії',
+            'yi': u'קאַטעגאָריע רעדן',
+            'zh-hk': u'分類討論',
+            'zh-tw': u'分類討論',
+        }
 
         self.namespaces[16] = {
-          'fi': u'Foorumi',
-          'got': u'Forum',
-          'info': u'Game',
-#      'ko': u'漢字',
-          'meta': u'UnSource',
-          'nl': u'Portaal',
-          'pt': u'Esplanada',
-          'th': u'อันไซโคลพีเดีย',
-          'zh-hk': u'偽基新聞',
-          'zh-tw': u'偽基新聞'
+            '_default': u'',
+            'fi': u'Foorumi',
+            'got': u'Forum',
+            'info': u'Game',
+            'meta': u'UnSource',
+            'nl': u'Portaal',
+            'pt': u'Esplanada',
+            'th': u'อันไซโคลพีเดีย',
+            'zh-hk': u'偽基新聞',
+            'zh-tw': u'偽基新聞'
         }
 
         self.namespaces[17] = {
-          'fi': u'Keskustelu foorumista',
-          'got': u'Forum gawaurdja',
-          'info': u'Game talk',
-#      'ko': u'討論',
-          'meta': u'UnSource talk',
-          'nl': u'Overleg portaal',
-          'pt': u'Esplanada Discussão',
-          'th': u'คุยเรื่องอันไซโคลพีเดีย',
-          'zh-hk': u'偽基新聞討論',
-          'zh-tw': u'偽基新聞討論'
+            '_default': u'',
+            'fi': u'Keskustelu foorumista',
+            'got': u'Forum gawaurdja',
+            'info': u'Game talk',
+            'meta': u'UnSource talk',
+            'nl': u'Overleg portaal',
+            'pt': u'Esplanada Discussão',
+            'th': u'คุยเรื่องอันไซโคลพีเดีย',
+            'zh-hk': u'偽基新聞討論',
+            'zh-tw': u'偽基新聞討論'
         }
 
         self.namespaces[18] = {
@@ -411,6 +1122,7 @@ class Family(family.Family):
             'pt': u'Fatos',
             'th': u'ไร้ข่าว',
             'zh-hk': u'偽基辭典',
+            'zh-tw': u'偽基辭典',
         }
 
         self.namespaces[19] = {
@@ -423,6 +1135,7 @@ class Family(family.Family):
             'pt': u'Fatos Discussão',
             'th': u'คุยเรื่องไร้ข่าว',
             'zh-hk': u'偽基辭典討論',
+            'zh-tw': u'偽基辭典討論',
         }
 
         self.namespaces[20] = {
@@ -434,6 +1147,7 @@ class Family(family.Family):
             'pt': u'Forum',
             'th': u'ไร้วิทยาลัย',
             'zh-hk': u'動漫遊戲',
+            'zh-tw': u'動漫遊戲',
         }
 
         self.namespaces[21] = {
@@ -445,109 +1159,121 @@ class Family(family.Family):
             'pt': u'Forum Discussão',
             'th': u'คุยเรื่องไร้วิทยาลัย',
             'zh-hk': u'動漫遊戲討論',
+            'zh-tw': u'動漫遊戲討論',
         }
 
         self.namespaces[22] = {
+            '_default': u'',
             'fi': u'Hikikirjasto',
             'meta': u'UnN',
             'nl': u'OnBoeken',
+            'pt': u'Descitações',
             'th': u'ไร้พจนานุกรม',
             'zh-hk': u'偽基文庫',
             'zh-tw': u'偽基文庫',
         }
 
         self.namespaces[23] = {
+            '_default': u'',
             'fi': u'Keskustelu hikikirjasta',
             'meta': u'UnN talk',
             'nl': u'Overleg OnBoeken',
+            'pt': u'Descitações Discussão',
             'th': u'คุยเรื่องไร้พจนานุกรม',
             'zh-hk': u'偽基文庫討論',
             'zh-tw': u'偽基文庫討論',
         }
 
         self.namespaces[24] = {
+            '_default': u'',
             'fi': u'Hikisitaatit',
             'meta': u'Forum',
+            'pt': u'Uiquipédia',
             'th': u'ไร้ชีวประวัติ',
             'zh-hk': u'主題展館',
+            'zh-tw': u'主題展館',
         }
 
         self.namespaces[25] = {
             'fi': u'Keskustelu hikisitaatista',
             'meta': u'Forum talk',
+            'pt': u'Uiquipédia Discussão',
             'th': u'คุยเรื่องไร้ชีวประวัติ',
             'zh-hk': u'主題展館討論',
+            'zh-tw': u'主題展館討論',
         }
 
         self.namespaces[26] = {
-          'fi': u'Hömppäpedia',
-          'th': u'สภาน้ำชา',
-          'zh-hk': u'論壇',
-          'zh-tw': u'論壇'
+            'fi': u'Hömppäpedia',
+            'th': u'สภาน้ำชา',
+            'zh-hk': u'論壇',
+            'zh-tw': u'論壇'
         }
 
         self.namespaces[27] = {
-          'fi': u'Höpinä hömpästä',
-          'th': u'คุยเรื่องสภาน้ำชา',
-          'zh-hk': u'論壇討論',
-          'zh-tw': u'論壇討論'
+            'fi': u'Höpinä hömpästä',
+            'th': u'คุยเรื่องสภาน้ำชา',
+            'zh-hk': u'論壇討論',
+            'zh-tw': u'論壇討論'
         }
 
         self.namespaces[28] = {
-          'fi': u'Hikipeli',
-          'nl': u'Ongerijmd',
-          'th': u'บอร์ด',
-          'zh-hk': u'詞意分道',
-          'zh-tw': u'詞意分道'
+            'fi': u'Hikipeli',
+            'nl': u'Ongerijmd',
+            'th': u'บอร์ด',
+            'zh-hk': u'詞意分道',
+            'zh-tw': u'詞意分道'
         }
 
         self.namespaces[29] = {
-          'fi': u'Hihitys Hikipelistä',
-          'th': u'คุยเรื่องบอร์ด',
-          'zh-hk': u'詞意分道討論',
-          'zh-tw': u'詞意分道討論'
+            'fi': u'Hihitys Hikipelistä',
+            'th': u'คุยเรื่องบอร์ด',
+            'zh-hk': u'詞意分道討論',
+            'zh-tw': u'詞意分道討論'
         }
 
         self.namespaces[30] = {
-          'pt': u'Deslivros',
-          'th': u'ไร้ซอร์ซ',
-          'zh-hk': u'臺語',
-          'zh-tw': u'臺語'
+            'fi': u'Hikiopisto',
+            'pt': u'Deslivros',
+            'th': u'ไร้ซอร์ซ',
+            'zh-hk': u'臺語',
+            'zh-tw': u'臺語',
         }
 
         self.namespaces[31] = {
-          'pt': u'Deslivros Discussão',
-          'th': u'คุยเรื่องไร้ซอร์ซ',
-          'zh-hk': u'臺語討論',
-          'zh-tw': u'臺語討論'
+            'fi': u'Keskustelu hikikurssista',
+            'pt': u'Deslivros Discussão',
+            'th': u'คุยเรื่องไร้ซอร์ซ',
+            'zh-hk': u'臺語討論',
+            'zh-tw': u'臺語討論',
         }
 
         self.namespaces[32] = {
-          'ja': u'Portal',
-          'pt': u'Desentrevistas',
-          'th': u'ไร้คำคม',
-          'zh-hk': u'香港語',
-          'zh-tw': u'香港語'
+            'fi': u'Hikiaineisto',
+            'ja': u'Portal',
+            'pt': u'Desentrevistas',
+            'th': u'ไร้คำคม',
+            'zh-hk': u'香港語',
         }
 
         self.namespaces[33] = {
-          'ja': u'Portal talk',
-          'pt': u'Desentrevistas Discussão',
-          'th': u'คุยเรื่องไร้คำคม',
-          'zh-hk': u'香港語討論',
-          'zh-tw': u'香港語討論'
+            'fi': u'Keskustelu hikiaineistosta',
+            'ja': u'Portal talk',
+            'pt': u'Desentrevistas Discussão',
+            'th': u'คุยเรื่องไร้คำคม',
+            'zh-hk': u'香港語討論',
         }
 
         self.namespaces[34] = {
-          'th': u'ไร้ภาพ',
-          'zh-hk': u'書面語',
-          'zh-tw': u'書面語'
+            'th': u'ไร้ภาพ',
+            'zh-hk': u'書面語',
+            'zh-tw': u'書面語'
         }
 
         self.namespaces[35] = {
-          'th': u'คุยเรื่องไร้ภาพ',
-          'zh-hk': u'書面語討論',
-          'zh-tw': u'書面語討論'
+            'th': u'คุยเรื่องไร้ภาพ',
+            'zh-hk': u'書面語討論',
+            'zh-tw': u'書面語討論'
         }
 
         self.namespaces[36] = {
@@ -568,6 +1294,7 @@ class Family(family.Family):
             'no': u'Ikkenytt',
             'pl': u'Cytaty',
             'sv': u'PsykNyheter',
+            'tr': u'YanSözlük',
         }
 
         self.namespaces[101] = {
@@ -578,12 +1305,12 @@ class Family(family.Family):
             'no': u'Ikkenytt-diskusjon',
             'pl': u'Dyskusja cytatów',
             'sv': u'PsykNyheter diskussion',
+            'tr': u'YanSözlük tartışma',
         }
 
         self.namespaces[102] = {
+            '_default': u'UnNews',
             'de': u'Undictionary',
-            'en': u'UnNews',
-            'ja': u'UnNews',
             'ko': u'포럼',
             'nn': u'Ikktionary',
             'no': u'Ikktionary',
@@ -593,152 +1320,116 @@ class Family(family.Family):
         }
 
         self.namespaces[103] = {
+            '_default': u'UnNews talk',
             'de': u'Undictionary Diskussion',
-            'en': u'UnNews talk',
-            'ja': u'UnNews talk',
             'ko': u'포럼토론',
             'nn': u'Ikktionary-diskusjon',
             'no': u'Ikktionary-diskusjon',
             'pl': u'Dyskusja NonNews',
             'sv': u'Forumdiskussion',
+            'tr': u'YanHaber tartışma',
         }
 
         self.namespaces[104] = {
+            '_default': u'Undictionary',
             'de': u'UnBooks',
-            'en': u'Undictionary',
-            'ja': u'Undictionary',
             'ko': u'백괴뉴스',
             'pl': u'Nonźródła',
+            'sv': u'Psyktionary',
         }
 
         self.namespaces[105] = {
+            '_default': u'Undictionary talk',
             'de': u'UnBooks Diskussion',
-            'en': u'Undictionary talk',
-            'ja': u'Undictionary talk',
             'ko': u'백괴뉴스토론',
             'pl': u'Dyskusja nonźródeł',
+            'sv': u'Psyktionary diskussion',
         }
 
         self.namespaces[106] = {
-            '_default': '',
-            'en': u'Game',
-            'ja': u'Game',
+            '_default': 'Game',
             'ko': u'백괴낱말사전',
             'pl': u'Słownik',
             'pt': u'Desnotícias',
+            'sv': u'PsykCitat',
         }
 
         self.namespaces[107] = {
-            'en': u'Game talk',
-            'ja': u'Game talk',
+            '_default': u'Game talk',
             'ko': u'백괴낱말사전토론',
             'pl': u'Dyskusja słownika',
             'pt': u'Desnotícias Discussão',
+            'sv': u'PsykCitat diskussion',
         }
 
         self.namespaces[108] = {
-            'en': u'Babel',
+            '_default': u'Babel',
             'ko': u'해설',
             'pl': u'Gra',
             'pt': u'Jogo',
+            'sv': u'Spel',
         }
 
         self.namespaces[109] = {
-            'en': u'Babel talk',
+            '_default': u'Babel talk',
             'ko': u'해설토론',
             'pl': u'Dyskusja gry',
             'pt': u'Jogo Discussão',
+            'sv': u'Speldiskussion',
         }
 
         self.namespaces[110] = {
-            'ar': u'Forum',
-            'ast': u'Forum',
-            'ca': u'Forum',
-            'cs': u'Forum',
-            'da': u'Forum',
-            'de': u'Forum',
-            'el': u'Forum',
-            'en': u'Forum',
-            'eo': u'Forum',
-            'es': u'Forum',
-            'fr': u'Forum',
+            '_default': u'Forum',
             'he': u'בית קפה',
-            'id': u'Forum',
-            'it': u'Forum',
-            'ja': u'Forum',
-            'jv': u'Forum',
             'ko': u'백괴식당',
-            'la': u'Forum',
-            'nn': u'Forum',
-            'no': u'Forum',
-            'pl': u'Forum',
             'pt': u'Descionário',
             'ru': u'Форум',
-            'sk': u'Forum',
-            'su': u'Forum',
             'sv': u'PsykBöcker',
             'tr': u'Astroloji',
-            'yi': u'Forum',
         }
 
         self.namespaces[111] = {
-            'ar': u'Forum talk',
-            'ast': u'Forum talk',
-            'ca': u'Forum talk',
-            'cs': u'Forum talk',
+            '_default': u'Forum talk',
             'da': u'Forumdiskussion',
-            'de': u'Forum talk',
-            'el': u'Forum talk',
-            'en': u'Forum talk',
-            'eo': u'Forum talk',
-            'es': u'Forum talk',
             'fr': u'Discussion Forum',
             'he': u'שיחת בית קפה',
-            'id': u'Forum talk',
-            'it': u'Forum talk',
-            'ja': u'Forum talk',
-            'jv': u'Forum talk',
             'ko': u'백괴식당토론',
-            'la': u'Forum talk',
             'nn': u'Forum-diskusjon',
             'no': u'Forum-diskusjon',
             'pl': u'Dyskusja forum',
             'pt': u'Descionário Discussão',
             'ru': u'Обсуждение форума',
-            'sk': u'Forum talk',
-            'su': u'Forum talk',
             'sv': u'PsykBöckerdiskussion',
             'tr': u'Astroloji tartışma',
-            'yi': u'Forum talk',
         }
 
         self.namespaces[112] = {
+            '_default': u'UnTunes',
             'cs': u'Regál',
-            'en': u'UnTunes',
             'es': u'Incinoticias',
             'fr': u'Désinformation',
             'he': u'איןספר',
             'it': u'NonNotizie',
-            'ja': u'UnTunes',
             'ko': u'백괴우주',
             'nn': u'Hvordan',
             'no': u'Hvordan',
             'pl': u'Portal',
+            'tr': u'Forum',
             'zh': u'伪基新闻',
         }
 
         self.namespaces[113] = {
+            '_default': u'UnTunes talk',
             'cs': u'Regál diskuse',
-            'en': u'UnTunes talk',
             'es': u'Incinoticias Discusión',
             'fr': u'Discussion Désinformation',
             'he': u'שיחת איןספר',
             'it': u'Discussioni NonNotizie',
-            'ja': u'UnTunes talk',
             'ko': u'백괴우주토론',
             'nn': u'Hvordan-diskusjon',
             'no': u'Hvordan-diskusjon',
             'pl': u'Dyskusja portalu',
+            'tr': u'Forum tartışma',
             'zh': u'伪基新闻 talk',
         }
 
@@ -749,6 +1440,7 @@ class Family(family.Family):
             'he': u'איןחדש',
             'nn': u'Hvorfor',
             'no': u'Hvorfor',
+            'pl': u'Poradnik',
             'zh': u'伪基文库',
         }
 
@@ -759,52 +1451,133 @@ class Family(family.Family):
             'he': u'שיחת איןחדש',
             'nn': u'Hvorfor-diskusjon',
             'no': u'Hvorfor-diskusjon',
+            'pl': u'Dyskusja poradnika',
             'zh': u'伪基文库 talk',
         }
 
+        self.namespaces[116] = {
+            '_default': u'',
+            'es': u'Incijuegos',
+            'he': u'איןטקסט',
+            'it': u'Giochi',
+            'zh': u'伪基音乐',
+        }
+
+        self.namespaces[117] = {
+            '_default': u'',
+            'es': u'Incijuegos Discusión',
+            'he': u'שיחת איןטקסט',
+            'it': u'Giochi',
+            'zh': u'伪基音乐 talk',
+        }
+
+        self.namespaces[118] = {
+            '_default': u'',
+            'es': u'Incijuegos',
+            'he': u'בית קפה',
+            'it': u'Giochi',
+            'zh': u'伪基词典',
+        }
+
+        self.namespaces[119] = {
+            '_default': u'',
+            'es': u'Incijuegos',
+            'he': u'בית קפה שיחת',
+            'it': u'Discussioni Giochi',
+            'zh': u'伪基词典 talk',
+        }
+
         self.namespaces[120] = {
+            '_default': u'',
             'he': u'איןמילון',
             'it': u'NonCitazioni',
             'pt': u'Privado',
+            'tr': u'YanMagazin',
         }
 
         self.namespaces[121] = {
+            '_default': u'',
             'he': u'שיחת איןמילון',
             'it': u'Discussioni NonCitazioni',
             'pt': u'Privado Discussão',
+            'tr': u'YanMagazin tartışma',
         }
 
         self.namespaces[122] = {
+            '_default': u'',
             'he': u'איןמינים',
             'it': u'NonDizionario',
+            'pt': u'Regra',
         }
 
         self.namespaces[123] = {
+            '_default': u'',
             'he': u'שיחת איןמינים',
             'it': u'Discussioni NonDizionario',
+            'pt': u'Regra Discussão',
         }
+
+        self.namespaces[400] = {
+            '_default': u'Video',
+        }
+
+        self.namespaces[401] = {
+            '_default': u'Video talk',
+        }
+
+        self.namespaces[402] = {
+            '_default': u'',
+            'zh': u'Video Template',
+        }
+
+        self.namespaces[500] = {
+            '_default': u'User blog',
+            'de': u'Benutzer Blog',
+        }
+
+        self.namespaces[501] = {
+            '_default': u'User blog comment',
+            'de': u'Benutzer Blog Kommentare',
+        }
+
+        self.namespaces[502] = {
+            '_default': u'Blog',
+        }
+
+        self.namespaces[503] = {
+            '_default': u'Blog talk',
+            'de': u'Blog Diskussion',
+        }
+
 
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these
         # for another wiki family.
-        self.languages_by_size  = ['en', 'ja', 'pt', 'it', 'pl', 'fr', 'fi', 'es', 'zh-tw', 'de', 'no']     
+        self.languages_by_size  = [
+            'en','pt','ja','pl','it','fr','es','fi','zh-tw','zh-hk','de','da','no',
+            'ko','ru','th','el','cs','he','zh','sv','hu','nl','id','ar','sk','uk',
+            'eo','tr','ca','fa','hr','sr','lt','tl','lv','bg','la','ro','ms','ast',
+            'mk','cy','et','sl','mo','bs','mg','yi','ka','got','zombie','bn','li',
+            'km','lb','lo','su','jv','ga','oc'
+        ]     
 
-    def hostname(self,code):
-        return self.langs[code]
+        self.alphabetic_revised = [
+            'ar','ast','bg','bn','bs','ca','common','cs','cy','da','de','el','en',
+            'eo','es','et','fa','fi','fr','ga','got','he','hr','hu','id','info','it',
+            'ja','jv','ka','km','ko','la','lb','li','lo','lt','lv','meta','mg','mk',
+            'mo','ms','nl','nn','no','oc','pl','pt','ro','ru','sk','sl','sr','su',
+            'sv','th','tl','tr','uk','yi','zh-hk','zh-tw','zh','zombie',
+        ]
 
-    def path(self, code):
-        if code == 'ko':
-           return '/w/index.php'
-        return '/index.php'
+
+    def scriptpath(self, code):
+        if code in ['ko', 'nl']:
+            return '/w'
+        return ''
 
     def version(self, code):
         return '1.12'
-
-    def apipath(self, code):
-        if code == 'ko':
-           return '/w/api.php'
-        return '/api.php'
 
     def code2encoding(self,code):
         return 'utf-8'

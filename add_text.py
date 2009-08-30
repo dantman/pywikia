@@ -50,7 +50,7 @@ __version__ = '$Id: add_text.py,v 1.5 2008/04/25 17:08:30 filnik Exp$'
 #
 
 import re, pagegenerators, urllib2, urllib
-import wikipedia, catlib
+import wikipedia
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
@@ -164,7 +164,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         result = re.findall(regexSkip, text)
         if result != []:
             wikipedia.output(u'Exception! regex (or word) used with -except is in the page. Skip!')
-            return (False, always) # continue
+            return (False, False, always) # continue
     # If not up, text put below
     if not up:
         newtext = text
@@ -215,7 +215,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             if choice == 'a':
                 always = True
             if choice == 'n':
-                return (False, always)
+                return (False, False, always)
             if choice == 'y' or always:
                 try:
                     if always:
@@ -224,7 +224,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                         page.put_async(newtext, summary)
                 except wikipedia.EditConflict:
                     wikipedia.output(u'Edit conflict! skip!')
-                    return (False, always)
+                    return (False, False, always)
                 except wikipedia.ServerError:
                     errorCount += 1
                     if errorCount < 5:
@@ -241,11 +241,11 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                     return (False, always)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Skipping %s (locked page)' % page.title())
-                    return (False, always)
+                    return (False, False, always)
                 else:
                     # Break only if the errors are one after the other...
                     errorCount = 0
-                    return (True, always)
+                    return (True, True, always)
         else:
             return (text, newtext, always)
 
@@ -304,7 +304,7 @@ def main():
         raise NoEnoughData('You have to specify the generator you want to use for the script!')
     # Main Loop
     for page in generator:
-        (status, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
+        (text, newtext, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
 
 if __name__ == "__main__":
     try:

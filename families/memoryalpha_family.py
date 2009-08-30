@@ -7,17 +7,27 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'memoryalpha'
-
+        self.languages_by_size = ['bg', 'cs', 'en', 'de', 'es', 'mu', 'nl', 'sv', 'fr', 'eo', 'pl', 'zh-cn', 'ja', 'it', 'pt', 'sr']
         self.langs = {
-            'de': None,
-            'en': None,
-            'eo': None,
-            'es': None,
-            'fr': None,
-            'nl': None,
-            'pl': None,
-            'sv': None,
-            }
+            'bg':'bg',
+            'cs':'cs',
+            'de':'de',
+            'en':'en',
+            'eo':'eo',
+            'es':'es',
+            'mu':'mu',
+            'fr':'fr',
+            'it':'it',
+            'ja':'ja',
+            'nl':'nl',
+            'pl':'pl',
+            'pt':'pt',
+            'ru':'ru',
+            'sr':'sr',
+            'sv':'sv',
+            'zh-cn':'zh-cn',
+        }
+
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Użytkownik'
@@ -27,35 +37,103 @@ class Family(family.Family):
 
         self.namespaces[4] = {
             '_default': u'Memory Alpha',
+            'cs': u'encyklopedie Star Treku',
+            'pt': u'Memória Alfa',
+            'ru': u'Memory Alpha - A Wikia wiki',
+            'sr': u'Успомене Алфе',
+            'zh-cn': u'阿尔法记忆',
         }
         self.namespaces[5] = {
             '_default': u'Memory Alpha talk',
+            'bg': u'Memory Alpha беседа',
+            'cs': u'encyklopedie Star Treku diskuse',
             'de': u'Memory Alpha Diskussion',
             'eo': u'Memory Alpha diskuto',
             'es': u'Memory Alpha Discusión',
             'fr': u'Discussion Memory Alpha',
+            'it': u'Discussioni Memory Alpha',
+            'ja': u'Memory Alpha‐ノート',
             'nl': u'Overleg Memory Alpha',
             'pl': u'Dyskusja Memory Alpha',
+            'pt': u'Memória Alfa Discussão',
+            'ru': u'Обсуждение Memory Alpha - A Wikia wiki',
+            'sr': u'Разговор о Успомене Алфе',
             'sv': u'Memory Alphadiskussion',
+            'zh-cn': u'阿尔法记忆 talk',
         }
+        self.namespaces[6]['pt'] = u'Arquivo'
+
+        self.namespaces[7]['pt'] = u'Arquivo Discussão'
+        self.namespaces[7]['fr'] = u'Discussion Fichier'
+
         self.namespaces[100] = {
             '_default': u'Forum',
+            'ru': u'Форум',
+            'pt': u'Fórum',
         }
         self.namespaces[101] = {
             '_default': u'Forum talk',
+            'pl': u'Dyskusja forum',
+            'ru': u'Обсуждение форума',
             'de': u'Forum Diskussion',
+            'pt': u'Fórum Discussão',
+        }
+        self.namespaces[102] = {
+            '_default': u'Portal',
+        }
+        self.namespaces[103] = {
+            '_default': u'Portal talk',
+            'de': u'Portal Diskussion',
+            'pt': u'Portal Discussão',
+        }
+        self.namespaces[110] = {
+            '_default': u'Forum',
+            'ru': u'Форум',
+        }
+        self.namespaces[111] = {
+            '_default': u'Forum talk',
+            'pl': u'Dyskusja forum',
+            'ru': u'Обсуждение форума',
+        }
+        self.namespaces[400] = {
+            '_default': u'Video',
+        }
+        self.namespaces[401] = {
+            '_default': u'Video talk',
+            'de': u'Video Diskussion',
+            'pl': u'Dyskusja Video',
+        }
+        self.namespaces[402] = {
+            '_default': u'Video Template',
+        }
+        self.namespaces[500] = {
+            '_default': u'User blog',
+            'de': u'Benutzer Blog',
+        }
+        self.namespaces[501] = {
+            '_default': u'User blog comment',
+            'de': u'Benutzer Blog Kommentare',
+        }
+        self.namespaces[502] = {
+            '_default': u'Blog',
+        }
+        self.namespaces[503] = {
+            '_default': u'Blog talk',
+            'de': u'Blog Diskussion',
         }
 
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these
         # for another wiki family.
-        self.languages_by_size = ['en', 'de', 'es', 'nl', 'sv', 'fr', 'eo', 'pl']
 
-        alphabetic = ['de', 'en', 'es', 'eo', 'fr', 'nl', 'pl', 'sv']
+        self.alphabetic_revised = ['de', 'en', 'es', 'eo', 'fr', 'nl', 'pl', 'sv']
+
+        self.obsolete = { 'zh':'zh-cn',}
+
 
     def hostname(self,code):
-        return 'www.memory-alpha.org'
+        return 'memory-alpha.org'
 
     def scriptpath(self, code):
         return '/%s' % code
