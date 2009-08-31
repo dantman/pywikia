@@ -29,7 +29,7 @@ Todo:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: upload_to_commons.py 69 2009-08-23 11:44:26Z multichill $'
+__version__ = '$Id$'
 
 import sys, urllib, re,  StringIO
 import wikipedia, config, query, imagerecat, upload
