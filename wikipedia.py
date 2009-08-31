@@ -2283,7 +2283,6 @@ not supported by PyWikipediaBot!"""
         unless getAll is True.
 
         """
-        site = self.site()
 
         # regular expression matching one edit in the version history.
         # results will have 4 groups: oldid, edit date/time, user name, and edit
@@ -2297,6 +2296,7 @@ not supported by PyWikipediaBot!"""
         startFromPage = None
         thisHistoryDone = False
         skip = False # Used in determining whether we need to skip the first page
+        dataQuery = []
 
         RLinkToNextPage = re.compile('&amp;offset=(.*?)&amp;')
 
@@ -2309,6 +2309,7 @@ not supported by PyWikipediaBot!"""
                 # Cause a reload, or at least make the loop run
                 thisHistoryDone = False
                 skip = True
+                dataQuery = self._versionhistoryearliest
             else:
                 thisHistoryDone = True
         elif not hasattr(self, '_versionhistory') or forceReload:
@@ -2317,11 +2318,12 @@ not supported by PyWikipediaBot!"""
             # Cause a reload, or at least make the loop run
             thisHistoryDone = False
             skip = True
+            dataQuery = self._versionhistory
         else:
             thisHistoryDone = True
 
         while not thisHistoryDone:
-            path = site.family.version_history_address(self.site().language(), self.urlname(), revCount)
+            path = self.site().family.version_history_address(self.site().language(), self.urlname(), revCount)
 
             if reverseOrder:
                 path += '&dir=prev'
@@ -2341,108 +2343,60 @@ not supported by PyWikipediaBot!"""
                 else:
                     output(u'Getting version history of %s' % self.aslink(forceInterwiki = True))
 
-            txt = site.getUrl(path)
+            txt = self.site().getUrl(path)
 
             # save a copy of the text
             self_txt = txt
 
-            if reverseOrder:
-                # If we are getting all of the page history...
-                if getAll:
-                    if len(self._versionhistoryearliest) == 0:
-                        matchObj = RLinkToNextPage.search(self_txt)
-                        if matchObj:
-                            startFromPage = matchObj.group(1)
-                        else:
-                            thisHistoryDone = True
+            # If we are getting all of the page history...
+            if getAll:
+                #Find the nextPage link, if not exist, the page is last history page 
+                matchObj = RLinkToNextPage.search(self_txt)
+                if matchObj:
+                    startFromPage = matchObj.group(1)
+                else:
+                    thisHistoryDone = True
 
-                        edits = editR.findall(self_txt)
+                if len(dataQuery) == 0:
+                    edits = editR.findall(self_txt)
+                    if reverseOrder:
                         edits.reverse()
-                        for edit in edits:
-                            self._versionhistoryearliest.append(edit)
-                        if len(edits) < revCount:
-                            thisHistoryDone = True
-                    else:
-                        if not skip:
-                            edits = editR.findall(self_txt)
-                            edits.reverse()
-                            for edit in edits:
-                                self._versionhistoryearliest.append(edit)
-                            if len(edits) < revCount:
-                                thisHistoryDone = True
-
-                            matchObj = RLinkToNextPage.search(self_txt)
-                            if matchObj:
-                                startFromPage = matchObj.group(1)
-                            else:
-                                thisHistoryDone = True
-
-                        else:
-                            # Skip the first page only,
-                            skip = False
-
-                            matchObj = RLinkToNextPage.search(self_txt)
-                            if matchObj:
-                                startFromPage = matchObj.group(1)
-                            else:
-                                thisHistoryDone = True
+                    #for edit in edits:
+                    dataQuery.extend([edit for edit in edits])
+                    if len(edits) < revCount:
+                        thisHistoryDone = True
                 else:
-                    # If we are not getting all, we stop on the first page.
-                    for edit in editR.findall(self_txt):
-                        self._versionhistoryearliest.append(edit)
-                    self._versionhistoryearliest.reverse()
-
-                    thisHistoryDone = True
-            else:
-                # If we are getting all of the page history...
-                if getAll:
-                    if len(self._versionhistory) == 0:
-                        matchObj = RLinkToNextPage.search(self_txt)
-                        if matchObj:
-                            startFromPage = matchObj.group(1)
-                        else:
-                            thisHistoryDone = True
-
+                    if not skip:
                         edits = editR.findall(self_txt)
-                        for edit in edits:
-                            self._versionhistory.append(edit)
+                        if reverseOrder:
+                            edits.reverse()
+                        #for edit in edits:
+                        dataQuery.extend([edit for edit in edits])
                         if len(edits) < revCount:
                             thisHistoryDone = True
                     else:
-                        if not skip:
-                            edits = editR.findall(self_txt)
-                            for edit in edits:
-                                self._versionhistory.append(edit)
-                            if len(edits) < revCount:
-                                thisHistoryDone = True
-
-                            matchObj = RLinkToNextPage.findall(self_txt)
-                            if len(matchObj) >= 2:
-                                startFromPage = matchObj[1]
-                            else:
-                                thisHistoryDone = True
-                        else:
-                            # Skip the first page only,
-                            skip = False
-
-                            matchObj = RLinkToNextPage.search(self_txt)
-                            if matchObj:
-                                startFromPage = matchObj.group(1)
-                            else:
-                                thisHistoryDone = True
-                else:
-                    # If we are not getting all, we stop on the first page.
-                    for edit in editR.findall(self_txt):
-                        self._versionhistory.append(edit)
-
-                    thisHistoryDone = True
+                        # Skip the first page only,
+                        skip = False
+            else:
+                # If we are not getting all, we stop on the first page.
+                #for edit in editR.findall(self_txt):
+                dataQuery.extend([edit for edit in editR.findall(self_txt)] )
+                if reverseOrder:
+                    dataQuery.reverse()
+                thisHistoryDone = True
 
         if reverseOrder:
             # Return only revCount edits, even if the version history is extensive
+            if dataQuery != []:
+                self._versionhistoryearliest = dataQuery
+                del dataQuery
             if len(self._versionhistoryearliest) > revCount and not getAll:
                 return self._versionhistoryearliest[0:revCount]
             return self._versionhistoryearliest
 
+        if dataQuery != []:
+            self._versionhistory = dataQuery
+            del dataQuery
         # Return only revCount edits, even if the version history is extensive
         if len(self._versionhistory) > revCount and not getAll:
             return self._versionhistory[0:revCount]
