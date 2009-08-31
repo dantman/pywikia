@@ -1254,7 +1254,7 @@ def uploadedYesterday(site = None):
 
     return pagegenerators.PagesFromTitlesGenerator(result, site)
 
-def recentChanges(site = None, delay=60, block=70):
+def recentChanges(site = None, delay=0, block=70):
     '''
     Return a pagegenerator containing all the images edited in a certain timespan.
     The delay is the amount of minutes to wait and the block is the timespan to return images in.
@@ -1348,7 +1348,7 @@ def main(args):
         if arg.startswith('-yesterday'):
             generator = uploadedYesterday(site)
         elif arg.startswith('-recentchanges'):
-            generator = recentChanges(site)
+            generator = recentChanges(site=site, delay=120)
         else:
             genFactory.handleArg(arg)
 
