@@ -31,7 +31,7 @@ Todo:
 #
 __version__ = '$Id$'
 
-import sys, urllib, re,  StringIO
+import sys, urllib, re,  StringIO, hashlib, base64
 import wikipedia, config, query, imagerecat, upload
 
 import flickrapi                  # see: http://stuvel.eu/projects/flickrapi
@@ -60,6 +60,37 @@ def isAllowedLicense(photoInfo = None):
     else:
         #We don't accept other licenses
         return False
+
+def getPhotoUrl(photoSizes=None):
+    '''
+    Get the url of the jpg file with the highest resolution
+    '''
+    url = ''
+    # The assumption is that the largest image is last
+    for size in photoSizes.find('sizes').findall('size'):
+        url = size.attrib['source']
+    return url
+
+def downloadPhoto(photoUrl=''):
+    imageFile=urllib.urlopen(photoUrl).read()
+    return StringIO.StringIO(imageFile)
+
+def findDuplicateImages(photo=None, site=wikipedia.getSite()):
+    result = []
+    hashObject = hashlib.sha1()
+    hashObject.update(photo.getvalue())
+    sha1Hash = base64.b16encode(hashObject.digest())
+
+    params = {
+	'action'    : 'query',
+        'list'      : 'allimages',
+        'aisha1'    : sha1Hash,
+        'aiprop'    : '',
+    }
+    data = query.GetData(params, wikipedia.getSite(), useAPI = True, encodeTitle = False)
+    for image in data['query']['allimages']:
+        result.append(image['name'])
+    return result
 
 def getTags(photoInfo = None):
     '''
@@ -116,16 +147,7 @@ def cleanUpTitle(title):
     title = title.replace(" ", "_")   
 
     return title
-
-def getPhotoUrl(photoSizes=None):
-    '''
-    Get the url of the jpg file with the highest resolution
-    '''
-    url = ''
-    # The assumption is that the largest image is last
-    for size in photoSizes.find('sizes').findall('size'):
-        url = size.attrib['source']
-    return url
+ 
 
 def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', override=u''):
     '''
@@ -143,57 +165,28 @@ def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', ov
         if(reviewer):
             description = description.replace(u'{{flickrreview}}', u'{{flickrreview|' + reviewer + '|{{subst:CURRENTYEAR}}-{{subst:CURRENTMONTH}}-{{subst:CURRENTDAY2}}}}')
     description = description.replace(u'\r\n', u'\n')
-    return description
-
-def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u''):
-    result = []    
-    # http://www.flickr.com/services/api/flickr.groups.pools.getPhotos.html
-    if(group_id):
-        #First get the total number of photo's in the group
-        photos = flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page='1')
-        pages = photos.find('photos').attrib['pages']
-
-        for i in range(1, int(pages)):
-            for photo in flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page=i).find('photos').getchildren():
-                yield photo.attrib['id']
-            
-    # http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
-    elif(photoset_id):
-        photos = flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page='1')
-        pages = photos.find('photos').attrib['pages']
-
-        for i in range(1, int(pages)):
-            for photo in flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page=i).find('photos').getchildren():
-                yield photo.attrib['id']
-    
-    # http://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
-    elif(user_id):
-        photos = flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page='1')
-        pages = photos.find('photos').attrib['pages']
-
-        for i in range(1, int(pages)):
-            for photo in flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page=i).find('photos').getchildren():
-                yield photo.attrib['id']
-    return
-    
+    return description  
 
 def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', override=u''):
     if(photo_id):
         print photo_id
         (photoInfo, photoSizes) = getPhoto(flickr=flickr, photo_id=photo_id)
     if (isAllowedLicense(photoInfo=photoInfo) or override):
-        # Tags not needed atm
-        #tags=getTags(photoInfo=photoInfo)
-
-        flinfoDescription = getFlinfoDescription(photo_id=photo_id)
-
-        filename = getFilename(photoInfo=photoInfo)
-        #print filename
+        #Get the url of the largest photo
         photoUrl = getPhotoUrl(photoSizes=photoSizes)
-        #print photoUrl
-        photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override)
-        #wikipedia.output(photoDescription)
-        (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photoUrl, filename).run()
+        #Should download the photo only once
+        photo = downloadPhoto(photoUrl=photoUrl)
+
+        #Don't upload duplicate images, should add override option
+        duplicates = findDuplicateImages(photo=photo)
+        if duplicates:
+            wikipedia.output(u'Found duplicate image at %s' % duplicates.pop())
+        else:
+            filename = getFilename(photoInfo=photoInfo)
+            flinfoDescription = getFlinfoDescription(photo_id=photo_id)
+            photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override)
+            #wikipedia.output(photoDescription)
+            (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photo, filename).run()
         #wikipedia.output(newPhotoDescription)
         #if (wikipedia.Page(title=u'File:'+ filename, site=wikipedia.getSite()).exists()):
         # I should probably check if the hash is the same and if not upload it under a different name
@@ -202,13 +195,14 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
             #Do the actual upload
             #Would be nice to check before I upload if the file is already at Commons
             #Not that important for this program, but maybe for derived programs
-        if not skip:
-            bot = upload.UploadRobot(url=photoUrl, description=newPhotoDescription, useFilename=newFilename, keepFilename=True, verifyDescription=False)
-            bot.upload_image(debug=False)
-    return 0
+            if not skip:
+                bot = upload.UploadRobot(url=photoUrl, description=newPhotoDescription, useFilename=newFilename, keepFilename=True, verifyDescription=False)
+                bot.upload_image(debug=False)
+                return 1
+    return 0 
 
 class Tkdialog:
-    def __init__(self, photoDescription, photoUrl, filename):
+    def __init__(self, photoDescription, photo, filename):
         self.root=Tk()
         #"%dx%d%+d%+d" % (width, height, xoffset, yoffset)
         self.root.geometry("%ix%i+10-10"%(config.tkhorsize, config.tkvertsize))
@@ -216,13 +210,13 @@ class Tkdialog:
         self.root.title(filename)
         self.photoDescription = photoDescription
         self.filename = filename 
-        self.photoUrl = photoUrl
+        self.photo = photo
         self.skip=False
         self.exit=False
 
         ## Init of the widgets
         # The image
-        self.image=self.getImage(self.photoUrl, 800, 600)
+        self.image=self.getImage(self.photo, 800, 600)
         self.imagePanel=Label(self.root, image=self.image)
         
         self.imagePanel.image = self.image
@@ -262,12 +256,10 @@ class Tkdialog:
         self.descriptionField.grid(row=14, column=1, columnspan=3)
         self.descriptionScrollbar.grid(row=14, column=5)
 
-    def getImage(self, url, width, height):
-        image=urllib.urlopen(url).read()
-        output = StringIO.StringIO(image)
-        image2 = Image.open(output)
-        image2.thumbnail((width, height))
-        imageTk = ImageTk.PhotoImage(image2)
+    def getImage(self, photo, width, height):
+        image = Image.open(photo)
+        image.thumbnail((width, height))
+        imageTk = ImageTk.PhotoImage(image)
         return imageTk
     
     def okFile(self):
@@ -292,6 +284,36 @@ class Tkdialog:
         self.root.mainloop()
         return (self.photoDescription, self.filename, self.skip)
 
+def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u''):
+    result = []    
+    # http://www.flickr.com/services/api/flickr.groups.pools.getPhotos.html
+    if(group_id):
+        #First get the total number of photo's in the group
+        photos = flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page='1')
+        pages = photos.find('photos').attrib['pages']
+
+        for i in range(1, int(pages)):
+            for photo in flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page=i).find('photos').getchildren():
+                yield photo.attrib['id']
+            
+    # http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
+    elif(photoset_id):
+        photos = flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page='1')
+        pages = photos.find('photos').attrib['pages']
+
+        for i in range(1, int(pages)):
+            for photo in flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page=i).find('photos').getchildren():
+                yield photo.attrib['id']
+    
+    # http://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
+    elif(user_id):
+        photos = flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page='1')
+        pages = photos.find('photos').attrib['pages']
+
+        for i in range(1, int(pages)):
+            for photo in flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page=i).find('photos').getchildren():
+                yield photo.attrib['id']
+    return
 
 def usage():
     wikipedia.output(u"Flickrripper is a tool to transfer flickr photos to Wikimedia Commons")
