@@ -42,6 +42,9 @@ from PIL import Image, ImageTk    # see: http://www.pythonware.com/products/pil/
 def getPhoto(flickr = None, photo_id = ''):
     '''
     Get the photo info and the photo sizes so we can use these later on
+
+    TODO: Add exception handling
+    
     '''
     photoInfo = flickr.photos_getInfo(photo_id=photo_id)
     #xml.etree.ElementTree.dump(photoInfo)
@@ -52,6 +55,8 @@ def getPhoto(flickr = None, photo_id = ''):
 def isAllowedLicense(photoInfo = None):
     '''
     Check if the image contains the right license
+
+    TODO: Maybe add more licenses
     '''
     license = photoInfo.find('photo').attrib['license']
     if license == '4' or license == '5':
@@ -72,10 +77,20 @@ def getPhotoUrl(photoSizes=None):
     return url
 
 def downloadPhoto(photoUrl=''):
+    '''
+    Download the photo and store it in a StrinIO.StringIO object.
+
+    TODO: Add exception handling
+    '''
     imageFile=urllib.urlopen(photoUrl).read()
     return StringIO.StringIO(imageFile)
 
 def findDuplicateImages(photo=None, site=wikipedia.getSite()):
+    '''
+    Takes the photo, calculates the SHA1 hash and asks the mediawiki api for a list of duplicates.
+
+    TODO: Add exception handling, fix site thing
+    '''
     result = []
     hashObject = hashlib.sha1()
     hashObject.update(photo.getvalue())
@@ -87,7 +102,7 @@ def findDuplicateImages(photo=None, site=wikipedia.getSite()):
         'aisha1'    : sha1Hash,
         'aiprop'    : '',
     }
-    data = query.GetData(params, wikipedia.getSite(), useAPI = True, encodeTitle = False)
+    data = query.GetData(params, site=wikipedia.getSite(), useAPI = True, encodeTitle = False)
     for image in data['query']['allimages']:
         result.append(image['name'])
     return result
@@ -105,6 +120,8 @@ def getTags(photoInfo = None):
 def getFlinfoDescription(photo_id = 0):
     '''
     Get the description from http://wikipedia.ramselehof.de/flinfo.php
+
+    TODO: Add exception handling, try a couple of times
     '''
     parameters = urllib.urlencode({'id' : photo_id, 'raw' : 'on'})
     
@@ -113,9 +130,11 @@ def getFlinfoDescription(photo_id = 0):
     #print rawDescription.decode('utf-8')
     return rawDescription.decode('utf-8')
 
-def getFilename(photoInfo=None):
+def getFilename(photoInfo=None, site=wikipedia.getSite()):
     '''
-    Build a good filename for the upload based on the username and the title
+    Build a good filename for the upload based on the username and the title.
+    Prevents naming collisions.
+
     '''
     username = photoInfo.find('photo').find('owner').attrib['username']
     title = photoInfo.find('photo').find('title').text
@@ -124,9 +143,20 @@ def getFilename(photoInfo=None):
     else:
         title = u''
 
-    return u'Flickr - %s - %s.jpg' % (username, title)
+    if (wikipedia.Page(title=u'File:Flickr - %s - %s.jpg' % (username, title), site=wikipedia.getSite()).exists()):
+        i = 1
+        while True:
+            if (wikipedia.Page(title=u'File:Flickr - %s - %s (%s).jpg' % (username, title, str(i)), site=wikipedia.getSite()).exists()):
+                i = i + 1
+            else:
+                return u'Flickr - %s - %s (%s).jpg' % (username, title, str(i))            
+    else:
+        return u'Flickr - %s - %s.jpg' % (username, title)
 
 def cleanUpTitle(title):
+    '''
+    Clean up the title of a potential mediawiki page. Otherwise the title of the page might not be allowed by the software.
+    '''
     title = title.strip()   
         
     title = re.sub("[<{\\[]", "(", title)
@@ -168,6 +198,9 @@ def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', ov
     return description  
 
 def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', override=u''):
+    '''
+    Process a single Flickr photo
+    '''
     if(photo_id):
         print photo_id
         (photoInfo, photoSizes) = getPhoto(flickr=flickr, photo_id=photo_id)
@@ -202,6 +235,9 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
     return 0 
 
 class Tkdialog:
+    '''
+    The user dialog.
+    '''
     def __init__(self, photoDescription, photo, filename):
         self.root=Tk()
         #"%dx%d%+d%+d" % (width, height, xoffset, yoffset)
@@ -257,6 +293,9 @@ class Tkdialog:
         self.descriptionScrollbar.grid(row=14, column=5)
 
     def getImage(self, photo, width, height):
+        '''
+        Take the StringIO object and build an imageTK thumbnail
+        '''
         image = Image.open(photo)
         image.thumbnail((width, height))
         imageTk = ImageTk.PhotoImage(image)
@@ -285,8 +324,12 @@ class Tkdialog:
         return (self.photoDescription, self.filename, self.skip)
 
 def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u''):
+    '''
+    Loop over a set of Flickr photos.
+    '''
     result = []    
     # http://www.flickr.com/services/api/flickr.groups.pools.getPhotos.html
+    # Get the photos in a group
     if(group_id):
         #First get the total number of photo's in the group
         photos = flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page='1')
@@ -297,6 +340,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u'')
                 yield photo.attrib['id']
             
     # http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
+    # Get the photos in a photoset
     elif(photoset_id):
         photos = flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
@@ -306,6 +350,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u'')
                 yield photo.attrib['id']
     
     # http://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
+    # Get the (public) photos uploaded by a user
     elif(user_id):
         photos = flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
@@ -316,6 +361,11 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u'')
     return
 
 def usage():
+    '''
+    Print usage information
+
+    TODO : Need more.
+    '''
     wikipedia.output(u"Flickrripper is a tool to transfer flickr photos to Wikimedia Commons")
     wikipedia.output(u"-group_id:<group_id>\n")
     wikipedia.output(u"-photoset_id:<photoset_id>\n")
