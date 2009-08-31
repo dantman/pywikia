@@ -494,7 +494,7 @@ def UserContributionsGenerator(username, number = 250, namespaces = [], site = N
         'ucuser': username,
         'ucprop': 'title',
         'uclimit': int(number),
-        'ucdir': 'newer',
+        'ucdir': 'older',
     }
     
     
