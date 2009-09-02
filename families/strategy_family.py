@@ -14,7 +14,7 @@ class Family(family.Family):
             'strategy': 'strategy.wikimedia.org',
         }
         if config.SSL_connection:
-            self.langs['commons'] = None
+            self.langs['strategy'] = None
 
         self.namespaces[4] = {
             '_default': [u'Strategic Planning', 'Project'],
@@ -22,36 +22,15 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Strategic Planning talk', 'Project talk'],
         }
-        self.namespaces[100] = {
-            '_default': [u'Creator', 'Project'],
+        self.namespaces[106] = {
+            '_default': [u'Proposal'],
         }
-        self.namespaces[101] = {
-            '_default': [u'Creator talk', 'Project talk'],
+        self.namespaces[107] = {
+            '_default': [u'Proposal talk'],
         }
 
         self.interwiki_forward = 'wikipedia'
 
-        self.category_redirect_templates = {
-            'commons': (u'Category redirect',
-                        u'Categoryredirect',
-                        u'See cat',
-                        u'Seecat',
-                        u'Catredirect',
-                        u'Cat redirect',
-                        u'CatRed',
-                        u'Cat-red',
-                        u'Catredir',
-                        u'Redirect category'),
-        }
-        
-        self.disambiguationTemplates = {
-            'commons': [u'Disambig', u'Disambiguation', u'Razločitev',
-                        u'Begriffsklärung']
-        }
-        
-        self.disambcatname = {
-            'commons':  u'Disambiguation'
-        }
 
     def version(self, code):
         return '1.16alpha-wmf'
