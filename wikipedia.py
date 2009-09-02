@@ -2780,9 +2780,8 @@ not supported by PyWikipediaBot!"""
         output(u'Page %s undeleted' % self.aslink())
         return result
 
-    def protect(self, ec = 'sysop', move = 'sysop', unprotect = False, reason = None, 
-                ec_duration = 'infinite', move_duration = 'infinite',
-                cascading = False, prompt = True, throttle = True):
+    def protect(self, ec = 'sysop', move = 'sysop', unprotect = False, reason = None, ec_duration = 'infinite', 
+                move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
         """(Un)protect a wiki title. Requires administrator status.
 
         If the title is not exist, the protection only ec (aka edit/create) available
