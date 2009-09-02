@@ -39,6 +39,7 @@ import xml.etree.ElementTree
 from Tkinter import *
 from PIL import Image, ImageTk    # see: http://www.pythonware.com/products/pil/
 
+
 def getPhoto(flickr = None, photo_id = ''):
     '''
     Get the photo info and the photo sizes so we can use these later on
@@ -323,11 +324,18 @@ class Tkdialog:
         self.root.mainloop()
         return (self.photoDescription, self.filename, self.skip)
 
-def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u''):
+def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id='', end_id='', tags=u''):
     '''
     Loop over a set of Flickr photos.
+
     '''
-    result = []    
+    result = []
+    retry = False
+    if not start_id:
+        found_start_id=True
+    else:
+        found_start_id=False
+        
     # http://www.flickr.com/services/api/flickr.groups.pools.getPhotos.html
     # Get the photos in a group
     if(group_id):
@@ -336,9 +344,24 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u'')
         pages = photos.find('photos').attrib['pages']
 
         for i in range(1, int(pages)):
-            for photo in flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page=i).find('photos').getchildren():
-                yield photo.attrib['id']
-            
+            gotPhotos = False
+            while not gotPhotos:
+                try:
+                    for photo in flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page=i).find('photos').getchildren():
+                        if photo.attrib['id']==start_id:
+                            found_start_id=True
+                        if found_start_id:
+                            if photo.attrib['id']==end_id:
+                                wikipedia.output('Found end_id')
+                                return
+                            else:
+                                yield photo.attrib['id']
+                                
+                except flickrapi.exceptions.FlickrError:
+                    gotPhotos = False
+                    wikipedia.output(u'Flickr api problem, sleeping')
+                    sleep(30)
+                    
     # http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
     # Get the photos in a photoset
     elif(photoset_id):
@@ -346,18 +369,51 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', tags=u'')
         pages = photos.find('photos').attrib['pages']
 
         for i in range(1, int(pages)):
-            for photo in flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page=i).find('photos').getchildren():
-                yield photo.attrib['id']
+            gotPhotos = False
+            while not gotPhotos:
+                try:            
+                    for photo in flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page=i).find('photos').getchildren():
+                        gotPhotos = True
+                        if photo.attrib['id']==start_id:
+                            found_start_id=True
+                        if found_start_id:
+                            if photo.attrib['id']==end_id:
+                                wikipedia.output('Found end_id')
+                                return
+                            else:
+                                yield photo.attrib['id']
+                        
+                except flickrapi.exceptions.FlickrError:
+                    gotPhotos = False
+                    wikipedia.output(u'Flickr api problem, sleeping')
+                    sleep(30)
     
     # http://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
     # Get the (public) photos uploaded by a user
     elif(user_id):
         photos = flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
-
+        #flickrapi.exceptions.FlickrError
         for i in range(1, int(pages)):
-            for photo in flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page=i).find('photos').getchildren():
-                yield photo.attrib['id']
+            gotPhotos = False
+            while not gotPhotos:
+                try:
+                    for photo in flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page=i).find('photos').getchildren():
+                        gotPhotos = True
+                        if photo.attrib['id']==start_id:
+                            found_start_id=True
+                        if found_start_id:
+                            if photo.attrib['id']==end_id:
+                                wikipedia.output('Found end_id')
+                                return
+                            else:
+                                yield photo.attrib['id']
+
+                except flickrapi.exceptions.FlickrError:
+                    gotPhotos = False
+                    wikipedia.output(u'Flickr api problem, sleeping')
+                    sleep(30)
+                
     return
 
 def usage():
@@ -389,6 +445,8 @@ def main():
     group_id = u''
     photoset_id = u''
     user_id = u''
+    start_id= u''
+    end_id=u''
     tags = u''
     totalPhotos = 0
     uploadedPhotos = 0
@@ -428,6 +486,16 @@ def main():
                 user_id = wikipedia.input(u'What is the user_id of the flickr user?')
             else:
                 user_id = arg[9:]
+        elif arg.startswith('-start_id'):
+            if len(arg) == 9:
+                start_id = wikipedia.input(u'What is the id of the photo you want to start at?')
+            else:
+                start_id = arg[10:]
+        elif arg.startswith('-end_id'):
+            if len(arg) == 7:
+                end_id = wikipedia.input(u'What is the id of the photo you want to end at?')
+            else:
+                end_id = arg[8:]                
         elif arg.startswith('-tags'):
             if len(arg) == 5:
                 tags = wikipedia.input(u'What is the tag you want to filter out (currently only one supported)?')
@@ -447,7 +515,7 @@ def main():
                 override = arg[10:]
 
     if user_id or group_id or photoset_id:
-        for photo_id in getPhotos(flickr=flickr, user_id=user_id, group_id=group_id, photoset_id=photoset_id, tags=tags):
+        for photo_id in getPhotos(flickr=flickr, user_id=user_id, group_id=group_id, photoset_id=photoset_id, start_id=start_id, end_id=end_id, tags=tags):
             uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override)
             totalPhotos = totalPhotos + 1
     else:
