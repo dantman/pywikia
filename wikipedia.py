@@ -2780,12 +2780,14 @@ not supported by PyWikipediaBot!"""
         output(u'Page %s undeleted' % self.aslink())
         return result
 
-    def protect(self, edit='sysop', move='sysop', unprotect=False,
-                reason=None, duration = None, cascading = False, prompt=True, throttle=True):
-        """(Un)protect a wiki page. Requires administrator status.
+    def protect(self, ec = 'sysop', move = 'sysop', unprotect = False, reason = None, 
+                ec_duration = 'infinite', move_duration = 'infinite',
+                cascading = False, prompt = True, throttle = True):
+        """(Un)protect a wiki title. Requires administrator status.
 
+        If the title is not exist, the protection only ec (aka edit/create) available
         If reason is None,  asks for a reason. If prompt is True, asks the
-        user if he wants to protect the page. Valid values for edit and move
+        user if he wants to protect the page. Valid values for ec and move
         are:
            * '' (equivalent to 'none')
            * 'autoconfirmed'
@@ -2799,12 +2801,16 @@ not supported by PyWikipediaBot!"""
         self.site().checkBlocks(sysop = True)
 
         address = self.site().protect_address(self.urlname())
+        #if self.exists() and ec != move: # check protect level if edit/move not same
+        #    if ec == 'sysop' and move != 'sysop':
+        #        raise Error("The level configuration is not safe")
+        
         if unprotect:
             address = self.site().unprotect_address(self.urlname())
             # unprotect_address is actually an alias for protect_address...
-            edit = move = ''
+            ec = move = ''
         else:
-            edit, move = edit.lower(), move.lower()
+            ec, move = ec.lower(), move.lower()
         if throttle:
             put_throttle()
         if reason is None:
@@ -2826,30 +2832,47 @@ not supported by PyWikipediaBot!"""
             token = self.site().getToken(self, sysop = True)
 
             # Translate 'none' to ''
-            if edit == 'none': edit = ''
+            if ec == 'none': ec = ''
             if move == 'none': move = ''
 
             # Translate no duration to infinite
-            if duration == 'none' or duration is None: duration = 'infinite'
+            if ec_duration == 'none' or not ec_duration: ec_duration = 'infinite'
+            if move_duration == 'none' or not move_duration: move_duration = 'infinite'
 
             # Get cascading
             if cascading == False:
                 cascading = '0'
             else:
-                if edit != 'sysop' or move != 'sysop':
+                if ec != 'sysop' or move != 'sysop' or not self.exists():
                     # You can't protect a page as autoconfirmed and cascading, prevent the error
+                    # Cascade only available exists page, create prot. not.
                     cascading = '0'
                     output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
                 else:
                     cascading = '1'
 
-            predata = {
-                'mwProtect-cascade': cascading,
-                'mwProtect-level-edit': edit,
-                'mwProtect-level-move': move,
-                'mwProtect-reason': reason,
-                'mwProtect-expiry': duration,
-            }
+            predata = {}
+            if self.site().versionnumber >= 10:
+                predata['mwProtect-cascade'] = cascading
+            
+            predata['mwProtect-reason'] = reason
+            
+            if not self.exists(): #and self.site().versionnumber() >= :
+                #create protect
+                predata['mwProtect-level-create'] = ec
+                predata['wpProtectExpirySelection-create'] = ec_duration
+            else:
+                #edit/move Protect
+                predata['mwProtect-level-edit'] = ec
+                predata['mwProtect-level-move'] = move
+                
+                if self.site().versionnumber() >= 14:
+                    predata['wpProtectExpirySelection-edit'] = ec_duration
+                    predata['wpProtectExpirySelection-move'] = move_duration
+                else:
+                    predata['mwProtect-expiry'] = ec_duration
+                    
+            
             if token:
                 predata['wpEditToken'] = token
             if self.site().hostname() in config.authenticate.keys():
@@ -2863,8 +2886,7 @@ not supported by PyWikipediaBot!"""
                                 data))
                 data = u''
             else:
-                response, data = self.site().postForm(address, predata,
-                                                      sysop=True)
+                response, data = self.site().postForm(address, predata, sysop=True)
 
             if response.status == 302 and not data:
                 output(u'Changed protection level of page %s.' % self.aslink())
