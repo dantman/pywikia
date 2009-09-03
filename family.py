@@ -894,23 +894,9 @@ class Family:
             },
             4: {
                 '_default': u'Project',
-                'arc': u'ܘܝܩܝܦܕܝܐ',
-                'bn': u'উইকিপিডিয়া',
-                'cs': u'Wikizdroje',
-                'ko': u'위키문헌',
-                'uk': u'Вікіцитати',
             },
             5: {
                 '_default': u'Project talk',
-                'arc': u'ܘܝܩܝܦܕܝܐ talk',
-                'bn': u'উইকিপিডিয়া আলোচনা',
-                'cs': u'Wikizdroje diskuse',
-                'gan': u'Wikipedia talk',
-                'ko': u'위키문헌토론',
-                'mhr': u'Обсуждение Wikipedia',
-                'sc': u'Cuntierra Wikipedia',
-                'sg': u'Discussion Wikipedia',
-                'uk': u'Обговорення Вікіцитатей',
             },
             6: {
                 '_default': [u'File', u'Image'],
