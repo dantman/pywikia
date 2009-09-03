@@ -33,10 +33,10 @@ except ImportError:
     import simplejson as json
     
 
-def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
+def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
     """Get data from the query api, and convert it into a data object
     """
-    if site is None:
+    if not site:
         site = wikipedia.getSite()
 
     for k,v in params.iteritems():
@@ -74,7 +74,7 @@ def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5,
     else:
         path = site.query_address() + urllib.urlencode(params.items())
 
-    if verbose:
+    if wikipedia.verbose:
         if titlecount > 0:
             wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, site.lang, path))
         else:
@@ -92,7 +92,7 @@ def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5,
                 res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
                 jsontext = res.read()
             elif params['action'] in postAC:
-                res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies(sysop=sysop), sysop=sysop)
+                res, jsontext = site.postForm(path, params, sysop, site.cookies(sysop = sysop) )
             else:
                 if back_response:
                     res, jsontext = site.getUrl( path, retry=True, data=data, sysop=sysop, back_response=True)
