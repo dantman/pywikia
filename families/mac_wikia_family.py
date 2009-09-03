@@ -38,6 +38,36 @@ class Family(family.Family):
         self.namespaces[111] = {
             '_default': u'Forum talk',
         }
+        self.namespaces[400] = {
+            '_default': u'Video',
+            'ru': u'Видео',
+        }
+        self.namespaces[401] = {
+            '_default': u'Video talk',
+            'ru': u'Обсуждение видео',
+        }
+
+        self.namespaces[500] = {
+            '_default': u'User blog',
+            'de': u'Benutzer Blog',
+            'ru': u'Блог участника',
+        }
+        self.namespaces[501] = {
+            '_default': u'User blog comment',
+            'de': u'Benutzer Blog Kommentare',
+            'ru': u'Комментарий блога участника',
+        }
+
+        self.namespaces[502] = {
+            '_default': u'Blog',
+            'ru': u'Блог',
+        }
+        self.namespaces[503] = {
+            '_default': u'Blog talk',
+            'de': u'Blog Diskussion',
+            'ru': u'Обсуждение блога',
+        }
+
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these

@@ -23,9 +23,9 @@ class Family(family.Family):
             'ru': 'ru.freeciv.wikia.com',
         }
 
-        self.namespaces[1]['fr'] = u'Discuter'
+        self.namespaces[1]['fr'] = u'Discussion'
 
-        self.namespaces[3]['fr'] = u'Discussion Utilisateur'
+        self.namespaces[3]['fr'] = u'Discussion utilisateur'
 
         self.namespaces[4] = {
             '_default': u'Freeciv',
@@ -45,36 +45,58 @@ class Family(family.Family):
             'ru': u'Обсуждение Freeciv',
         }
 
-        self.namespaces[6]['da'] = u'Billede'
+        self.namespaces[6]['da'] = u'Fil'
 
-        self.namespaces[7]['da'] = u'Billeddiskussion'
-        self.namespaces[7]['fr'] = u'Discussion Fichier'
+        self.namespaces[7]['da'] = u'Fildiskussion'
+        self.namespaces[7]['fr'] = u'Discussion fichier'
 
         self.namespaces[8]['fi'] = u'Järjestelmäviesti'
 
-        self.namespaces[11]['fr'] = u'Discussion Modèle'
+        self.namespaces[11]['fr'] = u'Discussion modèle'
 
-        self.namespaces[13]['fr'] = u'Discussion Aide'
+        self.namespaces[13]['fr'] = u'Discussion aide'
 
-        self.namespaces[15]['fr'] = u'Discussion Catégorie'
+        self.namespaces[15]['fr'] = u'Discussion catégorie'
 
         self.namespaces[110] = {
             '_default': u'Forum',
             'fi': u'Foorumi',
             'ru': u'Форум',
         }
-
         self.namespaces[111] = {
             '_default': u'Forum talk',
             'fi': u'Keskustelu foorumista',
             'ru': u'Обсуждение форума',
         }
+
         self.namespaces[400] = {
             '_default': u'Video',
+            'ru': u'Видео',
         }
-
         self.namespaces[401] = {
             '_default': u'Video talk',
+            'ru': u'Обсуждение видео',
+        }
+
+        self.namespaces[500] = {
+            '_default': u'User blog',
+            'de': u'Benutzer Blog',
+            'ru': u'Блог участника',
+        }
+        self.namespaces[501] = {
+            '_default': u'User blog comment',
+            'de': u'Benutzer Blog Kommentare',
+            'ru': u'Комментарий блога участника',
+        }
+
+        self.namespaces[502] = {
+            '_default': u'Blog',
+            'ru': u'Блог',
+        }
+        self.namespaces[503] = {
+            '_default': u'Blog talk',
+            'de': u'Blog Diskussion',
+            'ru': u'Обсуждение блога',
         }
 
 

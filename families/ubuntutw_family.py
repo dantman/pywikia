@@ -23,6 +23,7 @@ class Family(family.Family):
 
         self.namespaces[1] = {
             '_default': u'討論',
+            'zh': u'使用者討論',
         }
 
         self.namespaces[2] = {
@@ -31,6 +32,7 @@ class Family(family.Family):
 
         self.namespaces[3] = {
             '_default': u'討論',
+            'zh': u'使用者討論',
         }
 
         self.namespaces[4] = {

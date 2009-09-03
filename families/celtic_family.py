@@ -19,6 +19,13 @@ class Family(family.Family):
         self.namespaces[5] = {
             'eml': u'Discussioni CeltIKI',
         }
+        self.namespaces[6] = {
+            'eml': u'Immagine',
+        }
+        self.namespaces[7] = {
+            'eml': u'Discussioni immagine',
+        }
+
 
     def version(self, code):
         return "1.11.0"

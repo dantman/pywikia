@@ -17,7 +17,7 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
         self.namespaces[1]['fr'] = u'Discuter'
 
-        self.namespaces[3]['fr'] = u'Discussion Utilisateur'
+        self.namespaces[3]['fr'] = u'Discussion utilisateur'
 
         self.namespaces[4] = {
             '_default': u'Scratchpad',
@@ -34,13 +34,13 @@ class Family(family.Family):
             'ja': u'Scratchpad Wiki‐ノート',
             'zh': u'圍紀實驗室 talk',
         }
-        self.namespaces[7]['fr'] = u'Discussion Fichier'
+        self.namespaces[7]['fr'] = u'Discussion fichier'
 
-        self.namespaces[11]['fr'] = u'Discussion Modèle'
+        self.namespaces[11]['fr'] = u'Discussion modèle'
 
-        self.namespaces[13]['fr'] = u'Discussion Aide'
+        self.namespaces[13]['fr'] = u'Discussion aide'
 
-        self.namespaces[15]['fr'] = u'Discussion Catégorie'
+        self.namespaces[15]['fr'] = u'Discussion catégorie'
 
         self.namespaces[400] = {
             '_default': u'Video',
