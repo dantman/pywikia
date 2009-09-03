@@ -311,7 +311,7 @@ aanjepaß krijje:
         waited = 0
         while True:
             try:
-                response, result = query.GetData(predata, self,site back_response = True)
+                response, result = query.GetData(predata, self.site, back_response = True)
                 if response.status != 200:
                     # WARNING: if the server is down, this could
                     # cause an infinite loop
