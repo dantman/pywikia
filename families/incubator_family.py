@@ -2,7 +2,7 @@
 
 __version__ = '$Id$'
 
-import family, config
+import family
 
 # The Wikimedia Incubator family
 
@@ -13,7 +13,7 @@ class Family(family.Family):
         self.langs = {
             'incubator': 'incubator.wikimedia.org',
         }
-        if config.SSL_connection:
+        if family.config.SSL_connection:
             self.langs['incubator'] = None
 
         self.namespaces[4] = {
@@ -35,7 +35,7 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    if config.SSL_connection:
+    if family.config.SSL_connection:
         def hostname(self, code):
             return 'secure.wikimedia.org'
 

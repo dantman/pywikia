@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import family, config
+import family=
 
 __version__ = '$Id$'
 
@@ -19,7 +19,7 @@ class Family(family.Family):
             'sk', 'zh-min-nan', 'fo',
         ]
 
-        if config.SSL_connection:
+        if family.config.SSL_connection:
             for lang in self.languages_by_size:
                 self.langs[lang] = None
             self.langs['-'] = None
@@ -361,7 +361,7 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    if config.SSL_connection:
+    if family.config.SSL_connection:
         def hostname(self, code):
             return 'secure.wikimedia.org'
 
@@ -375,4 +375,6 @@ class Family(family.Family):
             return '/%s/%s/w' % (self.name, code)
 
         def nicepath(self, code):
+            if code == '-':
+                return '/wikipedia/sources/wiki/'
             return '/%s/%s/wiki/' % (self.name, code)

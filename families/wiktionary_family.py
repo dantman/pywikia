@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import family, config
+import family
 
 __version__ = '$Id$'
 
@@ -28,12 +28,10 @@ class Family(family.Family):
             'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
 
-        if config.SSL_connection:
-            for lang in self.languages_by_size:
-                self.langs[lang] = None
+        if family.config.SSL_connection:
+            self.langs = dict([(lang, None) for lang in self.languages_by_size])
         else:
-            for lang in self.languages_by_size:
-                self.langs[lang] = '%s.wiktionary.org' % lang
+            self.langs = dict([(lang, '%s.wiktionary.org' % lang) for lang in self.languages_by_size])
 
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikipedysta'
@@ -455,7 +453,7 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    if config.SSL_connection:
+    if family.config.SSL_connection:
         def hostname(self, code):
             return 'secure.wikimedia.org'
 

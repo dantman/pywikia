@@ -2,7 +2,7 @@
 
 __version__ = '$Id$'
 
-import family, config
+import family
 
 # The wikispecies family
 
@@ -13,7 +13,7 @@ class Family(family.Family):
         self.langs = {
             'species': 'species.wikimedia.org',
         }
-        if config.SSL_connection:
+        if family.config.SSL_connection:
             self.langs['species'] = None
 
         self.namespaces[4] = {
@@ -31,7 +31,7 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    if config.SSL_connection:
+    if family.config.SSL_connection:
         def hostname(self, code):
             return 'secure.wikimedia.org'
 
