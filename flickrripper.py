@@ -98,12 +98,12 @@ def findDuplicateImages(photo=None, site=wikipedia.getSite()):
     sha1Hash = base64.b16encode(hashObject.digest())
 
     params = {
-	'action'    : 'query',
+        'action'    : 'query',
         'list'      : 'allimages',
         'aisha1'    : sha1Hash,
         'aiprop'    : '',
     }
-    data = query.GetData(params, site=wikipedia.getSite(), useAPI = True, encodeTitle = False)
+    data = query.GetData(params, wikipedia.getSite(), encodeTitle = False)
     for image in data['query']['allimages']:
         result.append(image['name'])
     return result
