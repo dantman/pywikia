@@ -130,7 +130,7 @@ categoryToCheck = {
             'ar':[u'تصنيف:محتويات محمية'],
             'fr':[u'Category:Page semi-protégée', u'Category:Page protégée', u'Catégorie:Article protégé'],
             'he':[u'קטגוריה:ויקיפדיה: דפים מוגנים', u'קטגוריה:ויקיפדיה: דפים מוגנים חלקית'],
-            'it':[u'Categoria:Pagine semiprotette', u'Categoria:Voci protette', u'Categoria:Pagine protette - scadute'],
+            'it':[u'Categoria:Pagine protette - scadute', u'Categoria:Pagine semiprotette', u'Categoria:Voci protette'],
             'ja':[u'Category:編集保護中の記事',u'Category:編集半保護中の記事',
                 u'Category:移動保護中の記事',],
             'pt':[u'Category:!Páginas protegidas', u'Category:!Páginas semiprotegidas'],
@@ -306,7 +306,9 @@ def main():
             # page is not edit-protected
             # Deleting the template because the page doesn't need it.
             replaceToPerform = u'|'.join(TTP + TSP + TU)
-            text, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
+            text, changes = re.subn('<noinclude>(%s)</noinclude>' % replaceToPerform, '', text)
+            if changes == 0:
+                text, changes = re.subn('(%s)' % replaceToPerform, '', text)            
             wikipedia.output(u'The page is editable for all, deleting the template...')
 
         elif editRestr[0] == 'sysop':
@@ -350,8 +352,9 @@ def main():
                 wikipedia.output(u'The page is movable for all, deleting the template...')
                 # Deleting the template because the page doesn't need it.
                 replaceToPerform = u'|'.join(TSMP + TTMP + TU)
-                text, changes = re.subn('(?:<noinclude>|)(%s)(?:</noinclude>|)' % replaceToPerform, '', text)
-
+                text, changes = re.subn('<noinclude>(%s)</noinclude>' % replaceToPerform, '', text)
+                if changes == 0:
+                    text, changes = re.subn('(%s)' % replaceToPerform, '', text)
             elif moveRestr[0] == 'sysop':
                 # move-total-protection
                 if (TemplateInThePage[0] == 'sysop-move' and TTMP != None) or (TemplateInThePage[0] == 'unique' and TU != None):
