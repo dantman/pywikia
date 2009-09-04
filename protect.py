@@ -119,7 +119,7 @@ class ProtectionRobot:
             wikipedia.output(u'Processing page %s' % page.title())
             print self.edit, self.move#, self.create
             page.protect(unprotect=self.unprotect, reason=self.summary, prompt=self.always,
-                        edit=self.edit, move=self.move)
+                        ec=self.edit, move=self.move)
 
 # Asks a valid protection level for "operation".
 # Returns the protection level chosen by user.
