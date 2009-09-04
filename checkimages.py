@@ -880,7 +880,7 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-        duplicateRegex = r'(?:\[\[:File:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:File:%s\]\])$' % (re.escape(self.convert_to_url(self.imageName)), re.escape(self.convert_to_url(self.imageName)))
+        duplicateRegex = r'\[\[:File:%s\]\] has the following duplicates' % re.escape(self.convert_to_url(self.imageName))
         imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
         hash_found = imagePage.getHash()
         duplicates = self.site.getFilesFromAnHash(hash_found)
@@ -998,11 +998,10 @@ class main:
             else:
                 wikipedia.output(u"The log page (%s) is full! Please delete the old files reported. Skip!" % another_page.title())
                 return True # Don't report, but continue with the check (we don't now if this is the first time we check this file or not)
-        pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.DOTALL)
-        y = n.search(text_get, pos)
-        if y == None:
+        y = n.findall(text_get)
+        if y == []:
             # Adding the log
             if addings:
                 rep_text = rep_text % image_to_report # Adding the name of the image in the report if not done already
@@ -1010,7 +1009,6 @@ class main:
             wikipedia.output(u"...Reported...")
             reported = True
         else:
-            pos = y.end()
             wikipedia.output(u"%s is already in the report page." % image_to_report)
             reported = False
         return reported
@@ -1162,18 +1160,18 @@ class main:
                         if templateReal not in self.allLicenses: # don't put the same template, twice.
                             self.allLicenses.append(templateReal)
             # perform a dummy edit, sometimes there are problems with the Job queue
+            # it happends that there is listed only the template used and not all the template that are in the templates used in the page
+            # for example: there's only self, and not GFDL and the other licenses.
             if self.allLicenses == self.licenses_found and not dummy_edit and self.licenses_found != []:
                 wikipedia.output(u"Seems that there's a problem regarding the Job queue, trying with a dummy edit to solve the problem.")
-                try:
-                    
+                try:                    
                     self.imageCheckText = self.image.get()
                     self.image.put(self.imageCheckText, 'Bot: Dummy edit,if you see this comment write [[User talk:%s|here]].' % self.botnick)
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                     return (None, list())
                 dummy_edit = True
             else:
-                break
-            
+                break         
         if self.licenses_found != []:
             self.templateInList()
             if self.license_found == None and self.allLicenses != list():
