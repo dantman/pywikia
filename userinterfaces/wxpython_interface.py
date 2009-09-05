@@ -4,15 +4,15 @@ __version__ = '$Id$'
 import sys; sys.path.append('..')
 
 import config, re, sys
-from wxPython.wx import *
+import wx
 
-        
+app = wx.App()
 
 class UI:
     def __init__(self):
         pass
-
-    def output(self, text, ):
+    
+    def output(self, text, toStdout = False):
         """
         If a character can't be displayed, it will be replaced with a
         question mark.
@@ -28,8 +28,10 @@ class UI:
         question.
         """
         # TODO: hide input if password = True
-        answer = dialog = wxTextEntryDialog ( None, 'question', 'Title Here', '' )
-
+        
+        answer = wx.TextEntryDialog( None, question, question, '' )
+        answer.ShowModal()
+        print answer
 #tkSimpleDialog.askstring('title', question)
         return answer or ''
 
@@ -50,5 +52,10 @@ class UI:
             answer = self.input(prompt)
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
                 return answer
-ui = UI()
-print ui.input('Test?')
+
+
+if __name__ == '__main__':
+    ui = UI()
+    print ui.input('Test?')
+app.MainLoop()
+
