@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import family=
+import family
 
 __version__ = '$Id$'
 
