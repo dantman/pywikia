@@ -3,7 +3,7 @@ __version__ = '$Id$'
 
 import sys; sys.path.append('..')
 
-import config, re, sys
+import config, re, sys, terminal_interface
 import wx
 
 app = wx.App()
@@ -18,7 +18,9 @@ class UI:
         question mark.
         """
         # comma at the end means "don't print newline"
-        print text.encode(config.console_encoding, 'replace'),
+        #print text.encode(config.console_encoding, 'replace'),
+        terminal_interface.UI().output(text, toStdout)
+        
 
     def input(self, question, password = False):
         """
@@ -29,13 +31,16 @@ class UI:
         """
         # TODO: hide input if password = True
         
-        answer = wx.TextEntryDialog( None, question, question, '' )
+        if password:
+            answer = wx.PasswordEntryDialog( None, question, '','')
+        else:
+            answer = wx.TextEntryDialog( None, question, '', '' )
         answer.ShowModal()
-        print answer
-#tkSimpleDialog.askstring('title', question)
-        return answer or ''
+        print answer.GetValue()
+        #tkSimpleDialog.askstring('title', question)
+        return answer.GetValue() or ''
 
-    def inputChoice(self, question, options, hotkeys):
+    def inputChoice(self, question, options, hotkeys, default = None):
         goodAnswer = False
         while not goodAnswer:
             for i in range(len(options)):
@@ -49,7 +54,10 @@ class UI:
                     options[i] = '%s [%s]' % (option, hotkey)
 
             prompt = '%s (%s)' % (question, ', '.join(options))
-            answer = self.input(prompt)
+            answer = wx.TextEntryDialog(None, prompt, question, '')
+            answer.ShowModal()
+            answer = answer.GetValue()
+            
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
                 return answer
 
