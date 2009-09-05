@@ -14,33 +14,47 @@ sys.path.append('..')
 import wikipedia, config
 
 
-def readtalk(lang, familyName):
+def readtalk(lang, familyName, sysop = False):
     site = wikipedia.getSite(code=lang, fam=familyName)
-    site.forceLogin();
-    page = wikipedia.Page(site, u'User_Talk:' + config.usernames[familyName][lang])
-    wikipedia.output(u'Reading talk page from %s:%s'% (lang,familyName))
+    index = site._userIndex(sysop)
+    if sysop:
+        user = config.sysopnames[familyName][lang]
+    else:
+        user = config.usernames[familyName][lang]
+    page = wikipedia.Page(site, user, defaultNamespace=3)
+    if not site.loggedInAs(sysop):
+        site.forceLogin()
+    if site._messages[index]:
+        wikipedia.output("cleanning up the account new message notice")
+        pagetext = site.getUrl(site.get_address(u'User_Talk:' + user), sysop=sysop)
+        del pagetext
+    wikipedia.output(u'Reading talk page from %s:%s:%s'% (lang,familyName, user))
     try:
-        wikipedia.output(page.get (get_redirect=True)+"\n")
+        wikipedia.output( page.get(get_redirect=True)+"\n")
     except wikipedia.NoPage:
-        wikipedia.output("WARNING: Account talk page is not exist.\n")
+        wikipedia.output("Talk page is not exist.")
     except wikipedia.UserBlocked:
-        wikipedia.output("WARNING: Account in %s:%s is blocked.\n"% (familyName,lang))
+        wikipedia.output("Account is blocked.")
 
 def main():
     # Get a dictionary of all the usernames
-    all =  False
+    all = sysop = False
     
     for arg in wikipedia.handleArgs():
         if arg.startswith('-all'):
             all = True
-    
+        elif arg.startswith('-sysop'):
+            sysop = True
     if all == True:
-        namedict = config.usernames
+        if sysop:
+            namedict = config.sysopnames
+        else:
+            namedict = config.usernames
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
-                readtalk(lang,familyName)
+                readtalk(lang, familyName, sysop)
     else:
-        readtalk(wikipedia.default_code,wikipedia.default_family)
+        readtalk(wikipedia.default_code, wikipedia.default_family, sysop)
 
 if __name__ == "__main__":
     try:
