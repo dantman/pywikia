@@ -1402,6 +1402,9 @@ not supported by PyWikipediaBot!"""
         if not force:
             if not self.botMayEdit(username):
                 raise LockedPage(u'Not allowed to edit %s because of a restricting template' % self.aslink())
+            elif config.use_api and self.namespace() in [2,3] and ( '.css' in self.title() or '.js' in self.title()):
+                # API enable: if title is .css or .js in ns2,3 , it need permission `editusercssjs`
+                sysop = self._getActionUser(action = 'editusercssjs', restriction = self.editRestriction, sysop=True)
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
