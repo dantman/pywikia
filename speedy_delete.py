@@ -447,7 +447,7 @@ class SpeedyRobot:
         """
         self.mySite = wikipedia.getSite()
         self.csdCat = catlib.Category(self.mySite, wikipedia.translate(self.mySite, self.csd_cat))
-        self.savedProgress = '!'
+        self.savedProgress = None
         self.preloadingGen = None
 
     def guessReasonForDeletion(self, page):
@@ -509,7 +509,7 @@ class SpeedyRobot:
         startFromBeginning = True
         while keepGoing:
             if startFromBeginning:
-                self.savedProgress = '!'
+                self.savedProgress = None
             self.refreshGenerator()
             count = 0
             for page in self.preloadingGen:
@@ -523,7 +523,12 @@ class SpeedyRobot:
                 # Highlight the title in purple.
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
-                wikipedia.output(pageText)
+                if len(pageText) > 20000:
+                    wikipedia.output('The page detail is too large, only output first 5K detail:')
+                    wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
+                    wikipedia.output(pageText[:5000])
+                else:
+                    wikipedia.output(pageText)
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
                 choice = wikipedia.inputChoice(u'Input action?', ['delete', 'skip', 'update', 'quit'], ['d', 'S', 'u', 'q'], 'S')
                 if choice == 'q':
