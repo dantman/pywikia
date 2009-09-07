@@ -1203,7 +1203,8 @@ class ISBN:
             if rest.startswith(prefix):
                 result += prefix + '-'
                 rest = rest[len(prefix):]
-
+                break
+            
         # Determine the group
         for groupNumber in ranges.iterkeys():
             if rest.startswith(groupNumber):
