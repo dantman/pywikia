@@ -1120,10 +1120,10 @@ class GeneratorFactory:
         elif arg.startswith('-google'):
             gen = GoogleSearchPageGenerator(arg[8:])
         elif arg.startswith('-titleregex'):
-            if len(arg) == 6:
+            if len(arg) == 11:
                 regex = wikipedia.input(u'What page names are you looking for?')
             else:
-                regex = arg[7:]
+                regex = arg[12:]
             gen = RegexFilterPageGenerator(site.allpages(), regex)
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
