@@ -442,6 +442,7 @@ msg = {
     'nov': (u'robote ', u'Adid', u'Ekartad', u'Modifikad'),
     'nrm': (u'robot ', u'ajouôte', u'hale', u'amende'),
     'os': (u'Робот ', u'баххæст кодта', u'Баивта', u'Аиуварс'),
+    'pdc': (u'Bot: ', u'dezu geduh', u'raus gnumme', u'gennert'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pms': (u'ël trigomiro ', u'a gionta', u'a gava', u'a modìfica'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
@@ -1788,7 +1789,8 @@ class InterwikiBot(object):
     def selectQuerySite(self):
         """Select the site the next query should go out for."""
         # How many home-language queries we still have?
-        mycount = self.counts.get(wikipedia.getSite(), 0)
+        ###xqt: its seems this counts a negative value
+        mycount = max(0, self.counts.get(wikipedia.getSite(), 0))
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
@@ -2009,7 +2011,7 @@ if __name__ == "__main__":
                 globalvar.confirm = True
             elif arg == '-select':
                 globalvar.select = True
-            elif arg == '-autonomous':
+            elif arg == '-autonomous' or arg == '-auto':
                 globalvar.autonomous = True
             elif arg == '-noredirect':
                 globalvar.followredirect = False
