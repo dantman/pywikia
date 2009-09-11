@@ -1432,7 +1432,7 @@ not supported by PyWikipediaBot!"""
         newPage = not self.exists()
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
-        if self.site().lang == 'eo':
+        if self.site().lang == 'eo' and not config.use_api:
             newtext = encodeEsperantoX(newtext)
             comment = encodeEsperantoX(comment)
 
@@ -7139,7 +7139,7 @@ def altlang(code):
     if code == 'ckb':
         return ['ku', 'ar']
     #Chinese
-    if code in ['minnan', 'zh', 'zh-classical', 'zh-min-nan', 'zh-tw']:
+    if code in ['minnan', 'zh', 'zh-classical', 'zh-min-nan', 'zh-tw', 'zh-hans', 'zh-hant']:
         return ['zh', 'zh-tw', 'zh-cn', 'zh-classical']
     if code in ['cdo', 'gan', 'hak', 'ii', 'wuu', 'za', 'zh-cdo', 'zh-classical',
                 'zh-cn', 'zh-yue']:
