@@ -8,6 +8,10 @@ The following parameters are supported:
 
 &params;
 
+-summary:XYZ      Set the summary message text for the edit to XYZ, bypassing
+                  the predefined message texts with original and replacements
+                  inserted.
+
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 
@@ -41,6 +45,7 @@ docuReplacements = {
 
 # Summary message when using this module as a stand-alone script
 msg_standalone = {
+    'als': u'Bötli: chleineri Änderige',
     'ar': u'روبوت: تغييرات تجميلية',
     'be-x-old': u'Робат: касмэтычныя зьмены',
     'bg': u'Робот козметични промени',
@@ -54,20 +59,26 @@ msg_standalone = {
     'fa': u'ربات: ویرایش جزئی',
     'fi': u'Botti kosmeettisia muutoksia',
     'fr': u'Robot : Changement de type cosmétique',
+    'fy': u'bot tekstwiziging',
     'gl': u'bot Cambios estética',
     'he': u'בוט: שינויים קוסמטיים',
     'hi': u'Bot: अंगराग परिवर्तन',
     'hr': u'robot kozmetičke promjene',
     'hu': u'Bot: kozmetikai változtatások',
+    'ia': u'Robot: Cambios cosmetic',
     'id': u'bot kosmetik perubahan',
     'it': u'Bot: Modifiche estetiche',
     'ja': u'ロボットによる: 細部の編集',
     'ko': u'로봇: 예쁘게 바꿈',
+    'la': u'automaton: mutationes minores',
     'lt': u'robotas: smulkūs taisymai',
     'lv': u'robots kosmētiskās izmaiņas',
+    'mk': u'Бот: козметички промени',
+    'ms': u'Bot: perubahan kosmetik',
     'mt': u'Bot: kosmetiċi bidliet',
     'nl': u'Bot: cosmetische wijzigingen',
     'no': u'Bot: Kosmetiske endringer',
+    'pdc': u'Waddefresser: gleene Enneringe',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
     'ro': u'robot modificări cosmetice',
@@ -76,10 +87,11 @@ msg_standalone = {
     'sl': u'robot kozmetične spremembe',
     'sr': u'Бот козметичке промене',
     'sv': u'Bot: Kosmetiska ändringar',
-    'th': u'โรบอต ประทิ่นเปลี่ยนแปลง',
+    'th': u'บอต ปรับแต่งให้อ่านง่าย',
     'tl': u'robot Kosmetiko pagbabago',
     'tr': u'Bot Kozmetik değişiklikler',
     'uk': u'робот косметичні зміни',
+    'vec': u'Bot: Modifiche estetiche',
     'vi': u'robot: Sửa cách trình bày',
     'war': u'Robot: Kosmetiko nga mga pagbag-o',
     'zh': u'機器人: 細部更改',
@@ -88,6 +100,7 @@ msg_standalone = {
 # Summary message  that will be appended to the normal message when
 # cosmetic changes are made on the fly
 msg_append = {
+    'als': u'; chleineri Änderige',
     'ar': u'; تغييرات تجميلية',
     'be-x-old': u'; касмэтычныя зьмены',
     'bg': u'; козметични промени',
@@ -101,20 +114,26 @@ msg_append = {
     'fa': u'; ویرایش جزئی',
     'fi': u'; kosmeettisia muutoksia',
     'fr': u'; changement de type cosmétique',
+    'fy': u'; tekstwiziging',
     'gl': u'; cambios estética',
     'he': u'; שינויים קוסמטיים',
     'hi': u'; अंगराग परिवर्तन',
     'hr': u'; kozmetičke promjene',
     'hu': u'; kozmetikai változtatások',
+    'ia': u'; cambios cosmetic',
     'id': u'; kosmetik perubahan',
     'it': u'; modifiche estetiche',
     'ja': u'; 細部の編集',
     'ko': u'; 예쁘게 바꿈',
+    'la': u'; mutationes minores',
     'lt': u'; smulkūs taisymai',
     'lv': u'; kosmētiskās izmaiņas',
     'mt': u'; kosmetiċi bidliet',
+    'mk': u'; козметички промени',
+    'ms': u'; perubahan kosmetik',
     'nl': u'; cosmetische veranderingen',
     'no': u'; kosmetiske endringer',
+    'pdc': u', gleene Enneringe',
     'pl': u'; zmiany kosmetyczne',
     'pt': u'; mudanças triviais',
     'ro': u'; modificări cosmetice',
@@ -123,10 +142,11 @@ msg_append = {
     'sl': u'; kozmetične spremembe',
     'sr': u'; козметичке промене',
     'sv': u'; kosmetiska ändringar',
-    'th': u'; ประทิ่นเปลี่ยนแปลง',
+    'th': u'; ปรับแต่งให้อ่านง่าย',
     'tl': u'; Kosmetiko pagbabago',
     'tr': u'; Kozmetik değişiklikler',
     'uk': u'; косметичні зміни',
+    'vec': u'; modifiche estetiche',
     'vi': u'; sửa cách trình bày',
     'war': u'; kosmetiko nga mga pagbag-o',
     'zh': u'; 細部更改',
@@ -328,6 +348,7 @@ class CosmeticChangesToolkit:
     def resolveHtmlEntities(self, text):
         ignore = [
              38,     # Ampersand (&amp;)
+             39,     # ignore ' see http://eo.wikipedia.org/w/index.php?title=Liberec&diff=next&oldid=2320801
              60,     # Less than (&lt;)
              62,     # Great than (&gt;)
              91,     # Opening bracket - sometimes used intentionally inside links
@@ -359,8 +380,7 @@ class CosmeticChangesToolkit:
         front of a percent sign, so it is no longer required to place it
         manually.
         '''
-        percentR = re.compile(r'(\d)&nbsp;%')
-        text = percentR.sub(r'\1 %', text)
+        text = wikipedia.replaceExcept(text, r'(\d)&nbsp;%', r'\1 %', ['timeline'])
         return text
 
     def cleanUpSectionHeaders(self, text):
