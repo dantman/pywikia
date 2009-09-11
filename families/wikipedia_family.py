@@ -662,6 +662,7 @@ class Family(family.Family):
             'az':  [u'Dəqiqləşdirmə'],
             'ba':  [u'Күп мәғәнәлелек'],
             'bar': [u'Begriffsklärung'],
+            'bcl': [u'Clarip'],
             'be':  [u'Неадназначнасць', u'Disambig'],
             'be-x-old':  [u'Неадназначнасць', u'Неадназначнасьць', u'Disambig'],
             'bg':  [u'Пояснение', u'Disambig'],
@@ -785,6 +786,7 @@ class Family(family.Family):
             'vls': [u'Db', u'Dp', u'Dpintro'],
             'vo':  [u'Telplänov'],
             'wa':  [u'Omonimeye', u'Disambig'],
+            'war': [u'Pansayod'],
             'wo':  [u'Bokktekki'],
             'yi':  [u'באדייטען'],
             'zea': [u'dp', u'Deurverwiespagina'],
@@ -926,14 +928,11 @@ class Family(family.Family):
         # Order for fy: alphabetical by code, but y counts as i
 
         def fycomp(x,y):
-            if x == 'nb':
-               x = 'no'
-            if y == 'nb':
-               y = 'no'
             x = x.replace("y","i")+x.count("y")*"!"
             y = y.replace("y","i")+y.count("y")*"!"
             return cmp(x,y)
         self.fyinterwiki = self.alphabetic[:]
+        self.fyinterwiki.remove('nb')
         self.fyinterwiki.sort(fycomp)
 
         # Which languages have a special order for putting interlanguage links,
@@ -1010,6 +1009,7 @@ class Family(family.Family):
             '_default': {
                 'pt': [103],
                 'als': [105],
+                'ar': [105],
                 'en': [13],
                 'es': [105],
                 'fi': [5],
@@ -1062,6 +1062,9 @@ class Family(family.Family):
                 'pt': [0, 102],
                 'hr': [0, 102],
             },
+            'ar': {
+                '_default': [0, 100],
+            },
             'es': {
                 '_default': [0],
                 'pt': [0, 102],
@@ -1083,6 +1086,9 @@ class Family(family.Family):
                 '_default': [1],
                 'pt': [0, 103],
                 'hr': [0, 103],
+            },
+            'ar': {
+                '_default': [1, 101],
             },
             'es': {
                 '_default': [1],
