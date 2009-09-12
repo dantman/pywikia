@@ -873,7 +873,7 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ab', 'ace', 'af', 'ak', 'als', 'am', 'ang', 'arc', 'arz', 'as', 'ast,', 'av', 'ay', 'az',
+            'ab', 'ace', 'af', 'ak', 'als', 'am', 'ang', 'arc', 'arz', 'as', 'ast', 'av', 'ay', 'az',
             'ba', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
             'cbk-zam', 'cdo', 'ce', 'ceb', 'ch', 'chr', 'chy', 'ckb', 'co', 'crh', 'cr', 'csb', 'cu', 'cv', 'cy',
             'diq', 'dsb', 'dz', 'ee', 'el', 'eml', 'eo', 'et', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
