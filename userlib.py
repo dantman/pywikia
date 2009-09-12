@@ -148,7 +148,8 @@ class User:
 
             yield wikipedia.ImagePage(self.site, image), date, comment, deleted
 
-    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
+    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False,
+                enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
         """
         Block the user.
 
@@ -199,9 +200,9 @@ class User:
         response, data = self.site.postForm(address, predata, sysop = True)
 
         if data:
-            # TODO: i18n
-            if u'is already blocked' in data:
+            if self.site.mediawiki_message('ipb_already_blocked').replace('$1', self.name) in data:
                 raise AlreadyBlockedError
+            
             raise BlockError
         return True
 
@@ -223,7 +224,6 @@ class User:
     def _getBlockID(self):
         wikipedia.output(u"Getting block id for [[User:%s]]..." % self.name)
 
-        token = self.site.getToken(self, sysop = True)
         address = self.site.blocksearch_address(self.name)
         data = self.site.getUrl(address)
         bIDre = re.search(r'action=unblock&amp;id=(\d+)', data)
@@ -248,8 +248,7 @@ class User:
 
         response, data = self.site.postForm(address, predata, sysop = True)
         if response.status != 302:
-            # TODO: i18n
-            if re.search('Block ID \d+ not found', data):
+            if self.site.mediawiki_message('ipb_cant_unblock').replace('$1',blockID) in data:
                 raise AlreadyUnblockedError
             raise UnblockError, data
         return True
