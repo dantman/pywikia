@@ -16,7 +16,6 @@ import wikipedia, config
 
 def readtalk(lang, familyName, sysop = False):
     site = wikipedia.getSite(code=lang, fam=familyName)
-    index = site._userIndex(sysop)
     if sysop:
         user = config.sysopnames[familyName][lang]
     else:
@@ -24,7 +23,7 @@ def readtalk(lang, familyName, sysop = False):
     page = wikipedia.Page(site, user, defaultNamespace=3)
     if not site.loggedInAs(sysop):
         site.forceLogin()
-    if site._messages[index]:
+    if site.messages(sysop):
         wikipedia.output("cleanning up the account new message notice")
         pagetext = site.getUrl(site.get_address(u'User_Talk:' + user), sysop=sysop)
         del pagetext
