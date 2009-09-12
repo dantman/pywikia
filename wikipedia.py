@@ -2783,7 +2783,7 @@ not supported by PyWikipediaBot!"""
         output(u'Page %s undeleted' % self.aslink())
         return result
 
-    def protect(self, ec = 'sysop', move = 'sysop', unprotect = False, reason = None, ec_duration = 'infinite', 
+    def protect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite', 
                 move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
         """(Un)protect a wiki title. Requires administrator status.
 
@@ -2803,16 +2803,16 @@ not supported by PyWikipediaBot!"""
         self.site().checkBlocks(sysop = True)
 
         address = self.site().protect_address(self.urlname())
-        #if self.exists() and ec != move: # check protect level if edit/move not same
-        #    if ec == 'sysop' and move != 'sysop':
+        #if self.exists() and editcreate != move: # check protect level if edit/move not same
+        #    if editcreate == 'sysop' and move != 'sysop':
         #        raise Error("The level configuration is not safe")
         
         if unprotect:
             address = self.site().unprotect_address(self.urlname())
             # unprotect_address is actually an alias for protect_address...
-            ec = move = ''
+            editcreate = move = ''
         else:
-            ec, move = ec.lower(), move.lower()
+            editcreate, move = editcreate.lower(), move.lower()
         if throttle:
             put_throttle()
         if reason is None:
@@ -2834,18 +2834,18 @@ not supported by PyWikipediaBot!"""
             token = self.site().getToken(self, sysop = True)
 
             # Translate 'none' to ''
-            if ec == 'none': ec = ''
+            if editcreate == 'none': editcreate = ''
             if move == 'none': move = ''
 
             # Translate no duration to infinite
-            if ec_duration == 'none' or not ec_duration: ec_duration = 'infinite'
+            if editcreate_duration == 'none' or not editcreate_duration: editcreate_duration = 'infinite'
             if move_duration == 'none' or not move_duration: move_duration = 'infinite'
 
             # Get cascading
             if cascading == False:
                 cascading = '0'
             else:
-                if ec != 'sysop' or move != 'sysop' or not self.exists():
+                if editcreate != 'sysop' or move != 'sysop' or not self.exists():
                     # You can't protect a page as autoconfirmed and cascading, prevent the error
                     # Cascade only available exists page, create prot. not.
                     cascading = '0'
@@ -2861,18 +2861,18 @@ not supported by PyWikipediaBot!"""
             
             if not self.exists(): #and self.site().versionnumber() >= :
                 #create protect
-                predata['mwProtect-level-create'] = ec
-                predata['wpProtectExpirySelection-create'] = ec_duration
+                predata['mwProtect-level-create'] = editcreate
+                predata['wpProtectExpirySelection-create'] = editcreate_duration
             else:
                 #edit/move Protect
-                predata['mwProtect-level-edit'] = ec
+                predata['mwProtect-level-edit'] = editcreate
                 predata['mwProtect-level-move'] = move
                 
                 if self.site().versionnumber() >= 14:
-                    predata['wpProtectExpirySelection-edit'] = ec_duration
+                    predata['wpProtectExpirySelection-edit'] = editcreate_duration
                     predata['wpProtectExpirySelection-move'] = move_duration
                 else:
-                    predata['mwProtect-expiry'] = ec_duration
+                    predata['mwProtect-expiry'] = editcreate_duration
                     
             
             if token:
