@@ -157,18 +157,21 @@ project_inserted = ['en', 'fr', 'it', 'ja', 'pt', 'zh']
 
 def understandBlock(text, TTP, TSP, TSMP, TTMP, TU):
     """ Understand if the page is blocked and if it has the right template """
-    for catchRegex in TTP: # TTP = templateTotalProtection
-        resultCatch = re.findall(catchRegex, text)
-        if resultCatch:
-            return ('sysop-total', catchRegex)
-    for catchRegex in TSP:
-        resultCatch = re.findall(catchRegex, text)
-        if resultCatch:
-            return ('autoconfirmed-total', catchRegex)
-    for catchRegex in TU:
-        resultCatch = re.findall(catchRegex, text)
-        if resultCatch:
-            return ('unique', catchRegex)        
+    if TTP != None:
+        for catchRegex in TTP: # TTP = templateTotalProtection
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch:
+                return ('sysop-total', catchRegex)
+    if TSP != None:
+        for catchRegex in TSP:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch:
+                return ('autoconfirmed-total', catchRegex)
+    if TU != None:
+        for catchRegex in TU:
+            resultCatch = re.findall(catchRegex, text)
+            if resultCatch:
+                return ('unique', catchRegex)        
     if TSMP != None and TTMP != None and TTP != TTMP and TSP != TSMP:
         for catchRegex in TTMP:
             resultCatch = re.findall(catchRegex, text)
@@ -211,8 +214,6 @@ def main():
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
-    # Load the right site
-    site = wikipedia.getSite()
     # Loading the default options.
     for arg in wikipedia.handleArgs():
         if arg == '-always':
@@ -239,6 +240,9 @@ def main():
                 generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         else:
             genFactory.handleArg(arg)
+
+    # Load the right site
+    site = wikipedia.getSite()
     # Take the right templates to use, the category and the comment
     TSP = wikipedia.translate(site, templateSemiProtection)
     TTP = wikipedia.translate(site, templateTotalProtection)
@@ -305,7 +309,10 @@ def main():
         if not editRestr:
             # page is not edit-protected
             # Deleting the template because the page doesn't need it.
-            replaceToPerform = u'|'.join(TTP + TSP + TU)
+            if TU != None:
+                replaceToPerform = u'|'.join(TTP + TSP + TU)
+            else:
+                replaceToPerform = u'|'.join(TTP + TSP)                
             text, changes = re.subn('<noinclude>(%s)</noinclude>' % replaceToPerform, '', text)
             if changes == 0:
                 text, changes = re.subn('(%s)' % replaceToPerform, '', text)            
@@ -351,7 +358,10 @@ def main():
             if not moveRestr:
                 wikipedia.output(u'The page is movable for all, deleting the template...')
                 # Deleting the template because the page doesn't need it.
-                replaceToPerform = u'|'.join(TSMP + TTMP + TU)
+                if TU != None:
+                    replaceToPerform = u'|'.join(TSMP + TTMP + TU)
+                else:
+                    replaceToPerform = u'|'.join(TSMP + TTMP)
                 text, changes = re.subn('<noinclude>(%s)</noinclude>' % replaceToPerform, '', text)
                 if changes == 0:
                     text, changes = re.subn('(%s)' % replaceToPerform, '', text)
