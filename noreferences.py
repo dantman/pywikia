@@ -320,7 +320,7 @@ class NoReferencesBot:
         try:
             self.referencesText = referencesSubstitute[wikipedia.getSite().family.name][wikipedia.getSite().lang]
         except KeyError:
-            self.referencesText = u'<references/>'
+            self.referencesText = u'<references />'
 
     def lacksReferences(self, text, verbose = True):
         """
@@ -417,7 +417,7 @@ class NoReferencesBot:
         return self.createReferenceSection(oldText, index)
 
     def createReferenceSection(self, oldText, index, ident = '=='):
-        newSection = u'\n%s %s %s\n\n%s\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident, self.referencesText)
+        newSection = u'\n%s %s %s\n%s\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident, self.referencesText)
         return oldText[:index] + newSection + oldText[index:]
 
     def save(self, page, newText):
