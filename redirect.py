@@ -709,7 +709,7 @@ class RedirectRobot:
                         newRedir = targetPage
                         continue #
                 try:
-                oldText = redir.get(get_redirect=True)
+                    oldText = redir.get(get_redirect=True)
                 except wikipedia.BadTitle:
                     wikipedia.output(u"Bad Title Error")
                     break
