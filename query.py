@@ -81,7 +81,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
 
     lastError = None
-    retry_idle_time = 5
+    retry_idle_time = 1
 
     while retryCount >= 0:
         try:
@@ -110,15 +110,17 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
-            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s\n%s' % (site.hostname(), path), jsontext)
             lastError = error
             if retryCount >= 0:
-                wikipedia.output(u"Retrying in %i seconds..." % retry_idle_time)
-                time.sleep(retry_idle_time)
+                wikipedia.output(u"Retrying in %i minutes..." % retry_idle_time)
+                time.sleep(retry_idle_time*60)
                 # Next time wait longer, but not longer than half an hour
                 retry_idle_time *= 2
-                if retry_idle_time > 300:
-                    retry_idle_time = 300
+                if retry_idle_time > 30:
+                    retry_idle_time = 30
+            else:
+                wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s\n%s' % (site.hostname(), path), jsontext)
+
 
 
     raise lastError
