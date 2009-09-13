@@ -69,6 +69,7 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
+    'als': u'Bötli: Uflesung vum doppelte Redirect',
     'ar': u'روبوت: تصليح تحويلة مزدوجة',
     'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
     'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня',
@@ -91,6 +92,7 @@ msg_double={
     'ksh':u'Bot: [[special:doubleredirects|Dubbel Ömlëijdong]] fottjemaat',
     'lb': u'Bot: Duebel Viruleedung gefléckt',
     'lt': u'robotas: Taisomas dvigubas peradresavimas',
+    'mk': u'Бот: Исправка на двојни пренасочувања',
     'nds':u'Bot: Dubbelte Wiederleiden rutmakt',
     'nl': u'Bot: dubbele doorverwijzing gecorrigeerd',
     'nn': u'robot: retta dobbel omdirigering',
@@ -662,6 +664,9 @@ class RedirectRobot:
                         wikipedia.output(
                             u"Warning: Redirect target %s doesn't exist."
                             % newRedir.aslink())
+                except wikipedia.ServerError:
+                    wikipedia.output(u'Skipping: Server Error')
+                    break
                 else:
                     wikipedia.output(
                         u'   Links to: %s.'
@@ -680,6 +685,7 @@ class RedirectRobot:
                         wikipedia.output(
                            u'Warning: Redirect target %s forms a redirect loop.'
                               % targetPage.aslink())
+                        break ###xqt doesn't work. edits twice!
                         try:
                             content = targetPage.get(get_redirect=True)
                         except wikipedia.SectionError:
@@ -702,7 +708,11 @@ class RedirectRobot:
                     else:
                         newRedir = targetPage
                         continue #
+                try:
                 oldText = redir.get(get_redirect=True)
+                except wikipedia.BadTitle:
+                    wikipedia.output(u"Bad Title Error")
+                    break
                 text = mysite.redirectRegex().sub(
                         '#%s %s' %
                             (mysite.redirect( True ),
@@ -819,7 +829,6 @@ def main(*args):
             try:
                 ns = int(ns)
             except ValueError:
-#-namespace:all Process all namespaces. Works only with the API read interface.
 #-namespace:all Process all namespaces. Works only with the API read interface.
                pass
             if not ns in namespaces:
