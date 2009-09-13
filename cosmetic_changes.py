@@ -11,6 +11,8 @@ The following parameters are supported:
 -summary:XYZ      Set the summary message text for the edit to XYZ, bypassing
                   the predefined message texts with original and replacements
                   inserted.
+-always           Don't prompt for each replacement.
+
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
@@ -448,14 +450,19 @@ class CosmeticChangesBot:
             wikipedia.output("Page %s is locked?!" % page.aslink())
 
     def run(self):
-        for page in self.generator:
-            self.treat(page)
+        try:
+            for page in self.generator:
+                self.treat(page)
+        except KeyboardInterrupt:
+            wikipedia.output('\nQuitting program...')
 
 def main():
     #page generator
     gen = None
     pageTitle = []
     editSummary = ''
+    answer = 'y'
+    always = False
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
@@ -464,12 +471,14 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg.startswith('-summary:'):
             editSummary = arg[len('-summary:'):]
+        elif arg.startswith('-always'):
+            always = True
         else:
             if not genFactory.handleArg(arg):
                 pageTitle.append(arg)
-	if editSummary == '':
+    if editSummary == '':
         # Load default summary message.
-		editSummary = wikipedia.translate(wikipedia.getSite(), msg_standalone)
+        editSummary = wikipedia.translate(wikipedia.getSite(), msg_standalone)
     wikipedia.setAction(editSummary)
 
     # Disabled this check. Although the point is still valid, there
@@ -488,9 +497,12 @@ def main():
         gen = genFactory.getCombinedGenerator()
     if not gen:
         wikipedia.showHelp()
-    elif wikipedia.inputChoice(warning + '\nDo you really want to continue?', ['yes', 'no'], ['y', 'N'], 'N') == 'y':
+    elif not always:
+        answer = wikipedia.inputChoice(warning + '\nDo you really want to continue?', ['yes', 'no'], ['y', 'N'], 'N')
+    
+    if answer == 'y':
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = CosmeticChangesBot(preloadingGen)
+        bot = CosmeticChangesBot(preloadingGen, acceptall=always)
         bot.run()
 
 if __name__ == "__main__":
