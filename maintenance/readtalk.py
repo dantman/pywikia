@@ -11,23 +11,23 @@ TODO:
 import sys, re
 sys.path.append(re.sub('/[^/]*$', '', sys.path[0])) 
 sys.path.append('..')
-import wikipedia, config
+import wikipedia, config, userlib
 
 
 def readtalk(lang, familyName, sysop = False):
     site = wikipedia.getSite(code=lang, fam=familyName)
     if sysop:
-        user = config.sysopnames[familyName][lang]
+        user = userlib.User(site, config.sysopnames[familyName][lang])
     else:
-        user = config.usernames[familyName][lang]
-    page = wikipedia.Page(site, user, defaultNamespace=3)
+        user = userlib.User(site, config.usernames[familyName][lang])
+    page = user.getUserTalkPage()
     if not site.loggedInAs(sysop):
         site.forceLogin()
     if site.messages(sysop):
         wikipedia.output("cleanning up the account new message notice")
-        pagetext = site.getUrl(site.get_address(u'User_Talk:' + user), sysop=sysop)
+        pagetext = site.getUrl(site.get_address(page.urlname()), sysop=sysop)
         del pagetext
-    wikipedia.output(u'Reading talk page from %s:%s:%s'% (lang,familyName, user))
+    wikipedia.output(u'Reading talk page from %s' % user)
     try:
         wikipedia.output( page.get(get_redirect=True)+"\n")
     except wikipedia.NoPage:
