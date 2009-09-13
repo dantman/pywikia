@@ -5209,6 +5209,8 @@ your connection is down. Retrying in %i minutes..."""
                 if self._rights[index] is not None:
                     # Token and rights are loaded - user data is now loaded
                     self._userData[index] = True
+            #elif self.versionnumber() < 14:
+            #    # uiprop 'preferencestoken' is start from 1.14, if 1.8~13, we need to use other way to get token
             else:
                 if not self._isBlocked[index]:
                     output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
@@ -5474,13 +5476,17 @@ your connection is down. Retrying in %i minutes..."""
         
         # Get data
         # API Userinfo is available from version 1.11
-        if config.use_api and self.versionnumber() >= 11:
+        # preferencetoken available from 1.14
+        if config.use_api and self.versionnumber() >= 14:
             #Query userinfo
             params = {
                 'action': 'query',
                 'meta': 'userinfo',
                 'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits|preferencestoken',
             }
+            #if self.versionnumber() >= 14:
+            #    params['uiprop'] += '|preferencestoken'
+            
             text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
             ##output('%s' % text) # for debug use only
         else:
