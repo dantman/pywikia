@@ -1527,10 +1527,10 @@ not supported by PyWikipediaBot!"""
                 put_throttle()
             # Which web-site host are we submitting to?
             if newPage:
-                output(u'Creating page %s' % self.aslink())
+                output(u'Creating page %s via API' % self.aslink())
                 params['createonly'] = 1
             else:
-                output(u'Updating page %s' % self.aslink())
+                output(u'Updating page %s via API' % self.aslink())
                 params['nocreate'] = 1
             # Submit the prepared information
             try:
@@ -1597,13 +1597,15 @@ not supported by PyWikipediaBot!"""
                 errorCode = data['error']['code']
                 #cannot handle longpageerror and PageNoSave yet
                 if errorCode == 'maxlag' or response.status == 503:
-                        # server lag; Mediawiki recommends waiting 5 seconds
-                        # and retrying
+                    # server lag; wait for the lag time and retry
+                    info = data['error']['info']
                     if verbose:
-                        output(data, newline=False)
-                    output(u"Pausing 5 seconds due to database server lag.")
+                        output(u'INFO: %s' % info)###xqt
+                    m = re.search('Waiting for (.+?): (.+?) seconds lagged', info)
+                    timelag = int(m.group(2))
+                    output(u"Pausing %d seconds due to database server lag." % timelag)
                     dblagged = True
-                    time.sleep(5)
+                    time.sleep(timelag)
                     continue
                 elif errorCode == 'editconflict':
                     # 'editconflict':"Edit conflict detected",
@@ -1748,6 +1750,7 @@ not supported by PyWikipediaBot!"""
         retry_delay = 1
         retry_attempt = 1
         dblagged = False
+        wait = 5
         while True:
             if (maxTries == 0):
                 raise MaxTriesExceededError()
@@ -1780,9 +1783,10 @@ not supported by PyWikipediaBot!"""
                         # and retrying
                         if verbose:
                             output(data, newline=False)
-                        output(u"Pausing 5 seconds due to database server lag.")
+                        output(u"Pausing %d seconds due to database server lag." % wait)
                         dblagged = True
-                        time.sleep(5)
+                        time.sleep(wait)
+                        wait = min(wait*2, 300)
                         continue
                     # Squid error 503
                     raise ServerError(response.status)
@@ -1806,8 +1810,9 @@ not supported by PyWikipediaBot!"""
             # Check blocks
             self.site().checkBlocks(sysop = sysop)
             # A second text area means that an edit conflict has occured.
-            editconflict = re.compile('id=["\']wpTextbox2[\'"] name="wpTextbox2"')
-            if editconflict.search(data):
+            editconflict1 = re.compile('id=["\']wpTextbox2[\'"] name="wpTextbox2"')
+            editconflict2 = re.compile('name="wpTextbox2" id="wpTextbox2"')
+            if editconflict1.search(data) or editconflict2.search(data):
                 raise EditConflict(u'An edit conflict has occured.')
 
             # remove the wpAntispam keyword before checking for Spamfilter
@@ -1880,6 +1885,14 @@ not supported by PyWikipediaBot!"""
             if ("<title>Wikimedia Error</title>" in data or "has a problem</title>" in data) \
                 or response.status == 500:
                 output(u"Server error encountered; will retry in %i minute%s."
+                       % (retry_delay, retry_delay != 1 and "s" or ""))
+                time.sleep(60 * retry_delay)
+                retry_delay *= 2
+                if retry_delay > 30:
+                    retry_delay = 30
+                continue
+            if ("1213: Deadlock found when trying to get lock" in data):
+                output(u"Deadlock error encountered; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
                 retry_delay *= 2
@@ -7045,7 +7058,7 @@ def altlang(code):
     if code in ['cs', 'sk']:
         return ['cs', 'sk']
     #German
-    if code in ['als', 'bar', 'ksh']:
+    if code in ['als', 'bar', 'ksh', 'pdc']:
         return ['de']
     if code in ['als', 'lb']:
         return ['de', 'fr']
