@@ -45,6 +45,9 @@ class User:
         self.site = site
         self.name = name
 
+    def __str__(self):
+        return '%s:%s' % (self.site, self.name)
+
     def getUserPage(self, subpage=''):
         if self.name[0] == '#':
             #This user is probably being queried for purpose of lifting
