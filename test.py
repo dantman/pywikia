@@ -11,16 +11,20 @@ __version__='$Id$'
 #
 import re,sys,wikipedia
 
-for arg in wikipedia.handleArgs():
+def main():
+    for arg in wikipedia.handleArgs():
     wikipedia.output(u"Unknown argument: %s" % arg)
     wikipedia.stopme()
     sys.exit(1)
 
-mysite = wikipedia.getSite()
-if mysite.loggedInAs():
+    mysite = wikipedia.getSite()
+    if mysite.loggedInAs():
     wikipedia.output(u"You are logged in on %s as %s." % (repr(mysite), mysite.loggedInAs()))
-else:
+    else:
     wikipedia.output(u"You are not logged in on %s." % repr(mysite))
 
-wikipedia.stopme()
-
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
