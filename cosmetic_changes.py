@@ -423,8 +423,6 @@ class CosmeticChangesBot:
     def __init__(self, generator, acceptall = False):
         self.generator = generator
         self.acceptall = acceptall
-        # Load default summary message.
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_standalone))
 
     def treat(self, page):
         try:
@@ -457,14 +455,22 @@ def main():
     #page generator
     gen = None
     pageTitle = []
+    editSummary = ''
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
+        if arg.startswith('-summary:'):
+            editSummary = arg[len('-summary:'):]
+        else:
         if not genFactory.handleArg(arg):
             pageTitle.append(arg)
+	if editSummary == '':
+        # Load default summary message.
+		editSummary = wikipedia.translate(wikipedia.getSite(), msg_standalone)
+    wikipedia.setAction(editSummary)
 
     # Disabled this check. Although the point is still valid, there
     # is now a warning and a prompt (see below).
