@@ -123,7 +123,7 @@ def workon(page, links):
         comment = wikipedia.translate(mysite, msg)
         page.put(text, comment)
 
-try:
+def main():
     start = []
     test = False
     for arg in wikipedia.handleArgs():
@@ -160,6 +160,9 @@ try:
             pagestoload = []
             pagestodo = []
 
-finally:
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
     wikipedia.stopme()
 
