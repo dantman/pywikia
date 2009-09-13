@@ -465,8 +465,8 @@ def main():
         if arg.startswith('-summary:'):
             editSummary = arg[len('-summary:'):]
         else:
-        if not genFactory.handleArg(arg):
-            pageTitle.append(arg)
+            if not genFactory.handleArg(arg):
+                pageTitle.append(arg)
 	if editSummary == '':
         # Load default summary message.
 		editSummary = wikipedia.translate(wikipedia.getSite(), msg_standalone)
