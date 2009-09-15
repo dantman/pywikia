@@ -214,6 +214,8 @@ def main():
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
+    # Load the right site
+    site = wikipedia.getSite()
     # Loading the default options.
     for arg in wikipedia.handleArgs():
         if arg == '-always':
@@ -241,8 +243,6 @@ def main():
         else:
             genFactory.handleArg(arg)
 
-    # Load the right site
-    site = wikipedia.getSite()
     # Take the right templates to use, the category and the comment
     TSP = wikipedia.translate(site, templateSemiProtection)
     TTP = wikipedia.translate(site, templateTotalProtection)
