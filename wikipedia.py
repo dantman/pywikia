@@ -919,13 +919,13 @@ not supported by PyWikipediaBot!"""
             'prop'      :'info',
             'titles'    :self.title(),
             }
-        data = query.GetData(params, self.site(), encodeTitle = False)        
-        pageid = data['query']['pages'].keys()[0]
-        if data['query']['pages'][pageid].keys()[0] == 'lastrevid':
-            return data['query']['pages'][pageid]['lastrevid'] # if ok,
-                                                               # return the last revid
-        elif data['query']['pages'][pageid].keys()[0] == 'redirect':
+        data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages'].values()[0]
+        if data.has_key('redirect'):
             raise IsRedirectPage        
+        elif data.has_key('missing'):
+            raise NoPage
+        elif data.has_key('lastrevid'):
+            return data['lastrevid'] # if ok, return the last revid
         else:
             # should not exists, OR we have problems.
             # better double check in this situations
@@ -1990,16 +1990,14 @@ not supported by PyWikipediaBot!"""
         if ns < 0: # Special page
             return None
         if self.isTalkPage():
-            if self.namespace() == 1:
-                return Page(self.site(), self.titleWithoutNamespace())
-            else:
-                return Page(self.site(),
-                            self.site().namespace(ns - 1) + ':'
-                              + self.titleWithoutNamespace())
+            ns -= 1
         else:
-            return Page(self.site(),
-                        self.site().namespace(ns + 1) + ':'
-                          + self.titleWithoutNamespace())
+            ns += 1
+        
+        if ns == 6:
+            return ImagePage(self.site(), self.titleWithoutNamespace())
+        
+        return Page(self.site(), self.titleWithoutNamespace(), defaultNamespace=ns)
 
     def interwiki(self):
         """Return a list of interwiki links in the page text.
@@ -2123,21 +2121,19 @@ not supported by PyWikipediaBot!"""
         for page in self.linkedPages(withImageLinks = True):
             if page.isImage():
                 # convert Page object to ImagePage object
-                imagePage = ImagePage(page.site(), page.title())
-                results.append(imagePage)
+                results.append( ImagePage(page.site(), page.title()) )
         # Find images in galleries
         pageText = self.get(get_redirect=followRedirects)
         galleryR = re.compile('<gallery>.*?</gallery>', re.DOTALL)
         galleryEntryR = re.compile('(?P<title>(%s|%s):.+?)(\|.+)?\n' % (self.site().image_namespace(), self.site().family.image_namespace(code = '_default')))
         for gallery in galleryR.findall(pageText):
             for match in galleryEntryR.finditer(gallery):
-                page = ImagePage(self.site(), match.group('title'))
-                results.append(page)
+                results.append( ImagePage(self.site(), match.group('title')) )
         if loose:
             ns = getSite().image_namespace()
             imageR = re.compile('\w\w\w+\.(?:gif|png|jpg|jpeg|svg|JPG|xcf|pdf|mid|ogg|djvu)', re.IGNORECASE)
             for imageName in imageR.findall(pageText):
-                results.append(ImagePage(self.site(), ns + ':' + imageName))
+                results.append( ImagePage(self.site(), imageName) )
         return list(set(results))
 
     def templates(self, get_redirect=False):
@@ -5209,8 +5205,20 @@ your connection is down. Retrying in %i minutes..."""
                 if self._rights[index] is not None:
                     # Token and rights are loaded - user data is now loaded
                     self._userData[index] = True
-            #elif self.versionnumber() < 14:
-            #    # uiprop 'preferencestoken' is start from 1.14, if 1.8~13, we need to use other way to get token
+            elif self.versionnumber() < 14:
+                # uiprop 'preferencestoken' is start from 1.14, if 1.8~13, we need to use other way to get token
+                params = {
+                    'action': 'query',
+                    'prop': 'info',
+                    'titles':'Non-existing page',
+                    'intoken': 'edit',
+                }
+                data = query.GetData(params, self, sysop=sysop)['query']['pages'].values()[0]
+                if data.has_key('edittoken'):
+                    self._token[index] = data['edittoken']
+                    self._userData[index] = True
+                else:
+                    output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
             else:
                 if not self._isBlocked[index]:
                     output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
@@ -5810,10 +5818,9 @@ your connection is down. Retrying in %i minutes..."""
                 raise ServerError("The site version is not support this action.")
 
             for imageData in imagesData:
-                try:
+                comment = ''
+                if imageData.has_key('comment'):
                     comment = imageData['comment']
-                except KeyError:
-                    comment = ''
                 pageid = imageData['pageid']
                 title = imageData['title']
                 timestamp = imageData['timestamp']
@@ -6069,6 +6076,7 @@ your connection is down. Retrying in %i minutes..."""
             'list'       : 'allpages',
             'aplimit'   : config.special_page_limit,
             'apnamespace': namespace,
+            'apfrom': start
         }
 
         if not includeredirects:
@@ -6077,16 +6085,18 @@ your connection is down. Retrying in %i minutes..."""
             params['apfilterredir'] = 'redirects'
 
         while True:
-            params['apfrom'] = start
+            
             if throttle:
                 get_throttle()
             data = query.GetData(params, self)
             
+            count = 0
             for p in data['query']['allpages']:
+                count += 1
                 yield Page(self, p['title'])
             
-            if data.has_key('query-continue'):
-                start = data['query-continue']['allpages']['apfrom']
+            if data.has_key('query-continue') and count < config.special_page_limit:
+                params['apfrom'] = data['query-continue']['allpages']['apfrom']
             else:
                 break
 
