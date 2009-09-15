@@ -8,11 +8,12 @@ The following parameters are supported:
 
 &params;
 
+-always           Don't prompt you for each replacement. Warning (see below)
+                  has not to be confirmed. ATTENTION: Use this with care!
+
 -summary:XYZ      Set the summary message text for the edit to XYZ, bypassing
                   the predefined message texts with original and replacements
                   inserted.
--always           Don't prompt for each replacement.
-
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
@@ -52,6 +53,7 @@ msg_standalone = {
     'be-x-old': u'Робат: касмэтычныя зьмены',
     'bg': u'Робот козметични промени',
     'ca': u'Robot: Canvis cosmètics',
+    'cs': u'Robotické: kosmetické úpravy',
     'da': u'Bot: Kosmetiske ændringer',
     'de': u'Bot: Kosmetische Änderungen',
     'el': u'Ρομπότ: διακοσμητικές αλλαγές',
@@ -107,6 +109,7 @@ msg_append = {
     'be-x-old': u'; касмэтычныя зьмены',
     'bg': u'; козметични промени',
     'ca': u'; canvis cosmètics',
+    'cs': u'; kosmetické úpravy',
     'da': u'; kosmetiske ændringer',
     'de': u'; kosmetische Änderungen',
     'el': u'; διακοσμητικές αλλαγές',
@@ -471,11 +474,11 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg.startswith('-summary:'):
             editSummary = arg[len('-summary:'):]
-        elif arg.startswith('-always'):
+        elif arg == '-always':
             always = True
-        else:
-            if not genFactory.handleArg(arg):
-                pageTitle.append(arg)
+        elif not genFactory.handleArg(arg):
+            pageTitle.append(arg)
+
     if editSummary == '':
         # Load default summary message.
         editSummary = wikipedia.translate(wikipedia.getSite(), msg_standalone)

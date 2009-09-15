@@ -74,6 +74,7 @@ msg_double={
     'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
     'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня',
     'br': u'Kempennet adkas doubl gant robot',
+    'cs': u'Robot opravil dvojité přesměrování',
     'de': u'Bot: Korrigiere doppelten Redirect',
     'en': u'Robot: Fixing double redirect',
     'es': u'Robot: Arreglando doble redirección',
@@ -117,6 +118,7 @@ msg_double={
 reason_broken={
     'ar': u'روبوت: هدف التحويلة غير موجود',
     'be-x-old': u'Робат: мэта перанакіраваньня не існуе',
+    'cs': u'Přerušené přesměrování',
     'de': u'Bot: Weiterleitungsziel existiert nicht',
     'en': u'Robot: Redirect target doesn\'t exist',
     'es': u'Robot: La página a la que redirige no existe',
@@ -149,6 +151,7 @@ reason_broken={
 # Summary message for putting broken redirect to speedy delete
 sd_tagging_sum = {
     'ar': u'روبوت: وسم للحذف السريع',
+    'cs': u'Robot označil ke smazání',
     'en': u'Robot: Tagging for speedy deletion',
     'it': u'Bot: +Da cancellare subito',
     'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
@@ -162,6 +165,7 @@ sd_tagging_sum = {
 # Insert deletion template into page with a broken redirect
 sd_template = {
     'ar':u'{{شطب|تحويلة مكسورة}}',
+    'cs': u'{{smazat|přerušené přesměrování}}',
     'en':u'{{db-r1}}',
     'it':u'{{Cancella subito|9}}',
     'ja':u'{{即時削除|壊れたリダイレクト}}',
