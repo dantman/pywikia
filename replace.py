@@ -300,9 +300,7 @@ class ReplaceRobot:
         self.editSummary = editSummary
         if addedCat:
             site = wikipedia.getSite()
-            cat_ns = site.category_namespaces()[0]
-            self.addedCat = wikipedia.Page(site,
-                                           cat_ns + ':' + addedCat)
+            self.addedCat = wikipedia.Page(site, addCat, defaultNamespace=14)
         self.sleep = sleep
 
     def isTitleExcepted(self, title):
