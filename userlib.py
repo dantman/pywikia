@@ -41,8 +41,10 @@ class User:
         site - a wikipedia.Site object
         name - name of the user, without the trailing User:
         """
-
-        self.site = site
+        if type(site) == str:
+            self.site = wikipedia.getSite(site)
+        else:
+            self.site = site
         self.name = name
 
     def __str__(self):
@@ -75,7 +77,7 @@ class User:
         for page in self.contributions(limit):
             yield page[0]
 
-    def contributions(self, limit=500):
+    def contributions(self, limit=500, namespace = []):
         """ Yields pages that the user has edited, with an upper bound of ``limit''.
         Pages returned are not guaranteed to be unique
         (straight Special:Contributions parsing, in chunks of 500 items)."""
@@ -85,13 +87,23 @@ class User:
             #an autoblock, so has no contribs.
             raise AutoblockUserError
 
+        # please stay this in comment until the regex is fixed
+        #if wikipedia.config.use_api:
+        for pg, oldid, date, comment in self._apiContributions(limit):
+            yield pg, oldid, date, comment
+        return
+        #
+        #TODO: fix contribRX regex
+        #
         offset = 0
         step = min(limit,500)
         older_str = None
-        try:
-            older_str = self.site.mediawiki_message('pager-older-n')
-        except wikipedia.KeyError:
+        
+        if self.site.versionnumber() <= 11:
             older_str = self.site.mediawiki_message('sp-contributions-older')
+        else:
+            older_str = self.site.mediawiki_message('pager-older-n')
+        
         if older_str.startswith('{{PLURAL:$1'):
             older_str = older_str[13:]
             older_str = older_str[older_str.find('|')+1:]
@@ -99,7 +111,8 @@ class User:
         older_str = older_str.replace('$1',str(step))
 
         address = self.site.contribs_address(self.name,limit=step)
-        contribRX = re.compile('<li[^>]*> *<a href="(?P<url>[^"]*?)" title="[^"]+">(?P<date>[^<]+)</a>.*>diff</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a> *(?P<comment>.*?)(?P<top><strong> *\(top\) *</strong>)? *(<span class="mw-rollback-link">\[<a href="[^"]+token=(?P<rollbackToken>[^"]+)%2B%5C".*rollback</a>\]</span>)? *</li>')
+        contribRX = re.compile(r'<li[^>]*> *<a href="(?P<url>[^"]*?)" title="[^"]+">(?P<date>[^<]+)</a>.*>%s</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a> *(?P<comment>.*?)(?P<top><strong> *\(top\) *</strong>)? *(<span class="mw-rollback-link">\[<a href="[^"]+token=(?P<rollbackToken>[^"]+)%2B%5C".*%s</a>\]</span>)? *</li>' % (self.site.mediawiki_message('diff'),self.site.mediawiki_message('rollback') ) )
+
 
         while offset < limit:
             data = self.site.getUrl(address)
@@ -108,13 +121,13 @@ class User:
                 oldid = url[url.find('&amp;oldid=')+11:]
                 date = pg.group('date')
                 comment = pg.group('comment')
-                rollbackToken = pg.group('rollbackToken')
+                #rollbackToken = pg.group('rollbackToken')
                 top = None
                 if pg.group('top'):
                     top = True
 
                 # top, new, minor, should all go in a flags field
-                yield wikipedia.Page(self.site,pg.group('title')), oldid, date, comment, rollbackToken
+                yield wikipedia.Page(self.site, pg.group('title')), oldid, date, comment
 
                 offset += 1
                 if offset == limit:
@@ -124,6 +137,33 @@ class User:
                 address = nextRX.group('address').replace('&amp;','&')
             else:
                 break
+    
+    def _apiContributions(self, limit =  250, namespace = []):
+        
+        params = {
+            'action': 'query',
+            'list': 'usercontribs',
+            'ucuser': self.name,
+            'ucprop': 'ids|title|timestamp|comment',# |size|flags',
+            'uclimit': int(limit),
+            'ucdir': 'older',
+        }
+        
+        if namespace:
+            params['ucnamespace'] = '|'.join(namespace)
+        # An user is likely to contribute on several pages,
+        # keeping track of titles
+        count = 0
+        while True:
+            result = wikipedia.query.GetData(params, self.site)
+            for c in result['query']['usercontribs']:
+                yield wikipedia.Page(self.site, c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
+                count += 1
+            if result.has_key('query-continue') and count <= limit:
+                params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
+            else:
+                break
+        return
 
     def uploadedImages(self, number = 10):
         """Yield ImagePages from Special:Log&type=upload"""

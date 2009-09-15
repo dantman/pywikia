@@ -161,7 +161,7 @@ import threading, Queue, traceback
 import urllib, urllib2, time
 
 # Application specific imports
-import wikipedia, date, catlib, query
+import wikipedia, date, catlib, userlib, query
 import config
 
 # For python 2.4 compatibility
@@ -482,37 +482,15 @@ def UserContributionsGenerator(username, number = 250, namespaces = [], site = N
     Yields number unique pages edited by user:username
     namespaces : list of namespace numbers to fetch contribs from
     """
-    import urllib
+    
     if site is None:
         site = wikipedia.getSite()
     if number > 500:
         # the api does not allow more than 500 results for anonymous users
         number = 500
-    params = {
-        'action': 'query',
-        'list': 'usercontribs',
-        'ucuser': username,
-        'ucprop': 'title',
-        'uclimit': int(number),
-        'ucdir': 'older',
-    }
-    
-    
-    if namespaces:
-        params['ucnamespace'] = '|'.join(map(str, namespaces))
-    # An user is likely to contribute on several pages,
-    # keeping track of titles
-    titleList = []
-    while True:
-        result = query.GetData(params, site)
-        for contr in result['query']['usercontribs']:
-            if not contr['title'] in titleList:
-                titleList.append(contr['title'])
-                yield wikipedia.Page(site, contr['title'])
-        if result.has_key('query-continue'):
-            params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
-        else:
-            break
+    user = userlib.User(site, username)
+    for page in user.contributions(number, namespaces):
+        yield page[0]
 
 def SearchPageGenerator(query, number = 100, namespaces = None, site = None):
     """
@@ -1072,7 +1050,11 @@ class GeneratorFactory:
             if not firstPageTitle:
                 firstPageTitle = wikipedia.input(
                     u'At which page do you want to start?')
-            namespace = wikipedia.Page(site, firstPageTitle).namespace()
+            if self.namespaces != []:
+                namespace = self.namespaces[0]
+            else:
+                namespace = wikipedia.Page(site, firstPageTitle).namespace()
+            
             firstPageTitle = wikipedia.Page(site,
                                  firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
