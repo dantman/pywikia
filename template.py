@@ -253,6 +253,7 @@ class TemplateRobot:
         'pl':u'Robot podmienia szablon: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
         'ru':u'Робот: подстановка шаблона: %s',
+        'uk':u'Робот: підстановка шаблону: %s',
         'zh':u'機器人: 更換模板 %s',
     }
 
@@ -273,6 +274,7 @@ class TemplateRobot:
         'pl':u'Robot podmienia szablony: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
         'ru':u'Робот: подстановка шаблонов: %s',
+        'uk':u'Робот: підстановка шаблонів: %s',
         'zh':u'機器人: 更換模板 %s',
     }
 
