@@ -6090,12 +6090,12 @@ your connection is down. Retrying in %i minutes..."""
                 get_throttle()
             data = query.GetData(params, self)
             
-            count = 0
+            #count = 0
             for p in data['query']['allpages']:
-                count += 1
+                #count += 1
                 yield Page(self, p['title'])
             
-            if data.has_key('query-continue') and count < config.special_page_limit:
+            if data.has_key('query-continue'):
                 params['apfrom'] = data['query-continue']['allpages']['apfrom']
             else:
                 break
