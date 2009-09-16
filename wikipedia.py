@@ -1582,9 +1582,11 @@ not supported by PyWikipediaBot!"""
                 #for debug only
                 #------------------------
                 if verbose:
-                    output("error occured, result:%s\nstatus:%s\nresponse:%s" % (data, response.status, response.reason))
+                    output("error occured, code:%s\ninfo:%s\nstatus:%s\nresponse:%s" % (
+                        data['error']['code'], data['error']['info'], response.status, response.reason))
                     faked = params
-                    del faked['text'], faked['format']
+                    if faked.has_key('text'):
+                        del faked['text']
                     output("OriginalData:%s" % faked)
                     del faked
                 #------------------------
@@ -1592,10 +1594,7 @@ not supported by PyWikipediaBot!"""
                 #cannot handle longpageerror and PageNoSave yet
                 if errorCode == 'maxlag' or response.status == 503:
                     # server lag; wait for the lag time and retry
-                    info = data['error']['info']
-                    if verbose:
-                        output(u'INFO: %s' % info)###xqt
-                    m = re.search('Waiting for (.+?): (.+?) seconds lagged', info)
+                    m = re.search('Waiting for (.+?): (.+?) seconds lagged', data['error']['info'])
                     timelag = int(m.group(2))
                     output(u"Pausing %d seconds due to database server lag." % timelag)
                     dblagged = True
@@ -4849,11 +4848,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def solveCaptcha(self, data):
         if type(data) == dict: # API Mode result
+            data = data['edit']
             if data.has_key("captcha"):
-                captype = data['captcha']['type']
-                id = data['captcha']['id']
+                data = data['captcha']
+                captype = data['type']
+                id = data['id']
                 if captype in ['simple', 'math', 'question']:
-                    answer = input('What is the answer to the captcha "%s" ?' % data['result']['captcha']['question'])
+                    answer = input('What is the answer to the captcha "%s" ?' % data['question'])
                 elif captype == 'image':
                     url = self.protocol() + '://' + self.hostname() + self.captcha_image_address(id)
                     answer = ui.askForCaptcha(url)
@@ -5163,7 +5164,7 @@ your connection is down. Retrying in %i minutes..."""
                 self._userName[index] = None
 
             # Get user groups and rights
-            if text.has_key('groups') and text['groups'] != []:
+            if text.has_key('groups'):
                 self._rights[index] = text['groups']
                 self._rights[index].extend(text['rights'])
                 # Warnings
@@ -5485,10 +5486,10 @@ your connection is down. Retrying in %i minutes..."""
             params = {
                 'action': 'query',
                 'meta': 'userinfo',
-                'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits|preferencestoken',
+                'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits',
             }
-            #if self.versionnumber() >= 14:
-            #    params['uiprop'] += '|preferencestoken'
+            if self.versionnumber() >= 14:
+                params['uiprop'] += '|preferencestoken'
             
             text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
             ##output('%s' % text) # for debug use only
