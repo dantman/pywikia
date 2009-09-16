@@ -55,20 +55,18 @@ class User:
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no user pages per se.
             raise AutoblockUserError
-        fullpagename = self.site.namespace(2) + ':' + self.name
         if subpage:
-            fullpagename += '/' + subpage
-        return wikipedia.Page(self.site, fullpagename)
+            subpage = '/' + subpage
+        return wikipedia.Page(self.site, self.name + subpage, defaultNamespace=2)
 
     def getUserTalkPage(self, subpage=''):
         if self.name[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no user talk pages per se.
             raise AutoblockUserError
-        fullpagename = self.site.namespace(3) + ':' + self.name
         if subpage:
-            fullpagename += '/' + subpage
-        return wikipedia.Page(self.site,fullpagename)
+            subpage = '/' + subpage
+        return wikipedia.Page(self.site, self.name + subpage, defaultNamespace=3)
 
     def editedPages(self, limit=500):
         """ Deprecated function that wraps 'contributions'
@@ -148,18 +146,20 @@ class User:
             'uclimit': int(limit),
             'ucdir': 'older',
         }
+        if limit > wikipedia.config.special_page_limit:
+            params['uclimit'] = wikipedia.config.special_page_limit
+            if limit > 5000 and self.site.isAllowed('apihighlimits'):
+                params['uclimit'] = 5000
         
         if namespace:
             params['ucnamespace'] = '|'.join(namespace)
         # An user is likely to contribute on several pages,
         # keeping track of titles
-        count = 0
         while True:
             result = wikipedia.query.GetData(params, self.site)
             for c in result['query']['usercontribs']:
                 yield wikipedia.Page(self.site, c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
-                count += 1
-            if result.has_key('query-continue') and count <= limit:
+            if result.has_key('query-continue'):
                 params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
             else:
                 break
