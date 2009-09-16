@@ -935,39 +935,33 @@ not supported by PyWikipediaBot!"""
     def getTemplates(self, tllimit = 5000):
         #action=query&prop=templates&titles=Main Page
         """
-        Returns the templates that are used in the page given.
-
-        It works through the APIs.
+        Returns the templates that are used in the page given by API.
 
         If no templates found, returns None.
 
-        Note: It returns "only" the first 5000 templates, if there
-        are more, they won't be returned, sorry.
         """
         params = {
-            'action'    :'query',
-            'prop'      :'templates',
-            'titles'    :self.title(),
-            'tllimit'   :tllimit,
-            }
-
-        data = query.GetData(params, self.site(), encodeTitle = False)
-        try:
-            pageid = data['query']['pages'].keys()[0]
-        except KeyError:
-            if tllimit != 500:
-                return self.getTemplates(500)
+            'action': 'query',
+            'prop': 'templates',
+            'titles': self.title(),
+            'tllimit': tllimit,
+        }
+        if limit > config.special_page_limit:
+            params['tllimit'] = config.special_page_limit
+            if limit > 5000 and self.site.isAllowed('apihighlimits'):
+                params['tllimit'] = 5000
+        
+        tmpsFound = []
+        while True:
+            data = query.GetData(params, self.site(), encodeTitle = False)
+            tmpsFound.extend([Page(self.site(), tmp['title'], defaultNamespace=tmp['ns'])
+                                for tmp in data['query']['pages'].values()[0] ])
+            if data.has_key('query-continue'):
+                params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
-                raise Error(data)
-        try:
-            templates = data['query']['pages'][pageid]['templates']
-        except KeyError:
-            return list()
-        templatesFound = list()
-        for template in templates:
-            templateName = template['title']
-            templatesFound.append(Page(self.site(), templateName))
-        return templatesFound
+                break
+        
+        return tmpsFound
 
     def isRedirectPage(self):
         """Return True if this is a redirect, False if not or not existing."""
@@ -2602,6 +2596,7 @@ not supported by PyWikipediaBot!"""
         if answer == 'y':
             
             token = self.site().getToken(self, sysop = True)
+            reason = reason.encode(self.site().encoding())
             try:
                 d = self.site().api_address()
                 del d
@@ -2609,6 +2604,7 @@ not supported by PyWikipediaBot!"""
                 config.use_api = False
             
             if config.use_api and self.site().versionnumber() >= 12:
+                #API Mode
                 params = {
                     'action': 'delete',
                     'title': self.title(),
@@ -2628,19 +2624,18 @@ not supported by PyWikipediaBot!"""
                     
                     return False
             else:
+                #Ordinary mode from webpage.
                 host = self.site().hostname()
                 address = self.site().delete_address(self.urlname())
 
-                reason = reason.encode(self.site().encoding())
                 predata = {
                     'wpDeleteReasonList': 'other',
                     'wpReason': reason,
-                    'wpComment': reason,
+                    #'wpComment': reason, <- which version?
                     'wpConfirm': '1',
-                    'wpConfirmB': '1'
+                    'wpConfirmB': '1',
+                    'wpEditToken': token,
                 }
-                if token:
-                    predata['wpEditToken'] = token
                 if self.site().hostname() in config.authenticate.keys():
                     predata['Content-type'] = 'application/x-www-form-urlencoded'
                     predata['User-agent'] = useragent
@@ -4886,7 +4881,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 raise CaptchaError('We have been prompted for a ReCaptcha, but pywikipedia does not yet support ReCaptchas')
             return None
 
-    def postForm(self, address, predata, sysop=False, cookies = None):
+    def postForm(self, address, predata, sysop = False, cookies = None):
         """Post http form data to the given address at this site.
 
         address - the absolute path without hostname.
@@ -4911,8 +4906,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             raise ServerError(e)
 
     def postData(self, address, data,
-                 contentType='application/x-www-form-urlencoded',
-                 sysop=False, compress=True, cookies=None):
+                 contentType = 'application/x-www-form-urlencoded',
+                 sysop = False, compress = True, cookies = None):
         """Post encoded data to the given http address at this site.
 
         address is the absolute path without hostname.
