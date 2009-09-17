@@ -148,6 +148,7 @@ placeBeforeSections = {
     'pt': [
         u'Ligações externas',
         u'Veja também',
+        u'Ver também',
         u'Notas',
     ],
     'zh':[
@@ -269,6 +270,7 @@ referencesTemplates = {
                u'Bron3',u'ref',u'references',u'appendix',
                u'Noot',u'FootnotesSmall'],
         'pl': [u'przypisy', u'Przypisy'],
+        'pt': [u'Notas', 'ref-section'],
         'zh': [u'Reflist'],
     },
 }
