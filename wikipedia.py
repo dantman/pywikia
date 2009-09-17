@@ -5384,12 +5384,7 @@ your connection is down. Retrying in %i minutes..."""
                     try:
                         datas = query.GetData(params, self)['query']['allmessages']
                         self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
-                                for tag in datas])
-                    except KeyError:
-                        if verbose:
-                            output('API get messages had some error, retrying by ordinary.')
-                        api = False
-                        continue
+                                for tag in datas if not tag.has_key('missing')])
                     except NotImplementedError:
                         api = False
                         continue
