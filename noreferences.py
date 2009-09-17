@@ -232,6 +232,7 @@ referencesSections = {
     ],
     'pt': [
         u'Ligações externas',
+        u'Ver também',
         u'Veja também',
     ],
     'zh':[
