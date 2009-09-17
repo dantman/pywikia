@@ -231,9 +231,7 @@ referencesSections = {
         u'Przypisy',
     ],
     'pt': [
-        u'Ligações externas',
-        u'Ver também',
-        u'Veja também',
+        u'Referências',
     ],
     'zh':[
         u'參考文獻',
