@@ -47,10 +47,18 @@ def getPhoto(flickr = None, photo_id = ''):
     TODO: Add exception handling
     
     '''
-    photoInfo = flickr.photos_getInfo(photo_id=photo_id)
-    #xml.etree.ElementTree.dump(photoInfo)
-    photoSizes = flickr.photos_getSizes(photo_id=photo_id)
-    #xml.etree.ElementTree.dump(photoSizes)
+    gotPhoto = False
+    while not gotPhoto:
+        try: 
+            photoInfo = flickr.photos_getInfo(photo_id=photo_id)
+            #xml.etree.ElementTree.dump(photoInfo)
+            photoSizes = flickr.photos_getSizes(photo_id=photo_id)
+            #xml.etree.ElementTree.dump(photoSizes)
+            gotPhoto = True
+        except flickrapi.exceptions.FlickrError:
+            gotPhotos = False
+            wikipedia.output(u'Flickr api problem, sleeping')
+            sleep(30)
     return (photoInfo, photoSizes)
 
 def isAllowedLicense(photoInfo = None):
@@ -343,7 +351,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
         photos = flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
 
-        for i in range(1, int(pages)):
+        for i in range(1, int(pages)+1):
             gotPhotos = False
             while not gotPhotos:
                 try:
@@ -366,13 +374,13 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
     # Get the photos in a photoset
     elif(photoset_id):
         photos = flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page='1')
-        pages = photos.find('photos').attrib['pages']
+        pages = photos.find('photoset').attrib['pages']
 
-        for i in range(1, int(pages)):
+        for i in range(1, int(pages)+1):
             gotPhotos = False
             while not gotPhotos:
                 try:            
-                    for photo in flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page=i).find('photos').getchildren():
+                    for photo in flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page=i).find('photoset').getchildren():
                         gotPhotos = True
                         if photo.attrib['id']==start_id:
                             found_start_id=True
@@ -394,7 +402,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
         photos = flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
         #flickrapi.exceptions.FlickrError
-        for i in range(1, int(pages)):
+        for i in range(1, int(pages)+1):
             gotPhotos = False
             while not gotPhotos:
                 try:
@@ -478,7 +486,7 @@ def main():
                 group_id = arg[10:]
         elif arg.startswith('-photoset_id'):
             if len(arg) == 12:
-                photoset_id = wikipedia.input(u'What is the photoset_id)?')
+                photoset_id = wikipedia.input(u'What is the photoset_id?')
             else:
                 photoset_id = arg[13:]
         elif arg.startswith('-user_id'):
