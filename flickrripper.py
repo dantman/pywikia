@@ -39,6 +39,16 @@ import xml.etree.ElementTree
 from Tkinter import *
 from PIL import Image, ImageTk    # see: http://www.pythonware.com/products/pil/
 
+flickr_allowed_license = {  0 : False, # All Rights Reserved
+                            1 : False, # Creative Commons Attribution-NonCommercial-ShareAlike License
+                            2 : False, # Creative Commons Attribution-NonCommercial License
+                            3 : False, # Creative Commons Attribution-NonCommercial-NoDerivs License
+                            4 : True,  # Creative Commons Attribution License
+                            5 : True,  # Creative Commons Attribution-ShareAlike License
+                            6 : False, # Creative Commons Attribution-NoDerivs License
+                            7 : True,  # No known copyright restrictions
+                            8 : True,  # United States Government Work
+                            }
 
 def getPhoto(flickr = None, photo_id = ''):
     '''
@@ -67,12 +77,11 @@ def isAllowedLicense(photoInfo = None):
 
     TODO: Maybe add more licenses
     '''
+    
     license = photoInfo.find('photo').attrib['license']
-    if license == '4' or license == '5':
-        #Is cc-by or cc-by-sa
+    if flickr_allowed_license[int(license)]:
         return True
     else:
-        #We don't accept other licenses
         return False
 
 def getPhotoUrl(photoSizes=None):
