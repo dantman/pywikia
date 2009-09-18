@@ -809,6 +809,7 @@ class Family(family.Family):
             'be-x-old':  u'Вікіпэдыя:Неадназначнасьці',
             'bg':  u'Пояснителни страници',
             'ca':  u'Viquipèdia:Registre de pàgines de desambiguació',
+            'cbk-zam': u'Desambiguo',
             'cs':  u'Rozcestníky',
             'cy':  u'Gwahaniaethu',
             'da':  u'Flertdig',
