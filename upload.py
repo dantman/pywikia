@@ -223,6 +223,12 @@ class UploadRobot:
         if self.ignoreWarning:
             formdata["wpIgnoreWarning"] = "1"
 
+        # Get an edit token so we can do the upload
+        formdata["wpEditToken"]  = self.targetSite.getToken()
+
+        # Set the new filename
+        formdata["wpDestFile"]  = encodedFilename
+        
         # try to encode the strings to the encoding used by the target site.
         # if that's not possible (e.g. because there are non-Latin-1 characters and
         # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
