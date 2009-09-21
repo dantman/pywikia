@@ -11,9 +11,9 @@
 # Distributed under the terms of the MIT license.
 #
 
-import sys, settings
-if settings.pywikipedia_path not in sys.path:
-    sys.path.append(settings.pywikipedia_path)
+import sys #, settings    # No such module settings
+#if settings.pywikipedia_path not in sys.path:
+#    sys.path.append(settings.pywikipedia_path)
 
 import config, family, urllib   
 class Family(family.Family): 
@@ -27,6 +27,16 @@ class Family(family.Family):
     """
     
     def __init__(self,
+        name='MY_NAME_FOR_THIS_SERVER',
+        protocol='http',
+        server='www.my_server.com',
+        scriptpath='/my/script/path',
+        version='1.13.2',
+        lang='en',
+        encoding='utf-8',
+        api_supported=False,    
+        RversionTab=None    # very rare beast, you probably won't need it.
+        ):              
         """name: arbitrary name. Pick something easy to remember
         protocol: http|https
         server: dns address or ip address
@@ -38,16 +48,6 @@ class Family(family.Family):
         api_supported: Does this mediawiki instance support the mediawiki api?
         RversionTab: Magic. See superclass for information.
         """
-        name='MY_NAME_FOR_THIS_SERVER',
-        protocol='http',
-        server='www.my_server.com',
-        scriptpath='/my/script/path',
-        version='1.13.2',
-        lang='en',
-        encoding='utf-8',
-        api_supported=False,    
-        RversionTab=None    # very rare beast, you probably won't need it.
-        ):              
 
         family.Family.__init__(self) 
         self.name = name        # REQUIRED; replace with actual name
@@ -78,6 +78,7 @@ class Family(family.Family):
 
     def apipath(self, code):
         """returns whether or not this wiki 
+        """
         if self._api_supported:
             return '%s/api.php' % self.scriptpath(code)
         else:
