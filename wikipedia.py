@@ -4848,7 +4848,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def solveCaptcha(self, data):
         if type(data) == dict: # API Mode result
-            data = data['edit']
+            if data.has_key('edit') and  data['edit']['result'] != u"Success":
+                data = data['edit']
             if data.has_key("captcha"):
                 data = data['captcha']
                 captype = data['type']
