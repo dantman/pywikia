@@ -41,7 +41,7 @@ __version__ = '$Id$'
 from BeautifulSoup import UnicodeDammit
 import sys, re, urllib2, httplib, socket, codecs, ftplib
 import wikipedia, pagegenerators, noreferences
-import subprocess, tempfile, os
+import subprocess, tempfile, os, gzip, StringIO
 
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
@@ -518,6 +518,15 @@ class ReferencesRobot:
                         if dirIndex.match(redir) and not dirIndex.match(ref.link):
                             wikipedia.output(u'\03{lightyellow}WARNING\03{default} : Redirect to root : %s ' % ref.link)
                             continue
+
+                    # uncompress if necessary
+                    if headers.get('Content-Encoding') in ('gzip', 'x-gzip'):
+                        # XXX: small issue here: the whole page is downloaded
+                        # through f.read(). It might fetch big files/pages.
+                        # However, truncating an encoded gzipped stream is not
+                        # an option, for unzipping will fail.
+                        compressed = StringIO.StringIO(f.read())
+                        f = gzip.GzipFile(fileobj=compressed)
 
                     # Read the first 1,000,000 bytes (0.95 MB)
                     linkedpagetext = f.read(1000000)
