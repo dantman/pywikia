@@ -105,6 +105,12 @@ class Family(family.Family):
         self.namespaces[1221] = {
             '_default': [u'Okawix talk'],
         }
+        self.namespaces[1222] = {
+            '_default': [u'Okawix'],
+        }
+        self.namespaces[1223] = {
+            '_default': [u'Okawix talk'],
+        }
 
     def version(self, code):
         return "1.16alpha"
