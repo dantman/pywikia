@@ -946,9 +946,9 @@ not supported by PyWikipediaBot!"""
             'titles': self.title(),
             'tllimit': tllimit,
         }
-        if limit > config.special_page_limit:
+        if tllimit > config.special_page_limit:
             params['tllimit'] = config.special_page_limit
-            if limit > 5000 and self.site.isAllowed('apihighlimits'):
+            if tllimit > 5000 and self.site.isAllowed('apihighlimits'):
                 params['tllimit'] = 5000
         
         tmpsFound = []
