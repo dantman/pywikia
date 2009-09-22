@@ -106,10 +106,10 @@ class Family(family.Family):
             '_default': [u'Okawix talk'],
         }
         self.namespaces[1222] = {
-            '_default': [u'Okawix'],
+            '_default': [u'Osm'],
         }
         self.namespaces[1223] = {
-            '_default': [u'Okawix talk'],
+            '_default': [u'Osm talk'],
         }
 
     def version(self, code):
