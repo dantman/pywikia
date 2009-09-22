@@ -29,6 +29,10 @@ import wikipedia, urllib, time
 try:
     #For Python 2.6 newer
     import json
+    if not hasattr(json, 'loads'):
+        # 'json' can also be the name in for 
+        # http://pypi.python.org/pypi/python-json
+        import simplejson as json
 except ImportError:
     import simplejson as json
     
