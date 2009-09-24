@@ -7209,6 +7209,9 @@ def translate(code, xdict):
             xdict = xdict[default_family]
         else:
             xdict = xdict['wikipedia']
+        
+        if type(xdict) != dict:
+            return xdict
 
     if code in xdict:
         return xdict[code]
