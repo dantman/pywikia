@@ -593,7 +593,7 @@ class CategoryRemoveRobot:
         'no':u'Robot: Fjerner ifra %s',
         'nn':u'robot: fjerna ifrå %s',
         'pt':u'Bot: Removendo [[Categoria:%s]]',
-        'ru':u'Робот: исключение из [[Категория:%s]]',
+        'ru':u'Робот: исключение из %s',
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
         'sv':u'Robot: Tar bort från %s',
         'zh':u'機器人:移除目錄%s',
