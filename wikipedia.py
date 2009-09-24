@@ -814,7 +814,7 @@ not supported by PyWikipediaBot!"""
         else:
             RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>', re.DOTALL)
         matchVersionTab = RversionTab.search(text)
-        if not matchVersionTab:
+        if not matchVersionTab and not self.site().family.name == 'wikitravel':
             raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
         # Look if the page is on our watchlist
         matchWatching = Rwatchlist.search(text)
@@ -1009,6 +1009,10 @@ not supported by PyWikipediaBot!"""
         user_config.py, or using page.put(force=True).
 
         """
+
+        if self.site().family.name == 'wikitravel':        # Wikitravel's bot control.
+            self.site().family.bot_control(self.site())
+
         if config.ignore_bot_templates: #Check the "master ignore switch"
             return True
 
@@ -3969,6 +3973,9 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = 
                 cats = getCategoryLinks(s2, site = site)
                 s2 = removeCategoryLinksAndSeparator(s2.replace(marker,'',cseparatorstripped).strip(), site) + separator + s
                 newtext = replaceCategoryLinks(s2, cats, site=site, addOnly=True)
+            elif site.family.name == 'wikitravel':     # for Wikitravel's language links position.
+                s = separator + s + separator
+                newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
             else:
                 if template:
                     # Do we have a noinclude at the end of the template?
@@ -4749,7 +4756,10 @@ class Site(object):
                 'meta': 'userinfo',
                 'uiprop': 'blockinfo',
             }
-            data = query.GetData(params, self)['query']['userinfo']
+            if self.versionnumber() == 11:     # fix for version 1.11 API.
+                data = query.GetData(params, self)['userinfo']
+            else:
+                data = query.GetData(params, self)['query']['userinfo']
             return data.has_key('blockby')
         except NotImplementedError:
             return False
@@ -5268,6 +5278,9 @@ your connection is down. Retrying in %i minutes..."""
                 # No idea what is the user name, and it isn't important
                 self._userName[index] = None
 
+            if self.family.name == 'wikitravel':    # fix for Wikitravel's user page link.
+                self = self.family.user_page_link(self,index)
+
             # Check user groups, if possible (introduced in 1.10)
             groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
             m = groupsR.search(text)
@@ -5435,6 +5448,9 @@ your connection is down. Retrying in %i minutes..."""
                         retry_idle_time = 30
                     continue
                 break
+
+        if self.family.name == 'wikitravel':    # fix for Wikitravel's mediawiki message setting
+            self = self.family.mediawiki_message(self)
 
         key = key.lower()
         try:
