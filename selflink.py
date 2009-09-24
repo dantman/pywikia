@@ -53,6 +53,7 @@ msg = {
     'no':u'robot: fjerner selvlenker',
     'pl':u'Robot automatycznie usuwa linki zwrotne',
     'pt':u'Bot: Retirando link para o próprio artigo',
+    'ru':u'Бот: удалил заголовок-ссылку в тексте. см. ',
     'zh':u'機器人:移除自我連結',
 }
 
