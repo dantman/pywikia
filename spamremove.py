@@ -43,6 +43,7 @@ def main():
         'nl': u'Links naar gespamde site: %s verwijderd',
         'pt': u'Removendo links de spam do site %s',
         'ta': u'எரிதமாக இணைக்கப்பட்ட %s இணையத்தளம் நீக்கப்பட்டது',
+        'vi': u'xóa các liên kết đến website spam %s',
         'zh': u'機器人: 移除廣告黑名單連結 %s',
     }
     spamSite = ''
