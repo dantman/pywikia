@@ -157,7 +157,7 @@ class Family(family.Family):
             'kn': u'Wiktionary ಚರ್ಚೆ',
             'ko': u'위키낱말사전토론',
             'ku': u'Wiktionary nîqaş',
-            'kw': u'Cows Wiktionary',
+            'kw': [u'Kows Wiktionary', u'Cows Wiktionary'],
             'la': u'Disputatio Victionarii',
             'lb': u'Wiktionary Diskussioun',
             'li': u'Euverlèk Wiktionary',

@@ -147,6 +147,7 @@ class Family(family.Family):
             'pt': u'Portal',
             'sl': u'Stran',
             'tr': u'Kişi',
+            'vi': u'Chủ đề',
         }
         self.namespaces[101] = {
             'ar': u'نقاش البوابة',
@@ -166,6 +167,7 @@ class Family(family.Family):
             'pt': u'Portal Discussão',
             'sl': u'Pogovor o strani',
             'tr': u'Kişi tartışma',
+            'vi': u'Thảo luận Chủ đề',
         }
         self.namespaces[102] = {
             'ar': u'مؤلف',
@@ -185,6 +187,7 @@ class Family(family.Family):
             'no': u'Forfatter',
             'pl': u'Indeks',
             'pt': u'Autor',
+            'vi': u'Tác gia',
             'zh': u'Author',
         }
         self.namespaces[103] = {
@@ -205,6 +208,7 @@ class Family(family.Family):
             'no': u'Forfatterdiskusjon',
             'pl': u'Dyskusja indeksu',
             'pt': u'Autor Discussão',
+            'vi': u'Thảo luận Tác gia',
             'zh': u'Author talk',
         }
 
@@ -228,6 +232,7 @@ class Family(family.Family):
             'sl': u'Kazalo',
             'sv': u'Sida',
             'te': [u'పేజీ', u'Page'],
+            'vi': u'Trang',
             'zh': u'Page',
         }
 
@@ -251,6 +256,7 @@ class Family(family.Family):
             'sl': u'Pogovor o kazalu',
             'sv': u'Siddiskussion',
             'te': [u'పేజీ చర్చ', u'Page talk'],
+            'vi': u'Thảo luận Trang',
             'zh': u'Page talk',
         }
 
@@ -266,6 +272,7 @@ class Family(family.Family):
             'pt': u'Página',
             'ru': u'Индекс',
             'sv': u'Författare',
+            'vi': u'Mục lục',
             'zh': u'Index',
         }
 
@@ -281,6 +288,7 @@ class Family(family.Family):
             'pt': u'Página Discussão',
             'ru': u'Обсуждение индекса',
             'sv': u'Författardiskussion',
+            'vi': u'Thảo luận Mục lục',
             'zh': u'Index talk',
         }
 

@@ -98,6 +98,7 @@ class Family(family.Family):
             'pt': u'Portal',
             'ru': u'Портал',
             'sv': u'Portal',
+            'tr': u'Portal',
             'zh': u'频道',
         }
 
@@ -115,6 +116,7 @@ class Family(family.Family):
             'pt': u'Portal Discussão',
             'ru': u'Обсуждение портала',
             'sv': u'Portaldiskussion',
+            'tr': u'Portal tartışma',
             'zh': u'频道 talk',
         }
 
