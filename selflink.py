@@ -43,6 +43,7 @@ msg = {
     'cs':u'Robot odstranil odkaz na název článku',
     'de':u'Bot: Entferne Selbstlinks',
     'en':u'Robot: Removing selflinks',
+    'es':u'Bot: Eliminando enlaces al mismo artículo',
     'fr':u'Robot: Enlève autoliens',
     'he':u'בוט: מסיר קישורים של הדף לעצמו',
     'ja':u'ロボットによる 自己リンクの解除',
