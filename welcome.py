@@ -166,14 +166,15 @@ but can be used for some bad-nickname.
 # (C) Siebrand Mazeland, 2006-2007
 # (C) Filnik, 2007
 # (C) Daniel Herding, 2007
+# (C) Alex Shih-Han Lin, 2009
 #
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 #
 
-import wikipedia, config, string, locale, query
-import time, re, cPickle, os, urllib
+import wikipedia, config,  query
+import time, re, cPickle, os, urllib, string, locale
 import codecs
 from datetime import timedelta
 
@@ -197,166 +198,191 @@ locale.setlocale(locale.LC_ALL, '')
 #The page where the bot will save the log (e.g. Wikipedia:Welcome log).
 logbook = {
     'commons': u'Project:Welcome log',
-    'ar': u'Project:سجل الترحيب',
-    'da': None, # no welcome log on da.wiki
-    'de': None, # no welcome log on de.wiki
-    'en': u'Project:Welcome log',
-    'fa': u'Project:سیاهه خوشامد',
-    'fr': u'Wikipedia:Prise de décision/Accueil automatique des nouveaux par un robot/log',
-    'ga': u'Project:Log fáilte',
-    'he': None, # no welcome log on he.wiki
-    'id': None, # no welcome log on id.wiki
-    'it': u'Project:Benvenuto Bot/Log',
-    'ja': u'利用者:Alexbot/Welcomebotログ',
-    'ka': None, # no welcome log on ka.wiki
-    'nl': u'Project:Logboek welkom',
-    'no': u'Project:Velkomstlogg',
-    'pt': None, # no welcome log on pt.wiki
-    'ru': None, # no welcome log on ru.wiki
-    'sq': u'Project:Tung log',
-    'sr': u'Project:Добродошлице',
-    'vo': None, # no welcome log on vo.wiki
-    'zh': u'User:Welcomebot/欢迎日志',
+    'wikipedia': {
+        'ar': u'Project:سجل الترحيب',
+        'da': None, # no welcome log on da.wiki
+        'de': None, # no welcome log on de.wiki
+        'en': u'Project:Welcome log',
+        'fa': u'Project:سیاهه خوشامد',
+        'fr': u'Wikipedia:Prise de décision/Accueil automatique des nouveaux par un robot/log',
+        'ga': u'Project:Log fáilte',
+        'he': None, # no welcome log on he.wiki
+        'id': None, # no welcome log on id.wiki
+        'it': u'Project:Benvenuto Bot/Log',
+        'ja': u'利用者:Alexbot/Welcomebotログ',
+        'ka': None, # no welcome log on ka.wiki
+        'nl': u'Project:Logboek welkom',
+        'no': u'Project:Velkomstlogg',
+        'pt': None, # no welcome log on pt.wiki
+        'ru': None, # no welcome log on ru.wiki
+        'sq': u'Project:Tung log',
+        'sr': u'Project:Добродошлице',
+        'vo': None, # no welcome log on vo.wiki
+        'zh': u'User:Welcomebot/欢迎日志',
     }
+}
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {
     'commons':u'Welcome!',
-    'ar':u'مرحبا!',
-    'da':u'Velkommen',
-    'de':u'Herzlich willkommen!',
-    'en':u'Welcome!',
-    'fa':u'خوش آمدید!',
-    'fr':u'Bienvenue sur Wikipedia !',
-    'ga':u'Fáilte!',
-    'he':u'ברוך הבא!',
-    'id':u'Selamat datang',
-    'it':u'Benvenuto!',
-    'ja':u'ウィキペディア日本語版へようこそ！',
-    'ka':u'კეთილი იყოს თქვენი მობრძანება!',
-    'nl':u'Welkom!',
-    'no':u'Velkommen!',
-    'pt':u'Bem vindo!',
-    'ru':u'Добро пожаловать!',
-    'sq':u'Tung',
-    'sr':u'Добродошли!',
-    'vo':u'Benokömö!',
-    'zh':u'欢迎！',
+    'wikipedia': {
+        'ar':u'مرحبا!',
+        'da':u'Velkommen',
+        'de':u'Herzlich willkommen!',
+        'en':u'Welcome!',
+        'fa':u'خوش آمدید!',
+        'fr':u'Bienvenue sur Wikipedia !',
+        'ga':u'Fáilte!',
+        'he':u'ברוך הבא!',
+        'id':u'Selamat datang',
+        'it':u'Benvenuto!',
+        'ja':u'ウィキペディア日本語版へようこそ！',
+        'ka':u'კეთილი იყოს თქვენი მობრძანება!',
+        'nl':u'Welkom!',
+        'no':u'Velkommen!',
+        'pt':u'Bem vindo!',
+        'ru':u'Добро пожаловать!',
+        'sq':u'Tung',
+        'sr':u'Добродошли!',
+        'vo':u'Benokömö!',
+        'zh':u'欢迎！',
     }
+}
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
 # that is your signature (the bot has a random parameter to add different
 # sign, so in this way it will change according to your parameters).
 netext = {
     'commons':u'{{subst:welcome}} %s',
-    'ar':u'{{subst:ترحيب}} %s',
-    'da':u'{{velkommen|%s}}',
-    'de':u'{{subst:Hallo}} %s',
-    'en':u'{{subst:welcome}} %s',
-    'fa':u'{{جا:خوشامد}} %s',
-    'fr':u'{{subst:Discussion Projet:Aide/Bienvenue}} %s',
-    'ga':u'{{subst:fáilte}} %s',
-    'he':u'{{ס:ברוך הבא}} %s',
-    'id':u'{{sdbot|%s}}',
-    'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
-    'ja':u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
-    'ka':u'{{ახალი მომხმარებელი}}--%s',
-    'nl':u'{{hola|bot|%s}}',
-    'no':u'{{subst:bruker:jhs/vk}} %s',
-    'pt':u'{{subst:bem vindo}} %s',
-    'ru':u'{{Hello}} %s',
-    'sq':u'{{subst:tung}} %s',
-    'sr':u'{{Добродошлица}} %s',
-    'vo':u'{{benokömö}} %s',
-    'zh':u'{{subst:welcome|sign=%s}}',
-    }
+    'wikipedia': {
+        'ar':u'{{subst:ترحيب}} %s',
+        'da':u'{{velkommen|%s}}',
+        'de':u'{{subst:Hallo}} %s',
+        'en':u'{{subst:welcome}} %s',
+        'fa':u'{{جا:خوشامد}} %s',
+        'fr':u'{{subst:Discussion Projet:Aide/Bienvenue}} %s',
+        'ga':u'{{subst:fáilte}} %s',
+        'he':u'{{ס:ברוך הבא}} %s',
+        'id':u'{{sdbot|%s}}',
+        'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
+        'ja':u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
+        'ka':u'{{ახალი მომხმარებელი}}--%s',
+        'nl':u'{{hola|bot|%s}}',
+        'no':u'{{subst:bruker:jhs/vk}} %s',
+        'pt':u'{{subst:bem vindo}} %s',
+        'ru':u'{{Hello}} %s',
+        'sq':u'{{subst:tung}} %s',
+        'sr':u'{{Добродошлица}} %s',
+        'vo':u'{{benokömö}} %s',
+        'zh':u'{{subst:welcome|sign=%s}}',
+    },
+    'wikinews':{
+        'it': u'{{subst:benvenuto|%s}}',
+    },
+    'wiktionary':{
+        'it': u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s',
+    },
+    'wikiversity':{
+        'it': u'{{subst:Benvenuto}} %s',
+    },
+}
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
     'commons':u'Updating log',
-    'ar':u'تحديث السجل',
-    'da':u'Updating log',
-    'de':u'Aktualisiere Logdatei',
-    'en':u'Updating log',
-    'fa':u'به روز رسانی سیاهه',
-    'fr':u'Mise a jour du journal',
-    'ga':u'Log a thabhairt suas chun dáta',
-    'it':u'Aggiorno il log',
-    'ja':u'更新記録',
-    'nl':u'Logboek bijwerken',
-    'no':u'Oppdaterer logg',
-    'ru':u'Обновление',
-    'sq':u'Rifreskoj log',
-    'sr':u'Освежавање записа',
-    'zh':u'更新日志',
+    'wikipedia': {
+        'ar':u'تحديث السجل',
+        'da':u'Updating log',
+        'de':u'Aktualisiere Logdatei',
+        'en':u'Updating log',
+        'fa':u'به روز رسانی سیاهه',
+        'fr':u'Mise a jour du journal',
+        'ga':u'Log a thabhairt suas chun dáta',
+        'it':u'Aggiorno il log',
+        'ja':u'更新記録',
+        'nl':u'Logboek bijwerken',
+        'no':u'Oppdaterer logg',
+        'ru':u'Обновление',
+        'sq':u'Rifreskoj log',
+        'sr':u'Освежавање записа',
+        'zh':u'更新日志',
     }
+}
 # The page where the bot will report users with a possibly bad username.
 report_page = {
     'commons': u'Project:Administrators\' noticeboard/User problems/Usernames to be checked',
-    'ar': 'Project:إخطار الإداريين/أسماء مستخدمين للفحص',
-    'da': u'Bruger:Broadbot/Report',
-    'de': u'Benutzer:Filnik/Report',
-    'en': u'Project:Administrator intervention against vandalism',
-    'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
-    'ga': u'Project:Log fáilte/Drochainmneacha',
-    'it': u'Project:Benvenuto_Bot/Report',
-    'ja': u'利用者:Alexbot/report',
-    'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
-    'no': u'Bruker:JhsBot II/Rapport',
-    'ru': u'Участник:LatitudeBot/Рапорт',
-    'sq': u'User:EagleBot/Report',
-    'sr': u'User:SashatoBot/Записи',
-    'zh': u'User:Welcomebot/report',
+    'wikipedia': {
+        'ar': 'Project:إخطار الإداريين/أسماء مستخدمين للفحص',
+        'da': u'Bruger:Broadbot/Report',
+        'de': u'Benutzer:Filnik/Report',
+        'en': u'Project:Administrator intervention against vandalism',
+        'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
+        'ga': u'Project:Log fáilte/Drochainmneacha',
+        'it': u'Project:Benvenuto_Bot/Report',
+        'ja': u'利用者:Alexbot/report',
+        'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
+        'no': u'Bruker:JhsBot II/Rapport',
+        'ru': u'Участник:LatitudeBot/Рапорт',
+        'sq': u'User:EagleBot/Report',
+        'sr': u'User:SashatoBot/Записи',
+        'zh': u'User:Welcomebot/report',
     }
+}
 # The edit summary for reporting a possibly bad username.
 comment = {
     'commons':u'Adding a username that needs to be checked',
-    'ar':u'إضافة اسم مستخدم يحتاج للفحص',
-    'da':u'Adding a username that needs to be checked',
-    'de':u'Ergänze zu überprüfenden Benutzernamen',
-    'en':u'Adding a username that needs to be checked',
-    'fa':u'افزودن حساب کاربری نیازمند بررسی',
-    'it':u'Aggiunto utente da controllare',
-    'ja':u'不適切な利用者名の報告',
-    'nl':u'Te controleren gebruikersnaam toegevoegd',
-    'no':u'Legger til et brukernavn som m? sjekkes',
-    'ru':u'Добавлено подозрительное имя участника',
-    'sq':u'Added username to be checked',
-    'zh':u'回報不適當的用戶名稱',
+    'wikipedia':{
+        'ar':u'إضافة اسم مستخدم يحتاج للفحص',
+        'da':u'Adding a username that needs to be checked',
+        'de':u'Ergänze zu überprüfenden Benutzernamen',
+        'en':u'Adding a username that needs to be checked',
+        'fa':u'افزودن حساب کاربری نیازمند بررسی',
+        'it':u'Aggiunto utente da controllare',
+        'ja':u'不適切な利用者名の報告',
+        'nl':u'Te controleren gebruikersnaam toegevoegd',
+        'no':u'Legger til et brukernavn som m? sjekkes',
+        'ru':u'Добавлено подозрительное имя участника',
+        'sq':u'Added username to be checked',
+        'zh':u'回報不適當的用戶名稱',
     }
+}
 # The page where the bot reads the real-time bad words page
 # (this parameter is optional).
 bad_pag = {
     'commons': u'Project:Welcome log/Bad_names',
-    'ar': u'Project:سجل الترحيب/أسماء سيئة',
-    'en': u'Project:Welcome log/Bad_names',
-    'fa': u'Project:سیاهه خوشامد/نام بد',
-    'it': u'Project:Benvenuto_Bot/Lista_Badwords',
-    'ja': u'Project:不適切な名前の利用者',
-    'nl': u'Project:Logboek_welkom/Bad_names',
-    'no': u'Bruker:JhsBot/Daarlige ord',
-    'ru': u'Участник:LatitudeBot/Чёрный список',
-    'sq': u'User:Eagleal/Bad_names',
-    'sr': u'Додавање корисника за проверу',
-    'zh': u'User:Welcomebot/badname',
+    'wikipedia':{
+        'ar': u'Project:سجل الترحيب/أسماء سيئة',
+        'en': u'Project:Welcome log/Bad_names',
+        'fa': u'Project:سیاهه خوشامد/نام بد',
+        'it': u'Project:Benvenuto_Bot/Lista_Badwords',
+        'ja': u'Project:不適切な名前の利用者',
+        'nl': u'Project:Logboek_welkom/Bad_names',
+        'no': u'Bruker:JhsBot/Daarlige ord',
+        'ru': u'Участник:LatitudeBot/Чёрный список',
+        'sq': u'User:Eagleal/Bad_names',
+        'sr': u'Додавање корисника за проверу',
+        'zh': u'User:Welcomebot/badname',
     }
+}
 
 timeselected = u' ~~~~~' # Defining the time used after the signature
 
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
 report_text = {
     'commons':u"\n*{{user3|%s}}" + timeselected,
-    'ar':u"\n*{{user13|%s}}" + timeselected,
-    'da':u'\n*[[Bruger Diskussion:%s]] ' + timeselected,
-    'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
-    'en':u'\n*{{Userlinks|%s}} ' + timeselected,
-    'fa':u'\n*{{کاربر|%s}}' + timeselected,
-    'fr':u'\n*{{u|%s}} ' + timeselected,
-    'ga':u'\n*[[Plé úsáideora:%s]] ' + timeselected,
-    'it':u"\n{{Reported|%s|",
-    'ja':u"\n*{{User2|%s}}" + timeselected,
-    'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
-    'no':u'\n*{{bruker|%s}} ' + timeselected,
-    'sq':u'\n*[[User:%s]] ' + timeselected,
-    'zh':u"\n*{{User|%s}}" + timeselected
+    'wikipedia':{
+        'ar':u"\n*{{user13|%s}}" + timeselected,
+        'da':u'\n*[[Bruger Diskussion:%s]] ' + timeselected,
+        'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
+        'en':u'\n*{{Userlinks|%s}} ' + timeselected,
+        'fa':u'\n*{{کاربر|%s}}' + timeselected,
+        'fr':u'\n*{{u|%s}} ' + timeselected,
+        'ga':u'\n*[[Plé úsáideora:%s]] ' + timeselected,
+        'it':u"\n{{Reported|%s|",
+        'ja':u"\n*{{User2|%s}}" + timeselected,
+        'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
+        'no':u'\n*{{bruker|%s}} ' + timeselected,
+        'sq':u'\n*[[User:%s]] ' + timeselected,
+        'zh':u"\n*{{User|%s}}" + timeselected
     }
+}
 # Set where you load your list of signatures that the bot will load if you use
 # the random argument (this parameter is optional).
 random_sign = {
@@ -389,6 +415,14 @@ final_new_text_additions = {
     'zh':'<small>(via ~~~)</small>',
     }
 
+#
+#
+logpage_header = {
+    '_default' :u'{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"',
+    'no':u'[[Kategori:Velkomstlogg|{{PAGENAME}}]]\n{| class="wikitable"',
+    'it':u'[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"'
+}
+
 # Ok, that's all. What is below, is the rest of code, now the code is fixed
 # and it will run correctly in your project ;)
 ############################################################################
@@ -397,6 +431,37 @@ final_new_text_additions = {
 
 class FilenameNotSet(wikipedia.Error):
     """An exception indicating that a signature filename was not specifed."""
+
+
+
+class WelcomeBot(object):
+##developing to re-organize entire program.
+##    
+    
+    def __init__(self):
+        
+        self.site = wikipedia.getSite()
+        
+        pass
+        
+        
+    def reportBadAccount(self):
+        pass
+    
+    
+    
+    def makelogpage(self):
+        pass
+    def parseLog(self):
+        pass
+    def _parseLogOld(self):
+        pass
+    def defineSign(self):
+        pass
+
+    def run(self):
+        pass
+
 
 # Function stolen from wikipedia.py and modified.
 def urlname(talk_page, site):
@@ -534,27 +599,17 @@ def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
 def logmaker(wsite, welcomed_users, logg, summ2, usernam, contrib):
     """ Deduct the correct sub page name form the current date """
     safety = list()
-    rightime = time.localtime(time.time())
-    year = str(rightime[0])
-    month = str(rightime[1])
-    day = str(rightime[2])
-    if len(month) == 1:
-        month = u'0' + month
+    target = logg + '/' + time.strftime('%Y/%m/%d', time.localtime(time.time()))
+    
     if wsite.lang == 'it':
-        target = logg + '/' + day + '/' + month + '/' + year
-    else:
-        target = logg + '/' + year + '/' + month + '/' + day
+        target = logg + '/' + time.strftime('%d/%m/%Y', time.localtime(time.time()))
+    
     page = wikipedia.Page(wsite, target)
     try:
         safety.append(page.get())
     except wikipedia.NoPage:
         #Add the table heading each new period. See http://commons.wikimedia.org/wiki/Commons:Welcome_log
-        if wsite.lang == 'it':
-            safety.append(u'[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
-        elif wsite.lang == 'no':
-            safety.append(u'[[Kategori:Velkomstlogg|{{PAGENAME}}]]\n{| class="wikitable"')
-        else:
-            safety.append(u'{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
+        safety.append(wikipedia.translate(wsite, logpage_header) )
         # The string below show how the "Usernames" will be notified.
         safety.append('\n!%s' % usernam)
         # The string below show how the "Contribs" will be notified.
@@ -722,13 +777,6 @@ def main(settingsBot):
     talk = '%s:' % urlname(talk_page, wsite)
 
     # Some project of the same language, have different settings. (this is the place to add them).
-    if wsite.family.name == "wikinews" and wsite.lang == "it":
-        welcomer = u'{{subst:benvenuto|%s}}'
-        sign = 'Tooby'
-    elif wsite.family.name == "wiktionary" and wsite.lang == "it":
-        welcomer = u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
-    elif wsite.family.name == "wikiversity" and wsite.lang == "it":
-        welcomer = u'{{subst:Benvenuto}} %s'
 
     welcomed_users = list()
     if savedata and os.path.exists(filename):
@@ -797,8 +845,7 @@ def main(settingsBot):
                 whitelist_page = wikipedia.Page(wsite, wtlpg)
                 if whitelist_page.exists():
                     wikipedia.output(u'\nLoading the whitelist from %s...' % wsite.hostname() )
-                    text_white = whitelist_page.get()
-                    list_white = load_word_function(wsite, text_white)
+                    list_white = load_word_function(wsite, whitelist_page.get())
                 else:
                     wikipedia.output(u"\t\t>>>WARNING: The whitelist's page doesn't exist!<<<")
                     list_white = list()
