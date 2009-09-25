@@ -173,7 +173,7 @@ but can be used for some bad-nickname.
 __version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 #
 
-import wikipedia, config,  query
+import wikipedia, config, query, userlib
 import time, re, cPickle, os, urllib, string, locale
 import codecs
 from datetime import timedelta
@@ -224,28 +224,26 @@ logbook = {
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {
     'commons':u'Welcome!',
-    'wikipedia': {
-        'ar':u'مرحبا!',
-        'da':u'Velkommen',
-        'de':u'Herzlich willkommen!',
-        'en':u'Welcome!',
-        'fa':u'خوش آمدید!',
-        'fr':u'Bienvenue sur Wikipedia !',
-        'ga':u'Fáilte!',
-        'he':u'ברוך הבא!',
-        'id':u'Selamat datang',
-        'it':u'Benvenuto!',
-        'ja':u'ウィキペディア日本語版へようこそ！',
-        'ka':u'კეთილი იყოს თქვენი მობრძანება!',
-        'nl':u'Welkom!',
-        'no':u'Velkommen!',
-        'pt':u'Bem vindo!',
-        'ru':u'Добро пожаловать!',
-        'sq':u'Tung',
-        'sr':u'Добродошли!',
-        'vo':u'Benokömö!',
-        'zh':u'欢迎！',
-    }
+    'ar':u'مرحبا!',
+    'da':u'Velkommen',
+    'de':u'Herzlich willkommen!',
+    'en':u'Welcome!',
+    'fa':u'خوش آمدید!',
+    'fr':u'Bienvenue sur Wikipedia !',
+    'ga':u'Fáilte!',
+    'he':u'ברוך הבא!',
+    'id':u'Selamat datang',
+    'it':u'Benvenuto!',
+    'ja':u'ウィキペディア日本語版へようこそ！',
+    'ka':u'კეთილი იყოს თქვენი მობრძანება!',
+    'nl':u'Welkom!',
+    'no':u'Velkommen!',
+    'pt':u'Bem vindo!',
+    'ru':u'Добро пожаловать!',
+    'sq':u'Tung',
+    'sr':u'Добродошли!',
+    'vo':u'Benokömö!',
+    'zh':u'欢迎！',
 }
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
 # that is your signature (the bot has a random parameter to add different
@@ -281,6 +279,11 @@ netext = {
         'it': u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s',
     },
     'wikiversity':{
+        'de': u'{{subst:Willkommen|%s}}',
+        'el': u'{{subst:καλωσόρισμα}} %s',
+        'en': u'{{subst:Welcome}} %s',
+        'es': u'{{subst:bienvenido usuario}} %s',
+        'fr': u'{{Bienvenue}} %s',
         'it': u'{{subst:Benvenuto}} %s',
     },
 }
@@ -486,7 +489,6 @@ def load_word_function(wsite, raw):
 def parselog(wsite, raw, talk, number, sul):
     """ The function to load the users (only users who have a certain number of edits) """
     someone_found = False
-    autocreated = wsite.mediawiki_message('newuserlog-autocreate-entry')
 
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure).
@@ -500,32 +502,27 @@ def parselog(wsite, raw, talk, number, sul):
 
     for x in p.finditer(raw):
         someone_found = True
-        username = x.group('user')
+        userN = unicode(urllib.unquote(str(x.group('user'))), 'utf-8')
+        username = userlib.User(wsite, userN)
         #skip autocreated users (SUL)
-        if autocreated in x.group('reason') and not sul:
-            wikipedia.output(u'%s has been created automatically, skipping...' % username)
+        if wsite.mediawiki_message('newuserlog-autocreate-entry') in x.group('reason') and not sul:
+            wikipedia.output(u'%s has been created automatically, skipping...' % username.name())
             continue
-        userpage = wikipedia.Page(wsite, username)
-        # Defing the contrib's page of the user.
-        pathWiki = wsite.family.nicepath(wsite.lang)
-        con = '%sSpecial:Contributions/%s' % (pathWiki, userpage.urlname())
-        # Getting the contribs...
-        contribs = wsite.getUrl(con)
 
         #FIXME: It counts the first 50 edits
         # if number > 50, it won't work
         # (not *so* useful, it should be enough).
-        contribnum = contribs.count('<li class=')
+        contribnum = username.editCount()
 
         if contribnum >= number:
-            wikipedia.output(u'%s has enough edits to be welcomed' % userpage.titleWithoutNamespace() )
+            wikipedia.output(u'%s has enough edits to be welcomed' % username.name() )
             # The user must be welcomed, return his data.
-            yield ([username, contribnum])
+            yield ([username.name(), contribnum])
         elif contribnum < number:
             if contribnum == 0:
-                wikipedia.output(u'%s has no contributions.' % userpage.titleWithoutNamespace() )
+                wikipedia.output(u'%s has no contributions.' % username.name() )
             else:
-                wikipedia.output(u'%s has only %s contributions.' % (userpage.titleWithoutNamespace(), str(contribnum)) )
+                wikipedia.output(u'%s has only %s contributions.' % (username.name(), str(contribnum)) )
             # That user mustn't be welcomed.
             continue
 
@@ -617,7 +614,7 @@ def logmaker(wsite, welcomed_users, logg, summ2, usernam, contrib):
 
     for found_result in welcomed_users:
         # Adding the log... (don't take care of the variable's name...).
-        luserpage = str(found_result[0])
+        luserpage = found_result[0]
         luser = wikipedia.url2link(luserpage, wsite, wsite)
         edit_count = str(found_result[1])
         logtext = u'\n{{WLE|user=%s|contribs=%s}}' % (luser, edit_count)
@@ -887,8 +884,8 @@ def main(settingsBot):
                     welcom += final_additions
             else:
                 welcom = welcomer % sign
-            username = str(found_result[0])
-            usertalkpage = wikipedia.Page(wsite, talk + username)
+            username = found_result[0]
+            usertalkpage = wikipedia.Page(wsite, username, defaultNamespace=3)
             baduser = False
             # Check if the username is composed by only numbers.
             try:
@@ -903,7 +900,7 @@ def main(settingsBot):
                 wikipedia.output(u'%s has been blocked! Skipping...' % usertalkpage.titleWithoutNamespace())
                 continue
             # Understand if the user has a bad-username.
-            username = str(username).encode(config.console_encoding)
+            #username = username.encode(config.console_encoding)
             lower_uname = username.lower()
             for word in elenco: # elenco = list of bad words
                 if word.lower() in lower_uname:
