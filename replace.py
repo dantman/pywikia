@@ -386,7 +386,7 @@ class ReplaceRobot:
                         new_text = newest_text
                         newest_text = self.doReplacements(new_text)
                 if hasattr(self, "addedCat"):
-                    cats = page.categories(nofollow_redirects=True)
+                    cats = page.categories()
                     if self.addedCat not in cats:
                         cats.append(self.addedCat)
                         new_text = wikipedia.replaceCategoryLinks(new_text,
