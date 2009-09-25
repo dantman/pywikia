@@ -251,14 +251,17 @@ def ListToParam( list ):
     encList = ''
     # items may not have one symbol - '|'
     for l in list:
-        if '|' in l: raise "item '%s' contains '|' symbol" % l
+        if type(l) == str and '|' in l:
+            raise wikipedia.Error("item '%s' contains '|' symbol" % l )
         encList += ToUtf8(l) + '|'
     return encList[:-1]
 
 def ToUtf8(s):
-    if type(s) != type(u''):
-        wikipedia.output("item %s is not unicode" % unicode(s))
-        raise
+    if type(s) != unicode:
+        try:
+            s = unicode(s)
+        except UnicodeDecodeError:
+            s = s.decode(wikipedia.config.console_encoding)
     return s.encode('utf-8')
 
 def IsString(s):
