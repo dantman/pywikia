@@ -42,31 +42,44 @@ class User:
         name - name of the user, without the trailing User:
         """
         if type(site) == str:
-            self.site = wikipedia.getSite(site)
+            self._site = wikipedia.getSite(site)
         else:
-            self.site = site
-        self.name = name
-
+            self._site = site
+        self._name = name
+        self._blocked = None #None mean not loaded
+        self._group = None #None mean not loaded
+        self._editcount = -1 # -1 mean not loaded
+        self._registrationTime = None
+        self._gender = None
+        #if self.site().versionnumber() >= 16:
+        #    self._urToken = None
+    
+    def site(self):
+        return self._site
+    
+    def name(self):
+        return self._name
+    
     def __str__(self):
-        return '%s:%s' % (self.site, self.name)
-
+        return '%s:%s' % (self.site() , self.name() )
+    
     def getUserPage(self, subpage=''):
-        if self.name[0] == '#':
+        if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no user pages per se.
             raise AutoblockUserError
         if subpage:
             subpage = '/' + subpage
-        return wikipedia.Page(self.site, self.name + subpage, defaultNamespace=2)
+        return wikipedia.Page(self.site(), self.name() + subpage, defaultNamespace=2)
 
     def getUserTalkPage(self, subpage=''):
-        if self.name[0] == '#':
+        if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no user talk pages per se.
             raise AutoblockUserError
         if subpage:
             subpage = '/' + subpage
-        return wikipedia.Page(self.site, self.name + subpage, defaultNamespace=3)
+        return wikipedia.Page(self.site(), self.name() + subpage, defaultNamespace=3)
 
     def editedPages(self, limit=500):
         """ Deprecated function that wraps 'contributions'
@@ -80,7 +93,7 @@ class User:
         Pages returned are not guaranteed to be unique
         (straight Special:Contributions parsing, in chunks of 500 items)."""
 
-        if self.name[0] == '#':
+        if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no contribs.
             raise AutoblockUserError
@@ -97,10 +110,10 @@ class User:
         step = min(limit,500)
         older_str = None
         
-        if self.site.versionnumber() <= 11:
-            older_str = self.site.mediawiki_message('sp-contributions-older')
+        if self.site().versionnumber() <= 11:
+            older_str = self.site().mediawiki_message('sp-contributions-older')
         else:
-            older_str = self.site.mediawiki_message('pager-older-n')
+            older_str = self.site().mediawiki_message('pager-older-n')
         
         if older_str.startswith('{{PLURAL:$1'):
             older_str = older_str[13:]
@@ -108,12 +121,12 @@ class User:
             older_str = older_str[:-2]
         older_str = older_str.replace('$1',str(step))
 
-        address = self.site.contribs_address(self.name,limit=step)
-        contribRX = re.compile(r'<li[^>]*> *<a href="(?P<url>[^"]*?)" title="[^"]+">(?P<date>[^<]+)</a>.*>%s</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a> *(?P<comment>.*?)(?P<top><strong> *\(top\) *</strong>)? *(<span class="mw-rollback-link">\[<a href="[^"]+token=(?P<rollbackToken>[^"]+)%2B%5C".*%s</a>\]</span>)? *</li>' % (self.site.mediawiki_message('diff'),self.site.mediawiki_message('rollback') ) )
+        address = self.site().contribs_address(self.name(),limit=step)
+        contribRX = re.compile(r'<li[^>]*> *<a href="(?P<url>[^"]*?)" title="[^"]+">(?P<date>[^<]+)</a>.*>%s</a>\) *(<span class="[^"]+">[A-Za-z]</span>)* *<a href="[^"]+" (class="[^"]+" )?title="[^"]+">(?P<title>[^<]+)</a> *(?P<comment>.*?)(?P<top><strong> *\(top\) *</strong>)? *(<span class="mw-rollback-link">\[<a href="[^"]+token=(?P<rollbackToken>[^"]+)%2B%5C".*%s</a>\]</span>)? *</li>' % (self.site().mediawiki_message('diff'),self.site().mediawiki_message('rollback') ) )
 
 
         while offset < limit:
-            data = self.site.getUrl(address)
+            data = self.site().getUrl(address)
             for pg in contribRX.finditer(data):
                 url = pg.group('url')
                 oldid = url[url.find('&amp;oldid=')+11:]
@@ -125,7 +138,7 @@ class User:
                     top = True
 
                 # top, new, minor, should all go in a flags field
-                yield wikipedia.Page(self.site, pg.group('title')), oldid, date, comment
+                yield wikipedia.Page(self.site(), pg.group('title')), oldid, date, comment
 
                 offset += 1
                 if offset == limit:
@@ -137,18 +150,17 @@ class User:
                 break
     
     def _apiContributions(self, limit =  250, namespace = []):
-        
         params = {
             'action': 'query',
             'list': 'usercontribs',
-            'ucuser': self.name,
+            'ucuser': self.name(),
             'ucprop': 'ids|title|timestamp|comment',# |size|flags',
             'uclimit': int(limit),
             'ucdir': 'older',
         }
         if limit > wikipedia.config.special_page_limit:
             params['uclimit'] = wikipedia.config.special_page_limit
-            if limit > 5000 and self.site.isAllowed('apihighlimits'):
+            if limit > 5000 and self.site().isAllowed('apihighlimits'):
                 params['uclimit'] = 5000
         
         if namespace:
@@ -156,9 +168,12 @@ class User:
         # An user is likely to contribute on several pages,
         # keeping track of titles
         while True:
-            result = wikipedia.query.GetData(params, self.site)
+            result = wikipedia.query.GetData(params, self.site() )
+            if result.has_key('error'):
+                wikipedia.output('%s' % result)
+                raise wikipedia.Error
             for c in result['query']['usercontribs']:
-                yield wikipedia.Page(self.site, c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
+                yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
             if result.has_key('query-continue'):
                 params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
             else:
@@ -170,10 +185,10 @@ class User:
 
         regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a> .* uploaded "<a href=".*?"(?P<new> class="new")? title="(Image|File):(?P<image>.+?)"\s*>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
 
-        path = self.site.log_address(number, mode = 'upload', user = self.name)
-        html = self.site.getUrl(path)
+        path = self.site().log_address(number, mode = 'upload', user = self.name())
+        html = self.site().getUrl(path)
 
-        redlink_key = self.site.mediawiki_message('red-link-title')
+        redlink_key = self.site().mediawiki_message('red-link-title')
         redlink_tail_len = None
         if redlink_key.startswith('$1 '):
             redlink_tail_len = len(redlink_key[3:])
@@ -189,7 +204,7 @@ class User:
             date = m.group('date')
             comment = m.group('comment') or ''
 
-            yield wikipedia.ImagePage(self.site, image), date, comment, deleted
+            yield wikipedia.ImagePage(self.site(), image), date, comment, deleted
 
     def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False,
                 enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
@@ -210,7 +225,7 @@ class User:
         The default values for block options are set to as most unrestrictive
         """
 
-        if self.name[0] == '#':
+        if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so can't be blocked.
             raise AutoblockUserError
@@ -220,13 +235,13 @@ class User:
         if reason is None:
             reason = input(u'Please enter a reason for the block:')
 
-        token = self.site.getToken(self, sysop = True)
+        token = self.site().getToken(self, sysop = True)
 
-        wikipedia.output(u"Blocking [[User:%s]]..." % self.name)
+        wikipedia.output(u"Blocking [[User:%s]]..." % self.name())
 
         boolStr = ['0','1']
         predata = {
-            'wpBlockAddress': self.name,
+            'wpBlockAddress': self.name(),
             'wpBlockOther': expiry,
             'wpBlockReasonList': reason,
             'wpAnonOnly': boolStr[anonOnly],
@@ -239,11 +254,11 @@ class User:
             'wpEditToken': token
         }
 
-        address = self.site.block_address()
-        response, data = self.site.postForm(address, predata, sysop = True)
+        address = self.site().block_address()
+        response, data = self.site().postForm(address, predata, sysop = True)
 
         if data:
-            if self.site.mediawiki_message('ipb_already_blocked').replace('$1', self.name) in data:
+            if self.site().mediawiki_message('ipb_already_blocked').replace('$1', self.name()) in data:
                 raise AlreadyBlockedError
             
             raise BlockError
@@ -257,18 +272,18 @@ class User:
         reason - reason for block
         """
 
-        if self.name[0] == '#':
-            blockID = self.name[1:]
+        if self.name()[0] == '#':
+            blockID = self.name()[1:]
         else:
             blockID = self._getBlockID()
 
         self._unblock(blockID,reason)
 
     def _getBlockID(self):
-        wikipedia.output(u"Getting block id for [[User:%s]]..." % self.name)
+        wikipedia.output(u"Getting block id for [[User:%s]]..." % self.name())
 
-        address = self.site.blocksearch_address(self.name)
-        data = self.site.getUrl(address)
+        address = self.site().blocksearch_address(self.name())
+        data = self.site().getUrl(address)
         bIDre = re.search(r'action=unblock&amp;id=(\d+)', data)
         if not bIDre:
             wikipedia.output(data)
@@ -277,9 +292,9 @@ class User:
         return bIDre.group(1)
 
     def _unblock(self, blockID, reason):
-        wikipedia.output(u"Unblocking [[User:%s]]..." % self.name)
+        wikipedia.output(u"Unblocking [[User:%s]]..." % self.name())
 
-        token = self.site.getToken(self, sysop = True)
+        token = self.site().getToken(self, sysop = True)
 
         predata = {
             'id': blockID,
@@ -287,15 +302,40 @@ class User:
             'wpBlock': 'Unblock this address',
             'wpEditToken': token,
         }
-        address = self.site.unblock_address()
+        address = self.site().unblock_address()
 
-        response, data = self.site.postForm(address, predata, sysop = True)
+        response, data = self.site().postForm(address, predata, sysop = True)
         if response.status != 302:
-            if self.site.mediawiki_message('ipb_cant_unblock').replace('$1',blockID) in data:
+            if self.site().mediawiki_message('ipb_cant_unblock').replace('$1',blockID) in data:
                 raise AlreadyUnblockedError
             raise UnblockError, data
         return True
 
+def batchLoadUI(site, names = []):
+    #
+    # batch load users information by API.
+    # result info: http://www.mediawiki.org/wiki/API:Query_-_Lists#users_.2F_us
+    #
+    result = {}
+    params = {
+        'action': 'query',
+        'list': 'users',
+        'usprop': 'blockinfo|groups|editcount|registration|emailable|gender',
+        #'': '',
+    }
+    if type(names) == list():
+        params['ususers'] = query.ListToParam(names)
+    else:
+        params['ususers'] = names
+    
+    #if site.versionnumber() >= 16:
+    #    params['ustoken'] = 'userrights'
+    #result = dict([[sig['name'], sig] for sig in query.GetData(params, site)])
+    for sig in query.GetData(params, site):   
+        result[sig['name']] = sig
+    
+    
+    return result
 
 if __name__ == '__main__':
     """
