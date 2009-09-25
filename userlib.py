@@ -377,7 +377,7 @@ def batchLoadUI(names = [], site = None):
     if not site:
         site = wikipedia.getSite()
     elif type(site) is str or type(site) is unicode:
-        site = getSite(site)
+        site = wikipedia.getSite(site)
     
     result = {}
     params = {
