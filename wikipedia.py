@@ -921,7 +921,7 @@ not supported by PyWikipediaBot!"""
             }
         data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages'].values()[0]
         if data.has_key('redirect'):
-            raise IsRedirectPage        
+            raise IsRedirectPage
         elif data.has_key('missing'):
             raise NoPage
         elif data.has_key('lastrevid'):
@@ -929,7 +929,7 @@ not supported by PyWikipediaBot!"""
         else:
             # should not exists, OR we have problems.
             # better double check in this situations
-            x = self.get()                
+            x = self.get()
             return True # if we reach this point, we had no problems.
 
     def getTemplates(self, tllimit = 5000):
@@ -950,7 +950,7 @@ not supported by PyWikipediaBot!"""
             params['tllimit'] = config.special_page_limit
             if tllimit > 5000 and self.site.isAllowed('apihighlimits'):
                 params['tllimit'] = 5000
-        
+
         tmpsFound = []
         while True:
             data = query.GetData(params, self.site(), encodeTitle = False)
@@ -960,7 +960,7 @@ not supported by PyWikipediaBot!"""
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
                 break
-        
+
         return tmpsFound
 
     def isRedirectPage(self):
@@ -1169,6 +1169,12 @@ not supported by PyWikipediaBot!"""
             config.special_page_limit = 999
         site = self.site()
         path = self.site().references_address(self.urlname())
+        if withTemplateInclusion:
+            path+=u'&hidetrans=0'
+        if onlyTemplateInclusion:
+            path+=u'&hidetrans=0&hidelinks=1&hideredirs=1&hideimages=1'
+        if redirectsOnly:
+            path+=u'&hideredirs=0&hidetrans=1&hidelinks=1&hideimages=1'
         content = SoupStrainer("div", id=self.site().family.content_id)
         try:
             next_msg = self.site().mediawiki_message('whatlinkshere-next')
@@ -1313,7 +1319,7 @@ not supported by PyWikipediaBot!"""
             api_url = self.site().api_address()
         except NotImplementedError:
             return restrictions
-        
+
         predata = {
             'action': 'query',
             'prop': 'info',
@@ -1322,9 +1328,9 @@ not supported by PyWikipediaBot!"""
         }
         #if titles:
         #    predata['titles'] = query.ListToParam(titles)
-        
+
         text = query.GetData(predata, self.site())['query']['pages']
-        
+
         for pageid in text:
             if text[pageid].has_key('missing'):
                 self._getexception = NoPage
@@ -1333,7 +1339,7 @@ not supported by PyWikipediaBot!"""
                 # Don't know what may happen here.
                 # We may want to have better error handling
                 raise Error("BUG> API problem.")
-            if text[pageid]['protection'] != []: 
+            if text[pageid]['protection'] != []:
                 #if titles:
                 #    restrictions = dict([ detail['type'], [ detail['level'], detail['expiry'] ] ]
                 #        for detail in text[pageid]['protection'])
@@ -1468,7 +1474,7 @@ not supported by PyWikipediaBot!"""
         except NotImplementedError:
             return self._putPageOld(text, comment, watchArticle, minorEdit,
                 newPage, token, newToken, sysop, captcha, botflag, maxTries)
-        
+
         retry_attempt = 1
         retry_delay = 1
         dblagged = False
@@ -1478,12 +1484,12 @@ not supported by PyWikipediaBot!"""
             'text': self._encodeArg(text, 'text'),
             'summary': self._encodeArg(comment, 'summary'),
         }
-        
+
         if token:
             params['token'] = token
         else:
             params['token'] = self.site().getToken(sysop = sysop)
-        
+
         # Add server lag parameter (see config.py for details)
         if config.maxlag:
             params['maxlag'] = str(config.maxlag)
@@ -1492,29 +1498,29 @@ not supported by PyWikipediaBot!"""
             params['basetimestamp'] = self._editTime
         else:
             params['basetimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-        
+
         if self._startTime:
             params['starttimestamp'] = self._startTime
         else:
             params['starttimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-        
+
         if botflag:
             params['bot'] = 1
-        
+
         if minorEdit:
             params['minor'] = 1
         else:
             params['notminor'] = 1
-        
+
         if watchArticle:
             params['watch'] = 1
         #else:
         #    params['unwatch'] = 1
-        
+
         if captcha:
             params['captchaid'] = captcha['id']
             params['captchaword'] = captcha['answer']
-        
+
         while True:
             if (maxTries == 0):
                 raise MaxTriesExceededError()
@@ -1621,7 +1627,7 @@ not supported by PyWikipediaBot!"""
                         params['basetimestamp'] = self._editTime
                     else:
                         params['basetimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-                    
+
                     if self._startTime:
                         params['starttimestamp'] = self._startTime
                     else:
@@ -1645,7 +1651,7 @@ not supported by PyWikipediaBot!"""
                     # 'customcssjsprotected': "You're not allowed to edit custom CSS and JavaScript pages"
                     # 'protectednamespace': "You're not allowed to edit pages in the ``\$1'' namespace"
                     # 'protectednamespace-interface':"You're not allowed to edit interface messages"
-                    # 
+                    #
                     # The page is locked. This should have already been
                     # detected when getting the page, but there are some
                     # reasons why this didn't work, e.g. the page might be
@@ -1669,7 +1675,7 @@ not supported by PyWikipediaBot!"""
                         return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
                 # I think the error message title was changed from "Wikimedia Error"
                 # to "Wikipedia has a problem", but I'm not sure. Maybe we could
-                # just check for HTTP Status 500 (Internal Server Error)?                    
+                # just check for HTTP Status 500 (Internal Server Error)?
                 else:
                     output("Unknown Error. API Error code:%s" % data['error']['code'] )
                     output("Information:%s" %data['error']['info'])
@@ -1678,17 +1684,17 @@ not supported by PyWikipediaBot!"""
                     #
                     # The status code for update page completed in ordinary mode is 302 - Found
                     # But API is always 200 - OK because it only send "success" back in string.
-                    # if the page update is successed, we need to return code 302 for cheat script who 
+                    # if the page update is successed, we need to return code 302 for cheat script who
                     # using status code
                     #
                     return 302, response.reason, data
-            
+
             solve = self.site().solveCaptcha(data)
             if solve:
                 return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
-            
+
             return response.status, response.reason, data
-        
+
 
     def _putPageOld(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
@@ -1707,7 +1713,7 @@ not supported by PyWikipediaBot!"""
             'wpTextbox1': self._encodeArg(text, 'wikitext'),
             # As of October 2008, MW HEAD requires wpSection to be set.
             # We will need to fill this more smartly if we ever decide to edit by section
-            'wpSection': '', 
+            'wpSection': '',
         }
         if not botflag:
             predata['bot']='0'
@@ -1725,9 +1731,9 @@ not supported by PyWikipediaBot!"""
         else:
             predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
         if self._startTime:
-            predata['wpStarttime'] = self._startTime  
+            predata['wpStarttime'] = self._startTime
         else:
-            predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
+            predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
         if self._revisionId:
             predata['baseRevId'] = self._revisionId
         # Pass the minorEdit and watchArticle arguments to the Wiki.
@@ -1850,9 +1856,9 @@ not supported by PyWikipediaBot!"""
                 else:
                     predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                 if self._startTime:
-                    predata['wpStarttime'] = self._startTime  
+                    predata['wpStarttime'] = self._startTime
                 else:
-                    predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
+                    predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                 continue
             if self.site().has_mediawiki_message("viewsource")\
                     and self.site().mediawiki_message('viewsource') in data:
@@ -1990,10 +1996,10 @@ not supported by PyWikipediaBot!"""
             ns -= 1
         else:
             ns += 1
-        
+
         if ns == 6:
             return ImagePage(self.site(), self.titleWithoutNamespace())
-        
+
         return Page(self.site(), self.titleWithoutNamespace(), defaultNamespace=ns)
 
     def interwiki(self):
@@ -2361,7 +2367,7 @@ not supported by PyWikipediaBot!"""
 
             # If we are getting all of the page history...
             if getAll:
-                #Find the nextPage link, if not exist, the page is last history page 
+                #Find the nextPage link, if not exist, the page is last history page
                 matchObj = RLinkToNextPage.search(self_txt)
                 if matchObj:
                     startFromPage = matchObj.group(1)
@@ -2599,7 +2605,7 @@ not supported by PyWikipediaBot!"""
                 answer = 'y'
                 self.site()._noDeletePrompt = True
         if answer == 'y':
-            
+
             token = self.site().getToken(self, sysop = True)
             reason = reason.encode(self.site().encoding())
             try:
@@ -2607,7 +2613,7 @@ not supported by PyWikipediaBot!"""
                 del d
             except NotImplementedError:
                 config.use_api = False
-            
+
             if config.use_api and self.site().versionnumber() >= 12:
                 #API Mode
                 params = {
@@ -2626,7 +2632,7 @@ not supported by PyWikipediaBot!"""
                     else:
                         output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
                         output('%s' % datas)
-                    
+
                     return False
             else:
                 #Ordinary mode from webpage.
@@ -2792,7 +2798,7 @@ not supported by PyWikipediaBot!"""
         output(u'Page %s undeleted' % self.aslink())
         return result
 
-    def protect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite', 
+    def protect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
                 move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
         """(Un)protect a wiki title. Requires administrator status.
 
@@ -2815,7 +2821,7 @@ not supported by PyWikipediaBot!"""
         #if self.exists() and editcreate != move: # check protect level if edit/move not same
         #    if editcreate == 'sysop' and move != 'sysop':
         #        raise Error("The level configuration is not safe")
-        
+
         if unprotect:
             address = self.site().unprotect_address(self.urlname())
             # unprotect_address is actually an alias for protect_address...
@@ -2865,9 +2871,9 @@ not supported by PyWikipediaBot!"""
             predata = {}
             if self.site().versionnumber >= 10:
                 predata['mwProtect-cascade'] = cascading
-            
+
             predata['mwProtect-reason'] = reason
-            
+
             if not self.exists(): #and self.site().versionnumber() >= :
                 #create protect
                 predata['mwProtect-level-create'] = editcreate
@@ -2876,14 +2882,14 @@ not supported by PyWikipediaBot!"""
                 #edit/move Protect
                 predata['mwProtect-level-edit'] = editcreate
                 predata['mwProtect-level-move'] = move
-                
+
                 if self.site().versionnumber() >= 14:
                     predata['wpProtectExpirySelection-edit'] = editcreate_duration
                     predata['wpProtectExpirySelection-move'] = move_duration
                 else:
                     predata['mwProtect-expiry'] = editcreate_duration
-                    
-            
+
+
             if token:
                 predata['wpEditToken'] = token
             if self.site().hostname() in config.authenticate.keys():
@@ -3157,7 +3163,7 @@ class ImagePage(Page):
             return [nick, timestamp]
         except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
-        
+
     def getHash(self):
         """ Function that return the Hash of an file in oder to understand if two
             Files are the same or not.
@@ -5169,7 +5175,7 @@ your connection is down. Retrying in %i minutes..."""
             # Get username.
             # The data in anonymous mode had key 'anon'
             # if 'anon' exist, username is IP address, not to collect it right now
-            if not text.has_key('anon'): 
+            if not text.has_key('anon'):
                 self._isLoggedIn[index] = True
                 self._userName[index] = text['name']
             else:
@@ -5233,7 +5239,7 @@ your connection is down. Retrying in %i minutes..."""
                     output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
         else:
             #ordinary mode to get data from edit page HTMLs and JavaScripts
-            
+
             if '<div id="globalWrapper">' not in text:
                 # Not a wiki page
                 return
@@ -5485,13 +5491,13 @@ your connection is down. Retrying in %i minutes..."""
 
         if verbose:
             output(u'Getting information for site %s' % self)
-        
+
         try:
             api_url = self.api_address()
             del api_url
         except NotImplementedError:
             config.use_api = False
-        
+
         # Get data
         # API Userinfo is available from version 1.11
         # preferencetoken available from 1.14
@@ -5504,7 +5510,7 @@ your connection is down. Retrying in %i minutes..."""
             }
             if self.versionnumber() >= 14:
                 params['uiprop'] += '|preferencestoken'
-            
+
             text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
             ##output('%s' % text) # for debug use only
         else:
@@ -5586,7 +5592,7 @@ your connection is down. Retrying in %i minutes..."""
                     #'': '',
                 }
                 data = query.GetData(params, self)['query']['recentchanges']
-                
+
                 for np in data:
                     date = np['timestamp']
                     title = np['title']
@@ -6072,7 +6078,7 @@ your connection is down. Retrying in %i minutes..."""
         if namespace is None:
             page = Page(self, start)
             namespace = page.namespace()
-            start = page.titleWithoutNamespace()        
+            start = page.titleWithoutNamespace()
         try:
             api_url = self.api_address()
             del api_url
@@ -6095,16 +6101,16 @@ your connection is down. Retrying in %i minutes..."""
             params['apfilterredir'] = 'redirects'
 
         while True:
-            
+
             if throttle:
                 get_throttle()
             data = query.GetData(params, self)
-            
+
             #count = 0
             for p in data['query']['allpages']:
                 #count += 1
                 yield Page(self, p['title'])
-            
+
             if data.has_key('query-continue'):
                 params['apfrom'] = data['query-continue']['allpages']['apfrom']
             else:
@@ -6434,7 +6440,7 @@ your connection is down. Retrying in %i minutes..."""
         defaults = []
         for namespace in self.family.namespaces.itervalues():
             value = namespace.get('_default', None)
-            if value:    
+            if value:
                 if isinstance(value, list):
                     defaults += value
                 else:
@@ -6451,7 +6457,7 @@ your connection is down. Retrying in %i minutes..."""
 
         def replacenumbered(match):
             return self.namespace(int(match.group(1)))
-        
+
         return numbered.sub(replacenumbered, wikitext)
 
     # The following methods are for convenience, so that you can access
@@ -6898,7 +6904,7 @@ your connection is down. Retrying in %i minutes..."""
         """
         if self.versionnumber() < 12:
             return None
-        
+
         if hash_found is None: # If the hash is none return None and not continue
             return None
         # Now get all the images with the same hash
@@ -7227,7 +7233,7 @@ def translate(code, xdict):
             xdict = xdict[default_family]
         else:
             xdict = xdict['wikipedia']
-        
+
         if type(xdict) != dict:
             return xdict
 
