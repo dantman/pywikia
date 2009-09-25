@@ -111,6 +111,9 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
                 return json.loads( jsontext )
 
         except ValueError, error:
+            if 'Wikimedia Error' in jsontext: #wikimedia server error
+                raise wikipedia.ServerError
+            
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
