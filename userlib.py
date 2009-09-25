@@ -5,7 +5,7 @@ Library to work with users, their pages and talk pages.
 __version__ = '$Id$'
 
 import re
-import wikipedia
+import wikipedia, query
 
 
 
@@ -26,7 +26,7 @@ class BlockIDError(UnblockError): pass
 
 class AlreadyUnblockedError(UnblockError): pass
 
-class User:
+class User(object):
     """
     A class that represents a Wiki user.
     Has getters for the user's User: an User talk: (sub-)pages,
@@ -47,10 +47,9 @@ class User:
             self._site = site
         self._name = name
         self._blocked = None #None mean not loaded
-        self._group = None #None mean not loaded
-        self._editcount = -1 # -1 mean not loaded
+        self._groups = None #None mean not loaded
+        #self._editcount = -1 # -1 mean not loaded
         self._registrationTime = None
-        self._gender = None
         #if self.site().versionnumber() >= 16:
         #    self._urToken = None
     
@@ -62,6 +61,43 @@ class User:
     
     def __str__(self):
         return '%s:%s' % (self.site() , self.name() )
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    def _load(self):
+        data = batchLoadUI(self.name(), self.site()).values()[0]
+        if data.has_key('missing') or data.has_key('invalid'):
+            raise wikipedia.Error('No such user or invaild username')
+        
+        self._editcount = data['editcount']
+        
+        if data.has_key('groups'):
+            self._groups = data['groups']
+        else:
+            self._groups = []
+        
+        if not data['registration']:
+            self._registrationTime = "unknown"
+        else:
+            self._registrationTime = data['registration']
+        self._blocked = data.has_key('blockedby')
+        
+    
+    def editCount(self, force = False):
+        if not hasattr(self, '_editcount') or force:
+            self._load()
+        return self._editcount
+    
+    def isBlocked(self, force = False):
+        if not self._blocked or force:
+            self._load()
+        return self._blocked
+    
+    def groups(self, force = False):
+        if not self._groups or force:
+            self._load()
+        return self._groups
     
     def getUserPage(self, subpage=''):
         if self.name()[0] == '#':
@@ -164,11 +200,11 @@ class User:
                 params['uclimit'] = 5000
         
         if namespace:
-            params['ucnamespace'] = '|'.join(namespace)
+            params['ucnamespace'] = query.ListToParam(namespace)
         # An user is likely to contribute on several pages,
         # keeping track of titles
         while True:
-            result = wikipedia.query.GetData(params, self.site() )
+            result = query.GetData(params, self.site())
             if result.has_key('error'):
                 wikipedia.output('%s' % result)
                 raise wikipedia.Error
@@ -205,7 +241,29 @@ class User:
             comment = m.group('comment') or ''
 
             yield wikipedia.ImagePage(self.site(), image), date, comment, deleted
-
+    
+    def _apiUploadImages(self, number = 10):
+        
+        params = {
+            'action':'query',
+            'list':'logevents',
+            'letype':'upload',
+            'leuser':self.name(),
+            'lelimit':int(number),
+        }
+        count = 0
+        while True:
+            data = query.GetData(params, self.site())
+            for info in data['query']['logevents']:
+                count += 1
+                yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
+            
+            if data.has_key('query-continue') and count <= number:
+                params['lestart'] = data['query-continue']['logevents']['lestart']
+            else:
+                break
+        
+    
     def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False,
                 enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
         """
@@ -311,11 +369,16 @@ class User:
             raise UnblockError, data
         return True
 
-def batchLoadUI(site, names = []):
+def batchLoadUI(names = [], site = None):
     #
     # batch load users information by API.
     # result info: http://www.mediawiki.org/wiki/API:Query_-_Lists#users_.2F_us
     #
+    if not site:
+        site = wikipedia.getSite()
+    elif type(site) is str or type(site) is unicode:
+        site = getSite(site)
+    
     result = {}
     params = {
         'action': 'query',
@@ -331,7 +394,7 @@ def batchLoadUI(site, names = []):
     #if site.versionnumber() >= 16:
     #    params['ustoken'] = 'userrights'
     #result = dict([[sig['name'], sig] for sig in query.GetData(params, site)])
-    for sig in query.GetData(params, site):   
+    for sig in query.GetData(params, site)['query']['users']:
         result[sig['name']] = sig
     
     
