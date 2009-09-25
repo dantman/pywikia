@@ -517,7 +517,7 @@ def parselog(wsite, raw, talk, number, sul):
         if contribnum >= number:
             wikipedia.output(u'%s has enough edits to be welcomed' % username.name() )
             # The user must be welcomed, return his data.
-            yield ([username.name(), contribnum])
+            yield ([username.name(), contribnum, username.isBlocked()])
         elif contribnum < number:
             if contribnum == 0:
                 wikipedia.output(u'%s has no contributions.' % username.name() )
@@ -554,21 +554,6 @@ def report(wsite, rep_page, username, com, rep):
     else:
         pos = y.end()
         wikipedia.output(u'%s is already in the report page.' % username)
-
-def blocked(username):
-    #action=query&list=users&ususers=Filnik&usprop=blockinfo
-    """
-    Function that detects if a user is currently blocked or not.
-    """  
-    params = {
-        'action': 'query',
-        'list': 'users',
-        'ususers': username,
-        'usprop': 'blockinfo',
-    }
-
-    # If there's not the blockedby parameter (that means the user isn't blocked), it will return False otherwise True.
-    return query.GetData(params, encodeTitle = False)['query']['users'][0].has_key('blockedby')
 
 def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
     """ Function to load the random signatures. """
@@ -895,8 +880,8 @@ def main(settingsBot):
                 # OK, no problem
                 pass
             # Check if the user has been already blocked.
-            ki = blocked(username)
-            if ki == True:
+            
+            if found_result[2] == True:
                 wikipedia.output(u'%s has been blocked! Skipping...' % usertalkpage.titleWithoutNamespace())
                 continue
             # Understand if the user has a bad-username.
