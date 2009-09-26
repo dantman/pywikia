@@ -285,6 +285,7 @@ netext = {
         'es': u'{{subst:bienvenido usuario}} %s',
         'fr': u'{{Bienvenue}} %s',
         'it': u'{{subst:Benvenuto}} %s',
+        'en': u'{{subst:Welcome}}\n\n{{subst:Talktome}} %s',
     },
 }
 # The edit summary for updating the welcome log (e.g. Updating log).
@@ -391,7 +392,7 @@ report_text = {
 random_sign = {
     'ar': u'Project:سجل الترحيب/توقيعات',
     'da': u'Wikipedia:Velkommen/Signaturer',
-    'en': u'User:Filnik/Sign',
+    'en': u'Project:Welcome log/Sign',
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'fr': u'Projet:Service de Parrainage Actif/Signatures',
     'it': u'Project:Benvenuto_Bot/Firme',
@@ -888,6 +889,7 @@ def main(settingsBot):
             #username = username.encode(config.console_encoding)
             lower_uname = username.lower()
             for word in elenco: # elenco = list of bad words
+                lower_uname = str(lower_uname)
                 if word.lower() in lower_uname:
                     baduser = True
                     # The format of the italian report template is:
