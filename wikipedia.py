@@ -954,8 +954,12 @@ not supported by PyWikipediaBot!"""
         tmpsFound = []
         while True:
             data = query.GetData(params, self.site(), encodeTitle = False)
-            tmpsFound.extend([Page(self.site(), tmp['title'], defaultNamespace=tmp['ns'])
-                                for tmp in data['query']['pages'].values()[0] ])
+            pageid = data[u'query'][u'pages'].keys()[0]
+            try:
+                tmpsFound.extend([Page(self.site(), tmp['title'], defaultNamespace=tmp['ns'])
+                                    for tmp in data['query']['pages'][pageid].values()[0] ])
+            except TypeError:
+                pass
             if data.has_key('query-continue'):
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
