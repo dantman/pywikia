@@ -281,11 +281,10 @@ netext = {
     'wikiversity':{
         'de': u'{{subst:Willkommen|%s}}',
         'el': u'{{subst:καλωσόρισμα}} %s',
-        'en': u'{{subst:Welcome}} %s',
+        'en': u'{{subst:Welcome}}\n\n{{subst:Talktome}} %s',
         'es': u'{{subst:bienvenido usuario}} %s',
         'fr': u'{{Bienvenue}} %s',
         'it': u'{{subst:Benvenuto}} %s',
-        'en': u'{{subst:Welcome}}\n\n{{subst:Talktome}} %s',
     },
 }
 # The edit summary for updating the welcome log (e.g. Updating log).
