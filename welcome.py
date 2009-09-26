@@ -466,13 +466,6 @@ class WelcomeBot(object):
         pass
 
 
-# Function stolen from wikipedia.py and modified.
-def urlname(talk_page, site):
-    """The name of the page this Page refers to, in a form suitable for the URL of the page."""
-    title = talk_page.replace(" ", "_")
-    encodedTitle = title.encode(site.encoding())
-    return urllib.quote(encodedTitle)
-
 def load_word_function(wsite, raw):
     """ This is a function used to load the badword and the whitelist."""
     regl = r"(?:\"|\')(.*?)(?:\"|\')(?:, |\))"
@@ -486,7 +479,7 @@ def load_word_function(wsite, raw):
         wikipedia.output(u'\nReal-time list loaded.')
     return list_loaded
 
-def parselog(wsite, raw, talk, number, sul):
+def parselog(wsite, raw, number, sul):
     """ The function to load the users (only users who have a certain number of edits) """
     someone_found = False
 
@@ -495,7 +488,8 @@ def parselog(wsite, raw, talk, number, sul):
 
     # XXX: That's the regex, if there are problems, take a look here.
     reg =  u'\(<a href=\"' + re.escape(wsite.path())
-    reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % re.escape(talk)
+    reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % \
+      re.escape('%s:' % urllib.quote(wsite.namespace(3).replace(" ", "_").encode(wsite.encoding())))
     reg += u'.*?</span> (?P<reason>.*?) *?</li>'
 
     p = re.compile(reg, re.UNICODE)
@@ -755,9 +749,6 @@ def main(settingsBot):
     usernam = wsite.namespace(2)
     contrib = string.capitalize(wsite.mediawiki_message('contribslink'))
     # The talk_page's variable gives "Talk page".
-    talk_page = wsite.namespace(3)
-    talk = '%s:' % urlname(talk_page, wsite)
-
     # Some project of the same language, have different settings. (this is the place to add them).
 
     welcomed_users = list()
@@ -857,7 +848,7 @@ def main(settingsBot):
             except wikipedia.NoPage:
                 wikipedia.output(u'The list with signatures is not available... Using default signature...')
                 random = False
-        for found_result in parselog(wsite, log, talk, number, sul):
+        for found_result in parselog(wsite, log, number, sul):
             # Compiling the signature to be used.
             if random:
                 if number_user + 1 > len(signList):
