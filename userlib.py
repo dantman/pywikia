@@ -77,10 +77,11 @@ class User(object):
         else:
             self._groups = []
         
-        if not data['registration']:
-            self._registrationTime = "unknown"
-        else:
+        if data['registration']:
             self._registrationTime = data['registration']
+        else:
+            self._registrationTime = u'unknown'
+        
         self._blocked = data.has_key('blockedby')
         
     
@@ -384,21 +385,23 @@ def batchLoadUI(names = [], site = None):
         'action': 'query',
         'list': 'users',
         'usprop': 'blockinfo|groups|editcount|registration|emailable|gender',
-        #'': '',
+        'ususers': query.ListToParam(names),
     }
-    if type(names) == list():
-        params['ususers'] = query.ListToParam(names)
-    else:
-        params['ususers'] = names
-    
     #if site.versionnumber() >= 16:
     #    params['ustoken'] = 'userrights'
-    #result = dict([[sig['name'], sig] for sig in query.GetData(params, site)])
-    for sig in query.GetData(params, site)['query']['users']:
-        result[sig['name']] = sig
+
+    result = dict([(sig['name'].lower(), sig) for sig in query.GetData(params, site)['query']['users'] ])
     
     
     return result
+
+def batchDumpInfo(user):
+    totals = batchLoadUI([x.name() for x in user])
+    for oj in user:
+        data = totals[oj.name().lower()]
+        oj._editcount = data['editcount']
+        oj._groups = data['groups']
+        oj._blocked = data.has_key('blockedby')
 
 if __name__ == '__main__':
     """
