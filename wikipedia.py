@@ -920,11 +920,11 @@ not supported by PyWikipediaBot!"""
             'titles'    :self.title(),
             }
         data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages'].values()[0]
-        if data.has_key('redirect'):
+        if 'redirect' in data:
             raise IsRedirectPage
-        elif data.has_key('missing'):
+        elif 'missing' in data:
             raise NoPage
-        elif data.has_key('lastrevid'):
+        elif 'lastrevid' in data:
             return data['lastrevid'] # if ok, return the last revid
         else:
             # should not exists, OR we have problems.
@@ -960,7 +960,7 @@ not supported by PyWikipediaBot!"""
                                     for tmp in data['query']['pages'][pageid].values()[0] ])
             except TypeError:
                 pass
-            if data.has_key('query-continue'):
+            if 'query-continue' in data:
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
                 break
@@ -1202,7 +1202,7 @@ not supported by PyWikipediaBot!"""
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
                                  parseOnlyThese=content)
             next_text = body.find(text=nextpattern)
-            if next_text is not None and next_text.parent.has_key('href'):
+            if next_text is not None and 'href' in next_text:
                 path = next_text.parent['href'].replace("&amp;", "&")
             else:
                 path = ""
@@ -1336,10 +1336,10 @@ not supported by PyWikipediaBot!"""
         text = query.GetData(predata, self.site())['query']['pages']
 
         for pageid in text:
-            if text[pageid].has_key('missing'):
+            if 'missing' in text[pageid]:
                 self._getexception = NoPage
                 raise NoPage('Page %s does not exist' % self.aslink())
-            elif not text[pageid].has_key('pageid'):
+            elif not 'pageid' in text[pageid]:
                 # Don't know what may happen here.
                 # We may want to have better error handling
                 raise Error("BUG> API problem.")
@@ -1579,7 +1579,7 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
-            if data.has_key('error'):
+            if 'error' in data:
                 #All available error key in edit mode: (from ApiBase.php)
                 # 'noimageredirect-anon':"Anonymous users can't create image redirects",
                 # 'noimageredirect':"You don't have permission to create image redirects",
@@ -1599,7 +1599,7 @@ not supported by PyWikipediaBot!"""
                     output("error occured, code:%s\ninfo:%s\nstatus:%s\nresponse:%s" % (
                         data['error']['code'], data['error']['info'], response.status, response.reason))
                     faked = params
-                    if faked.has_key('text'):
+                    if 'text' in faked:
                         del faked['text']
                     output("OriginalData:%s" % faked)
                     del faked
@@ -2627,7 +2627,7 @@ not supported by PyWikipediaBot!"""
                     'reason': reason,
                 }
                 datas = query.GetData(params, self.site(), sysop = True)
-                if datas.has_key('delete'):
+                if 'delete' in datas:
                     output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
                     return True
                 else:
@@ -4772,7 +4772,7 @@ class Site(object):
                 data = query.GetData(params, self)['userinfo']
             else:
                 data = query.GetData(params, self)['query']['userinfo']
-            return data.has_key('blockby')
+            return 'blockedby' in data
         except NotImplementedError:
             return False
 
@@ -4870,9 +4870,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def solveCaptcha(self, data):
         if type(data) == dict: # API Mode result
-            if data.has_key('edit') and  data['edit']['result'] != u"Success":
+            if 'edit' in data and  data['edit']['result'] != u"Success":
                 data = data['edit']
-            if data.has_key("captcha"):
+            if "captcha" in data:
                 data = data['captcha']
                 captype = data['type']
                 id = data['id']
@@ -5151,17 +5151,17 @@ your connection is down. Retrying in %i minutes..."""
 
         if type(text) == dict: #text is dict, query from API
             # Check for blocks
-            if text.has_key('blockedby') and not self._isBlocked[index]:
+            if 'blockedby' in text and not self._isBlocked[index]:
                 # Write a warning if not shown earlier
                 if sysop:
                     account = 'Your sysop account'
                 else:
                     account = 'Your account'
                 output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
-            self._isBlocked[index] = text.has_key('blockedby')
+            self._isBlocked[index] = 'blockedby' in text
 
             # Check for new messages, the data must had key 'messages' in dict.
-            if text.has_key('messages'):
+            if 'messages' in text:
                 if not self._messages[index]:
                     # User has *new* messages
                     if sysop:
@@ -5179,7 +5179,7 @@ your connection is down. Retrying in %i minutes..."""
             # Get username.
             # The data in anonymous mode had key 'anon'
             # if 'anon' exist, username is IP address, not to collect it right now
-            if not text.has_key('anon'):
+            if not 'anon' in text:
                 self._isLoggedIn[index] = True
                 self._userName[index] = text['name']
             else:
@@ -5187,7 +5187,7 @@ your connection is down. Retrying in %i minutes..."""
                 self._userName[index] = None
 
             # Get user groups and rights
-            if text.has_key('groups'):
+            if 'groups' in text:
                 self._rights[index] = text['groups']
                 self._rights[index].extend(text['rights'])
                 # Warnings
@@ -5219,7 +5219,7 @@ your connection is down. Retrying in %i minutes..."""
             self._rights[index] = list(set(self._rights[index]))
 
             # Get token
-            if text.has_key('preferencestoken'):
+            if 'preferencestoken' in text:
                 self._token[index] = text['preferencestoken']
                 if self._rights[index] is not None:
                     # Token and rights are loaded - user data is now loaded
@@ -5233,7 +5233,7 @@ your connection is down. Retrying in %i minutes..."""
                     'intoken': 'edit',
                 }
                 data = query.GetData(params, self, sysop=sysop)['query']['pages'].values()[0]
-                if data.has_key('edittoken'):
+                if 'edittoken' in data:
                     self._token[index] = data['edittoken']
                     self._userData[index] = True
                 else:
@@ -5410,7 +5410,7 @@ your connection is down. Retrying in %i minutes..."""
                     try:
                         datas = query.GetData(params, self)['query']['allmessages']
                         self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
-                                for tag in datas if not tag.has_key('missing')])
+                                for tag in datas if not 'missing' in tag])
                     except NotImplementedError:
                         api = False
                         continue
@@ -5473,7 +5473,7 @@ your connection is down. Retrying in %i minutes..."""
 
     def has_mediawiki_message(self, key):
         """Return True iff this site defines a MediaWiki message for 'key'."""
-        #return self._mediawiki_messages.has_key(key)
+        #return key in self._mediawiki_messages
         try:
             v = self.mediawiki_message(key)
             return True
@@ -5839,7 +5839,7 @@ your connection is down. Retrying in %i minutes..."""
 
             for imageData in imagesData:
                 comment = ''
-                if imageData.has_key('comment'):
+                if 'comment' in imageData:
                     comment = imageData['comment']
                 pageid = imageData['pageid']
                 title = imageData['title']
@@ -6115,7 +6115,7 @@ your connection is down. Retrying in %i minutes..."""
                 #count += 1
                 yield Page(self, p['title'])
 
-            if data.has_key('query-continue'):
+            if 'query-continue' in data:
                 params['apfrom'] = data['query-continue']['allpages']['apfrom']
             else:
                 break
@@ -6314,7 +6314,7 @@ your connection is down. Retrying in %i minutes..."""
                             else:
                                 cache.append(pages['title'])
                                 yield Page(self, pages['title'])
-                    if data.has_key(u'query-continue'):
+                    if 'query-continue' in data:
                             params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
                     else:
                             break

@@ -417,7 +417,7 @@ class CosmeticChangesToolkit:
         return text
 
     def removeDeprecatedTemplates(self, text):
-        if deprecatedTemplates.has_key(self.site.family.name) and deprecatedTemplates[self.site.family.name].has_key(self.site.lang):
+        if self.site.family.name in deprecatedTemplates and self.site.lang in deprecatedTemplates[self.site.family.name]:
             for template in deprecatedTemplates[self.site.family.name][self.site.lang]:
                 if not self.site.nocapitalize:
                     template = '[' + template[0].upper() + template[0].lower() + ']' + template[1:]

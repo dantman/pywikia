@@ -285,17 +285,17 @@ class imageTransfer (threading.Thread):
             imtxt=self.imagePage.get(force=True)
 
             #Remove the move to commons templates
-            if moveToCommonsTemplate.has_key(self.imagePage.site().language()):
+            if self.imagePage.site().language() in moveToCommonsTemplate:
                 for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
                     imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
 
             #add {{NowCommons}}
-            if nowCommonsTemplate.has_key(self.imagePage.site().language()):
+            if self.imagePage.site().language() in nowCommonsTemplate:
                 addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname
             else:
                 addTemplate = nowCommonsTemplate['_default'] % self.newname
 
-            if nowCommonsMessage.has_key(self.imagePage.site().language()):
+            if self.imagePage.site().language() in nowCommonsMessage:
                 commentText = nowCommonsMessage[self.imagePage.site().language()]
             else:
                 commentText = nowCommonsMessage['_default']
@@ -308,7 +308,7 @@ class imageTransfer (threading.Thread):
 
             #If the image is uploaded under a different name, replace all instances
             if self.imagePage.titleWithoutNamespace() != self.newname:
-                if imageMoveMessage.has_key(self.imagePage.site().language()):
+                if self.imagePage.site().language() in imageMoveMessage:
                     moveSummary = imageMoveMessage[self.imagePage.site().language()] % (self.imagePage.titleWithoutNamespace(), self.newname)
                 else:
                     moveSummary = imageMoveMessage['_default'] % (self.imagePage.titleWithoutNamespace(), self.newname)

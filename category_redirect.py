@@ -303,8 +303,7 @@ aanjepaß krijje:
         querydata = {'action': 'query',
                      'maxlag': str(wikipedia.config.maxlag)}
         querydata = query.CombineParams(querydata, data)
-        if not querydata.has_key("action")\
-                or not querydata['action'] == 'query':
+        if not "action" in querydata or not querydata['action'] == 'query':
             raise ValueError(
                 "query_results: 'action' set to value other than 'query'"
                 )
@@ -330,7 +329,7 @@ aanjepaß krijje:
                 wikipedia.output(u"Invalid API response received; retrying...")
                 time.sleep(5)
                 continue
-            if type(result) is dict and result.has_key("error"):
+            if type(result) is dict and "error" in result:
                 if result['error']['code'] == "maxlag":
                     print "Pausing due to server lag.\r",
                     time.sleep(5)
@@ -353,7 +352,7 @@ aanjepaß krijje:
                 # query returned no results
                 return
             yield result['query']
-            if result.has_key("query-continue"):
+            if 'query-continue' in result:
                 assert len(result['query-continue'].keys()) == 1, \
                        "More than one query-continue key returned: %s" \
                        % result['query-continue'].keys()

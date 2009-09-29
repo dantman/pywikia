@@ -228,7 +228,7 @@ class Category(wikipedia.Page):
                 else:
                     yield ARTICLE, wikipedia.Page(self.site(), memb['title'])
             # try to find a link to the next list page
-            if data.has_key('query-continue'):
+            if 'query-continue' in data:
                 currentPageOffset = data['query-continue']['categorymembers']['cmcontinue']
             else:
                 break

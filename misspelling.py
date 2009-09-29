@@ -67,7 +67,7 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
         solve_disambiguation.DisambiguationRobot.__init__(self, always, [], True, self.createPageGenerator(firstPageTitle), False, main_only)
 
     def createPageGenerator(self, firstPageTitle):
-        if self.misspellingCategory.has_key(wikipedia.getSite().lang):
+        if wikipedia.getSite().lang in self.misspellingCategory:
             misspellingCategoryTitle = self.misspellingCategory[wikipedia.getSite().lang]
             misspellingCategory = catlib.Category(wikipedia.getSite(), misspellingCategoryTitle)
             generator = pagegenerators.CategorizedPageGenerator(misspellingCategory, recurse = True, start = firstPageTitle)

@@ -36,9 +36,9 @@ class BaseRevertBot(object):
             except StopIteration:
                 self.log(u'Fetching new batch of contributions')
                 response, data = query.GetData(predata, self.site, back_response = True)
-                if data.has_key('error'):
+                if 'error' in data:
                     raise RuntimeError(data['error'])
-                if data.has_key('query-continue'):
+                if 'query-continue' in data:
                     predata['uccontinue'] = data['query-continue']['usercontribs']
                 else:
                     never_continue = True
@@ -80,7 +80,7 @@ class BaseRevertBot(object):
         }
         response, data = query.GetData(predata, self.site, back_response = True)
 
-        if data.has_key('error'):
+        if 'error' in data:
             raise RuntimeError(data['error'])
 
         pages = data['query'].get('pages', ())

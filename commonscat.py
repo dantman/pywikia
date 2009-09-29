@@ -177,7 +177,7 @@ def getTemplate (lang = None):
     '''
     Get the template name in a language. Expects the language code, returns the translation.
     '''
-    if commonscatTemplates.has_key(lang):
+    if lang in commonscatTemplates:
         return commonscatTemplates[lang]
     else:
         return u'Commonscat'
@@ -186,7 +186,7 @@ def skipPage(page):
     '''
     Do we want to skip this page?
     '''
-    if ignoreTemplates.has_key(page.site().language()):
+    if page.site().language() in ignoreTemplates:
         templatesInThePage = page.templates()
         templatesWithParams = page.templatesWithParams()
         for template in ignoreTemplates[page.site().language()]:

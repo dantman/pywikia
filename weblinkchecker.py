@@ -599,7 +599,7 @@ class History:
         """
         self.semaphore.acquire()
         now = time.time()
-        if self.historyDict.has_key(url):
+        if url in self.historyDict:
             timeSinceFirstFound = now - self.historyDict[url][0][1]
             timeSinceLastFound= now - self.historyDict[url][-1][1]
             # if the last time we found this dead link is less than an hour
@@ -623,7 +623,7 @@ class History:
         If the link was previously found dead, removes it from the .dat file
         and returns True, else returns False.
         """
-        if self.historyDict.has_key(url):
+        if url in self.historyDict:
             self.semaphore.acquire()
             try:
                 del self.historyDict[url]

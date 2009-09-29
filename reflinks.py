@@ -264,11 +264,11 @@ class DuplicateReferences:
 
             params = match.group('params')
             group = self.GROUPS.match(params)
-            if not foundRefs.has_key(group):
+            if not group in foundRefs:
                 foundRefs[group] = {}
 
             groupdict = foundRefs[group]
-            if groupdict.has_key(content):
+            if content in groupdict:
                 v = groupdict[content]
                 v[1].append(match.group())
             else:
@@ -285,7 +285,7 @@ class DuplicateReferences:
 
                     if name == 'population':
                         wikipedia.output(content)
-                    if not foundRefNames.has_key(name):
+                    if not name in foundRefNames:
                         # first time ever we meet this name
                         if name == 'population':
                             print "in"
@@ -299,7 +299,7 @@ class DuplicateReferences:
             groupdict[content] = v
 
         id = 1
-        while foundRefNames.has_key(self.autogen + str(id)):
+        while self.autogen + str(id) in foundRefNames:
             id += 1
         for (g, d) in foundRefs.iteritems():
             if g:

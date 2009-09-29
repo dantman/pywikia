@@ -542,7 +542,7 @@ class ReplaceRobot:
                     if m.group('reftype').lower() in ( 'ref', 'ref_num', 'ref_label' ):    # confirm ref
                         refkey = m.group('refname').strip()
                         if refkey != '':
-                            if refusage.has_key( refkey ):
+                            if refkey in refusage:
                                 # wikipedia.output( u'refusage[%s] = %s' % (refkey,refusage[refkey]) )
                                 if refusage[refkey][2] == 0:    # if first use of reference
                                     text_line=text_line[:m.start(0)] + '{{ref|%s}}' % (refkey) + text_line[m.end(0):]
@@ -783,7 +783,7 @@ class ReplaceRobot:
                 if m.group('reftype').lower() in ( 'ref', 'ref_num', 'ref_label' ):    # confirm ref
                     refkey = m.group('refname').strip()
                     if refkey != '':
-                        if refusage.has_key(refkey):
+                        if refkey in refusage:
                             refusage[refkey][1] += 1    # duplicate use of reference
                             duplicatefound = True
                         else:
@@ -1100,11 +1100,11 @@ def main():
         except KeyError:
             wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
             return
-        if fix.has_key('regex'):
+        if 'regex' in fix:
             regex = fix['regex']
-        if fix.has_key('msg'):
+        if 'msg' in fix:
             editSummary = wikipedia.translate(wikipedia.getSite(), fix['msg'])
-        if fix.has_key('exceptions'):
+        if 'exceptions' in fix:
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 

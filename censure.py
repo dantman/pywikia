@@ -32,7 +32,7 @@ badWordList = {
     }
 
 site = wikipedia.getSite()
-if not badWordList.has_key(site.language() + '.' + site.family.name) or not logPages.has_key(site.language() + '.' + site.family.name):
+if not (site.language() + '.' + site.family.name) in badWordList or not (site.language() + '.' + site.family.name) in logPages:
     wikipedia.output('Error: your language isn\'t supported, see the source code for further details')
     sys.exit(1)
 ownWordPage = wikipedia.Page(site, badWordList[site.language() + '.' + site.family.name])

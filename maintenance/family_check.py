@@ -39,7 +39,7 @@ def check_family(family):
     wikipedia.output(u'Checking namespaces for %s' % family.name)
     result = {}
     for lang in family.langs:
-        if not family.obsolete.has_key(lang):
+        if not lang in family.obsolete:
             site = wikipedia.getSite(lang, family)
             wikipedia.output(u'Checking %s' % site)
             namespaces = check_namespaces(site)

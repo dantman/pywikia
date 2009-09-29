@@ -65,13 +65,13 @@ def translate(page, hints = None, auto = True, removebrackets = False):
         # search inside all dictionaries for this link
         dictName, value = date.getAutoFormat( page.site().language(), page.title() )
         if dictName:
-            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(page.site().language()) and value > date.maxyearBC[page.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(page.site().language()) and value > date.maxyearAD[page.site().language()]):
+            if not (dictName == 'yearsBC' and page.site().language() in date.maxyearBC and value > date.maxyearBC[page.site().language()]) or (dictName == 'yearsAD' and page.site().language() in date.maxyearAD and value > date.maxyearAD[page.site().language()]):
                 wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (page.title(),dictName,value))
                 for entryLang, entry in date.formats[dictName].iteritems():
                     if entryLang != page.site().language():
-                        if dictName == 'yearsBC' and date.maxyearBC.has_key(entryLang) and value > date.maxyearBC[entryLang]:
+                        if dictName == 'yearsBC' and entryLang in date.maxyearBC and value > date.maxyearBC[entryLang]:
                             pass
-                        elif dictName == 'yearsAD' and date.maxyearAD.has_key(entryLang) and value > date.maxyearAD[entryLang]:
+                        elif dictName == 'yearsAD' and entryLang in date.maxyearAD and value > date.maxyearAD[entryLang]:
                             pass
             else:
                             newname = entry(value)

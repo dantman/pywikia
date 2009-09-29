@@ -125,7 +125,7 @@ messages = {
 }
 
 def message(key, lang=Site.language()):
-    if not messages.has_key(lang):
+    if not lang in messages:
         lang = '_default'
     return messages[lang][key]
 
@@ -222,7 +222,7 @@ def generateTransclusions(Site, template, namespaces=[], eicontinue=''):
     for page_d in result['query']['embeddedin']:
         yield wikipedia.Page(Site, page_d['title'])
     
-    if result.has_key('query-continue'):
+    if 'query-continue' in result:
         eicontinue = result['query-continue']['embeddedin']['eicontinue']
         for page in generateTransclusions(Site, template, namespaces, eicontinue):
             yield page
@@ -458,7 +458,7 @@ class PageArchiver(object):
             return
         if not self.force and not self.Page.title+'/' == archive[:len(self.Page.title)+1] and not self.key_ok():
             raise ArchiveSecurityError
-        if not self.archives.has_key(archive):
+        if not archive in self.archives:
             self.archives[archive] = DiscussionPage(archive,self,vars)
         return self.archives[archive].feedThread(thread,maxArchiveSize)
 

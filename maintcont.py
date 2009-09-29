@@ -79,7 +79,7 @@ class MaintcontBot(SingleServerIRCBot):
                 ingroup += 1
         if ingroup == 0:
             return
-        if projtasks.has_key(group):
+        if group in projtasks:
             grt = projtasks[group]
         else:
             grt = tasks

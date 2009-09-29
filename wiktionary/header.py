@@ -49,16 +49,16 @@ class Header(object):
         self.header = self.header.replace('{{','').replace('}}','').strip().lower()
 
         # Now we know the content of the header, let's try to find out what it means:
-        if pos.has_key(self.header):
+        if self.header in pos:
             self.type=u'pos'
             self.contents=pos[self.header]
-        if langnames.has_key(self.header):
+        if self.header in langnames:
             self.type=u'lang'
             self.contents=self.header
-        if invertedlangnames.has_key(self.header):
+        if self.header in invertedlangnames:
             self.type=u'lang'
             self.contents=invertedlangnames[self.header]
-        if otherheaders.has_key(self.header):
+        if self.header in otherheaders:
             self.type=u'other'
             self.contents=otherheaders[self.header]
 

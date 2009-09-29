@@ -491,7 +491,7 @@ class RedirectGenerator:
                 num += 1
                 # check if the value - that is, the redirect target - is a
                 # redirect as well
-                if num > self.offset and redict.has_key(value):
+                if num > self.offset and value in redict:
                     yield key
                     wikipedia.output(u'\nChecking redirect %i of %i...'
                                      % (num + 1, len(redict)))
@@ -602,7 +602,7 @@ class RedirectRobot:
                         try:
                             redir_page.delete(reason, prompt = False)
                         except wikipedia.NoUsername:
-                            if sd_template.has_key(targetPage.site().lang) and sd_tagging_sum.has_key(targetPage.site().lang):
+                            if targetPage.site().lang in sd_template and targetPage.site().lang in sd_tagging_sum:
                                 wikipedia.output("No sysop in user-config.py, put page to speedy deletion.")
                                 content = redir_page.get(get_redirect=True)
                                 content = wikipedia.translate(targetPage.site().lang,sd_template)+"\n"+content
@@ -697,8 +697,8 @@ class RedirectRobot:
                                           targetPage.site(),
                                           targetPage.sectionFreeTitle()
                                       ).get(get_redirect=True)
-                        if sd_template.has_key(targetPage.site().lang) \
-                                and sd_tagging_sum.has_key(targetPage.site().lang):
+                        if targetPage.site().lang in sd_template \
+                                and targetPage.site().lang in sd_tagging_sum:
                             wikipedia.output(u"Tagging redirect for deletion")
                             # Delete the two redirects
                             content = wikipedia.translate(targetPage.site().lang,

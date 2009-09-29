@@ -463,7 +463,7 @@ class SpeedyRobot:
             reasons = wikipedia.translate(self.mySite, self.deletion_messages)
 
             for templateName in templateNames:
-                if reasons.has_key(templateName):
+                if templateName in reasons:
                     if type(reasons[templateName]) is not unicode:
                         #Make alias to delete_reasons
                         reason = wikipedia.translate(self.mySite, self.delete_reasons)[reasons[templateName]]
@@ -481,15 +481,15 @@ class SpeedyRobot:
 
         # We don't use wikipedia.translate() here because for some languages the
         # entry is intentionally left out.
-        if self.delete_reasons.has_key(self.mySite.family.name):
-            if self.delete_reasons[self.mySite.family.name].has_key(page.site().lang):
+        if self.mySite.family.name in self.delete_reasons:
+            if page.site().lang in self.delete_reasons[self.mySite.family.name]:
                 localReasons = wikipedia.translate(page.site().lang, self.delete_reasons)
                 wikipedia.output(u'')
                 for key, reason in     localReasons.iteritems():
                     wikipedia.output((key + ':').ljust(8) + reason)
                 wikipedia.output(u'')
                 reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
-                if localReasons.has_key(reason.strip()):
+                if reason.strip() in localReasons:
                     reason = localReasons[reason]
             else:
                 reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the suggested message:')
