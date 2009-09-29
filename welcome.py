@@ -859,7 +859,7 @@ class WelcomeBot(object):
 
 def showStatus(n = 0):
     staColor = {
-        0:'white',
+        0:'lightpurple',
         1:'lightaqua',
         2:'lightgreen',
         3:'lightyellow',
