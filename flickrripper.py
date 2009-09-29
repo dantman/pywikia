@@ -84,7 +84,7 @@ def isAllowedLicense(photoInfo = None):
     else:
         return False
 
-def getPhotoUrl(photoSizes=None):
+def getPhotoUrl(photoSizes = None):
     '''
     Get the url of the jpg file with the highest resolution
     '''
@@ -94,7 +94,7 @@ def getPhotoUrl(photoSizes=None):
         url = size.attrib['source']
     return url
 
-def downloadPhoto(photoUrl=''):
+def downloadPhoto(photoUrl = ''):
     '''
     Download the photo and store it in a StrinIO.StringIO object.
 
@@ -103,27 +103,15 @@ def downloadPhoto(photoUrl=''):
     imageFile=urllib.urlopen(photoUrl).read()
     return StringIO.StringIO(imageFile)
 
-def findDuplicateImages(photo=None, site=wikipedia.getSite()):
+def findDuplicateImages(photo = None, site = wikipedia.getSite()):
     '''
     Takes the photo, calculates the SHA1 hash and asks the mediawiki api for a list of duplicates.
 
     TODO: Add exception handling, fix site thing
     '''
-    result = []
     hashObject = hashlib.sha1()
     hashObject.update(photo.getvalue())
-    sha1Hash = base64.b16encode(hashObject.digest())
-
-    params = {
-        'action'    : 'query',
-        'list'      : 'allimages',
-        'aisha1'    : sha1Hash,
-        'aiprop'    : '',
-    }
-    data = query.GetData(params, wikipedia.getSite(), encodeTitle = False)
-    for image in data['query']['allimages']:
-        result.append(image['name'])
-    return result
+    return site.getFilesFromAnHash(base64.b16encode(hashObject.digest()))
 
 def getTags(photoInfo = None):
     '''
@@ -161,10 +149,10 @@ def getFilename(photoInfo=None, site=wikipedia.getSite()):
     else:
         title = u''
 
-    if (wikipedia.Page(title=u'File:Flickr - %s - %s.jpg' % (username, title), site=wikipedia.getSite()).exists()):
+    if wikipedia.Page(site, u'File:Flickr - %s - %s.jpg' % (username, title) ).exists():
         i = 1
         while True:
-            if (wikipedia.Page(title=u'File:Flickr - %s - %s (%s).jpg' % (username, title, str(i)), site=wikipedia.getSite()).exists()):
+            if (wikipedia.Page(site, u'File:Flickr - %s - %s (%s).jpg' % (username, title, str(i))).exists()):
                 i = i + 1
             else:
                 return u'Flickr - %s - %s (%s).jpg' % (username, title, str(i))            
@@ -203,19 +191,20 @@ def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', ov
     '''
     description = flinfoDescription
 
-    if(removeCategories):
-        description = wikipedia.removeCategoryLinks(text=description, site=wikipedia.getSite(u'commons', u'commons'))
+    if removeCategories:
+        description = wikipedia.removeCategoryLinks(description, wikipedia.getSite('commons', 'commons'))
 
-    if(override):
+    if override:
         description = description.replace(u'{{cc-by-sa-2.0}}\n', u'')
         description = description.replace(u'{{cc-by-2.0}}\n', u'')
         description = description.replace(u'{{flickrreview}}\n', u'')
         description = description.replace(u'{{copyvio|Flickr, licensed as "All Rights Reserved" which is not a free license --~~~~}}\n', u'')       
         description = description.replace(u'=={{int:license}}==', u'=={{int:license}}==\n' + override)
-    elif(flickrreview):
-        if(reviewer):
+    elif flickrreview:
+        if reviewer:
             description = description.replace(u'{{flickrreview}}', u'{{flickrreview|' + reviewer + '|{{subst:CURRENTYEAR}}-{{subst:CURRENTMONTH}}-{{subst:CURRENTDAY2}}}}')
-    if(addCategory):
+    
+    if addCategory:
         description = description + u'\n[[Category:' + addCategory + ']]\n'
     description = description.replace(u'\r\n', u'\n')
     return description  
@@ -224,23 +213,23 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
     '''
     Process a single Flickr photo
     '''
-    if(photo_id):
+    if photo_id:
         print photo_id
-        (photoInfo, photoSizes) = getPhoto(flickr=flickr, photo_id=photo_id)
-    if (isAllowedLicense(photoInfo=photoInfo) or override):
+        (photoInfo, photoSizes) = getPhoto(flickr, photo_id)
+    if  isAllowedLicense(photoInfo) or override:
         #Get the url of the largest photo
-        photoUrl = getPhotoUrl(photoSizes=photoSizes)
+        photoUrl = getPhotoUrl(photoSizes)
         #Should download the photo only once
-        photo = downloadPhoto(photoUrl=photoUrl)
+        photo = downloadPhoto(photoUrl)
 
         #Don't upload duplicate images, should add override option
-        duplicates = findDuplicateImages(photo=photo)
+        duplicates = findDuplicateImages(photo)
         if duplicates:
             wikipedia.output(u'Found duplicate image at %s' % duplicates.pop())
         else:
-            filename = getFilename(photoInfo=photoInfo)
-            flinfoDescription = getFlinfoDescription(photo_id=photo_id)
-            photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override, addCategory=addCategory, removeCategories=removeCategories)
+            filename = getFilename(photoInfo)
+            flinfoDescription = getFlinfoDescription(photo_id)
+            photoDescription = buildDescription(flinfoDescription, flickrreview, reviewer, override, addCategory, removeCategories)
             #wikipedia.output(photoDescription)
             if not autonomous:
                 (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photo, filename).run()
@@ -256,7 +245,7 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
             #Would be nice to check before I upload if the file is already at Commons
             #Not that important for this program, but maybe for derived programs
             if not skip:
-                bot = upload.UploadRobot(url=photoUrl, description=newPhotoDescription, useFilename=newFilename, keepFilename=True, verifyDescription=False)
+                bot = upload.UploadRobot(photoUrl, description=newPhotoDescription, useFilename=newFilename, keepFilename=True, verifyDescription=False)
                 bot.upload_image(debug=False)
                 return 1
     return 0 
@@ -364,12 +353,12 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
         
     # http://www.flickr.com/services/api/flickr.groups.pools.getPhotos.html
     # Get the photos in a group
-    if(group_id):
+    if group_id:
         #First get the total number of photo's in the group
         photos = flickr.groups_pools_getPhotos(group_id=group_id, user_id=user_id, tags=tags, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
 
-        for i in range(1, int(pages)+1):
+        for i in range(1, int(pages) + 1):
             gotPhotos = False
             while not gotPhotos:
                 try:
@@ -390,7 +379,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
                     
     # http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
     # Get the photos in a photoset
-    elif(photoset_id):
+    elif photoset_id:
         photos = flickr.photosets_getPhotos(photoset_id=photoset_id, per_page='100', page='1')
         pages = photos.find('photoset').attrib['pages']
 
@@ -416,7 +405,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
     
     # http://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
     # Get the (public) photos uploaded by a user
-    elif(user_id):
+    elif user_id:
         photos = flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page='1')
         pages = photos.find('photos').attrib['pages']
         #flickrapi.exceptions.FlickrError
@@ -426,10 +415,10 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
                 try:
                     for photo in flickr.people_getPublicPhotos(user_id=user_id, per_page='100', page=i).find('photos').getchildren():
                         gotPhotos = True
-                        if photo.attrib['id']==start_id:
+                        if photo.attrib['id'] == start_id:
                             found_start_id=True
                         if found_start_id:
-                            if photo.attrib['id']==end_id:
+                            if photo.attrib['id'] == end_id:
                                 wikipedia.output('Found end_id')
                                 return
                             else:
@@ -461,7 +450,7 @@ def main():
     #imagerecat.initLists()
 
     #Get the api key
-    if(config.flickr['api_key']):
+    if config.flickr['api_key']:
         flickr = flickrapi.FlickrAPI(config.flickr['api_key'])
     else:
         wikipedia.output('Flickr api key not found! Get yourself an api key')
@@ -553,9 +542,9 @@ def main():
             autonomous = True            
             
     if user_id or group_id or photoset_id:
-        for photo_id in getPhotos(flickr=flickr, user_id=user_id, group_id=group_id, photoset_id=photoset_id, start_id=start_id, end_id=end_id, tags=tags):
-            uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override, addCategory=addCategory, removeCategories=removeCategories, autonomous=autonomous)
-            totalPhotos = totalPhotos + 1
+        for photo_id in getPhotos(flickr, user_id, group_id, photoset_id, start_id, end_id, tags):
+            uploadedPhotos += processPhoto(flickr, photo_id, flickrreview, reviewer, override, addCategory, removeCategories, autonomous)
+            totalPhotos += 1
     else:
         usage()
 
