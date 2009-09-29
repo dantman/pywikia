@@ -236,6 +236,7 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
             else:
                 newPhotoDescription=photoDescription
                 newFilename=filename
+                skip=False
         #wikipedia.output(newPhotoDescription)
         #if (wikipedia.Page(title=u'File:'+ filename, site=wikipedia.getSite()).exists()):
         # I should probably check if the hash is the same and if not upload it under a different name
