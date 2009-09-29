@@ -197,7 +197,7 @@ def cleanUpTitle(title):
     return title
  
 
-def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', override=u''):
+def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', override=u'', addCategory=u'', removeCategories=False):
     '''
     Build the final description for the image. The description is based on the info from flickrinfo and improved.
     '''
@@ -212,10 +212,12 @@ def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', ov
     elif(flickrreview):
         if(reviewer):
             description = description.replace(u'{{flickrreview}}', u'{{flickrreview|' + reviewer + '|{{subst:CURRENTYEAR}}-{{subst:CURRENTMONTH}}-{{subst:CURRENTDAY2}}}}')
+    if(addCategory):
+        description = description + u'\n[[Category:' + addCategory + ']]\n'
     description = description.replace(u'\r\n', u'\n')
     return description  
 
-def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', override=u''):
+def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', override=u'', addCategory=u'', removeCategories=False, autonomous=False):
     '''
     Process a single Flickr photo
     '''
@@ -235,9 +237,13 @@ def processPhoto(flickr=None, photo_id=u'', flickrreview=False, reviewer=u'', ov
         else:
             filename = getFilename(photoInfo=photoInfo)
             flinfoDescription = getFlinfoDescription(photo_id=photo_id)
-            photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override)
+            photoDescription = buildDescription(flinfoDescription=flinfoDescription, flickrreview=flickrreview, reviewer=reviewer, override=override, addCategory=addCategory, removeCategories=removeCategories)
             #wikipedia.output(photoDescription)
-            (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photo, filename).run()
+            if not autonomous:
+                (newPhotoDescription, newFilename, skip)=Tkdialog(photoDescription, photo, filename).run()
+            else:
+                newPhotoDescription=photoDescription
+                newFilename=filename
         #wikipedia.output(newPhotoDescription)
         #if (wikipedia.Page(title=u'File:'+ filename, site=wikipedia.getSite()).exists()):
         # I should probably check if the hash is the same and if not upload it under a different name
@@ -465,6 +471,9 @@ def main():
     start_id= u''
     end_id=u''
     tags = u''
+    addCategory = u''
+    removeCategories = False
+    autonomous = False
     totalPhotos = 0
     uploadedPhotos = 0
 
@@ -485,7 +494,7 @@ def main():
     else:
         reviewer = u''
 
-    override = u''
+    override = u'' # Should be renamed to overrideLicense or something like that
     
     for arg in wikipedia.handleArgs():
         if arg.startswith('-group_id'):
@@ -530,10 +539,19 @@ def main():
                 override = wikipedia.input(u'What is the override text?')
             else:
                 override = arg[10:]
-
+        elif arg.startswith('-addcategory'):
+            if len(arg) == 12:
+                addCategory = wikipedia.input(u'What category do you want to add?')
+            else:
+                addCategory = arg[13:]
+        elif arg == '-removecategories':
+            removeCategories = True
+        elif arg == '-autonomous':
+            autonomous = True            
+            
     if user_id or group_id or photoset_id:
         for photo_id in getPhotos(flickr=flickr, user_id=user_id, group_id=group_id, photoset_id=photoset_id, start_id=start_id, end_id=end_id, tags=tags):
-            uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override)
+            uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override, addCategory=addCategory, removeCategories=removeCategories, autonomous=autonomous):
             totalPhotos = totalPhotos + 1
     else:
         usage()
