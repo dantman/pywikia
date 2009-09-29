@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to work with users, their pages and talk pages.
 """
@@ -67,12 +67,12 @@ class User(object):
     
     def _load(self):
         data = batchLoadUI(self.name(), self.site()).values()[0]
-        if data.has_key('missing') or data.has_key('invalid'):
+        if 'missing' in data or 'invalid' in data:
             raise wikipedia.Error('No such user or invaild username')
         
         self._editcount = data['editcount']
         
-        if data.has_key('groups'):
+        if 'groups' in data:
             self._groups = data['groups']
         else:
             self._groups = []
@@ -82,7 +82,7 @@ class User(object):
         else:
             self._registrationTime = u'unknown'
         
-        self._blocked = data.has_key('blockedby')
+        self._blocked = ('blockedby' in data)
         
     
     def editCount(self, force = False):
@@ -206,12 +206,12 @@ class User(object):
         # keeping track of titles
         while True:
             result = query.GetData(params, self.site())
-            if result.has_key('error'):
+            if 'error' in result:
                 wikipedia.output('%s' % result)
                 raise wikipedia.Error
             for c in result['query']['usercontribs']:
                 yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
-            if result.has_key('query-continue'):
+            if 'query-continue' in result:
                 params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
             else:
                 break
@@ -259,7 +259,7 @@ class User(object):
                 count += 1
                 yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
             
-            if data.has_key('query-continue') and count <= number:
+            if 'query-continue' in data and count <= number:
                 params['lestart'] = data['query-continue']['logevents']['lestart']
             else:
                 break
@@ -400,9 +400,9 @@ def batchDumpInfo(user):
     for oj in user:
         data = totals[oj.name().lower()]
         oj._editcount = data['editcount']
-        if data.has_key('groups'):
+        if 'groups' in data:
             oj._groups = data['groups']
-        oj._blocked = data.has_key('blockedby')
+        oj._blocked = ('blockedby' in data)
 
 if __name__ == '__main__':
     """
