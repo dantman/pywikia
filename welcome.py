@@ -675,13 +675,14 @@ class WelcomeBot(object):
             lev = query.GetData(params, self.site)
             for x in lev['query']['logevents']:
                 someone_found = True
+                count += 1
                 if not globalvar.welcomeAuto and x['action'] == 'autocreate':
                     showStatus(3)
                     wikipedia.output(u'%s has been created automatically.' % x['user'])
                     continue
                 if x.has_key("userhidden"):
                     continue
-                count += 1
+                
                 yield userlib.User(self.site, x['user'])
             
             if count < globalvar.queryLimit and lev.has_key('query-continue'):
@@ -689,6 +690,7 @@ class WelcomeBot(object):
             else:
                 break
         if someone_found:
+            showStatus(5)
             wikipedia.output(u'There is nobody to be welcomed...')
         else:
             wikipedia.output(u'\nLoaded all users...')
@@ -728,6 +730,7 @@ class WelcomeBot(object):
             yield userlib.User(self.site, userN)
         
         if someone_found:
+            showStatus(5)
             wikipedia.output(u'There is nobody to be welcomed...')
         else:
             wikipedia.output(u'\nLoaded all users...')
@@ -765,8 +768,6 @@ class WelcomeBot(object):
     def run(self):
         while True:
             welcomed_count = 0
-            #usoj = [x for x in ]
-            #userlib.batchDumpInfo(usoj)
             for users in self.parseNewUserLog():
                 if users.isBlocked():
                     showStatus(3)
