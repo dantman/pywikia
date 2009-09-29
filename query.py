@@ -32,7 +32,7 @@ try:
     if not hasattr(json, 'loads'):
         # 'json' can also be the name in for 
         # http://pypi.python.org/pypi/python-json
-        import simplejson as json
+        raise ImportError
 except ImportError:
     import simplejson as json
     
@@ -70,7 +70,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         'block', 'unblock', 'move', 'emailuser','import', 'userrights',
     ]
     if useAPI:
-        if params['action'] in postAC:
+        if params['action'] in postAC or data:
             path = site.api_address()
         else:
             path = site.api_address() + urllib.urlencode(params.items())
@@ -95,7 +95,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
                 params["User-agent"] = useragent
                 res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
                 jsontext = res.read()
-            elif params['action'] in postAC:
+            elif params['action'] in postAC or data:
                 res, jsontext = site.postForm(path, params, sysop, site.cookies(sysop = sysop) )
             else:
                 if back_response:
