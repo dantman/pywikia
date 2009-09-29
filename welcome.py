@@ -680,12 +680,12 @@ class WelcomeBot(object):
                     showStatus(3)
                     wikipedia.output(u'%s has been created automatically.' % x['user'])
                     continue
-                if x.has_key("userhidden"):
+                if "userhidden" in x:
                     continue
                 
                 yield userlib.User(self.site, x['user'])
             
-            if count < globalvar.queryLimit and lev.has_key('query-continue'):
+            if count < globalvar.queryLimit and 'query-continue' in lev:
                 params['lestart'] = lev['query-continue']['logevents']['lestart']
             else:
                 break
