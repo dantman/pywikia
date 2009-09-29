@@ -170,8 +170,10 @@ but can be used for some bad-nickname.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: welcome.py,v 1.5 2007/12/7 19.23.00 filnik Exp$'
 #
+
+__version__ = '$Id$'
+
 
 import wikipedia, config, query, userlib
 import time, re, cPickle, os, urllib, string, locale, random
