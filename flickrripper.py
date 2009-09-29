@@ -203,6 +203,9 @@ def buildDescription(flinfoDescription=u'', flickrreview=False, reviewer=u'', ov
     '''
     description = flinfoDescription
 
+    if(removeCategories):
+        description = wikipedia.removeCategoryLinks(text=description, site=wikipedia.getSite(u'commons', u'commons'))
+
     if(override):
         description = description.replace(u'{{cc-by-sa-2.0}}\n', u'')
         description = description.replace(u'{{cc-by-2.0}}\n', u'')
@@ -551,7 +554,7 @@ def main():
             
     if user_id or group_id or photoset_id:
         for photo_id in getPhotos(flickr=flickr, user_id=user_id, group_id=group_id, photoset_id=photoset_id, start_id=start_id, end_id=end_id, tags=tags):
-            uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override, addCategory=addCategory, removeCategories=removeCategories, autonomous=autonomous):
+            uploadedPhotos = uploadedPhotos + processPhoto(flickr=flickr, photo_id=photo_id, flickrreview=flickrreview, reviewer=reviewer, override=override, addCategory=addCategory, removeCategories=removeCategories, autonomous=autonomous)
             totalPhotos = totalPhotos + 1
     else:
         usage()
