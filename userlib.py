@@ -60,7 +60,7 @@ class User(object):
         return self._name
     
     def __str__(self):
-        return '%s:%s' % (self.site() , self.name() )
+        return u'%s:%s' % (self.site() , self.name() )
     
     def __repr__(self):
         return self.__str__()
@@ -400,7 +400,8 @@ def batchDumpInfo(user):
     for oj in user:
         data = totals[oj.name().lower()]
         oj._editcount = data['editcount']
-        oj._groups = data['groups']
+        if data.has_key('groups'):
+            oj._groups = data['groups']
         oj._blocked = data.has_key('blockedby')
 
 if __name__ == '__main__':
