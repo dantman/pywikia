@@ -138,16 +138,26 @@ def GetInterwikies(site, titles, extraParams = None ):
     extraParams if given must be a dict() as taken by GetData()
     """
 
-    params = {'titles':ListToParam(titles), 'what' : 'redirects|langlinks'}
+    params = {
+        'action': 'query',
+        'prop': 'langlinks',
+        'titles': ListToParam(titles),
+        'redirects': 1,
+    }
     params = CombineParams( params, extraParams )
-    return GetData(site, params )
+    return GetData(params, site)
 
 def GetLinks(site, titles, extraParams = None ):
     """ Get list of templates for the given titles
     """
-    params = {'titles':ListToParam(titles), 'what': 'redirects|links'}
+    params = {
+        'action': 'query',
+        'prop': 'links',
+        'titles': ListToParam(titles),
+        'redirects': 1,
+    }
     params = CombineParams( params, extraParams )
-    return GetData(site, params )
+    return GetData(params, site)
 
 def GetDisambigTemplates(site):
     """This method will return a set of disambiguation templates.
@@ -158,13 +168,13 @@ def GetDisambigTemplates(site):
     """
 
     disambigs = set()
-    disambigName = u"template:disambig"
+    disambigName = wikipedia.translate(site, site.family.disambiguationTemplates())
     disListName = u"Wikipedia:Disambiguation Templates"
     disListId = 0
 
     templateNames = GetLinks(site, [disListName, disambigName])
     for id, page in templateNames['pages'].iteritems():
-        if page['title'] == disambigName:
+        if page['title'] in disambigName:
             if 'normalizedTitle' in page:
                 disambigs.add(page['normalizedTitle'])
             elif 'redirect' in page:
