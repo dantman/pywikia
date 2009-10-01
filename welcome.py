@@ -199,7 +199,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 #The page where the bot will save the log (e.g. Wikipedia:Welcome log).
 logbook = {
-    'commons': u'Project:Welcome log',
+    'commons': {'_default': u'Project:Welcome log', },
     'wikipedia': {
         'ar': u'Project:سجل الترحيب',
         'da': None, # no welcome log on da.wiki
@@ -225,7 +225,7 @@ logbook = {
 }
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {
-    'commons':u'Welcome!',
+    'commons': {'_default': u'Welcome!', },
     'ar':u'مرحبا!',
     'da':u'Velkommen',
     'de':u'Herzlich willkommen!',
@@ -251,7 +251,7 @@ summary = {
 # that is your signature (the bot has a random parameter to add different
 # sign, so in this way it will change according to your parameters).
 netext = {
-    'commons':u'{{subst:welcome}} %s',
+    'commons': {'_default': u'{{subst:welcome}} %s', } ,
     'wikipedia': {
         'ar':u'{{subst:ترحيب}} %s',
         'da':u'{{velkommen|%s}}',
@@ -291,7 +291,7 @@ netext = {
 }
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
-    'commons':u'Updating log',
+    'commons': {'_default': u'Updating log',} ,
     'wikipedia': {
         'ar':u'تحديث السجل',
         'da':u'Updating log',
@@ -312,7 +312,7 @@ summary2 = {
 }
 # The page where the bot will report users with a possibly bad username.
 report_page = {
-    'commons': u'Project:Administrators\' noticeboard/User problems/Usernames to be checked',
+    'commons': {'_default': u'Project:Administrators\' noticeboard/User problems/Usernames to be checked', },
     'wikipedia': {
         'ar': 'Project:إخطار الإداريين/أسماء مستخدمين للفحص',
         'da': u'Bruger:Broadbot/Report',
@@ -332,7 +332,7 @@ report_page = {
 }
 # The edit summary for reporting a possibly bad username.
 comment = {
-    'commons':u'Adding a username that needs to be checked',
+    'commons': {'_default': u'Adding a username that needs to be checked',},
     'wikipedia':{
         'ar':u'إضافة اسم مستخدم يحتاج للفحص',
         'da':u'Adding a username that needs to be checked',
@@ -351,7 +351,7 @@ comment = {
 # The page where the bot reads the real-time bad words page
 # (this parameter is optional).
 bad_pag = {
-    'commons': u'Project:Welcome log/Bad_names',
+    'commons': {'_default': u'Project:Welcome log/Bad_names', },
     'wikipedia':{
         'ar': u'Project:سجل الترحيب/أسماء سيئة',
         'en': u'Project:Welcome log/Bad_names',
@@ -371,7 +371,7 @@ timeselected = u' ~~~~~' # Defining the time used after the signature
 
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
 report_text = {
-    'commons':u"\n*{{user3|%s}}" + timeselected,
+    'commons': {'_default': u"\n*{{user3|%s}}" + timeselected,}, 
     'wikipedia':{
         'ar':u"\n*{{user13|%s}}" + timeselected,
         'da':u'\n*[[Bruger Diskussion:%s]] ' + timeselected,
@@ -469,9 +469,6 @@ class WelcomeBot(object):
         if globalvar.randomSign:
             self.defineSign(True)
         
-        self.final_additions = wikipedia.translate(self.site, final_new_text_additions)
-        
-        #self.contrib = string.capitalize(self.site.mediawiki_message('contribslink'))
     
     def badNameFilter(self, name, force = False):
         if not globalvar.filtBadName:
