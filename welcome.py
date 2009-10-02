@@ -246,6 +246,7 @@ summary = {
     'sr':u'Добродошли!',
     'vo':u'Benokömö!',
     'zh':u'欢迎！',
+    'zh-yue': u'歡迎',
 }
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
 # that is your signature (the bot has a random parameter to add different
@@ -273,9 +274,11 @@ netext = {
         'sr':u'{{Добродошлица}} %s',
         'vo':u'{{benokömö}} %s',
         'zh':u'{{subst:welcome|sign=%s}}',
+        'zh-yue': u'{{歡迎}}--%s',
     },
     'wikinews':{
         'it': u'{{subst:benvenuto|%s}}',
+        'zh': u'{{subst:welcome}} %s',
     },
     'wiktionary':{
         'it': u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s',
@@ -291,24 +294,23 @@ netext = {
 }
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
-    'commons': {'_default': u'Updating log',} ,
-    'wikipedia': {
-        'ar':u'تحديث السجل',
-        'da':u'Updating log',
-        'de':u'Aktualisiere Logdatei',
-        'en':u'Updating log',
-        'fa':u'به روز رسانی سیاهه',
-        'fr':u'Mise a jour du journal',
-        'ga':u'Log a thabhairt suas chun dáta',
-        'it':u'Aggiorno il log',
-        'ja':u'更新記録',
-        'nl':u'Logboek bijwerken',
-        'no':u'Oppdaterer logg',
-        'ru':u'Обновление',
-        'sq':u'Rifreskoj log',
-        'sr':u'Освежавање записа',
-        'zh':u'更新日志',
-    }
+    'commons': u'Updating log',
+    'ar':u'تحديث السجل',
+    'da':u'Updating log',
+    'de':u'Aktualisiere Logdatei',
+    'en':u'Updating log',
+    'fa':u'به روز رسانی سیاهه',
+    'fr':u'Mise a jour du journal',
+    'ga':u'Log a thabhairt suas chun dáta',
+    'it':u'Aggiorno il log',
+    'ja':u'更新記録',
+    'nl':u'Logboek bijwerken',
+    'no':u'Oppdaterer logg',
+    'ru':u'Обновление',
+    'sq':u'Rifreskoj log',
+    'sr':u'Освежавање записа',
+    'zh':u'更新日志',
+    'zh-yue':u'更新日誌',
 }
 # The page where the bot will report users with a possibly bad username.
 report_page = {
@@ -328,6 +330,7 @@ report_page = {
         'sq': u'User:EagleBot/Report',
         'sr': u'User:SashatoBot/Записи',
         'zh': u'User:Welcomebot/report',
+        'zh-yue': u'User:Alexbot/report',
     }
 }
 # The edit summary for reporting a possibly bad username.
@@ -364,6 +367,7 @@ bad_pag = {
         'sq': u'User:Eagleal/Bad_names',
         'sr': u'Додавање корисника за проверу',
         'zh': u'User:Welcomebot/badname',
+        'zh-yue': u'User:Welcomebot/badname',
     }
 }
 
@@ -397,9 +401,9 @@ random_sign = {
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'fr': u'Projet:Service de Parrainage Actif/Signatures',
     'it': u'Project:Benvenuto_Bot/Firme',
-    'ja':u'利用者:Alexbot/Welcomebotログ/List',
+    'ja': None, #jawiki comminuty discussion oppose , [[ja:Wikipedia:Bot作業依頼/ウェルカムメッセージ貼り付け依頼]]
     'ru': u'Участник:LatitudeBot/Sign',
-    'zh': u'user:Welcomebot/欢迎日志/用户',
+    'zh': u'User:Welcomebot/欢迎日志/用户',
     }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
@@ -468,7 +472,8 @@ class WelcomeBot(object):
         
         if globalvar.randomSign:
             self.defineSign(True)
-        
+        if __name__ != '__main__': #use only in module call
+            self._checkQueue = []
     
     def badNameFilter(self, name, force = False):
         if not globalvar.filtBadName:
@@ -641,6 +646,10 @@ class WelcomeBot(object):
                 time.sleep(10)
     
     def parseNewUserLog(self):
+        #if __name__ != '__main__':
+        #    if self._checkQueue:
+        #        for nm in self._checkQueue:
+        #            yield userlib.User(self.site, nm)
         try:
             if config.use_api and self.site.versionnumber() >= 13:
                 x = self.site.api_address()
@@ -662,7 +671,7 @@ class WelcomeBot(object):
         }
         if globalvar.timeoffset != 0:
             now = self.site.server_time() - timedelta(minutes=globalvar.timeoffset)
-            params['lestart'] = int(now.strftime("%Y%m%d%H%M%S"))
+            params['lestart'] = int(now.strftime("%Y-%m-%dT%H:%M:%SZ"))
         elif globalvar.offset != 0:
             params['lestart'] = globalvar.offset
         
@@ -739,7 +748,14 @@ class WelcomeBot(object):
         signText = u''
         creg = re.compile(r"^\* ?(.*?)$", re.M)
         if not globalvar.signFileName:
-            signPage = wikipedia.Page(self.site, wikipedia.translate(self.site, random_sign) )
+            signPageName = wikipedia.translate(self.site, random_sign)
+            if not signPageName:
+                showStatus(4)
+                wikipedia.output("%s doesn't allow random signature, force disable." % self.site)
+                globalvar.randomSign = False
+                return None
+            
+            signPage = wikipedia.Page(self.site, signPageName )
             if signPage.exists():
                 wikipedia.output('Loading signature list...')
                 signText = signPage.get()
@@ -773,6 +789,8 @@ class WelcomeBot(object):
                 if self.badNameFilter(users.name()):
                     self.reportBadAccount(users.name())
                     continue
+                #if globalvar.offset != 0 and time.strptime(users.registrationTime(), "%Y-%m-%dT%H:%M:%SZ") >= globalvar.offset:
+                #    
                 if users.editCount() >= globalvar.attachEditCount:
                     showStatus(2)
                     wikipedia.output(u'%s has enough edits to be welcomed.' % users.name() )
@@ -856,6 +874,15 @@ class WelcomeBot(object):
                 #if hasattr(self, '_BAQueue') and len(self._BAQueue) > 0 and globalvar.filtBadName:
                 #    self.reportBadAccount(None, final = True)
                 break
+    #if __name__ != '__main__':
+    #    globalvar.offset = int(time.strftime("%Y%m%d%H%M%S", time.gmtime()))
+    #    
+    #    def putName(nm):
+    #        
+    #        self._checkQueue.append(name)
+    #        if len(self._checkQueue) >= globalvar.dumpToLog:
+    #            self.run()
+    #            self._checkQueue = []
 
 def showStatus(n = 0):
     staColor = {
