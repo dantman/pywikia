@@ -886,7 +886,7 @@ not supported by PyWikipediaBot!"""
     def previousRevision(self):
         """Return the revision id for the previous revision of this Page."""
         vh = self.getVersionHistory(revCount=2)
-        return vh[0][0]
+        return vh[1][0]
 
     def exists(self):
         """Return True if page exists on the wiki, even if it's a redirect.
@@ -5402,7 +5402,7 @@ your connection is down. Retrying in %i minutes..."""
 
             retry_idle_time = 1
             while True:
-                if api and self.versionnumber() >= 12:
+                if api and self.versionnumber() >= 12 or self.versionnumber() >= 16:
                     params = {
                         'action':'query',
                         'meta':'allmessages',
