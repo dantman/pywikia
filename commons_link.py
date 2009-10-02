@@ -38,6 +38,7 @@ import re
 
 comment1 = {
     'ar':u'روبوت: تضمين قالب كومنز',
+    'cs':u'Robot přidal šablonu commons',
     'en':u'Robot: Include commons template',
     'he':u'בוט: מוסיף תבנית Commons',
     'ja':u'ロボットによる: テンプレcommons追加',
@@ -46,6 +47,7 @@ comment1 = {
     }
 comment2 = {
     'ar':u'روبوت: تضمين قالب تصنيف كومنز',
+    'cs':u'Robot přidal šablonu commonscat',
     'en':u'Robot: Include commonscat template',
     'he':u'בוט: מוסיף תבנית Commonscat',
     'ja':u'ロボットによる: テンプレcommonscat追加',
@@ -70,15 +72,15 @@ class CommonsLinkBot:
                         oldText = page.get()
                         text = oldText
 
-                        # find commons template
-                        findTemplate=re.compile(ur'\{\{[Cc]ommons')
+                        # for commons template
+                        findTemplate=re.compile(ur'\{\{[Cc]ommonscat')
                         s = findTemplate.search(text)
                         findTemplate2=re.compile(ur'\{\{[Ss]isterlinks')
                         s2 = findTemplate2.search(text)
                         if s or s2:
                             wikipedia.output(u'** Already done.')
                         else:
-                            text = wikipedia.replaceCategoryLinks(text+u'{{commons||%s}}'%commonspage.title(), page.categories())
+                            text = wikipedia.replaceCategoryLinks(text+u'{{commons|%s}}'%commonspage.title(), page.categories())
                             if oldText != text:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
@@ -116,10 +118,12 @@ class CommonsLinkBot:
                         oldText = page.get()
                         text = oldText
 
-                        # find commonscat template
-                        findTemplate=re.compile(ur'\{\{[Cc]ommonscat')
+                        # for commonscat template
+                        findTemplate=re.compile(ur'\{\{[Cc]ommons')
                         s = findTemplate.search(text)
-                        if s:
+                        findTemplate2=re.compile(ur'\{\{[Ss]isterlinks')
+                        s2 = findTemplate2.search(text)
+                        if s or s2:
                             wikipedia.output(u'** Already done.')
                         else:
                             text = wikipedia.replaceCategoryLinks(text+u'{{commonscat|%s}}'%categoryname, page.categories())
