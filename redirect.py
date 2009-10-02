@@ -61,7 +61,7 @@ and arguments can be:
 #
 #
 from __future__ import generators
-import wikipedia, config
+import wikipedia, config, query
 import xmlreader
 import re, sys
 
@@ -259,8 +259,7 @@ class RedirectGenerator:
         else:
             return redict
 
-    def get_redirect_pageids_via_api(self, number = u'max', namespaces = [],
-                             start = None, until = None ):
+    def get_redirect_pageids_via_api(self, number = u'max', namespaces = [], start = None, until = None ):
         """
         Generator which will yield page IDs of Pages that are redirects.
         Get number of page ids in one go.
@@ -268,45 +267,37 @@ class RedirectGenerator:
         In each namespace, start alphabetically from a pagetitle start, wich need not exist.
         """
         # wikipedia.output(u'====> get_redirect_pageids_via_api(number=%s, #ns=%d, start=%s, until=%s)' % (number, len(namespaces), start, until))
-        import urllib
         if namespaces == []:
             namespaces = [ 0 ]
-        apiQ0 = self.site.api_address()
-        apiQ0 += 'action=query'
-        apiQ0 += '&list=allpages'
-        apiQ0 += '&apfilterredir=redirects'
-        apiQ0 += '&aplimit=%s' % number
-        apiQ0 += '&format=xml'
-        apPageTitleRe = re.compile(' pageid="(.*?)" .*? title="(.*?)"')
-        apPageIdRe = re.compile(' pageid="(.*?)"')
-        apfromRe = re.compile(' apfrom="(.*?)"')
+        params = {
+            'action':'query',
+            'list':'allpages',
+            'apfilterredir':'redirects',
+            'aplimit':number,
+            'apdir':'ascending',
+            #'':'',
+        }
+        
         for ns in namespaces:
             # print (ns)
-            apiQns = apiQ0 + '&apnamespace=%s' % ns
+            params['apnamespace'] = ns
             # print (apiQns)
-            while apiQns:
-                apiQ = apiQns
+            while True:
                 if start:
-                    apiQ += '&apfrom=%s' % urllib.quote(start.encode(site.encoding()))
+                    params['apfrom'] = start
                 # print (apiQ)
-                result = site.getUrl(apiQ)
+                data = query.GetData(params, self.site)
                 # wikipedia.output(u'===RESULT===\n%s\n' % result)
-                if until:
-                    for (pageid, pagetitle) in apPageTitleRe.findall(result):
-                        # wikipedia.output(u'===PAGEID=%s: %s' % (pageid, pagetitle)) ## TODO: make this a -verbose mode output, independant of -until
-                        if pagetitle > until:
-                           apiQns = None
-                           break
-                        yield pageid
-                else:
-                    for pageid in apPageIdRe.findall(result):
-                        # wikipedia.output(u'===PAGEID=%s' % pageid)
-                        yield pageid
-                m = apfromRe.search(result)
-                if m:
-                    start = m.group(1)
+                for x in data['query']['allpages']:
+                    if until and x['title'] == until:
+                        break
+                    yield x['pageid']
+                    
+                if 'query-continue' in data:
+                    params['apfrom'] = data['query-continue']['allpages']['apfrom']
                 else:
                     break
+                
 
     def _next_redirects_via_api_commandline(self, apiQi, number = 'max', namespaces = [],
                             start = None, until = None ):
@@ -318,8 +309,7 @@ class RedirectGenerator:
             namespaces = [ 0 ]
         maxurllen = 1018    # accomodate "GET " + apiQ + CR + LF in 1024 bytes.
         apiQ = ''
-        for pageid in self.get_redirect_pageids_via_api(number = number, namespaces = namespaces,
-                             start = start, until = until ):
+        for pageid in self.get_redirect_pageids_via_api(number, namespaces, start, until):
             if apiQ:
                 tmp = ( '%s|%s' % ( apiQ, pageid ) )
             else:
