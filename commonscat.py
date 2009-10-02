@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 With this tool you can add the template {{commonscat}} to categories.
@@ -75,6 +75,7 @@ commonscatTemplates = {
     'ga' : u'Catcómhaoin',
     'gd' : u'Commonscat',
     'gv' : u'Commonscat',
+    'ha' : u'Commonscat',
     'he' : u'Commonscat',
     'hi' : u'Commonscat',
     'hr' : u'Commonscat',
@@ -113,6 +114,7 @@ commonscatTemplates = {
     'nn' : u'Commonscat',
     'no' : u'Commonscat',
     'oc' : u'Commonscat',
+    'om' : u'Commonscat',
     'os' : u'Commonscat',
     'pam' : u'Commonscat',
     'pl' : u'Commonscat',
@@ -171,6 +173,7 @@ ignoreTemplates = {
     'ja' : [u'CommonscatS', u'Commons cat', u'SisterlinksN', u'Interwikicat'],
     'nds-nl' : [u'Commons'],
     'nl' : [u'Commons', u'Commonsklein', u'Commonscatklein', u'Catbeg', u'Catsjab', u'Catwiki'],
+    'om' : [u'Commons'],
 }
 
 def getTemplate (lang = None):
