@@ -188,6 +188,8 @@ class CosmeticChangesToolkit:
         text = self.validXhtml(text)
         text = self.removeUselessSpaces(text)
         text = self.removeNonBreakingSpaceBeforePercent(text)
+        text = self.fixSyntaxSave(text)
+        text = self.fixHtml(text)
         try:
             text = isbn.hyphenateIsbnNumbers(text)
         except isbn.InvalidIsbnException, error:
@@ -422,6 +424,39 @@ class CosmeticChangesToolkit:
                 if not self.site.nocapitalize:
                     template = '[' + template[0].upper() + template[0].lower() + ']' + template[1:]
                 text = wikipedia.replaceExcept(text, r'\{\{([mM][sS][gG]:)?' + template + '(?P<parameters>\|[^}]+|)}}', '', ['comment', 'math', 'nowiki', 'pre'])
+        return text
+
+    #from fixes.py
+    def fixSyntaxSave(self, text):
+        exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
+        # external link in double brackets
+        text = wikipedia.replaceExcept(text, r'\[\[(?P<url>https?://[^\]]+?)\]\]', r'[\g<url>]', exceptions)
+        # external link starting with double bracket
+        text = wikipedia.replaceExcept(text, r'\[\[(?P<url>https?://.+?)\]', r'[\g<url>]', exceptions)
+        # external link and description separated by a dash, with
+        # whitespace in front of the dash, so that it is clear that
+        # the dash is not a legitimate part of the URL.
+        text = wikipedia.replaceExcept(text, r'\[(?P<url>https?://[^\|\] \r\n]+?) +\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]', exceptions)
+        # dash in external link, where the correct end of the URL can
+        # be detected from the file extension. It is very unlikely that
+        # this will cause mistakes.
+        text = wikipedia.replaceExcept(text, r'\[(?P<url>https?://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx|\.jsp)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]', exceptions)
+        return text
+
+    def fixHtml(self, text):
+        # Everything case-insensitive (?i)
+        # Keep in mind that MediaWiki automatically converts <br> to <br />
+        exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
+        text = wikipedia.replaceExcept(text, r'(?i)<b>(.*?)</b>', r"'''\1'''" , exceptions)
+        text = wikipedia.replaceExcept(text, r'(?i)<strong>(.*?)</strong>', r"'''\1'''" , exceptions)
+        text = wikipedia.replaceExcept(text, r'(?i)<i>(.*?)</i>', r"''\1''" , exceptions)
+        text = wikipedia.replaceExcept(text, r'(?i)<em>(.*?)</em>', r"''\1''" , exceptions)
+        # horizontal line without attributes in a single line
+        text = wikipedia.replaceExcept(text, r'(?i)([\r\n])<hr[ /]*>([\r\n])', r'\1----\2', exceptions)
+        # horizontal line with attributes; can't be done with wiki syntax
+        # so we only make it XHTML compliant
+        text = wikipedia.replaceExcept(text, r'(?i)<hr ([^>/]+?)>', r'<hr \1 />', exceptions)
+        # TODO: maybe we can make the bot replace <p> tags with \r\n's.
         return text
 
 class CosmeticChangesBot:
