@@ -78,7 +78,7 @@ use_api_login = False
 
 # Enable data recieve from all avalible API.
 
-use_api = False
+use_api = True
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
