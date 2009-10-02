@@ -789,6 +789,7 @@ def main():
     # that are also used by other scripts and that determine on which pages
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
+    global day
     day = 7
     for arg in wikipedia.handleArgs():
         if arg == '-talk':
@@ -805,7 +806,6 @@ def main():
         elif arg.startswith('-ignore:'):
             HTTPignore.append(int(arg[8:]))
         elif arg.startswith('-day:'):
-            global day
             day = int(arg[5:])
         else:
             if not genFactory.handleArg(arg):
