@@ -4,7 +4,7 @@ Library to work with users, their pages and talk pages.
 """
 __version__ = '$Id$'
 
-import re
+import re, time
 import wikipedia, query
 
 
@@ -49,7 +49,7 @@ class User(object):
         self._blocked = None #None mean not loaded
         self._groups = None #None mean not loaded
         #self._editcount = -1 # -1 mean not loaded
-        self._registrationTime = None
+        self._registrationTime = -1
         #if self.site().versionnumber() >= 16:
         #    self._urToken = None
     
@@ -78,12 +78,16 @@ class User(object):
             self._groups = []
         
         if data['registration']:
-            self._registrationTime = data['registration']
+            self._registrationTime = time.strftime("%Y%m%d%H%M%S", time.strptime(data['registration'], "%Y-%m-%dT%H:%M:%SZ") )
         else:
-            self._registrationTime = u'unknown'
+            self._registrationTime = 0
         
         self._blocked = ('blockedby' in data)
-        
+    
+    def registrationTime(self, force = False):
+        if not hasattr(self, '_registrationTime') or force:
+            self._load()
+        return self._registrationTime
     
     def editCount(self, force = False):
         if not hasattr(self, '_editcount') or force:
