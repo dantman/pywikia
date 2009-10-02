@@ -158,21 +158,21 @@ sd_tagging_sum = {
     'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
     'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
     'nl': u'Bot: gemarkeerd voor snelle verwijdering',
-    'war': u'Robot: Nautod o nagbinalikbalik nga redirek',
-    'zh':u'機器人: 將損壞的重定向提報快速刪除',
+    'war':u'Robot: Nautod o nagbinalikbalik nga redirek',
+    'zh': u'機器人: 將損壞的重定向提報快速刪除',
 }
 
 # Insert deletion template into page with a broken redirect
 sd_template = {
-    'ar':u'{{شطب|تحويلة مكسورة}}',
+    'ar': u'{{شطب|تحويلة مكسورة}}',
     'cs': u'{{smazat|přerušené přesměrování}}',
-    'en':u'{{db-r1}}',
-    'it':u'{{Cancella subito|9}}',
-    'ja':u'{{即時削除|壊れたリダイレクト}}',
+    'en': u'{{db-r1}}',
+    'it': u'{{Cancella subito|9}}',
+    'ja': u'{{即時削除|壊れたリダイレクト}}',
     'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~\n\n',
     'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~\n\n',
-    'war': u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~\n\n',
-    'zh':u'{{delete|R1}}',
+    'war':u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~\n\n',
+    'zh': u'{{delete|R1}}',
 }
 
 class RedirectGenerator:
@@ -535,7 +535,12 @@ r"""\(<a href="/w/index\.php\?title=Special:Log&amp;offset=(\d+)&amp;limit=500&a
                 wikipedia.output(u"%s moved pages" % len(g))
             for moved_title in g:
                 moved_page = wikipedia.Page(site, moved_title)
-                if not moved_page.isRedirectPage():
+                try:
+                    if not moved_page.isRedirectPage():
+                        continue
+                except wikipedia.BadTitle:
+                    continue
+                except wikipedia.ServerError:
                     continue
                 # moved_page is now a redirect, so any redirects pointing
                 # to it need to be changed
@@ -659,6 +664,10 @@ class RedirectRobot:
                     wikipedia.output(
                         u'Warning: Redirect target %s is not a valid page title.'
                           % str(e)[10:])
+                #sometimes this error occures. Invalid Title starting with a '#'
+                except wikipedia.InvalidTitle, err:
+                    wikipedia.output(u'Warning: %s' % err)
+                    break 
                 except wikipedia.NoPage:
                     if len(redirList) == 1:
                         wikipedia.output(u'Skipping: Page %s does not exist.'
