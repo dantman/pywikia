@@ -612,7 +612,7 @@ class WelcomeBot(object):
             return True
     
     def makelogpage(self, queue = []):
-        if not globalvar.makeWelcomLog:
+        if not globalvar.makeWelcomeLog:
             return None
         if len(queue) == 0:
             return None
