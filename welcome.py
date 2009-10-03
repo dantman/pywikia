@@ -612,39 +612,40 @@ class WelcomeBot(object):
             return True
     
     def makelogpage(self, queue = []):
-        if globalvar.makeWelcomLog:
-            if len(queue) == 0:
-                return None
-            
-            text = u''
-            logg = wikipedia.translate(self.site, logbook)
-            target = logg + '/' + time.strftime('%Y/%m/%d', time.localtime(time.time()))
-            if self.site.lang == 'it':
-                target = logg + '/' + time.strftime('%d/%m/%Y', time.localtime(time.time()))
-            
-            logPage = wikipedia.Page(self.site, target)
-            if logPage.exists():
-                text = logPage.get()
-            else:
-                #make new log page
-                showStatus()
-                wikipedia.output('Log page is not exist, getting information for page creation')
-                text = wikipedia.translate(self.site, logpage_header)
-                text += u'\n!%s' % self.site.namespace(2)
-                text += u'\n!%s' % string.capitalize(self.site.mediawiki_message('contribslink'))
-            
-            for result in queue:
-                # Adding the log... (don't take care of the variable's name...).
-                luser = wikipedia.url2link(result.name(), self.site, self.site)
-                text += u'\n{{WLE|user=%s|contribs=%d}}' % (luser, result.editCount())
-            #update log page.
-            while True:
-                try:
-                    logPage.put(text, wikipedia.translate(self.site, summary2) )
-                    return True
-                except wikipedia.EditConflict:
-                    wikipedia.output(u'An edit conflict has occured. Pausing for 10 seconds before continuing.')
-                    time.sleep(10)
+        if not globalvar.makeWelcomLog:
+            return None
+        if len(queue) == 0:
+            return None
+        
+        text = u''
+        logg = wikipedia.translate(self.site, logbook)
+        target = logg + '/' + time.strftime('%Y/%m/%d', time.localtime(time.time()))
+        if self.site.lang == 'it':
+            target = logg + '/' + time.strftime('%d/%m/%Y', time.localtime(time.time()))
+        
+        logPage = wikipedia.Page(self.site, target)
+        if logPage.exists():
+            text = logPage.get()
+        else:
+            #make new log page
+            showStatus()
+            wikipedia.output('Log page is not exist, getting information for page creation')
+            text = wikipedia.translate(self.site, logpage_header)
+            text += u'\n!%s' % self.site.namespace(2)
+            text += u'\n!%s' % string.capitalize(self.site.mediawiki_message('contribslink'))
+        
+        for result in queue:
+            # Adding the log... (don't take care of the variable's name...).
+            luser = wikipedia.url2link(result.name(), self.site, self.site)
+            text += u'\n{{WLE|user=%s|contribs=%d}}' % (luser, result.editCount())
+        #update log page.
+        while True:
+            try:
+                logPage.put(text, wikipedia.translate(self.site, summary2) )
+                return True
+            except wikipedia.EditConflict:
+                wikipedia.output(u'An edit conflict has occured. Pausing for 10 seconds before continuing.')
+                time.sleep(10)
     
     def parseNewUserLog(self):
         #if __name__ != '__main__':
