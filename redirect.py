@@ -287,6 +287,8 @@ class RedirectGenerator:
                     params['apfrom'] = start
                 # print (apiQ)
                 data = query.GetData(params, self.site)
+                if "limits" in data: # process aplimit = max
+                    params['aplimit'] = int(data['limits']['allpages'])
                 # wikipedia.output(u'===RESULT===\n%s\n' % result)
                 for x in data['query']['allpages']:
                     if until and x['title'] == until:
@@ -299,30 +301,28 @@ class RedirectGenerator:
                     break
                 
 
-    def _next_redirects_via_api_commandline(self, apiQi, number = 'max', namespaces = [],
-                            start = None, until = None ):
+    def _next_redirects_via_api_commandline(self, number = 'max', namespaces = [], start = None, until = None ):
         """
         yields commands to the api for checking a set op page ids.
         """
         # wikipedia.output(u'====> _next_redirects_via_api_commandline(apiQi=%s, number=%s, #ns=%d, start=%s, until=%s)' % (apiQi, number, len(namespaces), start, until))
         if namespaces == []:
             namespaces = [ 0 ]
-        maxurllen = 1018    # accomodate "GET " + apiQ + CR + LF in 1024 bytes.
-        apiQ = ''
+        #maxurllen = 1018    # accomodate "GET " + apiQ + CR + LF in 1024 bytes.
+        apiQ = []
+        maxurllen = 900 - len(self.site.hostname() + self.site.api_address() )
+        clen = 0
         for pageid in self.get_redirect_pageids_via_api(number, namespaces, start, until):
-            if apiQ:
-                tmp = ( '%s|%s' % ( apiQ, pageid ) )
-            else:
-                tmp = ( '%s%s' % ( apiQi, pageid ) )
-            if len(tmp) > maxurllen and apiQ:
+            apiQ.append(pageid)
+            clen += len(str(pageid)) + 1
+            if clen > maxurllen and apiQ:
                 yield apiQ
-                tmp = ''
-            apiQ = tmp
+                apiQ = []
+                clen = 0
         if apiQ:
             yield apiQ
 
-    def get_redirects_via_api(self, number = u'max', namespaces = [],  start = None,
-                             until = None, maxlen = 8 ):
+    def get_redirects_via_api(self, number = u'max', namespaces = [],  start = None, until = None, maxlen = 8 ):
         """
         Generator which will yield a tuple of data about Pages that are redirects:
             0 - page title of a redirect page
@@ -347,30 +347,26 @@ class RedirectGenerator:
         import urllib
         if namespaces == []:
             namespaces = [ 0 ]
-        apiQ1 = self.site.api_address()
-        apiQ1 += 'action=query'
-        apiQ1 += '&redirects'
-        apiQ1 += '&format=xml'
-        apiQ1 += '&pageids='
-        redirectRe = re.compile('<r from="(.*?)" to="(.*?)"')
-        missingpageRe = re.compile('<page .*? title="(.*?)" missing=""')
-        existingpageRe = re.compile('<page pageid=".*?" .*? title="(.*?)"')
-        for apiQ in self._next_redirects_via_api_commandline(apiQ1, number = number,
-                                 namespaces = namespaces, start = start, until = until ):
+        params = {
+            'action':'query',
+            'redirects':1,
+            #'':'',
+        }
+        for apiQ in self._next_redirects_via_api_commandline(number, namespaces, start, until):
             # wikipedia.output (u'===apiQ=%s' % apiQ)
-            result = self.site.getUrl(apiQ)
+            params['pageids'] = query.ListToParam(apiQ)
+            data = query.GetData(params, self.site)
             # wikipedia.output(u'===RESULT===\n%s\n' % result)
             redirects = {}
             pages = {}
-            for redirect in redirectRe.findall(result):
-                # wikipedia.output (u'R: %s => %s' % redirect)
-                redirects[redirect[0]] = redirect[1]
-            for pagetitle in missingpageRe.findall(result):
+            redirects = dict([[x['from'], x['to']] for x in data['query']['redirects']])
+            
+            for pagetitle in data['query']['pages'].values():
                 # wikipedia.output (u'M: %s' % pagetitle)
-                pages[pagetitle] = False
-            for pagetitle in existingpageRe.findall(result):
-                # wikipedia.output (u'P: %s' % pagetitle)
-                pages[pagetitle] = True
+                if 'missing' in pagetitle and 'pageid' not in pagetitle:
+                    pages[pagetitle['title']] = False
+                else:
+                    pages[pagetitle['title']] = True
             for redirect in redirects:
                 target = redirects[redirect]
                 result = 0
