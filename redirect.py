@@ -310,15 +310,11 @@ class RedirectGenerator:
             namespaces = [ 0 ]
         #maxurllen = 1018    # accomodate "GET " + apiQ + CR + LF in 1024 bytes.
         apiQ = []
-        maxurllen = 900 - len(self.site.hostname() + self.site.api_address() )
-        clen = 0
         for pageid in self.get_redirect_pageids_via_api(number, namespaces, start, until):
             apiQ.append(pageid)
-            clen += len(str(pageid)) + 1
-            if clen > maxurllen and apiQ:
+            if len(apiQ) > 500:
                 yield apiQ
                 apiQ = []
-                clen = 0
         if apiQ:
             yield apiQ
 

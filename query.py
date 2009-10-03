@@ -59,18 +59,19 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     # Titles param might be long, case convert it to post request
     data = None
     titlecount = 0
-    if 'titles' in params:
-        titlecount = params['titles'].count('|')
-        if encodeTitle:
-            data = {'titles' : params['titles']}
-            del params['titles']
+    for pLongKey in ['titles', 'pageids', 'ucusers']: #
+        if pLongKey in params:
+            titlecount = params[pLongKey].count('|')
+            if encodeTitle:
+                data = {pLongKey : params[pLongKey]}
+                del params[pLongKey]
 
     postAC = [
         'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
         'block', 'unblock', 'move', 'emailuser','import', 'userrights',
     ]
     if useAPI:
-        if params['action'] in postAC or data:
+        if params['action'] in postAC:
             path = site.api_address()
         else:
             path = site.api_address() + urllib.urlencode(params.items())
@@ -80,7 +81,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
 
     if wikipedia.verbose:
         if titlecount > 0:
-            wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, site.lang, path))
+            wikipedia.output(u"Requesting %d %s from %s:%s" % (titlecount, data.keys()[0], site.lang, path))
         else:
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
 
@@ -95,7 +96,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
                 params["User-agent"] = useragent
                 res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
                 jsontext = res.read()
-            elif params['action'] in postAC or data:
+            elif params['action'] in postAC:
                 res, jsontext = site.postForm(path, params, sysop, site.cookies(sysop = sysop) )
             else:
                 if back_response:
