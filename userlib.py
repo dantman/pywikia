@@ -208,18 +208,16 @@ class User(object):
             params['ucnamespace'] = query.ListToParam(namespace)
         # An user is likely to contribute on several pages,
         # keeping track of titles
-        nbresults=0
+        nbresults = 0
         while True:
-            if nbresults>=limit:
-                break
             result = query.GetData(params, self.site())
             if 'error' in result:
                 wikipedia.output('%s' % result)
                 raise wikipedia.Error
             for c in result['query']['usercontribs']:
                 yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
-                nbresults=nbresults+1
-                if nbresults>=limit:
+                nbresults += 1
+                if nbresults >= limit:
                     break
             if 'query-continue' in result:
                 params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
