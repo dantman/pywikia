@@ -965,7 +965,7 @@ not supported by PyWikipediaBot!"""
                 if count >= tllimit:
                     break
             
-            if 'query-continue' in data and count < params['tllimlt']:
+            if 'query-continue' in data and count < tllimit:
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
                 break
@@ -6326,7 +6326,7 @@ your connection is down. Retrying in %i minutes..."""
                         if count >= limit:
                             break
                     
-                    if 'query-continue' in data and count < params['eulimit']:
+                    if 'query-continue' in data and count < limit:
                             params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
                     else:
                             break

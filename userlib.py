@@ -217,9 +217,9 @@ class User(object):
             for c in result['query']['usercontribs']:
                 yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
                 nbresults += 1
-                if nbresults >= params['uclimit']:
+                if nbresults >= limit:
                     break
-            if 'query-continue' in result and nbresults < params['uclimit']:
+            if 'query-continue' in result and nbresults < limit:
                 params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
             else:
                 break
