@@ -56,7 +56,7 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid, comment):
+    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid, comment, redirect):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
@@ -68,6 +68,7 @@ class XmlEntry:
         self.moveRestriction = moveRestriction
         self.revisionid = revisionid
         self.comment = comment
+        self.isredirect = redirect
 
 
 class XmlHeaderEntry:
@@ -94,6 +95,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         self.id = u''
         self.revisionid = u''
         self.comment = u''
+        self.isredirect = False
 
     def setCallback(self, callback):
         self.callback = callback
@@ -159,6 +161,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.inContributorTag = False
         elif name == 'restrictions':
             self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
+        elif name == 'redirect':
+            self.isredirect = True
         elif name == 'revision':
             # All done for this.
             # Remove trailing newlines and spaces
@@ -178,7 +182,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                              text, self.username, 
                              self.ipedit, timestamp, 
                              self.editRestriction, self.moveRestriction, 
-                             self.revisionid, self.comment)
+                             self.revisionid, self.comment, self.isredirect)
             self.inRevisionTag = False
             self.callback(entry)
         elif self.headercallback:
@@ -313,6 +317,7 @@ Consider installing the python-celementtree package.''')
         self.title = elem.findtext("{%s}title" % self.uri)
         self.pageid = elem.findtext("{%s}id" % self.uri)
         self.restrictions = elem.findtext("{%s}restrictions" % self.uri)
+        self.isredirect = elem.findtext("{%s}redirect" % self.uri) is not None
 
     def _create_revision(self, revision):
         """Creates a Single revision"""
@@ -332,7 +337,8 @@ Consider installing the python-celementtree package.''')
                        editRestriction=editRestriction,
                        moveRestriction=moveRestriction,
                        revisionid=revisionid,
-                       comment=comment
+                       comment=comment,
+                       redirect=self.isredirect
                       )
 
     def regex_parse(self):
