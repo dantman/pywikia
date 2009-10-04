@@ -952,14 +952,21 @@ not supported by PyWikipediaBot!"""
                 params['tllimit'] = 5000
 
         tmpsFound = []
+        count = 0
         while True:
             data = query.GetData(params, self.site(), encodeTitle = False)
             pageid = data[u'query'][u'pages'].keys()[0]
-            try:
-                tmpsFound.extend([Page(self.site(), tmp['title'], defaultNamespace=tmp['ns'])
-                                    for tmp in data['query']['pages'][pageid].values()[0] ])
-            except TypeError:
-                pass
+            
+                for tmp in data['query']['pages'][pageid].values()[0]:
+                    count += 1
+                    try:
+                        tmpsFound.append(Page(self.site(), tmp['title'], defaultNamespace=tmp['ns']) )
+                    except TypeError:
+                        pass
+                    
+                    if count >= tllimit:
+                        break
+            
             if 'query-continue' in data:
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
@@ -6302,11 +6309,13 @@ your connection is down. Retrying in %i minutes..."""
                     'eulimit': limit,
                     'euquery': url,
                 }
+                count = 0
                 while True:
                     data = query.GetData(params, self)
                     if data['query']['exturlusage'] == []:
                         break
                     for pages in data['query']['exturlusage']:
+                        count += 1
                         if not siteurl in pages['title']:
                             # the links themselves have similar form
                             if pages['title'] in cache:
@@ -6314,6 +6323,8 @@ your connection is down. Retrying in %i minutes..."""
                             else:
                                 cache.append(pages['title'])
                                 yield Page(self, pages['title'])
+                        if count >= limit:
+                            break
                     if 'query-continue' in data:
                             params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
                     else:
