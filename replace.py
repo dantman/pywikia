@@ -86,6 +86,8 @@ other:            First argument is the old text, second argument is the new
                   text. If the -regex argument is given, the first argument
                   will be regarded as a regular expression, and the second
                   argument might contain expressions like \\1 or \g<name>.
+                  It is possible to introduce more than one pair of old text
+                  and replacement.
 
 Examples:
 
@@ -99,6 +101,9 @@ If you have a dump called foobar.xml and want to fix typos in articles, e.g.
 Errror -> Error, use this:
 
     python replace.py -xml:foobar.xml "Errror" "Error" -namespace:0
+
+If you want to do more than one replacement at a time, use this:
+    python replace.py -xml:foobar.xml "Errror" "Error" "Faail" "Fail" -namespace:0
 
 If you have a page called 'John Doe' and want to fix the format of ISBNs, use:
 
