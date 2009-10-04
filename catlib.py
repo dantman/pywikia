@@ -218,8 +218,10 @@ class Category(wikipedia.Page):
             
             wikipedia.get_throttle()
             data = query.GetData(params, self.site())
+            count = 0
             
             for memb in data['query']['categorymembers']:
+                count += 1
                 # For MediaWiki versions where subcats look like articles
                 if isCatTitle(memb['title'], self.site()):
                     yield SUBCATEGORY, Category(self.site(), memb['title'])
@@ -227,8 +229,10 @@ class Category(wikipedia.Page):
                     yield ARTICLE, wikipedia.ImagePage(self.site(), memb['title'])
                 else:
                     yield ARTICLE, wikipedia.Page(self.site(), memb['title'])
+                if count >= params['cmlimit']:
+                    break
             # try to find a link to the next list page
-            if 'query-continue' in data:
+            if 'query-continue' in data and count < params['cmlimilt']:
                 currentPageOffset = data['query-continue']['categorymembers']['cmcontinue']
             else:
                 break

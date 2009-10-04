@@ -217,9 +217,9 @@ class User(object):
             for c in result['query']['usercontribs']:
                 yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
                 nbresults += 1
-                if nbresults >= limit:
+                if nbresults >= params['uclimit']:
                     break
-            if 'query-continue' in result:
+            if 'query-continue' in result and nbresults < params['uclimit']:
                 params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
             else:
                 break
@@ -266,8 +266,10 @@ class User(object):
             for info in data['query']['logevents']:
                 count += 1
                 yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
+                if count >= number:
+                    break
             
-            if 'query-continue' in data and count <= number:
+            if 'query-continue' in data and count < number:
                 params['lestart'] = data['query-continue']['logevents']['lestart']
             else:
                 break

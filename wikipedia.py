@@ -965,7 +965,7 @@ not supported by PyWikipediaBot!"""
                 if count >= tllimit:
                     break
             
-            if 'query-continue' in data:
+            if 'query-continue' in data and count < params['tllimlt']:
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
                 break
@@ -6115,12 +6115,14 @@ your connection is down. Retrying in %i minutes..."""
                 get_throttle()
             data = query.GetData(params, self)
 
-            #count = 0
+            count = 0
             for p in data['query']['allpages']:
-                #count += 1
+                count += 1
                 yield Page(self, p['title'])
+                if count >= config.special_page_limit:
+                    break
 
-            if 'query-continue' in data:
+            if 'query-continue' in data and count < params['aplimit']:
                 params['apfrom'] = data['query-continue']['allpages']['apfrom']
             else:
                 break
@@ -6323,7 +6325,8 @@ your connection is down. Retrying in %i minutes..."""
                                 yield Page(self, pages['title'])
                         if count >= limit:
                             break
-                    if 'query-continue' in data:
+                    
+                    if 'query-continue' in data and count < params['eulimit']:
                             params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
                     else:
                             break
