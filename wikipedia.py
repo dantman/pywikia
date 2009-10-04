@@ -7258,7 +7258,7 @@ def showDiff(oldtext, newtext):
     The differences are highlighted (only on Unix systems) to show which
     changes were made.
     """
-    # For information on difflib, see http://pydoc.org/2.3/difflib.html
+    # For information on difflib, see http://docs.python.org/library/difflib.html
     color = {
         '+': 'lightgreen',
         '-': 'lightred',
