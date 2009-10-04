@@ -956,16 +956,14 @@ not supported by PyWikipediaBot!"""
         while True:
             data = query.GetData(params, self.site(), encodeTitle = False)
             pageid = data[u'query'][u'pages'].keys()[0]
-            
-                for tmp in data['query']['pages'][pageid].values()[0]:
-                    count += 1
-                    try:
-                        tmpsFound.append(Page(self.site(), tmp['title'], defaultNamespace=tmp['ns']) )
-                    except TypeError:
-                        pass
-                    
-                    if count >= tllimit:
-                        break
+            for tmp in data['query']['pages'][pageid].values()[0]:
+                count += 1
+                try:
+                    tmpsFound.append(Page(self.site(), tmp['title'], defaultNamespace=tmp['ns']) )
+                except TypeError:
+                    pass
+                if count >= tllimit:
+                    break
             
             if 'query-continue' in data:
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
