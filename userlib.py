@@ -234,8 +234,7 @@ class User(object):
             else:
                 raise NotImplementedError #No enable api or version not support
         except NotImplementedError:
-            return self._putPageOld(text, comment, watchArticle, minorEdit,
-                newPage, token, newToken, sysop, captcha, botflag, maxTries)
+            return self._uploadedImagesOld(number)
         
         params = {
             'action':'query',
