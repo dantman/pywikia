@@ -312,7 +312,7 @@ class RedirectGenerator:
         apiQ = []
         for pageid in self.get_redirect_pageids_via_api(number, namespaces, start, until):
             apiQ.append(pageid)
-            if len(apiQ) > 500:
+            if len(apiQ) >= 500:
                 yield apiQ
                 apiQ = []
         if apiQ:
