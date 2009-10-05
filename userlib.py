@@ -129,21 +129,57 @@ class User(object):
         for page in self.contributions(limit):
             yield page[0]
 
-    def contributions(self, limit=500, namespace = []):
+    def contributions(self, limit = 500, namespace = []):
         """ Yields pages that the user has edited, with an upper bound of ``limit''.
         Pages returned are not guaranteed to be unique
         (straight Special:Contributions parsing, in chunks of 500 items)."""
+        # please stay this in comment until the regex is fixed
+        #if wikipedia.config.use_api:
+        #for pg, oldid, date, comment in self._ContributionsOld(limit):
+        #    yield pg, oldid, date, comment
+        #return
+
+        params = {
+            'action': 'query',
+            'list': 'usercontribs',
+            'ucuser': self.name(),
+            'ucprop': 'ids|title|timestamp|comment',# |size|flags',
+            'uclimit': int(limit),
+            'ucdir': 'older',
+        }
+        if limit > wikipedia.config.special_page_limit:
+            params['uclimit'] = wikipedia.config.special_page_limit
+            if limit > 5000 and self.site().isAllowed('apihighlimits'):
+                params['uclimit'] = 5000
+        
+        if namespace:
+            params['ucnamespace'] = query.ListToParam(namespace)
+        # An user is likely to contribute on several pages,
+        # keeping track of titles
+        nbresults = 0
+        while True:
+            result = query.GetData(params, self.site())
+            if 'error' in result:
+                wikipedia.output('%s' % result)
+                raise wikipedia.Error
+            for c in result['query']['usercontribs']:
+                yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
+                nbresults += 1
+                if nbresults >= limit:
+                    break
+            if 'query-continue' in result and nbresults < limit:
+                params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
+            else:
+                break
+        return
+
+    def _contributionsOld(self, limit = 250, namespace = []):
 
         if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no contribs.
             raise AutoblockUserError
 
-        # please stay this in comment until the regex is fixed
-        #if wikipedia.config.use_api:
-        for pg, oldid, date, comment in self._apiContributions(limit):
-            yield pg, oldid, date, comment
-        return
         #
         #TODO: fix contribRX regex
         #
@@ -190,42 +226,40 @@ class User(object):
             else:
                 break
     
-    def _apiContributions(self, limit =  250, namespace = []):
-        params = {
-            'action': 'query',
-            'list': 'usercontribs',
-            'ucuser': self.name(),
-            'ucprop': 'ids|title|timestamp|comment',# |size|flags',
-            'uclimit': int(limit),
-            'ucdir': 'older',
-        }
-        if limit > wikipedia.config.special_page_limit:
-            params['uclimit'] = wikipedia.config.special_page_limit
-            if limit > 5000 and self.site().isAllowed('apihighlimits'):
-                params['uclimit'] = 5000
+    def uploadedImages(self, number = 10):
+        try:
+            if config.use_api and self.site().versionnumber() >= 11:
+                apitest = self.site().api_address()
+                del apitest
+            else:
+                raise NotImplementedError #No enable api or version not support
+        except NotImplementedError:
+            return self._putPageOld(text, comment, watchArticle, minorEdit,
+                newPage, token, newToken, sysop, captcha, botflag, maxTries)
         
-        if namespace:
-            params['ucnamespace'] = query.ListToParam(namespace)
-        # An user is likely to contribute on several pages,
-        # keeping track of titles
-        nbresults = 0
+        params = {
+            'action':'query',
+            'list':'logevents',
+            'letype':'upload',
+            'leuser':self.name(),
+            'lelimit':int(number),
+        }
+        count = 0
         while True:
-            result = query.GetData(params, self.site())
-            if 'error' in result:
-                wikipedia.output('%s' % result)
-                raise wikipedia.Error
-            for c in result['query']['usercontribs']:
-                yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
-                nbresults += 1
-                if nbresults >= limit:
+            data = query.GetData(params, self.site())
+            for info in data['query']['logevents']:
+                count += 1
+                yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
+                if count >= number:
                     break
-            if 'query-continue' in result and nbresults < limit:
-                params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
+            
+            if 'query-continue' in data and count < number:
+                params['lestart'] = data['query-continue']['logevents']['lestart']
             else:
                 break
-        return
-
-    def uploadedImages(self, number = 10):
+        
+    
+    def _uploadedImagesOld(self, number = 10):
         """Yield ImagePages from Special:Log&type=upload"""
 
         regexp = re.compile('<li[^>]*>(?P<date>.+?)\s+<a href=.*?>(?P<user>.+?)</a> .* uploaded "<a href=".*?"(?P<new> class="new")? title="(Image|File):(?P<image>.+?)"\s*>(?:.*?<span class="comment">(?P<comment>.*?)</span>)?', re.UNICODE)
@@ -251,34 +285,11 @@ class User(object):
 
             yield wikipedia.ImagePage(self.site(), image), date, comment, deleted
     
-    def _apiUploadImages(self, number = 10):
-        
-        params = {
-            'action':'query',
-            'list':'logevents',
-            'letype':'upload',
-            'leuser':self.name(),
-            'lelimit':int(number),
-        }
-        count = 0
-        while True:
-            data = query.GetData(params, self.site())
-            for info in data['query']['logevents']:
-                count += 1
-                yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
-                if count >= number:
-                    break
-            
-            if 'query-continue' in data and count < number:
-                params['lestart'] = data['query-continue']['logevents']['lestart']
-            else:
-                break
-        
-    
-    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False,
-                enableAutoblock=False, emailBan=False, watchUser=False, allowUsertalk=True):
+    def block(self, expiry=None, reason = None, anonOnly = True, noSignup = False,
+          enableAutoblock = False, emailBan = False, watchUser = False, allowUsertalk = True,
+          reBlock = False):
         """
-        Block the user.
+        Block the user by API.
 
         Parameters:
         expiry - expiry time of block, may be a period of time (incl. infinite)
@@ -298,7 +309,71 @@ class User(object):
             #This user is probably being queried for purpose of lifting
             #an autoblock, so can't be blocked.
             raise AutoblockUserError
+        sefl.site()._getActionUser('block', sysop=True)
+        
+        if expiry is None:
+            expiry = input(u'Please enter the expiry time for the block:')
+        if reason is None:
+            reason = input(u'Please enter a reason for the block:')
+        
+        try:
+            if config.use_api and self.site().versionnumber() >= 12:
+                x = self.site().api_address()
+                del x
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
+            return self._blockOld(expiry, reason, anonOnly, noSignup, enableAutoblock, emailBan, watchUser, allowUsertalk)
+        
+        token = self.site().getToken(self, sysop = True)
+        boolStr = ['0','1']
+        
+        params = {
+            'action': 'block',
+            'user': self.name(),
+            'token':token,
+            'reason':reason,
+            'expiry':expiry,
+            #'':'',
+        }
+        if anonOnly:
+            params['anononly'] = 1
+        if noSignup:
+            params['nocreate'] = 1
+        if enableAutoblock:
+            params['autoblock'] = 1
+        if emailBan:
+            params['noemail'] = 1
+        #if watchUser:
+        #    
+        if allowUsertalk:
+            params['allowusertalk'] = 1
+        data = query.GetData(params, self.site(), sysop=True)
+        if 'error' in data: #error occured
+            errCode = data['error']['code']
+            if errCode == 'alreadyblocked':
+                raise AlreadyBlockedError
+            
+            raise BlockError
+        elif 'block' in data: #success
+                return True
+        else:
+            wikipedia.output("Unknown Error, result: %s" % data)
+            raise BlockError
 
+    def _blockOld(self, expiry, reason, anonOnly, noSignup, enableAutoblock, emailBan,
+                watchUser, allowUsertalk):
+        """
+        Block the user by web page.
+
+        """
+
+        if self.name()[0] == '#':
+            #This user is probably being queried for purpose of lifting
+            #an autoblock, so can't be blocked.
+            raise AutoblockUserError
+        sefl.site()._getActionUser('block', sysop=True)
+        
         if expiry is None:
             expiry = input(u'Please enter the expiry time for the block:')
         if reason is None:
