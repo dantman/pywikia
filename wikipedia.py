@@ -1687,7 +1687,7 @@ not supported by PyWikipediaBot!"""
                 # just check for HTTP Status 500 (Internal Server Error)?
                 else:
                     output("Unknown Error. API Error code:%s" % data['error']['code'] )
-                    output("Information:%s" %data['error']['info'])
+                    output("Information:%s" % data['error']['info'])
             else:
                 if data['edit']['result'] == u"Success":
                     #
@@ -1696,7 +1696,7 @@ not supported by PyWikipediaBot!"""
                     # if the page update is successed, we need to return code 302 for cheat script who
                     # using status code
                     #
-                    return 302, response.reason, data
+                    return 302, response.reason, data['edit']
 
             solve = self.site().solveCaptcha(data)
             if solve:
@@ -5510,7 +5510,7 @@ your connection is down. Retrying in %i minutes..."""
         # Get data
         # API Userinfo is available from version 1.11
         # preferencetoken available from 1.14
-        if config.use_api and self.versionnumber() >= 14:
+        if config.use_api and self.versionnumber() >= 12:
             #Query userinfo
             params = {
                 'action': 'query',
