@@ -43,11 +43,29 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     if not site:
         site = wikipedia.getSite()
 
+    if wikipedia.verbose:
+        wikipedia.output("====API PARAMS====")
     for k,v in params.iteritems():
         if not IsString(v):
             params[k] = unicode(v)
+        if wikipedia.verbose:
+            if type(v) != int:
+                if v.count('|') == 0 and len(v) > 40:
+                    wikipedia.output("[%s]: %s (total %d char)" % (k,v[0:30], lev(v)) )
+                elif v.count('|') > 8:
+                    wikipedia.output("[%s]: %s (and more %d values)" % (k,v[0:v.index('|')], len(v.split('|')) ) )
+                else:
+                    wikipedia.output("[%s]: %s" % (k,v) )
+            elif k == u'format':
+                continue
+            else:
+                wikipedia.output("[%s]: %s" % (k,v) )
+    if wikipedia.verbose:
+        wikipedia.output("==================")
+    
 
-    params['format'] = 'json'
+    if 'format' not in params:
+        params['format'] = 'json'
 
     if not useAPI:
         params['noprofile'] = ''
@@ -59,9 +77,9 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     # Titles param might be long, case convert it to post request
     data = None
     titlecount = 0
-    for pLongKey in ['titles', 'pageids', 'ucusers']: #
+    for pLongKey in ['titles', 'pageids', 'ucusers', 'ususers']: #
         if pLongKey in params:
-            titlecount = params[pLongKey].count('|')
+            titlecount = params[pLongKey].count('|') + 1
             if encodeTitle:
                 data = {pLongKey : params[pLongKey]}
                 del params[pLongKey]
@@ -80,10 +98,10 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         path = site.query_address() + urllib.urlencode(params.items())
 
     if wikipedia.verbose:
-        if titlecount > 0:
-            wikipedia.output(u"Requesting %d %s from %s:%s" % (titlecount, data.keys()[0], site.lang, path))
+        if titlecount > 1:
+            wikipedia.output(u"Requesting %d %s from %s" % (titlecount, data.keys()[0], site))
         else:
-            wikipedia.output(u"Request %s:%s" % (site.lang, path))
+            wikipedia.output(u"Requesting API query from %s" % site)
 
     lastError = None
     retry_idle_time = 1
