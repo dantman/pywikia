@@ -234,7 +234,9 @@ class User(object):
             else:
                 raise NotImplementedError #No enable api or version not support
         except NotImplementedError:
-            return self._uploadedImagesOld(number)
+            for p,t,c,a in self._uploadedImagesOld(number):
+                yield p,t,c,a
+            return
         
         params = {
             'action':'query',
@@ -249,6 +251,7 @@ class User(object):
             for info in data['query']['logevents']:
                 count += 1
                 yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
+                
                 if count >= number:
                     break
             
