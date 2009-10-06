@@ -103,7 +103,7 @@ def downloadPhoto(photoUrl = ''):
     imageFile=urllib.urlopen(photoUrl).read()
     return StringIO.StringIO(imageFile)
 
-def findDuplicateImages(photo = None, site = wikipedia.getSite()):
+def findDuplicateImages(photo = None, site = wikipedia.getSite(u'commons', u'commons')):
     '''
     Takes the photo, calculates the SHA1 hash and asks the mediawiki api for a list of duplicates.
 
@@ -136,7 +136,7 @@ def getFlinfoDescription(photo_id = 0):
     #print rawDescription.decode('utf-8')
     return rawDescription.decode('utf-8')
 
-def getFilename(photoInfo=None, site=wikipedia.getSite()):
+def getFilename(photoInfo=None, site=wikipedia.getSite(u'commons', u'commons')):
     '''
     Build a good filename for the upload based on the username and the title.
     Prevents naming collisions.
@@ -164,23 +164,23 @@ def cleanUpTitle(title):
     Clean up the title of a potential mediawiki page. Otherwise the title of the page might not be allowed by the software.
     '''
     title = title.strip()   
-        
-    title = re.sub("[<{\\[]", "(", title)
-    title = re.sub("[>}\\]]", ")", title)
-    title = re.sub("[ _]?\\(!\\)", "", title)
-    title = re.sub(",:[ _]", ", ", title)
-    title = re.sub("[;:][ _]", ", ", title)
-    title = re.sub("[\t\n ]+", " ", title)
-    title = re.sub("[\r\n ]+", " ", title)
-    title = re.sub("[\n]+", "", title)
-    title = re.sub("[?!]([.\"]|$)", "\\1", title)
-    title = re.sub("[&#%?!]", "^", title)
-    title = re.sub("[;]", ",", title)
-    title = re.sub("[/+\\\\:]", "-", title)
-    title = re.sub("--+", "-", title)
-    title = re.sub(",,+", ",", title)
-    title = re.sub("[-,^]([.]|$)", "\\1", title)
-    title = title.replace(" ", "_")   
+
+    title = re.sub(u"[<{\\[]", u"(", title)
+    title = re.sub(u"[>}\\]]", u")", title)
+    title = re.sub(u"[ _]?\\(!\\)", u"", title)
+    title = re.sub(u",:[ _]", u", ", title)
+    title = re.sub(u"[;:][ _]", u", ", title)
+    title = re.sub(u"[\t\n ]+", u" ", title)
+    title = re.sub(u"[\r\n ]+", u" ", title)
+    title = re.sub(u"[\n]+", u"", title)
+    title = re.sub(u"[?!]([.\"]|$)", u"\\1", title)
+    title = re.sub(u"[&#%?!]", u"^", title)
+    title = re.sub(u"[;]", u",", title)
+    title = re.sub(u"[/+\\\\:]", u"-", title)
+    title = re.sub(u"--+", u"-", title)
+    title = re.sub(u",,+", u",", title)
+    title = re.sub(u"[-,^]([.]|$)", u"\\1", title)
+    title = title.replace(u" ", u"_")   
 
     return title
  
