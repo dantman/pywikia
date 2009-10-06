@@ -227,7 +227,7 @@ class UploadRobot:
         formdata["wpEditToken"]  = self.targetSite.getToken()
 
         # Set the new filename
-        formdata["wpDestFile"]  = encodedFilename
+        formdata["wpDestFile"]  = filename
         
         # try to encode the strings to the encoding used by the target site.
         # if that's not possible (e.g. because there are non-Latin-1 characters and
