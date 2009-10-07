@@ -1179,7 +1179,7 @@ class Subject(object):
                 # except: should be avoided!!
                 except:
                    #raise
-                   wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
+                   wikipedia.output(u'File autonomous_problems.dat open or corrupted! Try again with -restore.')
                    sys.exit()
                 iw = ()
             elif page.isEmpty() and not page.isCategory():
