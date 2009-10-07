@@ -159,16 +159,16 @@ msg_append = {
 
 deprecatedTemplates = {
     'wikipedia': {
-        'de': [
-            u'Stub',
-        ]
+        'de': [u'Stub'],
+        'pdc':[u'Schkiss'],
     }
 }
 
 class CosmeticChangesToolkit:
-    def __init__(self, site, debug = False):
+    def __init__(self, site, debug = False, redirect = False):
         self.site = site
         self.debug = debug
+        self.redirect = redirect
 
     def change(self, text):
         """
@@ -180,8 +180,7 @@ class CosmeticChangesToolkit:
         text = self.standardizeCategories(text)
         text = self.cleanUpLinks(text)
         text = self.cleanUpSectionHeaders(text)
-        # Disabled because of a bug, and because its usefulness is disputed
-        # text = self.putSpacesInLists(text)
+        text = self.putSpacesInLists(text)
         text = self.translateAndCapitalizeNamespaces(text)
         text = self.removeDeprecatedTemplates(text)
         text = self.resolveHtmlEntities(text)
@@ -355,7 +354,6 @@ class CosmeticChangesToolkit:
     def resolveHtmlEntities(self, text):
         ignore = [
              38,     # Ampersand (&amp;)
-             39,     # ignore ' see http://eo.wikipedia.org/w/index.php?title=Liberec&diff=next&oldid=2320801
              60,     # Less than (&lt;)
              62,     # Great than (&gt;)
              91,     # Opening bracket - sometimes used intentionally inside links
@@ -363,6 +361,9 @@ class CosmeticChangesToolkit:
             124,     # Vertical bar (??) - used intentionally in navigation bar templates on de:
             160,     # Non-breaking space (&nbsp;) - not supported by Firefox textareas
         ]
+        # ignore ' see http://eo.wikipedia.org/w/index.php?title=Liberec&diff=next&oldid=2320801
+        if self.site.lang == 'eo':
+            ignore += [39]
         text = wikipedia.html2unicode(text, ignore = ignore)
         return text
 
@@ -414,8 +415,8 @@ class CosmeticChangesToolkit:
         and French Wikipedia. It might be that it is not wanted on other wikis.
         If there are any complaints, please file a bug report.
         """
-        # FIXME: This breaks redirects.
-        text = wikipedia.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
+        if not self.redirect:
+            text = wikipedia.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeDeprecatedTemplates(self, text):
