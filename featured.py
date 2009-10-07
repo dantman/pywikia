@@ -3,24 +3,28 @@
 """
 This script understands various command-line arguments:
 
-* -interactive       : ask before changing page
+-interactive:     ask before changing page
 
-* -nocache           : doesn't include /cache/featured file to remember if the
-                       article already was verified.
+-nocache          doesn't include /cache/featured file to remember if the
+                  article already was verified.
 
-* -fromlang:xx[,yy[,...]]] : xx,.. are the languages to be verified. Another
-                             possible with range the languages -fromlang:ar--fi
+-fromlang:xx,yy   xx,yy,zz,.. are the languages to be verified.
+-fromlang:ar--fi  Another possible with range the languages
 
-* -fromall           : to verify all languages.
+-fromall          to verify all languages.
 
-* -after:zzzz        : process pages after and including page zzzz
+-after:zzzz       process pages after and including page zzzz
 
-* -top               : using -top if you want moving {{Link FA|lang}} to top of interwiki.
-                       DEFAULT: placing {{Link FA|lang}} right next to corresponding interwiki.
-* -count             : Only counts how many featured articles of an languages (using "-fromlang" argument)
-                       or all wikipedias (using "-fromall" argument). (merge /archive/featuredcount.py) like:
-                           featured.py -fromlang:en,he -count
-                       (give counts how many featured articles of en and he wp)
+-top              using -top if you want moving {{Link FA|lang}} to top of
+                  interwiki. DEFAULT: placing {{Link FA|lang}} right next to
+                  corresponding interwiki.
+-count            Only counts how many featured articles of an languages
+                  (using "-fromlang" argument) or all wikipedias
+                  (using "-fromall" argument). (merge /archive/featuredcount.py)
+                  like: featured.py -fromlang:en,he -count
+                  (give counts how many featured articles of en and he wp)
+
+-good             use this script for good articles instead od featured articles
 
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
 
@@ -91,6 +95,19 @@ msg = {
     'zh': u'機器人: 連結特色條目 [[%s:%s]]',
 }
 
+msg_good = {
+    'als': u'Bötli: [[%s:%s]] isch en glungener Artikel',
+    'ar': u'بوت: [[%s:%s]] هي مقالة جيدة',
+    'cy': u'Robot: Mae [[%s:%s]] yn erthygl dda',
+    'de': u'Bot: [[%s:%s]] ist ein lesenswerter Artikel',
+    'en': u'Bot: [[%s:%s]] is a good article',
+    'eo': u'roboto: [[%s:%s]] estas artikolo leginda',
+    'es': u'Bot: Enlace a artículo bueno para: [[%s:%s]]',
+    'fr': u'Bot: Lien BA pour [[%s:%s]]',
+    'no': u'bot: [[%s:%s]] er en anbefalt artikkel',
+    'nn': u'bot: [[%s:%s]] er ein god artikkel',
+    'sv': u'Bot: [[%s:%s]] är en läsvärd artikel',
+}
 # ALL wikis use 'Link FA', and sometimes other localized templates.
 # We use _default AND the localized ones
 template = {
@@ -120,6 +137,21 @@ template = {
     'vi': [u'Liên kết chọn lọc'],
     'vo': [u'Yüm YG'],
     'yi': [u'רא'],
+}
+
+template_good = {
+    '_default': ['Link GA'],
+    'ar': [u'وصلة مقالة جيدة'],
+    'da': ['Link GA', 'Link AA'],
+    'eo': ['LigoLeginda'],
+    'es': ['Bueno'],
+    'fr': ['Lien BA'],
+    'is': ['Tengill GG'],
+    'nn': ['Link AA'],
+    'no': ['Link AA'],
+   #'tr': ['Link GA', 'Link KM'],
+    'vi': [u'Liên kết bài chất lượng tốt'],
+    'wo': ['Lien BA'],
 }
 
 featured_name = {
@@ -223,31 +255,67 @@ featured_name = {
     'zh-yue': (BACK, u"正文"),
 }
 
+good_name = {
+    'ar': (CAT, u"مقالات جيدة"),
+    'cs': (CAT, u"Wikipedie:Dobré články"),
+    'da': (CAT, u"Gode artikler"),
+    'de': (CAT, u"Wikipedia:Lesenswert"),
+    'dsb': (CAT, u"Naraźenje za pógódnośenje"),
+   #'en': (CAT, u"Wikipedia good articles"),
+    'eo': (CAT, u"Legindaj artikoloj"),
+    'es': (CAT, u"Wikipedia:Artículos buenos"),
+    'et': (CAT, u"Head artiklid"),
+    'fi': (CAT, u"Hyvät artikkelit"),
+    'fr': (CAT, u"Bon article"),
+    'hsb': (CAT, u"Namjet za pohódnoćenje"),
+    'id': (BACK, u"Artikel bagus"),
+   #'id': (CAT, u"Artikel bagus"),
+    'is': (CAT, u"Wikipedia:Gæðagreinar"),
+   #'ja': (CAT, u"おすすめ記事"),
+    'lt': (CAT, u"Vertingi straipsniai"),
+    'no': (CAT, u"Anbefalte artikler"),
+    'pl': (CAT, u"Dobre artykuły"),
+    'ru': (CAT, u"Википедия:Хорошие статьи"),
+    'simple': (CAT, u"Good articles"),
+    'sr': (BACK, u"Иконица добар"),
+    'sv': (CAT, u"Wikipedia:Läsvärda artiklar"),
+    'tr': (BACK, u"Kaliteli madde"),
+    'uk': (CAT, u"Вікіпедія:Добрі статті"),
+   #'yi': (CAT, u"וויקיפעדיע גוטע ארטיקלען"),
+    'zh': (CAT, u"優良條目"),
+}
+
 # globals
 interactive=0
 nocache=0
 afterpage=u"!"
+cache={}
 
-try:
-    cache=pickle.load(file("cache/featured","rb"))
-except:
-    cache={}
-
-def featuredArticles(site):
-    try:
-        method=featured_name[site.lang][0]
-    except KeyError, ex:
-        print 'Error: language %s doesn\'t have feature category source.' % ex
-        sys.exit()
-    name=featured_name[site.lang][1]
-    raw=method(site, name)
+def featuredArticles(site, good):
     arts=[]
+    if good:
+        feature = u'good'
+    else:
+        feature = u'feature'
+    try:
+        if good:
+	    method=good_name[site.lang][0]
+        else:
+	    method=featured_name[site.lang][0]
+    except KeyError:
+        wikipedia.output(u'Error: language %s doesn\'t has %s category source.' % (site.lang, feature))
+        return arts
+    if good:
+        name=good_name[site.lang][1]
+    else:
+        name=featured_name[site.lang][1]
+    raw=method(site, name)
     for p in raw:
         if p.namespace()==0: # Article
             arts.append(p)
         elif p.namespace()==1: # Article talk (like in English)
             arts.append(wikipedia.Page(p.site(), p.titleWithoutNamespace()))
-    wikipedia.output('\03{lightred}** wikipedia:%s has %i featured articles\03{default}' % (site.lang, len(arts)))
+    wikipedia.output('\03{lightred}** wikipedia:%s has %i %s articles\03{default}' % (site.lang, len(arts), feature))
     return arts
 
 def findTranslated(page, oursite=None):
@@ -306,7 +374,7 @@ def findTranslated(page, oursite=None):
     wikipedia.output(u"%s -> back interwiki ref target is %s" % (page.title(), backpage.title()))
     return None
 
-def featuredWithInterwiki(fromsite, tosite, template_on_top):
+def featuredWithInterwiki(fromsite, tosite, template_on_top, good):
     if not fromsite.lang in cache:
         cache[fromsite.lang]={}
     if not tosite.lang in cache[fromsite.lang]:
@@ -314,18 +382,24 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
     cc=cache[fromsite.lang][tosite.lang]
     if nocache:
         cc={}
-
-    try:
-        templatelist = template[tosite.lang]
-        templatelist += template['_default']
-    except KeyError:
-        templatelist = template['_default']
+    if good:
+        try:
+            templatelist = template_good[tosite.lang]
+            templatelist += template_good['_default']
+        except KeyError:
+            templatelist = template_good['_default']
+    else:
+        try:
+            templatelist = template[tosite.lang]
+            templatelist += template['_default']
+        except KeyError:
+            templatelist = template['_default']
 
     findtemplate = '(' + '|'.join(templatelist) + ')'
     re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate.replace(u' ', u'[ _]'), fromsite.lang), re.IGNORECASE)
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
-    arts=featuredArticles(fromsite)
+    arts=featuredArticles(fromsite, good)
 
     pairs=[]
     for a in arts:
@@ -358,7 +432,10 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
                         if not m:
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
-                        comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
+                        if good:
+                            comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_good) % (fromsite.lang, a.title()))
+                        else:
+                            comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
 
                         ### Moving {{Link FA|xx}} to top of interwikis ###
                         if template_on_top == True:
@@ -383,6 +460,9 @@ if __name__=="__main__":
     template_on_top = False
     featuredcount = False
     fromlang=[]
+    process_good = False
+    all  = False
+    part = False
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':
             interactive=1
@@ -390,23 +470,47 @@ if __name__=="__main__":
             nocache=1
         elif arg.startswith('-fromlang:'):
             fromlang=arg[10:].split(",")
-            try:
-                # BUG: range with zh-min-nan (3 "-")
-                if len(fromlang)==1 and fromlang[0].index("-")>=0:
-                    ll1,ll2=fromlang[0].split("--",1)
-                    if not ll1: ll1=""
-                    if not ll2: ll2="zzzzzzz"
-                    fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
-            except:
-                pass
+            part = True
         elif arg == '-fromall':
-            fromlang=featured_name.keys()
+            all = True
         elif arg.startswith('-after:'):
             afterpage=arg[7:]
         elif arg == '-top':
             template_on_top = True
         elif arg == '-count':
             featuredcount = True
+        elif arg == '-good':
+            process_good = True
+
+    if part:
+        try:
+            # BUG: range with zh-min-nan (3 "-")
+            if len(fromlang)==1 and fromlang[0].index("-")>=0:
+                ll1,ll2=fromlang[0].split("--",1)
+                if not ll1: ll1=""
+                if not ll2: ll2="zzzzzzz"
+		if process_good:
+                    fromlang=[ll for ll in good_name.keys() if ll>=ll1 and ll<=ll2]
+                else:
+                    fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
+        except:
+            pass
+			
+    if all:
+	if process_good:
+            fromlang=good_name.keys()
+	else:
+	    fromlang=featured_name.keys()
+			
+    if process_good:
+        filename="cache/good"
+    else:
+        filename="cache/featured"
+    try:
+        cache=pickle.load(file(filename,"rb"))
+    except:
+        cache={}
+
 
     if not fromlang:
         wikipedia.showHelp('featured')
@@ -417,12 +521,14 @@ if __name__=="__main__":
         for ll in fromlang:
             fromsite = wikipedia.getSite(ll)
             if featuredcount:
-                featuredArticles(fromsite)
+                featuredArticles(fromsite, process_good)
             elif  fromsite != wikipedia.getSite():
                 featuredWithInterwiki(fromsite, wikipedia.getSite(),
-                                      template_on_top)
+                                      template_on_top, process_good)
+    except KeyboardInterrupt:
+        wikipedia.output('\nQuitting program...')
     finally:
         wikipedia.stopme()
         if not nocache:
-            pickle.dump(cache,file("cache/featured","wb"))
+            pickle.dump(cache,file(filename,"wb"))
 
