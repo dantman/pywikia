@@ -641,9 +641,15 @@ class RedirectRobot:
                                             % redir.aslink())
                         break
                     else:
-                        wikipedia.output(
-                            u"Warning: Redirect target %s doesn't exist."
-                            % newRedir.aslink())
+                        if self.always:
+                            wikipedia.output(
+                                u"Skipping: Redirect target %s doesn't exist."
+                                % newRedir.aslink())
+                            break  # skip if automatic
+                        else:
+                            wikipedia.output(
+                                u"Warning: Redirect target %s doesn't exist."
+                                % newRedir.aslink())
                 except wikipedia.ServerError:
                     wikipedia.output(u'Skipping: Server Error')
                     break
