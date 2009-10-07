@@ -106,6 +106,7 @@ msg_good = {
     'fr': u'Bot: Lien BA pour [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en anbefalt artikkel',
     'nn': u'bot: [[%s:%s]] er ein god artikkel',
+    'ru': u'Робот: хорошая статья [[%s:%s]]',
     'sv': u'Bot: [[%s:%s]] är en läsvärd artikel',
 }
 # ALL wikis use 'Link FA', and sometimes other localized templates.
@@ -257,11 +258,12 @@ featured_name = {
 
 good_name = {
     'ar': (CAT, u"مقالات جيدة"),
+    'ca': (CAT, u"Llista d'articles bons"),
     'cs': (CAT, u"Wikipedie:Dobré články"),
     'da': (CAT, u"Gode artikler"),
     'de': (CAT, u"Wikipedia:Lesenswert"),
     'dsb': (CAT, u"Naraźenje za pógódnośenje"),
-   #'en': (CAT, u"Wikipedia good articles"),
+    'en': (CAT, u"Wikipedia good articles"),
     'eo': (CAT, u"Legindaj artikoloj"),
     'es': (CAT, u"Wikipedia:Artículos buenos"),
     'et': (CAT, u"Head artiklid"),
@@ -271,9 +273,11 @@ good_name = {
     'id': (BACK, u"Artikel bagus"),
    #'id': (CAT, u"Artikel bagus"),
     'is': (CAT, u"Wikipedia:Gæðagreinar"),
-   #'ja': (CAT, u"おすすめ記事"),
+    'ja': (CAT, u"おすすめ記事"),
     'lt': (CAT, u"Vertingi straipsniai"),
+    'lv': (CAT, u"Labi raksti"),
     'no': (CAT, u"Anbefalte artikler"),
+    'oc': (CAT, u"Bon article"),
     'pl': (CAT, u"Dobre artykuły"),
     'ru': (CAT, u"Википедия:Хорошие статьи"),
     'simple': (CAT, u"Good articles"),
@@ -281,7 +285,8 @@ good_name = {
     'sv': (CAT, u"Wikipedia:Läsvärda artiklar"),
     'tr': (BACK, u"Kaliteli madde"),
     'uk': (CAT, u"Вікіпедія:Добрі статті"),
-   #'yi': (CAT, u"וויקיפעדיע גוטע ארטיקלען"),
+    'uz': (CAT, u"Vikipediya:Yaxshi maqolalar"),
+    'yi': (CAT, u"וויקיפעדיע גוטע ארטיקלען"),
     'zh': (CAT, u"優良條目"),
 }
 
