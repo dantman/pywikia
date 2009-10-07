@@ -232,7 +232,7 @@ class Category(wikipedia.Page):
                 if count >= params['cmlimit']:
                     break
             # try to find a link to the next list page
-            if 'query-continue' in data and count < params['cmlimilt']:
+            if 'query-continue' in data and count < params['cmlimit']:
                 currentPageOffset = data['query-continue']['categorymembers']['cmcontinue']
             else:
                 break
