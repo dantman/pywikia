@@ -69,7 +69,7 @@ def get_content_type(filename):
 
 class UploadRobot:
     def __init__(self, url, urlEncoding = None, description = u'', useFilename = None, keepFilename = False,
-                 verifyDescription = True, ignoreWarning = False, targetSite = None):
+                 verifyDescription = True, ignoreWarning = False, targetSite = None, uploadByUrl = False, useApi = False):
         """
         ignoreWarning - Set this to True if you want to upload even if another
                         file would be overwritten or another mistake would be
@@ -88,6 +88,8 @@ class UploadRobot:
         else:
             self.targetSite = targetSite or wikipedia.getSite()
         self.targetSite.forceLogin()
+        self.uploadByUrl = uploadByUrl
+        self.useApi = useApi
 
     def urlOK(self):
         '''
@@ -103,7 +105,7 @@ class UploadRobot:
            If the user chooses not to retry, returns null.
         """
 
-        if not self._retrieved:
+        if not self._retrieved or self.uploadByUrl:
             # Get file contents
             wikipedia.output(u'Reading file %s' % self.url)
             if '://' in self.url:
@@ -228,6 +230,13 @@ class UploadRobot:
 
         # Set the new filename
         formdata["wpDestFile"]  = filename
+
+        if self.uploadByUrl:
+            formdata["wpUploadFileURL"]  = self.url
+            formdata["wpSourceType"] = 'Url'
+        #Not needed now. Might be needed in the future
+        #else:
+        #    formdata["wpSourceType"] = 'file'
         
         # try to encode the strings to the encoding used by the target site.
         # if that's not possible (e.g. because there are non-Latin-1 characters and
@@ -243,7 +252,12 @@ class UploadRobot:
         # don't upload if we're in debug mode
         if not debug:
             wikipedia.output(u'Uploading file to %s...' % self.targetSite)
-            response, returned_html = post_multipart(self.targetSite,
+
+            if self.uploadByUrl:
+                # Just do a post with all the fields filled out
+                response, returned_html = self.targetSite.postForm(self.targetSite.upload_address(), formdata.items(), cookies = self.targetSite.cookies())
+            else:
+                response, returned_html = post_multipart(self.targetSite,
                                   self.targetSite.upload_address(),
                                   formdata.items(),
                                   (('wpUploadFile', encodedFilename, self._contents),),
