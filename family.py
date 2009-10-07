@@ -3539,6 +3539,7 @@ class Family:
         'pdc': [u'weiterleitung'],
         'pl': [u'patrz', u'przekieruj', u'tam'],
         'pms': [u'rinvia', u'rinvio'],
+        'pt': [u'redirecionamento'],
         'pt-br': [u'redirecionamento'],
         'qu': [u'pusapuna', u'redirección'],
         'rmy': [u'redirecteaza'],
