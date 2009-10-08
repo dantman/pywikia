@@ -291,7 +291,7 @@ good_name = {
     'uz': (CAT, u"Vikipediya:Yaxshi maqolalar"),
     'yi': (CAT, u"וויקיפעדיע גוטע ארטיקלען"),
     'zh': (CAT, u"優良條目"),
-    #'zh-classical': (CAT, u"正典"),
+    'zh-classical': (CAT, u"正典"),
 }
 
 # globals
