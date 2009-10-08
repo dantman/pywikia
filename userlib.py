@@ -9,7 +9,7 @@ import wikipedia, query
 
 
 
-class AutoblockUserError(wikipedia.Error):
+class AutoblockUser(wikipedia.Error):
     """
     The class AutoblockUserError is an exception that is raised whenever
     an action is requested on a virtual autoblock user that's not available
@@ -18,13 +18,13 @@ class AutoblockUserError(wikipedia.Error):
 
 class BlockError(wikipedia.Error): pass
 
-class AlreadyBlockedError(BlockError): pass
+class AlreadyBlocked(BlockError): pass
 
 class UnblockError(wikipedia.Error): pass
 
 class BlockIDError(UnblockError): pass
 
-class AlreadyUnblockedError(UnblockError): pass
+class AlreadyUnblocked(UnblockError): pass
 
 class User(object):
     """
@@ -52,6 +52,12 @@ class User(object):
         self._registrationTime = -1
         #if self.site().versionnumber() >= 16:
         #    self._urToken = None
+        if name[0] == '#':
+            #This user is probably being queried for purpose of lifting an autoblock.
+            wikipedia.output("This is an autoblock ID, you can only use to unblock it.")
+            
+            
+
     
     def site(self):
         return self._site
@@ -83,6 +89,8 @@ class User(object):
             self._registrationTime = 0
         
         self._blocked = ('blockedby' in data)
+        #if self._blocked: #Get block ID
+        
     
     def registrationTime(self, force = False):
         if not hasattr(self, '_registrationTime') or force:
@@ -108,7 +116,7 @@ class User(object):
         if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no user pages per se.
-            raise AutoblockUserError
+            raise AutoblockUser
         if subpage:
             subpage = '/' + subpage
         return wikipedia.Page(self.site(), self.name() + subpage, defaultNamespace=2)
@@ -117,7 +125,7 @@ class User(object):
         if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no user talk pages per se.
-            raise AutoblockUserError
+            raise AutoblockUser
         if subpage:
             subpage = '/' + subpage
         return wikipedia.Page(self.site(), self.name() + subpage, defaultNamespace=3)
@@ -178,7 +186,7 @@ class User(object):
         if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so has no contribs.
-            raise AutoblockUserError
+            raise AutoblockUser
 
         #
         #TODO: fix contribRX regex
@@ -228,7 +236,7 @@ class User(object):
     
     def uploadedImages(self, number = 10):
         try:
-            if config.use_api and self.site().versionnumber() >= 11:
+            if wikipedia.config.use_api and self.site().versionnumber() >= 11:
                 apitest = self.site().api_address()
                 del apitest
             else:
@@ -239,11 +247,11 @@ class User(object):
             return
         
         params = {
-            'action':'query',
-            'list':'logevents',
-            'letype':'upload',
-            'leuser':self.name(),
-            'lelimit':int(number),
+            'action': 'query',
+            'list': 'logevents',
+            'letype': 'upload',
+            'leuser': self.name(),
+            'lelimit': int(number),
         }
         count = 0
         while True:
@@ -287,8 +295,8 @@ class User(object):
 
             yield wikipedia.ImagePage(self.site(), image), date, comment, deleted
     
-    def block(self, expiry=None, reason = None, anonOnly = True, noSignup = False,
-          enableAutoblock = False, emailBan = False, watchUser = False, allowUsertalk = True,
+    def block(self, expiry = None, reason = None, anon= True, noCreate = False,
+          onAutoblock = False, banMail = False, watchUser = False, allowUsertalk = True,
           reBlock = False):
         """
         Block the user by API.
@@ -310,58 +318,73 @@ class User(object):
         if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so can't be blocked.
-            raise AutoblockUserError
-        sefl.site()._getActionUser('block', sysop=True)
+            raise AutoblockUser
+        if self.isBlocked() and not reBlock:
+            raise AlreadyBlocked()
         
-        if expiry is None:
-            expiry = input(u'Please enter the expiry time for the block:')
-        if reason is None:
-            reason = input(u'Please enter a reason for the block:')
+        self.site()._getActionUser('block', sysop=True)
+        
+        if not expiry:
+            expiry = wikipedia.input(u'Please enter the expiry time for the block:')
+        if not reason:
+            reason = wikipedia.input(u'Please enter a reason for the block:')
         
         try:
-            if config.use_api and self.site().versionnumber() >= 12:
+            if wikipedia.config.use_api and self.site().versionnumber() >= 12:
                 x = self.site().api_address()
                 del x
             else:
                 raise NotImplementedError
         except NotImplementedError:
-            return self._blockOld(expiry, reason, anonOnly, noSignup, enableAutoblock, emailBan, watchUser, allowUsertalk)
-        
-        token = self.site().getToken(self, sysop = True)
-        boolStr = ['0','1']
+            return self._blockOld(expiry, reason, anon, noCreate,
+              onAutoblock, banMail, watchUser, allowUsertalk, reBlock)
         
         params = {
             'action': 'block',
             'user': self.name(),
-            'token':token,
-            'reason':reason,
-            'expiry':expiry,
+            'token': self.site().getToken(self, sysop = True),
+            'reason': reason,
             #'':'',
         }
-        if anonOnly:
+        if expiry:
+            params['expiry'] = expiry
+        if anon:
             params['anononly'] = 1
-        if noSignup:
+        if noCreate:
             params['nocreate'] = 1
-        if enableAutoblock:
+        if onAutoblock:
             params['autoblock'] = 1
-        if emailBan:
+        if banMail:
             params['noemail'] = 1
         #if watchUser:
         #    
+        if reBlock:
+            params['reblock'] = 1
         if allowUsertalk:
             params['allowusertalk'] = 1
+        
         data = query.GetData(params, self.site(), sysop=True)
         if 'error' in data: #error occured
             errCode = data['error']['code']
             if errCode == 'alreadyblocked':
-                raise AlreadyBlockedError
+                raise AlreadyBlocked()
+            elif errCode == 'blockedasrange':
+                raise AlreadyBlocked("Range Blocked")
+            #elif errCode == 'invalidrange':
+            #    pass
+            elif errCode == 'invalidexpiry':
+                raise BlockError("Invaild expiry")
+            elif errCode == 'pastexpiry ':
+                raise BlockError("expiry time is the past")
+            elif errCode == 'cantblock-email':
+                raise BlockError("You don't have permission to ban mail")
             
-            raise BlockError
         elif 'block' in data: #success
                 return True
         else:
             wikipedia.output("Unknown Error, result: %s" % data)
             raise BlockError
+        raise False
 
     def _blockOld(self, expiry, reason, anonOnly, noSignup, enableAutoblock, emailBan,
                 watchUser, allowUsertalk):
@@ -373,7 +396,7 @@ class User(object):
         if self.name()[0] == '#':
             #This user is probably being queried for purpose of lifting
             #an autoblock, so can't be blocked.
-            raise AutoblockUserError
+            raise AutoblockUser
         sefl.site()._getActionUser('block', sysop=True)
         
         if expiry is None:
