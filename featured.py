@@ -185,6 +185,7 @@ featured_name = {
     'es': (CAT, u"Wikipedia:Artículos destacados"),
     'et': (CAT, u"Eeskujulikud artiklid"),
     'eu': (CAT, u"Nabarmendutako artikuluak"),
+    'ext': (BACK, u"Destacau"),
     'fa': (BACK, u"نوشتار برگزیده"),
     'fi': (CAT, u"Suositellut sivut"),
     'fo': (CAT, u"Mánaðargrein"),
@@ -236,6 +237,7 @@ featured_name = {
     'sq': (BACK, u"Artikulli perfekt"),
     'sr': (CAT, u"Изабрани"),
     'sv': (CAT, u"Wikipedia:Utmärkta artiklar"),
+    'sw': (BACK, u"Makala_nzuri_sana"),
     'szl': (CAT, u"Wyrůžńůne artikle"),
     'ta': (CAT, u"சிறப்புக் கட்டுரைகள்"),
     'te': (CAT, u"విశేషవ్యాసాలు"),
@@ -246,6 +248,7 @@ featured_name = {
     'uk': (CAT, u"Вибрані статті"),
     'ur': (CAT, u"منتخب مقالے"),
     'uz': (CAT, u"Vikipediya:Tanlangan maqolalar"),
+    'vec': (BACK, u"Vetrina"),
     'vi': (CAT, u"Bài viết chọn lọc"),
     'vo': (CAT, u"Yegeds gudik"),
     'wa': (CAT, u"Raspepyî årtike"),
@@ -288,6 +291,7 @@ good_name = {
     'uz': (CAT, u"Vikipediya:Yaxshi maqolalar"),
     'yi': (CAT, u"וויקיפעדיע גוטע ארטיקלען"),
     'zh': (CAT, u"優良條目"),
+    #'zh-classical': (CAT, u"正典"),
 }
 
 # globals
