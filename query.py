@@ -116,11 +116,9 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
                     cont = params['file']
                     del params['file']
                 
-                res, jsontext = upload.post_multipart(self.site, path, params,
-                  (('file', params['filename'].encode(self.site.encoding()), cont),), self.cookies(sysop=sysop)
+                res, jsontext = upload.post_multipart(site, path, params,
+                  (('file', params['filename'].encode(site.encoding()), cont),), site.cookies(sysop=sysop)
                   )
-                
-                
             elif site.hostname() in wikipedia.config.authenticate.keys():
                 params["Content-type"] = "application/x-www-form-urlencoded"
                 params["User-agent"] = useragent
