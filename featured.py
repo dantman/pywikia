@@ -106,6 +106,7 @@ msg_good = {
     'fr': u'Bot: Lien BA pour [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en anbefalt artikkel',
     'nn': u'bot: [[%s:%s]] er ein god artikkel',
+    'pl': u'Bot: Link do dobrego artykułu: [[%s:%s]]',
     'ru': u'Робот: хорошая статья [[%s:%s]]',
     'sv': u'Bot: [[%s:%s]] är en läsvärd artikel',
 }
