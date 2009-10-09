@@ -25,7 +25,7 @@ __version__='$Id$'
 
 import os, sys, time
 import urllib, mimetypes
-import wikipedia, config
+import wikipedia, config, query
 
 def post_multipart(site, address, fields, files, cookies):
     """
@@ -216,13 +216,19 @@ class UploadRobot:
            If the user chooses not to retry, returns null.
         """
         try:
-            #if config.use_api and self.useApi and self.targetSite.versionnumber() >= 16:
-            #    x = self.tgargetSite.api_address()
-            #    del x
-            #else:
-            raise NotImplementedError
+            if self.useApi and self.targetSite.versionnumber() >= 16:
+                x = self.targetSite.api_address()
+                del x
+            else:
+                raise NotImplementedError
         except NotImplementedError:
             return self._uploadImageOld(debug)
+        
+        if not hasattr(self,'_contents'):
+            self.read_file_content()
+        
+        filename = self.process_filename()
+        
         params = {
             'action': 'upload',
             'token': self.targetSite.getToken(),
@@ -235,15 +241,55 @@ class UploadRobot:
         else:
             params['file'] = self._contents
         
+        if self.ignoreWarning:
+            params['ignorewarnings'] = 1
+        
+        wikipedia.output(u'Uploading file to %s via API....' % self.targetSite)
+        
         data = query.GetData(params, self.targetSite)
         
+        if wikipedia.verbose:
+            wikipedia.output("%s" % data)
+        
         if 'error' in data: # error occured
-            pass
+            errCode = data['error']['code']
+            wikipedia.output("%s" % data)
         else:
-            return 'upload' in data
+            data = data['upload']
+            if data['result'] == u'Warning': #upload success but return warning.
+                warn = data['warnings'].keys()[0]
+                wikipedia.output("We got a warning message:", newline=False)
+                warFn = data['warnings'][warn]
+                if warn == 'duplicate-archive':
+                    wikipedia.output("The file is duplicate a deleted file %s." % warFn)
+                elif warn == 'was-deleted':
+                    wikipedia.output("This file was deleted for %s." % warFn)
+                elif warn == 'emptyfile':
+                    wikipedia.output("File %s is an empty file." % warFn)
+                elif warn == 'exists':
+                    wikipedia.output("File %s is exists." % warFn)
+                elif warn == 'duplicate':
+                    wikipedia.output("Uploaded file is duplicate with %s." % warFn)
+                elif warn == 'badfilename':
+                    wikipedia.output("Target filename is invaild.")
+                elif warn == 'filetype-unwanted-type':
+                    wikipedia.output("File %s type is unwatched type.")
+                answer = wikipedia.inputChoice(u"Do you want to ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
+                if answer == "y":
+                    self.ignoreWarning = 1
+                    self.keepFilename = True
+                    return self.upload_image(debug)
+                else:
+                    wikipedia.output("Upload aborted.")
+                    return
+                
+            elif data['result'] == u'Success': #No any warning, upload and online complete.
+                return filename#data['filename']
+        
 
     def _uploadImageOld(self, debug=False):
-        self.read_file_content()
+        if not hasattr(self,'_contents'):
+            self.read_file_content()
         
         filename = self.process_filename()
         # Convert the filename (currently Unicode) to the encoding used on the
@@ -328,11 +374,11 @@ class UploadRobot:
                     if answer == "y":
                         self.ignoreWarning = 1
                         self.keepFilename = True
-                        return self.upload_image(debug)
+                        return self._uploadImageOld(debug)
                 else:
                     answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
                     if answer == "y":
-                        return self.upload_image(debug)
+                        return self._uploadImageOld(debug)
                     else:
                         return
         return filename
