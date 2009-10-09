@@ -24,7 +24,7 @@ and for a description.
 __version__='$Id$'
 
 import os, sys, time
-import urllib
+import urllib, mimetypes
 import wikipedia, config
 
 def post_multipart(site, address, fields, files, cookies):
@@ -63,7 +63,6 @@ def encode_multipart_formdata(fields, files):
     return content_type, body
 
 def get_content_type(filename):
-    import mimetypes
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
 
@@ -195,9 +194,6 @@ class UploadRobot:
         # MediaWiki doesn't allow spaces in the file name.
         # Replace them here to avoid an extra confirmation form
         filename = filename.replace(' ', '_')
-        # Convert the filename (currently Unicode) to the encoding used on the
-        # target wiki
-        encodedFilename = filename.encode(self.targetSite.encoding())
         # A proper description for the submission.
         wikipedia.output(u"The suggested description is:")
         wikipedia.output(self.description)
@@ -211,6 +207,7 @@ class UploadRobot:
                 # if user saved / didn't press Cancel
                 if newDescription:
                         self.description = newDescription
+        return filename
     
     def upload_image(self, debug=False):
         """Gets the image at URL self.url, and uploads it to the target wiki.
@@ -218,10 +215,41 @@ class UploadRobot:
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
+        try:
+            #if config.use_api and self.useApi and self.targetSite.versionnumber() >= 16:
+            #    x = self.tgargetSite.api_address()
+            #    del x
+            #else:
+            raise NotImplementedError
+        except NotImplementedError:
+            return self._uploadImageOld(debug)
+        params = {
+            'action': 'upload',
+            'token': self.targetSite.getToken(),
+            'comment': self.description,
+            'filename': filename,
+            #'': '',
+        }
+        if self.uploadByUrl:
+            params['url'] = self.url
+        else:
+            params['file'] = self._contents
+        
+        data = query.GetData(params, self.targetSite)
+        
+        if 'error' in data: # error occured
+            pass
+        else:
+            return 'upload' in data
 
+    def _uploadImageOld(self, debug=False):
         self.read_file_content()
         
-        self.process_filename()
+        filename = self.process_filename()
+        # Convert the filename (currently Unicode) to the encoding used on the
+        # target wiki
+        encodedFilename = filename.encode(self.targetSite.encoding())
+
 
         formdata = {}
         formdata["wpUploadDescription"] = self.description
@@ -263,12 +291,9 @@ class UploadRobot:
                 # Just do a post with all the fields filled out
                 response, returned_html = self.targetSite.postForm(self.targetSite.upload_address(), formdata.items(), cookies = self.targetSite.cookies())
             else:
-                response, returned_html = post_multipart(self.targetSite,
-                                  self.targetSite.upload_address(),
-                                  formdata.items(),
-                                  (('wpUploadFile', encodedFilename, self._contents),),
-                                  cookies = self.targetSite.cookies()
-                                  )
+                response, returned_html = post_multipart(self.targetSite, self.targetSite.upload_address(),
+                                  formdata.items(), (('wpUploadFile', encodedFilename, self._contents),),
+                                  cookies = self.targetSite.cookies())
             # There are 2 ways MediaWiki can react on success: either it gives
             # a 200 with a success message, or it gives a 302 (redirection).
             # Do we know how the "success!" HTML page should look like?
