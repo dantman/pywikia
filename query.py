@@ -91,6 +91,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     if useAPI:
         if params['action'] in postAC:
             path = site.api_address()
+            cont = ''
         else:
             path = site.api_address() + urllib.urlencode(params.items())
 
@@ -109,7 +110,18 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     while retryCount >= 0:
         try:
             jsontext = "Nothing received"
-            if site.hostname() in wikipedia.config.authenticate.keys():
+            if params['action'] == 'upload' and ('file' in params or cont):
+                import upload
+                if not cont:
+                    cont = params['file']
+                    del params['file']
+                
+                res, jsontext = upload.post_multipart(self.site, path, params,
+                  (('file', params['filename'].encode(self.site.encoding()), cont),), self.cookies(sysop=sysop)
+                  )
+                
+                
+            elif site.hostname() in wikipedia.config.authenticate.keys():
                 params["Content-type"] = "application/x-www-form-urlencoded"
                 params["User-agent"] = useragent
                 res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
