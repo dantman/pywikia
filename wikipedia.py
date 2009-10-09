@@ -1426,7 +1426,7 @@ not supported by PyWikipediaBot!"""
             self._editrestriction = False
         # If no comment is given for the change, use the default
         comment = comment or action
-        if config.cosmetic_changes and not self.isTalkPage():
+        if config.cosmetic_changes and not self.isTalkPage() and not calledModuleName() == 'cosmetic_changes':
             old = newtext
             if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
                 import cosmetic_changes
