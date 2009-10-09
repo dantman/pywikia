@@ -98,13 +98,7 @@ class UploadRobot:
         '''
         return self.url != '' and ('://' in self.url or os.path.exists(self.url))
 
-    def upload_image(self, debug=False):
-        """Gets the image at URL self.url, and uploads it to the target wiki.
-           Returns the filename which was used to upload the image.
-           If the upload fails, the user is asked whether to try again or not.
-           If the user chooses not to retry, returns null.
-        """
-
+    def read_file_content(self):
         if not self._retrieved or self.uploadByUrl:
             # Get file contents
             wikipedia.output(u'Reading file %s' % self.url)
@@ -159,16 +153,20 @@ class UploadRobot:
                 file = open(self.url,"rb")
                 self._contents = file.read()
                 file.close()
-
+    
+    def process_filename(self):
         # Isolate the pure name
         filename = self.url
+        
         if '/' in filename:
             filename = filename.split('/')[-1]
+        
         if '\\' in filename:
             filename = filename.split('\\')[-1]
+        
         if self.urlEncoding:
-            filename = urllib.unquote(filename)
-            filename = filename.decode(self.urlEncoding)
+            filename = urllib.unquote(filename.decode(self.urlEncoding))
+        
         if self.useFilename:
             filename = self.useFilename
         if not self.keepFilename:
@@ -213,12 +211,20 @@ class UploadRobot:
                 # if user saved / didn't press Cancel
                 if newDescription:
                         self.description = newDescription
+    
+    def upload_image(self, debug=False):
+        """Gets the image at URL self.url, and uploads it to the target wiki.
+           Returns the filename which was used to upload the image.
+           If the upload fails, the user is asked whether to try again or not.
+           If the user chooses not to retry, returns null.
+        """
+
+        self.read_file_content()
+        
+        self.process_filename()
 
         formdata = {}
         formdata["wpUploadDescription"] = self.description
-    #     if self.targetSite.version() >= '1.5':
-    #         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
-    #         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
         formdata["wpUploadAffirm"] = "1"
         formdata["wpUpload"] = "upload bestand"
         # This somehow doesn't work.
