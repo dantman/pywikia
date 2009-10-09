@@ -165,10 +165,11 @@ deprecatedTemplates = {
 }
 
 class CosmeticChangesToolkit:
-    def __init__(self, site, debug = False, redirect = False):
+    def __init__(self, site, debug = False, redirect = False, template = False):
         self.site = site
         self.debug = debug
         self.redirect = redirect
+        self.template = template
 
     def change(self, text):
         """
@@ -213,7 +214,7 @@ class CosmeticChangesToolkit:
         """
         if wikipedia.calledModuleName() <> 'interwiki':
             interwikiLinks = wikipedia.getLanguageLinks(text, insite = self.site)
-            text = wikipedia.replaceLanguageLinks(text, interwikiLinks, site = self.site)
+            text = wikipedia.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template)
         return text
 
     def standardizeCategories(self, text):
@@ -222,7 +223,7 @@ class CosmeticChangesToolkit:
         does not sort them.
         """
         # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
-        if self.site != wikipedia.getSite('de', 'wikipedia'):
+        if self.site != wikipedia.getSite('de', 'wikipedia') and not self.template:
             categories = wikipedia.getCategoryLinks(text, site = self.site)
             text = wikipedia.replaceCategoryLinks(text, categories, site = self.site)
         return text
@@ -471,7 +472,7 @@ class CosmeticChangesBot:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
+            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, template = (page.namespace() == 10))
             changedText = ccToolkit.change(page.get())
             if changedText != page.get():
                 if not self.acceptall:
