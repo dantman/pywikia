@@ -53,7 +53,7 @@ class CategoryRedirectBot(object):
                 'ar': u"تصنيف:تحويلات تصنيفات ويكيبيديا",
                 'cs': u"Kategorie:Zastaralé kategorie",
                 'da': "Kategori:Omdirigeringskategorier",
-                'en': "Category:Wikipedia category redirects",
+                'en': "Category:Wikipedia soft redirected categories",
                 'hu': "Kategória:Kategóriaátirányítások",
                 'ja': "Category:移行中のカテゴリ",
                 'no': "Kategori:Wikipedia omdirigertekategorier",
