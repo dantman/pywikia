@@ -211,8 +211,9 @@ class CosmeticChangesToolkit:
         Makes sure that interwiki links are put to the correct position and
         into the right order.
         """
-        interwikiLinks = wikipedia.getLanguageLinks(text, insite = self.site)
-        text = wikipedia.replaceLanguageLinks(text, interwikiLinks, site = self.site)
+        if wikipedia.calledModuleName() <> 'interwiki':
+            interwikiLinks = wikipedia.getLanguageLinks(text, insite = self.site)
+            text = wikipedia.replaceLanguageLinks(text, interwikiLinks, site = self.site)
         return text
 
     def standardizeCategories(self, text):
