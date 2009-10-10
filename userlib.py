@@ -167,7 +167,7 @@ class User(object):
             #elif code == '':
             #    
             
-        elif 'emailuser' in result':
+        elif 'emailuser' in result:
             if result['emailuser']['result'] == 'Success':
                 return True
         
