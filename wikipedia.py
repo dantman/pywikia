@@ -1430,7 +1430,7 @@ not supported by PyWikipediaBot!"""
             old = newtext
             if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
                 import cosmetic_changes
-                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), redirect=self.isRedirectPage(), template = (self.namespace() == 10))
+                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), redirect=self.isRedirectPage(), namespace = self.namespace())
                 newtext = ccToolkit.change(newtext)
                 if comment and old.strip().replace('\r\n', '\n') != newtext.strip().replace('\r\n', '\n'):
                     comment += translate(self.site(), cosmetic_changes.msg_append)

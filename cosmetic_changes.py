@@ -159,17 +159,17 @@ msg_append = {
 
 deprecatedTemplates = {
     'wikipedia': {
-        'de': [u'Stub'],
         'pdc':[u'Schkiss'],
     }
 }
 
 class CosmeticChangesToolkit:
-    def __init__(self, site, debug = False, redirect = False, template = False):
+    def __init__(self, site, debug = False, redirect = False, namespace = None):
         self.site = site
         self.debug = debug
         self.redirect = redirect
-        self.template = template
+        self.namespace = namespace
+        self.template = (self.namespace == 10)
 
     def change(self, text):
         """
@@ -472,7 +472,7 @@ class CosmeticChangesBot:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, template = (page.namespace() == 10))
+            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, namespace = page.namespace())
             changedText = ccToolkit.change(page.get())
             if changedText != page.get():
                 if not self.acceptall:
