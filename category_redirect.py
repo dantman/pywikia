@@ -311,9 +311,9 @@ aanjepaß krijje:
         while True:
             try:
                 result = query.GetData(querydata, self.site)
-                if data.startswith(u"unknown_action"):
-                    e = {'code': data[:14], 'info': data[16:]}
-                    raise APIError(e)
+                #if data.startswith(u"unknown_action"):
+                #    e = {'code': data[:14], 'info': data[16:]}
+                #    raise APIError(e)
             except wikipedia.ServerError:
                 wikipedia.output(u"Wikimedia Server Error; retrying...")
                 time.sleep(5)
