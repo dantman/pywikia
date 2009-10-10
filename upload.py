@@ -273,7 +273,7 @@ class UploadRobot:
                 elif warn == 'badfilename':
                     wikipedia.output("Target filename is invaild.")
                 elif warn == 'filetype-unwanted-type':
-                    wikipedia.output("File %s type is unwatched type.")
+                    wikipedia.output("File %s type is unwatched type." % warFn)
                 answer = wikipedia.inputChoice(u"Do you want to ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
                 if answer == "y":
                     self.ignoreWarning = 1
