@@ -2853,78 +2853,149 @@ not supported by PyWikipediaBot!"""
                 answer = 'y'
                 self.site()._noProtectPrompt = True
         if answer == 'y':
-            host = self.site().hostname()
-
+            try:
+                if config.use_api and self.site().versionnumber() >= 12:
+                    x = self.site().api_address()
+                    del x
+                else:
+                    raise NotImplementedError
+            except NotImplementedError:
+                return self._oldProtect( editcreate, move, unprotect, reason, editcreate_duration,
+                move_duration, cascading, prompt, throttle)
+            
             token = self.site().getToken(self, sysop = True)
 
             # Translate 'none' to ''
-            if editcreate == 'none': editcreate = ''
-            if move == 'none': move = ''
+            protections = []
+            expiry = []
+            if editcreate == 'none':
+                editcreate = 'all'
+            if move == 'none':
+                move = 'all'
 
-            # Translate no duration to infinite
-            if editcreate_duration == 'none' or not editcreate_duration: editcreate_duration = 'infinite'
-            if move_duration == 'none' or not move_duration: move_duration = 'infinite'
+            if editcreate_duration == 'none' or not editcreate_duration:
+                editcreate_duration = 'infinite'
+            if move_duration == 'none' or not move_duration:
+                move_duration = 'infinite'
 
-            # Get cascading
-            if cascading == False:
-                cascading = '0'
+            if self.exists():
+                protections.append("edit=%s" % editcreate)
+                
+                protections.append("move=%s" % move)
+                expiry.append(move_duration)
             else:
+                protections.append("create=%s" % editcreate)
+                
+            expiry.append(editcreate_duration)
+            
+            params = {
+                'action': 'protect',
+                'title': self.title(),
+                'token': token,
+                'protections': query.ListToParam(protections),
+                'expiry': query.ListToParam(expiry),
+                #'': '',
+            }
+            if reason:
+                params['reason'] = reason
+
+            if cascading:
                 if editcreate != 'sysop' or move != 'sysop' or not self.exists():
                     # You can't protect a page as autoconfirmed and cascading, prevent the error
                     # Cascade only available exists page, create prot. not.
-                    cascading = '0'
                     output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
                 else:
-                    cascading = '1'
-
-            predata = {}
-            if self.site().versionnumber >= 10:
-                predata['mwProtect-cascade'] = cascading
-
-            predata['mwProtect-reason'] = reason
-
-            if not self.exists(): #and self.site().versionnumber() >= :
-                #create protect
-                predata['mwProtect-level-create'] = editcreate
-                predata['wpProtectExpirySelection-create'] = editcreate_duration
+                    params['cascade'] = 1
+            
+            result = query.GetData(params, self.site(), sysop=True)
+            
+            if 'error' in result: #error occured
+                err = result['error']['code']
+                output('%s' % result)
+                #if err == '':
+                #    
+                #elif err == '':
+                #    
             else:
-                #edit/move Protect
-                predata['mwProtect-level-edit'] = editcreate
-                predata['mwProtect-level-move'] = move
+                if result['protect']:
+                    output(u'Changed protection level of page %s.' % self.aslink())
+                    return True
+            
+        return False
 
-                if self.site().versionnumber() >= 14:
-                    predata['wpProtectExpirySelection-edit'] = editcreate_duration
-                    predata['wpProtectExpirySelection-move'] = move_duration
-                else:
-                    predata['mwProtect-expiry'] = editcreate_duration
+    def _oldProtect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
+                move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
+        """internal use for protect page by ordinary web page form"""
+        host = self.site().hostname()
+        token = self.site().getToken(sysop = True)
 
+        # Translate 'none' to ''
+        if editcreate == 'none': editcreate = ''
+        if move == 'none': move = ''
 
-            if token:
-                predata['wpEditToken'] = token
-            if self.site().hostname() in config.authenticate.keys():
-                predata["Content-type"] = "application/x-www-form-urlencoded"
-                predata["User-agent"] = useragent
-                data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(
-                            urllib2.Request(
-                                self.site().protocol() + '://'
-                                    + self.site().hostname() + address,
-                                data))
-                data = u''
+        # Translate no duration to infinite
+        if editcreate_duration == 'none' or not editcreate_duration: editcreate_duration = 'infinite'
+        if move_duration == 'none' or not move_duration: move_duration = 'infinite'
+
+        # Get cascading
+        if cascading == False:
+            cascading = '0'
+        else:
+            if editcreate != 'sysop' or move != 'sysop' or not self.exists():
+                # You can't protect a page as autoconfirmed and cascading, prevent the error
+                # Cascade only available exists page, create prot. not.
+                cascading = '0'
+                output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
             else:
-                response, data = self.site().postForm(address, predata, sysop=True)
+                cascading = '1'
 
-            if response.status == 302 and not data:
-                output(u'Changed protection level of page %s.' % self.aslink())
-                return True
+        predata = {}
+        if self.site().versionnumber >= 10:
+            predata['mwProtect-cascade'] = cascading
+
+        predata['mwProtect-reason'] = reason
+
+        if not self.exists(): #and self.site().versionnumber() >= :
+            #create protect
+            predata['mwProtect-level-create'] = editcreate
+            predata['wpProtectExpirySelection-create'] = editcreate_duration
+        else:
+            #edit/move Protect
+            predata['mwProtect-level-edit'] = editcreate
+            predata['mwProtect-level-move'] = move
+
+            if self.site().versionnumber() >= 14:
+                predata['wpProtectExpirySelection-edit'] = editcreate_duration
+                predata['wpProtectExpirySelection-move'] = move_duration
             else:
-                #Normally, we expect a 302 with no data, so this means an error
-                self.site().checkBlocks(sysop = True)
-                output(u'Failed to change protection level of page %s:'
-                       % self.aslink())
-                output(u"HTTP response code %s" % response.status)
-                output(data)
-                return False
+                predata['mwProtect-expiry'] = editcreate_duration
+
+        if token:
+            predata['wpEditToken'] = token
+        if self.site().hostname() in config.authenticate.keys():
+            predata["Content-type"] = "application/x-www-form-urlencoded"
+            predata["User-agent"] = useragent
+            data = self.site().urlEncode(predata)
+            response = urllib2.urlopen(
+                        urllib2.Request(
+                            self.site().protocol() + '://'
+                                + self.site().hostname() + address,
+                            data))
+            data = u''
+        else:
+            response, data = self.site().postForm(address, predata, sysop=True)
+
+        if response.status == 302 and not data:
+            output(u'Changed protection level of page %s.' % self.aslink())
+            return True
+        else:
+            #Normally, we expect a 302 with no data, so this means an error
+            self.site().checkBlocks(sysop = True)
+            output(u'Failed to change protection level of page %s:'
+                   % self.aslink())
+            output(u"HTTP response code %s" % response.status)
+            output(data)
+            return False
 
     def removeImage(self, image, put=False, summary=None, safe=True):
         """Remove all occurrences of an image from this Page."""
