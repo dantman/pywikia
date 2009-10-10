@@ -15,12 +15,13 @@ class AutoblockUser(wikipedia.Error):
     an action is requested on a virtual autoblock user that's not available
     for him (i.e. roughly everything except unblock).
     """
+class UserActionRefuse(wikipedia.Error): pass
 
-class BlockError(wikipedia.Error): pass
+class BlockError(UserActionRefuse): pass
 
 class AlreadyBlocked(BlockError): pass
 
-class UnblockError(wikipedia.Error): pass
+class UnblockError(UserActionRefuse): pass
 
 class BlockIDError(UnblockError): pass
 
@@ -88,6 +89,8 @@ class User(object):
         else:
             self._registrationTime = 0
         
+        self._mailable = ("emailable" in data)
+        
         self._blocked = ('blockedby' in data)
         #if self._blocked: #Get block ID
         
@@ -137,6 +140,39 @@ class User(object):
         for page in self.contributions(limit):
             yield page[0]
 
+    def sendMail(self, subject = u'', text = u'', ccMe = False):
+        if not hasattr(self, '_mailable'):
+            self._load()
+        if not self._mailable:
+            raise UserActionRefuse("This user is not mailable")
+        
+        if not self.site().isAllowed('sendemail'):
+            raise UserActionRefuse("You don't have permission to send mail")
+        
+        params = {
+            'action': 'emailuser',
+            'target': self.name(),
+            'token': self.site().getToken(),
+            'subject': subject,
+            'text': text,
+        }
+        if ccMe:
+            params['ccmd'] = 1
+        
+        result = query.GetData(params, self.site())
+        if 'error' in result:
+            code = result['error']['code']
+            if code == 'usermaildisabled ':
+                wikipedia.output("User mail has been disabled")
+            #elif code == '':
+            #    
+            
+        elif 'emailuser' in result':
+            if result['emailuser']['result'] == 'Success':
+                return True
+        
+        return False
+    
     def contributions(self, limit = 500, namespace = []):
         """ Yields pages that the user has edited, with an upper bound of ``limit''.
         Pages returned are not guaranteed to be unique
