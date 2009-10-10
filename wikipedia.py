@@ -2700,22 +2700,54 @@ not supported by PyWikipediaBot!"""
         #TODO: Handle image file revisions too.
         output(u'Loading list of deleted revisions for [[%s]]...' % self.title())
 
-        address = self.site().undelete_view_address(self.urlname())
-        text = self.site().getUrl(address, sysop = True)
-        #TODO: Handle non-existent pages etc
-
-        rxRevs = re.compile(r'<input name="(?P<ts>(?:ts|fileid)\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>',re.DOTALL)
         self._deletedRevs = {}
-        for rev in rxRevs.finditer(text):
-            self._deletedRevs[rev.group('ts')] = [
-                    rev.group('date'),
-                    rev.group('editor'),
-                    rev.group('comment'),
-                    None,  #Revision text
-                    False, #Restoration marker
-                    ]
+        
+        if config.use_api and self.site().versionnumber() >= 12:
+            params = {
+                'action': 'query',
+                'list': 'deletedrevs',
+                'drfrom': self.titleWithoutNamespace(),
+                'drnamespace': self.namespace(),
+                'drprop': 'revid|user|comment|content',#|minor|len|token
+                'drlimit': 100,
+                'drdir': 'older',
+                #'': '',
+            }
+            count = 0
+            while True:
+                data = query.GetData(params, self.site(), sysop=True)
+                for x in data['query']['deletedrevs']:
+                    if x['title'] != self.title():
+                        continue
+                    
+                    for y in x['revisions']:
+                        count += 1
+                        ts = time.strftime("%Y%m%d%H%M%S", time.strptime(y['timestamp'], "%Y-%m-%dT%H:%M:%SZ") )
+                        self._deletedRevs[ts] = [y['timestamp'], y['user'], y['comment'] , y['*'], False]
+                
+                if 'query-continue' in data and data['query-continue']['deletedrevs']['drcontinue'].split('|')[1] == self.titleWithoutNamespace():
+                    params['drcontinue'] = data['query-continue']['deletedrevs']['drcontinue']
+                else:
+                    break
+            self._deletedRevsModified = False
+            
+        else:
+            address = self.site().undelete_view_address(self.urlname())
+            text = self.site().getUrl(address, sysop = True)
+            #TODO: Handle non-existent pages etc
 
-        self._deletedRevsModified = False
+            rxRevs = re.compile(r'<input name="(?P<ts>(?:ts|fileid)\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>',re.DOTALL)
+            for rev in rxRevs.finditer(text):
+                self._deletedRevs[rev.group('ts')] = [
+                        rev.group('date'),
+                        rev.group('editor'),
+                        rev.group('comment'),
+                        None,  #Revision text
+                        False, #Restoration marker
+                        ]
+
+            self._deletedRevsModified = False
+        
         return self._deletedRevs.keys()
 
     def getDeletedRevision(self, timestamp, retrieveText=False):
