@@ -1743,6 +1743,9 @@ class InterwikiBot(object):
                         # Only yield pages that have ( ) in titles
                         if "(" not in page.title():
                             continue
+                    if page.isTalkPage()
+                        wikipedia.output(u'Skipping: %s is a talk page' % page.title())
+                        continue
                     break
 
                 if self.generateUntil:
