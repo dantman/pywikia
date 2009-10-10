@@ -310,8 +310,8 @@ aanjepaß krijje:
         waited = 0
         while True:
             try:
-                response, result = query.GetData(querydata, self.site, back_response = True)
-                if response.status != 200:
+                resp, result = query.GetData(querydata, self.site, back_response = True)
+                if resp.status != 200:
                     # WARNING: if the server is down, this could
                     # cause an infinite loop
                     wikipedia.output(u"HTTP error %i received; retrying..."
