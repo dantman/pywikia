@@ -310,17 +310,14 @@ aanjepaß krijje:
         waited = 0
         while True:
             try:
-                resp, result = query.GetData(querydata, self.site, back_response = True)
-                if resp.status != 200:
-                    # WARNING: if the server is down, this could
-                    # cause an infinite loop
-                    wikipedia.output(u"HTTP error %i received; retrying..."
-                                      % response.status)
-                    time.sleep(5)
-                    continue
+                result = query.GetData(querydata, self.site)
                 if data.startswith(u"unknown_action"):
                     e = {'code': data[:14], 'info': data[16:]}
                     raise APIError(e)
+            except wikipedia.ServerError:
+                wikipedia.output(u"Wikimedia Server Error; retrying...")
+                time.sleep(5)
+                continue
             except ValueError:
                 # if the result isn't valid JSON, there must be a server
                 # problem.  Wait a few seconds and try again
