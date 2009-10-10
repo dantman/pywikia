@@ -157,7 +157,7 @@ class User(object):
             'text': text,
         }
         if ccMe:
-            params['ccmd'] = 1
+            params['ccme'] = 1
         
         result = query.GetData(params, self.site())
         if 'error' in result:
