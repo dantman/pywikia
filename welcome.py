@@ -673,7 +673,7 @@ class WelcomeBot(object):
         }
         if globalvar.timeoffset != 0:
             now = self.site.server_time() - timedelta(minutes=globalvar.timeoffset)
-            params['lestart'] = int(now.strftime("%Y-%m-%dT%H:%M:%SZ"))
+            params['lestart'] = int(now.strftime("%Y%m%d%H%M%S"))
         elif globalvar.offset != 0:
             params['lestart'] = globalvar.offset
         
