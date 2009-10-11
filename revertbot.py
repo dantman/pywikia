@@ -1,4 +1,4 @@
-import wikipedia, query
+import wikipedia, query, userlib
 
 __version__ = '$Id$'
 
@@ -22,9 +22,8 @@ class BaseRevertBot(object):
             'list': 'usercontribs',
             'uclimit': '500',
             'ucuser': self.site.username(),
-            'format': 'json'
         }
-        if ns is not None: predata['ucnamespace'] = ns
+        if ns: predata['ucnamespace'] = ns
         if max < 500 and max != -1: predata['uclimit'] = str(max)
 
         count = 0
@@ -35,7 +34,7 @@ class BaseRevertBot(object):
                 item = iterator.next()
             except StopIteration:
                 self.log(u'Fetching new batch of contributions')
-                response, data = query.GetData(predata, self.site, back_response = True)
+                data = query.GetData(predata, self.site)
                 if 'error' in data:
                     raise RuntimeError(data['error'])
                 if 'query-continue' in data:
@@ -76,9 +75,8 @@ class BaseRevertBot(object):
             'rvprop': 'ids|timestamp|user|content',
             'rvlimit': '2',
             'rvstart': item['timestamp'],
-            'format': 'json'
         }
-        response, data = query.GetData(predata, self.site, back_response = True)
+        data = query.GetData(predata, self.site)
 
         if 'error' in data:
             raise RuntimeError(data['error'])
