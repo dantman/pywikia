@@ -123,7 +123,7 @@ from __future__ import generators
 __version__ = '$Id$'
 
 import os, sys
-import httplib, socket, urllib
+import httplib, socket, urllib, urllib2
 import traceback
 import time, threading, Queue
 import math
@@ -5052,15 +5052,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         # TODO: add the authenticate stuff here
 
-        if False: #self.persistent_http:
-            conn = self.conn
-        else:
-            # Encode all of this into a HTTP request
-            if self.protocol() == 'http':
-                conn = httplib.HTTPConnection(self.hostname())
-            elif self.protocol() == 'https':
-                conn = httplib.HTTPSConnection(self.hostname())
-            # otherwise, it will crash, as other protocols are not supported
+        #if False: #self.persistent_http:
+        #    conn = self.conn
+        #else:
+        # Encode all of this into a HTTP request
+        if self.protocol() == 'http':
+            conn = httplib.HTTPConnection(self.hostname())
+        elif self.protocol() == 'https':
+            conn = httplib.HTTPSConnection(self.hostname())
+        # otherwise, it will crash, as other protocols are not supported
 
         conn.putrequest('POST', address)
         conn.putheader('Content-Length', str(len(data)))
@@ -5068,8 +5068,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         conn.putheader('User-agent', useragent)
         if cookies:
             conn.putheader('Cookie', cookies)
-        if False: #self.persistent_http:
-            conn.putheader('Connection', 'Keep-Alive')
+        #if False: #self.persistent_http:
+        #    conn.putheader('Connection', 'Keep-Alive')
         if compress:
             conn.putheader('Accept-encoding', 'gzip')
         conn.endheaders()
@@ -5121,82 +5121,82 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if retry is None:
             retry=config.retry_on_fail
 
-        if False: #self.persistent_http and not data:
-            self.conn.putrequest('GET', path)
-            self.conn.putheader('User-agent', useragent)
-            self.conn.putheader('Cookie', self.cookies(sysop = sysop))
-            self.conn.putheader('Connection', 'Keep-Alive')
-            if compress:
-                    self.conn.putheader('Accept-encoding', 'gzip')
-            self.conn.endheaders()
+        #if False: #self.persistent_http and not data:
+        #    self.conn.putrequest('GET', path)
+        #    self.conn.putheader('User-agent', useragent)
+        #    self.conn.putheader('Cookie', self.cookies(sysop = sysop))
+        #    self.conn.putheader('Connection', 'Keep-Alive')
+        #    if compress:
+        #            self.conn.putheader('Accept-encoding', 'gzip')
+        #    self.conn.endheaders()
 
-            # Prepare the return values
-            # Note that this can raise network exceptions which are not
-            # caught here.
-            try:
-                response = self.conn.getresponse()
-            except httplib.BadStatusLine:
-                # Blub.
-                self.conn.close()
-                self.conn.connect()
-                return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
+        #    # Prepare the return values
+        #    # Note that this can raise network exceptions which are not
+        #    # caught here.
+        #    try:
+        #        response = self.conn.getresponse()
+        #    except httplib.BadStatusLine:
+        #        # Blub.
+        #        self.conn.close()
+        #        self.conn.connect()
+        #        return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
 
-            text = response.read()
-            headers = dict(response.getheaders())
+        #    text = response.read()
+        #    headers = dict(response.getheaders())
 
+        #else:
+        if self.hostname() in config.authenticate.keys():
+            uo = authenticateURLopener
         else:
-            if self.hostname() in config.authenticate.keys():
-                uo = authenticateURLopener
-            else:
-                uo = MyURLopener()
-                if self.cookies(sysop = sysop):
-                    uo.addheader('Cookie', self.cookies(sysop = sysop))
-                if compress:
-                    uo.addheader('Accept-encoding', 'gzip')
-            if no_hostname == True: # This allow users to parse also toolserver's script
-                url = path          # and other useful pages without using some other functions.
-            else:
-                url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
-            data = self.urlEncode(data)
+            uo = MyURLopener()
+            if self.cookies(sysop = sysop):
+                uo.addheader('Cookie', self.cookies(sysop = sysop))
+            if compress:
+                uo.addheader('Accept-encoding', 'gzip')
+        if no_hostname == True: # This allow users to parse also toolserver's script
+            url = path          # and other useful pages without using some other functions.
+        else:
+            url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
+        data = self.urlEncode(data)
 
-            # Try to retrieve the page until it was successfully loaded (just in
-            # case the server is down or overloaded).
-            # Wait for retry_idle_time minutes (growing!) between retries.
-            retry_idle_time = 1
-            retrieved = False
-            while not retrieved:
-                try:
-                    if self.hostname() in config.authenticate.keys():
-                      request = urllib2.Request(url, data)
-                      request.add_header('User-agent', useragent)
-                      opener = urllib2.build_opener()
-                      f = opener.open(request)
-                    else:
-                        f = uo.open(url, data)
+        # Try to retrieve the page until it was successfully loaded (just in
+        # case the server is down or overloaded).
+        # Wait for retry_idle_time minutes (growing!) between retries.
+        retry_idle_time = 1
+        retrieved = False
+        while not retrieved:
+            try:
+                if self.hostname() in config.authenticate.keys():
+                  request = urllib2.Request(url, data)
+                  request.add_header('User-agent', useragent)
+                  opener = urllib2.build_opener()
+                  f = opener.open(request)
+                else:
+                    f = uo.open(url, data)
 
-                    # read & info can raise socket.error
-                    text = f.read()
-                    headers = f.info()
+                # read & info can raise socket.error
+                text = f.read()
+                headers = f.info()
 
-                    retrieved = True
-                except KeyboardInterrupt:
-                    raise
-                except Exception, e:
-                    if retry:
-                        # We assume that the server is down. Wait some time, then try again.
-                        output(u"%s" % e)
-                        output(u"""\
+                retrieved = True
+            except KeyboardInterrupt:
+                raise
+            except Exception, e:
+                if retry:
+                    # We assume that the server is down. Wait some time, then try again.
+                    output(u"%s" % e)
+                    output(u"""\
 WARNING: Could not open '%s'. Maybe the server or
 your connection is down. Retrying in %i minutes..."""
-                               % (url,
-                                  retry_idle_time))
-                        time.sleep(retry_idle_time * 60)
-                        # Next time wait longer, but not longer than half an hour
-                        retry_idle_time *= 2
-                        if retry_idle_time > 30:
-                            retry_idle_time = 30
-                    else:
-                        raise
+                           % (url,
+                              retry_idle_time))
+                    time.sleep(retry_idle_time * 60)
+                    # Next time wait longer, but not longer than half an hour
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                else:
+                    raise
 
         if cookie_only:
             return headers.get('set-cookie', '')
@@ -5207,10 +5207,10 @@ your connection is down. Retrying in %i minutes..."""
         if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
             output(u'Warning! len(text) does not match content-length: %s != %s' % \
                 (len(text), headers.get('content-length')))
-            if False: #self.persistent_http
-                self.conn.close()
-                self.conn.connect()
-            return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
+            #if False: #self.persistent_http
+            #    self.conn.close()
+            #    self.conn.connect()
+            return self.getUrl(path, retry, sysop, data, compress, no_hostname, cookie_only, back_response)
 
         if compress and contentEncoding == 'gzip':
             text = decompress_gzip(text)
