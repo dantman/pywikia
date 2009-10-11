@@ -83,7 +83,7 @@ class Preferences(HTMLParser, dict):
     
     def load(self, site):
         site.forceLogin()
-        data = site.getUrl(site.path() + '?title=Special:Preferences')
+        data = site.getUrl(site.get_address("Special:Preferences"))
         self.feed(data)
         self.close()
         self.site = site

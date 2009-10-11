@@ -32,17 +32,17 @@ mysite = wikipedia.getSite()
 newbies = 'newbies' in form
 
 if newbies:
-    post = 'title=Speciaal:Bijdragen&target=newbies'
+    path = mysite.contribs_address(self, target='newbies')
 else:
-    post = 'title=Speciaal:RecenteWijzigingen'
+    path = mysite.get_address("Special:RecentChanges")
 
 for element in form:
     if element != 'newbies':
-        post += '&%s=%s'%(element,form[element].value)
+        path += '&%s=%s' % (element, form[element].value)
 if not 'limit' in form:
-    post += '&limit=1000'
+    path += '&limit=1000'
 
-text = mysite.getUrl(mysite.path() + '?%s'%post)
+text = mysite.getUrl(path)
 
 text = text.split('\n')
 rcoptions = False
