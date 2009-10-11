@@ -342,6 +342,12 @@ flickr = {
     'reviewer': None, # If so, under what reviewer name?
     }
 
+# for all connection proxy handle
+proxy = {
+    'host': None,
+    'auth': None,
+}
+
 ############## COPYRIGHT SETTINGS ##############
 
 # Enable/disable search engine in copyright.py script
