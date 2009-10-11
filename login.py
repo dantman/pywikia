@@ -124,8 +124,9 @@ class LoginManager:
                 'action': 'login',
                 'lgname': self.username,
                 'lgpassword': self.password,
-                'lgdomain': self.site.family.ldapDomain,
             }
+            if self.site.family.ldapDomain:
+                predata['lgdomain'] = self.site.family.ldapDomain
             address = self.site.api_address()
         else:
             predata = {
