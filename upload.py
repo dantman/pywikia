@@ -284,7 +284,8 @@ class UploadRobot:
                     return
                 
             elif data['result'] == u'Success': #No any warning, upload and online complete.
-                return filename#data['filename']
+                wikipedia.output(u"Upload successful.")
+                return filename #data['filename']
         
 
     def _uploadImageOld(self, debug=False):
