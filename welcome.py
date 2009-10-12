@@ -686,6 +686,9 @@ class WelcomeBot(object):
                 count += 1
                 if 'user' not in x:
                     continue
+                #created twice?
+                if not globalvar.welcomeAuto and x['action'] == 'create2':
+                    continue
                 if not globalvar.welcomeAuto and x['action'] == 'autocreate':
                     showStatus(3)
                     wikipedia.output(u'%s has been created automatically.' % x['user'])
