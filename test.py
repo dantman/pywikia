@@ -17,9 +17,9 @@ __version__='$Id$'
 #
 import re,sys,wikipedia,config
 
-def show (mysite):
-    if mysite.loggedInAs():
-        wikipedia.output(u"You are logged in on %s as %s." % (repr(mysite), mysite.loggedInAs()))
+def show (mysite, sysop = False):
+    if mysite.loggedInAs(sysop = sysop):
+        wikipedia.output(u"You are logged in on %s as %s." % (repr(mysite), mysite.loggedInAs(sysop=sysop)))
     else:
         wikipedia.output(u"You are not logged in on %s." % repr(mysite))
 
@@ -41,9 +41,9 @@ def main():
             namedict = config.usernames
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
-                 show(wikipedia.getSite(lang, familyName))
+                 show(wikipedia.getSite(lang, familyName), sysop)
     else:
-        show(wikipedia.getSite())
+        show(wikipedia.getSite(), sysop)
 
 if __name__ == "__main__":
     try:
