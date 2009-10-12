@@ -684,11 +684,11 @@ class WelcomeBot(object):
             for x in lev['query']['logevents']:
                 someone_found = True
                 count += 1
+                if 'user' not in x:
+                    continue
                 if not globalvar.welcomeAuto and x['action'] == 'autocreate':
                     showStatus(3)
                     wikipedia.output(u'%s has been created automatically.' % x['user'])
-                    continue
-                if "userhidden" in x:
                     continue
                 
                 yield userlib.User(self.site, x['user'])
