@@ -85,7 +85,7 @@ class User(object):
             self._groups = []
         
         if data['registration']:
-            self._registrationTime = time.strftime("%Y%m%d%H%M%S", time.strptime(data['registration'], "%Y-%m-%dT%H:%M:%SZ") )
+            self._registrationTime = wikipedia.parsetime2stamp(data['registration'])
         else:
             self._registrationTime = 0
         
