@@ -5055,14 +5055,32 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         #if False: #self.persistent_http:
         #    conn = self.conn
         #else:
-        # Encode all of this into a HTTP request
         if self.protocol() == 'http':
-            conn = httplib.HTTPConnection(self.hostname())
+            if config.proxy['host']:
+                conn = httplib.HTTPConnection(config.proxy['host'])
+            else:
+                conn = httplib.HTTPConnection(self.hostname())
         elif self.protocol() == 'https':
             conn = httplib.HTTPSConnection(self.hostname())
+        # Encode all of this into a HTTP request
         # otherwise, it will crash, as other protocols are not supported
 
-        conn.putrequest('POST', address)
+        if address[-1] == "?":
+            address = address[:-1]
+        if config.proxy['host']:
+            proxyPutAddr = '%s://%s%s' % (self.protocol(), self.hostname(), address)
+            conn.putrequest('POST', proxyPutAddr)
+            if type(config.proxy['auth']) == tuple:
+                import base64
+                authcode = base64.b64encode("%s:%s" % (config.proxy['auth'][0], config.proxy['auth'][1]) )
+                conn.putheader('Proxy-Authorization', "Basic %s" % authcode )
+        else:
+            conn.putrequest('POST', address)
+        if self.hostname() in config.authenticate.keys():
+            import base64
+            authcode = base64.b64encode("%s:%s" % (config.authenticate[self.hostname()][0], config.authenticate[self.hostname()][1]) )
+            conn.putheader("Authorization", "Basic %s" % authcode )
+        
         conn.putheader('Content-Length', str(len(data)))
         conn.putheader('Content-type', contentType)
         conn.putheader('User-agent', useragent)
@@ -5148,7 +5166,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if self.hostname() in config.authenticate.keys():
             uo = authenticateURLopener
         else:
-            uo = MyURLopener()
+            if config.proxy['host'] and type(config.proxy['auth']) == tuple:
+                proxyHandle = {'http':'http://%s:%s@%s' % (config.proxy['auth'][0], config.proxy['auth'][1], config.proxy['host'] )}
+            elif config.proxy['host']:
+                proxyHandle = {'http':'http://%s' % config.proxy['host'] }
+            else:
+                proxyHandle = None
+            
+            uo = MyURLopener(proxies = proxyHandle)
             if self.cookies(sysop = sysop):
                 uo.addheader('Cookie', self.cookies(sysop = sysop))
             if compress:
@@ -5163,8 +5188,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         # case the server is down or overloaded).
         # Wait for retry_idle_time minutes (growing!) between retries.
         retry_idle_time = 1
-        retrieved = False
-        while not retrieved:
+        while True:
             try:
                 if self.hostname() in config.authenticate.keys():
                   request = urllib2.Request(url, data)
@@ -5178,7 +5202,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 text = f.read()
                 headers = f.info()
 
-                retrieved = True
+                break
             except KeyboardInterrupt:
                 raise
             except Exception, e:
@@ -5188,8 +5212,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     output(u"""\
 WARNING: Could not open '%s'. Maybe the server or
 your connection is down. Retrying in %i minutes..."""
-                           % (url,
-                              retry_idle_time))
+                           % (url, retry_idle_tie))
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
@@ -7787,7 +7810,16 @@ if config.authenticate:
     for site in config.authenticate:
         passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
-    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)
+    if config.proxy['host']:
+        proxyHandle = urllib2.ProxyHandler({'http':'http://%s' % config.proxy['host'] })
+        if config.proxy['auth']:
+            proxyAuth = urllib2.HTTPPasswordMgr()
+            proxyAuth.add_password(None, config.proxy['host'], config.proxy['auth'][0], config.proxy['auth'][1])
+            proxyAuthHandle = urllib2.ProxyBasicAuthHandler(proxyAuth)
+    else:
+        proxyHandle = None
+        proxyAuthHandle = None
+    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxyHandle, proxyAuthHandle, authhandler)
     urllib2.install_opener(authenticateURLopener)
 
 if __name__ == '__main__':

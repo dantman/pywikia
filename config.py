@@ -343,6 +343,8 @@ flickr = {
     }
 
 # for all connection proxy handle
+# to use it, proxy['host'] have to support HTTP and include port number (e.g. localhost:8080)
+# if proxy server neen authentication, set ('ID', 'PASSWORD') to proxy['auth'].
 proxy = {
     'host': None,
     'auth': None,
