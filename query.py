@@ -49,7 +49,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         if not IsString(v):
             params[k] = unicode(v)
         if wikipedia.verbose:
-            if type(v) != int:
+            if type(v) not in (int, long):
                 if v.count('|') == 0 and len(v) > 40:
                     wikipedia.output("[%s]: %s (total %d char)" % (k,v[0:30], lev(v)) )
                 elif v.count('|') > 8:
