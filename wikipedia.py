@@ -699,6 +699,15 @@ not supported by PyWikipediaBot!"""
             except SectionError:
                 self._getexception = SectionError
                 raise
+            except UserBlocked:
+                if self.site().loggedInAs(sysop=sysop):
+                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                else:
+                    if verbose:
+                        output("The IP address is blocked, retry by login.")
+                    self.site().forceLogin(sysop=sysop)
+                    return self.get(force, get_redirect, throttle, sysop, change_edit_time)
+
         return self._contents
 
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
