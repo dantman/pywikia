@@ -712,7 +712,7 @@ not supported by PyWikipediaBot!"""
 
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
                      oldid=None, change_edit_time=True):
-        """Get the contents of the Page via the edit page.
+        """Get the contents of the Page via API query
 
         Do not use this directly, use get() instead.
 
@@ -722,11 +722,100 @@ not supported by PyWikipediaBot!"""
 
         This method returns the raw wiki text as a unicode string.
         """
+        try:
+            if config.use_api and self.site().versionnumber() >= 11:
+                x = self.site().api_address()
+                del x
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
+            return self._getEditPageOld(get_redirect, throttle, sysop, oldid, change_edit_time)
+        
+        params = {
+            'action': 'query',
+            'titles': self.title(),
+            'prop': 'revisions|info',
+            'rvprop': 'content|ids|flags|timestamp|user|comment|size',
+            'rvlimit': 1,
+            'inprop': 'protection',#|talkid|subjectid',
+            'intoken': 'edit',
+        }
+        if oldid:
+            params['rvstartid'] = oldid
+        
+        if throttle:
+            get_throttle()
+        textareaFound = False
+        retry_idle_time = 1
+        while not textareaFound:
+            
+            data = query.GetData(params, self.site())
+            if 'error' in data:
+                raise RuntimeError("API query error: %s" % data)
+            pageInfo = data['query']['pages'].values()[0]
+            if data['query']['pages'].keys()[0] == "-1":
+                if 'missing' in pageInfo:
+                    raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
+                elif 'invalid' in pageInfo:
+                    raise BadTitle('BadTitle: %s' % self)
+            else: #vaild Title
+                if 'revisions' in pageInfo:
+                    textareaFound = True
+        
+        self.editRestriction = ''
+        self.moveRestriction = ''
+        self._userName = pageInfo['revisions'][0]['user']
+        
+        for restr in pageInfo['protection']:
+            if restr['type'] == 'edit':
+                self.editRestriction = restr['level']
+            elif restr['type'] == 'move':
+                self.moveRestriction = restr['level']	
+        
+        self._revisionId = pageInfo['revisions'][0]['revid']
+        
+        if change_edit_time:
+            self._editTime = parsetime2stamp(pageInfo['revisions'][0]['timestamp'])
+            self._startTime = parsetime2stamp(pageInfo["starttimestamp"])
+            
+            
+        self._isWatched = False #cannot handle in API in my research for now.
+        
+        pagetext = pageInfo['revisions'][0]['*']
+        pagetext = unescape(pagetext)
+        pagetext = pagetext.rstrip()
+        if self.site().lang == 'eo':
+            pagetext = decodeEsperantoX(pagetext)
+        m = self.site().redirectRegex().match(pagetext)
+        if m:
+            # page text matches the redirect pattern
+            if self.section() and not "#" in m.group(1):
+                redirtarget = "%s#%s" % (m.group(1), self.section())
+            else:
+                redirtarget = m.group(1)
+            if get_redirect:
+                self._redirarg = redirtarget
+            else:
+                raise IsRedirectPage(redirtarget)
+        if self.section():
+            # TODO: What the hell is this? Docu please.
+            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(pageInfo['revisions'][0]['*'],self.site().encoding()))
+            if not m:
+                try:
+                    self._getexception
+                except AttributeError:
+                    raise SectionError # Page has no section by this name
+        return pagetext
+
+    def _getEditPageOld(self, get_redirect=False, throttle=True, sysop=False,
+                     oldid=None, change_edit_time=True):
+        """Get the contents of the Page via the edit page."""
+
         if verbose:
             output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
         if oldid:
-            path = path + "&oldid="+oldid
+            path += "&oldid="+oldid
         # Make sure Brion doesn't get angry by waiting if the last time a page
         # was retrieved was not long enough ago.
         if throttle:
@@ -2731,8 +2820,7 @@ not supported by PyWikipediaBot!"""
                     
                     for y in x['revisions']:
                         count += 1
-                        ts = time.strftime("%Y%m%d%H%M%S", time.strptime(y['timestamp'], "%Y-%m-%dT%H:%M:%SZ") )
-                        self._deletedRevs[ts] = [y['timestamp'], y['user'], y['comment'] , y['*'], False]
+                        self._deletedRevs[parsetime2stamp(y['timestamp'])] = [y['timestamp'], y['user'], y['comment'] , y['*'], False]
                 
                 if 'query-continue' in data and data['query-continue']['deletedrevs']['drcontinue'].split('|')[1] == self.titleWithoutNamespace():
                     params['drcontinue'] = data['query-continue']['deletedrevs']['drcontinue']
@@ -7796,6 +7884,10 @@ def decompress_gzip(data):
         except IOError:
             raise
     return data
+
+def parsetime2stamp(tz):
+    s = time.strptime(tz, "%Y-%m-%dT%H:%M:%SZ")
+    return time.strftime("%Y%m%d%H%M%S", s)
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
