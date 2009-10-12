@@ -141,6 +141,9 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
                 return json.loads( jsontext )
 
         except ValueError, error:
+            if "<title>Wiki does not exist</title>" in jsontext:
+                raise wikipedia.NoSuchSite(u'Wiki %s does not exist yet' % site)
+
             if 'Wikimedia Error' in jsontext: #wikimedia server error
                 raise wikipedia.ServerError
             
