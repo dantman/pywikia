@@ -791,6 +791,11 @@ class WelcomeBot(object):
                 if self.badNameFilter(users.name()):
                     self.reportBadAccount(users.name())
                     continue
+                #if 'bot' in users.groups():
+                if 'bot' in users.name().lower():
+                    showStatus(3)
+                    wikipedia.output(u'%s might be a bot!' % users.name() )
+                    continue
                 #if globalvar.offset != 0 and time.strptime(users.registrationTime(), "%Y-%m-%dT%H:%M:%SZ") >= globalvar.offset:
                 #    
                 if users.editCount() >= globalvar.attachEditCount:
