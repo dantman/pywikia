@@ -240,6 +240,10 @@ class CosmeticChangesToolkit:
             if not family.isDefinedNSLanguage(nsNumber, self.site.lang):
                 # Skip undefined namespaces
                 continue
+            if nsNumber == 6 and self.site.family.name == 'wikipedia' and \
+               self.site.lang in ('en', 'fr'):
+                # skip processing file namespace on en-wiki and fr-wiki
+                continue
             namespaces = list(family.namespace(self.site.lang, nsNumber, all = True))
             thisNs = namespaces.pop(0)
 
