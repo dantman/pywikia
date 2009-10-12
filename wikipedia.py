@@ -5055,13 +5055,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         #if False: #self.persistent_http:
         #    conn = self.conn
         #else:
-        if self.protocol() == 'http':
-            if config.proxy['host']:
-                conn = httplib.HTTPConnection(config.proxy['host'])
-            else:
+        if config.proxy['host']:
+            conn = httplib.HTTPConnection(config.proxy['host'])
+        else:
+            if self.protocol() == 'http':
                 conn = httplib.HTTPConnection(self.hostname())
-        elif self.protocol() == 'https':
-            conn = httplib.HTTPSConnection(self.hostname())
+            elif self.protocol() == 'https':
+                conn = httplib.HTTPSConnection(self.hostname())
         # Encode all of this into a HTTP request
         # otherwise, it will crash, as other protocols are not supported
 
