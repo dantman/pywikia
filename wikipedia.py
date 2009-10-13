@@ -2577,12 +2577,91 @@ not supported by PyWikipediaBot!"""
         users = set([edit[2] for edit in edits])
         return users
 
-    def move(self, newtitle, reason=None, movetalkpage=True, sysop=False,
+    def move(self, newtitle, reason=None, movetalkpage=True, movesubpages=False, sysop=False,
              throttle=True, deleteAndMove=False, safe=True, fixredirects=True, leaveRedirect=True):
         """Move this page to new title given by newtitle. If safe, don't try
         to move and delete if not directly requested.
 
         * fixredirects has no effect in MW < 1.13"""
+        try:
+            if config.use_api and self.site().versionnumber() >= 12:
+                x = self.site().api_address()
+                del x
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
+            return self._moveOld(newtitle, reason, movetalkpage, sysop,
+              throttle, deleteAndMove, safe, fixredirects, leaveRedirect)
+        # Login
+        try:
+            self.get()
+        except:
+            pass
+        sysop = self._getActionUser(action = 'move', restriction = self.moveRestriction, sysop = False)
+        if deleteAndMove:
+            sysop = self._getActionUser(action = 'delete', restriction = '', sysop = True)
+            Page(self,site(), newtitle).delete(self.site().mediawiki_message('delete_and_move_reason'), False, False)
+
+        # Check blocks
+        self.site().checkBlocks(sysop = sysop)
+
+        if throttle:
+            put_throttle()
+        if reason is None:
+            reason = input(u'Please enter a reason for the move:')
+        if self.isTalkPage():
+            movetalkpage = False
+        
+        params = {
+            'action': 'move',
+            'from': self.title(),
+            'to': newtitle,
+            'token': self.site().getToken(sysop=sysop),
+            'reason': reason,
+            #'': '',
+        }
+        if movesubpages:
+            params['movesubpages'] = 1
+        
+        if movetalkpage:
+            params['movetalk'] = 1
+        
+        if not leaveRedirect:
+            params['noredirect'] = 1
+        
+        result = query.GetData(params, self.site(), sysop=sysop)
+        if 'error' in result:
+            err = result['error']['code']
+            if err == 'articleexists':
+                if safe:
+                    output(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
+                    return False
+                else:
+                    try:
+                        # Try to delete and move
+                        return self.move(newtitle, reason, movetalkpage, movesubpages, throttle = throttle, deleteAndMove = True)
+                    except NoUsername:
+                        # We dont have the user rights to delete
+                        output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+                        return False
+            #elif err == 'protectedpage':
+            #    
+            else:
+                output("Unknown Error: %s" % result)
+        elif 'move' in result:
+            if deleteAndMove:
+                output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
+            else:
+                output(u'Page %s moved to %s' % (self.title(), newtitle))
+            
+            if hasattr(self, '_contents'):
+                self.get(force=True, get_redirect=True, throttle=False)
+            return True
+        
+    
+    def _moveOld(self, newtitle, reason=None, movetalkpage=True, movesubpages=False, sysop=False,
+             throttle=True, deleteAndMove=False, safe=True, fixredirects=True, leaveRedirect=True):
+        
         # Login
         try:
             self.get()
@@ -2601,9 +2680,10 @@ not supported by PyWikipediaBot!"""
             reason = input(u'Please enter a reason for the move:')
         if self.isTalkPage():
             movetalkpage = False
+        
         host = self.site().hostname()
         address = self.site().move_address()
-        token = self.site().getToken(self, sysop = sysop)
+        token = self.site().getToken(sysop = sysop)
         predata = {
             'wpOldTitle': self.title().encode(self.site().encoding()),
             'wpNewTitle': newtitle.encode(self.site().encoding()),
@@ -2612,21 +2692,31 @@ not supported by PyWikipediaBot!"""
         if deleteAndMove:
             predata['wpDeleteAndMove'] = self.site().mediawiki_message('delete_and_move_confirm')
             predata['wpConfirm'] = '1'
+        
         if movetalkpage:
             predata['wpMovetalk'] = '1'
         else:
             predata['wpMovetalk'] = '0'
+        
         if self.site().versionnumber() >= 13:
             if fixredirects:
                 predata['wpFixRedirects'] = '1'
             else:
                 predata['wpFixRedirects'] = '0'
+        
         if leaveRedirect:
             predata['wpLeaveRedirect'] = '1'
         else:
             predata['wpLeaveRedirect'] = '0'
+        
+        if movesubpages:
+            predata['wpMovesubpages'] = '1'
+        else:
+            predata['wpMovesubpages'] = '0'
+        
         if token:
             predata['wpEditToken'] = token
+        
         if self.site().hostname() in config.authenticate.keys():
             predata['Content-type'] = 'application/x-www-form-urlencoded'
             predata['User-agent'] = useragent
@@ -2635,11 +2725,16 @@ not supported by PyWikipediaBot!"""
             data = u''
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
+        
         if data == u'' or self.site().mediawiki_message('pagemovedsub') in data:
             if deleteAndMove:
                 output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
             else:
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
+            
+            if hasattr(self, '_contents'):
+                self.get(force=True, get_redirect=True, throttle=False)
+            
             return True
         else:
             self.site().checkBlocks(sysop = sysop)
@@ -2650,7 +2745,7 @@ not supported by PyWikipediaBot!"""
                 else:
                     try:
                         # Try to delete and move
-                        return self.move(newtitle = newtitle, reason = reason, movetalkpage = movetalkpage, throttle = throttle, deleteAndMove = True)
+                        return self._moveOld(newtitle, reason, movetalkpage, movesubpages, throttle = throttle, deleteAndMove = True)
                     except NoUsername:
                         # We dont have the user rights to delete
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
