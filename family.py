@@ -3102,7 +3102,6 @@ class Family:
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
         self.interwiki_on_one_line = []
-
         # String used as separator between interwiki links and the text
         self.interwiki_text_separator = '\r\n\r\n'
 
@@ -3111,25 +3110,24 @@ class Family:
         # on_one_line is a list of languages that want the category links
         # one-after-another on a single line
         self.category_on_one_line = []
-
         # String used as separator between category links and the text
         self.category_text_separator = '\r\n\r\n'
-
         # When both at the bottom should categories come after interwikilinks?
         self.categories_last = []
 
-        # Which languages have a special order for putting interlanguage links,
-        # and what order is it? If a language is not in interwiki_putfirst,
-        # alphabetical order on language code is used. For languages that are in
-        # interwiki_putfirst, interwiki_putfirst is checked first, and
-        # languages are put in the order given there. All other languages are put
-        # after those, in code-alphabetical order.
+        # Which languages have a special order for putting interlanguage
+        # links, and what order is it? If a language is not in
+        # interwiki_putfirst, alphabetical order on language code is used.
+        # For languages that are in interwiki_putfirst, interwiki_putfirst
+        # is checked first, and languages are put in the order given there.
+        # All other languages are put after those, in code-alphabetical
+        # order.
         self.interwiki_putfirst = {}
 
-        # Languages in interwiki_putfirst_doubled should have a number plus a list
-        # of languages. If there are at least the number of interwiki links, all
-        # languages in the list should be placed at the front as well as in the
-        # normal list.
+        # Languages in interwiki_putfirst_doubled should have a number plus
+        # a list of languages. If there are at least the number of interwiki
+        # links, all languages in the list should be placed at the front as
+        # well as in the normal list.
         self.interwiki_putfirst_doubled = {}
 
         # Some families, e. g. commons and meta, are not multilingual and
@@ -3138,10 +3136,10 @@ class Family:
         # family.
         self.interwiki_forward = None
 
-        # Which language codes do no longer exist and by which language code should
-        # they be replaced. If for example the language with code xx: now should get
-        # code yy:, add {'xx':'yy'} to obsolete.
-        # If all links to language xx: shall be removed, add {'xx': None}.
+        # Which language codes no longer exist and by which language code
+        # should they be replaced. If for example the language with code xx:
+        # now should get code yy:, add {'xx':'yy'} to obsolete. If all
+        # links to language xx: should be removed, add {'xx': None}.
         self.obsolete = {}
 
         # Language codes of the largest wikis. They should be roughly sorted
@@ -3215,10 +3213,11 @@ class Family:
         # values are dicts where:
         #   keys are the originating langcode, or _default
         #   values are dicts where:
-        #       keys are the languages that can be linked to from the lang+ns, or _default
-        #       values are a list of namespace numbers
+        #     keys are the languages that can be linked to from the lang+ns, or
+        #     '_default'; values are a list of namespace numbers
         self.crossnamespace = {}
-        #### Examples :
+        ##
+        ## Examples :
         ## Allowing linking to pt' 102 NS from any other lang' 0 NS is
         # self.crossnamespace[0] = {
         #     '_default': { 'pt': [102]}
@@ -3605,7 +3604,7 @@ class Family:
         'sr': [u'СТРАНИЦЕ']
     }
 
-    def pagenamecodes(self,code):
+    def pagenamecodes(self, code):
         pos = ['PAGENAME']
         pos2 = []
         if code in self.pagename:
@@ -3615,10 +3614,10 @@ class Family:
         elif code == 'bm':
             return self.pagenamecodes('fr')
         for p in pos:
-            pos2 += [p,p.lower()]
+            pos2 += [p, p.lower()]
         return pos2
 
-    def pagename2codes(self,code):
+    def pagename2codes(self, code):
         pos = ['PAGENAME']
         pos2 = []
         if code in self.pagenamee:
@@ -3628,7 +3627,7 @@ class Family:
         elif code == 'bm':
             return self.pagename2codes('fr')
         for p in pos:
-            pos2 += [p,p.lower()]
+            pos2 += [p, p.lower()]
         return pos2
 
     # Methods
@@ -3640,6 +3639,7 @@ class Family:
         return 'http'
 
     def hostname(self, code):
+        """The hostname to use for standard http connections."""
         return self.langs[code]
 
     def scriptpath(self, code):
@@ -3674,11 +3674,18 @@ class Family:
 
     # Which version of MediaWiki is used?
     def version(self, code):
+        """Return MediaWiki version number as a string."""
         # Don't use this, use versionnumber() instead. This only exists
         # to not break family files.
         return '1.13alpha'
 
     def versionnumber(self, code):
+        """Return an int identifying MediaWiki version.
+
+        Currently this is implemented as returning the minor version
+        number; i.e., 'X' in version '1.X.Y'
+
+        """
         R = re.compile(r"(\d+).(\d+)")
         M = R.search(self.version(code))
         if not M:
@@ -3889,7 +3896,7 @@ class Family:
         found is an existing page, in case the normal regexp does not work."""
         return None
 
-    def has_query_api(self,code):
+    def has_query_api(self, code):
         """Is query.php installed in the wiki?"""
         return False
 
