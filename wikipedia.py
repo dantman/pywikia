@@ -3029,7 +3029,7 @@ not supported by PyWikipediaBot!"""
             
             result = query.GetData(params, self.site(), sysop=True)
             if 'error' in result:
-                raise RuntimeError("%s" % result)
+                raise RuntimeError("%s" % result['error'])
             elif 'undelete' in result:
                 output(u'Page %s undeleted' % self.aslink())
             
