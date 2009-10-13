@@ -58,12 +58,58 @@ def isWatched(pageName, site=None):
     watchlist = get(site)
     return pageName in watchlist
 
-def refresh(site):
+def refresh(site, sysop=False):
+    try:
+        if wikipedia.config.use_api and site.versionnumber() >= 10:
+            x = site.api_address()
+            del x
+        else:
+            raise NotImplementedError
+    except NotImplementedError:
+        _refreshOld(site)
+    
+    # get watchlist special page's URL
+    if not site.loggedInAs(sysop=sysop):
+        site.forceLogin(sysop=sysop)
+    
+    params = {
+        'action': 'query',
+        'list': 'watchlist',
+        'wllimit': wikipedia.config.special_page_limit,
+        'wlprop': 'title',
+    }
+    
+    wikipedia.output(u'Retrieving watchlist for %s' % repr(site))
+    #wikipedia.put_throttle() # It actually is a get, but a heavy one.
+    watchlist = []
+    while True:
+        data = wikipedia.query.GetData(params, site, sysop=sysop)
+        if 'error' in data:
+            raise RuntimeError('ERROR: %s' % data)
+        watchlist.extend([w['title'] for w in data['query']['watchlist']])
+        
+        if 'query-continue' in data:
+            params['wlstart'] = data['query-continue']['watchlist']['wlstart']
+        else:
+            break
+
+    # Save the watchlist to disk
+    # The file is stored in the watchlists subdir. Create if necessary.
+    if sysop:
+        f = open(wikipedia.config.datafilepath('watchlists',
+                 'watchlist-%s-%s-sysop.dat' % (site.family.name, site.lang)), 'w')    
+    else:
+        f = open(wikipedia.config.datafilepath('watchlists',
+                 'watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
+    pickle.dump(watchlist, f)
+    f.close()
+
+def _refreshOld(site, sysop=False):
     # get watchlist special page's URL
     path = site.watchlist_address()
     wikipedia.output(u'Retrieving watchlist for %s' % repr(site))
     #wikipedia.put_throttle() # It actually is a get, but a heavy one.
-    watchlistHTML = site.getUrl(path)
+    watchlistHTML = site.getUrl(path, sysop=sysop)
 
     wikipedia.output(u'Parsing watchlist')
     watchlist = []
@@ -74,21 +120,25 @@ def refresh(site):
 
     # Save the watchlist to disk
     # The file is stored in the watchlists subdir. Create if necessary.
-    f = open(wikipedia.config.datafilepath('watchlists',
+    if sysop:
+        f = open(wikipedia.config.datafilepath('watchlists',
+                 'watchlist-%s-%s-sysop.dat' % (site.family.name, site.lang)), 'w')    
+    else:
+        f = open(wikipedia.config.datafilepath('watchlists',
                  'watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
     pickle.dump(watchlist, f)
     f.close()
 
-def refresh_all(new = False):
+def refresh_all(new = False, sysop=False):
     if new:
         import config
         wikipedia.output('Downloading All watchlists for your accounts in user-config.py');
         for family in config.usernames:
             for lang in config.usernames[ family ]:
-                refresh(wikipedia.getSite( code = lang, fam = family ) )
+                refresh(wikipedia.getSite( code = lang, fam = family ), sysop=sysop )
         for family in config.sysopnames:
             for lang in config.sysopnames[ family ]:
-                refresh(wikipedia.getSite( code = lang, fam = family ) )
+                refresh(wikipedia.getSite( code = lang, fam = family ), sysop=sysop )
 
     else:
         import dircache, time
@@ -105,17 +155,20 @@ def refresh_all(new = False):
 def main():
     all = False
     new = False
+    sysop = False
     for arg in wikipedia.handleArgs():
         if arg == '-all' or arg == '-update':
             all = True
         elif arg == '-new':
             new = True
+        elif arg == '-sysop':
+            sysop = True
     if all:
-        refresh_all()
+        refresh_all(sysop=sysop)
     elif new:
-        refresh_all(new)
+        refresh_all(new, sysop=sysop)
     else:
-        refresh(wikipedia.getSite())
+        refresh(wikipedia.getSite(), sysop=sysop)
 
         watchlist = get(wikipedia.getSite())
         wikipedia.output(u'%i pages in the watchlist.' % len(watchlist))
