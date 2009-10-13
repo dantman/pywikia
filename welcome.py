@@ -959,7 +959,7 @@ if __name__ == "__main__":
             elif arg == '-break':
                 globalvar.recursive = False
             elif arg == '-nlog':
-                globalvar.makeWelcomLog = False
+                globalvar.makeWelcomeLog = False
             elif arg == '-ask':
                 globalvar.confirm = True
             elif arg == '-filter':
