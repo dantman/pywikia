@@ -770,7 +770,7 @@ not supported by PyWikipediaBot!"""
             if restr['type'] == 'edit':
                 self.editRestriction = restr['level']
             elif restr['type'] == 'move':
-                self.moveRestriction = restr['level']	
+                self.moveRestriction = restr['level']    
         
         self._revisionId = pageInfo['revisions'][0]['revid']
         
@@ -2999,37 +2999,64 @@ not supported by PyWikipediaBot!"""
                 if ... #decide whether to undelete a revision
                     pg.markDeletedRevision(rev) #mark for undeletion
             pg.undelete('This will restore only selected revisions.')
-
+        
         """
         # Login
         self._getActionUser(action = 'undelete', sysop = True)
-
+        
         # Check blocks
         self.site().checkBlocks(sysop = True)
-
+        
+        token = self.site().getToken(self, sysop=True)
+        
         if throttle:
             put_throttle()
-
-        address = self.site().undelete_address()
-        token = self.site().getToken(self, sysop=True)
-
-        formdata = {
+        
+        if config.use_api and self.site().versionnumber() >= 12:
+            params = {
+                'action': 'undelete',
+                'title': self.title(),
+                'reason': comment,
+                'token': token,
+            }
+            if self._deletedRevs and self._deletedRevsModified:
+                selected = []
+                
+                for ts in self._deletedRevs:
+                    if self._deletedRevs[ts][4]:
+                        selected.append(ts)
+                params['timestamps'] = query.ListToParam(ts),
+            
+            result = query.GetData(params, self.site(), sysop=True)
+            if 'error' in result:
+                raise RuntimeError("%s" % result)
+            elif 'undelete' in result:
+                output(u'Page %s undeleted' % self.aslink())
+            
+            return result
+            
+        else:
+            address = self.site().undelete_address()
+            
+            formdata = {
                 'target': self.title(),
                 'wpComment': comment,
                 'wpEditToken': token,
                 'restore': self.site().mediawiki_message('undeletebtn')
-                }
+            }
+            
+            if self._deletedRevs and self._deletedRevsModified:
+                for ts in self._deletedRevs:
+                    if self._deletedRevs[ts][4]:
+                        formdata['ts'+ts] = '1'
 
-        if self._deletedRevs is not None and self._deletedRevsModified:
-            for ts in self._deletedRevs:
-                if self._deletedRevs[ts][4]:
-                    formdata['ts'+ts] = '1'
-
-        self._deletedRevs = None
-        #TODO: Check for errors below (have we succeeded? etc):
-        result = self.site().postForm(address,formdata,sysop=True)
-        output(u'Page %s undeleted' % self.aslink())
-        return result
+            self._deletedRevs = None
+            #TODO: Check for errors below (have we succeeded? etc):
+            result = self.site().postForm(address,formdata,sysop=True)
+            output(u'Page %s undeleted' % self.aslink())
+        
+            return result
+        
 
     def protect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
                 move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
