@@ -825,7 +825,7 @@ class WelcomeBot(object):
                             welcomed_count += 1
                             self._totallyCount += 1
                             self.welcomed_users.append(users)
-                        except wikipedia.EditConflit:
+                        except wikipedia.EditConflict:
                             showStatus(4)
                             wikipedia.output(u'An edit conflict has occured, skipping this user.')
                     
