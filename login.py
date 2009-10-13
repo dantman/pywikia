@@ -300,7 +300,8 @@ class LoginManager:
                 os.remove(filename)
             except:
                 pass
-            wikipedia.output('%s is logged out.' % self.site)
+            if __name__ != "__main__":
+                wikipedia.output('%s is logged out.' % self.site)
             return True
         
         return False
