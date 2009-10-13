@@ -5605,8 +5605,14 @@ your connection is down. Retrying in %i minutes..."""
             if self.versionnumber() < 12:
                 usePHP = True
             else:
-                if config.use_api:
-                    api = True
+                try:
+                    if config.use_api:
+                        x = self.api_address()
+                        del x
+                        api = True
+                except NotImplementedError:
+                    api = False
+                
                 usePHP = False
                 elementtree = True
                 try:
@@ -5622,7 +5628,7 @@ your connection is down. Retrying in %i minutes..."""
                         output(u'Elementtree was not found, using BeautifulSoup instead')
                     elementtree = False
 
-            if config.use_diskcache:
+            if config.use_diskcache and not api:
                 import diskcache
                 _dict = lambda x : diskcache.CachedReadOnlyDictI(x, prefix = "msg-%s-%s-" % (self.family.name, self.lang))
             else:
@@ -5632,19 +5638,19 @@ your connection is down. Retrying in %i minutes..."""
             while True:
                 if api and self.versionnumber() >= 12 or self.versionnumber() >= 16:
                     params = {
-                        'action':'query',
-                        'meta':'allmessages',
+                        'action': 'query',
+                        'meta': 'allmessages',
+                        'ammessages': key,
                     }
-                    try:
-                        datas = query.GetData(params, self)['query']['allmessages']
-                        self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
-                                for tag in datas if not 'missing' in tag])
-                    except NotImplementedError:
-                        api = False
-                        continue
+                        datas = query.GetData(params, self)['query']['allmessages'][0]
+                        if "missing" in datas:
+                            raise KeyError("message is not exist.")
+                        elif datas['name'] not in self._mediawiki_messages:
+                            self._mediawiki_messages[datas['name']] = datas['*']
+                        #self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
+                        #        for tag in datas if not 'missing' in tag])
                 elif usePHP:
-                    phppage = self.getUrl(self.get_address("Special:Allmessages")
-                                      + "&ot=php")
+                    phppage = self.getUrl(self.get_address("Special:Allmessages") + "&ot=php")
                     Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
                     # Previous regexp don't match empty messages. Fast workaround...
                     phppage = re.sub("(?m)^('.*?' =&gt;) '',", r"\1 ' ',", phppage)
@@ -5652,8 +5658,7 @@ your connection is down. Retrying in %i minutes..."""
                         html2unicode(message.replace("\\'", "'")))
                             for (name, message) in Rphpvals.findall(phppage)])
                 else:
-                    xml = self.getUrl(self.get_address("Special:Allmessages")
-                                        + "&ot=xml")
+                    xml = self.getUrl(self.get_address("Special:Allmessages") + "&ot=xml")
                     # xml structure is :
                     # <messages lang="fr">
                     #    <message name="about">À propos</message>
@@ -7839,7 +7844,7 @@ Really exit?"""
         get_throttle.drop()
     except NameError:
         pass
-    if config.use_diskcache:
+    if config.use_diskcache and not config.use_api:
         for site in _sites.itervalues():
             if site._mediawiki_messages:
                 try:
