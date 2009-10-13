@@ -1305,7 +1305,7 @@ not supported by PyWikipediaBot!"""
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
                                  parseOnlyThese=content)
             next_text = body.find(text=nextpattern)
-            if next_text is not None and 'href' in next_text:
+            if next_text is not None and next_text.parent.has_key('href'):
                 path = next_text.parent['href'].replace("&amp;", "&")
             else:
                 path = ""
