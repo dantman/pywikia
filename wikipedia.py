@@ -5642,13 +5642,13 @@ your connection is down. Retrying in %i minutes..."""
                         'meta': 'allmessages',
                         'ammessages': key,
                     }
-                        datas = query.GetData(params, self)['query']['allmessages'][0]
-                        if "missing" in datas:
-                            raise KeyError("message is not exist.")
-                        elif datas['name'] not in self._mediawiki_messages:
-                            self._mediawiki_messages[datas['name']] = datas['*']
-                        #self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
-                        #        for tag in datas if not 'missing' in tag])
+                    datas = query.GetData(params, self)['query']['allmessages'][0]
+                    if "missing" in datas:
+                        raise KeyError("message is not exist.")
+                    elif datas['name'] not in self._mediawiki_messages:
+                        self._mediawiki_messages[datas['name']] = datas['*']
+                    #self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
+                    #        for tag in datas if not 'missing' in tag])
                 elif usePHP:
                     phppage = self.getUrl(self.get_address("Special:Allmessages") + "&ot=php")
                     Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
