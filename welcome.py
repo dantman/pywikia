@@ -176,9 +176,11 @@ __version__ = '$Id$'
 
 
 import wikipedia, config, query, userlib
-import time, re, cPickle, os, urllib, string, locale, random
+import time, re, urllib, locale
 import codecs
 from datetime import timedelta
+from random import choice
+from string import capitalize
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -633,7 +635,7 @@ class WelcomeBot(object):
             wikipedia.output('Log page is not exist, getting information for page creation')
             text = wikipedia.translate(self.site, logpage_header)
             text += u'\n!%s' % self.site.namespace(2)
-            text += u'\n!%s' % string.capitalize(self.site.mediawiki_message('contribslink'))
+            text += u'\n!%s' % capitalize(self.site.mediawiki_message('contribslink'))
         
         for result in queue:
             # Adding the log... (don't take care of the variable's name...).
@@ -813,7 +815,7 @@ class WelcomeBot(object):
                     else:
                         welcome_text = wikipedia.translate(self.site, netext)
                         if globalvar.randomSign:
-                            welcome_text = welcome_text % random.choice(self.defineSign())
+                            welcome_text = welcome_text % choice(self.defineSign())
                             welcome_text += timeselected
                         else:
                             welcome_text = welcome_text % globalvar.defaultSign
@@ -992,6 +994,7 @@ if __name__ == "__main__":
     finally:
         # If there is the savedata, the script must save the number_user.
         if globalvar.randomSign and globalvar.saveSignIndex and bot.welcomed_users:
+            import cPickle
             f = file(filename, 'w')
             cPickle.dump(bot.welcomed_users, f)
             f.close()
