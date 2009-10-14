@@ -1054,7 +1054,7 @@ not supported by PyWikipediaBot!"""
         while True:
             data = query.GetData(params, self.site(), encodeTitle = False)
             pageid = data[u'query'][u'pages'].keys()[0]
-            if type(data['query']['pages'][pageid].values()[0]) == list(): # if it's not a list: no templates
+            if type(data['query']['pages'][pageid].values()[0]) == type(list()): # if it's not a list: no templates
                 for tmp in data['query']['pages'][pageid].values()[0]:
                     count += 1
                     try:
