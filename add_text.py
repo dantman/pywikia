@@ -147,10 +147,10 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             text = page.get()
         except wikipedia.NoPage:
             wikipedia.output(u"%s doesn't exist, skip!" % page.title())
-            return (False, always) # continue
+            return (False, False, always) # continue
         except wikipedia.IsRedirectPage:
             wikipedia.output(u"%s is a redirect, skip!" % page.title())
-            return (False, always) # continue
+            return (False, False, always) # continue
     else:
         text = oldTextGiven
     # Understand if the bot has to skip the page or not
@@ -160,7 +160,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         result = re.findall(regexSkipUrl, site.getUrl(url))
         if result != []:
             wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
-            return (False, always) # continue
+            return (False, False, always) # continue
     if regexSkip != None:
         result = re.findall(regexSkip, text)
         if result != []:
@@ -236,10 +236,10 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                         raise wikipedia.ServerError(u'Fifth Server Error!')
                 except wikipedia.SpamfilterError, e:
                     wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                    return (False, always)
+                    return (False, False, always)
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Error putting page: %s' % error.args)
-                    return (False, always)
+                    return (False, False, always)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Skipping %s (locked page)' % page.title())
                     return (False, False, always)

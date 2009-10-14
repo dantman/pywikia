@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 With this tool you can add the template {{commonscat}} to categories.
@@ -260,7 +260,7 @@ def addCommonscat (page = None, summary = None, always = False):
         commonscatLink = findCommonscatLink(page)
         if (commonscatLink!=u''):
             textToAdd = u'{{' + getTemplate(page.site().language()) + u'|' + commonscatLink + u'}}'
-            (success, always) = add_text.add_text(page, textToAdd, summary, None, None, always);
+            (success, status, always) = add_text.add_text(page, textToAdd, summary, None, None, always);
             return (True, always);
 
     return (True, always);
