@@ -46,7 +46,9 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     if wikipedia.verbose:
         wikipedia.output("====API PARAMS====")
     for k,v in params.iteritems():
-        if not IsString(v):
+        if type(v) == list:
+            params[k] = unicode(ListToParam(v))
+        elif not IsString(v):
             params[k] = unicode(v)
         if wikipedia.verbose:
             if type(v) not in (int, long):
@@ -64,7 +66,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         wikipedia.output("==================")
     
 
-    if 'format' not in params:
+    if 'format' not in params or params['format'] != 'json':
         params['format'] = 'json'
 
     if not useAPI:
@@ -135,10 +137,13 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
 
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
+            
+            jsontext = json.loads( jsontext )
+            
             if back_response:
-                return res, json.loads( jsontext )
+                return res, jsontext
             else:
-                return json.loads( jsontext )
+                return jsontext
 
         except ValueError, error:
             if "<title>Wiki does not exist</title>" in jsontext:
