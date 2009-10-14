@@ -1052,17 +1052,15 @@ not supported by PyWikipediaBot!"""
         tmpsFound = []
         count = 0
         while True:
-            data = query.GetData(params, self.site(), encodeTitle = False)
-            pageid = data[u'query'][u'pages'].keys()[0]
-            if type(data['query']['pages'][pageid].values()[0]) == type(list()): # if it's not a list: no templates
-                for tmp in data['query']['pages'][pageid].values()[0]:
-                    count += 1
-                    try:
-                        tmpsFound.append(Page(self.site(), tmp['title'], defaultNamespace=tmp['ns']) )
-                    except TypeError: # no templates in the file.
-                        pass
-                    if count >= tllimit:
-                        break
+            data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages'].values()[0]
+            if "templates" not in data:
+                return []
+            
+            for tmp in data['templates']:
+                count += 1
+                tmpsFound.append(Page(self.site(), tmp['title'], defaultNamespace=tmp['ns']) )
+                if count >= tllimit:
+                    break
             
             if 'query-continue' in data and count < tllimit:
                 params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
