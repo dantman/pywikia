@@ -545,6 +545,7 @@ class WelcomeBot(object):
             for bname in self._blacklist:
                 if bname.lower() in str(name.lower()): #bad name positive
                     return True
+            self.bname = bname
         except UnicodeEncodeError:
             pass
         
@@ -600,7 +601,7 @@ class WelcomeBot(object):
                     # Adding the log.
                     rep_text += wikipedia.translate(self.site, report_text) % username
                     if self.site.lang == 'it':
-                        rep_text = "%s%s}}" % (rep_text, word)
+                        rep_text = "%s%s}}" % (rep_text, self.bname)
             
             com = wikipedia.translate(self.site, comment)
             if rep_text != '':
