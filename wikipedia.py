@@ -734,8 +734,8 @@ not supported by PyWikipediaBot!"""
         params = {
             'action': 'query',
             'titles': self.title(),
-            'prop': 'revisions|info',
-            'rvprop': 'content|ids|flags|timestamp|user|comment|size',
+            'prop': ['revisions','info'],
+            'rvprop': ['content','ids','flags','timestamp','user','comment','size'],
             'rvlimit': 1,
             'inprop': 'protection',#|talkid|subjectid',
             'intoken': 'edit',
@@ -1433,7 +1433,7 @@ not supported by PyWikipediaBot!"""
             'titles': self.title(),
         }
         #if titles:
-        #    predata['titles'] = query.ListToParam(titles)
+        #    predata['titles'] = titles
 
         text = query.GetData(predata, self.site())['query']['pages']
 
@@ -2900,7 +2900,7 @@ not supported by PyWikipediaBot!"""
                 'list': 'deletedrevs',
                 'drfrom': self.titleWithoutNamespace(),
                 'drnamespace': self.namespace(),
-                'drprop': 'revid|user|comment|content',#|minor|len|token
+                'drprop': ['revid','user','comment','content'],#','minor','len','token'],
                 'drlimit': 100,
                 'drdir': 'older',
                 #'': '',
@@ -3024,7 +3024,7 @@ not supported by PyWikipediaBot!"""
                 for ts in self._deletedRevs:
                     if self._deletedRevs[ts][4]:
                         selected.append(ts)
-                params['timestamps'] = query.ListToParam(ts),
+                params['timestamps'] = ts,
             
             result = query.GetData(params, self.site(), sysop=True)
             if 'error' in result:
@@ -3142,8 +3142,8 @@ not supported by PyWikipediaBot!"""
                 'action': 'protect',
                 'title': self.title(),
                 'token': token,
-                'protections': query.ListToParam(protections),
-                'expiry': query.ListToParam(expiry),
+                'protections': protections,
+                'expiry': expiry,
                 #'': '',
             }
             if reason:
@@ -3346,7 +3346,7 @@ not supported by PyWikipediaBot!"""
         params = {
             'action'    :'query',
             'prop'      :'revisions',
-            'rvprop'    :'user|timestamp',
+            'rvprop'    :['user','timestamp'],
             'rvlimit'   :limit,
             'titles'    :self.title(),
             }
@@ -5870,10 +5870,10 @@ your connection is down. Retrying in %i minutes..."""
             params = {
                 'action': 'query',
                 'meta': 'userinfo',
-                'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits',
+                'uiprop': ['blockinfo','groups','rights','hasmsg','ratelimits'],
             }
             if self.versionnumber() >= 14:
-                params['uiprop'] += '|preferencestoken'
+                params['uiprop'].append('preferencestoken')
 
             text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
             self._getUserData(text, sysop = sysop, force = force)
@@ -5950,8 +5950,8 @@ your connection is down. Retrying in %i minutes..."""
                     'rctype': 'new',
                     'rcnamespace': namespace,
                     'rclimit': int(number),
-                    'rcprop': 'title|timestamp|sizes|user|comment',
-                    'rcshow': '!bot|!redirect',
+                    'rcprop': ['title','timestamp','sizes','user','comment'],
+                    'rcshow': ['!bot','!redirect'],
                     #'': '',
                 }
                 data = query.GetData(params, self)['query']['recentchanges']
@@ -6249,7 +6249,7 @@ your connection is down. Retrying in %i minutes..."""
             'action'    : 'query',
             'list'      : 'recentchanges',
             'rctype'    : rctype,
-            'rcprop'    : 'user|comment|timestamp|title|ids|loginfo',    #|flags|sizes|redirect|patrolled'
+            'rcprop'    : ['user','comment','timestamp','title','ids','loginfo'],    #','flags','sizes','redirect','patrolled']
             'rclimit'   : int(number),
             }
         if rcstart is not None: params['rcstart'] = rcstart
@@ -8018,7 +8018,7 @@ def decompress_gzip(data):
 
 def parsetime2stamp(tz):
     s = time.strptime(tz, "%Y-%m-%dT%H:%M:%SZ")
-    return time.strftime("%Y%m%d%H%M%S", s)
+    return int(time.strftime("%Y%m%d%H%M%S", s))
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"

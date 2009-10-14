@@ -197,7 +197,7 @@ class User(object):
                 params['uclimit'] = 5000
         
         if namespace:
-            params['ucnamespace'] = query.ListToParam(namespace)
+            params['ucnamespace'] = namespace
         # An user is likely to contribute on several pages,
         # keeping track of titles
         nbresults = 0
@@ -534,8 +534,8 @@ def batchLoadUI(names = [], site = None):
     params = {
         'action': 'query',
         'list': 'users',
-        'usprop': 'blockinfo|groups|editcount|registration|emailable|gender',
-        'ususers': query.ListToParam(names),
+        'usprop': ['blockinfo', 'groups', 'editcount', 'registration', 'emailable', 'gender'],
+        'ususers': names,
     }
     #if site.versionnumber() >= 16:
     #    params['ustoken'] = 'userrights'

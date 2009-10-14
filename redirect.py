@@ -354,7 +354,7 @@ class RedirectGenerator:
         }
         for apiQ in self._next_redirects_via_api_commandline(number, namespaces, start, until):
             # wikipedia.output (u'===apiQ=%s' % apiQ)
-            params['pageids'] = query.ListToParam(apiQ)
+            params['pageids'] = apiQ
             data = query.GetData(params, self.site)
             # wikipedia.output(u'===RESULT===\n%s\n' % result)
             redirects = {}
