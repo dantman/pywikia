@@ -51,13 +51,20 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         elif not IsString(v):
             params[k] = unicode(v)
         if wikipedia.verbose:
-            if type(v) not in (int, long):
-                if v.count('|') == 0 and len(v) > 40:
-                    wikipedia.output("[%s]: %s (total %d char)" % (k,v[0:30], lev(v)) )
-                elif v.count('|') > 8:
-                    wikipedia.output("[%s]: %s (and more %d values)" % (k,v[0:v.index('|')], len(v.split('|')) ) )
+            if type(v) == list:
+                wikipedia.output("[%s]: " % k, newline = False)
+                if len(v) > 10:
+                    wikipedia.output("%s (total %d items)" % (v[0:30], len(v)) )
                 else:
-                    wikipedia.output("[%s]: %s" % (k,v) )
+                    wikipedia.output("%s" % v )
+            elif type(v) not in (int, long):
+                wikipedia.output("[%s]: " % k, newline = False)
+                if v.count('|') == 0 and len(v) > 40:
+                    wikipedia.output("%s (total %d char)" % (v[0:30], len(v) ) )
+                elif v.count('|') > 8:
+                    wikipedia.output("%s (and more %d values)" % (v[0:v.index('|')], len(v.split('|')) ) )
+                else:
+                    wikipedia.output("%s" % v )
             elif k == u'format':
                 continue
             else:
