@@ -843,6 +843,7 @@ class WelcomeBot(object):
                         if welcomed_count >= globalvar.dumpToLog:
                             if self.makelogpage(self.welcomed_users):
                                 self.welcomed_users = list()
+                                welcomed_count = 0
                             else:
                                 continue
                     # If we haven't to report, do nothing.
