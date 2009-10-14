@@ -4,7 +4,7 @@ Library to work with users, their pages and talk pages.
 """
 __version__ = '$Id$'
 
-import re, time
+import re
 import wikipedia, query
 
 
@@ -187,7 +187,7 @@ class User(object):
             'action': 'query',
             'list': 'usercontribs',
             'ucuser': self.name(),
-            'ucprop': 'ids|title|timestamp|comment',# |size|flags',
+            'ucprop': ['ids','title','timestamp','comment'],# 'size','flags'],
             'uclimit': int(limit),
             'ucdir': 'older',
         }
@@ -207,7 +207,11 @@ class User(object):
                 wikipedia.output('%s' % result)
                 raise wikipedia.Error
             for c in result['query']['usercontribs']:
-                yield wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']), c['revid'], c['timestamp'], c['comment']
+                yield (wikipedia.Page(self.site(), c['title'], defaultNamespace=c['ns']),
+                  c['revid'],
+                  wikipedia.parsetime2stamp(c['timestamp']),
+                  c['comment']
+                )
                 nbresults += 1
                 if nbresults >= limit:
                     break
