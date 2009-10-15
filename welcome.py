@@ -790,8 +790,6 @@ class WelcomeBot(object):
         while True:
             welcomed_count = 0
             for users in self.parseNewUserLog():
-                import userlib
-                users = userlib.User(self.site, 'Super studiosa')
                 if users.isBlocked():
                     showStatus(3)
                     wikipedia.output(u'%s has been blocked!' % users.name() )
