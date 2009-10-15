@@ -44,7 +44,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         site = wikipedia.getSite()
 
     if wikipedia.verbose:
-        wikipedia.output("====API PARAMS====")
+        wikipedia.output(u"====API PARAMS====")
     for k,v in params.iteritems():
         if type(v) == list:
             params[k] = unicode(ListToParam(v))
@@ -52,25 +52,25 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
             params[k] = unicode(v)
         if wikipedia.verbose:
             if type(v) == list:
-                wikipedia.output("[%s]: " % k, newline = False)
+                wikipedia.output(u"[%s]: " % k, newline = False)
                 if len(v) > 10:
-                    wikipedia.output("%s (total %d items)" % (v[0:30], len(v)) )
+                    wikipedia.output(u"%s (total %d items)" % (v[0:30], len(v)) )
                 else:
-                    wikipedia.output("%s" % v )
+                    wikipedia.output(u"%s" % v )
             elif type(v) not in (int, long):
-                wikipedia.output("[%s]: " % k, newline = False)
+                wikipedia.output(u"[%s]: " % k, newline = False)
                 if v.count('|') == 0 and len(v) > 40:
-                    wikipedia.output("%s (total %d char)" % (v[0:30], len(v) ) )
+                    wikipedia.output(u"%s (total %d char)" % (v[0:30], len(v) ) )
                 elif v.count('|') > 8:
-                    wikipedia.output("%s (and more %d values)" % (v[0:v.index('|')], len(v.split('|')) ) )
+                    wikipedia.output(u"%s (and more %d values)" % (v[0:v.index('|')], len(v.split('|')) ) )
                 else:
-                    wikipedia.output("%s" % v )
+                    wikipedia.output(u"%s" % v )
             elif k == u'format':
                 continue
             else:
-                wikipedia.output("[%s]: %s" % (k,v) )
+                wikipedia.output(u"[%s]: %s" % (k,v) )
     if wikipedia.verbose:
-        wikipedia.output("==================")
+        wikipedia.output(u"==================")
     
 
     if 'format' not in params or params['format'] != 'json':
