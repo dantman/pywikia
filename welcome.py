@@ -546,8 +546,8 @@ class WelcomeBot(object):
         try:
             for bname in self._blacklist:
                 if bname.lower() in str(name.lower()): #bad name positive
+                    self.bname = bname
                     return True
-            self.bname = bname
         except UnicodeEncodeError:
             pass
         
@@ -790,12 +790,11 @@ class WelcomeBot(object):
         while True:
             welcomed_count = 0
             for users in self.parseNewUserLog():
+                import userlib
+                users = userlib.User(self.site, 'Super studiosa')
                 if users.isBlocked():
                     showStatus(3)
                     wikipedia.output(u'%s has been blocked!' % users.name() )
-                    continue
-                if self.badNameFilter(users.name()):
-                    self.reportBadAccount(users.name())
                     continue
                 #if 'bot' in users.groups():
                 if 'bot' in users.name().lower():
@@ -813,6 +812,9 @@ class WelcomeBot(object):
                         wikipedia.output(u'%s has been already welcomed.' % users.name())
                         continue
                     else:
+                        if self.badNameFilter(users.name()):
+                            self.reportBadAccount(users.name())
+                            continue
                         welcome_text = wikipedia.translate(self.site, netext)
                         if globalvar.randomSign:
                             welcome_text = welcome_text % choice(self.defineSign())
