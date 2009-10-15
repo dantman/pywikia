@@ -467,6 +467,14 @@ emailSubject = {
         'zh':None,
         }
 
+# Seems that uploaderBots aren't interested to get messages regarding the
+# files that they upload.. strange, uh?
+# Format: [[user,regex], [user,regex]...] the regex is needed to match the user where to send the warning-msg
+uploadBots = {
+        'commons':[['File Upload Bot (Magnus Manske)',r'\|[Ss]ource=Transferred from .*?; transferred to Commons by \[\[User:(.*?)\]\]']],
+        'en':None,
+}
+
 # Add your project (in alphabetical order) if you want that the bot start
 project_inserted = [u'ar', u'commons', u'de', u'en', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
 
@@ -644,6 +652,15 @@ class main:
             else:
                 break
 
+    def uploadBotChangeFunction(self, reportPageText, upBotArray):
+        """ Detect the user that has uploaded the file through the upload bot """
+        regex = upBotArray[1]
+        results = re.findall(regex, reportPageText)
+        if results == []:
+            return upBotArray[0] # we can't find the user, report the problem to the bot
+        else:
+            luser = results[0]
+            return luser
     def tag_image(self, put = True):
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the file. """
@@ -671,7 +688,12 @@ class main:
             # We have a problem! Report and exit!
             self.report_image(self.image_to_report, self.rep_page, self.com, repme)
             return False
+        upBots = wikipedia.translate(self.site, uploadBots)
         luser = wikipedia.url2link(nick, self.site, self.site)
+        if upBots != None:
+            for upBot in upBots:
+                if upBot[0] == luser:
+                    luser = self.uploadBotChangeFunction(reportPageText, upBot)
         talk_page = wikipedia.Page(self.site, u"%s:%s" % (self.site.namespace(3), luser))
         self.talk_page = talk_page
         self.luser = luser
@@ -1142,7 +1164,7 @@ class main:
         self.license_found = None
         self.whiteTemplatesFound = False
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)[|\n<}]', re.DOTALL)
-        dummy_edit = False
+        #dummy_edit = False
         while 1:
             self.hiddentemplates = self.loadHiddenTemplates()      
             self.licenses_found = self.image.getTemplates()
@@ -1162,16 +1184,16 @@ class main:
             # perform a dummy edit, sometimes there are problems with the Job queue
             # it happends that there is listed only the template used and not all the template that are in the templates used in the page
             # for example: there's only self, and not GFDL and the other licenses.
-            if self.allLicenses == self.licenses_found and not dummy_edit and self.licenses_found != []:
-                wikipedia.output(u"Seems that there's a problem regarding the Job queue, trying with a dummy edit to solve the problem.")
-                try:                    
-                    self.imageCheckText = self.image.get()
-                    self.image.put(self.imageCheckText, 'Bot: Dummy edit,if you see this comment write [[User talk:%s|here]].' % self.botnick)
-                except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                    return (None, list())
-                dummy_edit = True
-            else:
-                break         
+            #if self.allLicenses == self.licenses_found and not dummy_edit and self.licenses_found != []:
+            #    wikipedia.output(u"Seems that there's a problem regarding the Job queue, trying with a dummy edit to solve the problem.")
+            #    try:                    
+            #        self.imageCheckText = self.image.get()
+            #        self.image.put(self.imageCheckText, 'Bot: Dummy edit,if you see this comment write [[User talk:%s|here]].' % self.botnick)
+            #    except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+            #        return (None, list())
+            #    dummy_edit = True
+            #else:
+            break         
         if self.licenses_found != []:
             self.templateInList()
             if self.license_found == None and self.allLicenses != list():
