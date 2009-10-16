@@ -42,56 +42,42 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     """
     if not site:
         site = wikipedia.getSite()
-
-    if wikipedia.verbose:
-        wikipedia.output(u"====API PARAMS====")
+    data = {}
+    titlecount = 0
+    
     for k,v in params.iteritems():
         if type(v) == list:
-            params[k] = unicode(ListToParam(v))
+            if k in [u'titles', u'pageids', u'revids', u'ususers'] and len(v) > 10:
+                # Titles param might be long, case convert it to post request
+                titlecount = len(params[k])
+                data[k] = unicode(ListToParam(v))
+            else:
+                params[k] = unicode(ListToParam(v))
+            
         elif not IsString(v):
             params[k] = unicode(v)
-        if wikipedia.verbose:
-            if type(v) == list:
-                wikipedia.output(u"[%s]: " % k, newline = False)
-                if len(v) > 10:
-                    wikipedia.output(u"%s (total %d items)" % (v[0:30], len(v)) )
-                else:
-                    wikipedia.output(u"%s" % v )
-            elif type(v) not in (int, long):
-                wikipedia.output(u"[%s]: " % k, newline = False)
-                if v.count('|') == 0 and len(v) > 40:
-                    wikipedia.output(u"%s (total %d char)" % (v[0:30], len(v) ) )
-                elif v.count('|') > 8:
-                    wikipedia.output(u"%s (and more %d values)" % (v[0:v.index('|')], len(v.split('|')) ) )
-                else:
-                    wikipedia.output(u"%s" % v )
-            elif k == u'format':
-                continue
-            else:
-                wikipedia.output(u"[%s]: %s" % (k,v) )
-    if wikipedia.verbose:
-        wikipedia.output(u"==================")
-    
+        elif type(v) == unicode:
+            params[k] = ToUtf8(v)
 
-    if 'format' not in params or params['format'] != 'json':
-        params['format'] = 'json'
+    if 'format' not in params or params['format'] != u'json':
+        params['format'] = u'json'
 
     if not useAPI:
         params['noprofile'] = ''
-
-    for k,v in params.iteritems():
-        if type(v) == type(u''):
-            params[k] = ToUtf8(v)
-
-    # Titles param might be long, case convert it to post request
-    data = None
-    titlecount = 0
-    for pLongKey in ['titles', 'pageids', 'ucusers', 'ususers']: #
-        if pLongKey in params:
-            titlecount = params[pLongKey].count('|') + 1
-            if encodeTitle:
-                data = {pLongKey : params[pLongKey]}
-                del params[pLongKey]
+    
+    if data:
+        del params[data.keys()[0]] 
+    
+    if wikipedia.verbose: #dump params info.
+        wikipedia.output(u"==== API action:%s ====" % params[u'action'])
+        if data:
+            wikipedia.output(u"%s: (%d items)" % (data.keys()[0], titlecount ) )
+        
+        for k, v in params.iteritems():
+            if k not in ['action', 'format', 'file', 'xml']:
+                wikipedia.output("%s: %s" % (k, v) )
+        wikipedia.output(u'-' * 16 )
+        
 
     postAC = [
         'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
