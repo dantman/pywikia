@@ -79,7 +79,7 @@ __version__ = '$Id$'
 #
 
 import re, time, urllib, urllib2, os, locale, sys, datetime
-import wikipedia, config, pagegenerators, catlib, query
+import wikipedia, config, pagegenerators, catlib, query, userlib
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -532,52 +532,6 @@ def printWithTimeZone(message):
         time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
     wikipedia.output(u"%s%s" % (message, time_zone))
 
-class EmailSender(wikipedia.Page):
-    """ Class to send emails through the Wikipedia's dedicated page. """
-    def __init__(self, site, user):
-        self.wikisite = site
-        self.user = user
-        page_special_name = u'Special:EmailUser'
-        self.page_special_name = page_special_name
-        # Special:EmailUser/Filnik
-        page = '%s/%s' % (self.page_special_name, self.user)
-        self.page = page
-        wikipedia.Page.__init__(self, site, page, None, 0)
-
-    def send(self, subject, text, prompt = True):
-        """ Send an email through wikipedia's page. """
-        host = self.site().hostname()
-        address = '/w/index.php?title=%s&target=%s&action=submit' % (self.page_special_name, self.user)
-        # Getting the token.
-        token = self.site().getToken(self)
-        # Defing the predata.
-        predata = {
-            "wpSubject" : subject,
-            "wpText" : text,
-            'wpSend' : "Send",
-            'wpCCMe' : '0',
-        }
-        predata['wpEditToken'] = token
-        if self.site().hostname() in config.authenticate.keys():
-            predata['Content-type'] = 'application/x-www-form-urlencoded'
-            predata['User-agent'] = wikipedia.useragent
-            data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
-            data = u''
-        else:
-            response, data = self.site().postForm(address, predata, sysop = False)
-        if data:
-            if 'var wgAction = "success";' in data:
-                wikipedia.output(u'Email sent')
-                return True
-            else:
-                wikipedia.output(u'Email not sent')
-                return False
-        else:
-            wikipedia.output(u'No data found.')
-            return False
-
-
 # Here there is the main class.
 class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
@@ -787,8 +741,12 @@ class main:
                 return # Exit
             if self.sendemailActive:
                 text_to_send = re.sub(r'__user-nickname__', r'%s' % self.luser, emailText)
-                emailClass = EmailSender(self.site, self.luser)
-                emailClass.send(emailSubj, text_to_send)
+                emailClass = userlib.User(self.site, self.luser)
+                try:
+                    emailClass.sendMail(emailSubj, text_to_send)
+                except userlib.UserActionRefuse:
+                    wikipedia.output("User is not mailable, aborted")
+                    return # exit
 
     def untaggedGenerator(self, untaggedProject, limit):
         """ Generator that yield the files without license. It's based on a tool of the toolserver. """

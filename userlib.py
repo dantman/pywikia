@@ -149,6 +149,11 @@ class User(object):
         if not self.site().isAllowed('sendemail'):
             raise UserActionRefuse("You don't have permission to send mail")
         
+        if wikipedia.config.use_api and self.site().versionnumber() > 14:
+            pass # will handle NotImplementedError later
+        else:
+            return self.sendMailOld(subject, text, ccMe)
+        
         params = {
             'action': 'emailuser',
             'target': self.name(),
@@ -169,9 +174,44 @@ class User(object):
             
         elif 'emailuser' in result:
             if result['emailuser']['result'] == 'Success':
+                wikipedia.output(u'Email sent.')
                 return True
         
         return False
+    
+    def sendMailOld(self, subject = u'', text = u'' ccMe = False):
+        addr = self.site().put_address('Special:EmailUser')
+        predata = {
+            "wpSubject" : subject,
+            "wpText" : text,
+            'wpSend' : "Send",
+            'wpCCMe' : '0',
+        }
+        if ccMe:
+            predata['wpCCMe'] = '1'
+        
+        predata['wpEditToken'] = self.site().getToken()
+
+        if self.site().hostname() in wikipedia.config.authenticate.keys():
+            predata['Content-type'] = 'application/x-www-form-urlencoded'
+            predata['User-agent'] = wikipedia.useragent
+            data = self.site().urlEncode(predata)
+            response = wikipedia.urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + addr, data))
+            data = response.read()
+        else:
+            response, data = self.site().postForm(address, predata, sysop = False)
+        
+        if data:
+            if 'var wgAction = "success";' in data:
+                wikipedia.output(u'Email sent.')
+                return True
+            else:
+                wikipedia.output(u'Email not sent.')
+                return False
+        else:
+            wikipedia.output(u'No data found.')
+            return False
+
     
     def contributions(self, limit = 500, namespace = []):
         """ Yields pages that the user has edited, with an upper bound of ``limit''.
