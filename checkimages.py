@@ -46,12 +46,12 @@ This script understands the following command-line arguments:
 
     -nologerror         - If given, this option will disable the error that is risen when the log is full.
 
----- Istructions for the real-time settings  ----
+---- Instructions for the real-time settings  ----
 * For every new block you have to add:
 
 <------- ------->
 
-In this way the Bot can understand where the block start to take the right parameter.
+In this way the Bot can understand where the block starts in order to take the right parameter.
 
 * Name= Set the name of the block
 * Find= Use it to define what search in the text of the image's description,
@@ -97,6 +97,7 @@ n_txt = {
     'de'     :u'{{Benutzer:ABF/D|~~~~}} {{Dateiüberprüfung/benachrichtigt (Kategorie)|{{subst:LOCALYEAR}}|{{subst:LOCALMONTH}}|{{subst:LOCALDAY}}}} {{Dateiüberprüfung/benachrichtigt (Text)|Lizenz|||||}} --This was added by ~~~~-- ',
     'en'     :u'\n{{subst:nld}}',
     'fr'     :u'\n{{subst:lid}}',
+    'ga'     :u'\n{{subst:Ceadúnas de dhíth}}',
     'hu'     :u'\n{{nincslicenc|~~~~~}}',
     'it'     :u'\n{{subst:unverdata}}',
     'ja'     :u'{{subst:Nld}}',
@@ -114,6 +115,7 @@ txt_find =  {
         'commons':[u'{{no license', u'{{no license/en', u'{{nld', u'{{no permission since'],
         'de':[u'{{DÜP', u'{{Dateiüberprüfung'],
         'en':[u'{{nld', u'{{no license'],
+        'ga':[u'{{Ceadúnas de dhíth', u'{{Ceadúnas de dhíth'],
         'hu':[u'{{nincsforrás',u'{{nincslicenc'],
         'it':[u'{{unverdata', u'{{unverified'],
         'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
@@ -128,6 +130,7 @@ comm = {
         'commons':u'Bot: Marking newly uploaded untagged file',
         'de'     :u'Bot: Markierung als Bild ohne Lizenz',
         'en'     :u'Bot: Marking newly uploaded untagged file',
+        'ga'     :u'Róbó: Ag márcáil comhad nua-uaslódáilte gan ceadúnas',
         'hu'     :u'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
         'it'     :u"Bot: Aggiungo unverified",
         'ja'     :u'ロボットによる:著作権情報なしの画像をタグ',
@@ -143,6 +146,7 @@ empty = {
         'de'     :u'{{subst:willkommen}} ~~~~',
         'en'     :u'{{welcome}}\n~~~~\n',
         'fr'     :u'{{Bienvenue nouveau\n~~~~\n',
+        'ga'     :u'{{subst:Fáilte}} - ~~~~\n',
         'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
         'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
         'ja'     :u'{{subst:Welcome/intro}}\n{{subst:welcome|--~~~~}}\n',
@@ -157,6 +161,7 @@ comm2 = {
         'commons':u"Bot: Requesting source information." ,
         'de'     :u'Bot:Notify User',
         'en'     :u"Bot: Requesting source information." ,
+        'ga'     :u"Róbó: Ag iarraidh eolais foinse." ,
         'it'     :u"Bot: Notifico l'unverified",
         'hu'     :u'Robot: Forrásinformáció kérése',
         'ja'     :u"ロボットによる:著作権情報明記のお願い",
@@ -171,6 +176,7 @@ delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
             'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
+            'ga'     :u"{{scrios|Tá iarmhír .%s ar an comhad seo.}}",
             'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
             'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
             'ja'     :u'{{db|知らないファイルフォーマット %s}}',
@@ -184,6 +190,7 @@ delete_immediately_head = {
             'commons':u"\n== Unknown extension! ==\n",
             'ar'     :u"\n== امتداد غير معروف! ==\n",
             'en'     :u"\n== Unknown extension! ==\n",
+            'ga'     :u"\n== Iarmhír neamhaithnid! ==\n",
             'fr'     :u'\n== Extension inconnue ==\n',
             'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
             'it'     :u'\n\n== File non specificato ==\n',
@@ -197,6 +204,7 @@ delete_immediately_notification = {
                 'ar'     :u'الملف [[:File:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
                 'commons':u'The [[:File:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'en'     :u'The [[:File:%s]] file seems to have a wrong extension, please check. ~~~~',
+                'ga'     :u'Tá iarmhír mícheart ar an comhad [[:File:%s]], scrúdaigh le d\'thoil. ~~~~',
                 'fr'     :u'Le fichier [[:File:%s]] semble avoir une mauvaise extension, veuillez vérifier. ~~~~',
                 'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
                 'it'     :u'{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Ext|%s|__botnick__}} --~~~~',
@@ -204,11 +212,12 @@ delete_immediately_notification = {
                 'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
                 'zh'    :u'您好，你上傳的[[:File:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
                 }
-# Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
+# Summary of the delete immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
             'ar'     :u'بوت: إضافة %s',
             'commons':u'Bot: Adding %s',
             'en'     :u'Bot: Adding %s',
+            'ga'     :u'Róbó: Cuir %s leis',
             'fr'     :u'Robot : Ajouté %s',
             'hu'     :u'Robot:"%s" hozzáadása',
             'it'     :u'Bot: Aggiungo %s',
@@ -225,6 +234,7 @@ nothing_head = {
                 'commons':u"",# Nothing, the template has already the header inside.
                 'de'     :u"\n== Bild ohne Lizenz ==\n",
                 'en'     :u"\n== Image without license ==\n",
+                'ga'     :u"\n== Comhad gan ceadúnas ==\n",
                 'fr'     :u"\n== Fichier sans licence ==\n",
                 'hu'     :u"\n== Licenc nélküli kép ==\n",
                 'it'     :u"\n\n== File senza licenza ==\n",
@@ -241,6 +251,7 @@ nothing_notification = {
                 'ar'     :u"{{subst:مصدر الصورة|File:%s}} --~~~~",
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|File:%s}} --~~~~",
+                'ga'     :u"{{subst:Foinse na híomhá|File:%s}} --~~~~",
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
                 'it'     :u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza|%s|__botnick__}} --~~~~",
                 'ja'     :u"\n{{subst:Image copyright|File:%s}}--~~~~",
@@ -255,6 +266,7 @@ bot_list = {
             'commons':[u'Siebot', u'CommonsDelinker', u'Filbot', u'John Bot', u'Sz-iwbot', u'ABFbot'],
             'de'     :[u'ABFbot'],
             'en'     :[u'OrphanBot'],
+            'ga'     :[u'AllieBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
             'ja'     :[u'Alexbot'],
             'ko'     :[u'Kwjbot IV'],
@@ -267,18 +279,20 @@ second_message_without_license = {
                 'commons':None,
                 'de':None,
                 'en': None,
+                'ga': None,
                 'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
                 'it':u':{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza2|%s|__botnick__}} --~~~~',
                 'ja':None,
                 'ta':None,
                 'zh':None,
                 }
-# You can add some settings to wikipedia. In this way, you can change them without touch the code.
+# You can add some settings to wikipedia. In this way, you can change them without touching the code.
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
                     'commons':u'User:Filbot/Settings',
                     'de':None,
                     'en':None,
+                    'ga':None,
                     'hu':None,
                     'it':u'Progetto:Coordinamento/Immagini/Bot/Settings#Settings',
                     'ja':None,
@@ -291,6 +305,7 @@ report_page = {
                 'commons':u'User:Filbot/Report',
                 'de'     :u'Benutzer:ABFbot/Report',
                 'en'     :u'User:Filnik/Report',
+                'ga'     :u'User:AllieBot/ReportImages',
                 'hu'     :u'User:Bdamokos/Report',
                 'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
                 'ja'     :u'User:Alexbot/report',
@@ -306,6 +321,7 @@ report_text = {
             'ar':u"\n*[[:صورة:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:File:%s]] " + timeselected,
+            'ga':u"\n*[[:File:%s]] " + timeselected,
             'hu':u"\n*[[:Kép:%s]] " + timeselected,
             'it':u"\n*[[:File:%s]] " + timeselected,
             'ja':u"\n*[[:File:%s]] " + timeselected,
@@ -320,6 +336,7 @@ comm10 = {
         'de'     :u'Bot:schreibe Log',
         'en'     :u'Bot: Updating the log',
         'fr'     :u'Robot: Mise à jour du journal',
+        'ga'     :u'Róbó: Log a thabhairt suas chun dáta',
         'hu'     :u'Robot: A napló frissítése',
         'it'     :u'Bot: Aggiorno il log',
         'ja'     :u'ロボットによる:更新',
@@ -329,7 +346,7 @@ comm10 = {
         }
 
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
-# analise the image without taking care of it. (the template must be in a list)
+# analyze the image without taking care of it. (the template must be in a list)
 # Warning: Don't add template like "en, de, it" because they are already in (added in the code, below
 # Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
 # because they are already put in the regex).
@@ -340,6 +357,7 @@ HiddenTemplate = {
         'de':[u'Template:Information'],
         'en':[u'Template:Information'],
         'fr':[u'Template:Information'],
+        'ga':[u'Template:Information'],
         'hu':[u'Template:Információ', u'Template:Enwiki', u'Template:Azonnali'],
         'it':[u'Template:EDP', u'Template:Informazioni file', u'Template:Information', u'Template:Trademark', u'Template:Permissionotrs'], # Put the other in the page on the project defined below
         'ja':[u'Template:Information'],
@@ -351,6 +369,7 @@ HiddenTemplate = {
 PageWithHiddenTemplates = {
     'commons': u'User:Filbot/White_templates#White_templates',
     'en':None,
+    'ga':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
     'ja':None,
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
@@ -362,6 +381,7 @@ PageWithHiddenTemplates = {
 PageWithAllowedTemplates = {
     'commons': u'User:Filbot/Allowed templates',
     'en':None,
+    'ga':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/AllowedTemplates',
     'ko':u'User:Kwjbot_IV/AllowedTemplates',
     'ta':None,
@@ -373,6 +393,7 @@ HiddenTemplateNotification = {
         'commons': u"""\n{{subst:User:Filnik/whitetemplate|File:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
         'de'     : None,
         'en'     : None,
+        'ga'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
         'ja'     :None,
         'ko'     : u"\n{{subst:User:Kwj2772/whitetemplates|%s}} --~~~~", 
@@ -387,6 +408,7 @@ HiddenTemplateNotification = {
 duplicatesText = {
         'commons': u'\n{{Dupe|__image__}}',
         'en'     : None,
+        'ga'     : None,
         'it'     : u'\n{{Progetto:Coordinamento/Immagini/Bot/Template duplicati|__images__}}',
         'ja'     :None,
         'ta'     :None,
@@ -396,6 +418,7 @@ duplicatesText = {
 duplicate_user_talk_head = {
         'commons': None,
         'en'     : None, 
+        'ga'     : None, 
         'it'     : u'\n\n== File doppio ==\n',
         'ja'     :None,
         'ta'     :None,
@@ -405,6 +428,7 @@ duplicate_user_talk_head = {
 duplicates_user_talk_text = {
         'commons': u'{{subst:User:Filnik/duplicates|File:%s|File:%s}}', # FIXME: it doesn't exist
         'en'     : None,
+        'ga'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
         'ja'     :None,
         'ta'     :None,
@@ -414,6 +438,7 @@ duplicates_user_talk_text = {
 duplicates_comment_talk = {
         'commons': u'Bot: Dupe file found',
         'en'     : None,
+        'ga'     : None,
         'it'     : u"Bot: Notifico il file doppio trovato",
         'ja'     :None,
         'ta'     :None,
@@ -423,6 +448,7 @@ duplicates_comment_talk = {
 duplicates_comment_image = {
         'commons': u'Bot: Tagging dupe file',
         'en'     : None,
+        'ga'     : None,
         'it'     : u'Bot: File doppio, da cancellare',
         'ja'     :None,
         'ta'     :None,
@@ -432,6 +458,7 @@ duplicates_comment_image = {
 duplicatesRegex = {
         'commons': r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
         'en'     : None,
+        'ga'     : None,
         'it'     : r'\{\{(?:[Tt]emplate:|)[Pp]rogetto:[Cc]oordinamento/Immagini/Bot/Template duplicati[|}]',
         'ja'     :None,
         'ta'     :None,
@@ -441,6 +468,7 @@ duplicatesRegex = {
 category_with_licenses = {
         'commons': 'Category:License tags',
         'en'     : 'Category:Wikipedia image copyright templates',
+        'ga'     : 'Catagóir:Clibeanna cóipchirt d\'íomhánna',
         'it'     : 'Categoria:Template Licenze copyright',
         'ja'     : 'Category:画像の著作権表示テンプレート',
         'ko'     : '분류:그림 저작권 틀',
@@ -454,6 +482,7 @@ category_with_licenses = {
 emailPageWithText = {
         'de':'Benutzer:ABF/D3',
         'en':None,
+        'ga':None,
         'ja':None,
         'ta':None,
         'zh':None,
@@ -462,6 +491,7 @@ emailPageWithText = {
 emailSubject = {
         'de':'Problemen mit Deinem Bild auf der Deutschen Wikipedia',
         'en':None,
+        'ga':None,
         'ja':None,
         'ta':None,
         'zh':None,
@@ -476,7 +506,7 @@ uploadBots = {
 }
 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = [u'ar', u'commons', u'de', u'en', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
+project_inserted = [u'ar', u'commons', u'de', u'en', u'ga', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
