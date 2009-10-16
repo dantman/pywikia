@@ -2408,20 +2408,11 @@ not supported by PyWikipediaBot!"""
         # regular expression matching one edit in the version history.
         # results will have 4 groups: oldid, edit date/time, user name, and edit
         # summary.
-        if self.site().versionnumber() < 4:
-            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
-        elif self.site().versionnumber() < 15:
-            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
-        elif self.site().versionnumber() < 16:
-            editR = re.compile(r'<li class=".*?">\((?:\w*|<a[^<]*</a>)\)\s\((?:\w*|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <span class="minor">.*?</span>|)(?: <span class="history-size">.*?</span>|)(?: <span class=[\'"]comment[\'"]>\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\)|)\s*</li>', re.UNICODE)
-        else:
-            editR = re.compile(r'<li(?: class="mw-tag[^>]+)?>\((?:\w+|<a[^<]*</a>)\)\s\((?:\w+|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <abbr class="minor"[^>]*?>.*?</abbr>|)(?: <span class="history-size">.*?</span>|)(?: <span class="comment">\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\))?(?: <span class="mw-tag-markers">.*?</span>\)</span>)?\s*</li>', re.UNICODE)
-        startFromPage = None
         thisHistoryDone = False
         skip = False # Used in determining whether we need to skip the first page
         dataQuery = []
+        hasData = False
 
-        RLinkToNextPage = re.compile('&amp;offset=(.*?)&amp;')
 
         # Are we getting by Earliest first?
         if reverseOrder:
@@ -2444,9 +2435,98 @@ not supported by PyWikipediaBot!"""
             dataQuery = self._versionhistory
         else:
             thisHistoryDone = True
+        
+        if not thisHistoryDone:
+            dataQuery.extend(self._getVersionHistory(getAll, skip, reverseOrder, revCount))
+        
+        if reverseOrder:
+            # Return only revCount edits, even if the version history is extensive
+            if dataQuery != []:
+                self._versionhistoryearliest = dataQuery
+                del dataQuery
+            if len(self._versionhistoryearliest) > revCount and not getAll:
+                return self._versionhistoryearliest[0:revCount]
+            return self._versionhistoryearliest
+        
+        if dataQuery != []:
+            self._versionhistory = dataQuery
+            del dataQuery
+        # Return only revCount edits, even if the version history is extensive
+        if len(self._versionhistory) > revCount and not getAll:
+            return self._versionhistory[0:revCount]
+        return self._versionhistory
+    
+    def _getVersionHistory(self, getAll = False, skipFirst = False, reverseOrder = False,
+                               revCount=500):
+        """Load history informations by API query.
+           Internal use for self.getVersionHistory(), don't use this function directly.
+        """
+        try:
+            if config.use_api and self.site().versionnumber() >= 8:
+                x = self.site().api_address()
+                del x
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
+            return self._getVersionHistoryOld(reExist, getAll, skipFirst, reverseOrder, revCount)
+        dataQ = []
+        thisHistoryDone = False
+        params = {
+            'action': 'query',
+            'prop': 'revisions',
+            'titles': self.title(),
+            'rvlimit': revCount,
+            #'': '',
+        }
+        while not thisHistoryDone:
+            if reverseOrder:
+                params['rvdir'] = 'newer'
+            
+            result = query.GetData(params, self.site())
+            if 'error' in result:
+                raise RuntimeError("%s" % result['error'])
+            
+            if 'query-continue' in result and getAll:
+                params['rvstartid'] = result['query-continue']['revisions']['rvstartid']
+            else:
+                thisHistoryDone = True
+            
+            if skipFirst:
+                skipFirst = False
+            else:
+                for r in result['query']['pages'].values()[0]['revisions']:
+                    c = ''
+                    if 'comment' in r:
+                        c = r['comment']
+                    #revision id, edit date/time, user name, edit summary
+                    dataQ.append((r['revid'], r['timestamp'], r['user'], c))
+            
+                if len(result['query']['pages'].values()[0]['revisions']) < revCount:
+                    thisHistoryDone = True        
+        
+        return dataQ
+    
+    def _getVersionHistoryOld(self, getAll = False, skipFirst = False, 
+                               reverseOrder = False, revCount=500):
+        """Load the version history page and return history information.
+           Internal use for self.getVersionHistory(), don't use this function directly.
+        """
+        dataQ = []
+        thisHistoryDone = False
+        startFromPage = None
+        if self.site().versionnumber() < 4:
+            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+        elif self.site().versionnumber() < 15:
+            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
+        elif self.site().versionnumber() < 16:
+            editR = re.compile(r'<li class=".*?">\((?:\w*|<a[^<]*</a>)\)\s\((?:\w*|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <span class="minor">.*?</span>|)(?: <span class="history-size">.*?</span>|)(?: <span class=[\'"]comment[\'"]>\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\)|)\s*</li>', re.UNICODE)
+        else:
+            editR = re.compile(r'<li(?: class="mw-tag[^>]+)?>\((?:\w+|<a[^<]*</a>)\)\s\((?:\w+|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <abbr class="minor"[^>]*?>.*?</abbr>|)(?: <span class="history-size">.*?</span>|)(?: <span class="comment">\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\))?(?: <span class="mw-tag-markers">.*?</span>\)</span>)?\s*</li>', re.UNICODE)
+
+        RLinkToNextPage = re.compile('&amp;offset=(.*?)&amp;')
 
         while not thisHistoryDone:
-            path = self.site().family.version_history_address(self.site().language(), self.urlname(), revCount)
+            path = self.site().family.version_history_address(self.site().language(), self.urlname(), config.special_page_limit)
 
             if reverseOrder:
                 path += '&dir=prev'
@@ -2471,60 +2551,30 @@ not supported by PyWikipediaBot!"""
             # save a copy of the text
             self_txt = txt
 
-            # If we are getting all of the page history...
-            if getAll:
-                #Find the nextPage link, if not exist, the page is last history page
-                matchObj = RLinkToNextPage.search(self_txt)
-                if matchObj:
-                    startFromPage = matchObj.group(1)
-                else:
-                    thisHistoryDone = True
-
-                if len(dataQuery) == 0:
-                    edits = editR.findall(self_txt)
-                    if reverseOrder:
-                        edits.reverse()
-                    #for edit in edits:
-                    dataQuery.extend([edit for edit in edits])
-                    if len(edits) < revCount:
-                        thisHistoryDone = True
-                else:
-                    if not skip:
-                        edits = editR.findall(self_txt)
-                        if reverseOrder:
-                            edits.reverse()
-                        #for edit in edits:
-                        dataQuery.extend([edit for edit in edits])
-                        if len(edits) < revCount:
-                            thisHistoryDone = True
-                    else:
-                        # Skip the first page only,
-                        skip = False
+            #Find the nextPage link, if not exist, the page is last history page
+            matchObj = RLinkToNextPage.search(self_txt)
+            if getAll and matchObj:
+                startFromPage = matchObj.group(1)
             else:
-                # If we are not getting all, we stop on the first page.
-                #for edit in editR.findall(self_txt):
-                dataQuery.extend([edit for edit in editR.findall(self_txt)] )
-                if reverseOrder:
-                    dataQuery.reverse()
                 thisHistoryDone = True
 
-        if reverseOrder:
-            # Return only revCount edits, even if the version history is extensive
-            if dataQuery != []:
-                self._versionhistoryearliest = dataQuery
-                del dataQuery
-            if len(self._versionhistoryearliest) > revCount and not getAll:
-                return self._versionhistoryearliest[0:revCount]
-            return self._versionhistoryearliest
-
-        if dataQuery != []:
-            self._versionhistory = dataQuery
-            del dataQuery
-        # Return only revCount edits, even if the version history is extensive
-        if len(self._versionhistory) > revCount and not getAll:
-            return self._versionhistory[0:revCount]
-        return self._versionhistory
-
+            if not skipFirst:
+                edits = editR.findall(self_txt)
+            
+            if skipFirst:
+                # Skip the first page only,
+                skipFirst = False
+            else:
+                if reverseOrder:
+                    edits.reverse()
+                #for edit in edits:
+                dataQ.extend(edits)
+                if len(edits) < revCount:
+                    thisHistoryDone = True
+        
+        return dataQ
+    
+    
     def getVersionHistoryTable(self, forceReload=False, reverseOrder=False,
                                getAll=False, revCount=500):
         """Return the version history as a wiki table."""
