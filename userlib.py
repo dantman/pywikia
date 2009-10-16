@@ -149,7 +149,7 @@ class User(object):
         if not self.site().isAllowed('sendemail'):
             raise UserActionRefuse("You don't have permission to send mail")
         
-        if wikipedia.config.use_api and self.site().versionnumber() > 14:
+        if wikipedia.config.use_api and self.site().versionnumber() >= 14:
             pass # will handle NotImplementedError later
         else:
             return self.sendMailOld(subject, text, ccMe)
