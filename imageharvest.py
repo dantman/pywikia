@@ -89,8 +89,16 @@ def main(give_url, image_url, desc):
         answer = wikipedia.inputChoice(u'Include image %s?' % image, ['yes', 'no', 'stop'], ['y', 'N', 's'], 'N')
         if answer == 'y':
             desc = wikipedia.input(u"Give the description of this image:")
-            desc = desc + "\r\n\n\r" + basicdesc
-            uploadBot = upload.UploadRobot(image, desc)
+            categories = []
+            while True:
+                cat = wikipedia.input(u"Specify a category (or press enter to end adding categories)")
+                if not cat.strip(): break
+                if ":" in cat:
+                    categories.append("[["+cat+"]]")
+                else:
+                    categories.append("[["+mysite.namespace(14)+":"+cat+"]]")
+            desc = desc + "\r\n\r\n" + basicdesc + "\r\n\r\n" + " ".join(categories)
+            uploadBot = upload.UploadRobot(image, description = desc)
             uploadBot.run()
         elif answer == 's':
             break
