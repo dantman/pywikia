@@ -555,7 +555,7 @@ class main:
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
         self.imageName = imageName
         # Defing the image's Page Object
-        self.image = wikipedia.ImagePage(self.site, u'%s%s' % (self.image_namespace, self.imageName))
+        self.image = wikipedia.ImagePage(self.site, self.imageName)
         self.timestamp = timestamp
         self.uploader = uploader
     
@@ -638,7 +638,7 @@ class main:
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the file. """
         # Get the image's description
-        reportPageObject = wikipedia.ImagePage(self.site, self.image_namespace + self.image_to_report)
+        reportPageObject = wikipedia.ImagePage(self.site, self.image_to_report)
         
         try:
             reportPageText = reportPageObject.get()
@@ -801,7 +801,7 @@ class main:
         max_usage = 0
         for element in listGiven:
             imageName = element[1]
-            imagePage = wikipedia.ImagePage(self.site, u'File:%s' % imageName)
+            imagePage = wikipedia.ImagePage(self.site, imageName)
             imageUsage = [page for page in imagePage.usingPages()]
             if len(imageUsage) > 0 and len(imageUsage) > max_usage:
                 max_usage = len(imageUsage)
@@ -895,7 +895,7 @@ class main:
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
         duplicateRegex = r'\[\[:File:%s\]\] has the following duplicates' % re.escape(self.convert_to_url(self.imageName))
-        imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
+        imagePage = wikipedia.ImagePage(self.site, self.imageName)
         hash_found = imagePage.getHash()
         duplicates = self.site.getFilesFromAnHash(hash_found)
         
@@ -913,7 +913,7 @@ class main:
                 time_list = list()
                 
                 for duplicate in duplicates:
-                    DupePage = wikipedia.ImagePage(self.site, u'File:%s' % duplicate)
+                    DupePage = wikipedia.ImagePage(self.site, duplicate)
                     
                     if DupePage.urlname() == self.image.urlname() and self.timestamp != None:
                         imagedata = self.timestamp
@@ -926,15 +926,14 @@ class main:
                     time_list.append(data_seconds)
                 older_image = self.returnOlderTime(time_image_list, time_list)
                 # And if the images are more than two?
-                Page_oder_image = wikipedia.ImagePage(self.site, u'File:%s' % older_image)
+                Page_oder_image = wikipedia.ImagePage(self.site, older_image)
                 string = ''
                 images_to_tag_list = []
                 
                 for duplicate in duplicates:
-                    if wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, duplicate)) == \
-                       wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, older_image)):
+                    if wikipedia.ImagePage(self.site, duplicate) == wikipedia.ImagePage(self.site, older_image):
                         continue # the older image, not report also this as duplicate
-                    DupePage = wikipedia.ImagePage(self.site, u'File:%s' % duplicate)
+                    DupePage = wikipedia.ImagePage(self.site, duplicate)
                     try:
                         DupPageText = DupePage.get()
                         older_page_text = Page_oder_image.get()
