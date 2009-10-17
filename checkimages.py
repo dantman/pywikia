@@ -649,7 +649,7 @@ class main:
         # You can use this function also to find only the user that
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
-            reportPageObject.put(reportPageText + self.newtext, comment = self.commImage, minorEdit = True)
+            reportPageObject.put(reportPageText + self.newtext, comment = self.commImage)
         # paginetta it's the image page object.        
         try:
             if reportPageObject == self.image and self.uploader:
@@ -1058,8 +1058,14 @@ class main:
                 self.settingsData = list()
                 try:
                     testo = wikiPage.get()
-                    rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?([^\n]*?)['\"]?\n"
-                    r = re.compile(rxp, re.UNICODE|re.DOTALL)
+                    r = re.compile(r"<------- ------->\n"
+                        "\*[Nn]ame ?= ?['\"](.*?)['\"]\n"
+                        "\*([Ff]ind|[Ff]indonly)=(.*?)\n"
+                        "\*[Ii]magechanges=(.*?)\n"
+                        "\*[Ss]ummary=['\"](.*?)['\"]\n"
+                        "\*[Hh]ead=['\"](.*?)['\"]\n"
+                        "\*[Tt]ext ?= ?['\"](.*?)['\"]\n"
+                        "\*[Mm]ex ?= ?['\"]?([^\n]*?)['\"]?\n", re.UNICODE|re.DOTALL)
                     number = 1
                     
                     for m in r.finditer(testo):
