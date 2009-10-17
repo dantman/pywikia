@@ -410,6 +410,7 @@ random_sign = {
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
 whitelist_pg = {
+    '_default': None,
     'ar':u'Project:سجل الترحيب/قائمة بيضاء',
     'en':u'User:Filnik/whitelist',
     'ga':u'Project:Log fáilte/Bánliosta',
@@ -481,6 +482,7 @@ class WelcomeBot(object):
         if not globalvar.filtBadName:
             return False
         
+        #initialize blacklist
         if not hasattr(self, '_blacklist') or force:
             elenco = [
                 ' ano', ' anus', 'anal ', 'babies', 'baldracca', 'balle', 'bastardo',
@@ -513,6 +515,8 @@ class WelcomeBot(object):
                 "vandal", " v.f. ", "v. fighter", "vandal f.", "vandal fighter", 'wales jimmy',
                 "wheels", "wales", "www.",
             ]
+            
+            #blacklist from wikipage
             badword_page = wikipedia.Page(self.site, wikipedia.translate(self.site, bad_pag) )
             list_loaded = list()
             if badword_page.exists():
@@ -525,10 +529,11 @@ class WelcomeBot(object):
             del elenco, elenco_others, list_loaded
         
         if not hasattr(self, '_whitelist') or force:
+            #initialize whitelist
             whitelist_default = ['emiliano']
             wtlpg = wikipedia.translate(self.site, whitelist_pg)
             list_white = list()
-            if wtlpg != None:
+            if wtlpg:
                 whitelist_page = wikipedia.Page(self.site, wtlpg)
                 if whitelist_page.exists():
                     wikipedia.output(u'\nLoading the whitelist from %s...' % self.site )
@@ -539,6 +544,7 @@ class WelcomeBot(object):
             else:
                 showStatus(4)
                 wikipedia.output(u"WARNING: The whitelist hasn't been setted!")
+            
             # Join the whitelist words.
             self._whitelist = list_white + whitelist_default
             del list_white, whitelist_default

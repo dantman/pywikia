@@ -532,6 +532,11 @@ def printWithTimeZone(message):
         time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
     wikipedia.output(u"%s%s" % (message, time_zone))
 
+class Global(object):
+    # default environment settings
+    pass
+    
+    
 # Here there is the main class.
 class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
@@ -757,15 +762,14 @@ class main:
         else:
             link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikilang=%s&wikifam=%s&order=img_timestamp&max=%s&ofs=0&max=%s' % (lang, project, limit, limit)
         text = self.site.getUrl(link, no_hostname = True)
-        regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
-        results = re.findall(regexp, text)
-        if results == []:
-            wikipedia.output(link)
-            raise NothingFound(u'Nothing found! Try to use the tool by yourself to be sure that it works!')
-        else:
+        results = re.findall(r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>""", text)
+        if results:
             for result in results:
                 wikiPage = wikipedia.ImagePage(self.site, result)
                 yield wikiPage
+        else:
+            wikipedia.output(link)
+            raise NothingFound(u'Nothing found! Try to use the tool by yourself to be sure that it works!')
 
     def regexGenerator(self, regexp, textrun):
         """ Generator used when an user use a regex parsing a page to yield the results """
@@ -782,7 +786,7 @@ class main:
         # The template #if: and #switch: aren't something to care about
         #self.hiddentemplates.extend([u'#if:', u'#switch:']) FIXME
         # Hidden template loading
-        if self.pageHidden != None:
+        if self.pageHidden:
             try:
                 pageHiddenText = wikipedia.Page(self.site, self.pageHidden).get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
@@ -809,7 +813,7 @@ class main:
                 max_usage = len(imageUsage)
                 num_older = num
             num += 1
-        if num_older != None:
+        if num_older:
             return listGiven[num_older][1]
         for element in listGiven:
             time = element[0]
@@ -819,7 +823,7 @@ class main:
                 if time > time_selected:
                     not_the_oldest = True
                     break
-            if not_the_oldest == False:
+            if not not_the_oldest:
                 return imageName
 
     def convert_to_url(self, page):
@@ -832,7 +836,7 @@ class main:
     def countEdits(self, pagename, userlist):
         """ Function to count the edit of a user or a list of users in a page. """
         # self.botolist
-        if type(userlist) == type(''):
+        if type(userlist) == str:
             userlist = [userlist]
         page = wikipedia.Page(self.site, pagename)
         history = page.getVersionHistory()
@@ -990,12 +994,18 @@ class main:
         return True # Ok - No problem. Let's continue the checking phase
 
     def report_image(self, image_to_report, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
-        """ Function to report the files in the report page when needed. """
-        if rep_page == None: rep_page = self.rep_page
-        if com == None: com = self.com
-        if rep_text == None: rep_text = self.rep_text
+        """ Report the files to the report page when needed. """
+        if not rep_page:
+            rep_page = self.rep_page
+        if not com:
+            com = self.com
+        if not rep_text:
+            rep_text = self.rep_text
+        
         another_page = wikipedia.Page(self.site, rep_page)
-        if regex == None: regex = image_to_report
+        
+        if not regex:
+            regex = image_to_report
         try:
             text_get = another_page.get()
         except wikipedia.NoPage:
@@ -1011,22 +1021,23 @@ class main:
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.DOTALL)
         y = n.findall(text_get)
-        if y == []:
+        if y:
+            wikipedia.output(u"%s is already in the report page." % image_to_report)
+            reported = False
+        else:
             # Adding the log
             if addings:
                 rep_text = rep_text % image_to_report # Adding the name of the image in the report if not done already
             another_page.put(text_get + rep_text, comment = com, minorEdit = False)
             wikipedia.output(u"...Reported...")
             reported = True
-        else:
-            wikipedia.output(u"%s is already in the report page." % image_to_report)
-            reported = False
         return reported
 
     def takesettings(self):
         """ Function to take the settings from the wiki. """
         try:
-            if self.settings == None: self.settingsData = None
+            if not self.settings:
+                self.settingsData = None
             else:
                 wikiPage = wikipedia.Page(self.site, self.settings)
                 self.settingsData = list()
@@ -1082,7 +1093,7 @@ class main:
             list_licenses.extend(pages)
         """
         catName = wikipedia.translate(self.site, category_with_licenses)
-        if catName == None:
+        if not catName:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
         list_licenses = catlib.categoryAllPageObjectsAPI(catName)
@@ -1090,11 +1101,12 @@ class main:
 
         # Add the licenses set in the default page as licenses
         # to check
-        if self.pageAllowed != None:
+        if self.pageAllowed:
             try:
                 pageAllowedText = wikipedia.Page(self.site, self.pageAllowed).get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 pageAllowedText = ''
+            
             for nameLicense in self.load(pageAllowedText):
                 pageLicense = wikipedia.Page(self.site, nameLicense)
                 if pageLicense not in list_licenses:
@@ -1107,10 +1119,11 @@ class main:
         This function check this.
         """
         if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
-            self.license_selected = template.title().replace('Template:', '')
+            self.license_selected = template.titleWithoutNamespace()
             self.seems_ok = True
             self.license_found = self.license_selected # let the last "fake" license normally detected
             return True
+        
         if template in self.hiddentemplates:
             # if the whitetemplate is not in the images description, we don't care
             try:
