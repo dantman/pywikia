@@ -97,7 +97,7 @@ def main(give_url, image_url, desc):
                     categories.append("[["+cat+"]]")
                 else:
                     categories.append("[["+mysite.namespace(14)+":"+cat+"]]")
-            desc = desc + "\r\n\r\n" + basicdesc + "\r\n\r\n" + " ".join(categories)
+            desc = desc + "\r\n\r\n" + basicdesc + "\r\n\r\n" + "\r\n".join(categories)
             uploadBot = upload.UploadRobot(image, description = desc)
             uploadBot.run()
         elif answer == 's':
