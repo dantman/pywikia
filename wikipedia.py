@@ -5770,10 +5770,10 @@ your connection is down. Retrying in %i minutes..."""
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
 
-    def mediawiki_message(self, key):
+    def mediawiki_message(self, key, forceReload = False):
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
-        if not self._mediawiki_messages:
+        if (not self._mediawiki_messages) or forceReload:
             api = False
             if verbose:
                 output(
@@ -5878,8 +5878,10 @@ your connection is down. Retrying in %i minutes..."""
         try:
             return self._mediawiki_messages[key]
         except KeyError:
-            raise KeyError("MediaWiki key '%s' does not exist on %s"
-                           % (key, self))
+            if not forceReload:
+                return self.mediawiki_message(key, True)
+            else:
+                raise KeyError("MediaWiki key '%s' does not exist on %s" % (key, self))
 
     def has_mediawiki_message(self, key):
         """Return True iff this site defines a MediaWiki message for 'key'."""
