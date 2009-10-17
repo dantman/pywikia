@@ -5984,7 +5984,6 @@ your connection is down. Retrying in %i minutes..."""
         # TODO: Repeat mechanism doesn't make much sense as implemented;
         #       should use both offset and limit parameters, and have an
         #       option to fetch older rather than newer pages
-        # TODO: extract and return edit comment.
         seen = set()
         try:
             d = self.apipath()
@@ -6000,23 +5999,17 @@ your connection is down. Retrying in %i minutes..."""
                     'rctype': 'new',
                     'rcnamespace': namespace,
                     'rclimit': int(number),
-                    'rcprop': ['title','timestamp','sizes','user','comment'],
+                    'rcprop': ['ids','title','timestamp','sizes','user','comment'],
                     'rcshow': ['!bot','!redirect'],
                     #'': '',
                 }
                 data = query.GetData(params, self)['query']['recentchanges']
 
                 for np in data:
-                    date = np['timestamp']
-                    title = np['title']
-                    length = np['newlen']
-                    username = np['user']
-                    loggedIn = u''
-                    comment = np['comment']
-                    if title not in seen:
-                        seen.add(title)
-                        page = Page(self, title)
-                        yield page, date, length, loggedIn, username, comment
+                    if np['pageid'] not in seen:
+                        seen.add(np['pageid'])
+                        page = Page(self, np['title'], defaultNamespace=np['ns'])
+                        yield page, np['timestamp'], np['timestamp'], u'', np['user'], np['comment']
             else:
                 path = self.newpages_address(n=number, namespace=namespace)
                 # The throttling is important here, so always enabled.
@@ -6231,31 +6224,26 @@ your connection is down. Retrying in %i minutes..."""
             'letype'    :'upload',
             'lelimit'   :int(number),
             }
-        if lestart is not None: params['lestart'] = lestart
-        if leend is not None: params['leend'] = leend
-        if leuser is not None: params['leuser'] = leuser
-        if letitle is not None: params['letitle'] = letitle
+        if lestart: params['lestart'] = lestart
+        if leend: params['leend'] = leend
+        if leuser: params['leuser'] = leuser
+        if letitle: params['letitle'] = letitle
         while True:
-            try:
-                if self.versionnumber() >= 11:
-                    imagesData = query.GetData(params, self, encodeTitle = False)['query']['logevents']
-                else:
-                    raise NotImplementedError("The site version is not support this action.")
-            except KeyError: #no 'query' or 'logevents', error occured
-                raise ServerError("The APIs don't return the data, the site may be down")
-            except NotImplementedError:
-                raise ServerError("The site version is not support this action.")
+            if self.versionnumber() >= 11:
+                imagesData = query.GetData(params, self, encodeTitle = False)
+            else:
+                raise NotImplementedError("The site version is not support this action.")
+            
+            if 'error' in imagesData:
+                raise RuntimeError('%s' % data['error'])
 
-            for imageData in imagesData:
+            for i in imagesData['query']['logevents']:
                 comment = ''
-                if 'comment' in imageData:
-                    comment = imageData['comment']
-                pageid = imageData['pageid']
-                title = imageData['title']
-                timestamp = imageData['timestamp']
-                ##logid = imageData['logid'] #no use current now
-                user = imageData['user']
-                yield ImagePage(self, title), timestamp, user, comment
+                if 'comment' in i:
+                    comment = i['comment']
+                #pageid = i['pageid']
+                ##logid = i['logid'] #no use current now
+                yield ImagePage(self, i['title']), i['timestamp'], i['user'], comment
             if not repeat:
                 break
 
@@ -6302,32 +6290,29 @@ your connection is down. Retrying in %i minutes..."""
             'rcprop'    : ['user','comment','timestamp','title','ids','loginfo'],    #','flags','sizes','redirect','patrolled']
             'rclimit'   : int(number),
             }
-        if rcstart is not None: params['rcstart'] = rcstart
-        if rcend is not None: params['rcend'] = rcend
-        if rcshow is not None: params['rcshow'] = rcshow
-        if rctype is not None: params['rctype'] = rctype
+        if rcstart: params['rcstart'] = rcstart
+        if rcend: params['rcend'] = rcend
+        if rcshow: params['rcshow'] = rcshow
+        if rctype: params['rctype'] = rctype
         while True:
             data = query.GetData(params, self, encodeTitle = False)
+            if 'error' in data:
+                raise RuntimeError('%s' % data['error'])
             try:
                 rcData = data['query']['recentchanges']
             except KeyError:
                 raise ServerError("The APIs don't return data, the site may be down")
 
-            for rcItem in rcData:
-                try:
-                    comment = rcItem['comment']
-                except KeyError:
-                    comment = ''
-                try:
-                    loginfo = rcItem['loginfo']
-                except KeyError:
-                    loginfo = ''
+            for i in rcData:
+                comment = ''
+                if 'comment' in i:
+                    comment = i['comment']
+                loginfo = ''
+                if 'loginfo' in i:
+                    loginfo = i['loginfo']
                 # pageid = rcItem['pageid']
-                title = rcItem['title']
-                timestamp = rcItem['timestamp']
                 # logid = rcItem['logid']
-                user = rcItem['user']
-                yield Page(self, title), timestamp, user, comment, loginfo
+                yield Page(self, i['title'], defaultNamespace=i['ns']), i['timestamp'], i['user'], comment, loginfo
             if not repeat:
                 break
 
@@ -6722,11 +6707,9 @@ your connection is down. Retrying in %i minutes..."""
                         count += 1
                         if not siteurl in pages['title']:
                             # the links themselves have similar form
-                            if pages['title'] in cache:
-                                continue
-                            else:
-                                cache.append(pages['title'])
-                                yield Page(self, pages['title'])
+                            if pages['pageid'] not in cache:
+                                cache.append(pages['pageid'])
+                                yield Page(self, pages['title'], defaultNamespace=pages['ns'])
                         if count >= limit:
                             break
                     
