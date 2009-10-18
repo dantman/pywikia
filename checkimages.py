@@ -506,8 +506,6 @@ class main:
         
         self.logFulNumber = logFulNumber
         
-        self.settings = wikipedia.translate(self.site, page_with_settings)
-        
         self.rep_page = wikipedia.translate(self.site, report_page)
         
         self.rep_text = wikipedia.translate(self.site, report_text)
@@ -1050,11 +1048,12 @@ class main:
     
     def takesettings(self):
         """ Function to take the settings from the wiki. """
+        settingsPage = wikipedia.translate(self.site, page_with_settings)
         try:
-            if not self.settings:
+            if not settingsPage:
                 self.settingsData = None
             else:
-                wikiPage = wikipedia.Page(self.site, self.settings)
+                wikiPage = wikipedia.Page(self.site, settingsPage)
                 self.settingsData = list()
                 try:
                     testo = wikiPage.get()
@@ -1171,7 +1170,7 @@ class main:
             result = self.miniTemplateCheck(template)
             if result:
                 break
-        if self.license_found == None:
+        if not self.license_found:
             for template in self.licenses_found:
                 try:
                     template.pageAPInfo()
@@ -1226,10 +1225,10 @@ class main:
             #else:
             break
         
-        if self.licenses_found != []:
+        if self.licenses_found:
             self.templateInList()
             
-            if self.license_found == None and self.allLicenses != list():
+            if not self.license_found and self.allLicenses:
                 # If only iterlist = self.AllLicenses if I remove something
                 # from iterlist it will be remove from self.AllLicenses too
                 iterlist = list(self.allLicenses)
@@ -1242,16 +1241,33 @@ class main:
                     except wikipedia.NoPage:
                         self.allLicenses.remove(template)
                 
-                if self.allLicenses != list():
+                if self.allLicenses:
                     self.license_found = self.allLicenses[0].title()
         self.some_problem = False # If it has "some_problem" it must check
                   # the additional settings.
         # if self.settingsData, use addictional settings
-        if self.settingsData != None:
+        if self.settingsData:
             self.findAdditionalProblems()
 
-        if self.some_problem == False:       
-            if not self.seems_ok and self.license_found != None:
+        if self.some_problem:
+            if self.mex_used in self.imageCheckText:
+                wikipedia.output(u'File already fixed. Skip.')
+            else:
+                wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
+                if self.mex_used.lower() == 'default':
+                    self.mex_used = self.unvertext
+                if self.imagestatus_used:
+                    reported = True
+                else:
+                    reported = self.report_image(self.imageName)
+                if reported:
+                    #if self.imagestatus_used == True:
+                    self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
+                else:
+                    wikipedia.output(u"Skipping the file...")
+                self.some_problem = False
+        else:
+            if not self.seems_ok and self.license_found:
                 rep_text_license_fake = u"\n*[[:File:%s]] seems to have " % self.imageName + \
                         "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
                 regexFakeLicense = r"\* ?\[\[:File:%s\]\] seems to have " % (re.escape(self.imageName)) + \
@@ -1259,25 +1275,8 @@ class main:
                 printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
                 self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                        addings = False, regex = regexFakeLicense)
-            elif self.license_found != None:
+            elif self.license_found:
                 printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, self.license_found))
-        else:
-            if self.mex_used in self.imageCheckText:
-                wikipedia.output(u'File already fixed. Skip.')
-            else:
-                wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
-                if self.mex_used.lower() == 'default':
-                    self.mex_used = self.unvertext
-                if self.imagestatus_used == False:
-                    reported = self.report_image(self.imageName)
-                else:
-                    reported = True
-                if reported == True:
-                    #if self.imagestatus_used == True:
-                    self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
-                else:
-                    wikipedia.output(u"Skipping the file...")
-                self.some_problem = False
         return (self.license_found, self.whiteTemplatesFound)
     
     def load(self, raw):
@@ -1303,7 +1302,7 @@ class main:
             return False
         if skip_number > limit: skip_number = limit
         # Print a starting message only if no images has been skipped
-        if self.skip_list == []:
+        if not self.skip_list:
             if skip_number == 1:
                 wikipedia.output(u'Skipping the first file:\n')
             else:
@@ -1386,19 +1385,19 @@ class main:
     
     def isTagged(self):
         """ Understand if a file is already tagged or not. """
-        TextFind = wikipedia.translate(self.site, txt_find)
         # Is the image already tagged? If yes, no need to double-check, skip
-        for i in TextFind:
+        for i in wikipedia.translate(self.site, txt_find):
             # If there are {{ use regex, otherwise no (if there's not the {{ may not be a template
             # and the regex will be wrong)
             if '{{' in i:
                 regexP = re.compile(r'\{\{(?:template|)%s ?(?:\||\n|\}|<) ?' % i.split('{{')[1].replace(u' ', u'[ _]'), re.I)
                 result = regexP.findall(self.imageCheckText)
-                if result != []:
+                if result:
                     return True
             elif i.lower() in self.imageCheckText:
                 return True
-        return False # Nothing Found? Ok: False      
+        
+        return False # Nothing Found
     
     def findAdditionalProblems(self):
         # In every tupla there's a setting configuration
@@ -1418,8 +1417,7 @@ class main:
                 break
             summary = tupla[5]
             head_2 = tupla[6]
-            text = tupla[7]
-            text = text % self.imageName
+            text = tupla[7] % self.imageName
             mexCatched = tupla[8]
             for k in find_list:
                 if find_tipe.lower() == 'findonly':
@@ -1491,8 +1489,7 @@ class main:
         self.imageCheckText = regex_nowiki.sub('', self.imageCheckText); self.imageCheckText = regex_pre.sub('', self.imageCheckText)        
         # Deleting the useless template from the description (before adding something
         # in the image the original text will be reloaded, don't worry).
-        self.tagged = self.isTagged()
-        if self.tagged == True:
+        if self.isTagged():
             # Tagged? Yes, skip.
             printWithTimeZone(u'%s is already tagged...' % self.imageName)
             return True        
@@ -1514,7 +1511,7 @@ class main:
             # It works also without this... but i want only to be sure ^^
             brackets = False
             return True        
-        elif delete == True:
+        elif delete:
             wikipedia.output(u"%s is not a file!" % self.imageName)
             # Modify summary text
             wikipedia.setAction(dels)

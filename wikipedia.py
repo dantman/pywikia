@@ -3467,25 +3467,22 @@ class ImagePage(Page):
         try:
             url = imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
             return url
-#        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
-#        m = urlR.search(self.getImagePageHtml())
+        #urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
+        #m = urlR.search(self.getImagePageHtml())
 
-#            url = m.group('url') or m.group('url2')
+        #    url = m.group('url') or m.group('url2')
         except KeyError:
-            raise NoPage(u'Image file URL for %s not found.'
-                         % self.aslink(forceInterwiki = True))
+            raise NoPage(u'Image file URL for %s not found.' % self.aslink(forceInterwiki = True) )
         return url
 
     def fileIsOnCommons(self):
         """Return True if the image is stored on Wikimedia Commons"""
-        return self.fileUrl().startswith(
-            u'http://upload.wikimedia.org/wikipedia/commons/')
+        return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
 
     def fileIsShared(self):
         """Return True if image is stored on Wikitravel shared repository."""
         if 'wikitravel_shared' in self.site().shared_image_repository():
-            return self.fileUrl().startswith(
-                u'http://wikitravel.org/upload/shared/')
+            return self.fileUrl().startswith(u'http://wikitravel.org/upload/shared/')
         return self.fileIsOnCommons()
 
     # FIXME: MD5 might be performed on not complete file due to server disconnection
@@ -5325,25 +5322,26 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         #else:
         if config.proxy['host']:
             conn = httplib.HTTPConnection(config.proxy['host'])
-        else:
-            if self.protocol() == 'http':
-                conn = httplib.HTTPConnection(self.hostname())
-            elif self.protocol() == 'https':
-                conn = httplib.HTTPSConnection(self.hostname())
-        # Encode all of this into a HTTP request
-        # otherwise, it will crash, as other protocols are not supported
-
-        if address[-1] == "?":
-            address = address[:-1]
-        if config.proxy['host']:
             proxyPutAddr = '%s://%s%s' % (self.protocol(), self.hostname(), address)
             conn.putrequest('POST', proxyPutAddr)
             if type(config.proxy['auth']) == tuple:
                 import base64
                 authcode = base64.b64encode("%s:%s" % (config.proxy['auth'][0], config.proxy['auth'][1]) )
                 conn.putheader('Proxy-Authorization', "Basic %s" % authcode )
+        
         else:
+            if self.protocol() == 'http':
+                conn = httplib.HTTPConnection(self.hostname())
+            elif self.protocol() == 'https':
+                conn = httplib.HTTPSConnection(self.hostname())
+            
             conn.putrequest('POST', address)
+        
+        # Encode all of this into a HTTP request
+        # otherwise, it will crash, as other protocols are not supported
+
+        if address[-1] == "?":
+            address = address[:-1]
         if self.hostname() in config.authenticate.keys():
             import base64
             authcode = base64.b64encode("%s:%s" % (config.authenticate[self.hostname()][0], config.authenticate[self.hostname()][1]) )
@@ -5405,32 +5403,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """
 
         if retry is None:
-            retry=config.retry_on_fail
+            retry = config.retry_on_fail
 
-        #if False: #self.persistent_http and not data:
-        #    self.conn.putrequest('GET', path)
-        #    self.conn.putheader('User-agent', useragent)
-        #    self.conn.putheader('Cookie', self.cookies(sysop = sysop))
-        #    self.conn.putheader('Connection', 'Keep-Alive')
-        #    if compress:
-        #            self.conn.putheader('Accept-encoding', 'gzip')
-        #    self.conn.endheaders()
-
-        #    # Prepare the return values
-        #    # Note that this can raise network exceptions which are not
-        #    # caught here.
-        #    try:
-        #        response = self.conn.getresponse()
-        #    except httplib.BadStatusLine:
-        #        # Blub.
-        #        self.conn.close()
-        #        self.conn.connect()
-        #        return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
-
-        #    text = response.read()
-        #    headers = dict(response.getheaders())
-
-        #else:
         if self.hostname() in config.authenticate.keys():
             uo = authenticateURLopener
         else:
@@ -5459,10 +5433,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         while True:
             try:
                 if self.hostname() in config.authenticate.keys():
-                  request = urllib2.Request(url, data)
-                  request.add_header('User-agent', useragent)
-                  opener = urllib2.build_opener()
-                  f = opener.open(request)
+                    request = urllib2.Request(url, data)
+                    request.add_header('User-agent', useragent)
+                    opener = urllib2.build_opener()
+                    f = opener.open(request)
                 else:
                     f = uo.open(url, data)
 
@@ -5533,7 +5507,7 @@ your connection is down. Retrying in %i minutes..."""
         self._getUserDataOld(text, sysop = sysop)
 
         if back_response:
-            return response, text
+            return f, text
         else:
             return text
 
