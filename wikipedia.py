@@ -3406,7 +3406,7 @@ not supported by PyWikipediaBot!"""
             raise NoPage(u'API Error, nothing found in the APIs')
 
         # We don't know the page's id, if any other better idea please change it
-        return data[data.keys()[0]][u'revisions']
+        return data.values()[0][u'revisions']
 
 class ImagePage(Page):
     """A subclass of Page representing an image descriptor wiki page.
@@ -3432,6 +3432,9 @@ class ImagePage(Page):
         if self.namespace() != 6:
             raise ValueError(u'BUG: %s is not in the image namespace!' % title)
         self._imagePageHtml = None
+        self._local = True
+        self._latestInfo = {}
+        self._infoLoaded = False
 
     def getImagePageHtml(self):
         """
@@ -3445,6 +3448,42 @@ class ImagePage(Page):
             self._imagePageHtml = self.site().getUrl(path)
         return self._imagePageHtml
 
+    def _loadInfo(self, limit = 1):
+        params = {
+            'action': 'query',
+            'prop': 'imageinfo',
+            'titles': self.title(),
+            'iiprop': ['timestamp', 'user', 'comment', 'url', 'size', 'dimensions', 'sha1', 'mime', 'metadata', 'archivename', 'bitdepth'],
+            'iilimit': limit,
+        }
+        data = query.GetData(params, self.site())
+        if 'error' in data:
+            raise RuntimeError("%s" %data['error'])
+        count = 0
+        if data['query']['pages'].values()[0]["imagerepository"] == "shared":
+            self._local = False
+        infos = []
+        
+        while True:
+            for info in data['query']['pages'].values()[0]['imageinfo']:
+                count += 1
+                if count == 1 and 'iistart' not in params: 
+                    # count 1 and no iicontinue mean first image revision is latest.
+                    self.latestInfo = info
+                infos.append(info)
+                if count >= limit:
+                    break
+            
+            
+            if count < limit and 'query-continue' in data:
+                params['iistart'] = data['query-continue']['imageinfo']['iistart']
+            else:
+                break
+        
+        self._infoLoaded = True
+        if limit > 1:
+            return infos
+
     def fileUrl(self):
         """Return the URL for the image described on this page."""
         # There are three types of image pages:
@@ -3457,27 +3496,20 @@ class ImagePage(Page):
         # is a full image link for .ogg and .mid files.
         #***********************
         #change to API query: action=query&titles=File:wiki.jpg&prop=imageinfo&iiprop=url
-        params = {
-            'action'    :'query',
-            'prop'      :'imageinfo',
-            'titles'    :self.title(),
-            'iiprop'    :'url',
-        }
-        imagedata = query.GetData(params, self.site(), encodeTitle = False)
-        try:
-            url = imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
-            return url
+        if not self._infoLoaded:
+            self._loadInfo()
+        
+        return self.latestInfo['url']
         #urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
         #m = urlR.search(self.getImagePageHtml())
 
         #    url = m.group('url') or m.group('url2')
-        except KeyError:
-            raise NoPage(u'Image file URL for %s not found.' % self.aslink(forceInterwiki = True) )
-        return url
 
     def fileIsOnCommons(self):
         """Return True if the image is stored on Wikimedia Commons"""
-        return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
+        if not self._infoLoaded:
+            self._loadInfo()
+        return not self._local
 
     def fileIsShared(self):
         """Return True if image is stored on Wikitravel shared repository."""
@@ -3489,9 +3521,9 @@ class ImagePage(Page):
     # (see bug #1795683).
     def getFileMd5Sum(self):
         """Return image file's MD5 checksum."""
-        uo = MyURLopener()
-        f = uo.open(self.fileUrl())
-        md5Checksum = md5(f.read()).hexdigest()
+        
+        f = self.site().getUrl(self.fileUrl(), no_hostname=True)
+        md5Checksum = md5(f).hexdigest()
         return md5Checksum
 
     def getFileVersionHistory(self):
@@ -3526,18 +3558,11 @@ class ImagePage(Page):
 
     def getLatestUploader(self):
         """ Function that uses the APIs to detect the latest uploader of the image """
-        params = {
-            'action'    :'query',
-            'prop'      :'imageinfo',
-            'titles'    :self.title(),
-            }
-        data = query.GetData(params, self.site(), encodeTitle = False)
+        if not self._infoLoaded:
+            self._loadInfo()
         try:
             # We don't know the page's id, if any other better idea please change it
-            pageid = data['query']['pages'].keys()[0]
-            nick = data['query']['pages'][pageid][u'imageinfo'][0][u'user']
-            timestamp = data['query']['pages'][pageid][u'imageinfo'][0][u'timestamp']
-            return [nick, timestamp]
+            return [self.latestInfo['user'], self.latestInfo['timestamp']]
         except KeyError:
             raise NoPage(u'API Error, nothing found in the APIs')
 
@@ -3546,17 +3571,10 @@ class ImagePage(Page):
             Files are the same or not.
             """
         if self.exists():
-            params = {
-                'action'    :'query',
-                'titles'    :self.title(),
-                'prop'      :'imageinfo',
-                'iiprop'    :'sha1',
-                }
-            # First of all we need the Hash that identify an image
-            data = query.GetData(params, self.site(), encodeTitle = False)
-            pageid = data['query']['pages'].keys()[0]
+            if not self._infoLoaded:
+                self._loadInfo()
             try:
-                hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
+                return self._latestInfo['sha1']
             except (KeyError, IndexError):
                 try:
                     self.get()
@@ -3568,8 +3586,6 @@ class ImagePage(Page):
                     return None
                 else:
                     raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
-            else:
-                return hash_found
         else:
             output(u'File deleted before getting the Hash. Skipping...')
             return None
