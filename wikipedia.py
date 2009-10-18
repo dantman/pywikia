@@ -3479,11 +3479,11 @@ class ImagePage(Page):
                     # count 1 and no iicontinue mean first image revision is latest.
                     self._latestInfo = info
                 infos.append(info)
-                if count >= limit:
+                if limit == 1:
                     break
             
             
-            if count < limit and 'query-continue' in data:
+            if 'query-continue' in data and limit != 1:
                 params['iistart'] = data['query-continue']['imageinfo']['iistart']
             else:
                 break
@@ -3548,6 +3548,15 @@ class ImagePage(Page):
 
         """
         result = []
+        infos = self._loadInfo(500)
+        #API query
+        if infos:
+            for i in infos:
+                result.append((i['timestamp'], i['user'], "%s¡Ñ%s" % (i['width'], i['height']), i['size'], i['comment']))
+            
+            return result
+        
+        #from ImagePage HTML
         history = re.search('(?s)<table class="wikitable filehistory">.+?</table>', self.getImagePageHtml())
         if history:
             lineR = re.compile(r'<tr>(?:<td>.*?</td>){1,2}<td.*?><a href=".+?">(?P<datetime>.+?)</a></td><td>.*?(?P<resolution>\d+\xd7\d+) <span.*?>\((?P<filesize>.+?)\)</span></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?:.*?<span class="comment">\((?P<comment>.*?)\)</span>)?</td></tr>')
