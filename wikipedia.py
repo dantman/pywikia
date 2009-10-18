@@ -737,8 +737,8 @@ not supported by PyWikipediaBot!"""
             'prop': ['revisions','info'],
             'rvprop': ['content','ids','flags','timestamp','user','comment','size'],
             'rvlimit': 1,
-            'inprop': 'protection',#|talkid|subjectid',
-            'intoken': 'edit',
+            'inprop': ['protection','talkid','subjectid','url','readable'],
+            #'intoken': 'edit',
         }
         if oldid:
             params['rvstartid'] = oldid
@@ -776,13 +776,13 @@ not supported by PyWikipediaBot!"""
         
         if change_edit_time:
             self._editTime = parsetime2stamp(pageInfo['revisions'][0]['timestamp'])
-            self._startTime = parsetime2stamp(pageInfo["starttimestamp"])
+            if "starttimestamp" in pageInfo:
+                self._startTime = parsetime2stamp(pageInfo["starttimestamp"])
             
             
         self._isWatched = False #cannot handle in API in my research for now.
         
-        pagetext = pageInfo['revisions'][0]['*']
-        pagetext = unescape(pagetext)
+        pagetext = unescape(pageInfo['revisions'][0]['*'])
         pagetext = pagetext.rstrip()
         if self.site().lang == 'eo':
             pagetext = decodeEsperantoX(pagetext)
@@ -3432,7 +3432,7 @@ class ImagePage(Page):
         if self.namespace() != 6:
             raise ValueError(u'BUG: %s is not in the image namespace!' % title)
         self._imagePageHtml = None
-        self._local = True
+        self._local = None
         self._latestInfo = {}
         self._infoLoaded = False
 
@@ -3456,12 +3456,20 @@ class ImagePage(Page):
             'iiprop': ['timestamp', 'user', 'comment', 'url', 'size', 'dimensions', 'sha1', 'mime', 'metadata', 'archivename', 'bitdepth'],
             'iilimit': limit,
         }
-        data = query.GetData(params, self.site())
+        try:
+            data = query.GetData(params, self.site())
+        except NotImplementedError:
+            output("API not work, loading page HTML.")
+            self.getImagePageHtml()
+            return
+            
         if 'error' in data:
             raise RuntimeError("%s" %data['error'])
         count = 0
         if data['query']['pages'].values()[0]["imagerepository"] == "shared":
             self._local = False
+        else:
+            self._local = True
         infos = []
         
         while True:
@@ -3499,17 +3507,24 @@ class ImagePage(Page):
         if not self._infoLoaded:
             self._loadInfo()
         
-        return self.latestInfo['url']
-        #urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
-        #m = urlR.search(self.getImagePageHtml())
+        if self._infoLoaded:
+            return self.latestInfo['url']
+        
+        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
+        m = urlR.search(self.getImagePageHtml())
 
-        #    url = m.group('url') or m.group('url2')
+        url = m.group('url') or m.group('url2')
+        return url
 
     def fileIsOnCommons(self):
         """Return True if the image is stored on Wikimedia Commons"""
         if not self._infoLoaded:
             self._loadInfo()
-        return not self._local
+        
+        if self._infoLoaded:
+            return not self._local
+        
+        return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
 
     def fileIsShared(self):
         """Return True if image is stored on Wikitravel shared repository."""
@@ -3575,7 +3590,7 @@ class ImagePage(Page):
                 self._loadInfo()
             try:
                 return self._latestInfo['sha1']
-            except (KeyError, IndexError):
+            except (KeyError, IndexError, TypeError):
                 try:
                     self.get()
                 except NoPage:
@@ -3598,6 +3613,38 @@ class ImagePage(Page):
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n' + u'\n|----\n'.join(lines) + '\n|}'
 
     def usingPages(self):
+        try:
+            if config.use_api and self.site().versionnumber() >= 11:
+                x = self.site().api_address()
+                del x
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
+            for a in self._usingPagesOld():
+                yield a
+            return
+        params = {
+            'action': 'query',
+            'list': 'imageusage',
+            'iutitle': self.title(),
+            'iulimit': config.special_page_limit,
+            #'': '',
+        }
+        
+        while True:
+            data = query.GetData(params, self.site())
+            if 'error' in data:
+                raise RuntimeError("%s" % data['error'])
+            
+            for iu in data['query']["imageusage"]:
+                yield Page(self.site(), iu['title'], defaultNamespace=iu['ns'])
+            
+            if 'query-continue' in data:
+                params['iucontinue'] = data['query-continue']['imageusage']['iucontinue']
+            else:
+                break
+    
+    def _usingPagesOld(self):
         """Yield Pages on which the image is displayed."""
         titleList = re.search('(?s)<h2 id="filelinks">.+?<!-- end content -->',
                               self.getImagePageHtml()).group()
