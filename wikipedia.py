@@ -3477,7 +3477,7 @@ class ImagePage(Page):
                 count += 1
                 if count == 1 and 'iistart' not in params: 
                     # count 1 and no iicontinue mean first image revision is latest.
-                    self.latestInfo = info
+                    self._latestInfo = info
                 infos.append(info)
                 if count >= limit:
                     break
@@ -3508,7 +3508,7 @@ class ImagePage(Page):
             self._loadInfo()
         
         if self._infoLoaded:
-            return self.latestInfo['url']
+            return self._latestInfo['url']
         
         urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
         m = urlR.search(self.getImagePageHtml())
@@ -3574,11 +3574,11 @@ class ImagePage(Page):
         """ Function that uses the APIs to detect the latest uploader of the image """
         if not self._infoLoaded:
             self._loadInfo()
-        try:
-            # We don't know the page's id, if any other better idea please change it
-            return [self.latestInfo['user'], self.latestInfo['timestamp']]
-        except KeyError:
-            raise NoPage(u'API Error, nothing found in the APIs')
+        if self._infoLoaded:
+            return [self._latestInfo['user'], self._latestInfo['timestamp']]
+        
+        inf = self.getFileVersionHistory()[0]
+        return [inf[1], inf[0]]
 
     def getHash(self):
         """ Function that return the Hash of an file in oder to understand if two
