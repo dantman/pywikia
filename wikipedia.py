@@ -5823,8 +5823,7 @@ your connection is down. Retrying in %i minutes..."""
         if (not self._mediawiki_messages) or forceReload:
             api = False
             if verbose:
-                output(
-                  u"Retrieving mediawiki messages from Special:Allmessages")
+                output(u"Retrieving mediawiki messages from Special:Allmessages")
             # Only MediaWiki r27393/1.12 and higher support XML output for Special:Allmessages
             if self.versionnumber() < 12:
                 usePHP = True
@@ -5860,7 +5859,7 @@ your connection is down. Retrying in %i minutes..."""
 
             retry_idle_time = 1
             while True:
-                if api and self.versionnumber() >= 12 or self.versionnumber() >= 16:
+                if api and self.versionnumber() >= 12:
                     params = {
                         'action': 'query',
                         'meta': 'allmessages',
@@ -5964,17 +5963,22 @@ your connection is down. Retrying in %i minutes..."""
         # Get data
         # API Userinfo is available from version 1.11
         # preferencetoken available from 1.14
-        if config.use_api and self.versionnumber() >= 12:
+        if config.use_api and self.versionnumber() >= 11:
             #Query userinfo
             params = {
                 'action': 'query',
                 'meta': 'userinfo',
-                'uiprop': ['blockinfo','groups','rights','hasmsg','ratelimits'],
+                'uiprop': ['blockinfo','groups','rights','hasmsg'],
             }
+            if self.versionnumber() >= 12:
+                params['uiprop'].append('ratelimits')
             if self.versionnumber() >= 14:
                 params['uiprop'].append('preferencestoken')
 
-            text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
+            if self.versionnumber() == 11:
+                text = query.GetData(params, self, sysop=sysop)['userinfo']
+            else:
+                text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
             self._getUserData(text, sysop = sysop, force = force)
         else:
             url = self.edit_address('Non-existing_page')
@@ -6058,18 +6062,16 @@ your connection is down. Retrying in %i minutes..."""
                     if np['pageid'] not in seen:
                         seen.add(np['pageid'])
                         page = Page(self, np['title'], defaultNamespace=np['ns'])
-                        yield page, np['timestamp'], np['timestamp'], u'', np['user'], np['comment']
+                        yield page, np['timestamp'], np['newlen'], u'', np['user'], np['comment']
             else:
                 path = self.newpages_address(n=number, namespace=namespace)
                 # The throttling is important here, so always enabled.
                 get_throttle()
                 html = self.getUrl(path)
 
-                entryR = re.compile(
-'<li[^>]*>(?P<date>.+?) \S*?<a href=".+?"'
-' title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]]'
-' .?<a href=".+?" title=".+?:(?P<username>.+?)">'
-                                    )
+                entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?"'
+                    ' title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]]'
+                    ' .?<a href=".+?" title=".+?:(?P<username>.+?)">')
                 for m in entryR.finditer(html):
                     date = m.group('date')
                     title = m.group('title')
@@ -6179,8 +6181,7 @@ your connection is down. Retrying in %i minutes..."""
             path = self.ancientpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile(
-'<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
                 date = m.group('date')
@@ -6468,7 +6469,7 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def randompage(self):
+    def randompage(self, redirect = False):
         if config.use_api and self.versionnumber() >= 12:
             params = {
                 'action': 'query',
@@ -6477,32 +6478,24 @@ your connection is down. Retrying in %i minutes..."""
                 'rnlimit': '1',
                 #'': '',
             }
+            if redirect:
+                params['rnredirect'] = 1
+            
             data = query.GetData(params, self)
             return Page(self, data['query']['random'][0]['title'])
         else:
-            """Yield random page via Special:Random"""
-            html = self.getUrl(self.random_address())
+            if redirect:
+                """Yield random redirect page via Special:RandomRedirect."""
+                html = self.getUrl(self.randomredirect_address())
+            else:
+                """Yield random page via Special:Random"""
+                html = self.getUrl(self.random_address())
             m = re.search('var wgPageName = "(?P<title>.+?)";', html)
             if m is not None:
                 return Page(self, m.group('title'))
 
     def randomredirectpage(self):
-        if config.use_api and self.versionnumber() >= 12:
-            params = {
-                'action': 'query',
-                'list': 'random',
-                #'rnnamespace': '0',
-                'rnlimit': '1',
-                'rnredirect': '1',
-            }
-            data = query.GetData(params, self)
-            return Page(self, data['query']['random'][0]['title'])
-        else:
-            """Yield random redirect page via Special:RandomRedirect."""
-            html = self.getUrl(self.randomredirect_address())
-            m = re.search('var wgPageName = "(?P<title>.+?)";', html)
-            if m is not None:
-                return Page(self, m.group('title'))
+        return self.randompage(redirect = True)
 
     def allpages(self, start='!', namespace=None, includeredirects=True,
                  throttle=True):
@@ -6615,8 +6608,7 @@ your connection is down. Retrying in %i minutes..."""
                 iend = returned_html.index(end_s,ibegin + 3)
             except ValueError:
                 if monobook_error:
-                    raise ServerError(
-"Couldn't extract allpages special page. Make sure you're using MonoBook skin.")
+                    raise ServerError("Couldn't extract allpages special page. Make sure you're using MonoBook skin.")
                 else:
                     # No list of wikilinks
                     break
