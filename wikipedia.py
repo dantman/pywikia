@@ -3393,20 +3393,16 @@ not supported by PyWikipediaBot!"""
     def getLatestEditors(self, limit = 1):
         """ Function to get the last editors of a page """
         #action=query&prop=revisions&titles=API&rvprop=timestamp|user|comment
-        params = {
-            'action'    :'query',
-            'prop'      :'revisions',
-            'rvprop'    :['user','timestamp'],
-            'rvlimit'   :limit,
-            'titles'    :self.title(),
-            }
-        try:
-            data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages']
-        except KeyError:
-            raise NoPage(u'API Error, nothing found in the APIs')
-
-        # We don't know the page's id, if any other better idea please change it
-        return data.values()[0][u'revisions']
+        if hasattr(self, '_versionhistory'):
+            data = self.getVersionHistory(getAll=True, revCount = limit)
+        else:
+            data = self.getVersionHistory(revCount = limit)
+        
+        result = []
+        for i in data:
+            result.append({'user':i[2],'timestamp':i[1]})
+        
+        return result
 
 class ImagePage(Page):
     """A subclass of Page representing an image descriptor wiki page.
