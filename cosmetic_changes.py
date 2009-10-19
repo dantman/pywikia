@@ -157,12 +157,6 @@ msg_append = {
     'zh': u'; 細部更改',
 }
 
-deprecatedTemplates = {
-    'wikipedia': {
-        'pdc':[u'Schkiss'],
-    }
-}
-
 class CosmeticChangesToolkit:
     def __init__(self, site, debug = False, redirect = False, namespace = None):
         self.site = site
@@ -183,7 +177,6 @@ class CosmeticChangesToolkit:
         text = self.cleanUpSectionHeaders(text)
         text = self.putSpacesInLists(text)
         text = self.translateAndCapitalizeNamespaces(text)
-        text = self.removeDeprecatedTemplates(text)
         text = self.resolveHtmlEntities(text)
         text = self.validXhtml(text)
         text = self.removeUselessSpaces(text)
@@ -423,14 +416,6 @@ class CosmeticChangesToolkit:
         """
         if not self.redirect:
             text = wikipedia.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
-        return text
-
-    def removeDeprecatedTemplates(self, text):
-        if self.site.family.name in deprecatedTemplates and self.site.lang in deprecatedTemplates[self.site.family.name]:
-            for template in deprecatedTemplates[self.site.family.name][self.site.lang]:
-                if not self.site.nocapitalize:
-                    template = '[' + template[0].upper() + template[0].lower() + ']' + template[1:]
-                text = wikipedia.replaceExcept(text, r'\{\{([mM][sS][gG]:)?' + template + '(?P<parameters>\|[^}]+|)}}', '', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     #from fixes.py
