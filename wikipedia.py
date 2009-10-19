@@ -3984,9 +3984,12 @@ class Throttle(object):
                 self.pid = my_pid
             self.checktime = time.time()
             processes[self.pid] = self.checktime
-            f = open(self.logfn(), 'w')
-            for p in processes:
-                f.write(str(p)+' '+str(processes[p])+'\n')
+            try:
+                f = open(self.logfn(), 'w')
+                for p in processes:
+                    f.write(str(p)+' '+str(processes[p])+'\n')
+            except IOError:
+                pass
             f.close()
             self.process_multiplicity = count
             if verbose:
@@ -4051,9 +4054,12 @@ class Throttle(object):
                         processes[pid] = ptime
                 except (IndexError,ValueError):
                     pass    # Sometimes the file gets corrupted - ignore that line
-        f = open(self.logfn(), 'w')
-        for p in processes:
-            f.write(str(p)+' '+str(processes[p])+'\n')
+        try:
+            f = open(self.logfn(), 'w')
+            for p in processes:
+                f.write(str(p)+' '+str(processes[p])+'\n')
+        except IOError:
+            pass
         f.close()
 
     def __call__(self, requestsize=1):
