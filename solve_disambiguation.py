@@ -16,8 +16,9 @@ number of the appropriate replacement, and perform the change.
 It is possible to choose to replace only the link (just type the number) or
 replace both link and link-text (type 'r' followed by the number).
 
-Multiple references in one page will be scanned in order, but typing 'n' (next)
-on any one of them will leave the complete page unchanged. To leave only some reference unchanged, use the 's' (skip) option.
+Multiple references in one page will be scanned in order, but typing 'n'
+(next) on any one of them will leave the complete page unchanged. To leave
+only some reference unchanged, use the 's' (skip) option.
 
 Command line options:
 
@@ -36,9 +37,10 @@ Command line options:
                Note: this is the same as -primary -just -pos:XY
 
    -file:XYZ   reads a list of pages from a text file. XYZ is the name of the
-               file from which the list is taken. If XYZ is not given, the user is asked for a filename.
-               Page titles should be inside [[double brackets]].
-               The -pos parameter won't work if -file is used.
+               file from which the list is taken. If XYZ is not given, the
+               user is asked for a filename. Page titles should be inside
+               [[double brackets]]. The -pos parameter won't work if -file
+               is used.
 
    -always:XY  instead of asking the user what to do, always perform the same
                action. For example, XY can be "r0", "u" or "2". Be careful with
@@ -49,10 +51,10 @@ Command line options:
    -main       only check pages in the main namespace, not in the talk,
                wikipedia, user, etc. namespaces.
 
-   -start:XY   goes through all disambiguation pages in the category on your wiki
-               that is defined (to the bot) as the category containing disambiguation
-               pages, starting at XY. If only '-start' or '-start:' is given, it starts
-               at the beginning.
+   -start:XY   goes through all disambiguation pages in the category on your
+               wiki that is defined (to the bot) as the category containing
+               disambiguation pages, starting at XY. If only '-start' or
+               '-start:' is given, it starts at the beginning.
                
    -min:XX     (XX being a number) only work on disambiguation pages for which
                at least XX are to be worked on.
@@ -60,17 +62,21 @@ Command line options:
 To complete a move of a page, one can use:
 
     python solve_disambiguation.py -just -pos:New_Name Old_Name
+
 """
+
 #
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
 # (C) Andre Engels, 2003-2004
 # (C) WikiWichtel, 2004
 #
-# Distributed under the terms of the MIT license.
-#
 __version__='$Id$'
 #
+# Distributed under the terms of the MIT license.
+#
+
+
 # Standard library imports
 import re, sys, codecs
 
@@ -446,7 +452,8 @@ class PrimaryIgnoreManager(object):
         filename = wikipedia.config.datafilepath('disambiguations',
                 self.disambPage.titleForFilename() + '.txt')
         try:
-            # The file is stored in the disambiguation/ subdir. Create if necessary.
+            # The file is stored in the disambiguation/ subdir.
+            # Create if necessary.
             f = codecs.open(filename, 'r', 'utf-8')
             for line in f.readlines():
                 # remove trailing newlines and carriage returns
@@ -567,6 +574,7 @@ class DisambiguationRobot(object):
             refPage - A page linking to disambPage
         Returns False if the user pressed q to completely quit the program.
         Otherwise, returns True.
+       
         """
         # TODO: break this function up into subroutines!
 
