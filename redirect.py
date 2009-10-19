@@ -69,50 +69,50 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
-    'als': u'Bötli: Uflesung vum doppelte Redirect',
-    'ar': u'روبوت: تصليح تحويلة مزدوجة',
-    'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms',
-    'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня',
-    'br': u'Kempennet adkas doubl gant robot',
-    'cs': u'Robot opravil dvojité přesměrování',
-    'de': u'Bot: Korrigiere doppelten Redirect',
-    'en': u'Robot: Fixing double redirect',
-    'es': u'Robot: Arreglando doble redirección',
-    'fa': u'ربات:اصلاح تغییر مسیر دوتایی',
-    'fi': u'Botti korjasi kaksinkertaisen ohjauksen',
-    'fr': u'Robot : répare double redirection',
-    'ga': u'Róbó : Ag socrú athsheolta dúbailte',
-    'he': u'בוט: מתקן הפניה כפולה',
-    'hr': u'Bot: Popravak dvostrukih preusmjeravanja',
-    'ia': u'Robot: reparation de duple redirection',
-    'is': u'Vélmenni: Lagfæri tvöfalda tilvísun',
-    'it': u'Bot: Sistemo i redirect doppi',
-    'ja': u'ロボットによる: 二重リダイレクト修正',
-    'ka': u'რობოტი: ორმაგი გადამისამართების გასწორება',
-    'ko': u'로봇: 이중 넘겨주기 수정',
-    'kk': u'Бот: Шынжырлы айдатуды түзетті',
-    'ksh':u'Bot: [[special:doubleredirects|Dubbel Ömlëijdong]] fottjemaat',
-    'lb': u'Bot: Duebel Viruleedung gefléckt',
-    'lt': u'robotas: Taisomas dvigubas peradresavimas',
-    'mk': u'Бот: Исправка на двојни пренасочувања',
-    'nds':u'Bot: Dubbelte Wiederleiden rutmakt',
-    'nl': u'Bot: dubbele doorverwijzing gecorrigeerd',
-    'nn': u'robot: retta dobbel omdirigering',
-    'no': u'bot: Retter dobbel omdirigering',
-    'pl': u'Robot naprawia podwójne przekierowanie',
-    'pt': u'Bot: Corrigido duplo redirecionamento',
-    'ru': u'Робот: исправление двойного перенаправления',
-    'sr': u'Бот: Поправка дуплих преусмерења',
-    'sv': u'Robot: Rättar dubbel omdirigering',
-    'szl': u'Robot sprowjo tuplowane przekerowańa',
-    'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน',
-    'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
-    'uk': u'Робот: виправлення подвійного перенаправлення',
-    'war': u'Robot: Gin-ayad in nagduduha nga redirek',
-    'yi': u'באט: פארראכטן פארטאפלטע ווייטערפירונג',
-    'zh': u'機器人:修正雙重重定向',
-    'zh-yue': u'機械人：拉直連串跳轉 ',
-    'zh-classical': u'僕:復修渡口',
+    'als': u'Bötli: Uflösig vun de doppleti Wyterleitig zue %s', 
+    'ar': u'روبوت: تصليح تحويلة مزدوجة → %s',
+    'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms → %s',
+    'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня → %s',
+    'br': u'Kempennet adkas doubl gant robot → %s',
+    'cs': u'Robot opravil dvojité přesměrování → %s',
+    'de': u'Bot: Korrigiere doppelte Weiterleitung zu %s',
+    'en': u'Robot: Fixing double redirect to %s',
+    'es': u'Robot: Arreglando doble redirección → %s',
+    'fa': u'ربات:اصلاح تغییر مسیر دوتایی → %s',
+    'fi': u'Botti korjasi kaksinkertaisen ohjauksen → %s',
+    'fr': u'Robot: répare double redirection à %s',
+    'ga': u'Róbó: Ag socrú athsheolta dúbailte → %s',
+    'he': u'בוט: מתקן הפניה כפולה → %s',
+    'hr': u'Bot: Popravak dvostrukih preusmjeravanja → %s',
+    'ia': u'Robot: reparation de duple redirection → %s',
+    'is': u'Vélmenni: Lagfæri tvöfalda tilvísun → %s',
+    'it': u'Bot: Sistemo i redirect doppi a %s',
+    'ja': u'ロボットによる: 二重リダイレクト修正 → %s',
+    'ka': u'რობოტი: ორმაგი გადამისამართების გასწორება → %s',
+    'ko': u'로봇: 이중 넘겨주기 수정 → %s',
+    'kk': u'Бот: Шынжырлы айдатуды түзетті → %s',
+    'ksh':u'Bot: [[special:doubleredirects|Dubbel Ömlëijdong]] fottjemaat → %s',
+    'lb': u'Bot: Duebel Viruleedung gefléckt → %s',
+    'lt': u'robotas: Taisomas dvigubas peradresavimas → %s',
+    'mk': u'Бот: Исправка на двојни пренасочувања → %s',
+    'nds':u'Bot: Dubbelte Wiederleiden rutmakt → %s',
+    'nl': u'Bot: dubbele doorverwijzing gecorrigeerd aan %s',
+    'nn': u'robot: retta dobbel omdirigering → %s',
+    'no': u'bot: Retter dobbel omdirigering → %s',
+    'pl': u'Robot naprawia podwójne przekierowanie → %s',
+    'pt': u'Bot: Corrigido duplo redirecionamento → %s',
+    'ru': u'Робот: исправление двойного перенаправления → %s',
+    'sr': u'Бот: Поправка дуплих преусмерења → %s',
+    'sv': u'Robot: Rättar dubbel omdirigering → %s',
+    'szl':u'Robot sprowjo tuplowane przekerowańa → %s',
+    'th': u'โรบอต: แก้หน้าเปลี่ยนทางซ้ำซ้อน → %s',
+    'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme → %s',
+    'uk': u'Робот: виправлення подвійного перенаправлення → %s',
+    'war':u'Robot: Gin-ayad in nagduduha nga redirek → %s',
+    'yi': u'באט: פארראכטן פארטאפלטע ווייטערפירונג → %s',
+    'zh': u'機器人:修正雙重重定向 → %s',
+    'zh-yue': u'機械人：拉直連串跳轉 → %s',
+    'zh-classical': u'僕:復修渡口 → %s',
 }
 
 # Reason for deleting broken redirects
@@ -598,13 +598,12 @@ class RedirectRobot:
             wikipedia.output(u'')
 
     def fix_double_redirects(self):
-        summary = wikipedia.translate(self.site, msg_double)
         for redir_name in self.generator.retrieve_double_redirects():
-            self.fix_1_double_redirect(redir_name, summary)
+            self.fix_1_double_redirect(redir_name)
             if self.exiting:
                 break
 
-    def fix_1_double_redirect(self,  redir_name, summary):
+    def fix_1_double_redirect(self,  redir_name):
             redir = wikipedia.Page(self.site, redir_name)
             # Show the title of the page we're working on.
             # Highlight the title in purple.
@@ -707,6 +706,7 @@ class RedirectRobot:
                         oldText)
                 if text == oldText:
                     break
+                summary = wikipedia.translate(self.site, msg_double) % targetPage.aslink()
                 wikipedia.showDiff(oldText, text)
                 if self.prompt(u'Do you want to accept the changes?'):
                     try:
@@ -731,7 +731,6 @@ class RedirectRobot:
         # TODO: part of this should be moved to generator, the rest merged into self.run()
         # get reason for deletion text
         delete_reason = wikipedia.translate(self.site, reason_broken)
-        double_summary = wikipedia.translate(self.site, msg_double)
         count = 0
         for (redir_name, code, target, final) in self.generator.get_redirects_via_api(
                                          namespaces = self.generator.namespaces,
@@ -743,7 +742,7 @@ class RedirectRobot:
                 self.delete_1_broken_redirect(redir_name, delete_reason)
                 count += 1
             else:
-                self.fix_1_double_redirect(redir_name, double_summary)
+                self.fix_1_double_redirect(redir_name)
                 count += 1
             # print ('%s .. %s' % (count, self.number))
             if self.exiting or ( self.number and count >= self.number ):
@@ -753,9 +752,6 @@ class RedirectRobot:
         # TODO: make all generators return a redicet type indicator,
         #        thus make them usabile with 'both'
         if self.action == 'double':
-            # get summary text
-            wikipedia.setAction(
-                wikipedia.translate(self.site, msg_double))
             self.fix_double_redirects()
         elif self.action == 'broken':
             self.delete_broken_redirects()
