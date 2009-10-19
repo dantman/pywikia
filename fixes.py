@@ -1,6 +1,16 @@
 # -*- coding: utf-8  -*-
-""" File containing all standard fixes """
+"""
+File containing all standard fixes
+
+"""
+
+#
+# (C) Pywikipedia team, 2008-2009
+#
 __version__ = '$Id$'
+#
+# Distributed under the terms of the MIT license.
+#
 
 help = u"""
                        * HTML       -  Convert HTML tags to wiki syntax, and
@@ -558,7 +568,7 @@ fixes = {
             (u'Special:Listgrouprights', u'Special:ListGroupRights'),
             (u'Special:Listusers',       u'Special:ListUsers'),
             (u'Special:Newimages',       u'Special:NewImages'),
-            (u'Special:Prefixindex',   u'Special:PrefixIndex'),
+            (u'Special:Prefixindex',     u'Special:PrefixIndex'),
             (u'Special:Protectedpages',  u'Special:ProtectedPages'),
             (u'Special:Recentchanges',   u'Special:RecentChanges'),
             (u'Special:Specialpages',    u'Special:SpecialPages'),
