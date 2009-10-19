@@ -4,7 +4,6 @@
 Edit a Wikipedia article with your favourite editor.
 """
 
-# Edit a Wikipedia article with your favourite editor.
 #
 # (C) Gerrit Holl 2004
 # (C) Pywikipedia team, 2004-2009
