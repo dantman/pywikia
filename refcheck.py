@@ -28,19 +28,22 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
+templates = ['ref', 'note', 'ref label', 'note label']
+
 class ReferencesRobot:
     #def __init__(self):
         #Nothing
     def countRefs(self, templates, namespaces):
         mysite = wikipedia.getSite()
+        mytpl  = mysite.template_namespace()+':'
         finalText = [u'Number of transclusions per template',u'------------------------------------']
         for template in templates:
-            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
+            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mytpl + template), onlyTemplateInclusion = True)
             if namespaces:
                 gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
             count = 0
             for page in gen:
-                count = count + 1
+                count += 1
             finalText.append(u'%s: %d' % (template, count))
         for line in finalText:
             wikipedia.output(line)
@@ -49,7 +52,6 @@ def main():
     doCount = False
     argsList = []
     namespaces = []
-    #templates = ['ref', 'note', 'ref label', 'note label']
     for arg in wikipedia.handleArgs():
         if arg == '-count':
             doCount = True
@@ -63,10 +65,9 @@ def main():
 
     if doCount:
         robot = ReferencesRobot()
-        if argsList:
-            robot.countRefs(argsList, namespaces)
-        else:
-            robot.countRefs(['ref', 'note', 'ref label', 'note label'], namespaces)
+        if not argsList:
+           argsList = templates
+        robot.countRefs(argsList, namespaces)
     else:
         wikipedia.showHelp('refcheck')
 
@@ -76,6 +77,3 @@ if __name__ == "__main__":
     finally:
         wikipedia.stopme()
 
-    #preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=100)
-    #for page in preloadingGen:
-        #pagetext = page.get()
