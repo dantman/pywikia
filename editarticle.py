@@ -1,10 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+Edit a Wikipedia article with your favourite editor.
+"""
 
 # Edit a Wikipedia article with your favourite editor.
 #
 # (C) Gerrit Holl 2004
+# (C) Pywikipedia team, 2004-2009
+#
+__version__ = "$Id$"
+#
 # Distributed under the terms of the MIT license.
+#
 
 # Version 0.4.
 #
@@ -15,7 +23,6 @@
 #       - ...
 
 __metaclass__ = type
-__version__ = "$Id$"
 import sys
 import os
 import string
@@ -102,7 +109,8 @@ class TextEditor:
         """
         text = self.convertLinebreaks(text)
         if config.editor:
-            tempFilename = '%s.%s' % (tempfile.mktemp(), config.editor_filename_extension)
+            tempFilename = '%s.%s' % (tempfile.mktemp(),
+                                      config.editor_filename_extension)
             tempFile = open(tempFilename, 'w')
             tempFile.write(text.encode(config.editor_encoding))
             tempFile.close()
@@ -114,14 +122,16 @@ class TextEditor:
                 # Nothing changed
                 return None
             else:
-                newcontent = open(tempFilename).read().decode(config.editor_encoding)
+                newcontent = open(tempFilename).read().decode(
+                                            config.editor_encoding)
                 os.unlink(tempFilename)
                 return self.restoreLinebreaks(newcontent)
         else:
             return self.restoreLinebreaks(wikipedia.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight))
 
 class ArticleEditor:
-    joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones
+    # join lines if line starts with this ones
+    joinchars = string.letters + '[]' + string.digits
 
     def __init__(self):
         self.set_options()
