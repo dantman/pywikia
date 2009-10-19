@@ -15,7 +15,7 @@ This script understands various command-line arguments:
 
 -after:zzzz       process pages after and including page zzzz
 
--top              using -top if you want moving {{Link FA|lang}} to top of
+-top              using -top if you want moving all {{Link FA|lang}} to top of
                   interwiki. DEFAULT: placing {{Link FA|lang}} right next to
                   corresponding interwiki.
 -count            Only counts how many featured articles of an languages
@@ -442,14 +442,21 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top, good):
                         if not m:
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
+                        site = wikipedia.getSite()
                         if good:
-                            comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_good) % (fromsite.lang, a.title()))
+                            comment = wikipedia.setAction(wikipedia.translate(site, msg_good) % (fromsite.lang, a.title()))
                         else:
-                            comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
+                            comment = wikipedia.setAction(wikipedia.translate(site, msg) % (fromsite.lang, a.title()))
 
                         ### Moving {{Link FA|xx}} to top of interwikis ###
                         if template_on_top == True:
-                            text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(templatelist[0], fromsite.lang)), atrans.categories())
+                            # Getting the interwiki
+                            iw = wikipedia.getLanguageLinks(text, site)
+                            # Removing the interwiki
+                            text = wikipedia.removeLanguageLinks(text, site)
+                            text += u"\r\n{{%s|%s}}\r\n"%(templatelist[0], fromsite.lang)
+                            # Adding the interwiki
+                            text = wikipedia.replaceLanguageLinks(text, iw, site)
 
                         ### Placing {{Link FA|xx}} right next to corresponding interwiki ###
                         else:
