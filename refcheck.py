@@ -67,7 +67,14 @@ def main():
         robot = ReferencesRobot()
         if not argsList:
            argsList = templates
-        robot.countRefs(argsList, namespaces)
+        choice = ''
+        if 'reflist' in argsList:
+            wikipedia.output(u'NOTE: it will take a long time to count "reflist".')
+            choice = wikipedia.inputChoice(u'Proceed anyway?', ['yes', 'no', 'skip'], ['y', 'n', 's'], 'y')
+            if choice == 's':
+                argsList.remove('reflist')
+        if choice <> 'n':
+            robot.countRefs(argsList, namespaces)
     else:
         wikipedia.showHelp('refcheck')
 
