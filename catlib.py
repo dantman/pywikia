@@ -225,7 +225,7 @@ class Category(wikipedia.Page):
                 count += 1
                 # For MediaWiki versions where subcats look like articles
                 if memb['ns'] == 14:
-                    yield SUBCATEGORY, Category.(self.site(), memb['title'], sortKey=memb['sortkey'])
+                    yield SUBCATEGORY, Category(self.site(), memb['title'], sortKey=memb['sortkey'])
                 elif memb['ns'] == 6:
                     yield ARTICLE, wikipedia.ImagePage(self.site(), memb['title'])
                 else:
