@@ -191,19 +191,18 @@ class Category(wikipedia.Page):
             return
         
         currentPageOffset = None
+        params = {
+            'action': 'query',
+            'list': 'categorymembers',
+            'cmtitle': self.title(),
+            'cmprop': ['title', 'ids', 'sortkey', 'timestamp'],
+            #'': '',
+        }
         while True:
-            params = {
-                'action': 'query',
-                'list': 'categorymembers',
-                'cmtitle': self.title(),
-                'cmprop': 'title',#|ids|sortkey|timestamp',
-                #'': '',
-            }
             if wikipedia.config.special_page_limit > 500:
                 params['cmlimit'] = 500
             else:
                 params['cmlimit'] = wikipedia.config.special_page_limit
-
             
             if currentPageOffset:
                 params['cmcontinue'] = currentPageOffset
@@ -218,17 +217,19 @@ class Category(wikipedia.Page):
             
             wikipedia.get_throttle()
             data = query.GetData(params, self.site())
+            if 'error' in data:
+                raise RuntimeError("%s" % data['error'])
             count = 0
             
             for memb in data['query']['categorymembers']:
                 count += 1
                 # For MediaWiki versions where subcats look like articles
-                if isCatTitle(memb['title'], self.site()):
-                    yield SUBCATEGORY, Category(self.site(), memb['title'])
-                elif memb['ns'] == 6 and self.site().image_namespace() in memb['title']:
+                if memb['ns'] == 14:
+                    yield SUBCATEGORY, Category.(self.site(), memb['title'], sortKey=memb['sortkey'])
+                elif memb['ns'] == 6:
                     yield ARTICLE, wikipedia.ImagePage(self.site(), memb['title'])
                 else:
-                    yield ARTICLE, wikipedia.Page(self.site(), memb['title'])
+                    yield ARTICLE, wikipedia.Page(self.site(), memb['title'], defaultNamespace=memb['ns'])
                 if count >= params['cmlimit']:
                     break
             # try to find a link to the next list page
