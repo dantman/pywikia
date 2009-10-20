@@ -28,7 +28,7 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
-templates = ['ref', 'note', 'ref label', 'note label']
+templates = ['ref', 'note', 'ref label', 'note label', 'reflist']
 
 class ReferencesRobot:
     #def __init__(self):
