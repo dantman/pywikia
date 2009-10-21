@@ -115,11 +115,6 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
                   (('file', params['filename'].encode(site.encoding()), cont),),
                   site.cookies(sysop=sysop)
                   )
-            elif site.hostname() in wikipedia.config.authenticate.keys():
-                params["Content-type"] = "application/x-www-form-urlencoded"
-                params["User-agent"] = useragent
-                res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
-                jsontext = res.read()
             elif params['action'] in postAC:
                 res, jsontext = site.postForm(path, params, sysop, site.cookies(sysop = sysop) )
             else:

@@ -394,7 +394,7 @@ class LinkChecker(object):
                 return self.resolveRedirect(useHEAD = False)
             else:
                 raise
-        if response.status >= 300 and response.status <= 399:
+        if response.code >= 300 and response.code <= 399:
             #print response.getheaders()
             redirTarget = response.getheader('Location')
             if redirTarget:
@@ -493,10 +493,10 @@ class LinkChecker(object):
             # read the server's encoding, in case we need it later
             self.readEncodingFromResponse(response)
             # site down if the server status is between 400 and 499
-            alive = response.status not in range(400, 500)
-            if response.status in self.HTTPignore:
+            alive = response.code not in range(400, 500)
+            if response.code in self.HTTPignore:
                 alive = False
-            return alive, '%s %s' % (response.status, response.reason)
+            return alive, '%s' % response.code
 
 class LinkCheckThread(threading.Thread):
     '''
