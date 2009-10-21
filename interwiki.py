@@ -1596,7 +1596,7 @@ class Subject(object):
             timeout=60
             while 1:
                 try:
-                    status, data = page.put(newtext, comment = mcomment)
+                    status, reason, data = page.put(newtext, comment = mcomment)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Page %s is locked. Skipping.' % (page.title(),))
                     raise SaveError
@@ -1628,7 +1628,7 @@ class Subject(object):
             if str(status) == '302':
                 return True
             else:
-                wikipedia.output(u'%s' % status)
+                wikipedia.output(u'%s %s' % (status, reason))
                 return False
         elif answer == 'g':
             raise GiveUpOnPage

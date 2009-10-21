@@ -347,14 +347,14 @@ class UploadRobot:
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
             success_msg = self.targetSite.mediawiki_message('successfulupload')
-            if success_msg in returned_html or response.code == 302:
+            if success_msg in returned_html or response.status == 302:
                  wikipedia.output(u"Upload successful.")
             # The following is not a good idea, because the server also gives a 200 when
             # something went wrong.
-            #if response.code in [200, 302]:
+            #if response.status in [200, 302]:
             #    wikipedia.output(u"Upload successful.")
 
-            elif response.code == 301:
+            elif response.status == 301:
                 wikipedia.output(u"Following redirect...")
                 address = response.getheader('Location')
                 wikipedia.output(u"Changed upload address to %s. Please update %s.py" % (address, self.targetSite.family.__module__))
@@ -368,7 +368,7 @@ class UploadRobot:
                 except:
                     pass
                 wikipedia.output(u'%s\n\n' % returned_html)
-                wikipedia.output(u'%i' % response.code)
+                wikipedia.output(u'%i %s' % (response.status, response.reason))
 
                 if self.targetSite.mediawiki_message('uploadwarning') in returned_html:
                     answer = wikipedia.inputChoice(u"You have recevied an upload warning message. Ignore?", ['Yes', 'No'], ['y', 'N'], 'N')

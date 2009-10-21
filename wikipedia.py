@@ -123,7 +123,7 @@ from __future__ import generators
 __version__ = '$Id$'
 
 import os, sys
-import socket, urllib, urllib2
+import httplib, socket, urllib, urllib2
 import traceback
 import time, threading, Queue
 import math
@@ -1647,6 +1647,8 @@ not supported by PyWikipediaBot!"""
                 response, data = query.GetData(params, self.site(), sysop=sysop, back_response = True)
                 if query.IsString(data):
                     raise KeyError
+            except httplib.BadStatusLine, line:
+                raise PageNotSaved('Bad status line: %s' % line.line)
             except ServerError:
                 output(u''.join(traceback.format_exception(*sys.exc_info())))
                 retry_attempt += 1
@@ -1671,7 +1673,7 @@ not supported by PyWikipediaBot!"""
             # Check blocks
             self.site().checkBlocks(sysop = sysop)
             # A second text area means that an edit conflict has occured.
-            if response.code == 500:
+            if response.status == 500:
                 output(u"Server error encountered; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
@@ -1696,8 +1698,8 @@ not supported by PyWikipediaBot!"""
                 #for debug only
                 #------------------------
                 if verbose:
-                    output("error occured, code:%s\ninfo:%s\nstatus:%s" % (
-                        data['error']['code'], data['error']['info'], response.code))
+                    output("error occured, code:%s\ninfo:%s\nstatus:%s\nresponse:%s" % (
+                        data['error']['code'], data['error']['info'], response.status, response.reason))
                     faked = params
                     if 'text' in faked:
                         del faked['text']
@@ -1706,7 +1708,7 @@ not supported by PyWikipediaBot!"""
                 #------------------------
                 errorCode = data['error']['code']
                 #cannot handle longpageerror and PageNoSave yet
-                if errorCode == 'maxlag' or response.code == 503:
+                if errorCode == 'maxlag' or response.status == 503:
                     # server lag; wait for the lag time and retry
                     m = re.search('Waiting for (.+?): (.+?) seconds lagged', data['error']['info'])
                     timelag = int(m.group(2))
@@ -1791,13 +1793,13 @@ not supported by PyWikipediaBot!"""
                     # if the page update is successed, we need to return code 302 for cheat script who
                     # using status code
                     #
-                    return 302, data['edit']
+                    return 302, response.reason, data['edit']
 
             solve = self.site().solveCaptcha(data)
             if solve:
                 return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
 
-            return response.code, data
+            return response.status, response.reason, data
 
 
     def _putPageOld(self, text, comment=None, watchArticle=False, minorEdit=True,
@@ -1884,7 +1886,7 @@ not supported by PyWikipediaBot!"""
                 return None
             try:
                 response, data = self.site().postForm(address, predata, sysop)
-                if response.code == 503:
+                if response.status == 503:
                     if 'x-database-lag' in response.msg.keys():
                         # server lag; Mediawiki recommends waiting 5 seconds
                         # and retrying
@@ -1896,7 +1898,9 @@ not supported by PyWikipediaBot!"""
                         wait = min(wait*2, 300)
                         continue
                     # Squid error 503
-                    raise ServerError(response.code)
+                    raise ServerError(response.status)
+            except httplib.BadStatusLine, line:
+                raise PageNotSaved('Bad status line: %s' % line.line)
             except ServerError:
                 output(u''.join(traceback.format_exception(*sys.exc_info())))
                 retry_attempt += 1
@@ -1988,7 +1992,7 @@ not supported by PyWikipediaBot!"""
             # to "Wikipedia has a problem", but I'm not sure. Maybe we could
             # just check for HTTP Status 500 (Internal Server Error)?
             if ("<title>Wikimedia Error</title>" in data or "has a problem</title>" in data) \
-                or response.code == 500:
+                or response.status == 500:
                 output(u"Server error encountered; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
@@ -2049,7 +2053,7 @@ not supported by PyWikipediaBot!"""
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
                 output(u"ERROR: Unexpected response from wiki server.")
-                output(u"       %s" % response.code)
+                output(u"       %s (%s) " % (response.status, response.reason))
                 output(data)
                 # Unexpected responses should raise an error and not pass,
                 # be it silently or loudly. This should raise an error
@@ -2058,7 +2062,7 @@ not supported by PyWikipediaBot!"""
                 # We are on the preview page, so the page was not saved
                 raise PageNotSaved
 
-            return response.code, data
+            return response.status, response.reason, data
 
     def canBeEdited(self):
         """Return bool indicating whether this page can be edited.
@@ -3281,7 +3285,7 @@ not supported by PyWikipediaBot!"""
         else:
             response, data = self.site().postForm(address, predata, sysop=True)
 
-        if response.code == 302 and not data:
+        if response.status == 302 and not data:
             output(u'Changed protection level of page %s.' % self.aslink())
             return True
         else:
@@ -3289,7 +3293,7 @@ not supported by PyWikipediaBot!"""
             self.site().checkBlocks(sysop = True)
             output(u'Failed to change protection level of page %s:'
                    % self.aslink())
-            output(u"HTTP response code %s" % response.code)
+            output(u"HTTP response code %s" % response.status)
             output(data)
             return False
 
@@ -3687,7 +3691,7 @@ class _GetAll(object):
             while True:
                 try:
                     data = self.getData()
-                except (socket.error, ServerError):
+                except (socket.error, httplib.BadStatusLine, ServerError):
                     # Print the traceback of the caught exception
                     output(u''.join(traceback.format_exception(*sys.exc_info())))
                     output(u'DBG> got network error in _GetAll.run. ' \
@@ -5134,6 +5138,14 @@ class Site(object):
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
 
+        #if persistent_http is None:
+        #    persistent_http = config.persistent_http
+        #self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
+        #if persistent_http:
+        #    if self.protocol() == 'http':
+        #        self.conn = httplib.HTTPConnection(self.hostname())
+        #    elif self.protocol() == 'https':
+        #        self.conn = httplib.HTTPSConnection(self.hostname())
         self.persistent_http = False
 
     def _userIndex(self, sysop = False):
@@ -5377,94 +5389,75 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """
 
         # TODO: add the authenticate stuff here
-        if self.hostname() in config.authenticate.keys():
-            uo = authenticateURLopener
+
+        #if False: #self.persistent_http:
+        #    conn = self.conn
+        #else:
+        if config.proxy['host']:
+            conn = httplib.HTTPConnection(config.proxy['host'])
+            proxyPutAddr = '%s://%s%s' % (self.protocol(), self.hostname(), address)
+            conn.putrequest('POST', proxyPutAddr)
+            if type(config.proxy['auth']) == tuple:
+                import base64
+                authcode = base64.b64encode("%s:%s" % (config.proxy['auth'][0], config.proxy['auth'][1]) )
+                conn.putheader('Proxy-Authorization', "Basic %s" % authcode )
+        
         else:
-            if config.proxy['host'] and type(config.proxy['auth']) == tuple:
-                proxyHandle = {'http':'http://%s:%s@%s' % (config.proxy['auth'][0], config.proxy['auth'][1], config.proxy['host'] )}
-            elif config.proxy['host']:
-                proxyHandle = {'http':'http://%s' % config.proxy['host'] }
-            else:
-                proxyHandle = None
+            if self.protocol() == 'http':
+                conn = httplib.HTTPConnection(self.hostname())
+            elif self.protocol() == 'https':
+                conn = httplib.HTTPSConnection(self.hostname())
             
-            uo = MyURLopener(proxies = proxyHandle)
-            uo.addheader('Cookie', cookies)
-            if compress:
-                uo.addheader('Accept-encoding', 'gzip')
+            conn.putrequest('POST', address)
+        
+        # Encode all of this into a HTTP request
+        # otherwise, it will crash, as other protocols are not supported
+
         if address[-1] == "?":
             address = address[:-1]
-        url = '%s://%s%s' % (self.protocol(), self.hostname(), address)
+        if self.hostname() in config.authenticate.keys():
+            import base64
+            authcode = base64.b64encode("%s:%s" % (config.authenticate[self.hostname()][0], config.authenticate[self.hostname()][1]) )
+            conn.putheader("Authorization", "Basic %s" % authcode )
+        
+        conn.putheader('Content-Length', str(len(data)))
+        conn.putheader('Content-type', contentType)
+        conn.putheader('User-agent', useragent)
+        if cookies:
+            conn.putheader('Cookie', cookies)
+        #if False: #self.persistent_http:
+        #    conn.putheader('Connection', 'Keep-Alive')
+        if compress:
+            conn.putheader('Accept-encoding', 'gzip')
+        conn.endheaders()
+        conn.send(data)
 
-        # Try to retrieve the page until it was successfully loaded (just in
-        # case the server is down or overloaded).
-        # Wait for retry_idle_time minutes (growing!) between retries.
-        retry_idle_time = 1
-        while True:
-            try:
-                if self.hostname() in config.authenticate.keys():
-                    request = urllib2.Request(url, data)
-                    request.add_header('User-agent', useragent)
-                    opener = urllib2.build_opener()
-                    f = opener.open(request)
-                else:
-                    f = uo.open(url, data)
-
-                # read & info can raise socket.error
-                text = f.read()
-                headers = f.info()
-                break
-            except KeyboardInterrupt:
-                raise
-            except Exception, e:
-                if retry:
-                    # We assume that the server is down. Wait some time, then try again.
-                    output(u"%s" % e)
-                    output(u"WARNING: Could not open '%s'. Maybe the server or" % url)
-                    output(u"your connection is down. Retrying in %i minutes..." % retry_idle_time)
-                    time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
-                    retry_idle_time *= 2
-                    if retry_idle_time > 30:
-                        retry_idle_time = 30
-                else:
-                    raise
-
-        contentType = headers.get('content-type', '')
-        contentEncoding = headers.get('content-encoding', '')
-
-        # Ensure that all sent data is received
-        if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
-            output(u'Warning! len(text) does not match content-length: %s != %s' % \
-                (len(text), headers.get('content-length')))
-            return self.postData(path, address, data, contentType, sysop, compress, cookie)
-
-        if compress and contentEncoding == 'gzip':
-            text = decompress_gzip(text)
-
-        R = re.compile('charset=([^\'\";]+)')
-        m = R.search(contentType)
-        if m:
-            charset = m.group(1)
-        else:
-            if verbose:
-                output(u"WARNING: No character set found.")
-            # UTF-8 as default
-            charset = 'utf-8'
-        # Check if this is the charset we expected
-        self.checkCharset(charset)
-        # Convert HTML to Unicode
+        # Prepare the return values
+        # Note that this can raise network exceptions which are not
+        # caught here.
         try:
-            text = unicode(text, charset, errors = 'strict')
-        except UnicodeDecodeError, e:
-            print e
-            output(u'ERROR: Invalid characters found on %s://%s%s, replaced by \\ufffd.' % (self.protocol(), self.hostname(), path))
-            # We use error='replace' in case of bad encoding.
-            text = unicode(text, charset, errors = 'replace')
+            response = conn.getresponse()
+        except httplib.BadStatusLine:
+            # Blub.
+            conn.close()
+            conn.connect()
+            return self.postData(address, data, contentType, sysop, compress, cookies)
+
+        data = response.read()
+
+        if compress and response.getheader('Content-Encoding') == 'gzip':
+            data = decompress_gzip(data)
+
+        data = data.decode(self.encoding())
+        response.close()
+
+        if True: #not self.persistent_http:
+            conn.close()
 
         # If a wiki page, get user data
-        self._getUserDataOld(text, sysop = sysop)
+        self._getUserDataOld(data, sysop = sysop)
 
-        return f, text
+        return response, data
 
     def getUrl(self, path, retry = None, sysop = False, data = None,
                compress = True, no_hostname = False, cookie_only=False, back_response=False):
@@ -5531,8 +5524,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 if retry:
                     # We assume that the server is down. Wait some time, then try again.
                     output(u"%s" % e)
-                    output(u"WARNING: Could not open '%s'. Maybe the server or" % url)
-                    output("your connection is down. Retrying in %i minutes..." % retry_idle_time)
+                    output(u"""\
+WARNING: Could not open '%s'. Maybe the server or
+your connection is down. Retrying in %i minutes..."""
+                           % (url, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
@@ -5550,6 +5545,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
             output(u'Warning! len(text) does not match content-length: %s != %s' % \
                 (len(text), headers.get('content-length')))
+            #if False: #self.persistent_http
+            #    self.conn.close()
+            #    self.conn.connect()
             return self.getUrl(path, retry, sysop, data, compress, no_hostname, cookie_only, back_response)
 
         if compress and contentEncoding == 'gzip':
