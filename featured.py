@@ -3,7 +3,7 @@
 """
 This script understands various command-line arguments:
 
--interactive:     ask before changing page
+-interactive:     ask before changing each page
 
 -nocache          doesn't include /cache/featured file to remember if the
                   article already was verified.
@@ -15,18 +15,19 @@ This script understands various command-line arguments:
 
 -after:zzzz       process pages after and including page zzzz
 
--top              using -top if you want moving all {{Link FA|lang}} to top of
-                  interwiki. DEFAULT: placing {{Link FA|lang}} right next to
-                  corresponding interwiki.
--count            Only counts how many featured articles of an languages
-                  (using "-fromlang" argument) or all wikipedias
-                  (using "-fromall" argument). (merge /archive/featuredcount.py)
-                  like: featured.py -fromlang:en,he -count
-                  (give counts how many featured articles of en and he wp)
+-top              use -top if you want to move all {{Link FA|lang}} to the top of
+                  interwiki links. Default is placing {{Link FA|lang}} right next to
+                  the corresponding interwiki link.
+-count            Only counts how many featured articles of the language(s)
+                  (given with the "-fromlang" argument) or all wikis
+                  (when using the "-fromall" argument) exist. 
+                  (merge /archive/featuredcount.py)
+                  Example: featured.py -fromlang:en,he -count
+                  counts how many featured articles exist in the en and he wikipedias.
 
--good             use this script for good articles instead od featured articles
+-good             use this script for good articles instead od featured articles.
 
-usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
+usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy--zz|-fromall]
 
 """
 __version__ = '$Id$'
