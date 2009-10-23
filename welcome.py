@@ -79,12 +79,16 @@ This script understands the following command-line arguments:
                    page (for istruction, see below).
 
     -file[:#]      Use a file instead of a wikipage to take the random sign.
-                   N.B. If you use this parameter, you don't need to use -random.
+                   If you use this parameter, you don't need to use -random.
+                   
+    -sign          Use one signature from command line instead of the default
 
     -savedata      This feature saves the random signature index to allow to
                    continue to welcome with the last signature used.
 
     -sul           Welcome the auto-created users (default: False)
+
+    -quiet         Prevents users without contributions are displayed
 
 ********************************* GUIDE ***********************************
 
@@ -143,22 +147,23 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
       use them.
 
 *************************** Known issues/FIXMEs ****************************
+*                                                                          *
+* The regex to load the user might be slightly different from project to   *
+* project. (In this case, write to Filnik or the PWRF for help...)         *
+* Use a class to group toghether the functions used.                       *
+*                                                                          *
+******************************** Badwords **********************************
 
-* The regex to load the user might be slightly different from project to project.
-  (in this case, write to Filnik for help...)
-* Use a class to group toghether the functions used.
+The list of Badwords of the code is opened. If you think that a word is
+international and it must be blocked in all the projects feel free to add it.
+If also you think that a word isn't so international, feel free to delete it.
 
-******************************** Badwords ***********************************
+However, there is a dinamic-wikipage to load that badwords of your project or
+you can add them directly in the source code that you are using without adding
+or deleting.
 
-The list of Badwords of the code is opened. If you think that a word is international
-and it must be blocked in all the projects feel free to add it. If also you think that
-a word isn't so international, feel free to delete it.
-
-However, there is a dinamic-wikipage to load that badwords of your project or you can
-add them directly in the source code that you are using without adding or deleting.
-
-Some words, like "Administrator" or "Dio" (God in italian) or "Jimbo" aren't badword at all
-but can be used for some bad-nickname.
+Some words, like "Administrator" or "Dio" (God in italian) or "Jimbo" aren't
+badword at all but can be used for some bad-nickname.
 """
 #
 # (C) Alfio, 2005
@@ -199,9 +204,9 @@ locale.setlocale(locale.LC_ALL, '')
 # The text below are dictionaries. Copy the 'en' line, change 'en' in your
 # language (e.g. 'de') and modify/translate the text.
 
-#The page where the bot will save the log (e.g. Wikipedia:Welcome log).
+# The page where the bot will save the log (e.g. Wikipedia:Welcome log).
 # 
-# Log disable project: da, de, en, he, id, ka, pt, ru, vo. 
+# Log disable project: da, de, en, he, id, ka, pdc, pt, ru, vo. 
 # ATTENTION: these languages in wikipedia is disabled to log welcome users, not necessary to set parameter for them.
 logbook = {
     'commons': {'_default': u'Project:Welcome log', },
@@ -223,26 +228,27 @@ logbook = {
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {
     'commons': {'_default': u'Welcome!', },
-    'ar':u'مرحبا!',
-    'da':u'Velkommen',
-    'de':u'Herzlich willkommen!',
-    'en':u'Welcome!',
-    'fa':u'خوش آمدید!',
-    'fr':u'Bienvenue sur Wikipedia !',
-    'ga':u'Fáilte!',
-    'he':u'ברוך הבא!',
-    'id':u'Selamat datang',
-    'it':u'Benvenuto!',
-    'ja':u'ウィキペディア日本語版へようこそ！',
-    'ka':u'კეთილი იყოს თქვენი მობრძანება!',
-    'nl':u'Welkom!',
-    'no':u'Velkommen!',
-    'pt':u'Bem vindo!',
-    'ru':u'Добро пожаловать!',
-    'sq':u'Tung',
-    'sr':u'Добродошли!',
-    'vo':u'Benokömö!',
-    'zh':u'欢迎！',
+    'ar': u'مرحبا!',
+    'da': u'Velkommen',
+    'de': u'Herzlich willkommen!',
+    'en': u'Welcome!',
+    'fa': u'خوش آمدید!',
+    'fr': u'Bienvenue sur Wikipedia !',
+    'ga': u'Fáilte!',
+    'he': u'ברוך הבא!',
+    'id': u'Selamat datang',
+    'it': u'Benvenuto!',
+    'ja': u'ウィキペディア日本語版へようこそ！',
+    'ka': u'კეთილი იყოს თქვენი მობრძანება!',
+    'nl': u'Welkom!',
+    'no': u'Velkommen!',
+    'pdc':u'Wilkum!',
+    'pt': u'Bem vindo!',
+    'ru': u'Добро пожаловать!',
+    'sq': u'Tung',
+    'sr': u'Добродошли!',
+    'vo': u'Benokömö!',
+    'zh': u'欢迎！',
     'zh-yue': u'歡迎',
 }
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
@@ -251,26 +257,27 @@ summary = {
 netext = {
     'commons': {'_default': u'{{subst:welcome}} %s', } ,
     'wikipedia': {
-        'ar':u'{{subst:ترحيب}} %s',
-        'da':u'{{velkommen|%s}}',
-        'de':u'{{subst:Hallo}} %s',
-        'en':u'{{subst:welcome}} %s',
-        'fa':u'{{جا:خوشامد}} %s',
-        'fr':u'{{subst:Discussion Projet:Aide/Bienvenue}} %s',
-        'ga':u'{{subst:fáilte}} %s',
-        'he':u'{{ס:ברוך הבא}} %s',
-        'id':u'{{sdbot|%s}}',
-        'it':u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
-        'ja':u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
-        'ka':u'{{ახალი მომხმარებელი}}--%s',
-        'nl':u'{{hola|bot|%s}}',
-        'no':u'{{subst:bruker:jhs/vk}} %s',
-        'pt':u'{{subst:bem vindo}} %s',
-        'ru':u'{{Hello}} %s',
-        'sq':u'{{subst:tung}} %s',
-        'sr':u'{{Добродошлица}} %s',
-        'vo':u'{{benokömö}} %s',
-        'zh':u'{{subst:welcome|sign=%s}}',
+        'ar': u'{{subst:ترحيب}} %s',
+        'da': u'{{velkommen|%s}}',
+        'de': u'{{subst:Hallo}} %s',
+        'en': u'{{subst:welcome}} %s',
+        'fa': u'{{جا:خوشامد}} %s',
+        'fr': u'{{subst:Discussion Projet:Aide/Bienvenue}} %s',
+        'ga': u'{{subst:fáilte}} %s',
+        'he': u'{{ס:ברוך הבא}} %s',
+        'id': u'{{sdbot|%s}}',
+        'it': u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}} %s',
+        'ja': u'{{subst:Welcome/intro}}\n{{subst:welcome|%s}} ',
+        'ka': u'{{ახალი მომხმარებელი}}--%s',
+        'nl': u'{{hola|bot|%s}}',
+        'no': u'{{subst:bruker:jhs/vk}} %s',
+        'pdc':u'{{subst:Wilkum}}%s',
+        'pt': u'{{subst:bem vindo}} %s',
+        'ru': u'{{Hello}} %s',
+        'sq': u'{{subst:tung}} %s',
+        'sr': u'{{Добродошлица}} %s',
+        'vo': u'{{benokömö}} %s',
+        'zh': u'{{subst:welcome|sign=%s}}',
         'zh-yue': u'{{歡迎}}--%s',
     },
     'wikinews':{
@@ -292,21 +299,22 @@ netext = {
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
     'commons': u'Updating log',
-    'ar':u'تحديث السجل',
-    'da':u'Updating log',
-    'de':u'Aktualisiere Logdatei',
-    'en':u'Updating log',
-    'fa':u'به روز رسانی سیاهه',
-    'fr':u'Mise a jour du journal',
-    'ga':u'Log a thabhairt suas chun dáta',
-    'it':u'Aggiorno il log',
-    'ja':u'更新記録',
-    'nl':u'Logboek bijwerken',
-    'no':u'Oppdaterer logg',
-    'ru':u'Обновление',
-    'sq':u'Rifreskoj log',
-    'sr':u'Освежавање записа',
-    'zh':u'更新日志',
+    'ar': u'تحديث السجل',
+    'da': u'Updating log',
+    'de': u'Aktualisiere Logdatei',
+    'en': u'Updating log',
+    'fa': u'به روز رسانی سیاهه',
+    'fr': u'Mise a jour du journal',
+    'ga': u'Log a thabhairt suas chun dáta',
+    'it': u'Aggiorno il log',
+    'ja': u'更新記録',
+    'nl': u'Logboek bijwerken',
+    'no': u'Oppdaterer logg',
+    'pdc':u'Logfeil ennere',
+    'ru': u'Обновление',
+    'sq': u'Rifreskoj log',
+    'sr': u'Освежавање записа',
+    'zh': u'更新日志',
     'zh-yue':u'更新日誌',
 }
 # The page where the bot will report users with a possibly bad username.
@@ -323,6 +331,7 @@ report_page = {
         'ja': u'利用者:Alexbot/report',
         'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
         'no': u'Bruker:JhsBot II/Rapport',
+        'pdc':u'Benutzer:Xqt/Report',
         'ru': u'Участник:LatitudeBot/Рапорт',
         'sq': u'User:EagleBot/Report',
         'sr': u'User:SashatoBot/Записи',
@@ -334,18 +343,19 @@ report_page = {
 comment = {
     'commons': {'_default': u'Adding a username that needs to be checked',},
     'wikipedia':{
-        'ar':u'إضافة اسم مستخدم يحتاج للفحص',
-        'da':u'Adding a username that needs to be checked',
-        'de':u'Ergänze zu überprüfenden Benutzernamen',
-        'en':u'Adding a username that needs to be checked',
-        'fa':u'افزودن حساب کاربری نیازمند بررسی',
-        'it':u'Aggiunto utente da controllare',
-        'ja':u'不適切な利用者名の報告',
-        'nl':u'Te controleren gebruikersnaam toegevoegd',
-        'no':u'Legger til et brukernavn som m? sjekkes',
-        'ru':u'Добавлено подозрительное имя участника',
-        'sq':u'Added username to be checked',
-        'zh':u'回報不適當的用戶名稱',
+        'ar': u'إضافة اسم مستخدم يحتاج للفحص',
+        'da': u'Adding a username that needs to be checked',
+        'de': u'Ergänze zu überprüfenden Benutzernamen',
+        'en': u'Adding a username that needs to be checked',
+        'fa': u'افزودن حساب کاربری نیازمند بررسی',
+        'it': u'Aggiunto utente da controllare',
+        'ja': u'不適切な利用者名の報告',
+        'nl': u'Te controleren gebruikersnaam toegevoegd',
+        'no': u'Legger til et brukernavn som m? sjekkes',
+        'pdc':u'Yuusernaame zum iwwerpriefe',
+        'ru': u'Добавлено подозрительное имя участника',
+        'sq': u'Added username to be checked',
+        'zh': u'回報不適當的用戶名稱',
     }
 }
 # The page where the bot reads the real-time bad words page
@@ -374,19 +384,20 @@ timeselected = u' ~~~~~' # Defining the time used after the signature
 report_text = {
     'commons': {'_default': u"\n*{{user3|%s}}" + timeselected,}, 
     'wikipedia':{
-        'ar':u"\n*{{user13|%s}}" + timeselected,
-        'da':u'\n*[[Bruger Diskussion:%s]] ' + timeselected,
-        'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
-        'en':u'\n*{{Userlinks|%s}} ' + timeselected,
-        'fa':u'\n*{{کاربر|%s}}' + timeselected,
-        'fr':u'\n*{{u|%s}} ' + timeselected,
-        'ga':u'\n*[[Plé úsáideora:%s]] ' + timeselected,
-        'it':u"\n{{Reported|%s|",
-        'ja':u"\n*{{User2|%s}}" + timeselected,
-        'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
-        'no':u'\n*{{bruker|%s}} ' + timeselected,
-        'sq':u'\n*[[User:%s]] ' + timeselected,
-        'zh':u"\n*{{User|%s}}" + timeselected
+        'ar': u"\n*{{user13|%s}}" + timeselected,
+        'da': u'\n*[[Bruger Diskussion:%s]] ' + timeselected,
+        'de': u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
+        'en': u'\n*{{Userlinks|%s}} ' + timeselected,
+        'fa': u'\n*{{کاربر|%s}}' + timeselected,
+        'fr': u'\n*{{u|%s}} ' + timeselected,
+        'ga': u'\n*[[Plé úsáideora:%s]] ' + timeselected,
+        'it': u"\n{{Reported|%s|",
+        'ja': u"\n*{{User2|%s}}" + timeselected,
+        'nl': u'\n*{{linkgebruiker%s}} ' + timeselected,
+        'no': u'\n*{{bruker|%s}} ' + timeselected,
+        'pdc':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
+        'sq': u'\n*[[User:%s]] ' + timeselected,
+        'zh': u"\n*{{User|%s}}" + timeselected
     }
 }
 # Set where you load your list of signatures that the bot will load if you use
@@ -456,8 +467,9 @@ class Global(object):
     signFileName = None     # File name, default: None
     defaultSign = '--~~~~'  # default signature
     queryLimit = 50         # number of users that the bot load to check
+    quiet = False           # Prevents users without contributions are displayed
 
-    #fileOption = False      # check if the user wants to use a file or the wikipage
+    #fileOption = False     # check if the user wants to use a file or the wikipage
 
 class WelcomeBot(object):
     
@@ -852,10 +864,12 @@ class WelcomeBot(object):
                                 continue
                     # If we haven't to report, do nothing.
                 else:
-                    showStatus(1)
                     if users.editCount() == 0:
-                        wikipedia.output(u'%s has no contributions.' % users.name() )
+                        if not globalvar.quiet:
+                            showStatus(1)
+                            wikipedia.output(u'%s has no contributions.' % users.name() )
                     else:
+                        showStatus(1)
                         wikipedia.output(u'%s has only %d contributions.' % (users.name(), users.editCount() ) )
                     # That user mustn't be welcomed.
                     continue
@@ -915,7 +929,7 @@ def showStatus(n = 0):
         0:'MSG',
         1:'NoAct',
         2:'Match',
-        3:'Skip',
+        3:'Skip ',
         4:'Warning',
         5:'Done',
     }
@@ -964,6 +978,12 @@ if __name__ == "__main__":
                     globalvar.signFileName = wikipedia.input(u'Where have you saved your signatures?')
                 else:
                     globalvar.signFileName = arg[6:]
+            elif arg.startswith('-sign:'):
+                if len(arg) == 6:
+                    globalvar.defaultSign = wikipedia.input(u'Which signature to use?')
+                else:
+                    globalvar.defaultSign = arg[6:]
+                globalvar.defaultSign += timeselected
             elif arg == '-break':
                 globalvar.recursive = False
             elif arg == '-nlog':
@@ -988,6 +1008,8 @@ if __name__ == "__main__":
                     globalvar.dumpToLog = int(wikipedia.input(u'After how many welcomed users would you like to update the welcome log?'))
                 else:
                     globalvar.dumpToLog = int(arg[11:])
+            elif arg == '-quiet':
+                globalvar.quiet = True
         # Filename and pywikipedia path
         # file where is stored the random signature index
         filename = wikipedia.config.datafilepath('welcome-%s-%s.data' % (wikipedia.default_family, wikipedia.default_code))  
