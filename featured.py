@@ -32,6 +32,8 @@ This script understands various command-line arguments:
 
 -quiet            prevents no corresponding pages are displayed.
 
+-debug            for debug purposes. No changes will be done.
+
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy--zz|-fromall]
 
 """
@@ -40,6 +42,7 @@ __version__ = '$Id$'
 #
 # (C) Maxim Razin, 2005
 # (C) Leonardo Gregianin, 2006-2007
+# (C) xqt, 2009
 #
 # Distributed under the terms of the MIT license.
 #
@@ -423,7 +426,29 @@ def findTranslated(page, oursite=None, quiet=False):
     wikipedia.output(u"%s -> back interwiki ref target is %s" % (page.title(), backpage.title()))
     return None
 
-def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet):
+def getTemplateList (lang, pType):
+    if pType == 'good':
+        try:
+            templates = template_good[lang]
+            templates+= template_good['_default']
+        except KeyError:
+            templates = template_good['_default']
+    elif pType == 'list':
+        try:
+            templates = template_lists[lang]
+            templatest+= template_lists['_default']
+        except KeyError:
+            templates = template_lists['_default']
+    else:
+        try:
+            templates = template[lang]
+            templates+= template['_default']
+        except KeyError:
+            templates = template['_default']
+    return templates
+
+
+def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet, debug = False):
     if not fromsite.lang in cache:
         cache[fromsite.lang]={}
     if not tosite.lang in cache[fromsite.lang]:
@@ -431,25 +456,8 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet):
     cc=cache[fromsite.lang][tosite.lang]
     if nocache:
         cc={}
-    if pType == 'good':
-        try:
-            templatelist = template_good[tosite.lang]
-            templatelist+= template_good['_default']
-        except KeyError:
-            templatelist = template_good['_default']
-    elif pType == 'list':
-        try:
-            templatelist = template_lists[tosite.lang]
-            templatelist+= template_lists['_default']
-        except KeyError:
-            templatelist = template_lists['_default']
-    else:
-        try:
-            templatelist = template[tosite.lang]
-            templatelist+= template['_default']
-        except KeyError:
-            templatelist = template['_default']
 
+    templatelist = getTemplateList(tosite.lang, pType)
     findtemplate = '(' + '|'.join(templatelist) + ')'
     re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate.replace(u' ', u'[ _]'), fromsite.lang), re.IGNORECASE)
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
@@ -510,11 +518,11 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet):
                             text=(text[:m.end()]
                                   + (u" {{%s|%s}}" % (templatelist[0], fromsite.lang))
                                   + text[m.end():])
-
-                        try:
-                            atrans.put(text, comment)
-                        except wikipedia.LockedPage:
-                            wikipedia.output(u'Page %s is locked!' % atrans.title())
+                        if not debug:
+                            try:
+                                atrans.put(text, comment)
+                            except wikipedia.LockedPage:
+                                wikipedia.output(u'Page %s is locked!' % atrans.title())
 
                 cc[a.title()]=atrans.title()
         except wikipedia.PageNotSaved, e:
@@ -528,6 +536,7 @@ if __name__=="__main__":
     doAll = False
     part  = False
     quiet = False
+    debug = False
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':
             interactive=1
@@ -550,6 +559,8 @@ if __name__=="__main__":
             processType = 'list'
         elif arg == '-quiet':
             quiet = True
+        elif arg == '-debug':
+            debug = True
 
     if part:
         try:
@@ -587,14 +598,27 @@ if __name__=="__main__":
         sys.exit(1)
 
     fromlang.sort()
+    
+    #test whether this site has template enabled
+    hasTemplate = False
+    if not featuredcount:
+        for tl in getTemplateList(wikipedia.getSite().lang, processType):
+            t = wikipedia.Page(wikipedia.getSite(), u'Template:'+tl)
+            if t.exists():
+                hasTemplate = True
+                break
     try:
         for ll in fromlang:
             fromsite = wikipedia.getSite(ll)
             if featuredcount:
                 featuredArticles(fromsite, processType)
+            elif not hasTemplate:
+                wikipedia.output(u'\nNOTE: %s arcticles are not implemented at %s-wiki.' % (processType, wikipedia.getSite().lang))
+                wikipedia.output('Quitting program...')
+                break
             elif  fromsite != wikipedia.getSite():
                 featuredWithInterwiki(fromsite, wikipedia.getSite(),
-                                      template_on_top, processType, quiet)
+                                      template_on_top, processType, quiet, debug)
     except KeyboardInterrupt:
         wikipedia.output('\nQuitting program...')
     finally:
