@@ -203,25 +203,17 @@ locale.setlocale(locale.LC_ALL, '')
 logbook = {
     'commons': {'_default': u'Project:Welcome log', },
     'wikipedia': {
+        '_default': None,
         'ar': u'Project:سجل الترحيب',
-        'da': None, # no welcome log on da.wiki
-        'de': None, # no welcome log on de.wiki
-        'en': u'Project:Welcome log',
         'fa': u'Project:سیاهه خوشامد',
         'fr': u'Wikipedia:Prise de décision/Accueil automatique des nouveaux par un robot/log',
         'ga': u'Project:Log fáilte',
-        'he': None, # no welcome log on he.wiki
-        'id': None, # no welcome log on id.wiki
         'it': u'Project:Benvenuto Bot/Log',
         'ja': u'利用者:Alexbot/Welcomebotログ',
-        'ka': None, # no welcome log on ka.wiki
         'nl': u'Project:Logboek welkom',
         'no': u'Project:Velkomstlogg',
-        'pt': None, # no welcome log on pt.wiki
-        'ru': None, # no welcome log on ru.wiki
         'sq': u'Project:Tung log',
         'sr': u'Project:Добродошлице',
-        'vo': None, # no welcome log on vo.wiki
         'zh': u'User:Welcomebot/欢迎日志',
     }
 }
@@ -628,6 +620,9 @@ class WelcomeBot(object):
         
         text = u''
         logg = wikipedia.translate(self.site, logbook)
+        if not logg:
+            return None
+        
         target = logg + '/' + time.strftime('%Y/%m/%d', time.localtime(time.time()))
         if self.site.lang == 'it':
             target = logg + '/' + time.strftime('%d/%m/%Y', time.localtime(time.time()))
