@@ -401,6 +401,9 @@ random_sign = {
     }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
+# 
+# Log disable project: da, de, en, he, id, ka, pt, ru, vo. 
+# ATTENTION: these languages in wikipedia is disabled to log welcome users, not necessary to set parameter for them.
 whitelist_pg = {
     '_default': None,
     'ar':u'Project:سجل الترحيب/قائمة بيضاء',
