@@ -5,8 +5,8 @@ This script understands various command-line arguments:
 
 -interactive:     ask before changing each page
 
--nocache          doesn't include /cache/featured /cache/lists or /cache/good file
-                  to remember if the article already was verified.
+-nocache          doesn't include /cache/featured /cache/lists or /cache/good
+                  file to remember if the article already was verified.
 
 -fromlang:xx,yy   xx,yy,zz,.. are the languages to be verified.
 -fromlang:ar--fi  Another possible with range the languages
@@ -15,21 +15,22 @@ This script understands various command-line arguments:
 
 -after:zzzz       process pages after and including page zzzz
 
--top              use -top if you want to move all {{Link FA|lang}} to the top of
-                  interwiki links. Default is placing {{Link FA|lang}} right next to
-                  the corresponding interwiki link.
+-top              use -top if you want to move all {{Link FA|lang}} to the top
+                  of interwiki links. Default is placing {{Link FA|lang}} right
+                  next to the corresponding interwiki link.
                   
 -count            Only counts how many featured/good articles exist
                   on all wikis (given with the "-fromlang" argument) or
                   on several language(s) (when using the "-fromall" argument). 
-                  Example: featured.py -fromlang:en,he -count
-                  counts how many featured articles exist in the en and he wikipedias.
+                  Example: featured.py -fromlang:en,he -count 
+                  counts how many featured articles exist in the en and he
+                  wikipedias.
 
 -lists            use this script for featured lists.
 
--good             use this script for good articles instead of featured articles.
+-good             use this script for good articles.
 
--quiet            prevents no corresponding pages are displayed
+-quiet            prevents no corresponding pages are displayed.
 
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy--zz|-fromall]
 
@@ -569,7 +570,7 @@ if __name__=="__main__":
     if doAll:
 	if processType == 'good':
             fromlang=good_name.keys()
-	elif processType == 'list'
+	elif processType == 'list':
             fromlang=lists_name.keys()
 	else:
 	    fromlang=featured_name.keys()
