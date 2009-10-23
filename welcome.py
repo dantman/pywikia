@@ -200,6 +200,9 @@ locale.setlocale(locale.LC_ALL, '')
 # language (e.g. 'de') and modify/translate the text.
 
 #The page where the bot will save the log (e.g. Wikipedia:Welcome log).
+# 
+# Log disable project: da, de, en, he, id, ka, pt, ru, vo. 
+# ATTENTION: these languages in wikipedia is disabled to log welcome users, not necessary to set parameter for them.
 logbook = {
     'commons': {'_default': u'Project:Welcome log', },
     'wikipedia': {
@@ -401,9 +404,6 @@ random_sign = {
     }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
-# 
-# Log disable project: da, de, en, he, id, ka, pt, ru, vo. 
-# ATTENTION: these languages in wikipedia is disabled to log welcome users, not necessary to set parameter for them.
 whitelist_pg = {
     '_default': None,
     'ar':u'Project:سجل الترحيب/قائمة بيضاء',
