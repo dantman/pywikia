@@ -721,7 +721,7 @@ class WelcomeBot(object):
                 break
         if someone_found:
             showStatus(5)
-            wikipedia.output(u'There is nobody to be welcomed...')
+            wikipedia.output(u'There is nobody left to be welcomed...')
         else:
             wikipedia.output(u'\nLoaded all users...')
     
@@ -761,7 +761,7 @@ class WelcomeBot(object):
         
         if someone_found:
             showStatus(5)
-            wikipedia.output(u'There is nobody to be welcomed...')
+            wikipedia.output(u'There is nobody left to be welcomed...')
         else:
             wikipedia.output(u'\nLoaded all users...')
     
@@ -810,10 +810,13 @@ class WelcomeBot(object):
                     showStatus(3)
                     wikipedia.output(u'%s has been blocked!' % users.name() )
                     continue
-                #if 'bot' in users.groups():
+                if 'bot' in users.groups():
+                    showStatus(3)
+                    wikipedia.output(u'%s is a bot!' % users.name() )
+                    continue
                 if 'bot' in users.name().lower():
                     showStatus(3)
-                    wikipedia.output(u'%s might be a bot!' % users.name() )
+                    wikipedia.output(u'%s might be a global bot!' % users.name() )
                     continue
                 #if globalvar.offset != 0 and time.strptime(users.registrationTime(), "%Y-%m-%dT%H:%M:%SZ") >= globalvar.offset:
                 #    
@@ -926,12 +929,12 @@ def showStatus(n = 0):
         5:'lightblue'
     }
     staMsg = {
-        0:'MSG',
+        0:'MSG  ',
         1:'NoAct',
         2:'Match',
         3:'Skip ',
         4:'Warning',
-        5:'Done',
+        5:'Done ',
     }
     wikipedia.output("\03{%s}[%s]\03{default} " % (staColor[n], staMsg[n]) , newline = False)
 
