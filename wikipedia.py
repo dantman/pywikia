@@ -3126,14 +3126,11 @@ not supported by PyWikipediaBot!"""
         # Check blocks
         self.site().checkBlocks(sysop = True)
 
-        address = self.site().protect_address(self.urlname())
         #if self.exists() and editcreate != move: # check protect level if edit/move not same
         #    if editcreate == 'sysop' and move != 'sysop':
         #        raise Error("The level configuration is not safe")
 
         if unprotect:
-            address = self.site().unprotect_address(self.urlname())
-            # unprotect_address is actually an alias for protect_address...
             editcreate = move = ''
         else:
             editcreate, move = editcreate.lower(), move.lower()
@@ -3248,6 +3245,11 @@ not supported by PyWikipediaBot!"""
                 output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
             else:
                 cascading = '1'
+
+        if unprotect:
+            address = self.site().unprotect_address(self.urlname())
+        else:
+            address = self.site().protect_address(self.urlname())
 
         predata = {}
         if self.site().versionnumber >= 10:
