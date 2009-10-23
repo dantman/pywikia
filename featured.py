@@ -366,7 +366,7 @@ def featuredArticles(site, pType):
             arts.append(p)
         elif p.namespace()==1 and site.lang <> 'el': # Article talk (like in English)
             arts.append(wikipedia.Page(p.site(), p.titleWithoutNamespace()))
-    wikipedia.output('\03{lightred}** wikipedia:%s has %i %s articles\03{default}' % (site.lang, len(arts), feature))
+    wikipedia.output('\03{lightred}** wikipedia:%s has %i %s articles\03{default}' % (site.lang, len(arts), pType))
     return arts
 
 def findTranslated(page, oursite=None, quiet=False):
