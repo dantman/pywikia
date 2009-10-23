@@ -1191,6 +1191,8 @@ class main:
         self.license_found = None
         self.whiteTemplatesFound = False
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)[|\n<}]', re.DOTALL)
+        # see below to understand the use of this regex
+        regex_are_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)\}\}', re.DOTALL)
         #dummy_edit = False
         while 1:
             self.hiddentemplates = self.loadHiddenTemplates()      
@@ -1198,7 +1200,10 @@ class main:
             templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
             
             if not self.licenses_found and templatesInTheImageRaw:
-                raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
+                # {{nameTemplate|something <- this is not a template, be sure that we haven't catch something like that.
+                licenses_TEST = regex_are_licenses.findall(self.imageCheckText)
+                if not self.licenses_found and licenses_TEST:
+                    raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
             self.allLicenses = list()
             
             if not self.list_licenses:
