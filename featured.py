@@ -16,7 +16,7 @@ This script understands various command-line arguments:
 -after:zzzz       process pages after and including page zzzz
 
 -top              use -top if you want to move all {{Link FA|lang}} to the top
-                  of interwiki links. Default is placing {{Link FA|lang}} right
+                  of the interwiki links. Default is placing {{Link FA|lang}}
                   next to the corresponding interwiki link.
                   
 -count            Only counts how many featured/good articles exist
@@ -30,9 +30,9 @@ This script understands various command-line arguments:
 
 -good             use this script for good articles.
 
--quiet            prevents no corresponding pages are displayed.
+-quiet            no corresponding pages are displayed.
 
--debug            for debug purposes. No changes will be done.
+-debug            for debug purposes. No changes will be made.
 
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy--zz|-fromall]
 
@@ -85,7 +85,7 @@ msg = {
     'ja': u'ロボットによる: 秀逸な項目へのリンク [[%s:%s]]',
     'ka': u'ბოტი: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
     'ko': u'로봇: 알찬 글 [[%s:%s]] 를 가리키는 링크',#로봇이：?
-    'ksh':u'bot: [[%s:%s]] ess enen ußjezëijshneten Atikkel',
+    'ksh':u'bot: [[%s:%s]] ess_enen ußjezëijshneten Atikkel',
     'lb': u'Bot: Exzellenten Arikel Link op [[%s:%s]]',
     'lt': u'Bot: Pavyzdinis straipsnis [[%s:%s]]',
     'nl': u'Bot: verwijzing naar etalage-artikel voor [[%s:%s]]',
@@ -113,6 +113,7 @@ msg_good = {
     'eo': u'roboto: [[%s:%s]] estas artikolo leginda',
     'es': u'Bot: Enlace a artículo bueno para: [[%s:%s]]',
     'fr': u'Bot: Lien BA pour [[%s:%s]]',
+    'ksh':u'bot: [[%s:%s]] ess_enen jooden Atikkel',
     'no': u'bot: [[%s:%s]] er en anbefalt artikkel',
     'nn': u'bot: [[%s:%s]] er ein god artikkel',
     'pl': u'Bot: Link do dobrego artykułu: [[%s:%s]]',
@@ -126,6 +127,7 @@ msg_lists = {
     'en': u'Bot: [[%s:%s]] is a featured list',
     'es': u'Bot: Enlace a lista destacado para: [[%s:%s]]',
     'fi': u'Botti: [[%s:%s]] on suositeltu luetteloon',
+    'ksh':u'bot: [[%s:%s]] ess_en joode Leß',
     'sv': u'Bot: [[%s:%s]] är en utmärkt list',
 }
 
@@ -301,6 +303,7 @@ good_name = {
    #'id': (CAT, u"Artikel bagus"),
     'is': (CAT, u"Wikipedia:Gæðagreinar"),
     'ja': (CAT, u"おすすめ記事"),
+    'ksh':(CAT, u"Joode Aatikkel"),
     'lt': (CAT, u"Vertingi straipsniai"),
     'lv': (CAT, u"Labi raksti"),
     'no': (CAT, u"Anbefalte artikler"),
@@ -324,6 +327,7 @@ lists_name = {
     'en': (BACK, u'Featured list'),
     'id': (BACK, u'Featured list'),
     'ja': (BACK, u'Featured List'),
+    'ksh':(CAT,  u"Joode Leß"),
     'no': (BACK, u'God liste'),
     'pl': (BACK, u'Medalista'),
     'pt': (BACK, u'Anexo destacado'),
