@@ -461,6 +461,7 @@ msg = {
     'te': (u'యంత్రము  ', u'కలుపుతున్నది', u'తొలగిస్తున్నది', u'మార్పులు చేస్తున్నది'),
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
+    'tk': (u'robot ', u'goşdy', u'aýyrdy', u'üýtgetdi'),
     'tl': (u'robot ', u'dinagdag', u'tinanggal', u'binago'),
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
     'tr': (u'Bot değişikliği ', u'Ekleniyor', u'Kaldırılıyor', u'Değiştiriliyor'),
