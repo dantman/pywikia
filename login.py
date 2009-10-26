@@ -27,9 +27,11 @@ Parameters:
 
    -force       Ignores if the user is already logged in, and tries to log in.
 
+   -test        test whether you are logged-in
+
    -v -v        Shows http requests made when logging in. This might leak
-    (doubly     private data (password, session id), so make sure to check the
-     verbose)   output. Using -log is recommended: this will output a lot of 
+   (doubly      private data (password, session id), so make sure to check the
+       verbose) output. Using -log is recommended: this will output a lot of 
                 data
 
 If not given as parameter, the script will ask for your username and password
@@ -37,8 +39,8 @@ If not given as parameter, the script will ask for your username and password
 combination, and store the resulting cookies (containing your password hash,
 so keep it secured!) in a file in the login-data subdirectory.
 
-All scripts in this library will be looking for this cookie file and will use the
-login information if it is present.
+All scripts in this library will be looking for this cookie file and will use
+the login information if it is present.
 
 To log out, throw away the XX-login.data file that is created in the login-data
 subdirectory.
@@ -68,6 +70,11 @@ botList = {
     }
 }
 
+def show (mysite, sysop = False):
+    if mysite.loggedInAs(sysop = sysop):
+        wikipedia.output(u"You are logged in on %s as %s." % (repr(mysite), mysite.loggedInAs(sysop=sysop)))
+    else:
+        wikipedia.output(u"You are not logged in on %s." % repr(mysite))
 
 class LoginManager:
     def __init__(self, password = None, sysop = False, site = None, username=None, verbose=False):
@@ -316,6 +323,7 @@ def main():
     forceLogin = False
     verbose = False
     cleanAll = clean = False
+    testonly = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith("-pass"):
@@ -331,13 +339,15 @@ def main():
             logall = True
         elif arg == "-force":
             forceLogin = True
+        elif arg == "-test":
+            testonly = True
         else:
             wikipedia.showHelp('login')
             return
     
     if wikipedia.verbose > 1:
-      wikipedia.output(u"WARNING: Using -v -v on login.py might leak private data. When sharing, please double check your password is not readable and log out your bots session.")
-      verbose = True # only use this verbose when running from login.py
+        wikipedia.output(u"WARNING: Using -v -v on login.py might leak private data. When sharing, please double check your password is not readable and log out your bots session.")
+        verbose = True # only use this verbose when running from login.py
     if logall:
         if sysop:
             namedict = config.sysopnames
@@ -346,32 +356,36 @@ def main():
 
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
-                try:
-                    site = wikipedia.getSite(lang, familyName)
-                    loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
-                    if clean:
-                        if os.path.exists(wikipedia.config.datafilepath('login-data',
-                          '%s-%s-%s-login.data' % (familyName, lang, namedict[familyName][lang]))):
-                            loginMan.logout()
-                    else:
-                        if not forceLogin and site.loggedInAs(sysop = sysop):
-                            wikipedia.output(u'Already logged in on %s' % site)
+                if testonly:
+                    show(wikipedia.getSite(lang, familyName), sysop)
+                else:
+                    try:
+                        site = wikipedia.getSite(lang, familyName)
+                        loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
+                        if clean:
+                            if os.path.exists(wikipedia.config.datafilepath('login-data',
+                              '%s-%s-%s-login.data' % (familyName, lang, namedict[familyName][lang]))):
+                                loginMan.logout()
                         else:
-                            loginMan.login()
-                except wikipedia.NoSuchSite:
-                    wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
+                            if not forceLogin and site.loggedInAs(sysop = sysop):
+                                wikipedia.output(u'Already logged in on %s' % site)
+                            else:
+                                loginMan.login()
+                    except wikipedia.NoSuchSite:
+                        wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
 
+    elif testonly:
+        show(wikipedia.getSite(), sysop)
+    elif clean:
+        try:
+            site = wikipedia.getSite()
+            lgm = LoginManager(site = site)
+            lgm.logout()
+        except wikipedia.NoSuchSite:
+            pass
     else:
-        if clean:
-            try:
-                site = wikipedia.getSite()
-                lgm = LoginManager(site = site)
-                lgm.logout()
-            except wikipedia.NoSuchSite:
-                pass
-        else:
-            loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
-            loginMan.login()
+        loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
+        loginMan.login()
 
 if __name__ == "__main__":
     try:
