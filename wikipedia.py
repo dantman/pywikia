@@ -337,7 +337,7 @@ class Page(object):
 
             if site is None:
                 site = getSite()
-            elif type(site) is str or type(site) is unicode:
+            elif type(site) in [str, unicode]:
                 site = getSite(site)
 
             self._site = site
@@ -3550,7 +3550,7 @@ class ImagePage(Page):
         #API query
         if infos:
             for i in infos:
-                result.append((i['timestamp'], i['user'], "%s°—%s" % (i['width'], i['height']), i['size'], i['comment']))
+                result.append((i['timestamp'], i['user'], "%s√ó%s" % (i['width'], i['height']), i['size'], i['comment']))
             
             return result
         
@@ -4159,7 +4159,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
     }
 
     # if we got a string, compile it as a regular expression
-    if type(old) is str or type(old) is unicode:
+    if type(old) in  [str, unicode]:
         if caseInsensitive:
             old = re.compile(old, re.IGNORECASE | re.UNICODE)
         else:
@@ -5140,14 +5140,6 @@ class Site(object):
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
 
-        #if persistent_http is None:
-        #    persistent_http = config.persistent_http
-        #self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
-        #if persistent_http:
-        #    if self.protocol() == 'http':
-        #        self.conn = httplib.HTTPConnection(self.hostname())
-        #    elif self.protocol() == 'https':
-        #        self.conn = httplib.HTTPSConnection(self.hostname())
         self.persistent_http = False
 
     def _userIndex(self, sysop = False):
@@ -5392,9 +5384,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         # TODO: add the authenticate stuff here
 
-        #if False: #self.persistent_http:
-        #    conn = self.conn
-        #else:
         if config.proxy['host']:
             conn = httplib.HTTPConnection(config.proxy['host'])
             proxyPutAddr = '%s://%s%s' % (self.protocol(), self.hostname(), address)
@@ -5427,8 +5416,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         conn.putheader('User-agent', useragent)
         if cookies:
             conn.putheader('Cookie', cookies)
-        #if False: #self.persistent_http:
-        #    conn.putheader('Connection', 'Keep-Alive')
+        
         if compress:
             conn.putheader('Accept-encoding', 'gzip')
         conn.endheaders()
@@ -5453,8 +5441,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         data = data.decode(self.encoding())
         response.close()
 
-        if True: #not self.persistent_http:
-            conn.close()
+        conn.close()
 
         # If a wiki page, get user data
         self._getUserDataOld(data, sysop = sysop)
@@ -5547,9 +5534,6 @@ your connection is down. Retrying in %i minutes..."""
         if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
             output(u'Warning! len(text) does not match content-length: %s != %s' % \
                 (len(text), headers.get('content-length')))
-            #if False: #self.persistent_http
-            #    self.conn.close()
-            #    self.conn.connect()
             return self.getUrl(path, retry, sysop, data, compress, no_hostname, cookie_only, back_response)
 
         if compress and contentEncoding == 'gzip':

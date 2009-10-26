@@ -194,7 +194,7 @@ def skipPage(page):
         templatesInThePage = page.templates()
         templatesWithParams = page.templatesWithParams()
         for template in ignoreTemplates[page.site().language()]:
-            if type(template) != type(tuple()):
+            if type(template) != tuple:
                 if template in templatesInThePage:
                     return True
             else:

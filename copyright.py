@@ -466,7 +466,7 @@ def economize_query(text):
 
 def join_family_data(reString, namespace):
     for s in wikipedia.Family().namespaces[namespace].itervalues():
-        if type (s) == type([]):
+        if type (s) == list:
             for e in s:
                 reString += '|' + e
         else:
@@ -797,7 +797,7 @@ class SearchEngine:
                         results = server_results.Responses[0].Results[0]
                     if results:
                         # list or instance?
-                        if type(results) == type([]):
+                        if type(results) == list:
                             for entry in results:
                                 cacheurl = None
                                 if hasattr(entry, 'CacheUrl'):

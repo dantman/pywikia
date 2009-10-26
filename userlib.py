@@ -567,7 +567,7 @@ def batchLoadUI(names = [], site = None):
     #
     if not site:
         site = wikipedia.getSite()
-    elif type(site) is str or type(site) is unicode:
+    elif type(site) in  [str, unicode]:
         site = wikipedia.getSite(site)
     
     result = {}

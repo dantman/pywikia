@@ -286,8 +286,8 @@ _reParameters = re.compile(u'|'.join([ u'(%%[1-9]?%s)' % s for s in _digitDecode
 _escPtrnCache2 = {}
 
 # Allow both unicode and single-byte strings
-_stringTypes = [type(u''), type('')]
-_listTypes = [type([]),type(())]
+_stringTypes = [unicode, str]
+_listTypes = [tuple, list]
 
 def escapePattern2( pattern ):
     """Converts a string pattern into a regex expression and cache.

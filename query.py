@@ -237,16 +237,16 @@ def CleanParams( params ):
     This method will convert it into a dictionary
     """
     if params is None:
-        return dict()
+        return {}
     pt = type( params )
-    if pt == type( {} ):
+    if pt == dict:
         return params
-    elif pt == type( () ):
+    elif pt == typle:
         if len( params ) != 2: raise "Tuple size must be 2"
         return {params[0]:params[1]}
-    elif pt == type( [] ):
+    elif pt == list:
         for p in params:
-            if p != type( () ) or len( p ) != 2: raise "Every list element must be a 2 item tuple"
+            if p != tuple or len( p ) != 2: raise "Every list element must be a 2 item tuple"
         return dict( params )
     else:
         raise "Unknown param type %s" % pt
@@ -267,7 +267,7 @@ def CombineParams( params1, params2 ):
             if len( v1 ) == 0:
                 params1[k] = v2
             elif len( v2 ) > 0:
-                if type('') != type(v1) or type('') != type(v2):
+                if str in [type(v1), type(v2)]:
                     raise "Both merged values must be of type 'str'"
                 params1[k] = v1 + '|' + v2
             # else ignore
@@ -309,4 +309,4 @@ def ToUtf8(s):
     return s.encode('utf-8')
 
 def IsString(s):
-    return type( s ) in [type( '' ), type( u'' )]
+    return type( s ) in [str, unicode]
