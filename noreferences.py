@@ -329,21 +329,21 @@ class NoReferencesBot:
         Checks whether or not the page is lacking a references tag.
         """
         oldTextCleaned = wikipedia.removeDisabledParts(text)
-        if not self.refR.search(oldTextCleaned):
-            if verbose:
-                wikipedia.output(u'No changes necessary: no ref tags found.')
-            return False
-        elif self.referencesR.search(oldTextCleaned):
+        if self.referencesR.search(oldTextCleaned):
             if verbose:
                 wikipedia.output(u'No changes necessary: references tag found.')
             return False
+        elif self.referencesTemplates:
+            templateR = u'{{(' + u'|'.join(self.referencesTemplates) + ')'
+            if re.search(templateR, oldTextCleaned, re.IGNORECASE):
+                if verbose:
+                    wikipedia.output(u'No changes necessary: references template found.')
+                return False
+        elif not self.refR.search(oldTextCleaned):
+            if verbose:
+                wikipedia.output(u'No changes necessary: no ref tags found.')
+            return False
         else:
-            if self.referencesTemplates:
-                templateR = u'{{(' + u'|'.join(self.referencesTemplates) + ')'
-                if re.search(templateR, oldTextCleaned, re.IGNORECASE):
-                    if verbose:
-                        wikipedia.output(u'No changes necessary: references template found.')
-                    return False
             if verbose:
                 wikipedia.output(u'Found ref without references.')
             return True
