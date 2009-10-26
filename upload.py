@@ -68,7 +68,7 @@ def get_content_type(filename):
 
 class UploadRobot:
     def __init__(self, url, urlEncoding = None, description = u'', useFilename = None, keepFilename = False,
-                 verifyDescription = True, ignoreWarning = False, targetSite = None, uploadByUrl = False, useApi = False):
+                 verifyDescription = True, ignoreWarning = False, targetSite = None, uploadByUrl = False):
         """
         ignoreWarning - Set this to True if you want to upload even if another
                         file would be overwritten or another mistake would be
@@ -88,7 +88,6 @@ class UploadRobot:
             self.targetSite = targetSite or wikipedia.getSite()
         self.targetSite.forceLogin()
         self.uploadByUrl = uploadByUrl
-        self.useApi = useApi
 
     def urlOK(self):
         '''
@@ -216,7 +215,7 @@ class UploadRobot:
            If the user chooses not to retry, returns null.
         """
         try:
-            if self.useApi and self.targetSite.versionnumber() >= 16:
+            if config.use_api and self.targetSite.versionnumber() >= 16:
                 x = self.targetSite.api_address()
                 del x
             else:
