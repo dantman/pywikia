@@ -1,5 +1,14 @@
 #!/usr/bin/python
 """
+##################################################
+This script with all its function has been merged
+to login.py. please use:
+
+  login.py -test
+
+xqt 2009-10-26
+##################################################
+
 Script to test whether you are logged-in
 
 Parameters:
