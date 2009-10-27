@@ -479,20 +479,20 @@ def printWithTimeZone(message):
 class Global(object):
     # default environment settings
     # Command line configurable parameters
-    repeat = True # Restart after having check all the images?
-    limit = 80 # How many images check?
-    time_sleep = 30 # How many time sleep after the check?
-    skip_number = 0 # How many images to skip before checking?
-    waitTime = 0 # How many time sleep before the check?
-    commonsActive = False # Check if on commons there's an image with the same name?
-    normal = False # Check the new images or use another generator?
-    urlUsed = False # Use the url-related function instead of the new-pages generator
-    regexGen = False # Use the regex generator
-    untagged = False # Use the untagged generator   
+    repeat = True            # Restart after having check all the images?
+    limit = 80               # How many images check?
+    time_sleep = 30          # How many time sleep after the check?
+    skip_number = 0          # How many images to skip before checking?
+    waitTime = 0             # How many time sleep before the check?
+    commonsActive = False    # Check if on commons there's an image with the same name?
+    normal = False           # Check the new images or use another generator?
+    urlUsed = False          # Use the url-related function instead of the new-pages generator
+    regexGen = False         # Use the regex generator
+    untagged = False         # Use the untagged generator   
     duplicatesActive = False # Use the duplicate option
     duplicatesReport = False # Use the duplicate-report option
-    sendemailActive = False # Use the send-email
-    logFullError = True # Raise an error when the log is full
+    sendemailActive = False  # Use the send-email
+    logFullError = True      # Raise an error when the log is full
     
     
 # Here there is the main class.
