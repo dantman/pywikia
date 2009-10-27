@@ -723,7 +723,7 @@ not supported by PyWikipediaBot!"""
         This method returns the raw wiki text as a unicode string.
         """
         try:
-            if config.use_api and self.site().versionnumber() >= 11:
+            if config.use_api and self.site().versionnumber() > 11:
                 x = self.site().api_address()
                 del x
             else:
