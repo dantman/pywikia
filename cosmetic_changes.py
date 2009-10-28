@@ -32,7 +32,8 @@ if you're running a bot on multiple sites and want to do cosmetic changes on
 all of them, but be careful if you do.
 """
 __version__ = '$Id$'
-import wikipedia, pagegenerators, isbn
+import wikipedia as pywikibot
+import pagegenerators, isbn
 import sys
 import re
 
@@ -188,7 +189,7 @@ class CosmeticChangesToolkit:
         except isbn.InvalidIsbnException, error:
             pass
         if self.debug:
-            wikipedia.showDiff(oldText, text)
+            pywikibot.showDiff(oldText, text)
         return text
 
     def fixSelfInterwiki(self, text):
@@ -205,9 +206,9 @@ class CosmeticChangesToolkit:
         Makes sure that interwiki links are put to the correct position and
         into the right order.
         """
-        if wikipedia.calledModuleName() <> 'interwiki':
-            interwikiLinks = wikipedia.getLanguageLinks(text, insite = self.site)
-            text = wikipedia.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template)
+        if pywikibot.calledModuleName() <> 'interwiki':
+            interwikiLinks = pywikibot.getLanguageLinks(text, insite = self.site)
+            text = pywikibot.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template)
         return text
 
     def standardizeCategories(self, text):
@@ -216,9 +217,9 @@ class CosmeticChangesToolkit:
         does not sort them.
         """
         # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
-        if self.site != wikipedia.getSite('de', 'wikipedia') and not self.template:
-            categories = wikipedia.getCategoryLinks(text, site = self.site)
-            text = wikipedia.replaceCategoryLinks(text, categories, site = self.site)
+        if self.site != pywikibot.getSite('de', 'wikipedia') and not self.template:
+            categories = pywikibot.getCategoryLinks(text, site = self.site)
+            text = pywikibot.replaceCategoryLinks(text, categories, site = self.site)
         return text
 
     def translateAndCapitalizeNamespaces(self, text):
@@ -242,7 +243,7 @@ class CosmeticChangesToolkit:
 
             # skip main (article) namespace
             if thisNs and namespaces:
-                text = wikipedia.replaceExcept(text, r'\[\[\s*(' + '|'.join(namespaces) + ') *:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]', exceptions)
+                text = pywikibot.replaceExcept(text, r'\[\[\s*(' + '|'.join(namespaces) + ') *:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]', exceptions)
         return text
 
     def cleanUpLinks(self, text):
@@ -259,8 +260,8 @@ class CosmeticChangesToolkit:
                 # We only work on namespace 0 because pipes and linktrails work
                 # differently for images and categories.
                 try:
-                    page = wikipedia.Page(self.site, titleWithSection)
-                except wikipedia.InvalidTitle:
+                    page = pywikibot.Page(self.site, titleWithSection)
+                except pywikibot.InvalidTitle:
                     return match.group()
                 if page.namespace() == 0:
                     # Replace underlines by spaces, also multiple underlines
@@ -284,7 +285,7 @@ class CosmeticChangesToolkit:
                         hadTrailingSpaces = (len(titleWithSection) != titleLength)
 
                     # Convert URL-encoded characters to unicode
-                    titleWithSection = wikipedia.url2unicode(titleWithSection, site = self.site)
+                    titleWithSection = pywikibot.url2unicode(titleWithSection, site = self.site)
 
                     if titleWithSection == '':
                         # just skip empty links.
@@ -347,7 +348,7 @@ class CosmeticChangesToolkit:
         # note that the definition of 'letter' varies from language to language.
         linkR = re.compile(r'\[\[(?P<titleWithSection>[^\]\|]+)(\|(?P<label>[^\]\|]*))?\]\](?P<linktrail>' + self.site.linktrail() + ')')
 
-        text = wikipedia.replaceExcept(text, linkR, handleOneLink, ['comment', 'math', 'nowiki', 'pre', 'startspace'])
+        text = pywikibot.replaceExcept(text, linkR, handleOneLink, ['comment', 'math', 'nowiki', 'pre', 'startspace'])
         return text
 
     def resolveHtmlEntities(self, text):
@@ -363,11 +364,11 @@ class CosmeticChangesToolkit:
         # ignore ' see http://eo.wikipedia.org/w/index.php?title=Liberec&diff=next&oldid=2320801
         if self.site.lang == 'eo':
             ignore += [39]
-        text = wikipedia.html2unicode(text, ignore = ignore)
+        text = pywikibot.html2unicode(text, ignore = ignore)
         return text
 
     def validXhtml(self, text):
-        text = wikipedia.replaceExcept(text, r'<br>', r'<br />', ['comment', 'math', 'nowiki', 'pre'])
+        text = pywikibot.replaceExcept(text, r'<br>', r'<br />', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeUselessSpaces(self, text):
@@ -376,8 +377,8 @@ class CosmeticChangesToolkit:
         spaceAtLineEndR = re.compile(' $')
 
         exceptions = ['comment', 'math', 'nowiki', 'pre', 'startspace', 'table', 'template']
-        text = wikipedia.replaceExcept(text, multipleSpacesR, ' ', exceptions)
-        text = wikipedia.replaceExcept(text, spaceAtLineEndR, '', exceptions)
+        text = pywikibot.replaceExcept(text, multipleSpacesR, ' ', exceptions)
+        text = pywikibot.replaceExcept(text, spaceAtLineEndR, '', exceptions)
 
         return text
 
@@ -387,7 +388,7 @@ class CosmeticChangesToolkit:
         front of a percent sign, so it is no longer required to place it
         manually.
         '''
-        text = wikipedia.replaceExcept(text, r'(\d)&nbsp;%', r'\1 %', ['timeline'])
+        text = pywikibot.replaceExcept(text, r'(\d)&nbsp;%', r'\1 %', ['timeline'])
         return text
 
     def cleanUpSectionHeaders(self, text):
@@ -402,7 +403,7 @@ class CosmeticChangesToolkit:
         """
         for level in range(1, 7):
             equals = '=' * level
-            text = wikipedia.replaceExcept(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', '\n' + equals + ' \g<title> ' + equals + '\r\n', ['comment', 'math', 'nowiki', 'pre'])
+            text = pywikibot.replaceExcept(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', '\n' + equals + ' \g<title> ' + equals + '\r\n', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def putSpacesInLists(self, text):
@@ -415,76 +416,77 @@ class CosmeticChangesToolkit:
         If there are any complaints, please file a bug report.
         """
         if not self.redirect:
-            text = wikipedia.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
+            text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     #from fixes.py
     def fixSyntaxSave(self, text):
         exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
         # external link in double brackets
-        text = wikipedia.replaceExcept(text, r'\[\[(?P<url>https?://[^\]]+?)\]\]', r'[\g<url>]', exceptions)
+        text = pywikibot.replaceExcept(text, r'\[\[(?P<url>https?://[^\]]+?)\]\]', r'[\g<url>]', exceptions)
         # external link starting with double bracket
-        text = wikipedia.replaceExcept(text, r'\[\[(?P<url>https?://.+?)\]', r'[\g<url>]', exceptions)
+        text = pywikibot.replaceExcept(text, r'\[\[(?P<url>https?://.+?)\]', r'[\g<url>]', exceptions)
         # external link and description separated by a dash, with
         # whitespace in front of the dash, so that it is clear that
         # the dash is not a legitimate part of the URL.
-        text = wikipedia.replaceExcept(text, r'\[(?P<url>https?://[^\|\] \r\n]+?) +\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]', exceptions)
+        text = pywikibot.replaceExcept(text, r'\[(?P<url>https?://[^\|\] \r\n]+?) +\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]', exceptions)
         # dash in external link, where the correct end of the URL can
         # be detected from the file extension. It is very unlikely that
         # this will cause mistakes.
-        text = wikipedia.replaceExcept(text, r'\[(?P<url>https?://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx|\.jsp)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]', exceptions)
+        text = pywikibot.replaceExcept(text, r'\[(?P<url>https?://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx|\.jsp)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]', exceptions)
         return text
 
     def fixHtml(self, text):
         # Everything case-insensitive (?i)
         # Keep in mind that MediaWiki automatically converts <br> to <br />
         exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
-        text = wikipedia.replaceExcept(text, r'(?i)<b>(.*?)</b>', r"'''\1'''" , exceptions)
-        text = wikipedia.replaceExcept(text, r'(?i)<strong>(.*?)</strong>', r"'''\1'''" , exceptions)
-        text = wikipedia.replaceExcept(text, r'(?i)<i>(.*?)</i>', r"''\1''" , exceptions)
-        text = wikipedia.replaceExcept(text, r'(?i)<em>(.*?)</em>', r"''\1''" , exceptions)
+        text = pywikibot.replaceExcept(text, r'(?i)<b>(.*?)</b>', r"'''\1'''" , exceptions)
+        text = pywikibot.replaceExcept(text, r'(?i)<strong>(.*?)</strong>', r"'''\1'''" , exceptions)
+        text = pywikibot.replaceExcept(text, r'(?i)<i>(.*?)</i>', r"''\1''" , exceptions)
+        text = pywikibot.replaceExcept(text, r'(?i)<em>(.*?)</em>', r"''\1''" , exceptions)
         # horizontal line without attributes in a single line
-        text = wikipedia.replaceExcept(text, r'(?i)([\r\n])<hr[ /]*>([\r\n])', r'\1----\2', exceptions)
+        text = pywikibot.replaceExcept(text, r'(?i)([\r\n])<hr[ /]*>([\r\n])', r'\1----\2', exceptions)
         # horizontal line with attributes; can't be done with wiki syntax
         # so we only make it XHTML compliant
-        text = wikipedia.replaceExcept(text, r'(?i)<hr ([^>/]+?)>', r'<hr \1 />', exceptions)
+        text = pywikibot.replaceExcept(text, r'(?i)<hr ([^>/]+?)>', r'<hr \1 />', exceptions)
         # TODO: maybe we can make the bot replace <p> tags with \r\n's.
         return text
 
 class CosmeticChangesBot:
-    def __init__(self, generator, acceptall = False):
+    def __init__(self, generator, acceptall = False, comment=u'Robot: Cosmetic changes'):
         self.generator = generator
         self.acceptall = acceptall
+        self.comment = comment
 
     def treat(self, page):
         try:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, namespace = page.namespace())
             changedText = ccToolkit.change(page.get())
             if changedText != page.get():
                 if not self.acceptall:
-                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                    choice = pywikibot.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                     if choice == 'a':
                         self.acceptall = True
                 if self.acceptall or choice == 'y':
-                    page.put(changedText)
+                    page.put(changedText, comment=self.comment)
             else:
-                wikipedia.output('No changes were necessary in %s' % page.title())
-        except wikipedia.NoPage:
-            wikipedia.output("Page %s does not exist?!" % page.aslink())
-        except wikipedia.IsRedirectPage:
-            wikipedia.output("Page %s is a redirect; skipping." % page.aslink())
-        except wikipedia.LockedPage:
-            wikipedia.output("Page %s is locked?!" % page.aslink())
+                pywikibot.output('No changes were necessary in %s' % page.title())
+        except pywikibot.NoPage:
+            pywikibot.output("Page %s does not exist?!" % page.aslink())
+        except pywikibot.IsRedirectPage:
+            pywikibot.output("Page %s is a redirect; skipping." % page.aslink())
+        except pywikibot.LockedPage:
+            pywikibot.output("Page %s is locked?!" % page.aslink())
 
     def run(self):
         try:
             for page in self.generator:
                 self.treat(page)
         except KeyboardInterrupt:
-            wikipedia.output('\nQuitting program...')
+            pywikibot.output('\nQuitting program...')
 
 def main():
     #page generator
@@ -498,7 +500,7 @@ def main():
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
 
-    for arg in wikipedia.handleArgs():
+    for arg in pywikibot.handleArgs():
         if arg.startswith('-summary:'):
             editSummary = arg[len('-summary:'):]
         elif arg == '-always':
@@ -508,12 +510,11 @@ def main():
 
     if editSummary == '':
         # Load default summary message.
-        editSummary = wikipedia.translate(wikipedia.getSite(), msg_standalone)
-    wikipedia.setAction(editSummary)
+        editSummary = pywikibot.translate(pywikibot.getSite(), msg_standalone)
 
     # Disabled this check. Although the point is still valid, there
     # is now a warning and a prompt (see below).
-    #if wikipedia.getSite() == wikipedia.getSite('nl','wikipedia'):
+    #if pywikibot.getSite() == pywikibot.getSite('nl','wikipedia'):
         #print "Deze bot is op WikipediaNL niet gewenst."
         #print "Het toevoegen van cosmetic changes bij andere wijzigingen is toegestaan,"
         #print "maar cosmetic_changes als stand-alone bot niet."
@@ -521,22 +522,22 @@ def main():
         #sys.exit()
 
     if pageTitle:
-        page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
+        page = pywikibot.Page(pywikibot.getSite(), ' '.join(pageTitle))
         gen = iter([page])
     if not gen:
         gen = genFactory.getCombinedGenerator()
     if not gen:
-        wikipedia.showHelp()
+        pywikibot.showHelp()
     elif not always:
-        answer = wikipedia.inputChoice(warning + '\nDo you really want to continue?', ['yes', 'no'], ['y', 'N'], 'N')
-    
+        answer = pywikibot.inputChoice(warning + '\nDo you really want to continue?', ['yes', 'no'], ['y', 'N'], 'N')
+
     if answer == 'y':
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = CosmeticChangesBot(preloadingGen, acceptall=always)
+        bot = CosmeticChangesBot(preloadingGen, acceptall=always, comment=editSummary)
         bot.run()
 
 if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

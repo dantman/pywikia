@@ -28,7 +28,7 @@ import string
 import optparse
 import tempfile
 
-import wikipedia
+import wikipedia as pywikibot
 import config
 
 msg = {
@@ -126,7 +126,7 @@ class TextEditor:
                 os.unlink(tempFilename)
                 return self.restoreLinebreaks(newcontent)
         else:
-            return self.restoreLinebreaks(wikipedia.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight))
+            return self.restoreLinebreaks(pywikibot.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight))
 
 class ArticleEditor:
     # join lines if line starts with this ones
@@ -135,12 +135,12 @@ class ArticleEditor:
     def __init__(self):
         self.set_options()
         self.setpage()
-        self.site = wikipedia.getSite()
+        self.site = pywikibot.getSite()
 
     def set_options(self):
         """Parse commandline and set options attribute"""
         my_args = []
-        for arg in wikipedia.handleArgs():
+        for arg in pywikibot.handleArgs():
             my_args.append(arg)
         parser = optparse.OptionParser()
         parser.add_option("-r", "--edit_redirect", action="store_true", default=False, help="Ignore/edit redirects")
@@ -156,9 +156,9 @@ class ArticleEditor:
 
     def setpage(self):
         """Sets page and page title"""
-        site = wikipedia.getSite()
-        pageTitle = self.options.page or wikipedia.input(u"Page to edit:")
-        self.page = wikipedia.Page(site, pageTitle)
+        site = pywikibot.getSite()
+        pageTitle = self.options.page or pywikibot.input(u"Page to edit:")
+        self.page = pywikibot.Page(site, pageTitle)
         if not self.options.edit_redirect and self.page.isRedirectPage():
             self.page = self.page.getRedirectTarget()
 
@@ -167,25 +167,25 @@ class ArticleEditor:
         fp = open(fn, 'w')
         fp.write(new)
         fp.close()
-        wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
+        pywikibot.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
 
     def run(self):
         try:
             old = self.page.get(get_redirect = self.options.edit_redirect)
-        except wikipedia.NoPage:
+        except pywikibot.NoPage:
             old = ""
         textEditor = TextEditor()
         new = textEditor.edit(old)
         if new and old != new:
-            wikipedia.showDiff(old, new)
-            changes = wikipedia.input(u"What did you change?")
-            comment = wikipedia.translate(wikipedia.getSite(), msg) % changes
+            pywikibot.showDiff(old, new)
+            changes = pywikibot.input(u"What did you change?")
+            comment = pywikibot.translate(pywikibot.getSite(), msg) % changes
             try:
                 self.page.put(new, comment = comment, minorEdit = False, watchArticle=self.options.watch)
-            except wikipedia.EditConflict:
+            except pywikibot.EditConflict:
                 self.handle_edit_conflict(new)
         else:
-            wikipedia.output(u"Nothing changed")
+            pywikibot.output(u"Nothing changed")
 
 def main():
     app = ArticleEditor()
@@ -195,5 +195,5 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()
 
