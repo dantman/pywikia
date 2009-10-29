@@ -159,17 +159,17 @@ msg_append = {
 }
 
 class CosmeticChangesToolkit:
-    def __init__(self, site, debug = False, redirect = False, namespace = None):
+    def __init__(self, site, debug=False, redirect=False, namespace=None):
         self.site = site
         self.debug = debug
         self.redirect = redirect
         self.namespace = namespace
         self.template = (self.namespace == 10)
-        self.talkpage = self.namespace >= 0 and self.namespace % 2 == 1
+        self.talkpage = self.isTalkPage()
 
     def change(self, text):
         """
-        Given a wiki source code text, returns the cleaned up version.
+        Given a wiki source code text, return the cleaned up version.
         """
         oldText = text
         text = self.fixSelfInterwiki(text)
