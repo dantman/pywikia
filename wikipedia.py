@@ -5448,8 +5448,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         return response, data
 
-    def getUrl(self, path, retry = None, sysop = False, data = None,
-               compress = True, no_hostname = False, cookie_only=False, back_response=False):
+    def getUrl(self, path, retry = None, sysop = False, data = None, compress = True,
+               no_hostname = False, cookie_only=False, refer=None, back_response=False):
         """
         Low-level routine to get a URL from the wiki.
 
@@ -5486,6 +5486,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             url = path          # and other useful pages without using some other functions.
         else:
             url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
+        if refer:
+            uo.addheader('Refer', refer)
         data = self.urlEncode(data)
 
         # Try to retrieve the page until it was successfully loaded (just in

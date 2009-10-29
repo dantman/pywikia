@@ -551,18 +551,43 @@ class GoogleSearchPageGenerator:
     def queryGoogle(self, query):
         #if config.google_key:
         if True:
-            #try:
+            try:
                 for url in self.queryViaSoapApi(query):
                     yield url
                 return
-            #except ImportError:
-                #pass
+            except ImportError:
+                for u in self.queryViaAPI(query):
+                    yield u
+                return
         # No google license key, or pygoogle not installed. Do it the ugly way.
         #for url in self.queryViaWeb(query):
         #    yield url
 
+    def queryViaAPI(self, query):
+        import json
+        url = u'http://ajax.googleapis.com/ajax/services/search/web?'
+        params = {
+            'key': config.google_key,
+            'v':'1.0',
+            'q': query,
+        }
+        url += urllib.urlencode(params)
+        
+        while True:
+            try:
+                wikipedia.output(u'Querying Google AJAX Search API...') #, offset %i' % offset)
+                result = json.loads(self.site.getUrl(url, refer = config.google_api_refer, no_hostname=True))
+                for res in result['responseData']['results']:
+                    yield res['url']
+            except:
+                wikipedia.output(u"An error occured. Retrying in 10 seconds...")
+                time.sleep(10)
+                continue
+        
+    
     def queryViaSoapApi(self, query):
         import google
+        
         google.LICENSE_KEY = config.google_key
         offset = 0
         estimatedTotalResultsCount = None
