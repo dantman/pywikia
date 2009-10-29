@@ -114,15 +114,18 @@ talk about HTTP, where the typo has become part of the standard:
 
     python replace.py referer referrer -file:typos.txt -excepttext:HTTP
 """
+from __future__ import generators
 #
-# (C) Daniel Herding & the Pywikipediabot Team, 2004-2008
+# (C) Daniel Herding & the Pywikipedia team, 2004-2009
+#
+__version__='$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
 
-from __future__ import generators
 import sys, re, time
-import wikipedia, pagegenerators
+import wikipedia as pywikibot
+import pagegenerators
 import editarticle
 import webbrowser
 
@@ -136,11 +139,10 @@ docuReplacements = {
     '&fixes-help;': fixes.help,
 }
 
-__version__='$Id$'
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
-# below.`v
+# below.
 msg = {
     'ar': u'%s روبوت : استبدال تلقائي للنص',
     'ca': u'Robot: Reemplaçament automàtic de text %s',
@@ -202,12 +204,12 @@ class XmlDumpReplacePageGenerator:
         self.skipping = bool(xmlStart)
 
         self.excsInside = []
-        if 'inside-tags' in self.exceptions:
+        if "inside-tags" in self.exceptions:
             self.excsInside += self.exceptions['inside-tags']
-        if 'inside' in self.exceptions:
+        if "inside" in self.exceptions:
             self.excsInside += self.exceptions['inside']
         import xmlreader
-        self.site = wikipedia.getSite()
+        self.site = pywikibot.getSite()
         dump = xmlreader.XmlDump(self.xmlFilename)
         self.parser = dump.parse()
 
@@ -222,24 +224,24 @@ class XmlDumpReplacePageGenerator:
                         and not self.isTextExcepted(entry.text):
                     new_text = entry.text
                     for old, new in self.replacements:
-                        new_text = wikipedia.replaceExcept(new_text, old, new, self.excsInside, self.site)
+                        new_text = pywikibot.replaceExcept(new_text, old, new, self.excsInside, self.site)
                     if new_text != entry.text:
-                        yield wikipedia.Page(self.site, entry.title)
+                        yield pywikibot.Page(self.site, entry.title)
         except KeyboardInterrupt:
             try:
                 if not self.skipping:
-                    wikipedia.output(
+                    pywikibot.output(
                         u'To resume, use "-xmlstart:%s" on the command line.'
                         % entry.title)
             except NameError:
                 pass
 
     def isTitleExcepted(self, title):
-        if 'title' in self.exceptions:
+        if "title" in self.exceptions:
             for exc in self.exceptions['title']:
                 if exc.search(title):
                     return True
-        if 'require-title' in self.exceptions:
+        if "require-title" in self.exceptions:
             for req in self.exceptions['require-title']:
                 if not req.search(title): # if not all requirements are met:
                     return True
@@ -247,7 +249,7 @@ class XmlDumpReplacePageGenerator:
         return False
 
     def isTextExcepted(self, text):
-        if 'text-contains' in self.exceptions:
+        if "text-contains" in self.exceptions:
             for exc in self.exceptions['text-contains']:
                 if exc.search(text):
                     return True
@@ -292,7 +294,7 @@ class ReplaceRobot:
                 regular expressions.
             inside-tags
                 A list of strings. These strings must be keys from the
-                exceptionRegexes dictionary in wikipedia.replaceExcept().
+                exceptionRegexes dictionary in pywikibot.replaceExcept().
 
         """
         self.generator = generator
@@ -301,22 +303,22 @@ class ReplaceRobot:
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
         self.recursive = recursive
+        if addedCat:
+            site = pywikibot.getSite()
+            self.addedCat = pywikibot.Page(site, addCat, defaultNamespace=14)
+        self.sleep = sleep
         # Some function to set default editSummary should probably be added
         self.editSummary = editSummary
-        if addedCat:
-            site = wikipedia.getSite()
-            self.addedCat = wikipedia.Page(site, addCat, defaultNamespace=14)
-        self.sleep = sleep
 
     def isTitleExcepted(self, title):
         """
         Iff one of the exceptions applies for the given title, returns True.
         """
-        if 'title' in self.exceptions:
+        if "title" in self.exceptions:
             for exc in self.exceptions['title']:
                 if exc.search(title):
                     return True
-        if 'require-title' in self.exceptions:
+        if "require-title" in self.exceptions:
             for req in self.exceptions['require-title']:
                 if not req.search(title):
                     return True
@@ -327,7 +329,7 @@ class ReplaceRobot:
         Iff one of the exceptions applies for the given page contents,
         returns True.
         """
-        if 'text-contains' in self.exceptions:
+        if "text-contains" in self.exceptions:
             for exc in self.exceptions['text-contains']:
                 if exc.search(original_text):
                     return True
@@ -340,14 +342,14 @@ class ReplaceRobot:
         """
         new_text = original_text
         exceptions = []
-        if 'inside-tags' in self.exceptions:
+        if "inside-tags" in self.exceptions:
             exceptions += self.exceptions['inside-tags']
-        if 'inside' in self.exceptions:
+        if "inside" in self.exceptions:
             exceptions += self.exceptions['inside']
         for old, new in self.replacements:
             if self.sleep is not None:
                 time.sleep(self.sleep)
-            new_text = wikipedia.replaceExcept(new_text, old, new, exceptions,
+            new_text = pywikibot.replaceExcept(new_text, old, new, exceptions,
                                                allowoverlap=self.allowoverlap)
         return new_text
 
@@ -359,7 +361,7 @@ class ReplaceRobot:
         # changed.
         for page in self.generator:
             if self.isTitleExcepted(page.title()):
-                wikipedia.output(
+                pywikibot.output(
                     u'Skipping %s because the title is on the exceptions list.'
                     % page.aslink())
                 continue
@@ -367,23 +369,23 @@ class ReplaceRobot:
                 # Load the page's text from the wiki
                 original_text = page.get(get_redirect=True)
                 if not page.canBeEdited():
-                    wikipedia.output(u"You can't edit page %s"
+                    pywikibot.output(u"You can't edit page %s"
                                      % page.aslink())
                     continue
-            except wikipedia.NoPage:
-                wikipedia.output(u'Page %s not found' % page.aslink())
+            except pywikibot.NoPage:
+                pywikibot.output(u'Page %s not found' % page.aslink())
                 continue
             new_text = original_text
             while True:
                 if self.isTextExcepted(new_text):
-                    wikipedia.output(
+                    pywikibot.output(
     u'Skipping %s because it contains text that is on the exceptions list.'
                         % page.aslink())
                     break
                 new_text = self.doReplacements(new_text)
                 if new_text == original_text:
-                    wikipedia.output('No changes were necessary in %s'
-                                     % page.aslink())
+                    pywikibot.output(u'No changes were necessary in %s'
+                                      % page.aslink())
                     break
                 if self.recursive:
                     newest_text = self.doReplacements(new_text)
@@ -394,16 +396,16 @@ class ReplaceRobot:
                     cats = page.categories()
                     if self.addedCat not in cats:
                         cats.append(self.addedCat)
-                        new_text = wikipedia.replaceCategoryLinks(new_text,
+                        new_text = pywikibot.replaceCategoryLinks(new_text,
                                                                   cats)
                 # Show the title of the page we're working on.
                 # Highlight the title in purple.
-                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
                                  % page.title())
-                wikipedia.showDiff(original_text, new_text)
+                pywikibot.showDiff(original_text, new_text)
                 if self.acceptall:
                     break
-                choice = wikipedia.inputChoice(
+                choice = pywikibot.inputChoice(
                             u'Do you want to accept these changes?',
                             ['Yes', 'No', 'Edit', 'open in Browser', 'All', "Quit"],
                             ['y', 'N', 'e', 'b', 'a', 'q'], 'N')
@@ -419,7 +421,7 @@ class ReplaceRobot:
                         page.site().hostname(),
                         page.site().nice_get_address(page.title())
                     ))
-                    wikipedia.input("Press Enter when finished in browser.")
+                    pywikibot.input("Press Enter when finished in browser.")
                     original_text = page.get(get_redirect=True, force=True)
                     new_text = original_text
                     continue
@@ -434,18 +436,18 @@ class ReplaceRobot:
             if self.acceptall and new_text != original_text:
                 try:
                     page.put(new_text, self.editSummary)
-                except wikipedia.EditConflict:
-                    wikipedia.output(u'Skipping %s because of edit conflict'
+                except pywikibot.EditConflict:
+                    pywikibot.output(u'Skipping %s because of edit conflict'
                                      % (page.title(),))
-                except wikipedia.SpamfilterError, e:
-                    wikipedia.output(
+                except pywikibot.SpamfilterError, e:
+                    pywikibot.output(
                         u'Cannot change %s because of blacklist entry %s'
                         % (page.title(), e.url))
-                except wikipedia.PageNotSaved, error:
-                    wikipedia.output(u'Error putting page: %s'
+                except pywikibot.PageNotSaved, error:
+                    pywikibot.output(u'Error putting page: %s'
                                      % (error.args,))
-                except wikipedia.LockedPage:
-                    wikipedia.output(u'Skipping %s (locked page)'
+                except pywikibot.LockedPage:
+                    pywikibot.output(u'Skipping %s (locked page)'
                                      % (page.title(),))
 
 def prepareRegexForMySQL(pattern):
@@ -510,24 +512,24 @@ def main(*args):
     genFactory = pagegenerators.GeneratorFactory()
     # Load default summary message.
     # BUG WARNING: This is probably incompatible with the -lang parameter.
-    editSummary = wikipedia.translate(wikipedia.getSite(), msg)
+    editSummary = pywikibot.translate(pywikibot.getSite(), msg)
     # Between a regex and another (using -fix) sleep some time (not to waste
     # too much CPU
     sleep = None
 
     # Read commandline parameters.
-    for arg in wikipedia.handleArgs(*args):
+    for arg in pywikibot.handleArgs(*args):
         if arg == '-regex':
             regex = True
         elif arg.startswith('-xmlstart'):
             if len(arg) == 9:
-                xmlStart = wikipedia.input(
+                xmlStart = pywikibot.input(
                     u'Please enter the dumped article to start with:')
             else:
                 xmlStart = arg[10:]
         elif arg.startswith('-xml'):
             if len(arg) == 4:
-                xmlFilename = wikipedia.input(
+                xmlFilename = pywikibot.input(
                     u'Please enter the XML dump\'s filename:')
             else:
                 xmlFilename = arg[5:]
@@ -535,7 +537,7 @@ def main(*args):
             useSql = True
         elif arg.startswith('-page'):
             if len(arg) == 5:
-                PageTitles.append(wikipedia.input(
+                PageTitles.append(pywikibot.input(
                                     u'Which page do you want to change?'))
             else:
                 PageTitles.append(arg[6:])
@@ -564,9 +566,9 @@ def main(*args):
         elif arg == '-multiline':
             multiline = True
         elif arg.startswith('-addcat:'):
-            add_cat = arg[len('addcat:'):]
+            add_cat = arg[8:]
         elif arg.startswith('-summary:'):
-            editSummary = arg[len('-summary:'):]
+            editSummary = arg[9:]
             summary_commandline = True
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
@@ -577,47 +579,47 @@ def main(*args):
                 commandline_replacements.append(arg)
 
     if (len(commandline_replacements) % 2):
-        raise wikipedia.Error, 'require even number of replacements.'
+        raise pywikibot.Error, 'require even number of replacements.'
     elif (len(commandline_replacements) == 2 and fix is None):
         replacements.append((commandline_replacements[0],
                              commandline_replacements[1]))
-        if summary_commandline == False:
-            editSummary = wikipedia.translate(wikipedia.getSite(), msg ) % (' (-' + commandline_replacements[0] + ' +'
+        if not summary_commandline:
+            editSummary = pywikibot.translate(pywikibot.getSite(), msg ) % (' (-' + commandline_replacements[0] + ' +'
                                    + commandline_replacements[1] + ')')
     elif (len(commandline_replacements) > 1):
         if (fix is None):
             for i in xrange (0, len(commandline_replacements), 2):
                 replacements.append((commandline_replacements[i],
                                      commandline_replacements[i + 1]))
-            if summary_commandline == False:
+            if not summary_commandline:
                 pairs = [( commandline_replacements[i],
                            commandline_replacements[i + 1] )
                          for i in range(0, len(commandline_replacements), 2)]
                 replacementsDescription = '(%s)' % ', '.join(
                     [('-' + pair[0] + ' +' + pair[1]) for pair in pairs])
-                editSummary = wikipedia.translate(wikipedia.getSite(), msg ) % replacementsDescription
+                editSummary = pywikibot.translate(pywikibot.getSite(), msg ) % replacementsDescription
         else:
-           raise wikipedia.Error(
+           raise pywikibot.Error(
                'Specifying -fix with replacements is undefined')
     elif fix is None:
-        old = wikipedia.input(u'Please enter the text that should be replaced:')
-        new = wikipedia.input(u'Please enter the new text:')
+        old = pywikibot.input(u'Please enter the text that should be replaced:')
+        new = pywikibot.input(u'Please enter the new text:')
         change = '(-' + old + ' +' + new
         replacements.append((old, new))
         while True:
-            old = wikipedia.input(
+            old = pywikibot.input(
 u'Please enter another text that should be replaced, or press Enter to start:')
             if old == '':
                 change = change + ')'
                 break
-            new = wikipedia.input(u'Please enter the new text:')
+            new = pywikibot.input(u'Please enter the new text:')
             change = change + ' & -' + old + ' +' + new
             replacements.append((old, new))
-        if not summary_commandline == True:
-            default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
-            wikipedia.output(u'The summary message will default to: %s'
+        if not summary_commandline:
+            default_summary_message =  pywikibot.translate(pywikibot.getSite(), msg) % change
+            pywikibot.output(u'The summary message will default to: %s'
                              % default_summary_message)
-            summary_message = wikipedia.input(
+            summary_message = pywikibot.input(
 u'Press Enter to use this default message, or enter a description of the\nchanges your bot will make:')
             if summary_message == '':
                 summary_message = default_summary_message
@@ -628,16 +630,16 @@ u'Press Enter to use this default message, or enter a description of the\nchange
         try:
             fix = fixes.fixes[fix]
         except KeyError:
-            wikipedia.output(u'Available predefined fixes are: %s'
+            pywikibot.output(u'Available predefined fixes are: %s'
                              % fixes.fixes.keys())
             return
-        if 'regex' in fix:
+        if "regex" in fix:
             regex = fix['regex']
-        if 'msg' in fix:
-            editSummary = wikipedia.translate(wikipedia.getSite(), fix['msg'])
-        if 'exceptions' in fix:
+        if "msg" in fix:
+            editSummary = pywikibot.translate(pywikibot.getSite(), fix['msg'])
+        if "exceptions" in fix:
             exceptions = fix['exceptions']
-        if 'nocase' in fix:
+        if "nocase" in fix:
             caseInsensitive = fix['nocase']
         replacements = fix['replacements']
 
@@ -692,14 +694,14 @@ JOIN text ON (page_id = old_id)
 LIMIT 200""" % (whereClause, exceptClause)
         gen = pagegenerators.MySQLPageGenerator(query)
     elif PageTitles:
-        pages = [wikipedia.Page(wikipedia.getSite(), PageTitle)
+        pages = [pywikibot.Page(pywikibot.getSite(), PageTitle)
                  for PageTitle in PageTitles]
         gen = iter(pages)
 
     gen = genFactory.getCombinedGenerator(gen)
     if not gen:
         # syntax error, show help text from the top of this file
-        wikipedia.showHelp('replace')
+        pywikibot.showHelp('replace')
         return
     if xmlFilename:
         # XML parsing can be quite slow, so use smaller batches and
@@ -711,8 +713,9 @@ LIMIT 200""" % (whereClause, exceptClause)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive, add_cat, sleep, editSummary)
     bot.run()
 
+
 if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

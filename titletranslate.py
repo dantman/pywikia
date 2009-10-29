@@ -9,7 +9,8 @@ __version__ = '$Id$'
 #
 import re
 
-import wikipedia, date
+import wikipedia as pywikibot
+import date
 
 def translate(page, hints = None, auto = True, removebrackets = False):
     """
@@ -53,12 +54,12 @@ def translate(page, hints = None, auto = True, removebrackets = False):
             for newcode in codes:
                 if newcode in site.languages():
                     if newcode != site.language():
-                        x = wikipedia.Page(site.getSite(code=newcode), newname)
+                        x = pywikibot.Page(site.getSite(code=newcode), newname)
                         if x not in result:
                             result.append(x)
                 else:
-                    if wikipedia.verbose:
-                        wikipedia.output(u"Ignoring unknown language code %s"%newcode)
+                    if pywikibot.verbose:
+                        pywikibot.output(u"Ignoring unknown language code %s"%newcode)
 
     # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:
@@ -66,7 +67,7 @@ def translate(page, hints = None, auto = True, removebrackets = False):
         dictName, value = date.getAutoFormat( page.site().language(), page.title() )
         if dictName:
             if not (dictName == 'yearsBC' and page.site().language() in date.maxyearBC and value > date.maxyearBC[page.site().language()]) or (dictName == 'yearsAD' and page.site().language() in date.maxyearAD and value > date.maxyearAD[page.site().language()]):
-                wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (page.title(),dictName,value))
+                pywikibot.output(u'TitleTranslate: %s was recognized as %s with value %d' % (page.title(),dictName,value))
                 for entryLang, entry in date.formats[dictName].iteritems():
                     if entryLang != page.site().language():
                         if dictName == 'yearsBC' and entryLang in date.maxyearBC and value > date.maxyearBC[entryLang]:
@@ -75,7 +76,7 @@ def translate(page, hints = None, auto = True, removebrackets = False):
                             pass
             else:
                             newname = entry(value)
-                            x = wikipedia.Page( wikipedia.getSite(code=entryLang, fam=site.family), newname )
+                            x = pywikibot.Page( pywikibot.getSite(code=entryLang, fam=site.family), newname )
                             if x not in result:
                                 result.append(x) # add new page
     return result
@@ -91,11 +92,11 @@ def getPoisonedLinks(pl):
     """
     result = []
 
-    wikipedia.output( u'getting poisoned links for %s' % pl.title() )
+    pywikibot.output( u'getting poisoned links for %s' % pl.title() )
 
     dictName, value = date.getAutoFormat( pl.site().language(), pl.title() )
     if dictName is not None:
-        wikipedia.output( u'date found in %s' % dictName )
+        pywikibot.output( u'date found in %s' % dictName )
 
         # errors in year BC
         if dictName in date.bcFormats:
