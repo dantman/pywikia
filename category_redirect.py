@@ -385,6 +385,7 @@ aanjepaß krijje:
             if header is not None:
                 log_items.setdefault(header, [])
                 log_items[header].append(line)
+        all_log_text = log_text
         if len(log_items) < LOG_SIZE:
             return log_text
         # sort by keys and keep the first (LOG_SIZE-1) values
@@ -392,17 +393,21 @@ aanjepaß krijje:
                      in sorted(log_items.items(), reverse=True)[ : LOG_SIZE-1]]
         log_text = "\n".join("\n".join(line for line in text) for text in keep)
         # get permalink to older logs
-        history = self.log_page.getVersionHistory(revCount=LOG_SIZE)
-        # get the id of the newest log being archived
-        rotate_revid = history[-1][0]
-        # append permalink
-        log_text = log_text + (
-            "\n\n'''[%s://%s%s/index.php?title=%s&oldid=%s Older logs]'''"
-                % (self.site.protocol(),
-                   self.site.hostname(),
-                   self.site.scriptpath(),
-                   self.log_page.urlname(),
-                   rotate_revid))
+        try:
+            history = self.log_page.getVersionHistory(revCount=LOG_SIZE)
+            # get the id of the newest log being archived
+            rotate_revid = history[-1][0]
+            # append permalink
+            log_text = log_text + (
+                "\n\n'''[%s://%s%s/index.php?title=%s&oldid=%s Older logs]'''"
+                    % (self.site.protocol(),
+                       self.site.hostname(),
+                       self.site.scriptpath(),
+                       self.log_page.urlname(),
+                       rotate_revid))
+        except IndexError:
+            # don't die if getVersionHistory fails (again)
+            return all_log_text
         return log_text
 
     def run(self):
