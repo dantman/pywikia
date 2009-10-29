@@ -5845,7 +5845,7 @@ your connection is down. Retrying in %i minutes..."""
 
             retry_idle_time = 1
             while True:
-                if api and self.versionnumber() >= 12:
+                if api and self.versionnumber() >= 12 or self.versionnumber() >= 16:
                     params = {
                         'action': 'query',
                         'meta': 'allmessages',
