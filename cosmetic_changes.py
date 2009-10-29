@@ -166,7 +166,7 @@ class CosmeticChangesToolkit:
         self.namespace = namespace
         self.template = (self.namespace == 10)
         self.talkpage = self.namespace >= 0 and self.namespace % 2 == 1
-        
+
     def change(self, text):
         """
         Given a wiki source code text, returns the cleaned up version.
