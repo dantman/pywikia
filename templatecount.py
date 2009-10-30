@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8  -*-
 """
 This script will display the list of pages transcluding a given list of templates.
 It can also be used to simply count the number of pages (rather than listing each
@@ -7,10 +9,12 @@ Syntax: python templatecount.py command [arguments]
 
 Command line options:
 
--count        Counts the number of times each template (passed in as an argument)
-              is transcluded.
--list         Gives the list of all of the pages transcluding the templates (rather
-              than just counting them).
+-count        Counts the number of times each template (passed in as an
+              argument) is transcluded.
+
+-list         Gives the list of all of the pages transcluding the templates
+              (rather than just counting them).
+
 -namespace:   Filters the search to a given namespace.  If this is specified
               multiple times it will search all given namespaces
 
@@ -25,6 +29,9 @@ Lists all the category pages that transclude {{cfd}} and {{cfdu}}.
      python templatecount.py -list -namespace:14 cfd cfdu
 
 """
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
 
 import wikipedia, config
@@ -32,17 +39,20 @@ import replace, pagegenerators
 import re, sys, string
 import datetime
 
+templates = ['ref', 'note', 'ref label', 'note label', 'reflist']
+
 class TemplateCountRobot:
     #def __init__(self):
         #Nothing
     def countTemplates(self, templates, namespaces):
         mysite = wikipedia.getSite()
+        mytpl  = mysite.template_namespace()+':'
         finalText = [u'Number of transclusions per template',u'------------------------------------']
         total = 0
         # The names of the templates are the keys, and the numbers of transclusions are the values.
         templateDict = {}
         for template in templates:
-            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
+            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mytpl + template), onlyTemplateInclusion = True)
             if namespaces:
                 gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
             count = 0
@@ -50,7 +60,7 @@ class TemplateCountRobot:
                 count += 1
             templateDict[template] = count
             finalText.append(u'%s: %d' % (template, count))
-            total = total + count
+            total += count
         for line in finalText:
             wikipedia.output(line, toStdout=True)
         wikipedia.output(u'TOTAL: %d' % total, toStdout=True)
@@ -105,8 +115,16 @@ def main():
     else:
         robot = TemplateCountRobot()
         if not argsList:
-            argsList = ['ref', 'note', 'ref label', 'note label']
-        if operation == "Count":
+            argsList = templates
+        choice = ''
+        if 'reflist' in argsList:
+            wikipedia.output(u'NOTE: it will take a long time to count "reflist".')
+            choice = wikipedia.inputChoice(u'Proceed anyway?', ['yes', 'no', 'skip'], ['y', 'n', 's'], 'y')
+            if choice == 's':
+                argsList.remove('reflist')
+        if choice == 'n':
+            return
+        elif operation == "Count":
             robot.countTemplates(argsList, namespaces)
         elif operation == "List":
             robot.listTemplates(argsList, namespaces)

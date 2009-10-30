@@ -1,4 +1,13 @@
+#!/usr/bin/python
 """
+##################################################
+This script with all its function has been merged
+to templatecount.py. please use:
+
+  templatecount.py -count
+
+xqt 2009-10-30
+##################################################
 This script checks references to see if they are properly formatted.  Right now
 it just counts the total number of transclusions of any number of given templates.
 
