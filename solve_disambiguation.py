@@ -430,9 +430,10 @@ class ReferringPageGeneratorWithIgnore:
                             pywikibot.output('Ignoring page %s'
                                              % refs[i].title())
                         del refs[i]
-                    elif self.primaryIgnoreManager.isIgnored(refs[i]):
-                        #pywikibot.output('Ignoring page %s because it was skipped before' % refs[i].title())
-                        del refs[i]
+        for i in range(len(refs)-1, -1, -1):
+            if self.primaryIgnoreManager.isIgnored(refs[i]):
+                #pywikibot.output('Ignoring page %s because it was skipped before' % refs[i].title())
+                del refs[i]
         if len(refs) < self.minimum:
             pywikibot.output(u"Found only %d pages to work on; skipping." % len(refs))
             return
