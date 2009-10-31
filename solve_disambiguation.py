@@ -412,28 +412,14 @@ def correctcap(link, text):
 class ReferringPageGeneratorWithIgnore:
     def __init__(self, disambPage, primary=False, minimum = 0):
         self.disambPage = disambPage
-        # if run with the -primary argument, enable the ignore manager
-        self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
-                                                         enabled=primary)
         self.minimum = minimum
-        
+
     def __iter__(self):
-        # TODO: start yielding before all referring pages have been found
-        refs = [page for page in self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)]
-        pywikibot.output(u"Found %d references." % len(refs))
-        # Remove ignorables
-        if self.disambPage.site().family.name in ignore_title and self.disambPage.site().lang in ignore_title[self.disambPage.site().family.name]:
-            for ig in ignore_title[self.disambPage.site().family.name][self.disambPage.site().lang]:
-                for i in range(len(refs)-1, -1, -1):
-                    if re.match(ig, refs[i].title()):
-                        if pywikibot.verbose:
-                            pywikibot.output('Ignoring page %s'
-                                             % refs[i].title())
-                        del refs[i]
-        for i in range(len(refs)-1, -1, -1):
-            if self.primaryIgnoreManager.isIgnored(refs[i]):
-                #pywikibot.output('Ignoring page %s because it was skipped before' % refs[i].title())
-                del refs[i]
+        generator = pagegenerators.ReferringPageGenerator(self.disambPage, followRedirects  = False, withTemplateInclusion = False)
+        generator = pagegenerators.PageTitleFilterPageGenerator(generator, ignore_title)
+
+        refs = [page for page in generator]
+
         if len(refs) < self.minimum:
             pywikibot.output(u"Found only %d pages to work on; skipping." % len(refs))
             return

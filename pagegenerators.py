@@ -734,6 +734,32 @@ def NamespaceFilterPageGenerator(generator, namespaces, site = None):
         if page.namespace() in namespaces:
             yield page
 
+def PageTitleFilterPageGenerator(generator, ignoreList):
+    """
+    Wraps around another generator. Yields only those pages are not
+    listed in the ignore list.
+
+    The ignoreList is a dictionary. Family names are mapped to
+    dictionaries in which language codes are mapped to lists of
+    page titles.
+    """
+
+    def isIgnored(page):
+        if not (page.site().family.name in ignoreList and page.site().lang in ignoreList[page.site().family.name]):
+            return False
+
+        for ig in ignoreList[page.site().family.name][page.site().lang]:
+            if re.match(ig, page.title()):
+                return True
+        return False
+
+    for page in generator:
+        if isIgnored(page):
+            if wikipedia.verbose:
+                wikipedia.output('Ignoring page %s' % page.title())
+        else:
+            yield page
+
 def RedirectFilterPageGenerator(generator):
     """
     Wraps around another generator. Yields only those pages that are not redirects.
