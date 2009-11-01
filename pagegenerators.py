@@ -18,22 +18,23 @@ __version__='$Id$'
 parameterHelp = """\
 -cat              Work on all pages which are in a specific category.
                   Argument can also be given as "-cat:categoryname" or
-                  as "-cat:categoryname|fromtitle".
+                  as "-cat:categoryname#fromtitle" (using | instead of #
+                  is also allowed in this one and the following)
 
 -catr             Like -cat, but also recursively includes pages in
                   subcategories, sub-subcategories etc. of the
                   given category.
                   Argument can also be given as "-catr:categoryname" or
-                  as "-catr:categoryname|fromtitle".
+                  as "-catr:categoryname#fromtitle".
 
 -subcats          Work on all subcategories of a specific category.
                   Argument can also be given as "-subcats:categoryname" or
-                  as "-subcats:categoryname|fromtitle".
+                  as "-subcats:categoryname#fromtitle".
 
 -subcatsr         Like -subcats, but also includes sub-subcategories etc. of
                   the given category.
                   Argument can also be given as "-subcatsr:categoryname" or
-                  as "-subcatsr:categoryname|fromtitle".
+                  as "-subcatsr:categoryname#fromtitle".
 
 -uncat            Work on all pages which are not categorised.
 
@@ -925,7 +926,7 @@ class GeneratorFactory:
             categoryname = wikipedia.input(u'Please enter the category name:')
         else:
             categoryname = arg[length + 1:]
-
+        categoryname = categoryname.replace('#', '|')
         ind = categoryname.find('|')
         startfrom = None
         if ind > 0:
