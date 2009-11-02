@@ -870,7 +870,10 @@ class Subject(object):
             return False
         if globalvar.nobackonly:
             if page == self.originPage:
-                pywikibot.output(u"%s has a backlink from %s."%(page,linkingPage))
+                try:
+                    pywikibot.output(u"%s has a backlink from %s."%(page,linkingPage))
+                except UnicodeDecodeError:
+                    pywikibot.output(u"Found a backlink for a page.")
                 self.makeForcedStop(counter)
                 return False
 
