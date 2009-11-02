@@ -6,8 +6,8 @@ text.
 This script understands the following command-line arguments:
 
     -hours:#       Use this parameter if to make the script repeat itself
-                   after # hours. Hours can be defined as a decimal. 0.001
-                   hours is one second.
+                   after # hours. Hours can be defined as a decimal. 0.01
+                   hours are 36 seconds; 0.1 are 6 minutes.
 
 """
 #
@@ -53,7 +53,7 @@ msg = {
     'ar': u'روبوت: هذه الصفحة سيتم تفريغها تلقائيا',
     'cs': u'Uhrabání pískoviště',
     'da': u'Bot: Nyt sand (fra[[Skabelon:Sandkasse tekst]])',
-    'de': u'Bot: Setze Seite zurück.',
+    'de': u'Bot: Setze Spielwiese zurück.',
     'en': u'Robot: Automatically cleaned',
     'fi': u'Botti siivosi hiekkalaatikon.',
     'he': u'בוט: דף זה ינוקה אוטומטית.',
