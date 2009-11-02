@@ -9,6 +9,11 @@ This script understands the following command-line arguments:
                    after # hours. Hours can be defined as a decimal. 0.01
                    hours are 36 seconds; 0.1 are 6 minutes.
 
+    -delay:#       Use this parameter for a wait time after the last edit
+                   was made. If no parameter is given it takes it from
+                   hours and limits it between 5 and 15 minutes.
+                   The minimum delay time is 5 minutes.
+
 """
 #
 # (C) Leonardo Gregianin, 2006
@@ -99,13 +104,28 @@ sandboxTitle = {
     }
 
 class SandboxBot:
-    def __init__(self, hours, no_repeat):
+    def __init__(self, hours, no_repeat, delay):
         self.hours = hours
         self.no_repeat = no_repeat
+        if delay == None:
+            self.delay = min(15, max(5, int(self.hours *60)))
+        else:
+            self.delay = max(5, delay)
 
     def run(self):
+        
+        def minutesDiff(time1, time2):
+            if type(time1) is long:
+                time1 = str(time1)
+            if type(time2) is long:
+                time2 = str(time2)
+            t1 = (((int(time1[0:4])*12+int(time1[4:6]))*30+int(time1[6:8]))*24+int(time1[8:10])*60)+int(time1[10:12])
+            t2 = (((int(time2[0:4])*12+int(time2[4:6]))*30+int(time2[6:8]))*24+int(time2[8:10])*60)+int(time2[10:12])
+            return abs(t2-t1)
+
         mySite = wikipedia.getSite()
         while True:
+            wait = False
             now = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
             localSandboxTitle = wikipedia.translate(mySite, sandboxTitle)
             if type(localSandboxTitle) is list:
@@ -113,36 +133,52 @@ class SandboxBot:
             else:
                 titles = [localSandboxTitle,]
             for title in titles:
-                sandboxPage = wikipedia.Page(mySite, localSandboxTitle)
+                sandboxPage = wikipedia.Page(mySite, title)
                 try:
                     text = sandboxPage.get()
                     translatedContent = wikipedia.translate(mySite, content)
+                    translatedMsg = wikipedia.translate(mySite, msg)
                     if text.strip() == translatedContent.strip():
                         wikipedia.output(u'The sandbox is still clean, no change necessary.')
-                    else:
-                        translatedMsg = wikipedia.translate(mySite, msg)
+                    elif text.find(translatedContent.strip()) <> 0:
                         sandboxPage.put(translatedContent, translatedMsg)
+                        wikipedia.output(u'Standard content was changed, sandbox cleaned.')
+                    else:
+                        diff = minutesDiff(sandboxPage.editTime(), time.strftime("%Y%m%d%H%M%S", time.gmtime()))
+                        #Is the last edit more than 5 minutes ago?
+                        if diff >= self.delay:
+                            sandboxPage.put(translatedContent, translatedMsg)
+                        else: #wait for the rest
+                            wikipedia.output(u'Sleeping for %d minutes.' % (self.delay-diff))
+                            time.sleep((self.delay-diff)*60)
+                            wait = True
                 except wikipedia.EditConflict:
                     wikipedia.output(u'*** Loading again because of edit conflict.\n')
             if self.no_repeat:
                 wikipedia.output(u'\nDone.')
                 return
-            else:
-                wikipedia.output('\nSleeping %s hours, now %s' % (self.hours, now) )
+            elif not wait:
+                if self.hours < 1.0:
+                    wikipedia.output('\nSleeping %s minutes, now %s' % ((self.hours*60), now) )
+                else:
+                    wikipedia.output('\nSleeping %s hours, now %s' % (self.hours, now) )
                 time.sleep(self.hours * 60 * 60)
 
 def main():
     hours = 1
+    delay = None
     no_repeat = True
     for arg in wikipedia.handleArgs():
         if arg.startswith('-hours:'):
             hours = float(arg[7:])
             no_repeat = False
+        elif arg.startswith('-delay:'):
+            delay = int(arg[7:])
         else:
             wikipedia.showHelp('clean_sandbox')
             return
 
-    bot = SandboxBot(hours, no_repeat)
+    bot = SandboxBot(hours, no_repeat, delay)
     bot.run()
 
 if __name__ == "__main__":
