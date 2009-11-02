@@ -1735,7 +1735,11 @@ class InterwikiBot(object):
         for i in range(number):
             try:
                 while True:
-                    page = self.pageGenerator.next()
+                    try:
+                        page = self.pageGenerator.next()
+                    except IOError:
+                        pywikibot.output(u'IOError occured; skipping')
+                        continue
                     if page in globalvar.skip:
                         pywikibot.output(u'Skipping: %s is in the skip list' % page.title())
                         continue
