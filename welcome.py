@@ -206,12 +206,12 @@ locale.setlocale(locale.LC_ALL, '')
 
 # The page where the bot will save the log (e.g. Wikipedia:Welcome log).
 # 
-# Log disable project: da, de, en, he, id, ka, pdc, pt, ru, vo. 
-# ATTENTION: these languages in wikipedia is disabled to log welcome users, not necessary to set parameter for them.
+# ATTENTION: "Log disabled comment is listed the projects not to log welcomed users, and no necessary to set deatils.
 logbook = {
     'commons': {'_default': u'Project:Welcome log', },
     'wikipedia': {
         '_default': None,
+        # Log disabled: da, de, en, he, id, ka, pdc, pt, ru, vo. 
         'ar': u'Project:سجل الترحيب',
         'fa': u'Project:سیاهه خوشامد',
         'fr': u'Wikipedia:Prise de décision/Accueil automatique des nouveaux par un robot/log',
