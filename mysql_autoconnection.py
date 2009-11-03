@@ -36,6 +36,7 @@ class Connection(object):
         self.max_retries = max_retries
         self.current_retry = 0
         self.callback = callback
+        self.database = None
 
         self.conn_args = conn_args
         self.conn_kwargs = conn_kwargs
@@ -83,7 +84,8 @@ class Connection(object):
         self.current_retry = 0
         self.connected = False
         try:
-            self.database.close()
+            if self.database:
+                self.database.close()
         except:
             pass
 
