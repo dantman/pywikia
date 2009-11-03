@@ -20,6 +20,7 @@ This script understands the following command-line arguments:
 # (C) Wikipedian, 2006-2007
 # (C) Andre Engels, 2007
 # (C) Siebrand Mazeland, 2007
+# (C) xqt, 2009
 #
 # Distributed under the terms of the MIT license.
 #
@@ -30,7 +31,9 @@ import wikipedia
 import time
 
 content = {
+    'als':u'{{subst:/Vorlage}}',
     'ar': u'{{من فضلك اترك هذا السطر ولا تعدله (عنوان ساحة التجربة)}}\n<!-- مرحبا! خذ راحتك في تجربة مهارتك في التنسيق والتحرير أسفل هذا السطر. هذه الصفحة لتجارب التعديل ، سيتم تفريغ هذه الصفحة كل 6 ساعات. -->',
+    'bar':u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
     'cs': u'{{subst:/uhrabat}}',
     'da': u'{{subst:Sandkasse tekst}}',
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
@@ -55,7 +58,9 @@ content = {
     }
 
 msg = {
+    'als':u'Bötli: Sandchaschte iigebnet.',
     'ar': u'روبوت: هذه الصفحة سيتم تفريغها تلقائيا',
+    'bar':u'Bot: Spielwiesn gmaht.',
     'cs': u'Uhrabání pískoviště',
     'da': u'Bot: Nyt sand (fra[[Skabelon:Sandkasse tekst]])',
     'de': u'Bot: Setze Spielwiese zurück.',
@@ -79,7 +84,9 @@ msg = {
     }
 
 sandboxTitle = {
+    'als':u'Wikipedia:Sandchaschte',
     'ar': u'ويكيبيديا:ساحة التجربة',
+    'bar':u'Wikipedia:Spielwiese',
     'cs': u'Wikipedie:Pískoviště',
     'da': u'Wikipedia:Sandkassen',
     'de': u'Wikipedia:Spielwiese',
