@@ -372,7 +372,7 @@ class CosmeticChangesToolkit:
         return text
 
     def validXhtml(self, text):
-        text = pywikibot.replaceExcept(text, r'<br>', r'<br />', ['comment', 'math', 'nowiki', 'pre'])
+        text = pywikibot.replaceExcept(text, r'(?i)<br[ /]*>', r'<br />', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeUselessSpaces(self, text):
