@@ -337,6 +337,8 @@ class CosmeticChangesToolkit:
                         newLink = ' ' + newLink
                     if hadTrailingSpaces:
                         newLink = newLink + ' '
+                    if newline:
+                        newLink = newline + newLink
                     return newLink
             # don't change anything
             return match.group()
