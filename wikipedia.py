@@ -8090,6 +8090,15 @@ class MyURLopener(urllib.FancyURLopener):
             raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
         else:
             return urllib.FancyURLopener.http_error_default(self, url, fp, errcode, errmsg, headers)
+        
+    def open_http(self, url, data=None):
+        ret = urllib.FancyURLopener.open_http(self, url, data)
+        if hasattr(self, 'http_code'):
+            ret.status = self.http_code
+            del self.http_code
+        else:
+            ret.status = 200
+        return ret
 
 
 
