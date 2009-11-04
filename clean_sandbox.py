@@ -147,7 +147,7 @@ class SandboxBot:
                     translatedMsg = wikipedia.translate(mySite, msg)
                     if text.strip() == translatedContent.strip():
                         wikipedia.output(u'The sandbox is still clean, no change necessary.')
-                    elif text.find(translatedContent.strip()) <> 0:
+                    elif text.find(translatedContent.strip()) <> 0 and not 'subst:' in translatedContent:
                         sandboxPage.put(translatedContent, translatedMsg)
                         wikipedia.output(u'Standard content was changed, sandbox cleaned.')
                     else:
@@ -186,7 +186,10 @@ def main():
             return
 
     bot = SandboxBot(hours, no_repeat, delay)
-    bot.run()
+    try:
+        bot.run()
+    except KeyboardInterrupt:
+        wikipedia.output('\nQuitting program...')
 
 if __name__ == "__main__":
     try:
