@@ -782,7 +782,7 @@ not supported by PyWikipediaBot!"""
             
         self._isWatched = False #cannot handle in API in my research for now.
         
-        pagetext = unescape(pageInfo['revisions'][0]['*'])
+        pagetext = pageInfo['revisions'][0]['*']
         pagetext = pagetext.rstrip()
         if self.site().lang == 'eo':
             pagetext = decodeEsperantoX(pagetext)
