@@ -123,7 +123,7 @@ from __future__ import generators
 __version__ = '$Id$'
 
 import os, sys
-import httplib, socket, urllib, urllib2
+import httplib, socket, urllib, urllib2, cookielib
 import traceback
 import time, threading, Queue
 import math
@@ -5464,69 +5464,59 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
            Returns the HTML text of the page converted to unicode.
         """
 
+        
         if retry is None:
             retry = config.retry_on_fail
 
-        if self.hostname() in config.authenticate.keys():
-            uo = authenticateURLopener
-        else:
-            if config.proxy['host'] and type(config.proxy['auth']) == tuple:
-                proxyHandle = {'http':'http://%s:%s@%s' % (config.proxy['auth'][0], config.proxy['auth'][1], config.proxy['host'] )}
-            elif config.proxy['host']:
-                proxyHandle = {'http':'http://%s' % config.proxy['host'] }
-            else:
-                proxyHandle = None
-            
-            uo = MyURLopener(proxies = proxyHandle)
-            if self.cookies(sysop = sysop):
-                uo.addheader('Cookie', self.cookies(sysop = sysop))
-            if compress:
-                uo.addheader('Accept-encoding', 'gzip')
-        if no_hostname == True: # This allow users to parse also toolserver's script
-            url = path          # and other useful pages without using some other functions.
+        headers = {'User-agent': useragent,}
+        
+        if self.cookies(sysop = sysop):
+            headers['Cookie'] = self.cookies(sysop = sysop)
+        if compress:
+            headers['Accept-encoding'] = 'gzip'
+    
+        if refer:
+            headers['Refer'] = refer
+        
+        if no_hostname: # This allow users to parse also toolserver's script
+            url = path  # and other useful pages without using some other functions.
         else:
             url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
-        if refer:
-            uo.addheader('Refer', refer)
         data = self.urlEncode(data)
-
+        
         # Try to retrieve the page until it was successfully loaded (just in
         # case the server is down or overloaded).
         # Wait for retry_idle_time minutes (growing!) between retries.
         retry_idle_time = 1
         while True:
             try:
-                if self.hostname() in config.authenticate.keys():
-                    request = urllib2.Request(url, data)
-                    request.add_header('User-agent', useragent)
-                    opener = urllib2.build_opener()
-                    f = opener.open(request)
-                else:
-                    f = uo.open(url, data)
+                request = urllib2.Request(url, data, headers)
+                f = MyURLopener.open(request)
 
                 # read & info can raise socket.error
                 text = f.read()
                 headers = f.info()
-
                 break
             except KeyboardInterrupt:
                 raise
+            except urllib2.HTTPError, e:
+                if e.code in [401, 404]:
+                    raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
+                output(u"Result:%s %s" % (e.code, e.msg))
+                raise 
             except Exception, e:
+                output(u'%s' %e)
                 if retry:
-                    # We assume that the server is down. Wait some time, then try again.
-                    output(u"%s" % e)
-                    output(u"""\
-WARNING: Could not open '%s'. Maybe the server or
-your connection is down. Retrying in %i minutes..."""
+                    output(u"""WARNING: Could not open '%s'. Maybe the server or\n your connection is down. Retrying in %i minutes..."""
                            % (url, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
-                else:
-                    raise
-
+                    continue
+                
+                raise
         if cookie_only:
             return headers.get('set-cookie', '')
         contentType = headers.get('content-type', '')
@@ -5569,8 +5559,8 @@ your connection is down. Retrying in %i minutes..."""
 
         if back_response:
             return f, text
-        else:
-            return text
+        
+        return text
 
     def _getUserData(self, text, sysop = False, force = True):
         """
@@ -8082,48 +8072,37 @@ def parsetime2stamp(tz):
     s = time.strptime(tz, "%Y-%m-%dT%H:%M:%SZ")
     return int(time.strftime("%Y%m%d%H%M%S", s))
 
-class MyURLopener(urllib.FancyURLopener):
-    version="PythonWikipediaBot/1.0"
+# Site Cookies handler
+COOKIEFILE = config.datafilepath('login-data', 'cookies.lwp')
+cj = cookielib.LWPCookieJar()
+if os.path.isfile(COOKIEFILE):
+    cj.load(COOKIEFILE)
 
-    def http_error_default(self, url, fp, errcode, errmsg, headers):
-        if errcode == 401 or errcode == 404:
-            raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
-        else:
-            return urllib.FancyURLopener.http_error_default(self, url, fp, errcode, errmsg, headers)
+cookieProcessor = urllib2.HTTPCookieProcessor(cj)
+MyURLopener = urllib2.build_opener(cookieProcessor)
+
+if config.proxy['host']:
+    proxyHandler = urllib2.ProxyHandler({'http':'http://%s/' % config.proxy['host'] })
+    
+    MyURLopener = urllib2.build_opener(cookieProcessor, proxyHandler)
+    if config.proxy['auth']:
+        proxyAuth = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        proxyAuth.add_password(None, config.proxy['host'], config.proxy['auth'][0], config.proxy['auth'][1])
+        proxyAuthHandler = urllib2.ProxyBasicAuthHandler(proxyAuth)
         
-    def open_http(self, url, data=None):
-        ret = urllib.FancyURLopener.open_http(self, url, data)
-        if hasattr(self, 'http_code'):
-            ret.status = self.http_code
-            del self.http_code
-        else:
-            ret.status = 200
-        return ret
+        MyURLopener = urllib2.build_opener(cookieProcessor, proxyHandler, proxyAuthHandler)
 
-
-
-# Special opener in case we are using a site with authentication
 if config.authenticate:
-    import urllib2, cookielib
-    COOKIEFILE = config.datafilepath('login-data', 'cookies.lwp')
-    cj = cookielib.LWPCookieJar()
-    if os.path.isfile(COOKIEFILE):
-        cj.load(COOKIEFILE)
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
     for site in config.authenticate:
         passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
+
+    MyURLopener = urllib2.build_opener(cookieProcessor, authhandler)
     if config.proxy['host']:
-        proxyHandle = urllib2.ProxyHandler({'http':'http://%s' % config.proxy['host'] })
+        MyURLopener = urllib2.build_opener(cookieProcessor, authhandler, proxyHandler)
         if config.proxy['auth']:
-            proxyAuth = urllib2.HTTPPasswordMgr()
-            proxyAuth.add_password(None, config.proxy['host'], config.proxy['auth'][0], config.proxy['auth'][1])
-            proxyAuthHandle = urllib2.ProxyBasicAuthHandler(proxyAuth)
-    else:
-        proxyHandle = None
-        proxyAuthHandle = None
-    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxyHandle, proxyAuthHandle, authhandler)
-    urllib2.install_opener(authenticateURLopener)
+            MyURLopener = urllib2.build_opener(cookieProcessor, authhandler, proxyHandler, proxyAuthHandler)
 
 if __name__ == '__main__':
     import doctest
