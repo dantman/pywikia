@@ -150,69 +150,53 @@ class LoginManager:
             login_address = self.site.login_address()
             address = login_address + '&action=submit'
         
-        if self.site.hostname() in config.authenticate.keys():
-            headers = {
-                "Content-type": "application/x-www-form-urlencoded",
-                "User-agent": wikipedia.useragent
-            }
-            data = self.site.urlEncode(predata)
+        if api:
+            response, data = query.GetData(predata, self.site, back_response = True)
+            if data['login']['result'] != "Success":
+                faildInfo = data['login']['result']
+                #if faildInfo == "NotExists":
+                #    
+                #elif faildInfo == "WrongPass":
+                #    
+                #elif faildInfo == "Throttled":
+                #    
+                return False
+        else:
+            response, data = self.site.postData(address, self.site.urlEncode(predata))
             if self.verbose:
                 fakepredata = predata
-                fakepredata['wpPassword'] = u'XXXX'
-                wikipedia.output(u"urllib2.urlopen(urllib2.Request('%s', %s, %s)):" % (self.site.protocol() + '://' + self.site.hostname() + address, self.site.urlEncode(fakepredata), headers))
-            response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data, headers))
-            data = response.read()
-            if self.verbose:
-                fakedata = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
+                fakepredata['wpPassword'] = u'XXXXX'
+                wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
                 trans = config.transliterate
                 config.transliterate = False #transliteration breaks for some reason
                 wikipedia.output(fakedata.decode(self.site.encoding()))
                 config.transliterate = trans
+                fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
+                wikipedia.output(u"%s/%s\n%s" % (response.code, response.msg, fakeresponsemsg))
             wikipedia.cj.save(wikipedia.COOKIEFILE)
-            return "Ok"
-        else:
-            if api:
-                response, data = query.GetData(predata, self.site, back_response = True)
-                if data['login']['result'] != "Success":
-                    faildInfo = data['login']['result']
-                    #if faildInfo == "NotExists":
-                    #    
-                    #elif faildInfo == "WrongPass":
-                    #    
-                    #elif faildInfo == "Throttled":
-                    #    
-                    return False
-            else:
-                response, data = self.site.postData(address, self.site.urlEncode(predata))
-                if self.verbose:
-                    fakepredata = predata
-                    fakepredata['wpPassword'] = fakepredata['lgpassword'] = u'XXXXX'
-                    wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
-                    fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", response.msg.__str__())
-                    wikipedia.output(u"%s/%s\n%s" % (response.status, response.reason, fakeresponsemsg))
-                    wikipedia.output(u"%s" % data)
-            Reat=re.compile(': (.*?);')
-            L = []
+            
+        Reat=re.compile(': (.*?);')
     
-            for eat in response.msg.getallmatchingheaders('set-cookie'):
-                m = Reat.search(eat)
-                if m:
-                    L.append(m.group(1))
+        L = []
+        for eat in response.info().getallmatchingheaders('set-cookie'):
+            m = Reat.search(eat)
+            if m:
+                L.append(m.group(1))
     
-            got_token = got_user = False
-            for Ldata in L:
-                if 'Token=' in Ldata:
-                    got_token = True
-                if 'User=' in Ldata or 'UserName=' in Ldata:
-                    got_user = True
+        got_token = got_user = False
+        for Ldata in L:
+            if 'Token=' in Ldata:
+                got_token = True
+            if 'User=' in Ldata or 'UserName=' in Ldata:
+                got_user = True
     
-            if got_token and got_user:
-                return "\n".join(L)
-            elif not captcha:
-                solve = self.site.solveCaptcha(data)
-                if solve:
-                    return self.getCookie(api = api, remember = remember, captcha = solve)
-            return None
+        if got_token and got_user:
+            return "\n".join(L)
+        elif not captcha:
+            solve = self.site.solveCaptcha(data)
+            if solve:
+                return self.getCookie(api = api, remember = remember, captcha = solve)
+        return None
 
     def storecookiedata(self, data):
         """
