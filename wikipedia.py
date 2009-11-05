@@ -1874,16 +1874,6 @@ not supported by PyWikipediaBot!"""
             else:
                 output(u'Changing page %s' % self.aslink())
             # Submit the prepared information
-            if self.site().hostname() in config.authenticate.keys():
-                predata["Content-type"] = "application/x-www-form-urlencoded"
-                predata["User-agent"] = useragent
-                data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-                # I'm not sure what to check in this case, so I just assume
-                # things went ok.  Very naive, I agree.
-                data = u''
-                # No idea how to get the info now.
-                return None
             try:
                 response, data = self.site().postForm(address, predata, sysop)
                 if response.code == 503:
@@ -2600,14 +2590,7 @@ not supported by PyWikipediaBot!"""
         }
         get_throttle(requestsize = 10)
         now = time.time()
-        if self.site().hostname() in config.authenticate.keys():
-            predata["Content-type"] = "application/x-www-form-urlencoded"
-            predata["User-agent"] = useragent
-            data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
-            data = response.read()
-        else:
-            response, data = self.site().postForm(address, predata)
+        response, data = self.site().postForm(address, predata)
         data = data.encode(self.site().encoding())
 #        get_throttle.setDelay(time.time() - now)
         output = []
@@ -2766,14 +2749,7 @@ not supported by PyWikipediaBot!"""
         if token:
             predata['wpEditToken'] = token
         
-        if self.site().hostname() in config.authenticate.keys():
-            predata['Content-type'] = 'application/x-www-form-urlencoded'
-            predata['User-agent'] = useragent
-            data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-            data = u''
-        else:
-            response, data = self.site().postForm(address, predata, sysop = sysop)
+        response, data = self.site().postForm(address, predata, sysop = sysop)
         
         if data == u'' or self.site().mediawiki_message('pagemovedsub') in data:
             if deleteAndMove:
@@ -2898,14 +2874,7 @@ not supported by PyWikipediaBot!"""
                     'wpConfirmB': '1',
                     'wpEditToken': token,
                 }
-                if self.site().hostname() in config.authenticate.keys():
-                    predata['Content-type'] = 'application/x-www-form-urlencoded'
-                    predata['User-agent'] = useragent
-                    data = self.site().urlEncode(predata)
-                    response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-                    data = u''
-                else:
-                    response, data = self.site().postForm(address, predata, sysop = True)
+                response, data = self.site().postForm(address, predata, sysop = True)
                 if data:
                     self.site().checkBlocks(sysop = True)
                     if self.site().mediawiki_message('actioncomplete') in data:
@@ -3274,18 +3243,8 @@ not supported by PyWikipediaBot!"""
 
         if token:
             predata['wpEditToken'] = token
-        if self.site().hostname() in config.authenticate.keys():
-            predata["Content-type"] = "application/x-www-form-urlencoded"
-            predata["User-agent"] = useragent
-            data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(
-                        urllib2.Request(
-                            self.site().protocol() + '://'
-                                + self.site().hostname() + address,
-                            data))
-            data = u''
-        else:
-            response, data = self.site().postForm(address, predata, sysop=True)
+        
+        response, data = self.site().postForm(address, predata, sysop=True)
 
         if response.code == 302 and not data:
             output(u'Changed protection level of page %s.' % self.aslink())
@@ -3860,17 +3819,10 @@ class _GetAll(object):
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
-        if self.site.hostname() in config.authenticate.keys():
-            predata["Content-type"] = "application/x-www-form-urlencoded"
-            predata["User-agent"] = useragent
-            data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data))
-            data = response.read()
-        else:
-            response, data = self.site.postForm(address, predata)
-            # The XML parser doesn't expect a Unicode string, but an encoded one,
-            # so we'll encode it back.
-            data = data.encode(self.site.encoding())
+        response, data = self.site.postForm(address, predata)
+        # The XML parser doesn't expect a Unicode string, but an encoded one,
+        # so we'll encode it back.
+        data = data.encode(self.site.encoding())
 #        get_throttle.setDelay(time.time() - now)
         return data
 

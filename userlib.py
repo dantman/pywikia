@@ -192,14 +192,7 @@ class User(object):
         
         predata['wpEditToken'] = self.site().getToken()
 
-        if self.site().hostname() in wikipedia.config.authenticate.keys():
-            predata['Content-type'] = 'application/x-www-form-urlencoded'
-            predata['User-agent'] = wikipedia.useragent
-            data = self.site().urlEncode(predata)
-            response = wikipedia.urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + addr, data))
-            data = response.read()
-        else:
-            response, data = self.site().postForm(address, predata, sysop = False)
+        response, data = self.site().postForm(address, predata, sysop = False)
         
         if data:
             if 'var wgAction = "success";' in data:
