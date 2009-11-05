@@ -80,7 +80,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         
 
     postAC = [
-        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect', 'parse',
+        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
         'block', 'unblock', 'move', 'emailuser','import', 'userrights', 'upload',
     ]
     if useAPI:

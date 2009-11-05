@@ -554,7 +554,7 @@ class User(object):
         address = self.site().unblock_address()
 
         response, data = self.site().postForm(address, predata, sysop = True)
-        if response.code != 302:
+        if response.status != 302:
             if self.site().mediawiki_message('ipb_cant_unblock').replace('$1',blockID) in data:
                 raise AlreadyUnblockedError
             raise UnblockError, data
