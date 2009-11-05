@@ -145,9 +145,12 @@ class SandboxBot:
                     text = sandboxPage.get()
                     translatedContent = wikipedia.translate(mySite, content)
                     translatedMsg = wikipedia.translate(mySite, msg)
+                    subst = 'subst:' in translatedContent
                     if text.strip() == translatedContent.strip():
                         wikipedia.output(u'The sandbox is still clean, no change necessary.')
-                    elif text.find(translatedContent.strip()) <> 0 and not 'subst:' in translatedContent:
+                    elif subst and sandboxPage.userName() == mySite.loggedInAs():
+                        wikipedia.output(u'The sandbox might be clean, no change necessary.')
+                    elif text.find(translatedContent.strip()) <> 0 and not subst:
                         sandboxPage.put(translatedContent, translatedMsg)
                         wikipedia.output(u'Standard content was changed, sandbox cleaned.')
                     else:
