@@ -749,7 +749,7 @@ not supported by PyWikipediaBot!"""
         retry_idle_time = 1
         while not textareaFound:
             
-            data = query.GetData(params, self.site())
+            data = query.GetData(params, self.site(), sysop=sysop)
             if 'error' in data:
                 raise RuntimeError("API query error: %s" % data)
             pageInfo = data['query']['pages'].values()[0]
@@ -5547,6 +5547,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         
         index = self._userIndex(sysop)
         # Check for blocks
+        
         if 'blockedby' in text and not self._isBlocked[index]:
             # Write a warning if not shown earlier
             if sysop:
@@ -5931,10 +5932,21 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 text = query.GetData(params, self, sysop=sysop)['userinfo']
             else:
                 text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
+            
+            if 'anon' in text:
+                if verbose: output(u'Force login cause you\'re in anonymous mode.')
+                self.forceLogin(sysop)
+                return self._load(sysop, force)
+
             self._getUserData(text, sysop = sysop, force = force)
         else:
             url = self.edit_address('Non-existing_page')
             text = self.getUrl(url, sysop = sysop)
+            if " value=\"+\\\" " in text: #anonymous mode text
+                if verbose: output(u'Force login cause you\'re in anonymous mode.')
+                self.forceLogin(sysop)
+                return self._load(sysop, force)
+            
             self._getUserDataOld(text, sysop = sysop, force = force)
         
 
