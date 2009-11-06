@@ -2492,8 +2492,8 @@ not supported by PyWikipediaBot!"""
                     dataQ.append((r['revid'], r['timestamp'], r['user'], c))
             
                 if len(result['query']['pages'].values()[0]['revisions']) < revCount:
-                    thisHistoryDone = True        
-        
+                    thisHistoryDone = True
+
         return dataQ
     
     def _getVersionHistoryOld(self, getAll = False, skipFirst = False, 
@@ -5371,7 +5371,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 raise 
             except Exception, e:
                 output(u'%s' %e)
-                if retry:
+                if config.retry_on_fail:
                     output(u"""WARNING: Could not open '%s'. Maybe the server or\n your connection is down. Retrying in %i minutes..."""
                            % (url, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
