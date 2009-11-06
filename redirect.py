@@ -69,7 +69,7 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
-    'als': u'Bötli: Uflösig vun de doppleti Wyterleitig zue %s', 
+    'als':u'Bötli: Uflösig vun de doppleti Wyterleitig zue %s', 
     'ar': u'روبوت: تصليح تحويلة مزدوجة → %s',
     'bat-smg': u'Robots: Taisuoms dvėgobs paradresavėms → %s',
     'be-x-old': u'Робат: выпраўленьне падвойнага перанакіраваньня → %s',
@@ -145,7 +145,8 @@ reason_broken={
     'sr': u'Бот: Преусмерење не постоји',
     'th': u'โรบอต: หน้าเปลี่ยนทางเสีย',
     'tr': u'Bot değişikliği: Var olmayan sayfaya olan yönlendirme',
-    'war': u'Robot: Waray dida an karadto-an han redirek',
+    'war':u'Robot: Waray dida an karadto-an han redirek',
+    'yi': u'באט: ווײַטערפֿירן ציל עקזיסטירט נישט',
     'zh': u'機器人:該重定向的目標不存在',
     'zh-yue': u'機械人：跳轉目標唔存在',
 }

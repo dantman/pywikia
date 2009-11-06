@@ -49,7 +49,7 @@ docuReplacements = {
 
 # Summary message when using this module as a stand-alone script
 msg_standalone = {
-    'als': u'Bötli: chleineri Änderige',
+    'als':u'Bötli: chleineri Änderige',
     'ar': u'روبوت: تغييرات تجميلية',
     'be-x-old': u'Робат: касмэтычныя зьмены',
     'bg': u'Робот козметични промени',
@@ -83,7 +83,7 @@ msg_standalone = {
     'mt': u'Bot: kosmetiċi bidliet',
     'nl': u'Bot: cosmetische wijzigingen',
     'no': u'Bot: Kosmetiske endringer',
-    'pdc': u'Waddefresser: gleene Enneringe',
+    'pdc':u'Waddefresser: gleene Enneringe',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
     'ro': u'robot modificări cosmetice',
@@ -97,16 +97,17 @@ msg_standalone = {
     'tl': u'robot Kosmetiko pagbabago',
     'tr': u'Bot Kozmetik değişiklikler',
     'uk': u'робот косметичні зміни',
-    'vec': u'Bot: Modifiche estetiche',
+    'vec':u'Bot: Modifiche estetiche',
     'vi': u'robot: Sửa cách trình bày',
-    'war': u'Robot: Kosmetiko nga mga pagbag-o',
+    'war':u'Robot: Kosmetiko nga mga pagbag-o',
+    'yi': u'באט: קאסמעטישע ענדערונגען',
     'zh': u'機器人: 細部更改',
 }
 
 # Summary message  that will be appended to the normal message when
 # cosmetic changes are made on the fly
 msg_append = {
-    'als': u'; chleineri Änderige',
+    'als':u'; chleineri Änderige',
     'ar': u'; تغييرات تجميلية',
     'be-x-old': u'; касмэтычныя зьмены',
     'bg': u'; козметични промени',
@@ -140,7 +141,7 @@ msg_append = {
     'ms': u'; perubahan kosmetik',
     'nl': u'; cosmetische veranderingen',
     'no': u'; kosmetiske endringer',
-    'pdc': u', gleene Enneringe',
+    'pdc':u', gleene Enneringe',
     'pl': u'; zmiany kosmetyczne',
     'pt': u'; mudanças triviais',
     'ro': u'; modificări cosmetice',
@@ -154,9 +155,10 @@ msg_append = {
     'tl': u'; Kosmetiko pagbabago',
     'tr': u'; Kozmetik değişiklikler',
     'uk': u'; косметичні зміни',
-    'vec': u'; modifiche estetiche',
+    'vec':u'; modifiche estetiche',
     'vi': u'; sửa cách trình bày',
-    'war': u'; kosmetiko nga mga pagbag-o',
+    'war':u'; kosmetiko nga mga pagbag-o',
+    'yi': u'; קאסמעטישע ענדערונגען',
     'zh': u'; 細部更改',
 }
 
