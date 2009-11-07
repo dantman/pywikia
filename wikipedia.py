@@ -5932,20 +5932,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 text = query.GetData(params, self, sysop=sysop)['userinfo']
             else:
                 text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
-            
-            if 'anon' in text:
-                if verbose: output(u'Force login cause you\'re in anonymous mode.')
-                self.forceLogin(sysop)
-                return self._load(sysop, force)
 
             self._getUserData(text, sysop = sysop, force = force)
         else:
             url = self.edit_address('Non-existing_page')
             text = self.getUrl(url, sysop = sysop)
-            if " value=\"+\\\" " in text: #anonymous mode text
-                if verbose: output(u'Force login cause you\'re in anonymous mode.')
-                self.forceLogin(sysop)
-                return self._load(sysop, force)
             
             self._getUserDataOld(text, sysop = sysop, force = force)
         
