@@ -8056,18 +8056,18 @@ if os.path.isfile(COOKIEFILE):
     cj.load(COOKIEFILE)
 
 cookieProcessor = urllib2.HTTPCookieProcessor(cj)
-MyURLopener = urllib2.build_opener(cookieProcessor)
+MyURLopener = urllib2.build_opener()
 
 if config.proxy['host']:
     proxyHandler = urllib2.ProxyHandler({'http':'http://%s/' % config.proxy['host'] })
     
-    MyURLopener = urllib2.build_opener(cookieProcessor, proxyHandler)
+    MyURLopener = urllib2.build_opener(proxyHandler)
     if config.proxy['auth']:
         proxyAuth = urllib2.HTTPPasswordMgrWithDefaultRealm()
         proxyAuth.add_password(None, config.proxy['host'], config.proxy['auth'][0], config.proxy['auth'][1])
         proxyAuthHandler = urllib2.ProxyBasicAuthHandler(proxyAuth)
         
-        MyURLopener = urllib2.build_opener(cookieProcessor, proxyHandler, proxyAuthHandler)
+        MyURLopener = urllib2.build_opener(proxyHandler, proxyAuthHandler)
 
 if config.authenticate:
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -8075,11 +8075,11 @@ if config.authenticate:
         passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
 
-    MyURLopener = urllib2.build_opener(cookieProcessor, authhandler)
+    MyURLopener = urllib2.build_opener(authhandler)
     if config.proxy['host']:
-        MyURLopener = urllib2.build_opener(cookieProcessor, authhandler, proxyHandler)
+        MyURLopener = urllib2.build_opener(authhandler, proxyHandler)
         if config.proxy['auth']:
-            MyURLopener = urllib2.build_opener(cookieProcessor, authhandler, proxyHandler, proxyAuthHandler)
+            MyURLopener = urllib2.build_opener(authhandler, proxyHandler, proxyAuthHandler)
 
 if __name__ == '__main__':
     import doctest
