@@ -126,6 +126,8 @@ class LoginManager:
 
         Returns cookie data if succesful, None otherwise.
         """
+        L = []
+        CenL = []
         if api:
             predata = {
                 'action': 'login',
@@ -161,6 +163,10 @@ class LoginManager:
                 #elif faildInfo == "Throttled":
                 #    
                 return False
+            #L.append('%s_session=%s' % (data['login']['cookieprefix'], data['login']['sessionid'])
+            
+            #if __name__ == "__main__":
+            #    wikipedia.output('%s' % data['login'])
         else:
             response, data = self.site.postData(address, self.site.urlEncode(predata))
             if self.verbose:
@@ -173,43 +179,47 @@ class LoginManager:
                 config.transliterate = trans
                 fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
                 wikipedia.output(u"%s/%s\n%s" % (response.code, response.msg, fakeresponsemsg))
-            wikipedia.cj.save(wikipedia.COOKIEFILE)
+            #wikipedia.cj.save(wikipedia.COOKIEFILE)
             
-        Reat=re.compile(': (.*?);')
+        Reat=re.compile(': (.*?)=(.*?);')
     
-        L = []
+        L = {}
+        CenL = {}
         for eat in response.info().getallmatchingheaders('set-cookie'):
             m = Reat.search(eat)
             if m:
-                L.append(m.group(1))
+                #if 'central' in x:
+                #    CenL.append(x)
+                #else:
+                L[m.group(1)] = m.group(2)
     
         got_token = got_user = False
-        for Ldata in L:
-            if 'Token=' in Ldata:
+        for Ldata in L.keys():
+            if 'Token' in Ldata:
                 got_token = True
-            if 'User=' in Ldata or 'UserName=' in Ldata:
+            if 'User' in Ldata or 'UserName' in Ldata:
                 got_user = True
     
         if got_token and got_user:
-            return "\n".join(L)
+            return L
         elif not captcha:
             solve = self.site.solveCaptcha(data)
             if solve:
                 return self.getCookie(api = api, remember = remember, captcha = solve)
         return None
 
-    def storecookiedata(self, data):
+    def storecookiedata(self, filename, data):
         """
         Stores cookie data.
 
         The argument data is the raw data, as returned by getCookie().
 
         Returns nothing."""
-        filename = wikipedia.config.datafilepath('login-data',
-                       '%s-%s-%s-login.data'
-                       % (self.site.family.name, self.site.lang, self.username))
-        f = open(filename, 'w')
-        f.write(data)
+        s = u''
+        for v, k in data.iteritems():
+            s += "%s=%s\n" % (v, k)
+        f = open(wikipedia.config.datafilepath('login-data',filename), 'w')
+        f.write(s)
         f.close()
 
     def readPassword(self):
@@ -227,7 +237,7 @@ class LoginManager:
         ("my_sysop_user", "my_sysop_password")
         ("en", "wikipedia", "my_en_user", "my_en_pass")
         """
-        file = open(wikipedia.config.datafilepath(config.password_file))
+        file = open(wikipedia.config.datafilepath(config.password_file), 'r')
         for line in file:
             if not line.strip(): continue
             entry = eval(line)
@@ -256,7 +266,8 @@ class LoginManager:
             api = False
             return self.login(False, retry)
         if cookiedata:
-            self.storecookiedata(cookiedata)
+            fn = '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username) 
+            self.storecookiedata(fn,cookiedata)
             wikipedia.output(u"Should be logged in now")
             # Show a warning according to the local bot policy
             if not self.botAllowed():
