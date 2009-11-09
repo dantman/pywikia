@@ -490,7 +490,7 @@ msg = {
     'war':(u'robot ', u'Gindugngan', u'Gintanggal', u'Ginliwat'),
     'xal': (u'көдлвр ', u'немв', u'һарһв', u'сольв'),
     'yi': (u'באט ', u'צוגעלייגט', u'אראפגענומען', u'געענדערט'),
-    'yo': (u'Bot ', u'Fífikún', u'Yíyọkúrò', u'Títúnṣe')
+    'yo': (u'Bot ', u'Fífikún', u'Yíyọkúrò', u'Títúnṣe'),
     'yue': (u'機械人 ', u'加', u'減', u'改'),
     'zh': (u'機器人 ', u'新增', u'移除', u'修改'),
     'zh-classical': (u'僕 ', u'增', u'削', u'修'),
