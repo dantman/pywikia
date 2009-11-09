@@ -79,6 +79,7 @@ def show (mysite, sysop = False):
 class LoginManager:
     def __init__(self, password = None, sysop = False, site = None, username=None, verbose=False):
         self.site = site or wikipedia.getSite()
+        self.sysop = sysop
         if username:
             self.username=username
             # perform writeback.
@@ -201,6 +202,12 @@ class LoginManager:
                 got_user = True
     
         if got_token and got_user:
+            index = self.site._userIndex(self.sysop)
+            self.site._cookies[index] = L
+            try:
+                self.site._token[index] = data['login']['lgtoken'] + "+\\"
+            except:
+                pass
             return L
         elif not captcha:
             solve = self.site.solveCaptcha(data)

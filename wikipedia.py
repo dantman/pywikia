@@ -5197,7 +5197,10 @@ class Site(object):
         """Return a string containing the user's current cookies."""
         self._loadCookies(sysop = sysop)
         index = self._userIndex(sysop)
-        return self._cookies[index]
+        if self._cookies[index]:
+            return "; ".join(["%s=%s" % (v,k) for v,k in self._cookies[index].iteritems()])
+        else:
+            return None
 
     def _loadCookies(self, sysop = False):
         """Retrieve session cookies for login"""
@@ -5227,13 +5230,19 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 self._isLoggedIn[index] = False
             else:
                 f = open(fn)
-                self._cookies[index] = '; '.join([x.strip() for x in f.readlines()])
+                tmp = {}
+                ck = re.compile("(.*?)=(.*?)\n")
+                for x in ck.findall(f.read()):
+                    tmp[ x[0] ] = x[1]
+                self._cookies[index] = tmp
                 f.close()
     
     def _readCookies(self, filename):
         try:
             f = open( config.datafilepath('login-data', filename) )
-            data = '; '.join([p.strip() for p in f.readlines()])
+            ck = re.compile("(.*?)=(.*?)\n")
+            data = dict([(x[0],x[1]) for x in ck.findall(f.read())])
+            #data = dict(ck.findall(f.read()))
             f.close()
             return data
         except IOError:
