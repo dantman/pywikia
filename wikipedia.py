@@ -5220,8 +5220,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             self._cookies[index] = None
             self._isLoggedIn[index] = False
         else:
-            tmp = '%s-%s-%s-login.data' % (
-                    self.family.name, self.lang, username)
+            tmp = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
             fn = config.datafilepath('login-data', tmp)
             if not os.path.exists(fn):
                 self._cookies[index] = None
@@ -5230,6 +5229,32 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 f = open(fn)
                 self._cookies[index] = '; '.join([x.strip() for x in f.readlines()])
                 f.close()
+    
+    def _readCookies(self, filename):
+        try:
+            f = open( config.datafilepath('login-data', filename) )
+            data = '; '.join([p.strip() for p in f.readlines()])
+            f.close()
+            return data
+        except IOError:
+            return None
+    
+    def _setupCookies(self, datas, sysop = False):
+        index = self._userIndex(sysop)
+        filename = '%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop) )
+        #if self.family.cross_projects:
+        #    for proj in self.family.cross_projects + self.family.name:
+        #        filename = '%s-%s-central-login.data' % (proj, self.username(sysop) )
+                
+    
+    def _removeCookies(self, sysop = False, central = False):
+        #if self.family_cross_projects:
+        #    file = config.datafilepath('login-data', '%s-%s-central-login.data' % (self.family.name, self.username(sysop)))
+        #    if os.path.exists(file):
+        #        os.remove( file )
+        file = config.datafilepath('%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop)) )
+        if os.path.exists(file):
+            os.remove(file)
 
     def urlEncode(self, query):
         """Encode a query so that it can be sent using an http POST request."""
@@ -5444,7 +5469,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         headers = {'User-agent': useragent,}
         
-        if self.cookies(sysop = sysop):
+        if self.cookies(sysop = sysop) and not no_hostname:
             headers['Cookie'] = self.cookies(sysop = sysop)
         if compress:
             headers['Accept-encoding'] = 'gzip'
