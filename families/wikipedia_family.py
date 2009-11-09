@@ -1044,6 +1044,7 @@ class Family(family.Family):
             'pt': {
                 '_default': [0],
                 'als': [0, 104],
+                'ar': [0, 104],
                 'es': [0, 104],
                 'fr': [0, 104],
                 'lt': [0, 104]
@@ -1080,6 +1081,7 @@ class Family(family.Family):
             },
             'ar': {
                 '_default': [0, 100],
+                'pt': [0, 102],
             },
             'es': {
                 '_default': [0],
