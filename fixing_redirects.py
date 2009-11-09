@@ -83,7 +83,7 @@ def treat(text, linkedPage, targetPage):
         # Make sure that next time around we will not find this same hit.
         curpos = m.start() + 1
         # ignore interwiki links and links to sections of the same page
-        if m.group('title') == '' or mysite.isInterwikiLink(m.group('title')):
+        if m.group('title').strip() == '' or mysite.isInterwikiLink(m.group('title')):
             continue
         else:
             actualLinkPage = wikipedia.Page(targetPage.site(), m.group('title'))
@@ -157,7 +157,7 @@ def workon(page):
         try:
             page.put(text, comment)
         except (wikipedia.Error):
-            wikipedia.output('Error : unable to put %s' % page.aslink())
+            wikipedia.output('Error: unable to put %s' % page.aslink())
 
 def main():
     start = '!'
