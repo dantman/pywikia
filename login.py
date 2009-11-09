@@ -175,7 +175,7 @@ class LoginManager:
                 wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
                 trans = config.transliterate
                 config.transliterate = False #transliteration breaks for some reason
-                wikipedia.output(fakedata.decode(self.site.encoding()))
+                #wikipedia.output(fakedata.decode(self.site.encoding()))
                 config.transliterate = trans
                 fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
                 wikipedia.output(u"%s/%s\n%s" % (response.code, response.msg, fakeresponsemsg))
