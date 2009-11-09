@@ -53,6 +53,8 @@ These command-line arguments can be used to specify which pages to work on:
                    against the live wiki is using the warnfile.py
                    script.
 
+	-quiet         Use this option to get less output
+
 Additionaly, these arguments can be used to restrict the bot to certain pages:
 
     -namespace:n   Number or name of namespace to process. The parameter can be
@@ -534,6 +536,7 @@ class Global(object):
     contentsondisk = config.interwiki_contents_on_disk
     lacklanguage = None
     minlinks = 0
+    quiet  = False
 
 class StoredPage(pywikibot.Page):
     """
@@ -1610,12 +1613,14 @@ class Subject(object):
             # another get-query first.
             if bot:
                 while pywikibot.get_throttle.waittime() + 2.0 < pywikibot.put_throttle.waittime():
-                    pywikibot.output(u"NOTE: Performing a recursive query first to save time....")
+                    if not globalvar.quiet:
+                        pywikibot.output(u"NOTE: Performing a recursive query first to save time....")
                     qdone = bot.oneQuery()
                     if not qdone:
                         # Nothing more to do
                         break
-            pywikibot.output(u"NOTE: Updating live wiki...")
+            if not globalvar.quiet:
+                pywikibot.output(u"NOTE: Updating live wiki...")
             timeout=60
             while 1:
                 try:
@@ -1747,7 +1752,7 @@ class InterwikiBot(object):
            list of subjects becomes too small, but only if there is a
            PageGenerator"""
         fs = self.firstSubject()
-        if fs:
+        if fs and not globalvar.quiet:
             pywikibot.output(u"NOTE: The first unfinished subject is " + fs.originPage.aslink(True))
         pywikibot.output(u"NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number))
         for i in range(number):
@@ -1995,6 +2000,7 @@ if __name__ == "__main__":
         # that are also used by other scripts and that determine on which pages
         # to work on.
         genFactory = pagegenerators.GeneratorFactory()
+        dumped = False
 
         for arg in pywikibot.handleArgs():
             if arg.startswith('-xml'):
@@ -2141,6 +2147,8 @@ if __name__ == "__main__":
                     globalvar.minlinks = 1
             elif arg == '-back':
                 globalvar.nobackonly = True
+            elif arg == '-quiet':
+                globalvar.quiet = True
             else:
                 if not genFactory.handleArg(arg):
                     singlePageTitle.append(arg)
@@ -2216,12 +2224,20 @@ if __name__ == "__main__":
                 bot.run()
             except KeyboardInterrupt:
                 bot.dump()
+                dumped = True
             except:
                 bot.dump()
+                dumped = True
                 raise
         finally:
             if globalvar.contentsondisk:
                 StoredPage.SPdeleteStore()
+            if (optRestore or optContinue) and not dumped:
+                try:
+                    os.remove(dumpFileName)
+                    pywikibot.output(u'Dumpfile %s deleted' % dumpFileName)
+                except WindowsError:
+                    pass
 
     finally:
         pywikibot.stopme()
