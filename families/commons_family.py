@@ -52,6 +52,11 @@ class Family(family.Family):
         self.disambcatname = {
             'commons':  u'Disambiguation'
         }
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikiquote', 'wikisource', 'wikinews', 'wikiversity',
+            'meta', 'mediawiki', 'test', 'incubator', 'species',
+        ]
+
 
     def version(self, code):
         return '1.16alpha-wmf'

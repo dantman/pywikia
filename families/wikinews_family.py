@@ -190,6 +190,11 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = ['cs', 'hu',]
+        # CentralAuth cross avaliable projects.
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikiquote', 'wikisource', 'wikiversity', 
+            'meta', 'mediawiki', 'test', 'incubator', 'commons', 'species'
+        ]
 
     def code2encoding(self, code):
         return 'utf-8'

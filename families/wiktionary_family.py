@@ -383,6 +383,11 @@ class Family(family.Family):
             'ia', 'ie', 'ik', 'jv', 'ka', 'li', 'lt', 'mk', 'nl', 'no', 'pt', 'sk', 'tg', 'th', 'ti', 
             'ts', 'ug', 'uk', 'vo', 'za', 'zh-min-nan', 'zh', 'zu', 
         ]
+        # CentralAuth cross avaliable projects.
+        self.cross_projects = [
+            'wikipedia', 'wikibooks', 'wikiquote', 'wikisource', 'wikinews', 'wikiversity',
+            'meta', 'mediawiki', 'test', 'incubator', 'commons', 'species'
+        ]
         self.obsolete = {
             'aa': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Afar_Wiktionary
             'ab': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Abkhaz_Wiktionary

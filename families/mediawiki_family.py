@@ -36,6 +36,11 @@ class Family(family.Family):
         self.namespaces[103] = {
             '_default': u'Extension talk',
         }
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikiquote', 'wikisource',
+            'wikinews', 'wikiversity', 'meta', 'test', 'incubator', 'commons', 'species',
+        ]
+
 
     def version(self, code):
         return '1.16alpha-wmf'

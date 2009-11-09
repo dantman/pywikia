@@ -362,6 +362,11 @@ class Family(family.Family):
         self.cross_allowed = [
             'el','fa','it','ko','no','zh'
         ]
+        # CentralAuth cross avaliable projects.
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikiquote', 'wikinews', 'wikiversity', 
+            'meta', 'mediawiki', 'test', 'incubator', 'commons', 'species'
+        ]
 
     def version(self, code):
         return '1.16alpha-wmf'

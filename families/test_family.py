@@ -125,6 +125,10 @@ class Family(family.Family):
         self.namespaces[133] = {
             '_default': u'نقاش المساعدة',
         }
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikiquote', 'wikisource', 'wikinews', 'wikiversity',
+            'meta', 'mediawiki', 'incubator', 'commons', 'species',
+        ]
 
     def version(self, code):
         return '1.16alpha-wmf'

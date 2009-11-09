@@ -346,6 +346,11 @@ class Family(family.Family):
         }
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = ['fa', 'fy', 'it', 'ru', 'simple', 'zh']
+        # CentralAuth cross avaliable projects.
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikiquote', 'wikiquote', 'wikinews', 'wikiversity', 
+            'meta', 'mediawiki', 'test', 'incubator', 'commons', 'species'
+        ]
 
     def version(self, code):
         return '1.16alpha-wmf'

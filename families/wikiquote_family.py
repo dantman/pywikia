@@ -205,6 +205,11 @@ class Family(family.Family):
             'af','am','ang','ar','ast','az','ca','da','fa','it',
             'ka','ko','la','nn','no','ro','simple','sv','vi','zh'
         ]
+        # CentralAuth cross avaliable projects.
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikisource', 'wikinews', 'wikiversity', 
+            'meta', 'mediawiki', 'test', 'incubator', 'commons', 'species'
+        ]
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
