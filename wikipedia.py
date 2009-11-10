@@ -5223,23 +5223,31 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             self._cookies[index] = None
             self._isLoggedIn[index] = False
         else:
-            tmp = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
-            fn = config.datafilepath('login-data', tmp)
-            if not os.path.exists(fn):
+            # check central login data if cross_projects is available.
+            localFn = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
+            localPa = config.datafilepath('login-data', localFn)
+            if self.family.cross_projects:
+                for proj in [self.family.name] + self.family.cross_projects:
+                    #find all central data in all cross_projects
+                    centralFn = '%s-%s-central-login.data' % (proj, username)
+                    centralPa = config.datafilepath('login-data', centralFn)
+                    if os.path.exists(centralPa):
+                        self._cookies[index] = self._readCookies(centralFn)
+                        break
+            
+            if os.path.exists(localPa):
+                #read and dump local logindata into self._cookies[index]
+                self._cookies[index] = query.CombineParams(self._cookies[index], self._readCookies(localFn))
+            elif not os.path.exists(localPa) and not self.family.cross_projects:
+                #keep anonymous mode if not login and centralauth not enable
                 self._cookies[index] = None
                 self._isLoggedIn[index] = False
-            else:
-                f = open(fn)
-                tmp = {}
-                ck = re.compile("(.*?)=(.*?)\n")
-                for x in ck.findall(f.read()):
-                    tmp[ x[0] ] = x[1]
-                self._cookies[index] = tmp
-                f.close()
+                
     
     def _readCookies(self, filename):
+        """read login cookie file and return a dictionary."""
         try:
-            f = open( config.datafilepath('login-data', filename) )
+            f = open( config.datafilepath('login-data', filename), 'r')
             ck = re.compile("(.*?)=(.*?)\n")
             data = dict([(x[0],x[1]) for x in ck.findall(f.read())])
             #data = dict(ck.findall(f.read()))
@@ -5249,22 +5257,71 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             return None
     
     def _setupCookies(self, datas, sysop = False):
+        """save the cookie dictionary to files
+           if cross_project enable, files will separate two, centraldata and localdata.
+        
+        """
         index = self._userIndex(sysop)
-        filename = '%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop) )
-        #if self.family.cross_projects:
-        #    for proj in self.family.cross_projects + self.family.name:
-        #        filename = '%s-%s-central-login.data' % (proj, self.username(sysop) )
-                
+        if not self._cookies[index]:
+            self._cookies[index] = datas
+        cache = {0:"",1:""} #0 is central auth, 1 is local.
+        if not self.username(sysop):
+            if not self._cookies[index]:
+                return 
+            elif self.family.cross_projects_cookie_username in self._cookies[index]:
+                # Using centralauth to cross login data, it's not necessary to forceLogin, but Site() didn't know it.
+                # So we need add centralauth username data into siteattribute
+                self._userName[index] = self._cookies[index][self.family.cross_projects_cookie_username]
+
+        
+        for k, v in datas.iteritems():
+            #put key and values into save cache
+            if self.family.cross_projects and k in self.family.cross_projects_cookies:
+                cache[0] += "%s=%s\n" % (k,v)
+            else:
+                cache[1] += "%s=%s\n" % (k,v)
+        
+        # write the data.
+        if self.family.cross_projects:
+            filename = '%s-%s-central-login.data' % (self.family.name, self.username(sysop))
+            f = open(config.datafilepath('login-data', filename), 'w')
+            f.write(cache[0])
+            f.close()
+            
+        filename = '%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop))
+        f = open(config.datafilepath('login-data', filename), 'w')
+        f.write(cache[1])
+        f.close()
+        
     
-    def _removeCookies(self, sysop = False, central = False):
-        #if self.family_cross_projects:
-        #    file = config.datafilepath('login-data', '%s-%s-central-login.data' % (self.family.name, self.username(sysop)))
-        #    if os.path.exists(file):
-        #        os.remove( file )
-        file = config.datafilepath('%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop)) )
+    def _removeCookies(self, name):
+        # remove cookies.
+        # ToDo: remove all local datas if cross_projects enable.
+        #
+        if self.family.cross_projects:
+            file = config.datafilepath('login-data', '%s-%s-central-login.data' % (self.family.name, name))
+            if os.path.exists(file):
+                os.remove( file )
+        file = config.datafilepath('login-data', '%s-%s-%s-login.data' % (self.family.name, self.lang, name))
         if os.path.exists(file):
             os.remove(file)
-
+    
+    def updateCookies(self, datas, sysop = False):
+        """Check and update the current cookies datas and save back to files."""
+        index = self._userIndex(sysop)
+        if not self._cookies[index]:
+            self._setupCookies(datas, sysop)
+            
+        for k, v in datas.iteritems():
+            if k in self._cookies[index]:
+                if v != self._cookies[index][k]:
+                    self._cookies[index][k] = v
+            else:
+                self._cookies[index][k] = v
+        
+        self._setupCookies(self._cookies[index], sysop)
+        
+    
     def urlEncode(self, query):
         """Encode a query so that it can be sent using an http POST request."""
         if not query:
@@ -5381,6 +5438,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         
         if compress:
             headers['Accept-encoding'] = 'gzip'
+        #print '%s' % headers
         
         url = '%s://%s%s' % (self.protocol(), self.hostname(), address)
         # Try to retrieve the page until it was successfully loaded (just in
@@ -5416,6 +5474,17 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     continue
                 
                 raise
+        
+        # check cookies return or not, if return, send its to update.
+        if f.info().getallmatchingheaders('set-cookie'):
+            Reat=re.compile(': (.*?)=(.*?);')
+            tmpc = {}
+            for d in f.info().getallmatchingheaders('set-cookie'):
+                m = Reat.search(d)
+                if m: tmpc[m.group(1)] = m.group(2)
+            if self.cookies(sysop):
+                self.updateCookies(tmpc, sysop)
+
         resContentType = headers.get('content-type', '')
         contentEncoding = headers.get('content-encoding', '')
 
@@ -5525,6 +5594,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     continue
                 
                 raise
+        # check cookies return or not, if return, send its to update.
+        if not no_hostname and f.info().getallmatchingheaders('set-cookie'):
+            Reat=re.compile(': (.*?)=(.*?);')
+            tmpc = {}
+            for d in f.info().getallmatchingheaders('set-cookie'):
+                m = Reat.search(d)
+                if m: tmpc[m.group(1)] = m.group(2)
+            self.updateCookies(tmpc, sysop)
+        
         if cookie_only:
             return headers.get('set-cookie', '')
         contentType = headers.get('content-type', '')

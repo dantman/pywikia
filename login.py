@@ -127,8 +127,6 @@ class LoginManager:
 
         Returns cookie data if succesful, None otherwise.
         """
-        L = []
-        CenL = []
         if api:
             predata = {
                 'action': 'login',
@@ -154,7 +152,7 @@ class LoginManager:
             address = login_address + '&action=submit'
         
         if api:
-            response, data = query.GetData(predata, self.site, back_response = True)
+            response, data = query.GetData(predata, self.site, sysop=self.sysop, back_response = True)
             if data['login']['result'] != "Success":
                 faildInfo = data['login']['result']
                 #if faildInfo == "NotExists":
@@ -164,12 +162,8 @@ class LoginManager:
                 #elif faildInfo == "Throttled":
                 #    
                 return False
-            #L.append('%s_session=%s' % (data['login']['cookieprefix'], data['login']['sessionid'])
-            
-            #if __name__ == "__main__":
-            #    wikipedia.output('%s' % data['login'])
         else:
-            response, data = self.site.postData(address, self.site.urlEncode(predata))
+            response, data = self.site.postData(address, self.site.urlEncode(predata), sysop=self.sysop)
             if self.verbose:
                 fakepredata = predata
                 fakepredata['wpPassword'] = u'XXXXX'
@@ -185,13 +179,9 @@ class LoginManager:
         Reat=re.compile(': (.*?)=(.*?);')
     
         L = {}
-        CenL = {}
         for eat in response.info().getallmatchingheaders('set-cookie'):
             m = Reat.search(eat)
             if m:
-                #if 'central' in x:
-                #    CenL.append(x)
-                #else:
                 L[m.group(1)] = m.group(2)
     
         got_token = got_user = False
@@ -202,13 +192,23 @@ class LoginManager:
                 got_user = True
     
         if got_token and got_user:
+            #process the basic information to Site()
             index = self.site._userIndex(self.sysop)
-            self.site._cookies[index] = L
-            try:
+            if api:
+                #API result came back username, token and sessions.
+                self.site._userName[index] = data['login']['lgusername']
                 self.site._token[index] = data['login']['lgtoken'] + "+\\"
-            except:
-                pass
-            return L
+            else:
+                self.site._userName[index] = self.username
+
+            if self.site._cookies[index]:
+                #if user is trying re-login, update the new information
+                self.site.updateCookies(L, self.sysop)
+            else:
+                # clean type login, setup the new cookies files.
+                self.site._setupCookies(L, self.sysop)
+            
+            return True
         elif not captcha:
             solve = self.site.solveCaptcha(data)
             if solve:
@@ -274,7 +274,7 @@ class LoginManager:
             return self.login(False, retry)
         if cookiedata:
             fn = '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username) 
-            self.storecookiedata(fn,cookiedata)
+            #self.storecookiedata(fn,cookiedata)
             wikipedia.output(u"Should be logged in now")
             # Show a warning according to the local bot policy
             if not self.botAllowed():
@@ -303,14 +303,7 @@ class LoginManager:
                 flushCk = True
         
         if flushCk:
-            filename = wikipedia.config.datafilepath('login-data',
-                       '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username))
-            try:
-                os.remove(filename)
-            except:
-                pass
-            if __name__ != "__main__":
-                wikipedia.output('%s is logged out.' % self.site)
+            self.site._removeCookies(self.username)
             return True
         
         return False
@@ -365,9 +358,7 @@ def main():
                         site = wikipedia.getSite(lang, familyName)
                         loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
                         if clean:
-                            if os.path.exists(wikipedia.config.datafilepath('login-data',
-                              '%s-%s-%s-login.data' % (familyName, lang, namedict[familyName][lang]))):
-                                loginMan.logout()
+                            loginMan.logout()
                         else:
                             if not forceLogin and site.loggedInAs(sysop = sysop):
                                 wikipedia.output(u'Already logged in on %s' % site)
