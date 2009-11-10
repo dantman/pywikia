@@ -361,7 +361,7 @@ class UploadRobot:
                 except:
                     pass
                 wikipedia.output(u'%s\n\n' % returned_html)
-                wikipedia.output(u'%i %s' % (response.code, response.reason))
+                wikipedia.output(u'%i %s' % (response.code, response.msg))
 
                 if self.targetSite.mediawiki_message('uploadwarning') in returned_html:
                     answer = wikipedia.inputChoice(u"You have recevied an upload warning message. Ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
