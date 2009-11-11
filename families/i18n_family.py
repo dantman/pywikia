@@ -27,6 +27,18 @@ class Family(family.Family):
         self.namespaces[7] = {
             '_default': [u'File talk'],
         }
+        self.namespaces[90] = {
+            '_default': [u'Thread'],
+        }
+        self.namespaces[91] = {
+            '_default': [u'Thread talk'],
+        }
+        self.namespaces[92] = {
+            '_default': [u'Summary'],
+        }
+        self.namespaces[93] = {
+            '_default': [u'Summary talk'],
+        }
         self.namespaces[100] = {
             '_default': [u'Portal'],
         }
@@ -68,6 +80,12 @@ class Family(family.Family):
         }
         self.namespaces[1207] = {
             '_default': [u'Wikimedia talk'],
+        }
+        self.namespaces[1208] = {
+            '_default': [u'StatusNet'],
+        }
+        self.namespaces[1209] = {
+            '_default': [u'StatusNet talk'],
         }
         self.namespaces[1210] = {
             '_default': [u'Mantis'],
