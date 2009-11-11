@@ -12,6 +12,11 @@ Parameters:
    -all         Try to log in on all sites where a username is defined in
                 user-config.py.
 
+   -clean       Use this option for logout. In combination with -all it
+                will log out on all sites where a username is defined.
+
+   -force       Ignores if the user is already logged in, and tries to log in.
+
    -pass        Useful in combination with -all when you have accounts for
                 several sites and use the same password for all of them.
                 Asks you for the password, then logs in on all given sites.
@@ -25,14 +30,12 @@ Parameters:
 
    -sysop       Log in with your sysop account.
 
-   -force       Ignores if the user is already logged in, and tries to log in.
-
    -test        test whether you are logged-in
 
-   -v -v        Shows http requests made when logging in. This might leak
-   (doubly      private data (password, session id), so make sure to check the
-       verbose) output. Using -log is recommended: this will output a lot of 
-                data
+   -v -v        (Doubly verbose) Shows http requests made when logging in. This
+                might leak private data (password, session id), so make sure to
+                check the output. Using -log is recommended: this will output a
+                lot of data
 
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this
@@ -317,7 +320,7 @@ def main():
     logall = False
     forceLogin = False
     verbose = False
-    cleanAll = clean = False
+    clean = False
     testonly = False
 
     for arg in wikipedia.handleArgs():
