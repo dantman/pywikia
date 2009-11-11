@@ -202,8 +202,8 @@ class Family(family.Family):
 
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'af','am','ang','ar','ast','az','ca','da','fa','it',
-            'ka','ko','la','nn','no','ro','simple','sv','vi','zh'
+            'af','am','ang','ar','ast','az','bg','bs','ca','cs','da','el','es','eu','fa','fr','fi','he','hu','hy','id','it',
+            'ka','ko','la','lt','nl','nn','no','pt','ro','simple','sv','vi','zh'
         ]
         # CentralAuth cross avaliable projects.
         self.cross_projects = [

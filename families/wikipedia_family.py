@@ -888,8 +888,8 @@ class Family(family.Family):
         ]
         # Global bot allowed languages on http://meta.wikimedia.org/wiki/Bot_policy/Implementation#Current_implementation
         self.cross_allowed = [
-            'ab', 'ace', 'af', 'ak', 'als', 'am', 'ang', 'arc', 'arz', 'as', 'ast', 'av', 'ay', 'az',
-            'ba', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
+            'ab', 'ace', 'af', 'ak', 'als', 'am', 'an', 'ang', 'arc', 'arz', 'as', 'ast', 'av', 'ay', 'az',
+            'ba', 'bat-smg', 'bar', 'bcl', 'be-x-old', 'be', 'bg', 'bh', 'bi', 'bm', 'bo', 'bpy', 'bug', 'bxr',
             'cbk-zam', 'cdo', 'ce', 'ceb', 'ch', 'chr', 'chy', 'ckb', 'co', 'crh', 'cr', 'csb', 'cu', 'cv', 'cy',
             'diq', 'dsb', 'dz', 'ee', 'el', 'eml', 'eo', 'et', 'eu', 'ext', 'fa', 'ff', 'fj', 'fo', 'frp', 'fur',
             'ga', 'gan', 'gd', 'glk', 'gn', 'got', 'gu', 'gv', 'ha', 'hak', 'haw', 'hif', 'hi', 'hr', 'hsb', 'ht', 'hu', 'hy',
@@ -898,7 +898,7 @@ class Family(family.Family):
             'lad', 'lb', 'lbe', 'lg', 'li', 'lij', 'lmo', 'ln', 'lo', 'lv',
             'map-bms', 'mdf', 'mg', 'mhr', 'mi', 'mk', 'mn', 'ms', 'mt', 'mwl', 'myv', 'my', 'mzn',
             'nah', 'na', 'nap', 'nds-nl', 'ne', 'new', 'ng', 'nl', 'nov', 'nrm', 'nv', 'ny', 'oc', 'om', 'or', 'os',
-            'pam', 'pap', 'pa', 'pag', 'pdc', 'pi', 'pms', 'pnb', 'pnt', 'ps', 'qu', 'rm', 'rmy', 'rn', 'roa-rup', 'roa-tara', 'rw',
+            'pam', 'pap', 'pa', 'pag', 'pdc', 'pi', 'pih', 'pms', 'pnb', 'pnt', 'ps', 'qu', 'rm', 'rmy', 'rn', 'roa-rup', 'roa-tara', 'rw',
             'sah', 'sa', 'sc', 'scn', 'sco', 'sd', 'se', 'sg', 'sh', 'simple', 'si', 'sk', 'sm', 'sn', 'so', 'srn', 'stq', 'st', 'su', 'sw', 'szl',
             'ta', 'te', 'tet', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tpi', 'ts', 'tt', 'tum', 'tw', 'ty',
             'udm', 'ug', 'uz', 've', 'vls', 'wa', 'war', 'wo', 'wuu',
