@@ -127,9 +127,6 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
             # decodedObj = eval( jsontext )
             
             jsontext = json.loads( jsontext )
-            #just for now to read the server output
-            if wikipedia.verbose:
-                print jsontext
             
             if back_response:
                 return res, jsontext

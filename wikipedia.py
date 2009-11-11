@@ -6040,10 +6040,16 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             if self.versionnumber() >= 14:
                 params['uiprop'].append('preferencestoken')
 
+            data = query.GetData(params, self, sysop=sysop)
+            
+            # Show the API error code instead making an index error
+            if 'error' in data:
+                raise RuntimeError('%s' % data['error'])
+
             if self.versionnumber() == 11:
-                text = query.GetData(params, self, sysop=sysop)['userinfo']
+                text = data['userinfo']
             else:
-                text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
+                text = data['query']['userinfo']
 
             self._getUserData(text, sysop = sysop, force = force)
         else:
