@@ -397,20 +397,22 @@ class SpeedyRobot:
                 'empty':u'[[WP:CSD#G1]]: 沒有實際內容或歷史記錄的文章。',
                 'test':u'[[WP:CSD#G2]]: 測試頁',
                 'vand':u'[[WP:CSD#G3]]: 純粹破壞',
-                'cont':u'[[WP:CSD#G4]]: 非常短，而且沒有定義或內容。',
-                'rep':u'[[WP:CSD#G5]]: 重複的條目或是重新建立的內容',
+                'rep':u'[[WP:CSD#G5]]: 經討論被刪除後又重新創建的內容',
                 'oprj':u'[[WP:CSD#G7]]: 內容來自其他中文計劃',
-                'text':u'[[WP:CSD#G9]]: 只有相關連結、項目的頁面',
+                'move':u'[[WP:CSD#G8]]: 依[[Wikipedia:移動請求]]暫時刪除以進行移動或合併頁面之工作',
                 'auth':u'[[WP:CSD#G10]]: 原作者請求',
                 'ad':u'[[WP:CSD#G11]]: 明顯的以廣告宣傳為目而建立的頁面',
                 'adc':u'[[WP:CSD#G11]]: 只有條目名稱中的人物或團體之聯絡資訊',
                 'bio':u'[[WP:CSD#G12]]: 未列明來源及語調負面的生者傳記',
                 'mactra':u'[[WP:CSD#G13]]: 明顯的機器翻譯',
-                'notrans': u'[[WP:CSD#G14]]: 超過2周沒有做任何翻譯的非現代標準漢語條目',
+                'notrans': u'[[WP:CSD#G14]]: 未翻譯的頁面',
                 'isol':u'[[WP:CSD#G15]]: 孤立頁面',
                 'isol-f':u'[[WP:CSD#G15]]: 孤立頁面-沒有對應檔案的檔案頁面',
                 'isol-sub':u'[[WP:CSD#G15]]: 孤立頁面-沒有對應母頁面的子頁面',
-                'br':u'[[WP:CSD#R1]]: 損壞的重定向',
+                'cont':u'[[WP:CSD#A1]]: 非常短，而且沒有定義或內容。',
+                'nocont':u'[[WP:CSD#A2]]: 沒有內容',
+                'nc':u'[[WP:CSD#A3]]: 跨計劃內容',
+                'cn':u'[[WP:CSD#R2]]: 跨空間重定向',
                 'wr':u'[[WP:CSD#R3]]: 錯誤重定向',
                 'vdr':u'[[WP:CSD#R4]]: 故意破壞的結果',
                 'slr':u'[[WP:CSD#R5]]: 指向本身的重定向或循環的重定向',
@@ -422,7 +424,7 @@ class SpeedyRobot:
                 'commons':u'[[WP:CSD#I7]]: 此圖片已存在於[[:commons:|維基共享資源]]',
                 'urs':u'[[WP:CSD#O1]]: 用戶請求刪除自己的用戶頁子頁面',
                 'anou':u'[[WP:CSD#O3]]: 匿名用戶的用戶討論頁，其中的內容不再有用',
-                'uc':u'[[WP:CSD#O4]]: 空類別',
+                'uc':u'[[WP:CSD#O5]]: 空類別',
                 'tmp':u'[[WP:CSD]]: 臨時頁面',
                 },
         },
@@ -485,8 +487,10 @@ class SpeedyRobot:
             if page.site().lang in self.delete_reasons[self.mySite.family.name]:
                 localReasons = wikipedia.translate(page.site().lang, self.delete_reasons)
                 wikipedia.output(u'')
-                for key, reason in     localReasons.iteritems():
-                    wikipedia.output((key + ':').ljust(8) + reason)
+                localReasoneKey = localReasons.keys()
+                localReasoneKey.sort()
+                for key in localReasoneKey:
+                    wikipedia.output((key + ':').ljust(8) + localReasons[key])
                 wikipedia.output(u'')
                 reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
                 if reason.strip() in localReasons:
