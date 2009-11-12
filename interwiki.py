@@ -1738,12 +1738,14 @@ class InterwikiBot(object):
         self.generateNumber = number
         self.generateUntil = until
 
-    def dump(self):
+    def dump(self, append = True):
         site = pywikibot.getSite()
         dumpfn = pywikibot.config.datafilepath(
                      'interwiki-dumps',
                      'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
-        f = codecs.open(dumpfn, 'a', 'utf-8')
+        if append: mode = 'a'
+        else: mode = 'w'
+        f = codecs.open(dumpfn, mode, 'utf-8')
         for subj in self.subjects:
             f.write(subj.originPage.aslink(None)+'\n')
         f.close()
@@ -2187,18 +2189,21 @@ if __name__ == "__main__":
                                u'interwikidump-%s-%s.txt'
                                  % (site.family.name, site.lang))
             hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpFileName)
+            hintlessPageGen = pagegenerators.DuplicateFilterPageGenerator(hintlessPageGen)
             if optContinue:
                 # We waste this generator to find out the last page's title
                 # This is an ugly workaround.
+                nextPage = "!"
+                namespace = 0
                 for page in hintlessPageGen:
-                    pass
-                try:
-                    nextPage = page.titleWithoutNamespace() + '!'
-                    namespace = page.namespace()
-                except NameError:
+                    lastPage = page.titleWithoutNamespace()
+                    if lastPage > nextPage:
+                        nextPage = lastPage
+                        namespace = page.namespace()
+                if nextPage == "!":
                     pywikibot.output(u"Dump file is empty?! Starting at the beginning.")
-                    nextPage = "!"
-                    namespace = 0
+                else:
+                    nextPage = page.titleWithoutNamespace() + '!'
                 # old generator is used up, create a new one
                 hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
 
@@ -2225,10 +2230,10 @@ if __name__ == "__main__":
             try:
                 bot.run()
             except KeyboardInterrupt:
-                bot.dump()
+                bot.dump(not (optRestore or optContinue))
                 dumped = True
             except:
-                bot.dump()
+                bot.dump(not (optRestore or optContinue))
                 dumped = True
                 raise
         finally:
