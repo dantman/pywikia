@@ -26,7 +26,6 @@ Options:
   -c PAGE, --calc=PAGE  calculate key for PAGE and exit
   -l LOCALE, --locale=LOCALE
                         switch to locale LOCALE
-  -L LANG, --lang=LANG  set the language code to work on
 """
 #
 # (C) Misza13, 2006-2007
@@ -36,6 +35,8 @@ Options:
 __version__ = '$Id$'
 #
 import wikipedia, pagegenerators, query
+Site = wikipedia.getSite()
+
 import os, re, time, locale, traceback, string, urllib
 
 try: #Get a constructor for the MD5 hash object
@@ -45,6 +46,8 @@ except ImportError: #Old python?
     import md5
     new_hash = md5.md5
 
+
+language = Site.language()
 messages = {
         '_default': {
             'ArchiveFull': u'(ARCHIVE FULL)',
@@ -121,8 +124,7 @@ messages = {
             },
 }
 
-def message(key):
-    lang = wikipedia.getSite().language()
+def message(key, lang=Site.language()):
     if not lang in messages:
         lang = '_default'
     return messages[lang][key]
@@ -265,11 +267,7 @@ class DiscussionThread(object):
             TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
 #3. joulukuuta 2008 kello 16.26 (EET)
         if not TM:
-            TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kello \W*(\d\d).(\d\d) \(.*?\)', line)
-        if not TM:
-# 14:23, 12. Jan. 2009 (UTC)
-            pat = re.compile(r'(\d\d):(\d\d), (\d\d?)\. (\S+)\.? (\d\d\d\d) \(UTC\)')
-            TM = pat.search(line)
+                TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kello \W*(\d\d).(\d\d) \(.*?\)', line)
         if TM:
 #            wikipedia.output(TM)
             TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")
@@ -289,8 +287,6 @@ class DiscussionThread(object):
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (%Z)")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%d. %Bta %Y kello %H.%M (%Z)")
-            if not TIME:
-                TIME = txt2timestamp(TM.group(0),"%H:%M, %d. %b. %Y (%Z)")
             if TIME:
                 self.timestamp = max(self.timestamp,time.mktime(TIME))
 #                wikipedia.output(u'Time to be parsed: %s' % TM.group(0))
@@ -322,11 +318,10 @@ class DiscussionPage(object):
     Feed threads to it and run an update() afterwards."""
     #TODO: Make it a subclass of wikipedia.Page
 
-    def __init__(self, site, title, archiver, vars=None):
-        self.site  = site
+    def __init__(self, title, archiver, vars=None):
         self.title = title
         self.threads = []
-        self.Page = wikipedia.Page(self.site, self.title)
+        self.Page = wikipedia.Page(Site,self.title)
         self.full = False
         self.archiver = archiver
         self.vars = vars
@@ -396,7 +391,7 @@ class PageArchiver(object):
     pageSummary = message('PageSummary')
     archiveSummary = message('ArchiveSummary')
 
-    def __init__(self, site, Page, tpl, salt, force=False):
+    def __init__(self, Page, tpl, salt, force=False):
         self.attributes = {
                 'algo' : ['old(24h)',False],
                 'archive' : ['',False],
@@ -407,8 +402,7 @@ class PageArchiver(object):
         self.tpl = tpl
         self.salt = salt
         self.force = force
-        self.site = site
-        self.Page = DiscussionPage(self.site, Page.title(),self)
+        self.Page = DiscussionPage(Page.title(),self)
         self.loadConfig()
         self.commentParams = {
                 'from' : self.Page.title,
@@ -436,7 +430,7 @@ class PageArchiver(object):
 
     def loadConfig(self):
         hdrlines = self.Page.header.split('\n')
-        wikipedia.output(u'Looking for: %s' % self.tpl)
+#        wikipedia.output(u'Looking for: %s' % self.tpl)
         mode = 0
         for line in hdrlines:
             if mode == 0 and re.search('{{'+self.tpl,line):
@@ -503,7 +497,7 @@ class PageArchiver(object):
         return set(whys)
 
     def run(self):
-        if not self.Page.Page.botMayEdit(wikipedia.getSite().username):
+        if not self.Page.Page.botMayEdit(Site.username):
             return
         whys = self.analyzePage()
         if self.archivedThreads < int(self.get('minthreadstoarchive',2)):
@@ -544,20 +538,17 @@ def main():
             help='calculate key for PAGE and exit', metavar='PAGE')
     parser.add_option('-l', '--locale', dest='locale',
             help='switch to locale LOCALE', metavar='LOCALE')
-    parser.add_option('-L', '--lang', dest='lang',
-            help='current language code', metavar='lang')
     parser.add_option('-T', '--timezone', dest='timezone',
             help='switch timezone to TIMEZONE', metavar='TIMEZONE')
     (options, args) = parser.parse_args()
-    Site = wikipedia.getSite(code=options.lang)
-    wikipedia.handleArgs('-lang:%s' %options.lang)
-    language = Site.language()
+
     if options.locale:
         locale.setlocale(locale.LC_TIME,options.locale) #Required for english month names
 
-    if hasattr(time, 'tzset') and options.timezone:
+    if options.timezone:
         os.environ['TZ'] = options.timezone
-        time.tzset()
+    #Or use the preset value
+    time.tzset()
 
     if options.calc:
         if not options.salt:
@@ -600,7 +591,7 @@ def main():
 
         for pg in pagelist:
             try: #Catching exceptions, so that errors in one page do not bail out the entire process
-                Archiver = PageArchiver(Site, pg, a, salt, force)
+                Archiver = PageArchiver(pg, a, salt, force)
                 Archiver.run()
                 time.sleep(10)
             except:
@@ -611,7 +602,5 @@ def main():
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    finally:
-        wikipedia.stopme()
+    main()
+    wikipedia.stopme()
