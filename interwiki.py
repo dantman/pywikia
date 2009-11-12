@@ -1743,7 +1743,7 @@ class InterwikiBot(object):
         dumpfn = pywikibot.config.datafilepath(
                      'interwiki-dumps',
                      'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
-        f = codecs.open(dumpfn, 'w', 'utf-8')
+        f = codecs.open(dumpfn, 'a', 'utf-8')
         for subj in self.subjects:
             f.write(subj.originPage.aslink(None)+'\n')
         f.close()
