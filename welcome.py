@@ -43,52 +43,52 @@ be on the local wiki:
 
 This script understands the following command-line arguments:
 
-    -edit[:#]      Define how many edits a new user needs to be welcomed
+   -edit[:#]       Define how many edits a new user needs to be welcomed
                    (default: 1, max: 50)
 
-    -time[:#]      Define how many seconds the bot sleeps before restart
+   -time[:#]       Define how many seconds the bot sleeps before restart
                    (default: 3600)
 
-    -break         Use it if you don't want that the Bot restart at the end
+   -break          Use it if you don't want that the Bot restart at the end
                    (it will break) (default: False)
 
-    -nlog          Use this parameter if you do not want the bot to log all
+   -nlog           Use this parameter if you do not want the bot to log all
                    welcomed users (default: False)
 
-    -limit[:#]     Use this parameter to define how may users should be
+   -limit[:#]      Use this parameter to define how may users should be
                    checked (default:50)
 
-    -offset[:TIME] Skip the latest new users (those newer than TIME)
+   -offset[:TIME]  Skip the latest new users (those newer than TIME)
                    to give interactive users a chance to welcome the
                    new users (default: now)
                    Timezone is the server timezone, GMT for Wikimedia
                    TIME format : yyyymmddhhmmss
 
-    -timeoffset[:#] Skip the latest new users, accounts newer than
-                    # minutes
+   -timeoffset[:#] Skip the latest new users, accounts newer than
+                   # minutes
 
-    -numberlog[:#] The number of users to welcome before refreshing the
+   -numberlog[:#]  The number of users to welcome before refreshing the
                    welcome log (default: 4)
 
-    -filter        Enable the username checks for bad names (default: False)
+   -filter         Enable the username checks for bad names (default: False)
 
-    -ask           Use this parameter if you want to confirm each possible
+   -ask            Use this parameter if you want to confirm each possible
                    bad username (default: False)
 
-    -random        Use a random signature, taking the signatures from a wiki
-                   page (for istruction, see below).
+   -random         Use a random signature, taking the signatures from a wiki
+                   page (for instruction, see below).
 
-    -file[:#]      Use a file instead of a wikipage to take the random sign.
+   -file[:#]       Use a file instead of a wikipage to take the random sign.
                    If you use this parameter, you don't need to use -random.
                    
-    -sign          Use one signature from command line instead of the default
+   -sign           Use one signature from command line instead of the default
 
-    -savedata      This feature saves the random signature index to allow to
+   -savedata       This feature saves the random signature index to allow to
                    continue to welcome with the last signature used.
 
-    -sul           Welcome the auto-created users (default: False)
+   -sul            Welcome the auto-created users (default: False)
 
-    -quiet         Prevents users without contributions are displayed
+   -quiet          Prevents users without contributions are displayed
 
 ********************************* GUIDE ***********************************
 
