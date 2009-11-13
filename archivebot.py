@@ -170,14 +170,14 @@ def str2size(str):
     'B' (bytes) or 'T' (threads)."""
     if str[-1] in string.digits: #TODO: de-uglify
         return (int(str),'B')
-    elif str[-1] == 'K':
+    elif str[-1] in ['K', 'k']:
         return (int(str[:-1])*1024,'B')
     elif str[-1] == 'M':
         return (int(str[:-1])*1024*1024,'B')
     elif str[-1] == 'T':
         return (int(str[:-1]),'T')
     else:
-        return (0,'B')
+        return (int(str[:-1])*1024,'B')
 
 
 def int2month(num):
@@ -597,8 +597,6 @@ def main():
             except:
                 wikipedia.output(u'Error occured while processing page [[%s]]' % pg.title())
                 traceback.print_exc()
-    else:
-        wikipedia.showHelp("archivebot")
 
 
 if __name__ == '__main__':
