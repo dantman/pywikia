@@ -5463,7 +5463,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 elif e.code == 500:
                     output(u'HTTPError: %s' % (e.code, e.msg))
                     if config.retry_on_fail:
-                        Server error encountered; will retry in %i minute%s.
                         output(u"""WARNING: Could not open '%s'.\nMaybe the server is down. Retrying in %i minutes..."""
                                % (url, retry_idle_time))
                         time.sleep(retry_idle_time * 60)
