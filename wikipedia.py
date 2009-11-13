@@ -5459,8 +5459,22 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             except urllib2.HTTPError, e:
                 if e.code in [401, 404]:
                     raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
-                output(u"Result:%s %s" % (e.code, e.msg))
-                raise 
+                # just check for HTTP Status 500 (Internal Server Error)?
+                elif e.code == 500:
+                    output(u'HTTPError: %s' % (e.code, e.msg))
+                    if config.retry_on_fail:
+                        Server error encountered; will retry in %i minute%s.
+                        output(u"""WARNING: Could not open '%s'.\nMaybe the server is down. Retrying in %i minutes..."""
+                               % (url, retry_idle_time))
+                        time.sleep(retry_idle_time * 60)
+                        # Next time wait longer, but not longer than half an hour
+                        if retry_idle_time > 30:
+                            retry_idle_time = 30
+                        continue
+                    raise
+                else:
+                    output(u"Result: %s %s" % (e.code, e.msg))
+                    raise 
             except Exception, e:
                 output(u'%s' %e)
                 if config.retry_on_fail:
@@ -5472,7 +5486,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     if retry_idle_time > 30:
                         retry_idle_time = 30
                     continue
-                
                 raise
         
         # check cookies return or not, if return, send its to update.
