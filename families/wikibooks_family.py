@@ -75,6 +75,7 @@ class Family(family.Family):
             'ur': u'وکی کتب',
             'uz': u'Vikikitob',
             'vo': u'Vükibuks',
+            'zh': u'维基教科书',
         }
 
         self.namespaces[5] = {
@@ -172,6 +173,7 @@ class Family(family.Family):
             'vo': u'Bespik dö Vükibuks',
             'wa': u'Wikibooks copene',
             'za': u'Wikibooks讨论',
+            'zh': u'维基教科书讨论',
         }
 
         self.namespaces[100] = {

@@ -95,6 +95,7 @@ class Family(family.Family):
             'uz': u'Vikilug‘at',
             'vo': u'Vükivödabuk',
             'yi': [u'װיקיװערטערבוך', u'וויקיווערטערבוך'],
+            'zh': u'维基词典',
         }
 
         self.namespaces[5] = {
@@ -216,6 +217,7 @@ class Family(family.Family):
             'wo': u'Wiktionary waxtaan',
             'yi': [u'װיקיװערטערבוך רעדן', u'וויקיווערטערבוך רעדן'],
             'za': u'Wiktionary讨论',
+            'zh': u'维基词典讨论',
         }
 
         self.namespaces[100] = {
