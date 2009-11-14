@@ -5237,10 +5237,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             
             if os.path.exists(localPa):
                 #read and dump local logindata into self._cookies[index]
-                for k, v in self._readCookies(localFn).iteritems():
-                    if k not in self._cookies[index]:
-                        self._cookies[index][k] = v
-                
+                self._cookies[index] = query.CombineParams(self._cookies[index], self._readCookies(localFn))
             elif not os.path.exists(localPa) and not self.family.cross_projects:
                 #keep anonymous mode if not login and centralauth not enable
                 self._cookies[index] = None
