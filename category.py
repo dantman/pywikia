@@ -145,7 +145,7 @@ msg_change={
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'it':u'Bot: Modifico %s',
     'lt':u'robotas: Keičiama %s',
-    'ja':u'ロボットによる: カテゴリ変更 [[%s]]',
+    'ja':u'ロボットによる: カテゴリ変更 [[%s]]→[[%s]]',
     'kk':u'Бот: %s дегенді түзетті',
     'ko': u'로봇: %s 수정',
     'ksh':u'Bot: %s ußjewääßelt',
@@ -159,7 +159,7 @@ msg_change={
     'ru':u'Робот: изменение %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
-    'zh':u'機器人:變更目錄 [[%s]]',
+    'zh':u'機器人:變更目錄 [[%s]]→[[%s]]',
     }
 
 deletion_reason_move = {
@@ -423,13 +423,16 @@ class CategoryMoveRobot:
         self.batchMode = batchMode
         self.deleteEmptySourceCat = deleteEmptySourceCat
         self.titleRegex = titleRegex
-        # set edit summary message
-        if not self.editSummary:
-            self.editSummary = pywikibot.translate(site, msg_change)% self.oldCat.title()
 
     def run(self):
         site = pywikibot.getSite()
         newCat = catlib.Category(site, 'Category:' + self.newCatTitle)
+        # set edit summary message
+        if not self.editSummary:
+            try:
+                self.editSummary = pywikibot.translate(site, msg_change) % (self.oldCat.title(), newCat.title() )
+            except TypeError:
+                self.editSummary = pywikibot.translate(site, msg_change) % self.oldCat.title()
 
         # Copy the category contents to the new category page
         copied = False
