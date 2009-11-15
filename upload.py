@@ -215,11 +215,11 @@ class UploadRobot:
            If the user chooses not to retry, returns null.
         """
         try:
-            if config.use_api and self.targetSite.versionnumber() >= 16:
-                x = self.targetSite.api_address()
-                del x
-            else:
-                raise NotImplementedError
+            #if config.use_api and self.targetSite.versionnumber() >= 16:
+            #    x = self.targetSite.api_address()
+            #    del x
+            #else:
+            raise NotImplementedError
         except NotImplementedError:
             return self._uploadImageOld(debug)
         
