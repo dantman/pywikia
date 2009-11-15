@@ -5198,7 +5198,14 @@ class Site(object):
         self._loadCookies(sysop = sysop)
         index = self._userIndex(sysop)
         if self._cookies[index]:
-            return "; ".join(["%s=%s" % (v,k) for v,k in self._cookies[index].iteritems()])
+            outputDatas = ''
+            for k,v in self._cookies[index].iteritems():
+                if v:
+                    outputDatas += "%s=%s; " % (k,v)
+                else:
+                    # protection for value ''
+                    outputDatas += "%s=none; " % k
+            return outputDatas
         else:
             return None
 
@@ -5237,7 +5244,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             
             if os.path.exists(localPa):
                 #read and dump local logindata into self._cookies[index]
-                self._cookies[index] = query.CombineParams(self._cookies[index], self._readCookies(localFn))
+                for k, v in self._readCookies(localFn).iteritems():
+                    if k and v and k not in self._cookies[index]:
+                        self._cookies[index][k] = v
+                #self._cookies[index] = query.CombineParams(self._cookies[index], self._readCookies(localFn))
             elif not os.path.exists(localPa) and not self.family.cross_projects:
                 #keep anonymous mode if not login and centralauth not enable
                 self._cookies[index] = None
