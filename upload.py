@@ -105,7 +105,7 @@ class UploadRobot:
                 dt = 15
 
                 while not self._retrieved:
-                    uo = wikipedia.MyURLopener()
+                    uo = wikipedia.MyURLopener
                     if resume:
                         wikipedia.output(u"Resume download...")
                         uo.addheader('Range', 'bytes=%s-' % rlen)
