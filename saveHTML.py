@@ -200,14 +200,14 @@ def main():
                     print "skipping existing " + i['image']
                     continue
                 print 'downloading ' + i['image'],
-                uo = wikipedia.MyURLopener()
+                uo = wikipedia.MyURLopener
                 file = uo.open( "http://upload.wikimedia.org/wikipedia/"
                                 +mysite.lang + '/' + i['path'] + i['image'])
                 content = file.read()
                 if (len(content) < 500):
                     uo.close()
                     print "downloading from commons",
-                    uo = wikipedia.MyURLopener()
+                    uo = wikipedia.MyURLopener
                     file = uo.open( "http://commons.wikimedia.org/upload/"
                                     + i['path'] + i['image'])
                     #print "http://commons.wikimedia.org/upload/", i['path'] , i['image'], file

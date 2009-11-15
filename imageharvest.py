@@ -31,7 +31,7 @@ def get_imagelinks(url):
         relativepath=relativepath[:len(relativepath)-1]
         relativepath="/".join(relativepath)
     links = []
-    uo = wikipedia.MyURLopener()
+    uo = wikipedia.MyURLopener
     file = uo.open(url)
     text = file.read()
     file.close()

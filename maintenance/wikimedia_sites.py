@@ -25,7 +25,7 @@ for family in families:
     obsolete = wikipedia.Family(family).obsolete
 
     url = 'http://s23.org/wikistats/%s' % familiesDict[family]
-    uo = wikipedia.MyURLopener()
+    uo = wikipedia.MyURLopener
     f = uo.open(url)
     text = f.read()
 
