@@ -75,6 +75,8 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         
         for k, v in params.iteritems():
             if k not in ['action', 'format', 'file', 'xml']:
+                if not isinstance(v, unicode):
+                    v = v.decode('utf-8')
                 wikipedia.output(u"%s: %s" % (k, v) )
         wikipedia.output(u'-' * 16 )
         
