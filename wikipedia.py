@@ -5198,8 +5198,9 @@ class Site(object):
         self._loadCookies(sysop = sysop)
         index = self._userIndex(sysop)
         if self._cookies[index]:
-            outputDatas = ''
-            for k,v in self._cookies[index].iteritems():
+            #convert cookies dictionary data to string.
+            outputDatas = ""
+            for k, v in self._cookies[index].iteritems():
                 if v:
                     outputDatas += "%s=%s; " % (k,v)
                 else:
@@ -5210,7 +5211,12 @@ class Site(object):
             return None
 
     def _loadCookies(self, sysop = False):
-        """Retrieve session cookies for login"""
+        """
+         Retrieve session cookies for login
+         if family datas define the cross projects, this function will search 
+         the central login file made by self or cross available project
+         functioin will read the cookiedata if got one of them is exist
+        """
         index = self._userIndex(sysop)
         if self._cookies[index] is not None:
             return
@@ -5244,6 +5250,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             
             if os.path.exists(localPa):
                 #read and dump local logindata into self._cookies[index]
+                # if self._cookies[index] is not availabe, read the local data and set the dictionary.
                 if type(self._cookies[index]) == dict:
                     for k, v in self._readCookies(localFn).iteritems():
                         if k not in self._cookies[index]:
@@ -5271,8 +5278,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
     
     def _setupCookies(self, datas, sysop = False):
         """save the cookie dictionary to files
-           if cross_project enable, files will separate two, centraldata and localdata.
-        
+           if cross_project enable, savefiles will separate two, centraldata and localdata.
         """
         index = self._userIndex(sysop)
         if not self._cookies[index]:
