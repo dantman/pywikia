@@ -8265,6 +8265,7 @@ if config.authenticate:
 
     MyURLopener.add_handler(authhandler)
 
+MyURLopener.addheaders = [('User-agent', useragent)]
 
 if __name__ == '__main__':
     import doctest
