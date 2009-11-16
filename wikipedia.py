@@ -5578,7 +5578,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         headers = {'User-agent': useragent,}
         
-        if self.cookies(sysop = sysop) and not no_hostname:
+        if not no_hostname and self.cookies(sysop = sysop):
             headers['Cookie'] = self.cookies(sysop = sysop)
         if compress:
             headers['Accept-encoding'] = 'gzip'
