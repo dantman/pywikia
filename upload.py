@@ -106,9 +106,12 @@ class UploadRobot:
 
                 while not self._retrieved:
                     uo = wikipedia.MyURLopener
+                    headers = [('User-agent', wikipedia.useragent)]
+
                     if resume:
                         wikipedia.output(u"Resume download...")
-                        uo.addheader('Range', 'bytes=%s-' % rlen)
+                        headers.append(('Range', 'bytes=%s-' % rlen))
+                    uo.addheaders = headers
 
                     file = uo.open(self.url)
 
