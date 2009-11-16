@@ -8244,7 +8244,7 @@ if os.path.isfile(COOKIEFILE):
 cookieProcessor = urllib2.HTTPCookieProcessor(cj)
 
 
-MyURLopener = urllib2.build_opener(U2)
+MyURLopener = urllib2.build_opener(U2RedirectHandler)
 
 if config.proxy['host']:
     proxyHandler = urllib2.ProxyHandler({'http':'http://%s/' % config.proxy['host'] })
