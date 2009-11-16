@@ -3654,9 +3654,11 @@ class _GetAll(object):
                     data = self.getData()
                 except (socket.error, httplib.BadStatusLine, ServerError):
                     # Print the traceback of the caught exception
-                    output(u''.join(traceback.format_exception(*sys.exc_info())))
-                    output(u'DBG> got network error in _GetAll.run. ' \
-                            'Sleeping for %d seconds...' % self.sleeptime)
+                    s = ''.join(traceback.format_exception(*sys.exc_info()))
+                    if not isinstance(s, unicode):
+                        s = s.decode('utf-8')
+                    output(u'%s\nDBG> got network error in _GetAll.run. ' \
+                            'Sleeping for %d seconds...' % (s, self.sleeptime))
                     self.sleep()
                 else:
                     if "<title>Wiki does not exist</title>" in data:
