@@ -1524,8 +1524,19 @@ not supported by PyWikipediaBot!"""
         # If no comment is given for the change, use the default
         comment = comment or action
         if config.cosmetic_changes and not self.isTalkPage() and not calledModuleName() == 'cosmetic_changes':
-            old = newtext
-            if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
+            if config.cosmetic_changes_mylang_only:
+                cc = (self.site().family.name == config.family and self.site().lang == config.mylang) or \
+                     self.site().family.name in config.cosmetic_changes_enable.keys() and \
+                     self.site().lang in config.cosmetic_changes_enable[self.site().family.name]
+            else:
+                cc = True
+            cc = cc and not \
+                 (self.site().family.name in config.cosmetic_changes_disable.keys() and \
+                 self.site().lang in config.cosmetic_changes_disable[self.site().family.name])
+            if cc:
+                old = newtext
+                if verbose:
+                    output(u'Cosmetic Changes for %s-%s enabled.' % (self.site().family.name, self.site().lang))
                 import cosmetic_changes
                 ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), redirect=self.isRedirectPage(), namespace = self.namespace())
                 newtext = ccToolkit.change(newtext)
