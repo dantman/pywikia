@@ -5520,10 +5520,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 raise
         
         # check cookies return or not, if return, send its to update.
-        if f.info().getallmatchingheaders('set-cookie'):
+        if hasattr(f, 'sheaders'):
+            ck = f.sheaders
+        else:
+            ck = f.info().getallmatchingheaders('set-cookie')
+        if ck:
             Reat=re.compile(': (.*?)=(.*?);')
             tmpc = {}
-            for d in f.info().getallmatchingheaders('set-cookie'):
+            for d in ck:
                 m = Reat.search(d)
                 if m: tmpc[m.group(1)] = m.group(2)
             if self.cookies(sysop):
@@ -5639,10 +5643,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 
                 raise
         # check cookies return or not, if return, send its to update.
-        if not no_hostname and f.info().getallmatchingheaders('set-cookie'):
+        if hasattr(f, 'sheaders'):
+            ck = f.sheaders
+        else:
+            ck = f.info().getallmatchingheaders('set-cookie')
+        if not no_hostname and ck:
             Reat=re.compile(': (.*?)=(.*?);')
             tmpc = {}
-            for d in f.info().getallmatchingheaders('set-cookie'):
+            for d in ck:
                 m = Reat.search(d)
                 if m: tmpc[m.group(1)] = m.group(2)
             self.updateCookies(tmpc, sysop)
@@ -8211,6 +8219,22 @@ def parsetime2stamp(tz):
     s = time.strptime(tz, "%Y-%m-%dT%H:%M:%SZ")
     return int(time.strftime("%Y%m%d%H%M%S", s))
 
+#Redirect Handler for urllib2
+class U2RedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_301(self, req, fp, code, msg, headers):
+        result = urllib2.HTTPRedirectHandler.http_error_301(
+            self, req, fp, code, msg, headers)
+        result.code = code
+        result.sheaders = [v for v in headers.__str__().split('\n') if v.startswith('Set-Cookie:')]
+        return result
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        result = urllib2.HTTPRedirectHandler.http_error_302(
+            self, req, fp, code, msg, headers)
+        result.code = code
+        result.sheaders = [v for v in headers.__str__().split('\n') if v.startswith('Set-Cookie:')]
+        return result
+
 # Site Cookies handler
 COOKIEFILE = config.datafilepath('login-data', 'cookies.lwp')
 cj = cookielib.LWPCookieJar()
@@ -8218,18 +8242,20 @@ if os.path.isfile(COOKIEFILE):
     cj.load(COOKIEFILE)
 
 cookieProcessor = urllib2.HTTPCookieProcessor(cj)
-MyURLopener = urllib2.build_opener()
+
+
+MyURLopener = urllib2.build_opener(U2)
 
 if config.proxy['host']:
     proxyHandler = urllib2.ProxyHandler({'http':'http://%s/' % config.proxy['host'] })
     
-    MyURLopener = urllib2.build_opener(proxyHandler)
+    MyURLopener.add_handler(proxyHandler)
     if config.proxy['auth']:
         proxyAuth = urllib2.HTTPPasswordMgrWithDefaultRealm()
         proxyAuth.add_password(None, config.proxy['host'], config.proxy['auth'][0], config.proxy['auth'][1])
         proxyAuthHandler = urllib2.ProxyBasicAuthHandler(proxyAuth)
         
-        MyURLopener = urllib2.build_opener(proxyHandler, proxyAuthHandler)
+        MyURLopener.add_handler(proxyAuthHandler)
 
 if config.authenticate:
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -8237,14 +8263,12 @@ if config.authenticate:
         passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
 
-    MyURLopener = urllib2.build_opener(authhandler)
-    if config.proxy['host']:
-        MyURLopener = urllib2.build_opener(authhandler, proxyHandler)
-        if config.proxy['auth']:
-            MyURLopener = urllib2.build_opener(authhandler, proxyHandler, proxyAuthHandler)
+    MyURLopener.add_handler(authhandler)
+
 
 if __name__ == '__main__':
     import doctest
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
+

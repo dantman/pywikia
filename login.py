@@ -143,11 +143,12 @@ class LoginManager:
             predata = {
                 "wpName": self.username.encode(self.site.encoding()),
                 "wpPassword": self.password,
-                "wpDomain": self.site.family.ldapDomain,     # VistaPrint fix
                 "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
                 "wpRemember": str(int(bool(remember))),
                 "wpSkipCookieCheck": '1'
             }
+            if self.site.family.ldapDomain:     # VistaPrint fix
+                predata["wpDomain"] = self.site.family.ldapDomain
             if captcha:
                 predata["wpCaptchaId"] = captcha['id']
                 predata["wpCaptchaWord"] = captcha['answer']
@@ -182,7 +183,11 @@ class LoginManager:
         Reat=re.compile(': (.*?)=(.*?);')
     
         L = {}
-        for eat in response.info().getallmatchingheaders('set-cookie'):
+        if hasattr(response, 'sheaders'):
+            ck = response.sheaders
+        else:
+            ck = response.info().getallmatchingheaders('set-cookie')
+        for eat in ck:
             m = Reat.search(eat)
             if m:
                 L[m.group(1)] = m.group(2)
