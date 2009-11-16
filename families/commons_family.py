@@ -28,6 +28,12 @@ class Family(family.Family):
         self.namespaces[101] = {
             '_default': [u'Creator talk', 'Project talk'],
         }
+        self.namespaces[100] = {
+            '_default': [u'TimedText'],
+        }
+        self.namespaces[101] = {
+            '_default': [u'TimedText talk'],
+        }
 
         self.interwiki_forward = 'wikipedia'
 
@@ -43,12 +49,12 @@ class Family(family.Family):
                         u'Catredir',
                         u'Redirect category'),
         }
-        
+
         self.disambiguationTemplates = {
             'commons': [u'Disambig', u'Disambiguation', u'Razločitev',
                         u'Begriffsklärung']
         }
-        
+
         self.disambcatname = {
             'commons':  u'Disambiguation'
         }
