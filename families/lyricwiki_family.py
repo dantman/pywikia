@@ -39,5 +39,4 @@ class Family(family.Family):
         return ''
 
     def apipath(self, code):
-        raise NotImplementedError(
-            "The lyricwiki family does not support api.php")
+        return '/api.php'
