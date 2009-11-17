@@ -3504,8 +3504,7 @@ class ImagePage(Page):
     # (see bug #1795683).
     def getFileMd5Sum(self):
         """Return image file's MD5 checksum."""
-        uo = MyURLopener()
-        f = uo.open(self.fileUrl())
+        f = MyURLopener.open(self.fileUrl())
         return md5(f.read()).hexdigest()
 
     def getFileVersionHistory(self):
