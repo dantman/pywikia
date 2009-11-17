@@ -1723,9 +1723,9 @@ not supported by PyWikipediaBot!"""
                     # server lag; wait for the lag time and retry
                     m = re.search('Waiting for (.+?): (.+?) seconds lagged', data['error']['info'])
                     timelag = int(m.group(2))
-                    output(u"Pausing %d seconds due to database server lag." % timelag)
+                    output(u"Pausing %d seconds due to database server lag." % min(timelag,300))
                     dblagged = True
-                    time.sleep(timelag)
+                    time.sleep(min(timelag,300))
                     continue
                 elif errorCode == 'editconflict':
                     # 'editconflict':"Edit conflict detected",
