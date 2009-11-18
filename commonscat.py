@@ -59,7 +59,7 @@ commonscatTemplates = {
     'cs' : (u'Commonscat', [u'Commons cat']),
     'cu' : (u'Commonscat', []),
     'cv' : (u'Commonscat', []),
-    'da' : (u'Commonscat', [u'Commons cat']),
+    'da' : (u'Commonscat', [u'Commons cat', u'Commonskat', u'Commonscat2']),
     'de' : (u'Commonscat', []), # No alternatives found
     'diq' : (u'Commonscat', []),
     'dv' : (u'Commonscat', []),
@@ -249,13 +249,13 @@ def addCommonscat (page = None, summary = None, always = False):
             return (True, always)
         elif checkedCommonscatTarget!=u'':
             #We have a new Commonscat link, replace the old one
-            changeCommonscat (page, currentCommonscatTemplate, currentCommonscat, primaryCommonscat, checkedCommonscat)
+            changeCommonscat (page, currentCommonscatTemplate, currentCommonscatTarget, primaryCommonscat, checkedCommonscatTarget)
             return (True, always)
         else:
             #Commonscat link is wrong
             commonscatLink = findCommonscatLink(page)
             if (commonscatLink!=u''):
-                changeCommonscat (page, currentCommonscat, commonscatLink)
+                changeCommonscat (page, currentCommonscatTemplate, currentCommonscatTarget, primaryCommonscat, commonscatLink)
             #else
             #Should i remove the commonscat link?
 
