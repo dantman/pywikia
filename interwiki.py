@@ -1186,7 +1186,7 @@ class Subject(object):
                     iw = ()
                     self.workonme = False
 
-            elif globalvar.autonomous and duplicate:
+            elif globalvar.autonomous and duplicate and not skip:
                 
                 pywikibot.output(u"Stopping work on %s because duplicate pages"\
                     " %s and %s are found" % (self.originPage.aslink(True), 
