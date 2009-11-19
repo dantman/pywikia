@@ -11,20 +11,20 @@ class Family(family.Family):
         self.name = 'wiktionary'
 
         self.languages_by_size = [
-            'fr', 'en', 'tr', 'lt', 'vi', 'ru', 'io', 'zh', 'el', 'pl',
-            'fi', 'no', 'hu', 'it', 'ta', 'sv', 'de', 'ko', 'lo', 'pt',
-            'nl', 'ku', 'ja', 'es', 'id', 'te', 'ro', 'et', 'gl', 'bg',
-            'ca', 'ar', 'vo', 'uk', 'fa', 'is', 'sr', 'af', 'sw', 'scn',
-            'fy', 'th', 'br', 'oc', 'simple', 'li', 'cs', 'he', 'sl', 'hy',
-            'sq', 'tt', 'la', 'zh-min-nan', 'da', 'ast', 'tk', 'ur', 'wa', 'hsb',
-            'kk', 'ml', 'ky', 'hr', 'wo', 'kn', 'ang', 'eo', 'hi', 'gn',
-            'ga', 'ia', 'az', 'co', 'sk', 'csb', 'st', 'ms', 'nds', 'kl',
-            'sd', 'ug', 'ti', 'tl', 'mk', 'ka', 'an', 'my', 'gu', 'km',
-            'lv', 'cy', 'ts', 'qu', 'eu', 'fo', 'bs', 'am', 'rw', 'mr',
-            'su', 'chr', 'mn', 'nah', 'om', 'ie', 'yi', 'be', 'iu', 'mg',
-            'sh', 'gd', 'nn', 'bn', 'zu', 'si', 'pa', 'mt', 'dv', 'tpi',
-            'mi', 'roa-rup', 'jv', 'tg', 'ps', 'ik', 'so', 'uz', 'ha', 'gv',
-            'ss', 'kw', 'sa', 'ay', 'na', 'jbo', 'ne', 'tn', 'sm', 'sg',
+            'fr', 'en', 'lt', 'tr', 'vi', 'ru', 'zh', 'io', 'pl', 'el',
+            'fi', 'hu', 'no', 'it', 'ta', 'de', 'sv', 'ko', 'pt', 'nl',
+            'lo', 'ku', 'ja', 'es', 'ro', 'id', 'te', 'et', 'gl', 'bg',
+            'uk', 'ca', 'ar', 'kn', 'vo', 'ml', 'fa', 'is', 'sr', 'af',
+            'li', 'sw', 'cs', 'scn', 'fy', 'th', 'simple', 'br', 'oc', 'he',
+            'sl', 'hy', 'sq', 'tt', 'la', 'zh-min-nan', 'da', 'hr', 'ast', 'tk',
+            'wa', 'ur', 'hsb', 'kk', 'ky', 'wo', 'ang', 'eo', 'hi', 'ga',
+            'gn', 'az', 'ia', 'co', 'sk', 'csb', 'st', 'ms', 'mr', 'tl',
+            'ka', 'nds', 'kl', 'sd', 'ug', 'ti', 'mk', 'an', 'my', 'gu',
+            'km', 'lv', 'eu', 'cy', 'mg', 'ts', 'qu', 'sh', 'bs', 'fo',
+            'am', 'rw', 'chr', 'su', 'mn', 'om', 'nah', 'bn', 'ie', 'yi',
+            'be', 'iu', 'gd', 'nn', 'zu', 'si', 'tg', 'pa', 'mt', 'dv',
+            'tpi', 'roa-rup', 'mi', 'jv', 'kw', 'ps', 'uz', 'ik', 'so', 'gv',
+            'sg', 'ha', 'ss', 'sa', 'ay', 'na', 'jbo', 'ne', 'tn', 'sm',
             'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
 
@@ -95,7 +95,6 @@ class Family(family.Family):
             'uz': u'Vikilug‘at',
             'vo': u'Vükivödabuk',
             'yi': [u'װיקיװערטערבוך', u'וויקיווערטערבוך'],
-            'zh': u'维基词典',
         }
 
         self.namespaces[5] = {
@@ -217,7 +216,6 @@ class Family(family.Family):
             'wo': u'Wiktionary waxtaan',
             'yi': [u'װיקיװערטערבוך רעדן', u'וויקיווערטערבוך רעדן'],
             'za': u'Wiktionary讨论',
-            'zh': u'维基词典讨论',
         }
 
         self.namespaces[100] = {

@@ -11,11 +11,11 @@ class Family(family.Family):
         self.name = 'wikisource'
 
         self.languages_by_size = [
-            'en', 'pt', 'fr', 'zh', 'es', 'de', 'ru', 'he', 'it', 'ar',
+            'en', 'pt', 'ru', 'zh', 'fr', 'es', 'de', 'he', 'it', 'ar',
             'fa', 'hu', 'pl', 'th', 'cs', 'ro', 'hr', 'te', 'fi', 'tr',
-            'nl', 'sv', 'sl', 'ko', 'sr', 'ja', 'la', 'uk', 'el', 'li',
-            'ml', 'is', 'bs', 'id', 'ca', 'bn', 'az', 'yi', 'hy', 'mk',
-            'no', 'da', 'vi', 'et', 'ta', 'bg', 'lt', 'kn', 'gl', 'cy',
+            'nl', 'sv', 'sl', 'ko', 'sr', 'uk', 'ja', 'el', 'la', 'li',
+            'yi', 'ml', 'az', 'is', 'bn', 'bs', 'ca', 'vi', 'id', 'hy',
+            'mk', 'no', 'da', 'et', 'ta', 'bg', 'lt', 'kn', 'gl', 'cy',
             'sk', 'zh-min-nan', 'fo',
         ]
 
@@ -72,7 +72,6 @@ class Family(family.Family):
             'th': u'วิกิซอร์ซ',
             'tr': u'VikiKaynak',
             'yi': [u'װיקיביבליאָטעק', u'וויקיביבליאטעק'],
-            'zh': u'维基文库',
         }
         self.namespaces[5] = {
             '_default': [u'Wikisource talk', self.namespaces[5]['_default']],
@@ -129,7 +128,6 @@ class Family(family.Family):
             'uk': u'Обговорення Wikisource',
             'vi': u'Thảo luận Wikisource',
             'yi': [u'װיקיביבליאָטעק רעדן', u'וויקיביבליאטעק רעדן'],
-            'zh': u'维基文库讨论',
         }
         self.namespaces[100] = {
             'ar': u'بوابة',

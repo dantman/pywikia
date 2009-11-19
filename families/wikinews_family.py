@@ -11,9 +11,9 @@ class Family(family.Family):
         self.name = 'wikinews'
 
         self.languages_by_size = [
-            'en', 'sr', 'pl', 'it', 'de', 'fr', 'pt', 'es', 'zh', 'sv',
-            'ja', 'ru', 'nl', 'he', 'fi', 'ar', 'sd', 'cs', 'no', 'uk',
-            'hu', 'ca', 'ro', 'th', 'bs', 'bg', 'ta', 'tr'
+            'sr', 'en', 'pl', 'de', 'it', 'fr', 'pt', 'es', 'zh', 'ja',
+            'sv', 'ru', 'nl', 'he', 'fi', 'ar', 'cs', 'sd', 'no', 'hu',
+            'uk', 'ca', 'ro', 'ta', 'tr', 'bg', 'th', 'bs',
         ]
 
         if family.config.SSL_connection:
@@ -53,7 +53,6 @@ class Family(family.Family):
             'th': u'วิกิข่าว',
             'tr': u'Vikihaber',
             'uk': u'ВікіНовини',
-            'zh': u'维基新闻',
         }
         self.namespaces[5] = {
             '_default': [u'Wikinews talk', self.namespaces[5]['_default']],
@@ -83,7 +82,6 @@ class Family(family.Family):
             'th': u'คุยเรื่องวิกิข่าว',
             'tr': u'Vikihaber tartışma',
             'uk': u'Обговорення ВікіНовини',
-            'zh': u'维基新闻讨论',
         }
 
         self.namespaces[100] = {

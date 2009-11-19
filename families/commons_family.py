@@ -24,9 +24,11 @@ class Family(family.Family):
         }
         self.namespaces[100] = {
             '_default': [u'Creator', 'Project'],
+            'commons': u'Creator',
         }
         self.namespaces[101] = {
             '_default': [u'Creator talk', 'Project talk'],
+            'commons': u'Creator talk',
         }
         self.namespaces[100] = {
             '_default': [u'TimedText'],

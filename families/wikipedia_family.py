@@ -12,32 +12,33 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'de', 'fr', 'pl', 'ja', 'it', 'nl', 'es', 'pt', 'ru',
-            'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'hu', 'tr', 'cs', 'ro',
-            'vo', 'eo', 'da', 'sk', 'id', 'ko', 'ar', 'vi', 'he', 'lt',
-            'sr', 'sl', 'bg', 'et', 'fa', 'hr', 'simple', 'new', 'ht', 'nn',
-            'gl', 'th', 'ms', 'el', 'te', 'eu', 'ceb', 'hi', 'mk', 'ka',
-            'la', 'br', 'bs', 'lb', 'is', 'az', 'cy', 'sq', 'mr', 'sh',
-            'bpy', 'lv', 'tl', 'pms', 'be-x-old', 'jv', 'bn', 'oc', 'ta', 'io',
-            'be', 'an', 'scn', 'nds', 'su', 'nap', 'ku', 'sw', 'af', 'fy',
-            'ast', 'zh-yue', 'bat-smg', 'wa', 'war', 'ur', 'qu', 'ml', 'ksh', 'cv',
-            'tg', 'ga', 'vec', 'roa-tara', 'gu', 'gd', 'uz', 'pam', 'kn', 'yi',
-            'mi', 'lmo', 'yo', 'zh-min-nan', 'nah', 'glk', 'co', 'hsb', 'roa-rup', 'kk',
-            'als', 'ia', 'li', 'hy', 'sah', 'bcl', 'gan', 'tt', 'tk', 'sa',
-            'nds-nl', 'wuu', 'os', 'fo', 'vls', 'arz', 'fiu-vro', 'nrm', 'am', 'pag',
-            'rm', 'map-bms', 'dv', 'mn', 'gv', 'se', 'diq', 'fur', 'ne', 'sco',
-            'bar', 'lij', 'nov', 'bh', 'mt', 'ilo', 'pi', 'mzn', 'zh-classical', 'csb',
-            'ug', 'km', 'frp', 'lad', 'si', 'kw', 'ang', 'sc', 'pdc', 'haw',
-            'mg', 'to', 'kv', 'my', 'szl', 'pa', 'ps', 'myv', 'ie', 'gn',
-            'hif', 'ln', 'stq', 'jbo', 'wo', 'arc', 'crh', 'tpi', 'ty', 'ext',
-            'cbk-zam', 'ky', 'hak', 'eml', 'zea', 'srn', 'ay', 'pap', 'so', 'kg',
-            'ig', 'or', 'kab', 'lo', 'udm', 'rmy', 'ba', 'dsb', 'ce', 'sm',
-            'av', 'nv', 'cu', 'ks', 'tet', 'got', 'kaa', 'bo', 'sd', 'mdf',
-            'iu', 'na', 'bm', 'as', 'cdo', 'kl', 'pnt', 'chr', 'ee', 'om',
-            'pih', 'ab', 'zu', 'ti', 'ts', 'ss', 'za', 'bi', 'ha', 'cr',
-            'dz', 'xal', 've', 'ch', 'xh', 'tn', 'bug', 'ik', 'bxr', 'rw',
-            'st', 'tw', 'chy', 'ak', 'fj', 'ny', 'ff', 'sn', 'sg', 'lbe',
-            'lg', 'rn', 'ki', 'tum', 'ng', 'mhr', 'ckb', 'pnb', 'mwl', 'ace'
+            'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'hu', 'cs', 'tr', 'ro',
+            'eo', 'ko', 'da', 'vo', 'id', 'sk', 'ar', 'vi', 'sr', 'he',
+            'lt', 'fa', 'bg', 'sl', 'hr', 'et', 'simple', 'new', 'ms', 'th',
+            'gl', 'nn', 'hi', 'ht', 'eu', 'el', 'te', 'ceb', 'mk', 'ka',
+            'la', 'br', 'az', 'bs', 'lb', 'is', 'sh', 'mr', 'cy', 'sq',
+            'lv', 'tl', 'bpy', 'be-x-old', 'pms', 'jv', 'bn', 'oc', 'ta', 'io',
+            'be', 'an', 'nds', 'scn', 'sw', 'su', 'fy', 'af', 'nap', 'ku',
+            'ast', 'bat-smg', 'zh-yue', 'ur', 'ml', 'wa', 'gu', 'qu', 'war', 'cv',
+            'ksh', 'ga', 'tg', 'vec', 'roa-tara', 'gd', 'kn', 'uz', 'pam', 'lmo',
+            'yi', 'mi', 'zh-min-nan', 'nah', 'glk', 'hsb', 'kk', 'co', 'roa-rup', 'als',
+            'hy', 'sah', 'li', 'ia', 'tt', 'bcl', 'gan', 'os', 'nds-nl', 'tk',
+            'sa', 'fiu-vro', 'fo', 'arz', 'vls', 'mn', 'am', 'nrm', 'dv', 'pag',
+            'rm', 'map-bms', 'wuu', 'gv', 'ne', 'bar', 'se', 'sco', 'diq', 'fur',
+            'my', 'lij', 'pnb', 'nov', 'mt', 'yo', 'bh', 'mzn', 'ilo', 'csb',
+            'pi', 'zh-classical', 'ug', 'km', 'lad', 'si', 'frp', 'sc', 'ang', 'mg',
+            'kw', 'haw', 'pdc', 'ps', 'szl', 'kv', 'to', 'pa', 'ie', 'hif',
+            'hak', 'myv', 'gn', 'bo', 'ln', 'stq', 'crh', 'jbo', 'arc', 'wo',
+            'nv', 'ext', 'ky', 'tpi', 'ty', 'cbk-zam', 'mhr', 'eml', 'zea', 'srn',
+            'ay', 'pap', 'so', 'ig', 'kg', 'or', 'kab', 'ckb', 'lo', 'ace',
+            'udm', 'ba', 'rmy', 'dsb', 'kaa', 'ce', 'sm', 'ks', 'av', 'cu',
+            'tet', 'got', 'sd', 'mdf', 'iu', 'na', 'bm', 'kl', 'ab', 'pih',
+            'as', 'pnt', 'cdo', 'chr', 'mwl', 'ee', 'om', 'xal', 'zu', 'ti',
+            'ts', 'za', 'ss', 've', 'bi', 'ha', 'cr', 'dz', 'ch', 'bxr',
+            'bug', 'xh', 'tn', 'ki', 'rw', 'ik', 'st', 'tw', 'ny', 'chy',
+            'ak', 'fj', 'sn', 'ff', 'lg', 'lbe', 'rn', 'tum', 'sg', 'ng',
         ]
+
 
         if family.config.SSL_connection:
             self.langs = dict([(lang, None) for lang in self.languages_by_size])
@@ -140,7 +141,6 @@ class Family(family.Family):
             'uz': u'Vikipediya',
             'vo': u'Vükiped',
             'yi': [u'װיקיפּעדיע', u'וויקיפעדיע'],
-            'zh': u'维基百科',
             'zh-classical': u'維基大典',
         }
 
@@ -329,7 +329,6 @@ class Family(family.Family):
             'yo': u'Ọ̀rọ̀ Wikipedia',
             'za': u'Wikipedia讨论',
             'zea': u'Overleg Wikipedia',
-            'zh': u'维基百科讨论',
             'zh-classical': u'維基大典 talk',
         }
 

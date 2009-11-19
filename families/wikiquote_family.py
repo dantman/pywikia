@@ -11,14 +11,14 @@ class Family(family.Family):
         self.name = 'wikiquote'
 
         self.languages_by_size = [
-            'en', 'it', 'de', 'pl', 'pt', 'sk', 'ru', 'es', 'bg', 'bs',
-            'sl', 'tr', 'he', 'lt', 'fr', 'cs', 'zh', 'fa', 'hu', 'uk',
-            'id', 'sv', 'el', 'no', 'nl', 'ja', 'fi', 'eo', 'hy', 'et',
-            'nn', 'ca', 'simple', 'ka', 'ar', 'ku', 'ko', 'hr', 'ro', 'gl',
-            'sr', 'ml', 'li', 'is', 'th', 'af', 'te', 'da', 'sq', 'vi',
-            'eu', 'az', 'la', 'br', 'hi', 'be', 'ast', 'uz', 'ang', 'zh-min-nan',
-            'lb', 'mr', 'gu', 'su', 'ur', 'ta', 'wo', 'kn', 'ky', 'cy',
-            'am', 'co', 'kk',
+            'en', 'it', 'pl', 'de', 'pt', 'ru', 'sk', 'es', 'bg', 'bs',
+            'sl', 'tr', 'fr', 'he', 'lt', 'cs', 'zh', 'el', 'hu', 'fa',
+            'uk', 'id', 'sv', 'nl', 'no', 'ja', 'fi', 'simple', 'hy', 'eo',
+            'et', 'nn', 'ca', 'ka', 'ar', 'ko', 'ku', 'hr', 'gl', 'ro',
+            'sr', 'ml', 'li', 'is', 'th', 'te', 'af', 'da', 'sq', 'eu',
+            'az', 'vi', 'la', 'cy', 'br', 'hi', 'be', 'ast', 'uz', 'ta',
+            'ang', 'zh-min-nan', 'mr', 'gu', 'lb', 'su', 'ur', 'wo', 'ky', 'kn',
+            'am', 'kk', 'co',
         ]
 
         if family.config.SSL_connection:
@@ -62,7 +62,6 @@ class Family(family.Family):
             'uk': u'Вікіцитати',
             'ur': u'وکی اقتباسات',
             'uz': u'Vikiiqtibos',
-            'zh': u'维基语录',
         }
 
         self.namespaces[5] = {
@@ -140,7 +139,6 @@ class Family(family.Family):
             'vi': u'Thảo luận Wikiquote',
             'vo': u'Bespik dö Wikiquote',
             'wo': u'Wikiquote waxtaan',
-            'zh': u'维基语录讨论',
         }
 
         self.namespaces[100] = {
