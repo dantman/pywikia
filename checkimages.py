@@ -605,8 +605,7 @@ class main:
                 else:
                     if not resPutMex:
                         break
-            
-            if self.notification and self.head:
+            if self.notification:
                 try:
                     self.put_mex_in_talk()
                 except wikipedia.EditConflict:
@@ -702,14 +701,11 @@ class main:
                 testoattuale = self.talk_page.get()
             except wikipedia.NoPage:
                 second_text = False
-                ti_es_ti = wikipedia.translate(self.site, empty)
-                testoattuale = ti_es_ti                        
+                testoattuale  = wikipedia.translate(self.site, empty)                  
         except wikipedia.NoPage:
             wikipedia.output(u'The user page is blank')
             second_text = False
-            ti_es_ti = wikipedia.translate(self.site, empty)
-            testoattuale = ti_es_ti
-        
+            testoattuale = wikipedia.translate(self.site, empty)        
         if self.commTalk:
             commentox = self.commTalk
         else:
