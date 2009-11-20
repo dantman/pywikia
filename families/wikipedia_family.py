@@ -629,6 +629,7 @@ class Family(family.Family):
                    u'Category redirect',
                    u'Catredirect',),
             'simple': (u"Category redirect",
+                       u"Categoryredirect",
                        u"Catredirect",),
             'sq': (u'Kategori e zhvendosur',
                    u'Category redirect',),
