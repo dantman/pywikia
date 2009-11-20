@@ -44,26 +44,26 @@ commonscatTemplates = {
     'an' : (u'Commonscat', []),
     'ang' : (u'Commonscat', []),
     'ar' : (u'تصنيف كومنز', [u'Commonscat', u'تصنيف كومونز', u'Commons cat', u'CommonsCat']),
-    'ast' : (u'Commonscat', []),
+    'ast' : (u'Commonscat', []), # No alternatives found
     'az' : (u'CommonsKat', []),
     'bar' : (u'Commonscat', []),
     'bat-smg' : (u'Commonscat', []),
-    'be' : (u'Commonscat', []),
+    'be' : (u'Commonscat', []), # No alternatives found
     'bg' : (u'Commonscat', []),
-    'bn' : (u'কমন্সক্যাট', []),
-    'br' : (u'Commonscat', []),
+    'bn' : (u'কমন্সক্যাট', [u'Commonscat']),
+    'br' : (u'Commonscat', []), # No alternatives found
     'ca' : (u'Commonscat', []),
-    'cbk-zam' : (u'Commonscat', []),
-    'chr' : (u'Commonscat', []),
-    'crh' : (u'CommonsKat', []),
+    'cbk-zam' : (u'Commonscat', []), # No alternatives found
+    'chr' : (u'Commonscat', []), # No alternatives found
+    'crh' : (u'CommonsKat', [u'Commonscat']),
     'cs' : (u'Commonscat', [u'Commons cat']),
-    'cu' : (u'Commonscat', []),
-    'cv' : (u'Commonscat', []),
+    'cu' : (u'Commonscat', []), # No alternatives found
+    'cv' : (u'Commonscat', []), # No alternatives found
     'da' : (u'Commonscat', [u'Commons cat', u'Commonskat', u'Commonscat2']),
     'de' : (u'Commonscat', []), # No alternatives found
-    'diq' : (u'Commonscat', []),
-    'dv' : (u'Commonscat', []),
-    'el' : (u'Commonscat', []),
+    'diq' : (u'Commonscat', []), # No alternatives found
+    'dv' : (u'Commonscat', []), # No alternatives found
+    'el' : (u'Commonscat', []), # No alternatives found
     'en' : (u'Commons category', [u'Commoncat', u'Commons2', u'Cms-catlist-up', u'Catlst commons', u'Commonscategory', u'Commonscat', u'Commons cat']),
     'eo' : (u'Commonscat', []), # No alternatives found
     'es' : (u'Commonscat', [u'Ccat', u'Commons cat', u'Categoría Commons', u'Commonscat-inline']),
@@ -71,52 +71,52 @@ commonscatTemplates = {
     'fa' : (u'انبار-رده', [u'Commonscat', u'Commons cat', u'انبار رده', u'Commons category']),
     'fi' : (u'Commonscat', []), # No alternatives found
     'fr' : (u'Commonscat', [u'CommonsCat', u'Commons cat', u'Commons category']),
-    'frp' : (u'Commonscat', []),
+    'frp' : (u'Commonscat', [u'CommonsCat']), 
     'fy' : (u'Commonscat', []),
-    'ga' : (u'Catcómhaoin', []),
-    'gd' : (u'Commonscat', []),
-    'gv' : (u'Commonscat', []),
+    'ga' : (u'Catcómhaoin', [u'Commonscat']),
+    'gd' : (u'Commonscat', []), # No alternatives found
+    'gv' : (u'Commonscat', []), # No alternatives found
     'ha' : (u'Commonscat', []),
     'he' : (u'Commonscat', []),
-    'hi' : (u'Commonscat', []),
+    'hi' : (u'Commonscat', [u'Commons2', u'Commons cat', u'Commons category']),
     'hr' : (u'Commonscat', []),
     'hu' : (u'Közvagyonkat', []),
-    'hy' : (u'Commonscat', []),
+    'hy' : (u'Commons cat', [u'Commonscat']),
     'ia' : (u'Commonscat', []),
     'id' : (u'Commonscat', [u'Commons cat', u'Commons2', u'CommonsCat', u'Commons category']),
     'io' : (u'Commonscat', []),
     'is' : (u'CommonsCat', []),
     'it' : (u'Commonscat', []),
     'ja' : (u'Commonscat', [u'Commons cat', u'Commons category']),
-    'jv' : (u'Commonscat', []),
+    'jv' : (u'Commonscat', [u'Commons cat']),
     'ka' : (u'Commonscat', []),
-    'kaa' : (u'Commons cat', []),
-    'kg' : (u'Commonscat', []),
-    'kk' : (u'Commonscat', []),
+    'kaa' : (u'Commons cat', [u'Commonscat']),
+    'kg' : (u'Commonscat', []), # No alternatives found
+    'kk' : (u'Commonscat', [u'Commons2']),
     'km' : (u'Commonscat', []),
-    'kn' : (u'Commonscat', []),
-    'ko' : (u'Commonscat', []),
+    'kn' : (u'Commonscat', []), # No alternatives found
+    'ko' : (u'Commonscat', [u'Commons cat', u'공용분류']),
     'la' : (u'CommuniaCat', []),
     'lad' : (u'Commonscat', []),
-    'lbe' : (u'Commonscat', []),
+    'lbe' : (u'Commonscat', []), # No alternatives found
     'li' : (u'Commonscat', []),
     'lo' : (u'Commonscat', []),
     'lt' : (u'Commonscat', []),
     'lv' : (u'Commonscat', []),
     'mi' : (u'Commonscat', []),
     'mk' : (u'Ризница-врска', [u'Commonscat', u'Commons cat', u'CommonsCat', u'Commons2', u'Commons category']),
-    'ml' : (u'Commonscat', []),
+    'ml' : (u'Commonscat', [u'Commons cat', u'Commons2']),
     'mn' : (u'Commonscat', []),
     'ms' : (u'Commonscat', []),
     'nah' : (u'Commonscat', []),
     'nds-nl' : (u'Commonscat', []),
-    'new' : (u'Commonscat', []),
+    'new' : (u'Commonscat', []), # No alternatives found
     'nl' : (u'Commonscat', []), # No alternatives found
     'nn' : (u'Commonscat', [u'Commons cat']),
     'no' : (u'Commonscat', []), # No alternatives found
     'oc' : (u'Commonscat', []),
     'om' : (u'Commonscat', []),
-    'os' : (u'Commonscat', []),
+    'os' : (u'Commonscat', [u'Commons cat']),
     'pam' : (u'Commonscat', []),
     'pl' : (u'Commonscat', []), # No alternatives found
     'pt' : (u'Commonscat', [u'Commons cat']),
@@ -125,7 +125,7 @@ commonscatTemplates = {
     'ru' : (u'Commonscat', [u'Викисклад-кат']),
     'sah' : (u'Commonscat', []),
     'scn' : (u'Commonscat', []),
-    'sd' : (u'Commonscat', []),
+    'sd' : (u'Commonscat', []), # No alternatives found
     'se' : (u'Commonscat', []),
     'sh' : (u'Commonscat', []),
     'si' : (u'Commonscat', []),
@@ -136,15 +136,15 @@ commonscatTemplates = {
     'sr' : (u'Commonscat', []),
     'su' : (u'Commonscat', []),
     'sv' : (u'Commonscat', [u'Commonscat-rad', u'Commonskat', u'Commons cat']),
-    'sw' : (u'Commonscat', []),
+    'sw' : (u'Commonscat', [u'Commons2', u'Commons cat']),
     'ta' : (u'Commonscat', []),
-    'te' : (u'Commonscat', []),
+    'te' : (u'Commonscat', [u'Commons cat']),
     'th' : (u'Commonscat', []),
     'tl' : (u'Commonscat', []),
     'tr' : (u'CommonsKat', [u'Commonscat', u'Commons cat']),
     'tt' : (u'Commonscat', []),
     'udm' : (u'Commonscat', []),
-    'uk' : (u'Commonscat', []),
+    'uk' : (u'Commonscat', [u'Commons cat', u'Category', u'Commonscat-inline']),
     'uz' : (u'Commonscat', []),
     'vi' : (u'Commonscat', [u'Commons2', u'Commons cat', u'Commons category', u'Commons+cat']),
     'vls' : (u'Commonscat', []),
@@ -152,8 +152,8 @@ commonscatTemplates = {
     'xal' : (u'Commonscat', []),
     'zea' : (u'Commonscat', []),
     'zh' : (u'Commonscat', [u'Commons cat']),
-    'zh-classical' : (u'共享類', []),
-    'zh-yue' : (u'同享類', []),
+    'zh-classical' : (u'共享類', [u'Commonscat']),
+    'zh-yue' : (u'同享類', [u'Commonscat', u'共享類 ', u'Commons cat']),
 }
 
 ignoreTemplates = {
@@ -281,14 +281,18 @@ def changeCommonscat (page = None, oldtemplate = u'', oldcat = u'', newtemplate 
 
 def findCommonscatLink (page=None):
     for ipage in page.interwiki():
-        if(ipage.exists() and not ipage.isRedirectPage() and not ipage.isDisambig()):
-            commonscatLink = getCommonscatLink (ipage)
-            if commonscatLink:
-                (currentCommonscatTemplate, possibleCommonscat) = commonscatLink
-                checkedCommonscat = checkCommonscatLink(possibleCommonscat)
-                if (checkedCommonscat!= u''):
-                    wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + checkedCommonscat + ".")
-                    return checkedCommonscat
+        try:
+            if(ipage.exists() and not ipage.isRedirectPage() and not ipage.isDisambig()):
+                commonscatLink = getCommonscatLink (ipage)
+                if commonscatLink:
+                    (currentCommonscatTemplate, possibleCommonscat) = commonscatLink
+                    checkedCommonscat = checkCommonscatLink(possibleCommonscat)
+                    if (checkedCommonscat!= u''):
+                        wikipedia.output("Found link for " + page.title() + " at [[" + ipage.site().language() + ":" + ipage.title() + "]] to " + checkedCommonscat + ".")
+                        return checkedCommonscat
+        except wikipedia.BadTitle:
+            #The interwiki was incorrect
+            return u''
     return u''
 
 
