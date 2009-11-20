@@ -562,13 +562,13 @@ class WelcomeBot(object):
                     self.bname = bname
                     return True
         except UnicodeEncodeError:
-            pass
-        
+            pass        
         try:
             for wname in self._whitelist:
                 if wname.lower() in str(name.lower()):
                     name = name.replace(wname.lower(), '')
                     for bname in self._blacklist:
+                        self.bname = bname
                         return bname.lower() in name.lower()
         except UnicodeEncodeError:
             pass    
