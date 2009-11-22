@@ -451,7 +451,7 @@ msg = {
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nah': (u'Tepozcuayollotl', u'Tlamahxiltilli', u'Tlaquixtilli', u'Tlapatlalli'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
-    'nds-nl': (u'bot', u'derbie', u'derof', u'aanders'),
+    'nds-nl': (u'bot ', u'derbie', u'derof', u'aanders'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
     'no': (u'robot ', u'legger til', u'fjerner', u'endrer'),
