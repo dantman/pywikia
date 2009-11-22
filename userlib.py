@@ -42,7 +42,7 @@ class User(object):
         site - a wikipedia.Site object
         name - name of the user, without the trailing User:
         """
-        if type(site) == str:
+        if type(site) in [str, unicode]:
             self._site = wikipedia.getSite(site)
         else:
             self._site = site
@@ -73,27 +73,8 @@ class User(object):
         return self.__str__()
     
     def _load(self):
-        data = batchLoadUI(self.name(), self.site()).values()[0]
-        if 'missing' in data or 'invalid' in data:
-            raise wikipedia.Error('No such user or invaild username')
-        
-        self._editcount = data['editcount']
-        
-        if 'groups' in data:
-            self._groups = data['groups']
-        else:
-            self._groups = []
-        
-        if data['registration']:
-            self._registrationTime = wikipedia.parsetime2stamp(data['registration'])
-        else:
-            self._registrationTime = 0
-        
-        self._mailable = ("emailable" in data)
-        
-        self._blocked = ('blockedby' in data)
-        #if self._blocked: #Get block ID
-        
+        getall(self.site(), [self])
+        return
     
     def registrationTime(self, force = False):
         if not hasattr(self, '_registrationTime') or force:
@@ -553,39 +534,69 @@ class User(object):
             raise UnblockError, data
         return True
 
-def batchLoadUI(names = [], site = None):
-    #
-    # batch load users information by API.
-    # result info: http://www.mediawiki.org/wiki/API:Query_-_Lists#users_.2F_us
-    #
-    if not site:
-        site = wikipedia.getSite()
-    elif type(site) in  [str, unicode]:
-        site = wikipedia.getSite(site)
-    
-    result = {}
-    params = {
-        'action': 'query',
-        'list': 'users',
-        'usprop': ['blockinfo', 'groups', 'editcount', 'registration', 'emailable', 'gender'],
-        'ususers': names,
-    }
-    #if site.versionnumber() >= 16:
-    #    params['ustoken'] = 'userrights'
+def getall(site, users, throttle=True, force=False):
+    """Bulk-retrieve users data from site
+ 
+    Arguments: site = Site object
+               users = iterable that yields User objects
 
-    result = dict([(sig['name'].lower(), sig) for sig in query.GetData(params, site)['query']['users'] ])
-    
-    
-    return result
+    """
+    users = list(users)  # if pages is an iterator, we need to make it a list
+    if len(users) > 1: wikipedia.output(u'Getting %d users data from %s...' % (len(users), site))
+    _GetAllUI(site, users, throttle, force).run()
 
-def batchDumpInfo(user):
-    totals = batchLoadUI([x.name() for x in user])
-    for oj in user:
-        data = totals[oj.name().lower()]
-        oj._editcount = data['editcount']
-        if 'groups' in data:
-            oj._groups = data['groups']
-        oj._blocked = ('blockedby' in data)
+class _GetAllUI(object):
+    def __init__(self, site, users, throttle, force):
+        self.site = site
+        self.users = []
+        self.throttle = throttle
+        self.force = force
+        self.sleeptime = 15
+    
+        for user in users:
+            if not hasattr(user, '_editcount') or force:
+                self.users.append(user)
+            elif wikipedia.verbose:
+                wikipedia.output(u"BUGWARNING: %s already done!" % user.name())
+     
+    def run(self):
+        if self.users:
+            while True:
+                try:
+                    data = self.getData()
+                except Exception, e:
+                    # Print the traceback of the caught exception
+                    print e
+                    raise
+                else:
+                    break
+            
+            for uj in self.users:
+                x = data[uj.name()]
+                uj._editcount = x['editcount']
+                if 'groups' in x:
+                    uj._groups = x['groups']
+                else:
+                    uj._groups = []
+                if x['registration']:
+                    uj._registrationTime = wikipedia.parsetime2stamp(x['registration'])
+                else:
+                    uj._registrationTime = 0
+                uj._mailable = ("emailable" in x)
+                uj._blocked = ('blockedby' in x)
+                #if self._blocked: #Get block ID
+        
+    def getData(self):
+        datas = {}
+        params = {
+            'action': 'query',
+            'list': 'users',
+            'usprop': ['blockinfo', 'groups', 'editcount', 'registration', 'emailable', 'gender'],
+            'ususers': u'|'.join([n.name() for n in self.users]),
+        }
+        for n in query.GetData(params, self.site)['query']['users']:
+            datas[n['name']] = n
+        return datas
 
 if __name__ == '__main__':
     """
