@@ -468,6 +468,7 @@ class Global(object):
     defaultSign = '--~~~~'  # default signature
     queryLimit = 50         # number of users that the bot load to check
     quiet = False           # Prevents users without contributions are displayed
+    quick = False           # Provide quick check by API bulk-retrieve user datas
 
     #fileOption = False     # check if the user wants to use a file or the wikipage
 
@@ -697,6 +698,7 @@ class WelcomeBot(object):
             params['lestart'] = globalvar.offset
         
         count = 0
+        count_auto = 0
         wikipedia.output("Querying new user log from API....")
         while True:
             lev = query.GetData(params, self.site)
@@ -709,8 +711,10 @@ class WelcomeBot(object):
                 if not globalvar.welcomeAuto and x['action'] == 'create2':
                     continue
                 if not globalvar.welcomeAuto and x['action'] == 'autocreate':
-                    showStatus(3)
-                    wikipedia.output(u'%s has been created automatically.' % x['user'])
+                    if not globalvar.quick:
+                        showStatus(3)
+                        wikipedia.output(u'%s has been created automatically.' % x['user'])
+                    count_auto += 1
                     continue
                 
                 yield userlib.User(self.site, x['user'])
@@ -720,6 +724,10 @@ class WelcomeBot(object):
             else:
                 break
         if someone_found:
+            if globalvar.quick and count_auto > 0:
+                showStatus()
+                wikipedia.output(u'Ignored %d user(s) by auto-create' % count_auto)
+            
             showStatus(5)
             wikipedia.output(u'There is nobody left to be welcomed...')
         else:
@@ -805,7 +813,18 @@ class WelcomeBot(object):
     def run(self):
         while True:
             welcomed_count = 0
-            for users in self.parseNewUserLog():
+            if globalvar.quick and config.use_api:
+                us = [x for x in self.parseNewUserLog()]
+                showStatus()
+                try:
+                    userlib.getall(self.site, us)
+                except NotImplementedError:
+                    globalvar.quick = False
+                    us = self._parseNewUserLogOld()
+            else:
+                us = self.parseNewUserLog()
+            
+            for users in us:
                 if users.isBlocked():
                     showStatus(3)
                     wikipedia.output(u'%s has been blocked!' % users.name() )
@@ -1013,6 +1032,9 @@ if __name__ == "__main__":
                     globalvar.dumpToLog = int(arg[11:])
             elif arg == '-quiet':
                 globalvar.quiet = True
+            elif arg == '-quick':
+                globalvar.quick = True
+            
         # Filename and pywikipedia path
         # file where is stored the random signature index
         filename = wikipedia.config.datafilepath('welcome-%s-%s.data' % (wikipedia.default_family, wikipedia.default_code))  
