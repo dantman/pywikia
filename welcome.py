@@ -1042,7 +1042,14 @@ if __name__ == "__main__":
             wikipedia.output('WARING: both -offset and -timeoffset were provided, ignoring -offset')
             globalvar.offset = 0
         bot = WelcomeBot()
-        bot.run()
+        try:
+            bot.run()
+        except KeyboardInterrupt:
+            if bot.welcomed_users:
+                showStatus()
+                wikipedia.output("Put welcomed users before quit...")
+                bot.makelogpage(bot.welcomed_users)
+            wikipedia.output("Quitting...")
     finally:
         # If there is the savedata, the script must save the number_user.
         if globalvar.randomSign and globalvar.saveSignIndex and bot.welcomed_users:
