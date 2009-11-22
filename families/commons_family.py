@@ -23,17 +23,15 @@ class Family(family.Family):
             '_default': [u'Commons talk', 'Project talk'],
         }
         self.namespaces[100] = {
-            '_default': [u'Creator', 'Project'],
-            'commons': u'Creator',
+            '_default': u'Creator',
         }
         self.namespaces[101] = {
-            '_default': [u'Creator talk', 'Project talk'],
-            'commons': u'Creator talk',
+            '_default': u'Creator talk',
         }
-        self.namespaces[100] = {
+        self.namespaces[102] = {
             '_default': [u'TimedText'],
         }
-        self.namespaces[101] = {
+        self.namespaces[103] = {
             '_default': [u'TimedText talk'],
         }
 

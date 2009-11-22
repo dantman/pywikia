@@ -24,6 +24,18 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Project talk', self.namespaces[5]['_default']],
         }
+        self.namespaces[90] = {
+            '_default': u'Thread',
+        }
+        self.namespaces[91] = {
+            '_default': u'Thread talk',
+        }
+        self.namespaces[92] = {
+            '_default': u'Summary',
+        }
+        self.namespaces[93] = {
+            '_default': u'Summary talk',
+        }
         self.namespaces[100] = {
             '_default': u'Manual',
         }
