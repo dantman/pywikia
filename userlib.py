@@ -570,9 +570,11 @@ class _GetAllUI(object):
                     raise
                 else:
                     break
-            
-            for uj in self.users:
-                x = data[uj.name()]
+            for uj in self.users: 
+                try:
+                    x = data[uj.name()]
+                except KeyError:
+                    break
                 uj._editcount = x['editcount']
                 if 'groups' in x:
                     uj._groups = x['groups']
