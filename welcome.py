@@ -90,6 +90,8 @@ This script understands the following command-line arguments:
 
    -quiet          Prevents users without contributions are displayed
 
+   -quick          Provide quick check by API bulk-retrieve user datas
+
 ********************************* GUIDE ***********************************
 
 Report, Bad and white list guide:
@@ -485,11 +487,11 @@ class WelcomeBot(object):
             self.defineSign(True)
         if __name__ != '__main__': #use only in module call
             self._checkQueue = []
-    
+
     def badNameFilter(self, name, force = False):
         if not globalvar.filtBadName:
             return False
-        
+
         #initialize blacklist
         if not hasattr(self, '_blacklist') or force:
             elenco = [
@@ -523,7 +525,7 @@ class WelcomeBot(object):
                 "vandal", " v.f. ", "v. fighter", "vandal f.", "vandal fighter", 'wales jimmy',
                 "wheels", "wales", "www.",
             ]
-            
+
             #blacklist from wikipage
             badword_page = wikipedia.Page(self.site, wikipedia.translate(self.site, bad_pag) )
             list_loaded = list()
@@ -535,7 +537,7 @@ class WelcomeBot(object):
                 wikipedia.output(u'The bad word page doesn\'t exist!')
             self._blacklist = elenco + elenco_others + list_loaded
             del elenco, elenco_others, list_loaded
-        
+
         if not hasattr(self, '_whitelist') or force:
             #initialize whitelist
             whitelist_default = ['emiliano']
@@ -552,11 +554,11 @@ class WelcomeBot(object):
             else:
                 showStatus(4)
                 wikipedia.output(u"WARNING: The whitelist hasn't been setted!")
-            
+
             # Join the whitelist words.
             self._whitelist = list_white + whitelist_default
             del list_white, whitelist_default
-        
+
         try:
             for bname in self._blacklist:
                 if bname.lower() in str(name.lower()): #bad name positive
@@ -573,7 +575,7 @@ class WelcomeBot(object):
                         return bname.lower() in name.lower()
         except UnicodeEncodeError:
             pass    
-        
+
         return False
 
     def reportBadAccount(self, name = None, final = False):
@@ -587,7 +589,7 @@ class WelcomeBot(object):
                     globalvar.confirm = False
             else:
                 answer = 'y'
-            
+
             if answer.lower() in ['yes', 'y'] or not globalvar.confirm:
                 showStatus()
                 wikipedia.output(u'%s is possibly an unwanted username. It will be reported.' % name)
@@ -595,7 +597,7 @@ class WelcomeBot(object):
                     self._BAQueue.append(name)
                 else:
                     self._BAQueue = [name]
-        
+
         if len(self._BAQueue) >= globalvar.dumpToLog or final:
             rep_text = ''
             #name in queue is max, put detail to report page
@@ -618,7 +620,7 @@ class WelcomeBot(object):
                     rep_text += wikipedia.translate(self.site, report_text) % username
                     if self.site.lang == 'it':
                         rep_text = "%s%s}}" % (rep_text, self.bname)
-            
+
             com = wikipedia.translate(self.site, comment)
             if rep_text != '':
                 rep_page.put(text_get + rep_text, comment = com, minorEdit = True)
@@ -627,22 +629,22 @@ class WelcomeBot(object):
             self.BAQueue = list()
         else:
             return True
-    
+
     def makelogpage(self, queue = []):
         if not globalvar.makeWelcomeLog:
             return None
         if len(queue) == 0:
             return None
-        
+
         text = u''
         logg = wikipedia.translate(self.site, logbook)
         if not logg:
             return None
-        
+
         target = logg + '/' + time.strftime('%Y/%m/%d', time.localtime(time.time()))
         if self.site.lang == 'it':
             target = logg + '/' + time.strftime('%d/%m/%Y', time.localtime(time.time()))
-        
+
         logPage = wikipedia.Page(self.site, target)
         if logPage.exists():
             text = logPage.get()
@@ -653,7 +655,7 @@ class WelcomeBot(object):
             text = wikipedia.translate(self.site, logpage_header)
             text += u'\n!%s' % self.site.namespace(2)
             text += u'\n!%s' % capitalize(self.site.mediawiki_message('contribslink'))
-        
+
         for result in queue:
             # Adding the log... (don't take care of the variable's name...).
             luser = wikipedia.url2link(result.name(), self.site, self.site)
@@ -666,7 +668,7 @@ class WelcomeBot(object):
             except wikipedia.EditConflict:
                 wikipedia.output(u'An edit conflict has occured. Pausing for 10 seconds before continuing.')
                 time.sleep(10)
-    
+
     def parseNewUserLog(self):
         #if __name__ != '__main__':
         #    if self._checkQueue:
@@ -682,7 +684,7 @@ class WelcomeBot(object):
             for x in self._parseNewUserLogOld():
                 yield x
             return
-        
+
         params = {
             'action':'query',
             'list':'logevents',
@@ -696,15 +698,14 @@ class WelcomeBot(object):
             params['lestart'] = int(now.strftime("%Y%m%d%H%M%S"))
         elif globalvar.offset != 0:
             params['lestart'] = globalvar.offset
-        
-        count = 0
+
         count_auto = 0
         wikipedia.output("Querying new user log from API....")
         while True:
             lev = query.GetData(params, self.site)
+            count = len(lev['query']['logevents'])
             for x in lev['query']['logevents']:
                 someone_found = True
-                count += 1
                 if 'user' not in x:
                     continue
                 #created twice?
@@ -716,9 +717,9 @@ class WelcomeBot(object):
                         wikipedia.output(u'%s has been created automatically.' % x['user'])
                     count_auto += 1
                     continue
-                
+
                 yield userlib.User(self.site, x['user'])
-            
+
             if count < globalvar.queryLimit and 'query-continue' in lev:
                 params['lestart'] = lev['query-continue']['logevents']['lestart']
             else:
@@ -732,7 +733,7 @@ class WelcomeBot(object):
             wikipedia.output(u'There is nobody left to be welcomed...')
         else:
             wikipedia.output(u'\nLoaded all users...')
-    
+
     def _parseNewUserLogOld(self):
         someone_found = False
         URL = self.site.log_address(globalvar.queryLimit, 'newusers')
@@ -750,9 +751,9 @@ class WelcomeBot(object):
         reg =  u'\(<a href=\"' + re.escape(self.site.path())
         reg += u'\?title=%s(?P<user>.*?)&(?:amp;|)action=(?:edit|editredlink|edit&amp;redlink=1)\"' % re.escape('%s:' % urllib.quote(self.site.namespace(3).replace(" ", "_").encode(self.site.encoding())))
         reg += u'.*?</span> (?P<reason>.*?) *?</li>'
-        
+
         p = re.compile(reg, re.UNICODE)
-        
+
         for x in p.finditer(raw):
             someone_found = True
             userN = unicode(urllib.unquote(str(x.group('user'))), 'utf-8')
@@ -761,22 +762,22 @@ class WelcomeBot(object):
                 showStatus(3)
                 wikipedia.output(u'%s has been created automatically, skipping...' % userN)
                 continue
-            
+
             #FIXME: It counts the first 50 edits
             # if number > 50, it won't work
             # (not *so* useful, it should be enough).
             yield userlib.User(self.site, userN)
-        
+
         if someone_found:
             showStatus(5)
             wikipedia.output(u'There is nobody left to be welcomed...')
         else:
             wikipedia.output(u'\nLoaded all users...')
-    
+
     def defineSign(self, force = False):
         if hasattr(self,'_randomSignature') and not force:
             return self._randomSignature
-        
+
         signText = u''
         creg = re.compile(r"^\* ?(.*?)$", re.M)
         if not globalvar.signFileName:
@@ -786,7 +787,7 @@ class WelcomeBot(object):
                 wikipedia.output("%s doesn't allow random signature, force disable." % self.site)
                 globalvar.randomSign = False
                 return None
-            
+
             signPage = wikipedia.Page(self.site, signPageName )
             if signPage.exists():
                 wikipedia.output('Loading signature list...')
@@ -804,12 +805,12 @@ class WelcomeBot(object):
             except IOError:
                 wikipedia.output(u'Error! - No fileName!')
                 raise FilenameNotSet("No signature filename specified.")
-            
+
             signText = f.read()
             f.close()
         self._randomSignature = creg.findall(signText)
         return self._randomSignature
-    
+
     def run(self):
         while True:
             welcomed_count = 0
@@ -823,7 +824,7 @@ class WelcomeBot(object):
                     us = self._parseNewUserLogOld()
             else:
                 us = self.parseNewUserLog()
-            
+
             for users in us:
                 if users.isBlocked():
                     showStatus(3)
@@ -869,7 +870,7 @@ class WelcomeBot(object):
                         except wikipedia.EditConflict:
                             showStatus(4)
                             wikipedia.output(u'An edit conflict has occured, skipping this user.')
-                    
+
                     if globalvar.makeWelcomeLog and wikipedia.translate(self.site, logbook):
                         showStatus(5)
                         if welcomed_count == 1:
@@ -1049,7 +1050,7 @@ if __name__ == "__main__":
                 showStatus()
                 wikipedia.output("Put welcomed users before quit...")
                 bot.makelogpage(bot.welcomed_users)
-            wikipedia.output("Quitting...")
+            wikipedia.output("\nQuitting...")
     finally:
         # If there is the savedata, the script must save the number_user.
         if globalvar.randomSign and globalvar.saveSignIndex and bot.welcomed_users:
