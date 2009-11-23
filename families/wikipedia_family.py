@@ -755,6 +755,7 @@ class Family(family.Family):
             'no':  [u'Peker', u'Etternavn', u'Disambig', u'Tobokstavsforkortelse',
                     u'Trebokstavsforkortelse', u'Flertydig', u'Pekerside'],
             'nov': [u'Desambig'],
+            'nv':  [u'Dab'],
             'nrm': [u'Page dé frouque'],
             'oc':  [u'Omonimia', u'Disambig'],
             'pl':  [u'Disambig', u'DisambRulers', u'DisambigC', u'Strona ujednoznaczniająca'],
