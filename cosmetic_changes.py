@@ -444,7 +444,7 @@ class CosmeticChangesToolkit:
         If there are any complaints, please file a bug report.
         """
         if not self.redirect:
-            text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>[:;]*(\*+|#+)[:;\*#]*)(?P<char>[^\s\*#:;].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
+            text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>[:;]*(\*+|#+)[:;\*#]*)(?P<char>[^\s\*#:;].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre', 'source'])
         return text
 
     #from fixes.py
