@@ -203,24 +203,24 @@ class Category(wikipedia.Page):
                 params['cmlimit'] = 500
             else:
                 params['cmlimit'] = wikipedia.config.special_page_limit
-            
+
             if currentPageOffset:
                 params['cmcontinue'] = currentPageOffset
                 wikipedia.output('Getting [[%s]] list from %s...'
                                  % (self.title(), currentPageOffset[:-1])) # cmcontinue last key is '|'
             elif startFrom:
-                params['cmstart'] = startFrom
+                params['cmstartsortkey'] = startFrom
                 wikipedia.output('Getting [[%s]] list starting at %s...'
                                  % (self.title(), startFrom))
             else:
                 wikipedia.output('Getting [[%s]]...' % self.title())
-            
+
             wikipedia.get_throttle()
             data = query.GetData(params, self.site())
             if 'error' in data:
                 raise RuntimeError("%s" % data['error'])
             count = 0
-            
+
             for memb in data['query']['categorymembers']:
                 count += 1
                 # For MediaWiki versions where subcats look like articles
