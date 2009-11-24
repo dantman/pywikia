@@ -443,8 +443,9 @@ class CosmeticChangesToolkit:
         and French Wikipedia. It might be that it is not wanted on other wikis.
         If there are any complaints, please file a bug report.
         """
+        exceptions = ['comment', 'math', 'nowiki', 'pre', 'source', 'timeline']
         if not self.redirect:
-            text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>[:;]*(\*+|#+)[:;\*#]*)(?P<char>[^\s\*#:;].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre', 'source'])
+            text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>[:;]*(\*+|#+)[:;\*#]*)(?P<char>[^\s\*#:;].+?)', '\g<bullet> \g<char>', exceptions)
         return text
 
     #from fixes.py
