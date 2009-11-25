@@ -4137,6 +4137,9 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
             if exc not in exceptionRegexes:
                 raise ValueError("Unknown tag type: " + exc)
             dontTouchRegexes.append(exceptionRegexes[exc])
+            # handle alias
+            if exc == 'source':
+                dontTouchRegexes.append(re.compile(r'(?is)<syntaxhighlight .*?</syntaxhighlight>'))
         else:
             # assume it's a regular expression
             dontTouchRegexes.append(exc)
