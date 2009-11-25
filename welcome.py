@@ -287,7 +287,7 @@ netext = {
         'zh': u'{{subst:welcome}} %s',
     },
     'wiktionary':{
-        'it': u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s',
+        'it': u'{{subst:Utente:Filnik/Benve|firma=%s}}',
     },
     'wikiversity':{
         'de': u'{{subst:Willkommen|%s}}',
