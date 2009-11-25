@@ -543,7 +543,19 @@ def getall(site, users, throttle=True, force=False):
     """
     users = list(users)  # if pages is an iterator, we need to make it a list
     if len(users) > 1: wikipedia.output(u'Getting %d users data from %s...' % (len(users), site))
-    _GetAllUI(site, users, throttle, force).run()
+    
+    if len(users) > 500:
+        for urg in range(0, len(users), 500):
+            if urg == range(0, len(users), 500)[-1]: #latest
+                k = users[urg:]
+                _GetAllUI(site, k, throttle, force).run()
+                users[urg:] = k
+            else:
+                k = users[urg:urg + 500]
+                _GetAllUI(site, k, throttle, force).run()
+                users[urg:urg + 500] = k
+    else:
+        _GetAllUI(site, users, throttle, force).run()
 
 class _GetAllUI(object):
     def __init__(self, site, users, throttle, force):
@@ -596,9 +608,7 @@ class _GetAllUI(object):
             'usprop': ['blockinfo', 'groups', 'editcount', 'registration', 'emailable', 'gender'],
             'ususers': u'|'.join([n.name() for n in self.users]),
         }
-        for n in query.GetData(params, self.site)['query']['users']:
-            datas[n['name']] = n
-        return datas
+        return dict([(n['name'], n) for n in query.GetData(params, self.site)['query']['users']])
 
 if __name__ == '__main__':
     """
