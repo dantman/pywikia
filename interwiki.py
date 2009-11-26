@@ -1964,7 +1964,6 @@ def compareLanguages(old, new, insite):
         sep = u' '
     if modifying:
         mods += (sep + mod + colon + comma.join([fmt(new, x) for x in modifying]))
-        sep = u' '
     if mods:
         mcomment = head + mods
     return mods, mcomment, adding, removing, modifying
