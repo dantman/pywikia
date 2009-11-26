@@ -398,6 +398,7 @@ class SpeedyRobot:
                 'test':u'[[WP:CSD#G2]]: 測試頁',
                 'vand':u'[[WP:CSD#G3]]: 純粹破壞',
                 'rep':u'[[WP:CSD#G5]]: 經討論被刪除後又重新創建的內容',
+                'repa':u'[[WP:CSD#G5]]: 重複的文章',
                 'oprj':u'[[WP:CSD#G7]]: 內容來自其他中文計劃',
                 'move':u'[[WP:CSD#G8]]: 依[[Wikipedia:移動請求]]暫時刪除以進行移動或合併頁面之工作',
                 'auth':u'[[WP:CSD#G10]]: 原作者請求',
