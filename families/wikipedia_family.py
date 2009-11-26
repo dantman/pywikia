@@ -1130,6 +1130,8 @@ class Family(family.Family):
             },
         }
         self.crossnamespace[12] = {
+            'de': {'_default': [4],
+            },
             'en': {
                 '_default': [0],
             },
