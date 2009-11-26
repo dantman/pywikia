@@ -73,7 +73,7 @@ class User(object):
         return self.__str__()
     
     def _load(self):
-        getall(self.site(), [self])
+        getall(self.site(), [self], force=True)
         return
     
     def registrationTime(self, force = False):

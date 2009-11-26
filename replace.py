@@ -305,7 +305,7 @@ class ReplaceRobot:
         self.recursive = recursive
         if addedCat:
             site = pywikibot.getSite()
-            self.addedCat = pywikibot.Page(site, addCat, defaultNamespace=14)
+            self.addedCat = pywikibot.Page(site, addedCat, defaultNamespace=14)
         self.sleep = sleep
         # Some function to set default editSummary should probably be added
         self.editSummary = editSummary

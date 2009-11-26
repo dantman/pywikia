@@ -1647,7 +1647,7 @@ class Subject(object):
                     timeout *= 2
                     time.sleep(timeout)
                 except pywikibot.ServerError:
-                    if timeout>3600:
+                    if timeout > 3600:
                         raise
                     pywikibot.output(u'ERROR putting page: ServerError.')
                     pywikibot.output(u'Sleeping %i seconds before trying again.' % (timeout,))
