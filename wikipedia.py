@@ -3848,7 +3848,25 @@ def getall(site, pages, throttle=True, force=False):
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
     output(u'Getting %d pages from %s...' % (len(pages), site))
-    _GetAll(site, pages, throttle, force).run()
+    limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
+    
+    if len(pages) > limit:
+        # separate export pages for bulk-retrieve
+        
+        for pagg in range(0, len(pages), limit):
+            if pagg == range(0, len(pages), limit)[-1]: #latest retrieve
+                k = pages[pagg:]
+                output(u'Getting pages %d - %d of %d...' % (pagg + 1, len(pages), len(pages)))
+                _GetAll(site, k, throttle, force).run()
+                pages[pagg:] = k
+            else:
+                k = pages[pagg:pagg + limit]
+                output(u'Getting pages %d - %d of %d...' % (pagg + 1, pagg + limit, len(pages)))
+                _GetAll(site, k, throttle, force).run()
+                pages[pagg:pagg + limit] = k
+            get_throttle(requestsize = len(pages) / 10) # one time to retrieve is 7.7 sec.
+    else:
+        _GetAll(site, pages, throttle, force).run()
 
 
 # Library functions
