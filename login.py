@@ -273,7 +273,11 @@ class LoginManager:
 
         self.password = self.password.encode(self.site.encoding())
 
-        wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
+        if api:
+            wikipedia.output(u"Logging in to %s as %s via API." % (self.site, self.username))
+        else:
+            wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
+        
         try:
             cookiedata = self.getCookie(api)
         except NotImplementedError:
