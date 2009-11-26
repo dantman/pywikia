@@ -387,7 +387,7 @@ def main():
             acceptAll = True
         else:
             if not genFactory.handleArg(arg):
-                templateNames.append(arg)
+                templateNames.append(pywikibot.Page(pywikibot.getSite(), arg, defaultNamespace=10).titleWithoutNamespace())
 
     if subst or remove:
         for templateName in templateNames:
@@ -403,7 +403,7 @@ def main():
     oldTemplates = []
     ns = pywikibot.getSite().template_namespace()
     for templateName in templates.keys():
-        oldTemplate = pywikibot.Page(pywikibot.getSite(), ns + ':' + templateName)
+        oldTemplate = pywikibot.Page(pywikibot.getSite(), templateName, defaultNamespace=10)
         oldTemplates.append(oldTemplate)
 
     if xmlfilename:
