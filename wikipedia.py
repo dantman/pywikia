@@ -2213,7 +2213,7 @@ not supported by PyWikipediaBot!"""
                     continue
                 if not withImageLinks and page.isImage():
                     continue
-                if page.sectionFreeTitle():
+                if page.sectionFreeTitle() and page not in result:
                     result.append(page)
         return result
 
