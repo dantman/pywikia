@@ -161,6 +161,7 @@ ignoreTemplates = {
     'ar' : [u'تحويلة تصنيف', u'كومنز', u'كومونز', u'Commons'],
     'cs' : [u'Commons', u'Sestřičky', u'Sisterlinks'],
     'da' : [u'Commons', u'Commons left', u'Commons2', u'Commonsbilleder', u'Commonscat left', u'Commonscat2', u'GalleriCommons', u'Søsterlinks'],
+    'de' : [u'Commons']
     'en' : [u'Category redirect', u'Commons', u'Commonscat1A', u'Commoncats', u'Commonscat4Ra', u'Sisterlinks', u'Sisterlinkswp', u'Tracking category', u'Template category', u'Wikipedia category'],
     'eo' : [u'Commons', (u'Projekto/box', 'commons='), (u'Projekto', 'commons='), (u'Projektoj', 'commons='), (u'Projektoj', 'commonscat=')],
     'es' : [u'Commons', u'IprCommonscat'],
