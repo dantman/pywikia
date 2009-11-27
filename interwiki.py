@@ -518,9 +518,7 @@ class Global(object):
     skipauto = False
     untranslated = False
     untranslatedonly = False
-    askhints = False
     auto = True
-    hintnobracket = False
     neverlink = []
     showtextlink = 0
     showtextlinkadd = 300
@@ -534,6 +532,9 @@ class Global(object):
     followinterwiki = True
     minsubjects = config.interwiki_min_subjects
     nobackonly = False
+    askhints = False
+    hintnobracket = False
+    hints = []
     hintsareright = False
     contentsondisk = config.interwiki_contents_on_disk
     lacklanguage = None
@@ -1787,7 +1788,7 @@ class InterwikiBot(object):
                 if self.generateUntil:
                     if page.titleWithoutNamespace() > self.generateUntil:
                         raise StopIteration
-                self.add(page, hints = hints)
+                self.add(page, hints = globalvar.hints)
                 self.generated += 1
                 if self.generateNumber:
                     if self.generated >= self.generateNumber:
@@ -1986,7 +1987,6 @@ globalvar=Global()
 if __name__ == "__main__":
     try:
         singlePageTitle = []
-        hints = []
         start = None
         # Which namespaces should be processed?
         # default to [] which means all namespaces will be processed
@@ -2015,7 +2015,7 @@ if __name__ == "__main__":
             elif arg == '-noauto':
                 globalvar.auto = False
             elif arg.startswith('-hint:'):
-                hints.append(arg[6:])
+                globalvar.hints.append(arg[6:])
             elif arg.startswith('-hintfile'):
                 hintfilename = arg[10:]
                 if (hintfilename is None) or (hintfilename == ''):
@@ -2023,7 +2023,7 @@ if __name__ == "__main__":
                 f = codecs.open(hintfilename, 'r', config.textfile_encoding)
                 R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
                 for pageTitle in R.findall(f.read()):
-                    hints.append(pageTitle)
+                    globalvar.hints.append(pageTitle)
                 f.close()
             elif arg == '-force':
                 globalvar.force = True
@@ -2223,7 +2223,7 @@ if __name__ == "__main__":
             if not singlePageTitle:
                 singlePageTitle = pywikibot.input(u'Which page to check:')
             singlePage = pywikibot.Page(pywikibot.getSite(), singlePageTitle)
-            bot.add(singlePage, hints = hints)
+            bot.add(singlePage, hints = globalvar.hints)
 
         try:
             try:
