@@ -176,6 +176,7 @@ ignoreTemplates = {
     'nds-nl' : [u'Commons'],
     'nl' : [u'Commons', u'Commonsklein', u'Commonscatklein', u'Catbeg', u'Catsjab', u'Catwiki'],
     'om' : [u'Commons'],
+    'pt' : [u'Correlatos'],
     'ru' : [u'Навигация'],
 }
 
