@@ -338,8 +338,7 @@ def add_category(sort_by_last_name = False, create_pages = False):
     '''A robot to mass-add a category to a list of pages.'''
     site = pywikibot.getSite()
     if gen:
-        newcatTitle = pywikibot.input(
-            u'Category to add (do not give namespace):')
+        newcatTitle = pywikibot.input(u'Category to add (do not give namespace):')
         if not site.nocapitalize:
             newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
 
@@ -354,13 +353,13 @@ def add_category(sort_by_last_name = False, create_pages = False):
                 answer = ''
 
             while answer not in ('y','n','a'):
-                answer = pywikibot.input(u'%s [y/n/a(ll)]:' % (page.aslink()))
+                answer = pywikibot.inputChoice(u'%s'% (page.aslink()),  ['Yes', 'No', 'All'],['y', 'n', 'a'], 'n')
                 if answer == 'a':
                     confirm = ''
                     while confirm not in ('y','n'):
-                        confirm = pywikibot.input(u"""\
+                        confirm = pywikibot.inputChoice(u"""\
 This should be used if and only if you are sure that your links are correct!
-Are you sure? [y/n]:""")
+Are you sure?""", ['Yes', 'No'], ['y', 'n'], 'n')
                     if confirm == 'n':
                         answer = ''
 
@@ -729,7 +728,7 @@ class CategoryTidyRobot:
         flag = False
         while not flag:
             print ''
-            choice = pywikibot.input(u'Choice:')
+            choice = pywikibot.inputChoice(u'Choice:', ['jump', 'skip', 'remove', 'print'], ['j', 's', 'r', '?'], 's')
             if choice in ['s', 'S']:
                 flag = True
             elif choice == '':
