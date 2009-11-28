@@ -2160,7 +2160,11 @@ if __name__ == "__main__":
         # ensure that we don't try to change main page
         try:
             site = pywikibot.getSite()
-            mainpagename = site.mediawiki_message('mainpage')
+            try:
+                mainpagename = site.siteinfo()['mainpage']
+            except TypeError: #pywikibot module handle
+                mainpagename = site.siteinfo['mainpage']
+            
             globalvar.skip.add(pywikibot.Page(site, mainpagename))
         except pywikibot.Error:
             pywikibot.output(u'Missing main page name')
