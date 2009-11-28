@@ -5953,7 +5953,45 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             if u'<textarea' in text and u'<li id="ca-viewsource"' not in text and not self._isBlocked[index]:
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
-
+    
+    def siteinfo(self, key = 'general', force = False): #, dump = False
+        """Get Mediawiki Site informations by API
+           dump - return all siteinfo datas
+        """
+        if hasattr(self, '_info') and key in self._info and not force:
+            return self._info[key]
+        
+        params = {
+            'action':'query',
+            'meta':'siteinfo',
+            'siprop':['general', 'namespaces', ],
+        }
+        if self.versionnumber() > 10:
+            params['siprop'].extend(['statistics', ])
+            #'specialpagealiases', 'interwikimap', 'namespacealiases', 'usergroups', 
+        if self.versionnumber() > 13:
+            params['siprop'].extend(['fileextensions', 'rightsinfo', ])
+            #'magicwords', 'extensions', 
+        try:
+            data = query.GetData(params, self)['query']
+            if not hasattr(self, '_info'):
+                self._info = data
+            else:
+                for k, v in data.iteritems():
+                    #if k in self._info:  
+                    #    if v != self._info[k]: self._info[k] = v 
+                    #else:
+                    self._info[k] = v 
+                    
+            try:
+                return self._info[key]
+            except KeyError:
+                return None
+        except NotImplementedError:
+            self._info = {}
+            return False
+        
+    
     def mediawiki_message(self, key, forceReload = False):
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
