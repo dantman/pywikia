@@ -13,7 +13,7 @@ class Family(family.Family):
         self.name = u'wikia'
 
         self.langs = {
-            u'wikia': u'search.wikia.com',
+            u'wikia': None,
         }
 
         self.namespaces[4] = {
@@ -35,9 +35,14 @@ class Family(family.Family):
             '_default': u'Mini talk',
         }
         
-    def code2encoding(self, code):
-        return 'iso-8859-1'
+    def hostname(self, code):
+        return u'www.wikia.com'
     
     def version(self, code):
-        return "1.12alpha"
-    
+        return "1.15.1"
+
+    def scriptpath(self, code):
+        return ''
+
+    def apipath(self, code):
+        return '/api.php'
