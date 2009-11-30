@@ -72,6 +72,7 @@ msg = {
     'nn': u'Robot: La til %s',
     'pl': u'Robot dodaje: %s',
     'pt': u'Bot: Adicionando %s',
+    'ru': u'Бот: добавление %s',
     'sv': u'Bot: Lägger till %s',
     'szl': u'Bot dodowo: %s',
     'vo': u'Bot: Läükon vödemi: %s',
@@ -188,7 +189,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         newtext = wikipedia.replaceCategoryLinks(newtext, categoriesInside, site, True)
         #Put the nn iw message back
         if (site.language()==u'nn'):
-            newtext = newtext + u'\n' + nn_iw_msg       
+            newtext = newtext + u'\n' + nn_iw_msg
         # Dealing the stars' issue
         starsListInPage = list()
         for star in starsList:
