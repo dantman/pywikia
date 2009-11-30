@@ -1252,14 +1252,12 @@ not supported by PyWikipediaBot!"""
             self._isDisambig = len(disambigInPage) > 0
         return self._isDisambig
 
-    def getReferences(self,
-            follow_redirects=True, withTemplateInclusion=True,
-            onlyTemplateInclusion=False, redirectsOnly=False):
-        """Yield all pages that link to the page.
+    def getReferences(self, follow_redirects=True, withTemplateInclusion=True,
+            onlyTemplateInclusion=False, redirectsOnly=False, internal = False):
+        """Yield all pages that link to the page by API
 
         If you need a full list of referring pages, use this:
             pages = [page for page in s.getReferences()]
-
         Parameters:
         * follow_redirects      - if True, also returns pages that link to a
                                   redirect pointing to the page.
@@ -1269,6 +1267,98 @@ not supported by PyWikipediaBot!"""
                                   used as a template.
         * redirectsOnly         - if True, only returns redirects to self.
 
+        """
+        try:
+            if config.use_api and self.site().versionnumber() > 9:
+                d = self.site().apipath()
+                del d
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
+            for s in self.getReferencesOld(follow_redirects, withTemplateInclusion, onlyTemplateInclusion, redirectsOnly):
+                yield s
+            return
+            
+        params = {
+            'action': 'query',
+            'list': [],
+        }
+        if not onlyTemplateInclusion:
+            params['list'].append('backlinks')
+            params['bltitle'] = self.title()
+            params['bllimit'] = config.special_page_limit
+            params['blfilterredir'] = 'all'
+            if follow_redirects:
+                params['blredirect'] = 1
+            if redirectsOnly:
+                params['blfilterredir'] = 'redirects'
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+                params['bllimit'] = 500
+        
+        if withTemplateInclusion or onlyTemplateInclusion:
+            params['list'].append('embeddedin')
+            params['eititle'] = self.title()
+            params['eilimit'] = config.special_page_limit
+            params['eifilterredir'] = 'all'
+            if follow_redirects:
+                params['eiredirect'] = 1
+            if redirectsOnly:
+                params['eifilterredir'] = 'redirects'
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+                params['eilimit'] = 5000
+        
+        allDone = False
+        
+        while not allDone:
+            if not internal:
+                output(u'Getting references to %s via API...' % self.aslink())
+            
+            datas = query.GetData(params, self.site())
+            data = datas['query'].values()
+            if len(data) == 2:
+                data = data[0] + data[1]
+            else:
+                data = data[0]
+            
+            refPages = set()
+            for blp in data:
+                pg = Page(self.site(), blp['title'], defaultNamespace = blp['ns'])
+                if pg in refPages:
+                    continue
+                
+                yield pg
+                refPages.add(pg)
+                if follow_redirects and 'redirect' in blp and 'redirlinks' in blp:
+                    for p in blp['redirlinks']:
+                        plk = Page(self.site(), p['title'], defaultNamespace = p['ns'])
+                        if plk in refPages:
+                            continue
+                        
+                        yield plk
+                        refPages.add(plk)
+                        if follow_redirects and 'redirect' in p:
+                            for zms in plk.getReferences(follow_redirects, withTemplateInclusion, 
+                                              onlyTemplateInclusion, redirectsOnly, internal=True):
+                                yield zms
+                        else:
+                            continue
+                else:
+                    continue
+            
+            if 'query-continue' in datas:
+                if 'backlinks' in datas['query-continue']:
+                    params['blcontinue'] = datas['query-continue']['backlinks']['blcontinue']
+                
+                if 'embeddedin' in datas['query-continue']:
+                    params['eicontinue'] = datas['query-continue']['embeddedin']['eicontinue']
+            else:
+                allDone = True
+            
+    
+    def getReferencesOld(self,
+            follow_redirects=True, withTemplateInclusion=True,
+            onlyTemplateInclusion=False, redirectsOnly=False):
+        """Yield all pages that link to the page.
         """
         # Temporary bug-fix while researching more robust solution:
         if config.special_page_limit > 999:
@@ -5613,7 +5703,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if retry is None:
             retry = config.retry_on_fail
 
-        headers = {'User-agent': useragent,}
+        headers = {
+            'User-agent': useragent,
+            #'Accept-Language': config.mylang,
+            #'Accept-Charset': config.textfile_encoding,
+            #'Keep-Alive': '115',
+            #'Connection': 'keep-alive',
+            #'Cache-Control': 'max-age=0',
+            #'': '',
+        }
         
         if not no_hostname and self.cookies(sysop = sysop):
             headers['Cookie'] = self.cookies(sysop = sysop)
