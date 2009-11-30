@@ -1234,7 +1234,7 @@ class Subject(object):
                 elif page.site().family == redirectTargetPage.site().family \
                     and not self.skipPage(page, redirectTargetPage, counter):
                     if self.addIfNew(redirectTargetPage, counter, page):
-                        if config.interwiki_shownew:
+                        if config.interwiki_shownew or pywikibot.verbose:
                             pywikibot.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
 
                 continue
@@ -1327,7 +1327,7 @@ class Subject(object):
                                     pywikibot.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(True), page.aslink(True), linkedPage.aslink(True)))
                                     break
                             else:
-                                if config.interwiki_shownew:
+                                if config.interwiki_shownew or pywikibot.verbose:
                                     pywikibot.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
@@ -1700,13 +1700,13 @@ class Subject(object):
             # another get-query first.
             if bot:
                 while pywikibot.get_throttle.waittime() + 2.0 < pywikibot.put_throttle.waittime():
-                    if not globalvar.quiet:
+                    if not globalvar.quiet or pywikibot.verbose:
                         pywikibot.output(u"NOTE: Performing a recursive query first to save time....")
                     qdone = bot.oneQuery()
                     if not qdone:
                         # Nothing more to do
                         break
-            if not globalvar.quiet:
+            if not globalvar.quiet or pywikibot.verbose:
                 pywikibot.output(u"NOTE: Updating live wiki...")
             timeout=60
             while 1:
@@ -1842,7 +1842,7 @@ class InterwikiBot(object):
            list of subjects becomes too small, but only if there is a
            PageGenerator"""
         fs = self.firstSubject()
-        if fs and not globalvar.quiet:
+        if fs and (not globalvar.quiet or pywikibot.verbose):
             pywikibot.output(u"NOTE: The first unfinished subject is " + fs.originPage.aslink(True))
         pywikibot.output(u"NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number))
         for i in range(number):
@@ -2162,7 +2162,6 @@ def main():
         else:
             ns = 'all'
         hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
-
 
     elif optRestore or optContinue or globalvar.restoreAll:
         site = pywikibot.getSite()
