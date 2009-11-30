@@ -1934,7 +1934,7 @@ class InterwikiBot(object):
                     else:
                         break
             # If we have a few, getting the home language is a good thing.
-            if not globalvar.restoreAll
+            if not globalvar.restoreAll:
                 try:
                     if self.counts[pywikibot.getSite()] > 4:
                         return pywikibot.getSite()
