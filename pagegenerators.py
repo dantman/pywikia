@@ -135,9 +135,10 @@ parameterHelp = """\
 -gorandom         Specifies that the robot should starting at the random pages 
                   returned by [[Special:Random]].
 
--recentchanges    Work on new and edited pages returned by [[Special:Recentchanges]].
-                  Can also be given as "-recentchanges:n" where n is the number
-                  of pages to be returned, else 100 pages are returned.
+-recentchanges    Work on new and edited pages returned by
+                  [[Special:Recentchanges]]. Can also be given as
+                  "-recentchanges:n" where n is the number of pages to be
+                  returned, else 100 pages are returned.
 
 -redirectonly     Work on redirect pages only, not their target pages.
                   The robot goes alphabetically through all redirect pages

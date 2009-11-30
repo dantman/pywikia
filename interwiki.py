@@ -74,21 +74,22 @@ Additionaly, these arguments can be used to restrict the bot to certain pages:
                    that amount of pages and then stop. This is only useful in
                    combination with -start. The default is not to stop.
  
-    -until:        used as -until:title, specifies that the robot should process
-                   pages in wiki default sort order up to, and including, "title"
-                   and then stop. This is only useful in combination with -start.
-                   The default is not to stop.
+    -until:        used as -until:title, specifies that the robot should
+                   process pages in wiki default sort order up to, and
+                   including, "title" and then stop. This is only useful in
+                   combination with -start. The default is not to stop.
                    Note: do not specify a namespace, even if -start has one.
 
-    -bracket       only work on pages that have (in the home language) parenthesis
-                   in their title. All other pages are skipped.
+    -bracket       only work on pages that have (in the home language)
+                   parenthesis in their title. All other pages are skipped.
                    (note: without ending colon)
 
     -skipfile:     used as -skipfile:filename, skip all links mentioned in
                    the given file. This does not work with -number!
 
     -skipauto      use to skip all pages that can be translated automatically,
-                   like dates, centuries, months, etc. (note: without ending colon)
+                   like dates, centuries, months, etc.
+                   (note: without ending colon)
 
     -lack:         used as -lack:xx with xx a language code: only work on pages
                    without links to language xx. You can also add a number nn
@@ -102,7 +103,8 @@ These arguments are useful to provide hints to the bot:
                    useful if you specify a single page to work on. If no
                    text is given after the second ':', the name of the page
                    itself is used as the title for the hint, unless the
-                   -hintnobracket command line option (see there) is also selected.
+                   -hintnobracket command line option (see there) is also
+                   selected.
 
                    There are some special hints, trying a number of languages
                    at once:
@@ -222,15 +224,15 @@ These arguments specify in which way the bot should follow interwiki links:
 The following arguments are only important for users who have accounts for
 multiple languages, and specify on which sites the bot should modify pages:
 
-    -localonly     only work on the local wiki, not on other wikis in the family
-                   I have a login at. (note: without ending colon)
+    -localonly     only work on the local wiki, not on other wikis in the
+                   family I have a login at. (note: without ending colon)
 
     -limittwo      only update two pages - one in the local wiki (if logged-in)
                    and one in the top available one.
                    For example, if the local page has links to de and fr,
                    this option will make sure that only local and de: (larger)
-                   site is updated. This option is useful to quickly set two way
-                   links without updating all of wiki's sites.
+                   site is updated. This option is useful to quickly set two
+                   way links without updating all of wiki's sites.
                    (note: without ending colon)
 
     -whenneeded    works like limittwo, but other languages are changed in the

@@ -9,14 +9,14 @@ The following parameters are supported:
 
 &params;
 
-    -debug         If given, doesn't do any real changes, but only shows
-                   what would have been changed.
+-dry              If given, doesn't do any real changes, but only shows
+                  what would have been changed.
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 """
 __version__ = '$Id$'
-import wikipedia
+import wikipedia as pywikibot
 import pagegenerators
 
 # This is required for the text that is shown when you run this script
@@ -43,20 +43,20 @@ class BasicBot:
         'zh': u'機器人：編輯.....',
     }
 
-    def __init__(self, generator, debug):
+    def __init__(self, generator, dry):
         """
         Constructor. Parameters:
             * generator - The page generator that determines on which pages
                           to work on.
-            * debug     - If True, doesn't do any real changes, but only shows
+            * dry       - If True, doesn't do any real changes, but only shows
                           what would have been changed.
         """
         self.generator = generator
-        self.debug = debug
+        self.dry = dry
+        # Set the edit summary message
+        self.summary = pywikibot.translate(pywikibot.getSite(), self.msg)
 
     def run(self):
-        # Set the edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg))
         for page in self.generator:
             self.treat(page)
 
@@ -67,11 +67,11 @@ class BasicBot:
         try:
             # Load the page
             text = page.get()
-        except wikipedia.NoPage:
-            wikipedia.output(u"Page %s does not exist; skipping." % page.aslink())
+        except pywikibot.NoPage:
+            pywikibot.output(u"Page %s does not exist; skipping." % page.aslink())
             return
-        except wikipedia.IsRedirectPage:
-            wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
+        except pywikibot.IsRedirectPage:
+            pywikibot.output(u"Page %s is a redirect; skipping." % page.aslink())
             return
 
         ################################################################
@@ -86,21 +86,21 @@ class BasicBot:
         if text != page.get():
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             # show what was changed
-            wikipedia.showDiff(page.get(), text)
-            if not self.debug:
-                choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
+            pywikibot.showDiff(page.get(), text)
+            if not self.dry:
+                choice = pywikibot.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
                 if choice == 'y':
                     try:
                         # Save the page
-                        page.put(text)
-                    except wikipedia.LockedPage:
-                        wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
-                    except wikipedia.EditConflict:
-                        wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                    except wikipedia.SpamfilterError, error:
-                        wikipedia.output(u'Cannot change %s because of spam blacklist entry %s' % (page.title(), error.url))
+                        page.put(text, comment=self.summary)
+                    except pywikibot.LockedPage:
+                        pywikibot.output(u"Page %s is locked; skipping." % page.aslink())
+                    except pywikibot.EditConflict:
+                        pywikibot.output(u'Skipping %s because of edit conflict' % (page.title()))
+                    except pywikibot.SpamfilterError, error:
+                        pywikibot.output(u'Cannot change %s because of spam blacklist entry %s' % (page.title(), error.url))
 
 
 def main():
@@ -113,14 +113,14 @@ def main():
     # This temporary array is used to read the page title if one single
     # page to work on is specified by the arguments.
     pageTitleParts = []
-    # If debug is True, doesn't do any real changes, but only show
+    # If dry is True, doesn't do any real changes, but only show
     # what would have been changed.
-    debug = False
+    dry = False
 
     # Parse command line arguments
-    for arg in wikipedia.handleArgs():
-        if arg.startswith("-debug"):
-            debug = True
+    for arg in pywikibot.handleArgs():
+        if arg.startswith("-dry"):
+            dry = True
         else:
             # check if a standard argument like
             # -start:XYZ or -ref:Asdf was given.
@@ -130,7 +130,7 @@ def main():
     if pageTitleParts != []:
         # We will only work on a single page.
         pageTitle = ' '.join(pageTitleParts)
-        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        page = pywikibot.Page(pywikibot.getSite(), pageTitle)
         gen = iter([page])
 
     if not gen:
@@ -139,13 +139,13 @@ def main():
         # The preloading generator is responsible for downloading multiple
         # pages from the wiki simultaneously.
         gen = pagegenerators.PreloadingGenerator(gen)
-        bot = BasicBot(gen, debug)
+        bot = BasicBot(gen, dry)
         bot.run()
     else:
-        wikipedia.showHelp()
+        pywikibot.showHelp()
 
 if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

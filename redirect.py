@@ -19,18 +19,18 @@ and arguments can be:
 -xml           Retrieve information from a local XML dump
                (http://download.wikimedia.org). Argument can also be given as
                "-xml:filename.xml". Cannot be used with -api or -moves.
-               If neither of -xml -api -moves is given, info will be loaded from
-               a special page of the live wiki.
+               If neither of -xml -api -moves is given, info will be loaded
+               from a special page of the live wiki.
 
 -api           Retrieve information from the wiki via MediaWikis application
                program interface (API). Cannot be used with -xml or -moves.
-               If neither of -xml -api -moves is given, info will be loaded from
-               a special page of the live wiki.
+               If neither of -xml -api -moves is given, info will be loaded
+               from a special page of the live wiki.
 
 -moves         Use the page move log to find double-redirect candidates. Only
-               works with action "double", does not work with either -xml, or -api.
-               If neither of -xml -api -moves is given, info will be loaded from
-               a special page of the live wiki.
+               works with action "double", does not work with either -xml, or
+               -api. If neither of -xml -api -moves is given, info will be
+               loaded from a special page of the live wiki.
 
 -namespace:n   Namespace to process. Works only with an XML dump, or the API
                interface. Can be given multiple times, for several namespaces.
