@@ -332,32 +332,6 @@ docuReplacements = {
     '&pagegenerators_help;': pagegenerators.parameterHelp
 }
 
-class XmlDumpLmoLinkPageGenerator:
-    """
-    Generator which will yield Pages that might contain selflinks.
-    These pages will be retrieved from a local XML dump file
-    (cur table).
-    """
-    def __init__(self, xmlFilename):
-        """
-        Arguments:
-            * xmlFilename  - The dump's path, either absolute or relative
-        """
-
-        self.xmlFilename = xmlFilename
-
-    def __iter__(self):
-        import xmlreader
-        mysite = pywikibot.getSite()
-        dump = xmlreader.XmlDump(self.xmlFilename)
-        r = re.compile(r'\d')
-        for entry in dump.parse():
-            if not r.search(entry.title):
-                selflinkR = re.compile(r'\[\[lmo:')
-                if selflinkR.search(entry.text):
-                    yield pywikibot.Page(mysite, entry.title)
-
-
 class SaveError(pywikibot.Error):
     """
     An attempt to save a page with changed interwiki has failed.
@@ -548,6 +522,7 @@ class Global(object):
     lacklanguage = None
     minlinks = 0
     quiet  = False
+    restoreAll = False
 
     def readOptions(self, arg):
         if arg == '-noauto':
@@ -1673,16 +1648,8 @@ class Subject(object):
             for rmsite in removing:
                 if rmsite != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
                     rmPage = old[rmsite]
-                    ##########
-                    # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
-                    # where useless bot-created articles were mass-deleted. See for example:
-                    # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
-                    if rmsite == pywikibot.getSite('lmo', 'wikipedia'):
-                        pywikibot.output(u'Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % rmPage.aslink())
-                    else:
-                    ##########
-                        new[rmsite] = old[rmsite]
-                        pywikibot.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
+                    new[rmsite] = old[rmsite] #put it to new means don't delete it
+                    pywikibot.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
             # Re-Check what needs to get done
             mods, mcomment, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
@@ -1967,11 +1934,12 @@ class InterwikiBot(object):
                     else:
                         break
             # If we have a few, getting the home language is a good thing.
-            try:
-                if self.counts[pywikibot.getSite()] > 4:
-                    return pywikibot.getSite()
-            except KeyError:
-                pass
+            if not globalvar.restoreAll
+                try:
+                    if self.counts[pywikibot.getSite()] > 4:
+                        return pywikibot.getSite()
+                except KeyError:
+                    pass
         # If getting the home language doesn't make sense, see how many
         # foreign page queries we can find.
         return self.maxOpenSite()
@@ -2123,12 +2091,6 @@ def main():
     for arg in pywikibot.handleArgs():
         if globalvar.readOptions(arg):
             continue
-        elif arg.startswith('-xml'):
-            if len(arg) == 4:
-                xmlFilename = pywikibot.input(u'Please enter the XML dump\'s filename:')
-            else:
-                xmlFilename = arg[5:]
-            hintlessPageGen = XmlDumpLmoLinkPageGenerator(xmlFilename)
         elif arg.startswith('-warnfile:'):
             warnfile = arg[10:]
         elif arg.startswith('-years'):
@@ -2156,8 +2118,8 @@ def main():
             else:
                 newPages = 100
         elif arg.startswith('-restore'):
-            restoreAll = arg[9:].lower() == 'all'
-            optRestore = not restoreAll
+            globalvar.restoreAll = arg[9:].lower() == 'all'
+            optRestore = not globalvar.restoreAll
         elif arg == '-continue':
             optContinue = True
         elif arg.startswith('-namespace:'):
@@ -2202,9 +2164,9 @@ def main():
         hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
 
 
-    elif optRestore or optContinue or restoreAll:
+    elif optRestore or optContinue or globalvar.restoreAll:
         site = pywikibot.getSite()
-        if restoreAll:
+        if globalvar.restoreAll:
             import glob
             for FileName in glob.iglob('interwiki-dumps/interwikidump-*.txt'):
                 s = FileName.split('\\')[1].split('.')[0].split('-')
@@ -2243,8 +2205,6 @@ def main():
                 pywikibot.output(u"Dump file is empty?! Starting at the beginning.")
             else:
                 nextPage = page.titleWithoutNamespace() + '!'
-            # old generator is used up, create a new one
-            #hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
             hintlessPageGen = pagegenerators.CombinedPageGenerator([hintlessPageGen, pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
         if not hintlessPageGen:
             pywikibot.output(u'No Dumpfiles found.')
@@ -2271,7 +2231,7 @@ def main():
 
     try:
         try:
-            append = not (optRestore or optContinue or restoreAll)
+            append = not (optRestore or optContinue or globalvar.restoreAll)
             bot.run()
         except KeyboardInterrupt:
             dumpFileName = bot.dump(append)
