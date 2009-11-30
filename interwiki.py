@@ -39,11 +39,18 @@ These command-line arguments can be used to specify which pages to work on:
                    This implies -noredirect.
 
     -restore:      restore a set of "dumped" pages the robot was working on
-                   when it terminated.
+                   when it terminated. The dump file will be subsequently
+                   removed.
+
+    -restore:all   restore a set of "dumped" pages of all dumpfiles to a given
+                   family remaining in the "interwiki-dumps" directory. All
+                   these dump files will be subsequently removed. If restoring
+                   process interrupts again, it saves all unprocessed pages in
+                   one new dump file of the given site.
 
     -continue:     like restore, but after having gone through the dumped pages,
                    continue alphabetically starting at the last of the dumped
-                   pages.
+                   pages. The dump file will be subsequently removed.
 
     -warnfile:     used as -warnfile:filename, reads all warnings from the
                    given file that apply to the home wiki language,
@@ -53,7 +60,7 @@ These command-line arguments can be used to specify which pages to work on:
                    against the live wiki is using the warnfile.py
                    script.
 
-	-quiet         Use this option to get less output
+    -quiet:        Use this option to get less output
 
 Additionaly, these arguments can be used to restrict the bot to certain pages:
 
@@ -269,9 +276,10 @@ All these options can be changed through the user-config.py configuration file.
 If interwiki.py is terminated before it is finished, it will write a dump file
 to the interwiki-dumps subdirectory. The program will read it if invoked with
 the "-restore" or "-continue" option, and finish all the subjects in that list.
-To run the interwiki-bot on all pages on a language, run it with option
-"-start:!", and if it takes so long you have to break it off, use "-continue"
-next time.
+After finishing the dump file will be deleted. To run the interwiki-bot on all
+pages on a language, run it with option "-start:!", and if it takes so long you
+have to break it off, use "-continue" next time.
+
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -540,6 +548,113 @@ class Global(object):
     lacklanguage = None
     minlinks = 0
     quiet  = False
+
+    def readOptions(self, arg):
+        if arg == '-noauto':
+            self.auto = False
+        elif arg.startswith('-hint:'):
+            self.hints.append(arg[6:])
+        elif arg.startswith('-hintfile'):
+            hintfilename = arg[10:]
+            if (hintfilename is None) or (hintfilename == ''):
+                hintfilename = pywikibot.input(u'Please enter the hint filename:')
+            f = codecs.open(hintfilename, 'r', config.textfile_encoding)
+            R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
+            for pageTitle in R.findall(f.read()):
+                self.hints.append(pageTitle)
+            f.close()
+        elif arg == '-force':
+            self.force = True
+        elif arg == '-same':
+            self.same = True
+        elif arg == '-wiktionary':
+            self.same = 'wiktionary'
+        elif arg == '-untranslated':
+            self.untranslated = True
+        elif arg == '-untranslatedonly':
+            self.untranslated = True
+            self.untranslatedonly = True
+        elif arg == '-askhints':
+            self.untranslated = True
+            self.untranslatedonly = False
+            self.askhints = True
+        elif arg == '-hintnobracket':
+            self.hintnobracket = True
+        elif arg == '-confirm':
+            self.confirm = True
+        elif arg == '-select':
+            self.select = True
+        elif arg == '-autonomous' or arg == '-auto':
+            self.autonomous = True
+        elif arg == '-noredirect':
+            self.followredirect = False
+        elif arg == '-initialredirect':
+            self.initialredirect = True
+        elif arg == '-localonly':
+            self.localonly = True
+        elif arg == '-limittwo':
+            self.limittwo = True
+            self.strictlimittwo = True
+        elif arg.startswith('-whenneeded'):
+            self.limittwo = True
+            self.strictlimittwo = False
+            try:
+                self.needlimit = int(arg[12:])
+            except KeyError:
+                pass
+            except ValueError:
+                pass
+        elif arg.startswith('-skipfile:'):
+            skipfile = arg[10:]
+            skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
+            for page in skipPageGen:
+                self.skip.add(page)
+            del skipPageGen
+        elif arg == '-skipauto':
+            self.skipauto = True
+        elif arg.startswith('-neverlink:'):
+            self.neverlink += arg[11:].split(",")
+        elif arg.startswith('-ignore:'):
+            self.ignore += [pywikibot.Page(None,p) for p in arg[8:].split(",")]
+        elif arg.startswith('-ignorefile:'):
+            ignorefile = arg[12:]
+            ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
+            for page in ignorePageGen:
+                self.ignore.append(page)
+            del ignorePageGen
+        elif arg == '-showpage':
+            self.showtextlink += self.showtextlinkadd
+        elif arg == '-graph':
+            # override configuration
+            config.interwiki_graph = True
+        elif arg == '-bracket':
+            self.parenthesesonly = True
+        elif arg == '-localright':
+            self.followinterwiki = False
+        elif arg == '-hintsareright':
+            self.hintsareright = True
+        elif arg.startswith('-array:'):
+            self.minsubjects = int(arg[7:])
+        elif arg.startswith('-query:'):
+            self.maxquerysize = int(arg[7:])
+        elif arg == '-back':
+            self.nobackonly = True
+        elif arg == '-async':
+            self.async = True
+        elif arg == '-giveup':
+            self.giveup = True
+        elif arg == '-quiet':
+            self.quiet = True
+        elif arg.startswith('-lack:'):
+            remainder = arg[6:].split(':')
+            self.lacklanguage = remainder[0]
+            if len(remainder) > 1:
+                self.minlinks = int(remainder[1])
+            else:
+                self.minlinks = 1
+        else:
+            return False
+        return True
 
 class StoredPage(pywikibot.Page):
     """
@@ -1127,9 +1242,11 @@ class Subject(object):
                     if globalvar.initialredirect:
                         if globalvar.contentsondisk:
                             redirectTargetPage = StoredPage(redirectTargetPage)
-                        self.originPage = redirectTargetPage
-                        self.todo.add(redirectTargetPage)
-                        counter.plus(redirectTargetPage.site)
+                        #don't follow double redirects; it might be a self loop
+                        if not redirectTargetPage.isRedirectPage():
+                            self.originPage = redirectTargetPage
+                            self.todo.add(redirectTargetPage)
+                            counter.plus(redirectTargetPage.site)
                     else:
                         # This is a redirect page to the origin. We don't need to
                         # follow the redirection.
@@ -1744,13 +1861,14 @@ class InterwikiBot(object):
         dumpfn = pywikibot.config.datafilepath(
                      'interwiki-dumps',
                      'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
-        if append: mode = 'a'
-        else: mode = 'w'
-        f = codecs.open(dumpfn, mode, 'utf-8')
+        if append: mode = 'appended'
+        else: mode = 'written'
+        f = codecs.open(dumpfn, mode[0], 'utf-8')
         for subj in self.subjects:
             f.write(subj.originPage.aslink(None)+'\n')
         f.close()
-        pywikibot.output(u'Dump %s (%s) saved' % (site.lang, site.family.name))
+        pywikibot.output(u'Dump %s (%s) %s.' % (site.lang, site.family.name, mode))
+        return dumpfn
 
     def generateMore(self, number):
         """Generate more subjects. This is called internally when the
@@ -1940,8 +2058,7 @@ def compareLanguages(old, new, insite):
     removing = sorted(oldiw - newiw)
     modifying = sorted(site for site in oldiw & newiw if old[site] != new[site])
 
-    mcomment = u''
-    mods = u""
+    mcomment = mods = u''
 
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
@@ -1950,11 +2067,10 @@ def compareLanguages(old, new, insite):
         # Use short format, just the language code
         fmt = lambda d, site: site.lang
 
-    colon = u': '
-    comma = u', '
-
     head, add, rem, mod = pywikibot.translate(insite.lang, msg)
 
+    colon = u': '
+    comma = u', '
     sep = u''
 
     if adding:
@@ -1980,274 +2096,208 @@ def readWarnfile(filename, bot):
         hintStrings = ['%s:%s' % (hintedPage.site().language(), hintedPage.title()) for hintedPage in pagelist]
         bot.add(page, hints = hintStrings)
 
-#===========
+def main():
+    singlePageTitle = []
+    start = None
+    # Which namespaces should be processed?
+    # default to [] which means all namespaces will be processed
+    namespaces = []
+    number = None
+    until = None
+    warnfile = None
+    # a normal PageGenerator (which doesn't give hints, only Pages)
+    hintlessPageGen = None
+    optContinue = False
+    optRestore = False
+    restoreAll = False
+    restoredFiles = []
+    File2Restore  = []
+    dumpFileName = ''
+    append = True
+    newPages = None
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
 
+    for arg in pywikibot.handleArgs():
+        if globalvar.readOptions(arg):
+            continue
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlFilename = pywikibot.input(u'Please enter the XML dump\'s filename:')
+            else:
+                xmlFilename = arg[5:]
+            hintlessPageGen = XmlDumpLmoLinkPageGenerator(xmlFilename)
+        elif arg.startswith('-warnfile:'):
+            warnfile = arg[10:]
+        elif arg.startswith('-years'):
+            # Look if user gave a specific year at which to start
+            # Must be a natural number or negative integer.
+            if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
+                startyear = int(arg[7:])
+            else:
+                startyear = 1
+            # avoid problems where year pages link to centuries etc.
+            globalvar.followredirect = False
+            hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
+        elif arg.startswith('-days'):
+            if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
+                # Looks as if the user gave a specific month at which to start
+                # Must be a natural number.
+                startMonth = int(arg[6:])
+            else:
+                startMonth = 1
+            hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
+        elif arg.startswith('-new'):
+            if len(arg) > 5 and arg[4] == ':' and arg[5:].isdigit():
+                # Looks as if the user gave a specific number of pages
+                newPages = int(arg[5:])
+            else:
+                newPages = 100
+        elif arg.startswith('-restore'):
+            restoreAll = arg[9:].lower() == 'all'
+            optRestore = not restoreAll
+        elif arg == '-continue':
+            optContinue = True
+        elif arg.startswith('-namespace:'):
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
+        # deprecated for consistency with other scripts
+        elif arg.startswith('-number:'):
+            number = int(arg[8:])
+        elif arg.startswith('-until:'):
+            until = arg[7:]
+        else:
+            if not genFactory.handleArg(arg):
+                singlePageTitle.append(arg)
+
+    # ensure that we don't try to change main page
+    try:
+        site = pywikibot.getSite()
+        try:
+            mainpagename = site.siteinfo()['mainpage']
+        except TypeError: #pywikibot module handle
+            mainpagename = site.siteinfo['mainpage']
+        globalvar.skip.add(pywikibot.Page(site, mainpagename))
+    except pywikibot.Error:
+        pywikibot.output(u'Missing main page name')
+
+    if newPages is not None:
+        if len(namespaces) == 0:
+            ns = 0 
+        elif len(namespaces) == 1:
+            ns = namespaces[0]
+            if ns != 'all':
+                if isinstance(ns, unicode) or isinstance(ns, str):
+                    index = site.getNamespaceIndex(ns)
+                    if index is None:
+                        raise ValueError(u'Unknown namespace: %s' % ns)
+                    ns = index
+            namespaces = []
+        else:
+            ns = 'all'
+        hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
+
+
+    elif optRestore or optContinue or restoreAll:
+        site = pywikibot.getSite()
+        if restoreAll:
+            import glob
+            for FileName in glob.iglob('interwiki-dumps/interwikidump-*.txt'):
+                s = FileName.split('\\')[1].split('.')[0].split('-')
+                sitename = s[1]
+                for i in range(0,2): s.remove(s[0])
+                sitelang = '-'.join(s)
+                if site.family.name == sitename:
+                    File2Restore.append([sitename, sitelang])
+        else:
+            File2Restore.append([site.family.name, site.lang])
+        for sitename, sitelang in File2Restore:
+            dumpfn = pywikibot.config.datafilepath(
+                               'interwiki-dumps',
+                               u'interwikidump-%s-%s.txt'
+                                 % (sitename, sitelang))
+            pywikibot.output(u'Reading interwikidump-%s-%s.txt' % (sitename, sitelang))
+            site = pywikibot.getSite(sitelang, sitename)
+            if not hintlessPageGen:
+                hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpfn, site)
+            else:
+                hintlessPageGen = pagegenerators.CombinedPageGenerator([hintlessPageGen,pagegenerators.TextfilePageGenerator(dumpfn, site)])
+            restoredFiles.append(dumpfn)
+        if hintlessPageGen:
+            hintlessPageGen = pagegenerators.DuplicateFilterPageGenerator(hintlessPageGen)
+        if optContinue:
+            # We waste this generator to find out the last page's title
+            # This is an ugly workaround.
+            nextPage = "!"
+            namespace = 0
+            for page in hintlessPageGen:
+                lastPage = page.titleWithoutNamespace()
+                if lastPage > nextPage:
+                    nextPage = lastPage
+                    namespace = page.namespace()
+            if nextPage == "!":
+                pywikibot.output(u"Dump file is empty?! Starting at the beginning.")
+            else:
+                nextPage = page.titleWithoutNamespace() + '!'
+            # old generator is used up, create a new one
+            #hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
+            hintlessPageGen = pagegenerators.CombinedPageGenerator([hintlessPageGen, pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
+        if not hintlessPageGen:
+            pywikibot.output(u'No Dumpfiles found.')
+            return
+
+    bot = InterwikiBot()
+
+    if not hintlessPageGen:
+        hintlessPageGen = genFactory.getCombinedGenerator()
+    if hintlessPageGen:
+        if len(namespaces) > 0:
+            hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
+        # we'll use iter() to create make a next() function available.
+        bot.setPageGenerator(iter(hintlessPageGen), number = number, until=until)
+    elif warnfile:
+        # TODO: filter namespaces if -namespace parameter was used
+        readWarnfile(warnfile, bot)
+    else:
+        singlePageTitle = ' '.join(singlePageTitle)
+        if not singlePageTitle:
+            singlePageTitle = pywikibot.input(u'Which page to check:')
+        singlePage = pywikibot.Page(pywikibot.getSite(), singlePageTitle)
+        bot.add(singlePage, hints = globalvar.hints)
+
+    try:
+        try:
+            append = not (optRestore or optContinue or restoreAll)
+            bot.run()
+        except KeyboardInterrupt:
+            dumpFileName = bot.dump(append)
+        except:
+            dumpFileName = bot.dump(append)
+            raise
+    finally:
+        if globalvar.contentsondisk:
+            StoredPage.SPdeleteStore()
+        if dumpFileName:
+            try:
+                restoredFiles.remove(dumpFileName)
+            except ValueError:
+                pass
+        for dumpFileName in restoredFiles:
+            try:
+                os.remove(dumpFileName)
+                pywikibot.output(u'Dumpfile %s deleted' % dumpFileName.split('\\')[-1])
+            except WindowsError:
+                pass
+
+#===========
 globalvar=Global()
 
 if __name__ == "__main__":
     try:
-        singlePageTitle = []
-        start = None
-        # Which namespaces should be processed?
-        # default to [] which means all namespaces will be processed
-        namespaces = []
-        number = None
-        until = None
-        warnfile = None
-        # a normal PageGenerator (which doesn't give hints, only Pages)
-        hintlessPageGen = None
-        optContinue = False
-        optRestore = False
-        newPages = None
-        # This factory is responsible for processing command line arguments
-        # that are also used by other scripts and that determine on which pages
-        # to work on.
-        genFactory = pagegenerators.GeneratorFactory()
-        dumped = False
-
-        for arg in pywikibot.handleArgs():
-            if arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlFilename = pywikibot.input(u'Please enter the XML dump\'s filename:')
-                else:
-                    xmlFilename = arg[5:]
-                hintlessPageGen = XmlDumpLmoLinkPageGenerator(xmlFilename)
-            elif arg == '-noauto':
-                globalvar.auto = False
-            elif arg.startswith('-hint:'):
-                globalvar.hints.append(arg[6:])
-            elif arg.startswith('-hintfile'):
-                hintfilename = arg[10:]
-                if (hintfilename is None) or (hintfilename == ''):
-                    hintfilename = pywikibot.input(u'Please enter the hint filename:')
-                f = codecs.open(hintfilename, 'r', config.textfile_encoding)
-                R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
-                for pageTitle in R.findall(f.read()):
-                    globalvar.hints.append(pageTitle)
-                f.close()
-            elif arg == '-force':
-                globalvar.force = True
-            elif arg == '-same':
-                globalvar.same = True
-            elif arg == '-wiktionary':
-                globalvar.same = 'wiktionary'
-            elif arg == '-untranslated':
-                globalvar.untranslated = True
-            elif arg == '-untranslatedonly':
-                globalvar.untranslated = True
-                globalvar.untranslatedonly = True
-            elif arg == '-askhints':
-                globalvar.untranslated = True
-                globalvar.untranslatedonly = False
-                globalvar.askhints = True
-            elif arg == '-noauto':
-                pass
-            elif arg == '-hintnobracket':
-                globalvar.hintnobracket = True
-            elif arg.startswith('-warnfile:'):
-                warnfile = arg[10:]
-            elif arg == '-confirm':
-                globalvar.confirm = True
-            elif arg == '-select':
-                globalvar.select = True
-            elif arg == '-autonomous' or arg == '-auto':
-                globalvar.autonomous = True
-            elif arg == '-noredirect':
-                globalvar.followredirect = False
-            elif arg == '-initialredirect':
-                globalvar.initialredirect = True
-            elif arg == '-localonly':
-                globalvar.localonly = True
-            elif arg == '-limittwo':
-                globalvar.limittwo = True
-                globalvar.strictlimittwo = True
-            elif arg.startswith('-whenneeded'):
-                globalvar.limittwo = True
-                globalvar.strictlimittwo = False
-                try:
-                    globalvar.needlimit = int(arg[12:])
-                except KeyError:
-                    pass
-                except ValueError:
-                    pass
-            elif arg.startswith('-years'):
-                # Look if user gave a specific year at which to start
-                # Must be a natural number or negative integer.
-                if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
-                    startyear = int(arg[7:])
-                else:
-                    startyear = 1
-                # avoid problems where year pages link to centuries etc.
-                globalvar.followredirect = False
-                hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
-            elif arg.startswith('-days'):
-                if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
-                    # Looks as if the user gave a specific month at which to start
-                    # Must be a natural number.
-                    startMonth = int(arg[6:])
-                else:
-                    startMonth = 1
-                hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
-            elif arg.startswith('-new'):
-                if len(arg) > 5 and arg[4] == ':' and arg[5:].isdigit():
-                    # Looks as if the user gave a specific number of pages
-                    newPages = int(arg[5:])
-                else:
-                    newPages = 100
-            elif arg.startswith('-skipfile:'):
-                skipfile = arg[10:]
-                skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
-                for page in skipPageGen:
-                    globalvar.skip.add(page)
-                del skipPageGen
-            elif arg == '-skipauto':
-                globalvar.skipauto = True
-            elif arg == '-restore':
-                optRestore = True
-            elif arg == '-continue':
-                optContinue = True
-            elif arg.startswith('-namespace:'):
-                try:
-                    namespaces.append(int(arg[11:]))
-                except ValueError:
-                    namespaces.append(arg[11:])
-            # deprecated for consistency with other scripts
-            elif arg.startswith('-number:'):
-                number = int(arg[8:])
-            elif arg.startswith('-until:'):
-                until = arg[7:]
-            elif arg.startswith('-neverlink:'):
-                globalvar.neverlink += arg[11:].split(",")
-            elif arg.startswith('-ignore:'):
-                globalvar.ignore += [pywikibot.Page(None,p) for p in arg[8:].split(",")]
-            elif arg.startswith('-ignorefile:'):
-                ignorefile = arg[12:]
-                ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
-                for page in ignorePageGen:
-                    globalvar.ignore.append(page)
-                del ignorePageGen
-            elif arg == '-showpage':
-                globalvar.showtextlink += globalvar.showtextlinkadd
-            elif arg == '-graph':
-                # override configuration
-                config.interwiki_graph = True
-            elif arg == '-bracket':
-                globalvar.parenthesesonly = True
-            elif arg == '-localright':
-                globalvar.followinterwiki = False
-            elif arg == '-hintsareright':
-                globalvar.hintsareright = True
-            elif arg.startswith('-array:'):
-                globalvar.minsubjects = int(arg[7:])
-            elif arg.startswith('-query:'):
-                globalvar.maxquerysize = int(arg[7:])
-            elif arg.startswith('-lack:'):
-                remainder = arg[6:].split(':')
-                globalvar.lacklanguage = remainder[0]
-                if len(remainder) > 1:
-                    globalvar.minlinks = int(remainder[1])
-                else:
-                    globalvar.minlinks = 1
-            elif arg == '-back':
-                globalvar.nobackonly = True
-            elif arg == '-quiet':
-                globalvar.quiet = True
-            else:
-                if not genFactory.handleArg(arg):
-                    singlePageTitle.append(arg)
-
-
-        # ensure that we don't try to change main page
-        try:
-            site = pywikibot.getSite()
-            try:
-                mainpagename = site.siteinfo()['mainpage']
-            except TypeError: #pywikibot module handle
-                mainpagename = site.siteinfo['mainpage']
-            
-            globalvar.skip.add(pywikibot.Page(site, mainpagename))
-        except pywikibot.Error:
-            pywikibot.output(u'Missing main page name')
-
-        if newPages is not None:
-            if len(namespaces) == 0:
-                ns = 0 
-            elif len(namespaces) == 1:
-                ns = namespaces[0]
-                if ns != 'all':
-                    if isinstance(ns, unicode) or isinstance(ns, str):
-                        index = site.getNamespaceIndex(ns)
-                        if index is None:
-                            raise ValueError(u'Unknown namespace: %s' % ns)
-                        ns = index
-                namespaces = []
-            else:
-                ns = 'all'
-            hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
-
-        if optRestore or optContinue:
-            site = pywikibot.getSite()
-            dumpFileName = pywikibot.config.datafilepath(
-                               'interwiki-dumps',
-                               u'interwikidump-%s-%s.txt'
-                                 % (site.family.name, site.lang))
-            hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpFileName)
-            hintlessPageGen = pagegenerators.DuplicateFilterPageGenerator(hintlessPageGen)
-            if optContinue:
-                # We waste this generator to find out the last page's title
-                # This is an ugly workaround.
-                nextPage = "!"
-                namespace = 0
-                for page in hintlessPageGen:
-                    lastPage = page.titleWithoutNamespace()
-                    if lastPage > nextPage:
-                        nextPage = lastPage
-                        namespace = page.namespace()
-                if nextPage == "!":
-                    pywikibot.output(u"Dump file is empty?! Starting at the beginning.")
-                else:
-                    nextPage = page.titleWithoutNamespace() + '!'
-                # old generator is used up, create a new one
-                hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
-
-        bot = InterwikiBot()
-
-        if not hintlessPageGen:
-            hintlessPageGen = genFactory.getCombinedGenerator()
-        if hintlessPageGen:
-            if len(namespaces) > 0:
-                hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
-            # we'll use iter() to create make a next() function available.
-            bot.setPageGenerator(iter(hintlessPageGen), number = number, until=until)
-        elif warnfile:
-            # TODO: filter namespaces if -namespace parameter was used
-            readWarnfile(warnfile, bot)
-        else:
-            singlePageTitle = ' '.join(singlePageTitle)
-            if not singlePageTitle:
-                singlePageTitle = pywikibot.input(u'Which page to check:')
-            singlePage = pywikibot.Page(pywikibot.getSite(), singlePageTitle)
-            bot.add(singlePage, hints = globalvar.hints)
-
-        try:
-            try:
-                bot.run()
-            except KeyboardInterrupt:
-                bot.dump(not (optRestore or optContinue))
-                dumped = True
-            except:
-                bot.dump(not (optRestore or optContinue))
-                dumped = True
-                raise
-        finally:
-            if globalvar.contentsondisk:
-                StoredPage.SPdeleteStore()
-            if (optRestore or optContinue) and not dumped:
-                try:
-                    os.remove(dumpFileName)
-                    pywikibot.output(u'Dumpfile %s deleted' % dumpFileName)
-                except WindowsError:
-                    pass
-
+        main()
     finally:
         pywikibot.stopme()
