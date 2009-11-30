@@ -34,6 +34,7 @@ class Family(family.Family):
             'fr': u'Wikiversité',
             'it': u'Wikiversità',
             'pt': u'Wikiversidade',
+            'ru': u'Викиверситет',
         }
         self.namespaces[5] = {
             '_default': [u'Wikiversity talk', self.namespaces[5]['_default']],
@@ -46,6 +47,7 @@ class Family(family.Family):
             'it': u'Discussioni Wikiversità',
             'ja': u'Wikiversity‐ノート',
             'pt': u'Wikiversidade Discussão',
+            'ru': u'Обсуждение Викиверситета',
         }
 
         self.namespaces[100] = {
