@@ -2792,8 +2792,8 @@ not supported by PyWikipediaBot!"""
                 try:
                     self.get(force=True, get_redirect=True, throttle=False)
                 except NoPage:
-                    output(u'Page %s is moved and no longer exist.')
-                    delattr(self, '_contents')
+                    output(u'Page %s is moved and no longer exist.' % self.title() )
+                    #delattr(self, '_contents')
             return True
         
     
@@ -2869,8 +2869,8 @@ not supported by PyWikipediaBot!"""
                 try:
                     self.get(force=True, get_redirect=True, throttle=False)
                 except NoPage:
-                    output(u'Page %s is moved and no longer exist.')
-                    delattr(self, '_contents')
+                    output(u'Page %s is moved and no longer exist.' % self.title() )
+                    #delattr(self, '_contents')
             
             return True
         else:
