@@ -2733,7 +2733,7 @@ not supported by PyWikipediaBot!"""
         sysop = self._getActionUser(action = 'move', restriction = self.moveRestriction, sysop = False)
         if deleteAndMove:
             sysop = self._getActionUser(action = 'delete', restriction = '', sysop = True)
-            Page(self,site(), newtitle).delete(self.site().mediawiki_message('delete_and_move_reason'), False, False)
+            Page(self.site(), newtitle).delete(self.site().mediawiki_message('delete_and_move_reason'), False, False)
 
         # Check blocks
         self.site().checkBlocks(sysop = sysop)
