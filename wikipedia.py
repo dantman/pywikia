@@ -1305,7 +1305,7 @@ not supported by PyWikipediaBot!"""
             if redirectsOnly:
                 params['eifilterredir'] = 'redirects'
             if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
-                params['eilimit'] = 5000
+                params['eilimit'] = 500
         
         allDone = False
         
@@ -2536,7 +2536,7 @@ not supported by PyWikipediaBot!"""
                 self._versionhistoryearliest = dataQuery
                 del dataQuery
             if len(self._versionhistoryearliest) > revCount and not getAll:
-                return self._versionhistoryearliest[0:revCount]
+                return self._versionhistoryearliest[:revCount]
             return self._versionhistoryearliest
         
         if dataQuery != []:
@@ -2544,7 +2544,7 @@ not supported by PyWikipediaBot!"""
             del dataQuery
         # Return only revCount edits, even if the version history is extensive
         if len(self._versionhistory) > revCount and not getAll:
-            return self._versionhistory[0:revCount]
+            return self._versionhistory[:revCount]
         return self._versionhistory
     
     def _getVersionHistory(self, getAll = False, skipFirst = False, reverseOrder = False,
@@ -2788,7 +2788,12 @@ not supported by PyWikipediaBot!"""
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
             
             if hasattr(self, '_contents'):
-                self.get(force=True, get_redirect=True, throttle=False)
+                #self.__init__(self.site(), newtitle, defaultNamespace = self._namespace)
+                try:
+                    self.get(force=True, get_redirect=True, throttle=False)
+                except NoPage:
+                    output(u'Page %s is moved and no longer exist.')
+                    delattr(self, '_contents')
             return True
         
     
@@ -2853,16 +2858,23 @@ not supported by PyWikipediaBot!"""
         response, data = self.site().postForm(address, predata, sysop = sysop)
         
         if data == u'' or self.site().mediawiki_message('pagemovedsub') in data:
+            #Move Success
             if deleteAndMove:
                 output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
             else:
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
             
             if hasattr(self, '_contents'):
-                self.get(force=True, get_redirect=True, throttle=False)
+                #self.__init__(self.site(), newtitle, defaultNamespace = self._namespace)
+                try:
+                    self.get(force=True, get_redirect=True, throttle=False)
+                except NoPage:
+                    output(u'Page %s is moved and no longer exist.')
+                    delattr(self, '_contents')
             
             return True
         else:
+            #Move Failure
             self.site().checkBlocks(sysop = sysop)
             if self.site().mediawiki_message('articleexists') in data or self.site().mediawiki_message('delete_and_move') in data:
                 if safe:
