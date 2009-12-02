@@ -444,7 +444,7 @@ class CosmeticChangesToolkit:
         If there are any complaints, please file a bug report.
         """
         exceptions = ['comment', 'math', 'nowiki', 'pre', 'source', 'timeline']
-        if not self.redirect:
+        if not self.redirect and pywikibot.calledModuleName() <> 'capitalize_redirects':
             text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>[:;]*(\*+|#+)[:;\*#]*)(?P<char>[^\s\*#:;].+?)', '\g<bullet> \g<char>', exceptions)
         return text
 
