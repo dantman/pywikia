@@ -1,7 +1,9 @@
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 
 '''
-Bot to create redirects.
+Bot to create capitalized redirects where the first character of the first
+word is uppercase and the remainig characters and words are lowercase.
 
 Command-line arguments:
 
@@ -28,16 +30,24 @@ Command-line arguments:
 
     -always     Don't prompt to make changes, just do them.
 
+    -titlecase  creates a titlecased redirect version of a given page
+                where all words of the title start with an uppercase 
+                character and the remaining characters are lowercase
+
 Example: "python capitalize_redirects.py -start:B -always"
 '''
 #
 # (C) Yrithinnd
+# (C) Pywikipedia bot team, 2007-2009
+#
 # Class licensed under terms of the MIT license
 #
 __version__ = '$Id$'
+#
 
 import time, sys
-import wikipedia, pagegenerators, catlib
+import wikipedia as pywikibot
+import pagegenerators, catlib
 
 msg = {
      'ar': u'روبوت: إنشاء تحويلة إلى [[%s]]',
@@ -55,9 +65,11 @@ msg = {
     }
 
 class CapitalizeBot:
-    def __init__(self, generator, acceptall):
+    def __init__(self, generator, acceptall, titlecase):
         self.generator = generator
         self.acceptall = acceptall
+        self.titlecase = titlecase
+        self.site = pywikibot.getSite()
 
     def run(self):
         for page in self.generator:
@@ -66,31 +78,32 @@ class CapitalizeBot:
             page_t = page.title()
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n>>> \03{lightpurple}%s\03{default} <<<"
+            pywikibot.output(u"\n>>> \03{lightpurple}%s\03{default} <<<"
                              % page_t)
-            page_cap = wikipedia.Page(wikipedia.getSite(), page_t.title().capitalize())
+            if self.titlecase:
+                page_cap = pywikibot.Page(self.site, page_t.title())
+            else:
+                page_cap = pywikibot.Page(self.site, page_t.capitalize())
             if not page_cap.exists():
-                wikipedia.output(u'%s doesn\'t exist' % page_cap.title())
+                pywikibot.output(u'[[%s]] doesn\'t exist' % page_cap.title())
                 if not self.acceptall:
-                    choice = wikipedia.inputChoice(
+                    choice = pywikibot.inputChoice(
                             u'Do you want to create a redirect?',
-                            ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                            ['Yes', 'No', 'All', 'Quit'], ['y', 'N', 'a', 'q'], 'N')
                     if choice == 'a':
                         self.acceptall = True
+                    elif choice == 'q':
+                        break
                 if self.acceptall or choice == 'y':
+                    comment = pywikibot.translate(self.site, msg) % page_t
                     try:
-                        wikipedia.setAction(
-                            wikipedia.translate(wikipedia.getSite(), msg)
-                            % page_t)
-                        page_cap.put(u"#REDIRECT [[%s]]" % page_t)
+                        page_cap.put(u"#REDIRECT [[%s]]" % page_t, comment)
                         print
                     except:
-                        wikipedia.output(
-                            u"An error occurred. Retrying in 15 seconds...")
-                        time.sleep(15)
+                        pywikibot.output(u"An error occurred, skipping...")
                         continue
             else:
-                wikipedia.output(u'%s already exists, skipping...\n'
+                pywikibot.output(u'%s already exists, skipping...\n'
                                  % page_t.title())
 
 def main():
@@ -103,44 +116,47 @@ def main():
     acceptall = False
     namespaces = []
     startpage = None
+    titlecase = False
 
-    for arg in wikipedia.handleArgs():
+    for arg in pywikibot.handleArgs():
         if arg.startswith('-file'):
             if len(arg) == 5:
-                textfilename = wikipedia.input(u'Please enter the filename:')
+                textfilename = pywikibot.input(u'Please enter the filename:')
             else:
                 textfilename = arg[6:]
             source = 'textfile'
         elif arg.startswith('-cat'):
             if len(arg) == 4:
-                categoryname = wikipedia.input(
+                categoryname = pywikibot.input(
                                u'Please enter the category name:')
             else:
                 categoryname = arg[5:]
             source = 'category'
         elif arg.startswith('-page'):
             if len(arg) == 5:
-                pageNames.append(wikipedia.input(
+                pageNames.append(pywikibot.input(
                                  u'Which page do you want to change?'))
             else:
                 pageNames.append(arg[6:])
             source = 'singlepage'
         elif arg.startswith('-ref'):
             if len(arg) == 4:
-                referredPageName = wikipedia.input(
+                referredPageName = pywikibot.input(
                                    u'Links to which page should be processed?')
             else:
                 referredPageName = arg[5:]
             source = 'ref'
         elif arg.startswith('-start'):
             if len(arg) == 6:
-                firstPageTitle = wikipedia.input(
+                firstPageTitle = pywikibot.input(
                                  u'Which page do you want to change?')
             else:
                 firstPageTitle = arg[7:]
             source = 'allpages'
         elif arg == '-always':
             acceptall = True
+        elif arg == '-titlecase':
+            titlecase = True
         elif arg.startswith('-namespace:'):
             try:
                 namespaces.append(int(arg[11:]))
@@ -152,30 +168,30 @@ def main():
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
     elif source == 'category':
-        cat = catlib.Category(wikipedia.getSite(), categoryname)
+        cat = catlib.Category(pywikibot.getSite(), categoryname)
         gen = pagegenerators.CategorizedPageGenerator(cat)
     elif source == 'singlepage':
-        pages = [wikipedia.Page(wikipedia.getSite(), pageName)
+        pages = [pywikibot.Page(pywikibot.getSite(), pageName)
                  for pageName in pageNames]
         gen = iter(pages)
     elif source == 'allpages':
-        namespace = wikipedia.Page(wikipedia.getSite(),
+        namespace = pywikibot.Page(pywikibot.getSite(),
                                    firstPageTitle).namespace()
         gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
     elif source == 'ref':
-        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
+        referredPage = pywikibot.Page(pywikibot.getSite(), referredPageName)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
     elif source == None or len(commandline_replacements) not in [0, 2]:
-        wikipedia.showHelp(u'capitalize_redirects')
+        pywikibot.showHelp(u'capitalize_redirects')
         return
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
-    bot = CapitalizeBot(preloadingGen, acceptall)
+    bot = CapitalizeBot(preloadingGen, acceptall, titlecase)
     bot.run()
 
 if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()
