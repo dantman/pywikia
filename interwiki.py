@@ -2079,7 +2079,6 @@ def main():
     hintlessPageGen = None
     optContinue = False
     optRestore = False
-    restoreAll = False
     restoredFiles = []
     File2Restore  = []
     dumpFileName = ''
@@ -2197,7 +2196,8 @@ def main():
             # This is an ugly workaround.
             nextPage = "!"
             namespace = 0
-            for page in hintlessPageGen:
+            searchGen = pagegenerators.TextfilePageGenerator(dumpfn, site)
+            for page in searchGen:
                 lastPage = page.titleWithoutNamespace()
                 if lastPage > nextPage:
                     nextPage = lastPage
