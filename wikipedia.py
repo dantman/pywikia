@@ -5210,6 +5210,7 @@ class Site(object):
                 raise NoSuchSite("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
         self._mediawiki_messages = {}
+        self._info = {}
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
         self._userData = [False, False]
@@ -6064,42 +6065,61 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 # Token not found
                 output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
     
-    def siteinfo(self, key = 'general', force = False): #, dump = False
+    def siteinfo(self, key = 'general', force = False, dump = False):
         """Get Mediawiki Site informations by API
            dump - return all siteinfo datas
+            
+           some siprop params is huge data for MediaWiki, they take long times to read by testment.
+           these params could get, but only one by one.
+           
         """
-        if hasattr(self, '_info') and key in self._info and not force:
-            return self._info[key]
+        # protection for key in other datatype
+        if type(key) not in [str, unicode]:
+           key = 'general'
+        
+        if self._info and key in self._info and not force:
+            if dump:
+                return self._info
+            else:
+                return self._info[key]
         
         params = {
             'action':'query',
             'meta':'siteinfo',
             'siprop':['general', 'namespaces', ],
         }
+        #ver 1.10 handle
         if self.versionnumber() > 10:
             params['siprop'].extend(['statistics', ])
-            #'specialpagealiases', 'interwikimap', 'namespacealiases', 'usergroups', 
+            if key in ['specialpagealiases', 'interwikimap', 'namespacealiases', 'usergroups', ]:
+                if verbose: print 'getting huge siprop %s...' % key
+                params['siprop'] = [key]
+        
+        #ver 1.13 handle
         if self.versionnumber() > 13:
-            params['siprop'].extend(['fileextensions', 'rightsinfo', ])
-            #'magicwords', 'extensions', 
+            if key not in ['specialpagealiases', 'interwikimap', 'namespacealiases', 'usergroups', ]:
+                params['siprop'].extend(['fileextensions', 'rightsinfo', ])
+            if key in ['magicwords', 'extensions', ]:
+                if verbose: print 'getting huge siprop %s...' % key
+                params['siprop'] = [key]
         try:
             data = query.GetData(params, self)['query']
-            if not hasattr(self, '_info'):
-                self._info = data
-            else:
-                for k, v in data.iteritems():
-                    #if k in self._info:  
-                    #    if v != self._info[k]: self._info[k] = v 
-                    #else:
-                    self._info[k] = v 
-                    
-            try:
-                return self._info[key]
-            except KeyError:
-                return None
         except NotImplementedError:
-            self._info = {}
-            return False
+            return None
+        
+        if not hasattr(self, '_info'):
+            self._info = data
+        else:
+            for k, v in data.iteritems():
+                self._info[k] = v 
+        #data pre-process
+        try:
+            if dump:
+                return self._info
+            else:
+                return self._info[key]
+        except KeyError:
+            return None
         
     
     def mediawiki_message(self, key, forceReload = False):
