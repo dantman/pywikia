@@ -292,13 +292,16 @@ def main():
             pywikibot.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
             continue
         """
-        editRestr = restrictions['edit']
-        if editRestr and editRestr[0] == 'sysop':
-            try:
-                config.sysopnames[site.family.name][site.lang]
-            except:
-                pywikibot.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
-                continue
+        try:
+            editRestr = restrictions['edit']
+            if editRestr and editRestr[0] == 'sysop':
+                try:
+                    config.sysopnames[site.family.name][site.lang]
+                except:
+                    pywikibot.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
+                    continue
+        except KeyError:
+            continue
 
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
