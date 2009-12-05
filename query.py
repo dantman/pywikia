@@ -25,7 +25,7 @@ This module allow you to use the API in a simple and easy way.
 __version__ = '$Id$'
 #
 
-import wikipedia, urllib, time
+import wikipedia, time
 try:
     #For Python 2.6 newer
     import json
@@ -92,10 +92,10 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
             path = site.api_address()
             cont = ''
         else:
-            path = site.api_address() + urllib.urlencode(params.items())
+            path = site.api_address() + site.urlEncode(params.items())
 
     else:
-        path = site.query_address() + urllib.urlencode(params.items())
+        path = site.query_address() + site.urlEncode(params.items())
 
     if wikipedia.verbose:
         if titlecount > 1:
@@ -294,9 +294,9 @@ def ListToParam( list ):
     encList = ''
     # items may not have one symbol - '|'
     for l in list:
-        if type(l) == str and '|' in l:
+        if type(l) == str and u'|' in l:
             raise wikipedia.Error("item '%s' contains '|' symbol" % l )
-        encList += ToUtf8(l) + '|'
+        encList += ToUtf8(l) + u'|'
     return encList[:-1]
 
 def ToUtf8(s):
@@ -305,7 +305,7 @@ def ToUtf8(s):
             s = unicode(s)
         except UnicodeDecodeError:
             s = s.decode(wikipedia.config.console_encoding)
-    return s.encode('utf-8')
+    return s
 
 def IsString(s):
     return type( s ) in [str, unicode]
