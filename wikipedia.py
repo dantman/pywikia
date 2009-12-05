@@ -5616,7 +5616,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
                 # just check for HTTP Status 500 (Internal Server Error)?
                 elif e.code == 500:
-                    output(u'HTTPError: %s' % (e.code, e.msg))
+                    output(u'HTTPError: %s %s' % (e.code, e.msg))
                     if config.retry_on_fail:
                         output(u"""WARNING: Could not open '%s'.\nMaybe the server is down. Retrying in %i minutes..."""
                                % (url, retry_idle_time))
