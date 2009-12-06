@@ -560,22 +560,21 @@ class WelcomeBot(object):
             del list_white, whitelist_default
 
         try:
-            for bname in self._blacklist:
-                if bname.lower() in str(name.lower()): #bad name positive
-                    self.bname = bname
-                    return True
-        except UnicodeEncodeError:
-            pass        
-        try:
             for wname in self._whitelist:
-                if wname.lower() in str(name.lower()):
-                    name = name.replace(wname.lower(), '')
+                if wname.lower() in str(name).lower():
+                    name = name.lower().replace(wname.lower(), '')
                     for bname in self._blacklist:
                         self.bname = bname
                         return bname.lower() in name.lower()
         except UnicodeEncodeError:
-            pass    
-
+            pass  
+        try:
+            for bname in self._blacklist:
+                if bname.lower() in str(name).lower(): #bad name positive
+                    self.bname = bname
+                    return True
+        except UnicodeEncodeError:
+            pass          
         return False
 
     def reportBadAccount(self, name = None, final = False):
@@ -824,7 +823,6 @@ class WelcomeBot(object):
                     us = self._parseNewUserLogOld()
             else:
                 us = self.parseNewUserLog()
-
             for users in us:
                 if users.isBlocked():
                     showStatus(3)
