@@ -73,7 +73,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     
     if wikipedia.verbose: #dump params info.
         wikipedia.output(u"==== API action:%s ====" % params[u'action'])
-        if data:
+        if data and 'file' not in data:
             wikipedia.output(u"%s: (%d items)" % (data.keys()[0], titlecount ) )
         
         for k, v in params.iteritems():
