@@ -214,18 +214,18 @@ class UploadRobot:
                         self.description = newDescription
         return filename
     
-    def upload_image(self, debug=False):
+    def upload_image(self, debug=False, sessionKey = 0):
         """Gets the image at URL self.url, and uploads it to the target wiki.
            Returns the filename which was used to upload the image.
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
         try:
-            #if config.use_api and self.targetSite.versionnumber() >= 16:
-            #    x = self.targetSite.api_address()
-            #    del x
-            #else:
-            raise NotImplementedError
+            if config.use_api and self.targetSite.versionnumber() >= 16:
+                x = self.targetSite.api_address()
+                del x
+            else:
+                raise NotImplementedError
         except NotImplementedError:
             return self._uploadImageOld(debug)
         
@@ -241,9 +241,11 @@ class UploadRobot:
             'filename': filename,
             #'': '',
         }
+        if sessionKey:
+            params['sessionkey'] = sessionKey
         if self.uploadByUrl:
             params['url'] = self.url
-        else:
+        elif not self.uploadByUrl and not sessionKey:
             params['file'] = self._contents
         
         if self.ignoreWarning:
@@ -262,28 +264,27 @@ class UploadRobot:
         else:
             data = data['upload']
             if data['result'] == u'Warning': #upload success but return warning.
-                warn = data['warnings'].keys()[0]
-                wikipedia.output("We got a warning message:", newline=False)
-                warFn = data['warnings'][warn]
-                if warn == 'duplicate-archive':
-                    wikipedia.output("The file is duplicate a deleted file %s." % warFn)
-                elif warn == 'was-deleted':
-                    wikipedia.output("This file was deleted for %s." % warFn)
-                elif warn == 'emptyfile':
-                    wikipedia.output("File %s is an empty file." % warFn)
-                elif warn == 'exists':
-                    wikipedia.output("File %s is exists." % warFn)
-                elif warn == 'duplicate':
-                    wikipedia.output("Uploaded file is duplicate with %s." % warFn)
-                elif warn == 'badfilename':
-                    wikipedia.output("Target filename is invaild.")
-                elif warn == 'filetype-unwanted-type':
-                    wikipedia.output("File %s type is unwatched type." % warFn)
+                wikipedia.output("Got warning message:")
+                for k,v in data['warnings'].iteritems():
+                    if k == 'duplicate-archive':
+                        wikipedia.output("\tThe file is duplicate a deleted file %s." % v)
+                    elif k == 'was-deleted':
+                        wikipedia.output("\tThis file was deleted for %s." % v)
+                    elif k == 'emptyfile':
+                        wikipedia.output("\tFile %s is an empty file." % v)
+                    elif k == 'exists':
+                        wikipedia.output("\tFile %s is exists." % v)
+                    elif k == 'duplicate':
+                        wikipedia.output("\tUploaded file is duplicate with %s." % v)
+                    elif k == 'badfilename':
+                        wikipedia.output("\tTarget filename is invalid.")
+                    elif k == 'filetype-unwanted-type':
+                        wikipedia.output("\tFile %s type is unwatched type." % v)
                 answer = wikipedia.inputChoice(u"Do you want to ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
                 if answer == "y":
                     self.ignoreWarning = 1
                     self.keepFilename = True
-                    return self.upload_image(debug)
+                    return self.upload_image(debug, sessionKey = data['sessionkey'])
                 else:
                     wikipedia.output("Upload aborted.")
                     return
