@@ -46,7 +46,9 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     titlecount = 0
     
     for k,v in params.iteritems():
-        if type(v) == list:
+        if k == u'file':
+            data[k] = v
+        elif type(v) == list:
             if k in [u'titles', u'pageids', u'revids', u'ususers'] and len(v) > 10:
                 # Titles param might be long, case convert it to post request
                 titlecount = len(params[k])
@@ -66,7 +68,8 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
         params['noprofile'] = ''
     
     if data:
-        del params[data.keys()[0]] 
+        for k in data:
+            del params[k] 
     
     if wikipedia.verbose: #dump params info.
         wikipedia.output(u"==== API action:%s ====" % params[u'action'])
@@ -109,14 +112,10 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
     while retryCount >= 0:
         try:
             jsontext = "Nothing received"
-            if params['action'] == 'upload' and ('file' in params or cont):
+            if params['action'] == 'upload' and ('file' in data):
                 import upload
-                if not cont:
-                    cont = params['file']
-                    del params['file']
-                
                 res, jsontext = upload.post_multipart(site, path, params.items(),
-                  (('file', params['filename'].encode(site.encoding()), cont),),
+                  (('file', params['filename'].encode(site.encoding()), data['file']),),
                   site.cookies(sysop=sysop)
                   )
             elif params['action'] in postAC:
