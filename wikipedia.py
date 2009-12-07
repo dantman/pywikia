@@ -3621,7 +3621,7 @@ class ImagePage(Page):
         #API query
         if infos:
             for i in infos:
-                result.append((i['timestamp'], i['user'], "%s×%s" % (i['width'], i['height']), i['size'], i['comment']))
+                result.append((i['timestamp'], i['user'], u"%s×%s" % (i['width'], i['height']), i['size'], i['comment']))
             
             return result
         
@@ -3686,7 +3686,7 @@ class ImagePage(Page):
         """Return the version history in the form of a wiki table."""
         lines = []
         for (datetime, username, resolution, size, comment) in self.getFileVersionHistory():
-            lines.append('| %s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
+            lines.append(u'| %s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n' + u'\n|----\n'.join(lines) + '\n|}'
 
     def usingPages(self):
