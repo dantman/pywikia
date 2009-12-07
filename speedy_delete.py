@@ -519,7 +519,7 @@ class SpeedyRobot:
             count = 0
             for page in self.preloadingGen:
                 try:
-                    pageText = page.get(get_redirect = True)
+                    pageText = page.get(get_redirect = True).split("\n")
                     count += 1
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page %s does not exist or has already been deleted, skipping.' % page.aslink())
@@ -528,12 +528,12 @@ class SpeedyRobot:
                 # Highlight the title in purple.
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
-                if len(pageText) > 20000:
-                    wikipedia.output('The page detail is too large, only output first 5K detail:')
+                if len(pageText) > 75:
+                    wikipedia.output('The page detail is too many lines, only output first 50 lines:')
                     wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
-                    wikipedia.output(pageText[:5000])
+                    wikipedia.output(u'\n'.join(pageText[:50]))
                 else:
-                    wikipedia.output(pageText)
+                    wikipedia.output(u'\n'.join(pageText))
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
                 choice = wikipedia.inputChoice(u'Input action?', ['delete', 'skip', 'update', 'quit'], ['d', 'S', 'u', 'q'], 'S')
                 if choice == 'q':
