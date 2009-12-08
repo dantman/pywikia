@@ -621,10 +621,6 @@ class Global(object):
             self.maxquerysize = int(arg[7:])
         elif arg == '-back':
             self.nobackonly = True
-        elif arg == '-async':
-            self.async = True
-        elif arg == '-giveup':
-            self.giveup = True
         elif arg == '-quiet':
             self.quiet = True
         elif arg.startswith('-lack:'):
@@ -1286,7 +1282,6 @@ class Subject(object):
                     self.workonme = False
 
             elif globalvar.autonomous and duplicate and not skip:
-                
                 pywikibot.output(u"Stopping work on %s because duplicate pages"\
                     " %s and %s are found" % (self.originPage.aslink(True), 
                                               duplicate.aslink(True), 
