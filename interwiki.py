@@ -486,6 +486,11 @@ msg = {
     'zh-yue': (u'機械人 ', u'加', u'減', u'改'),
 }
 
+moved_links = {
+    'de' : (u'dokumentation', u'/Meta'),
+    'en' : (u'documentation', u'/doc'),
+}
+
 class Global(object):
     """Container class for global settings.
        Use of globals outside of this is to be avoided."""
@@ -1661,7 +1666,11 @@ class Subject(object):
 
         pywikibot.output(u"Changes to be made: %s" % mods)
         oldtext = page.get()
-        newtext = pywikibot.replaceLanguageLinks(oldtext, new, site = page.site(), template = (page.namespace() == 10) )
+        template = (page.namespace() == 10)
+        newtext = pywikibot.replaceLanguageLinks(oldtext, new, site = page.site(), template = template )
+        if template and not botMayEdit(page):
+            pywikibot.output(u'WARNING: %s should have interwiki links on subpage. Skipping' % page.aslink(True))
+            return False
         if newtext == oldtext:
             return False
         if globalvar.debug:
@@ -2054,6 +2063,14 @@ def compareLanguages(old, new, insite):
     if mods:
         mcomment = head + mods
     return mods, mcomment, adding, removing, modifying
+
+def botMayEdit (page):
+    tmpl, loc = pywikibot.translate(page.site().lang, moved_links)
+    templates = page.templatesWithParams(get_redirect=True);
+    for template in templates:
+        if template[0].lower() == tmpl:
+            return False
+    return True
 
 def readWarnfile(filename, bot):
     import warnfile
