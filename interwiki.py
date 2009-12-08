@@ -1924,7 +1924,7 @@ class InterwikiBot(object):
     def selectQuerySite(self):
         """Select the site the next query should go out for."""
         # How many home-language queries we still have?
-        mycount = self.counts.get(wikipedia.getSite(), 0)
+        mycount = self.counts.get(pywikibot.getSite(), 0)
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
