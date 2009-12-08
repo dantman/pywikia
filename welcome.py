@@ -853,7 +853,9 @@ class WelcomeBot(object):
                         welcome_text = wikipedia.translate(self.site, netext)
                         if globalvar.randomSign:
                             welcome_text = welcome_text % choice(self.defineSign())
-                            if self.site.family != 'wiktionary' and self.site.lang != 'it':
+                            if self.site.family == 'wiktionary' and self.site.lang == 'it':
+                                pass
+                            else:
                                 welcome_text += timeselected
                         else:
                             welcome_text = welcome_text % globalvar.defaultSign
