@@ -1198,7 +1198,6 @@ class Subject(object):
             # Now check whether any interwiki links should be added to the
             # todo list.
 
-
             if not page.exists():
                 pywikibot.output(u"NOTE: %s does not exist" % page.aslink(True))
                 if page == self.originPage:
@@ -1228,7 +1227,7 @@ class Subject(object):
                         if not redirectTargetPage.isRedirectPage():
                             self.originPage = redirectTargetPage
                             self.todo.add(redirectTargetPage)
-                            counter.plus(redirectTargetPage.site)
+                            counter.plus(redirectTargetPage.site())
                     else:
                         # This is a redirect page to the origin. We don't need to
                         # follow the redirection.
@@ -1925,8 +1924,7 @@ class InterwikiBot(object):
     def selectQuerySite(self):
         """Select the site the next query should go out for."""
         # How many home-language queries we still have?
-        ### it seems this counts a negative value
-        mycount = max(0, self.counts.get(pywikibot.getSite(), 0))
+        mycount = self.counts.get(wikipedia.getSite(), 0)
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
