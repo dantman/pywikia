@@ -137,6 +137,8 @@ def treat(text, linkedPage, targetPage):
         continue
     return text
 
+pageCache = []
+
 def workon(page):
     mysite = wikipedia.getSite()
     try:
@@ -145,7 +147,12 @@ def workon(page):
         return
     wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
     links = page.linkedPages()
-    wikipedia.getall(mysite,links)
+    if len(links) > 0:
+        wikipedia.getall(mysite,links)
+    else:
+        wikipedia.output('No any links.')
+        return
+    
     for page2 in links:
         try:
             target = page2.getRedirectTarget()
