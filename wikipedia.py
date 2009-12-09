@@ -734,10 +734,10 @@ not supported by PyWikipediaBot!"""
         params = {
             'action': 'query',
             'titles': self.title(),
-            'prop': ['revisions','info'],
-            'rvprop': ['content','ids','flags','timestamp','user','comment','size'],
+            'prop': ['revisions', 'info'],
+            'rvprop': ['content', 'ids', 'flags', 'timestamp', 'user', 'comment', 'size'],
             'rvlimit': 1,
-            'inprop': ['protection','talkid','subjectid','url','readable'],
+            'inprop': ['protection', 'talkid', 'subjectid', 'url', 'readable'],
             #'intoken': 'edit',
         }
         if oldid:
@@ -1128,9 +1128,9 @@ not supported by PyWikipediaBot!"""
             return True
 
         for template in templates:
-            if template[0] == 'Nobots':
+            if template[0].lower() == 'nobots':
                 return False
-            elif template[0] == 'Bots':
+            elif template[0].lower() == 'bots':
                 if len(template[1]) == 0:
                     return True
                 else:
@@ -3761,54 +3761,89 @@ class _GetAll(object):
 
     def run(self):
         if self.pages:
-            while True:
-                try:
-                    data = self.getData()
-                except (socket.error, httplib.BadStatusLine, ServerError):
-                    # Print the traceback of the caught exception
-                    s = ''.join(traceback.format_exception(*sys.exc_info()))
-                    if not isinstance(s, unicode):
-                        s = s.decode('utf-8')
-                    output(u'%s\nDBG> got network error in _GetAll.run. ' \
-                            'Sleeping for %d seconds...' % (s, self.sleeptime))
-                    self.sleep()
-                else:
-                    if "<title>Wiki does not exist</title>" in data:
-                        raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
-                    elif "</mediawiki>" not in data[-20:]:
-                        # HTML error Page got thrown because of an internal
-                        # error when fetching a revision.
-                        output(u'Received incomplete XML data. ' \
-                            'Sleeping for %d seconds...' % self.sleeptime)
-                        self.sleep()
-                    elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
-                        output(u'Got incorrect export page. ' \
-                            'Sleeping for %d seconds...' % self.sleeptime)
+            doAPI = None
+            #if config.use_api:
+            #    # API Implemented Check
+            #    try:
+            #        doAPI = True
+            #        d = self.site.api_address()
+            #        del d
+            #    except NotImplementedError:
+            #        doAPI = False
+            
+            if doAPI:
+                while True:
+                    try:
+                        data = self.getDataApi()
+                    except (socket.error, httplib.BadStatusLine, ServerError):
+                        # Print the traceback of the caught exception
+                        s = ''.join(traceback.format_exception(*sys.exc_info()))
+                        if not isinstance(s, unicode):
+                            s = s.decode('utf-8')
+                        output(u'%s\nDBG> got network error in _GetAll.run. ' \
+                                'Sleeping for %d seconds...' % (s, self.sleeptime))
                         self.sleep()
                     else:
-                        break
-            R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
-            m = R.match(data)
-            if m:
-                data = m.group(2)
-            handler = xmlreader.MediaWikiXmlHandler()
-            handler.setCallback(self.oneDone)
-            handler.setHeaderCallback(self.headerDone)
-            #f = open("backup.txt", "w")
-            #f.write(data)
-            #f.close()
-            try:
-                xml.sax.parseString(data, handler)
-            except (xml.sax._exceptions.SAXParseException, ValueError), err:
-                debugDump( 'SaxParseBug', self.site, err, data )
-                raise
-            except PageNotFound:
-                return
-            # All of the ones that have not been found apparently do not exist
+                        if 'error' in data:
+                            raise RuntimeError(data['error'])
+                        else:
+                            break
+                
+                self.headerDoneApi(data['query'])
+                if 'normalized' in data['query']:
+                    self._norm = dict([(x['from'],x['to']) for x in data['query']['normalized']])
+                for vals in data['query']['pages'].values():
+                    self.oneDoneApi(vals)
+                
+            else:
+                while True:
+                    try:
+                        data = self.getData()
+                    except (socket.error, httplib.BadStatusLine, ServerError):
+                        # Print the traceback of the caught exception
+                        s = ''.join(traceback.format_exception(*sys.exc_info()))
+                        if not isinstance(s, unicode):
+                            s = s.decode('utf-8')
+                        output(u'%s\nDBG> got network error in _GetAll.run. ' \
+                                'Sleeping for %d seconds...' % (s, self.sleeptime))
+                        self.sleep()
+                    else:
+                        if "<title>Wiki does not exist</title>" in data:
+                            raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
+                        elif "</mediawiki>" not in data[-20:]:
+                            # HTML error Page got thrown because of an internal
+                            # error when fetching a revision.
+                            output(u'Received incomplete XML data. ' \
+                                'Sleeping for %d seconds...' % self.sleeptime)
+                            self.sleep()
+                        elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
+                            output(u'Got incorrect export page. ' \
+                                'Sleeping for %d seconds...' % self.sleeptime)
+                            self.sleep()
+                        else:
+                            break
+                R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
+                m = R.match(data)
+                if m:
+                    data = m.group(2)
+                handler = xmlreader.MediaWikiXmlHandler()
+                handler.setCallback(self.oneDone)
+                handler.setHeaderCallback(self.headerDone)
+                #f = open("backup.txt", "w")
+                #f.write(data)
+                #f.close()
+                try:
+                    xml.sax.parseString(data, handler)
+                except (xml.sax._exceptions.SAXParseException, ValueError), err:
+                    debugDump( 'SaxParseBug', self.site, err, data )
+                    raise
+                except PageNotFound:
+                    return
+                # All of the ones that have not been found apparently do not exist
             for pl in self.pages:
                 if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                     pl._getexception = NoPage
-
+    
     def oneDone(self, entry):
         title = entry.title
         username = entry.username
@@ -3841,7 +3876,7 @@ class _GetAll(object):
                         ## output(u"%s is a redirect" % page2.aslink())
                         redirectto = m.group(1)
                         if section and not "#" in redirectto:
-                            redirectto = redirectto+"#"+section
+                            redirectto += "#" + section
                         page2._getexception = IsRedirectPage
                         page2._redirarg = redirectto
 
@@ -3905,13 +3940,13 @@ class _GetAll(object):
                     else:
                         flag = u"is '%s', but should be '%s'" % (ns, nshdr)
                     output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
-#                    self.site.family.namespaces[id][lang] = nshdr
+                    #self.site.family.namespaces[id][lang] = nshdr
             else:
                 output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
         for id in self.site.family.namespaces:
             if self.site.family.isDefinedNSLanguage(id, lang) and id not in header.namespaces:
                 output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id))
-
+    
     def getData(self):
         address = self.site.export_address()
         pagenames = [page.sectionFreeTitle() for page in self.pages]
@@ -3937,9 +3972,156 @@ class _GetAll(object):
         # The XML parser doesn't expect a Unicode string, but an encoded one,
         # so we'll encode it back.
         data = data.encode(self.site.encoding())
-#        get_throttle.setDelay(time.time() - now)
+        #get_throttle.setDelay(time.time() - now)
         return data
 
+    def oneDoneApi(self, data):
+        title = data['title']
+        try:
+            username = data['revisions'][0]['user']
+            ipedit = 'anon' in data['revisions'][0]
+            timestamp = data['revisions'][0]['timestamp']
+            text = data['revisions'][0]['*']
+            editRestriction = ''
+            moveRestriction = ''
+            for revs in data['protection']:
+                if revs['type'] == 'edit':
+                    editRestriction = revs['level']
+                elif revs['type'] == 'move':
+                    moveRestriction = revs['level']
+            revisionId = data['lastrevid']
+        except KeyError:
+            pass
+        
+        page = Page(self.site, title)
+        successful = False
+        for page2 in self.pages:
+            if hasattr(self, '_norm') and page2.sectionFreeTitle() in self._norm:
+                page2._title = self._norm[page2.sectionFreeTitle()]
+            
+            if page2.sectionFreeTitle() == page.sectionFreeTitle():
+                if 'missing' in data:
+                    page2._getexception = NoPage
+                    successful = True
+                    break
+                
+                if 'invalid' in data:
+                    page2._getexception = BadTitle
+                    successful = True
+                    break
+                
+                if not (hasattr(page2,'_contents') or hasattr(page2,'_getexception')) or self.force:
+                    page2.editRestriction = editRestriction
+                    page2.moveRestriction = moveRestriction
+                    if editRestriction == 'autoconfirmed':
+                        page2._editrestriction = True
+                    page2._permalink = revisionId
+                    page2._userName = username
+                    page2._ipedit = ipedit
+                    page2._revisionId = revisionId
+                    page2._editTime = timestamp
+                    section = page2.section()
+                    # Store the content
+                    page2._contents = text
+                    if 'redirect' in data:
+                        ## output(u"%s is a redirect" % page2.aslink())
+                        m = self.site.redirectRegex().match(text)
+                        redirectto = m.group(1)
+                        if section and not "#" in redirectto:
+                            redirectto += "#" + section
+                        page2._getexception = IsRedirectPage
+                        page2._redirarg = redirectto
+
+                    # This is used for checking deletion conflict.
+                    # Use the data loading time.
+                    page2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                    if section:
+                        m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
+                        if not m:
+                            try:
+                                page2._getexception
+                                output(u"WARNING: Section not found: %s" % page2.aslink(forceInterwiki = True))
+                            except AttributeError:
+                                # There is no exception yet
+                                page2._getexception = SectionError
+                successful = True
+                # Note that there is no break here. The reason is that there
+                # might be duplicates in the pages list.
+        if not successful:
+            output(u"BUG>> title %s (%s) not found in list" % (title, page.aslink(forceInterwiki=True)))
+            output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
+            raise PageNotFound
+
+    def headerDoneApi(self, header):
+        p = re.compile('^MediaWiki (.+)$')
+        m = p.match(header['general']['generator'])
+        if m:
+            version = m.group(1)
+            if version != self.site.version():
+                output(u'WARNING: Family file %s contains version number %s, but it should be %s' % (self.site.family.name, self.site.version(), version))
+
+        # Verify case
+        if self.site.nocapitalize:
+            case = 'case-sensitive'
+        else:
+            case = 'first-letter'
+        if case != header['general']['case'].strip():
+            output(u'WARNING: Family file %s contains case %s, but it should be %s' % (self.site.family.name, case, header.case.strip()))
+
+        # Verify namespaces
+        lang = self.site.lang
+        ids = header['namespaces'].keys()
+        ids.sort()
+        for id in ids:
+            nshdr = header['namespaces'][id]['*']
+            id = header['namespaces'][id]['id']
+            if self.site.family.isDefinedNSLanguage(id, lang):
+                ns = self.site.namespace(id) or u''
+                if ns != nshdr:
+                    try:
+                        dflt = self.site.family.namespace('_default', id)
+                    except KeyError:
+                        dflt = u''
+                    if not ns and not dflt:
+                        flag = u"is not set, but should be '%s'" % nshdr
+                    elif dflt == ns:
+                        flag = u"is set to default ('%s'), but should be '%s'" % (ns, nshdr)
+                    elif dflt == nshdr:
+                        flag = u"is '%s', but should be removed (default value '%s')" % (ns, nshdr)
+                    else:
+                        flag = u"is '%s', but should be '%s'" % (ns, nshdr)
+                    output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
+                    #self.site.family.namespaces[id][lang] = nshdr
+            else:
+                output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
+        for id in self.site.family.namespaces:
+            if self.site.family.isDefinedNSLanguage(id, lang) and u'%i' % id not in header['namespaces']:
+                output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id ) )
+            
+    def getDataApi(self):
+        pagenames = [page.sectionFreeTitle() for page in self.pages]
+        ## We need to use X convention for requested page titles.
+        #if self.site.lang == 'eo':
+        #    pagenames = [encodeEsperantoX(pagetitle) for pagetitle in pagenames]
+        
+        params = {
+            'action': 'query',
+            'meta':'siteinfo',
+            'prop': ['info', 'revisions'],
+            'titles': pagenames,
+            'siprop': ['general', 'namespaces'],
+            'rvprop': ['content', 'timestamp', 'user', 'comment', 'size'],#'ids', 
+            'inprop': ['protection', 'talkid', 'subjectid'], #, 'url', 'readable'
+        }
+        
+        # Slow ourselves down
+        get_throttle(requestsize = len(self.pages))
+        # Now make the actual request to the server
+        now = time.time()
+        
+        #get_throttle.setDelay(time.time() - now)
+        return query.GetData(params, self.site)
+    
 def getall(site, pages, throttle=True, force=False):
     """Use Special:Export to bulk-retrieve a group of pages from site
 
@@ -3949,7 +4131,11 @@ def getall(site, pages, throttle=True, force=False):
     """
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
-    output(u'Getting %d pages from %s...' % (len(pages), site))
+    output(u'Getting %d pages from %s' % (len(pages), site), newline = False)
+    #if config.use_api:
+    #    output(u' via API...')
+    #else:
+    output(u'...')
     limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
     
     if len(pages) > limit:
