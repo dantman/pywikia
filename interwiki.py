@@ -491,10 +491,13 @@ msg = {
     'zh-yue': (u'機械人 ', u'加', u'減', u'改'),
 }
 
+# Subpage templates. Must be in lower case
 moved_links = {
     'cs' : (u'dokumentace', u'/doc'),
     'de' : (u'dokumentation', u'/Meta'),
     'en' : (u'documentation', u'/doc'),
+    'fr' : (u'documentation modèle en sous-page', u'/Documentation'),
+    'pl' : (u'dokumentacja', u'/opis'),
 }
 
 class Global(object):
@@ -1669,7 +1672,7 @@ class Subject(object):
         template = (page.namespace() == 10)
         newtext = pywikibot.replaceLanguageLinks(oldtext, new, site = page.site(), template = template )
         if template and not botMayEdit(page):
-            pywikibot.output(u'WARNING: %s should have interwiki links on subpage. Skipping' % page.aslink(True))
+            pywikibot.output(u'SKIPPING: %s should have interwiki links on subpage.' % page.aslink(True))
             return False
         if newtext == oldtext:
             return False
@@ -2064,7 +2067,10 @@ def compareLanguages(old, new, insite):
     return mods, mcomment, adding, removing, modifying
 
 def botMayEdit (page):
-    tmpl, loc = pywikibot.translate(page.site().lang, moved_links)
+    try:
+        tmpl, loc = moved_links[page.site().lang]
+    except KeyError:
+        return True
     templates = page.templatesWithParams(get_redirect=True);
     for template in templates:
         if template[0].lower() == tmpl:
