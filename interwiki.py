@@ -498,7 +498,7 @@ moved_links = {
     'cs' : (u'dokumentace',   u'/doc'),
     'de' : (u'dokumentation', u'/Meta'),
     'en' : (u'documentation', u'/doc'),
-    'es' : (u'documentación', u'/doc'),
+    'es' : ([u'documentación', u'documentación de plantilla'], u'/doc'),
     #fr doesn't work since template is on subpage itself
     'fr' : (u'documentation modèle en sous-page', u'/Documentation'),
     'hu' : (u'sablondokumentáció', u'/doc'),
@@ -507,6 +507,7 @@ moved_links = {
     'ko' : (u'documentation', u'/설명문서'),
     'ms' : (u'documentation', u'/doc'),
     'pl' : (u'dokumentacja',  u'/opis'),
+    'pt' : (u'documentação',  u'/doc'),
     'ru' : (u'doc',           u'/doc'),
     'sv' : (u'dokumentation', u'/dok'),
     'vi' : (u'documentation', u'/doc'),
@@ -2086,7 +2087,7 @@ def botMayEdit (page):
         return True
     templates = page.templatesWithParams(get_redirect=True);
     for template in templates:
-        if template[0].lower() == tmpl:
+        if template[0].lower() in tmpl:
             return False
     return True
 
