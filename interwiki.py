@@ -492,6 +492,7 @@ msg = {
 }
 
 moved_links = {
+    'cs' : (u'dokumentace', u'/doc'),
     'de' : (u'dokumentation', u'/Meta'),
     'en' : (u'documentation', u'/doc'),
 }
