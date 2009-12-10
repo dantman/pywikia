@@ -514,6 +514,16 @@ moved_links = {
     'zh' : (u'documentation', u'/doc'),
 }
 
+# A list of template names in different languages.
+# Pages which contains these shouldn't be changed.
+ignoreTemplates = {
+    '_default': [u'delete'],
+    'cs' : [u'Pracuje_se'],
+    'de' : [u'inuse', u'löschen', u'sla'],
+    'en' : [u'inuse'],
+    'pdc': [u'lösche'],
+}
+
 class Global(object):
     """Container class for global settings.
        Use of globals outside of this is to be avoided."""
@@ -2081,14 +2091,23 @@ def compareLanguages(old, new, insite):
     return mods, mcomment, adding, removing, modifying
 
 def botMayEdit (page):
+    tmpl = []
     try:
         tmpl, loc = moved_links[page.site().lang]
     except KeyError:
-        return True
-    templates = page.templatesWithParams(get_redirect=True);
-    for template in templates:
-        if template[0].lower() in tmpl:
-            return False
+        pass
+    if type(tmpl) != list:
+        tmpl = tmpl.split()
+    try:
+        tmpl += ignoreTemplates[page.site().lang]
+    except KeyError:
+        pass
+    tmpl += ignoreTemplates['_default']
+    if tmpl != []:
+        templates = page.templatesWithParams(get_redirect=True);
+        for template in templates:
+            if template[0].lower() in tmpl:
+                return False
     return True
 
 def readWarnfile(filename, bot):
