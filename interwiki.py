@@ -491,13 +491,26 @@ msg = {
     'zh-yue': (u'機械人 ', u'加', u'減', u'改'),
 }
 
-# Subpage templates. Must be in lower case
+# Subpage templates. Must be in lower case,
+# whereas subpage itself must be case sensitive
 moved_links = {
-    'cs' : (u'dokumentace', u'/doc'),
+    'ca' : (u'ús de la plantilla', u'/ús'),
+    'cs' : (u'dokumentace',   u'/doc'),
     'de' : (u'dokumentation', u'/Meta'),
     'en' : (u'documentation', u'/doc'),
+    'es' : (u'documentación', u'/doc'),
+    #fr doesn't work since template is on subpage itself
     'fr' : (u'documentation modèle en sous-page', u'/Documentation'),
-    'pl' : (u'dokumentacja', u'/opis'),
+    'hu' : (u'sablondokumentáció', u'/doc'),
+    'id' : (u'template doc',  u'/doc'),
+    'ka' : (u'თარგის ინფო',   u'/ინფო'),
+    'ko' : (u'documentation', u'/설명문서'),
+    'ms' : (u'documentation', u'/doc'),
+    'pl' : (u'dokumentacja',  u'/opis'),
+    'ru' : (u'doc',           u'/doc'),
+    'sv' : (u'dokumentation', u'/dok'),
+    'vi' : (u'documentation', u'/doc'),
+    'zh' : (u'documentation', u'/doc'),
 }
 
 class Global(object):
