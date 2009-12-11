@@ -53,6 +53,7 @@ class Family(family.Family):
             'th': u'วิกิข่าว',
             'tr': u'Vikihaber',
             'uk': u'ВікіНовини',
+            'zh': [u'Wikinews', u'维基新闻'],
         }
         self.namespaces[5] = {
             '_default': [u'Wikinews talk', self.namespaces[5]['_default']],
@@ -82,6 +83,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องวิกิข่าว',
             'tr': u'Vikihaber tartışma',
             'uk': u'Обговорення ВікіНовини',
+            'zh': [u'Wikinews talk', u'维基新闻讨论'],
         }
 
         self.namespaces[100] = {

@@ -141,6 +141,7 @@ class Family(family.Family):
             'uz': u'Vikipediya',
             'vo': u'Vükiped',
             'yi': [u'װיקיפּעדיע', u'וויקיפעדיע'],
+            'zh': [u'Wikipedia', u'维基百科'],
             'zh-classical': u'維基大典',
         }
 
@@ -329,6 +330,7 @@ class Family(family.Family):
             'yo': u'Ọ̀rọ̀ Wikipedia',
             'za': u'Wikipedia讨论',
             'zea': u'Overleg Wikipedia',
+            'zh': [u'Wikipedia talk', u'维基百科讨论'],
             'zh-classical': u'維基大典 talk',
         }
 

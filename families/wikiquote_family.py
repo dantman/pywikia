@@ -62,6 +62,7 @@ class Family(family.Family):
             'uk': u'Вікіцитати',
             'ur': u'وکی اقتباسات',
             'uz': u'Vikiiqtibos',
+            'zh': [u'Wikiquote', u'维基语录'],
         }
 
         self.namespaces[5] = {
@@ -139,6 +140,7 @@ class Family(family.Family):
             'vi': u'Thảo luận Wikiquote',
             'vo': u'Bespik dö Wikiquote',
             'wo': u'Wikiquote waxtaan',
+            'zh': [u'Wikiquote talk', u'维基语录讨论'],
         }
 
         self.namespaces[100] = {
