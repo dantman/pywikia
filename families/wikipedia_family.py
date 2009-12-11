@@ -1018,6 +1018,7 @@ class Family(family.Family):
                 'pt': [102],
                 'als': [104],
                 'ar': [104],
+                'de': [4],
                 'en': [12],
                 'es': [104],
                 'fi': [4],
@@ -1040,10 +1041,32 @@ class Family(family.Family):
             },
         }
         self.crossnamespace[4] = {
-            'fi': {'_default': [0]}
+            '_default': {
+                '_default': [12],
+            },
+            'de': {
+                '_default': [0, 12]
+            },
+            'fi': {
+                '_default': [0, 12]
+            },
         }
         self.crossnamespace[5] = {
-            'fi': {'_default': [1]}
+            'fi': {
+                '_default': [1]}
+        }
+        self.crossnamespace[12] = {
+            '_default': {
+                '_default': [4],
+            },
+            'en': {
+                '_default': [0, 4],
+            },
+        }
+        self.crossnamespace[13] = {
+            'en': {
+                '_default': [0],
+            },
         }
         self.crossnamespace[102] = {
             'pt': {
@@ -1131,18 +1154,7 @@ class Family(family.Family):
                 'hr': [0, 103],
             },
         }
-        self.crossnamespace[12] = {
-            'de': {'_default': [4],
-            },
-            'en': {
-                '_default': [0],
-            },
-        }
-        self.crossnamespace[13] = {
-            'en': {
-                '_default': [0],
-            },
-        }
+
     def get_known_families(self, site):
         # In Swedish Wikipedia 's:' is part of page title not a family
         # prefix for 'wikisource'.
