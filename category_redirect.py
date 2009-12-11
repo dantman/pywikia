@@ -386,7 +386,7 @@ aanjepaß krijje:
             cPickle.dump(record, open(datafile + ".bak", "wb"))
 
         try:
-            template_list = self.site.family.category_redirect_templates[self.site.code]
+            template_list = self.site.family.category_redirect_templates[self.site.lang]
         except KeyError:
             pywikibot.output(u"No redirect templates defined for %s"
                               % self.site.sitename())
