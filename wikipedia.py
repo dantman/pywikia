@@ -8033,7 +8033,7 @@ def altlang(code):
     if code in ['cs', 'sk']:
         return ['cs', 'sk']
     #German
-    if code in ['als', 'bar', 'ksh', 'pdc']:
+    if code in ['bar', 'ksh', 'pdc']:
         return ['de']
     if code in ['als', 'lb']:
         return ['de', 'fr']
