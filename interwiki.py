@@ -1702,9 +1702,13 @@ class Subject(object):
         pywikibot.output(u"Changes to be made: %s" % mods)
         oldtext = page.get()
         template = (page.namespace() == 10)
-        newtext = pywikibot.replaceLanguageLinks(oldtext, new, site = page.site(), template = template )
-        if template and not botMayEdit(page):
-            pywikibot.output(u'SKIPPING: %s should have interwiki links on subpage.' % page.aslink(True))
+        newtext = pywikibot.replaceLanguageLinks(oldtext, new, site = page.site(), template = template)
+        # This is for now. Later there should be different funktions for each kind
+        if not botMayEdit(page):
+            if template:
+                pywikibot.output(u'SKIPPING: %s should have interwiki links on subpage.' % page.aslink(True))
+            else:
+                pywikibot.output(u'SKIPPING: %s is under construction or to be deleted.' % page.aslink(True))
             return False
         if newtext == oldtext:
             return False
@@ -2105,7 +2109,7 @@ def botMayEdit (page):
     except KeyError:
         pass
     if type(tmpl) != list:
-        tmpl = tmpl.split()
+        tmpl = [tmpl]
     try:
         tmpl += ignoreTemplates[page.site().lang]
     except KeyError:
