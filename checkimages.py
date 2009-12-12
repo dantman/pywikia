@@ -112,7 +112,7 @@ n_txt = {
 # '{{nld' --> '\{\{(?:template:|)no[ _]license ?(?:\||\n|\}) ?' (case insensitive).
 # If there's not a {{ it will work as usual (if x in Text)
 txt_find =  {
-        'commons':[u'{{no license', u'{{no license/en', u'{{nld', u'{{no permission since'],
+        'commons':[u'{{no license', u'{{no license/en', u'{{nld', u'{{no permission', u'{{no permission since'],
         'de':[u'{{DÜP', u'{{Dateiüberprüfung'],
         'en':[u'{{nld', u'{{no license'],
         'ga':[u'{{Ceadúnas de dhíth', u'{{Ceadúnas de dhíth'],
