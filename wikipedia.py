@@ -5623,7 +5623,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 cache[1] += "%s=%s\n" % (k,v)
         
         # write the data.
-        if self.family.cross_projects:
+        if self.family.cross_projects and cache[0]:
             filename = '%s-%s-central-login.data' % (self.family.name, self.username(sysop))
             f = open(config.datafilepath('login-data', filename), 'w')
             f.write(cache[0])
