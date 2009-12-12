@@ -503,19 +503,20 @@ moved_links = {
              u'doc',
              u'documentation, template'], u'/doc'),
     'es' : ([u'documentación', u'documentación de plantilla'], u'/doc'),
-    #fr doesn't work since template is on subpage itself
-    'fr' : (u'documentation modèle en sous-page', u'/Documentation'),
+    'fr' : (u'/documentation', u'/Documentation'),
     'hu' : (u'sablondokumentáció', u'/doc'),
     'id' : (u'template doc',  u'/doc'),
+    'ja' : (u'documentation', u'/doc'),
     'ka' : (u'თარგის ინფო',   u'/ინფო'),
     'ko' : (u'documentation', u'/설명문서'),
     'ms' : (u'documentation', u'/doc'),
     'pl' : (u'dokumentacja',  u'/opis'),
-    'pt' : (u'documentação',  u'/doc'),
+    'pt' : ([u'documentação', u'/doc'],  u'/doc'),
+    'ro' : (u'documentaţie',  u'/doc'),
     'ru' : (u'doc',           u'/doc'),
     'sv' : (u'dokumentation', u'/dok'),
     'vi' : (u'documentation', u'/doc'),
-    'zh' : (u'documentation', u'/doc'),
+    'zh' : ([u'documentation', u'doc'], u'/doc'),
 }
 
 # A list of template names in different languages.
@@ -523,14 +524,16 @@ moved_links = {
 ignoreTemplates = {
     '_default': [u'delete'],
     'cs' : [u'Pracuje_se'],
-    'de' : [u'inuse', u'löschen', u'sla'],
+    'de' : [u'inuse', u'löschen', u'sla', u'löschantrag', u'löschantragstext'],
     'en' : [u'inuse'],
     'pdc': [u'lösche'],
 }
 
 class Global(object):
-    """Container class for global settings.
-       Use of globals outside of this is to be avoided."""
+    """
+    Container class for global settings.
+    Use of globals outside of this is to be avoided.
+    """
     autonomous = False
     confirm = False
     select = False
@@ -569,6 +572,7 @@ class Global(object):
     restoreAll = False
 
     def readOptions(self, arg):
+        """ Read all commandline parameters for the global container """
         if arg == '-noauto':
             self.auto = False
         elif arg.startswith('-hint:'):
