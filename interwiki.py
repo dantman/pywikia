@@ -398,7 +398,7 @@ msg = {
     'gl': (u'bot ', u'Engadido', u'Eliminado', u'Modificado'),
     'gn': (u'bot ', u'ojoapy', u'oñembogue', u'oñemoambue'),
     'gu': (u'રોબોટ ', u'ઉમેરણ', u'હટાવ્યું', u'ફેરફાર'),
-    'gv': (u'', u'cur stiagh ec bot', u'scryssit magh ec bot', u'Cheaghil bot'),
+    'gv': (u'bot ', u'currit stiagh ec', u'scryssit magh ec', u'caghlaait ec'),
     'he': (u'בוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot ', u'Dodaje', u'Uklanja', u'Mijenja'),
     'hsb': (u'bot ', u'přidał', u'wotstronił', u'změnił'),
