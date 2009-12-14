@@ -447,7 +447,7 @@ emailSubject = {
 # Format: [[user,regex], [user,regex]...] the regex is needed to match the user where to send the warning-msg
 uploadBots = {
         '_default':None,
-        'commons':[['File Upload Bot (Magnus Manske)',r'\|[Ss]ource=Transferred from .*?; transferred to Commons by \[\[User:(.*?)\]\]']],
+        'commons':[['File Upload Bot (Magnus Manske)', r'\|[Ss]ource=Transferred from .*?; transferred to Commons by \[\[User:(.*?)\]\]']],
 }
 
 # Add your project (in alphabetical order) if you want that the bot start
@@ -500,34 +500,22 @@ class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
                  duplicatesReport = False, logFullError = True):
         """ Constructor, define some global variable """
-        self.site = site
-        
-        self.logFullError = logFullError
-        
-        self.logFulNumber = logFulNumber
-        
-        self.rep_page = wikipedia.translate(self.site, report_page)
-        
-        self.rep_text = wikipedia.translate(self.site, report_text)
-        
-        self.com = wikipedia.translate(self.site, comm10)
-        
-        hiddentemplatesRaw = wikipedia.translate(self.site, HiddenTemplate)
-        
-        self.hiddentemplates = [wikipedia.Page(self.site, tmp) for tmp in hiddentemplatesRaw]
-        
-        self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)
-        
+        self.site = site       
+        self.logFullError = logFullError        
+        self.logFulNumber = logFulNumber        
+        self.rep_page = wikipedia.translate(self.site, report_page)        
+        self.rep_text = wikipedia.translate(self.site, report_text)        
+        self.com = wikipedia.translate(self.site, comm10)        
+        hiddentemplatesRaw = wikipedia.translate(self.site, HiddenTemplate)        
+        self.hiddentemplates = [wikipedia.Page(self.site, tmp) for tmp in hiddentemplatesRaw]        
+        self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)        
         self.pageAllowed = wikipedia.translate(self.site, PageWithAllowedTemplates)        
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
         # Adding the bot's nickname at the notification text if needed.
-        botolist = wikipedia.translate(self.site, bot_list)
-        
-        project = wikipedia.getSite().family.name
-        
-        self.project = project
-        
+        botolist = wikipedia.translate(self.site, bot_list)       
+        project = wikipedia.getSite().family.name        
+        self.project = project        
         bot = config.usernames[project]
         try:
             botnick = bot[self.site.lang]
@@ -1119,6 +1107,10 @@ class main:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
         list_licenses = catlib.categoryAllPageObjectsAPI(catName)
+        if self.site.lang == 'commons':
+            no_licenses_to_skip = catlib.categoryAllPageObjectsAPI('Category:License-related tags')
+            for license_given in no_licenses_to_skip:
+                list_licenses.remove(license_given)
         wikipedia.output('') # blank line
     
         # Add the licenses set in the default page as licenses
