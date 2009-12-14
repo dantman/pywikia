@@ -3543,21 +3543,23 @@ class ImagePage(Page):
         infos = []
         
         while True:
-            for info in data['query']['pages'].values()[0]['imageinfo']:
-                count += 1
-                if count == 1 and 'iistart' not in params: 
+            try:
+                for info in data['query']['pages'].values()[0]['imageinfo']:
+                    count += 1
+                    if count == 1 and 'iistart' not in params: 
                     # count 1 and no iicontinue mean first image revision is latest.
-                    self._latestInfo = info
-                infos.append(info)
-                if limit == 1:
+                        self._latestInfo = info
+                    infos.append(info)
+                    if limit == 1:
+                        break
+            
+            
+                if 'query-continue' in data and limit != 1:
+                    params['iistart'] = data['query-continue']['imageinfo']['iistart']
+                else:
                     break
-            
-            
-            if 'query-continue' in data and limit != 1:
-                params['iistart'] = data['query-continue']['imageinfo']['iistart']
-            else:
-                break
-        
+            except KeyError:
+                output("Not image in imagepage")
         self._infoLoaded = True
         if limit > 1:
             return infos
