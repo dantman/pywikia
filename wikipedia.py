@@ -3542,8 +3542,8 @@ class ImagePage(Page):
             self._local = True
         infos = []
         
-        while True:
-            try:
+        try:
+            while True:
                 for info in data['query']['pages'].values()[0]['imageinfo']:
                     count += 1
                     if count == 1 and 'iistart' not in params: 
@@ -3558,8 +3558,8 @@ class ImagePage(Page):
                     params['iistart'] = data['query-continue']['imageinfo']['iistart']
                 else:
                     break
-            except KeyError:
-                output("Not image in imagepage")
+         except KeyError:
+            output("Not image in imagepage")
         self._infoLoaded = True
         if limit > 1:
             return infos
