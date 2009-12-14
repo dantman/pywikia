@@ -3558,7 +3558,7 @@ class ImagePage(Page):
                     params['iistart'] = data['query-continue']['imageinfo']['iistart']
                 else:
                     break
-         except KeyError:
+        except KeyError:
             output("Not image in imagepage")
         self._infoLoaded = True
         if limit > 1:
