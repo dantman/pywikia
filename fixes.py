@@ -13,23 +13,34 @@ __version__ = '$Id$'
 #
 
 help = u"""
-                       * HTML       -  Convert HTML tags to wiki syntax, and
-                                       fix XHTML.
-                       * isbn        - Fix badly formatted ISBNs.
-                       * syntax     -  Try to fix bad wiki markup. Do not run
-                                       this in automatic mode, as the bot may
-                                       make mistakes.
-                       * syntax-safe - Like syntax, but less risky, so you can
-                                       run this in automatic mode.
-                       * case-de     - fix upper/lower case errors in German
-                       * grammar-de  - fix grammar and typography in German
-                       * vonbis      - Ersetze Binde-/Gedankenstrich durch "bis" in German
-                       * music       - Links auf Begriffsklärungen in German
-                       * datum       - specific date formats in German
-                       * correct-ar  - Corrections for Arabic Wikipedia and any Arabic wiki.
-                       * yu-tld      - the yu top-level domain will soon be disabled, see
-                       * fckeditor   - Try to convert FCKeditor HTML tags to wiki syntax.
-                                       http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
+                  * HTML        - Convert HTML tags to wiki syntax, and
+                                  fix XHTML.
+                                    **) NOTE below
+                  * isbn        - Fix badly formatted ISBNs.
+                                    **) NOTE below
+                  * syntax      - Try to fix bad wiki markup. Do not run
+                                  this in automatic mode, as the bot may
+                                  make mistakes.
+                  * syntax-safe - Like syntax, but less risky, so you can
+                                  run this in automatic mode.
+                                    **) NOTE below
+                  * case-de     - fix upper/lower case errors in German
+                  * grammar-de  - fix grammar and typography in German
+                  * vonbis      - Ersetze Binde-/Gedankenstrich durch "bis"
+                                  in German
+                  * music       - Links auf Begriffsklärungen in German
+                  * datum       - specific date formats in German
+                  * correct-ar  - Corrections for Arabic Wikipedia and any
+                                  Arabic wiki.
+                  * yu-tld      - the yu top-level domain will soon be
+                                  disabled, see
+                  * fckeditor   - Try to convert FCKeditor HTML tags to wiki
+                                  syntax.
+                                  http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
+                                  
+                                    **) NOTE: these fixes are part of the
+                                        cosmetic_changes.py. You may use
+                                        that script instead.
 
 """
 
