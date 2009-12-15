@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-This is a Bot written by Filnik to add a text at the end of the page but above categories,
-interwiki and template for the stars of the interwiki (default).
+This is a Bot written by Filnik to add a text at the end of the page but above
+categories, interwiki and template for the stars of the interwiki (default).
 
 Alternatively it may also add a text at the top of the page.
 These command line parameters can be used to specify which pages to work on:
@@ -11,27 +11,43 @@ These command line parameters can be used to specify which pages to work on:
 
 Furthermore, the following command line parameters are supported:
 
--page               Use a page as generator
--text               Define which text to add. "\n" are interpreted as newlines.
--summary            Define the summary to use
--except             Use a regex to check if the text is already in the page
--excepturl          Use the html page as text where you want to see if there's the text, not the wiki-page.
--newimages          Add text in the new images
--untagged           Add text in the images that don't have any license template
--always             If used, the bot won't ask if it should add the text specified
--up                 If used, put the text at the top of the page
+-page             Use a page as generator
+
+-text             Define which text to add. "\n" are interpreted as newlines.
+
+-summary          Define the summary to use
+
+-except           Use a regex to check if the text is already in the page
+
+-excepturl        Use the html page as text where you want to see if there's
+                  the text, not the wiki-page.
+
+-newimages        Add text in the new images
+
+-untagged         Add text in the images that don't have any license template
+
+-always           If used, the bot won't ask if it should add the text
+                  specified
+
+-up               If used, put the text at the top of the page
 
 --- Example ---
 1.
-# This is a script to add a template to the top of the pages with category:catname
-python add_text.py -cat:catname -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{([Tt]emplate:|)[Ss]omething" -up
+# This is a script to add a template to the top of the pages with
+# category:catname
+# Warning! Put it in one line, otherwise it won't work correctly.
+
+python add_text.py -cat:catname -summary:"Bot: Adding a template"
+-text:"{{Something}}" -except:"\{\{([Tt]emplate:|)[Ss]omething" -up
 
 2.
-# Command used on it.wikipedia to put the template in the page without any category.
-# But warning! Put it in a line, otherwise it won't work correctly.
+# Command used on it.wikipedia to put the template in the page without any
+# category.
+# Warning! Put it in one line, otherwise it won't work correctly.
 
-python add_text.py -excepturl:"class='catlinks'>" -uncat -text:"{{Categorizzare}}"
--except:"\{\{([Tt]emplate:|)[Cc]ategorizzare" -summary:"Bot: Aggiungo template Categorizzare"
+python add_text.py -excepturl:"class='catlinks'>" -uncat
+-text:"{{Categorizzare}}" -except:"\{\{([Tt]emplate:|)[Cc]ategorizzare"
+-summary:"Bot: Aggiungo template Categorizzare"
 
 --- Credits and Help ---
 This script has been written by Botwiki's staff, if you want to help us
@@ -191,7 +207,6 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         if (site.language()==u'nn'):
             newtext = newtext + u'\n' + nn_iw_msg
         # Dealing the stars' issue
-        starsListInPage = list()
         for star in starsList:
             regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}\n)' % star, re.I)
             risultato = regex.findall(newtext)
