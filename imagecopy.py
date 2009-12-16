@@ -245,9 +245,10 @@ def pageTextPost(url,parameters):
     
 class imageTransfer (threading.Thread):
 
-    def __init__ ( self, imagePage, newname):
+    def __init__ ( self, imagePage, newname, category):
         self.imagePage = imagePage
         self.newname = newname
+        self.category = category
         threading.Thread.__init__ ( self )
 
     def run(self):
@@ -275,6 +276,11 @@ class imageTransfer (threading.Thread):
 
         # I want every picture to be tagged with the bottemplate so i can check my contributions later.
         CH=u'\n\n{{BotMoveToCommons|'+ self.imagePage.site().language() + '.' + self.imagePage.site().family.name +'|year={{subst:CURRENTYEAR}}|month={{subst:CURRENTMONTHNAME}}|day={{subst:CURRENTDAY}}}}' + CH
+
+        if self.category:
+            CH = CH.replace(u'{{subst:Unc}} <!-- Remove this line once you have added categories -->', u'')
+            CH = CH + u'[[Category:' + self.category + u']]'
+            
                 
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
@@ -462,12 +468,16 @@ def main(args):
     generator = None;
     #newname = "";
     imagepage = None;
+    always = False
+    category = u''
     # Load a lot of default generators
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
+        elif arg.startswith('-cc:'):
+            category = arg [len('-cc:'):]
         else:
             genFactory.handleArg(arg)
     
@@ -526,7 +536,7 @@ def main(args):
                         # We dont overwrite images, pick another name, go to the start of the loop
 
             if not skip:
-                imageTransfer(imagepage, newname).start()
+                imageTransfer(imagepage, newname, category).start()
 
     wikipedia.output(u'Still ' + str(threading.activeCount()) + u' active threads, lets wait')
     for openthread in threading.enumerate():
