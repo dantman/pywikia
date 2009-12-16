@@ -478,6 +478,7 @@ def main(args):
     pregenerator = pagegenerators.PreloadingGenerator(generator)
 
     for page in pregenerator:
+        skip = False
         if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
             imagepage = wikipedia.ImagePage(page.site(), page.title())
 
@@ -492,31 +493,37 @@ def main(args):
                 except NotImplementedError:
                     #No API, using the page file instead
                     (datetime, username, resolution, size, comment) = imagepage.getFileVersionHistory().pop()
-                while True:
+                if always:
+                    newname=imagepage.titleWithoutNamespace()
+                    CommonsPage=wikipedia.Page(wikipedia.getSite('commons', 'commons'), u'File:'+newname)
+                    if CommonsPage.exists():
+                        skip = True
+                else:
+                    while True:
+    
+                        # Do the Tkdialog to accept/reject and change te name
+                        (newname, skip)=Tkdialog(imagepage.titleWithoutNamespace(), imagepage.get(), username, imagepage.permalink(), imagepage.templates()).getnewname()
 
-                    # Do the Tkdialog to accept/reject and change te name
-                    (newname, skip)=Tkdialog(imagepage.titleWithoutNamespace(), imagepage.get(), username, imagepage.permalink(), imagepage.templates()).getnewname()
+                        if skip:
+                            wikipedia.output('Skipping this image')
+                            break
 
-                    if skip:
-                        wikipedia.output('Skipping this image')
-                        break
-
-                    # Did we enter a new name?
-                    if len(newname)==0:
-                        #Take the old name
-                        newname=imagepage.titleWithoutNamespace()
-                    else:
-                        newname = newname.decode('utf-8')
+                        # Did we enter a new name?
+                        if len(newname)==0:
+                            #Take the old name
+                            newname=imagepage.titleWithoutNamespace()
+                        else:
+                            newname = newname.decode('utf-8')
                         
-                    # Check if the image already exists
-                    CommonsPage=wikipedia.Page(
-                                   wikipedia.getSite('commons', 'commons'),
-                                   'Image:'+newname)
-                    if not CommonsPage.exists():
-                        break
-                    else:
-                        wikipedia.output('Image already exists, pick another name or skip this image')
-                    # We dont overwrite images, pick another name, go to the start of the loop
+                        # Check if the image already exists
+                        CommonsPage=wikipedia.Page(
+                                       wikipedia.getSite('commons', 'commons'),
+                                       u'File:'+newname)
+                        if not CommonsPage.exists():
+                            break
+                        else:
+                            wikipedia.output('Image already exists, pick another name or skip this image')
+                        # We dont overwrite images, pick another name, go to the start of the loop
 
             if not skip:
                 imageTransfer(imagepage, newname).start()
