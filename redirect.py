@@ -283,16 +283,16 @@ class RedirectGenerator:
             params['apnamespace'] = ns
             if self.api_start:
                 params['apfrom'] = self.api_start
-            while True:
+            done = False
+            while not done:
                 data = query.GetData(params, self.site)
                 if "limits" in data: # process aplimit = max
                     params['aplimit'] = int(data['limits']['allpages'])
                 for x in data['query']['allpages']:
-                    if self.api_until and x['title'] == self.api_until:
-                        break
+                    done = self.api_until and x['title'] >= self.api_until
+                    if done: break
                     yield x['pageid']
-
-                if 'query-continue' in data:
+                if not done and 'query-continue' in data:
                     params['apfrom'] = data['query-continue']['allpages']['apfrom']
                 else:
                     break
@@ -341,6 +341,10 @@ class RedirectGenerator:
         for apiQ in self._next_redirects_via_api_commandline():
             params['pageids'] = apiQ
             data = query.GetData(params, self.site)
+            if 'error' in data:
+                raise RuntimeError("API query error: %s" % data)
+            if data == []:
+                raise RuntimeError("No results given.")
             redirects = {}
             pages = {}
             redirects = dict((x['from'], x['to'])
@@ -452,13 +456,13 @@ class RedirectGenerator:
                     wikipedia.output(u'\nChecking redirect %i of %i...'
                                      % (num + 1, len(redict)))
 
-    move_regex = re.compile(
-            r'moved <a href.*?>(.*?)</a> to <a href=.*?>.*?</a>.*?</li>')
-
     def get_moved_pages_redirects(self):
         '''generate redirects to recently-moved pages'''
         # this will run forever, until user interrupts it
         import datetime
+
+        move_regex = re.compile(
+                r'moved <a href.*?>(.*?)</a> to <a href=.*?>.*?</a>.*?</li>')
 
         if self.offset <= 0:
             self.offset = 1
@@ -482,7 +486,7 @@ class RedirectGenerator:
                 import traceback
                 wikipedia.output(unicode(traceback.format_exc()))
                 return
-            g = self.move_regex.findall(move_list)
+            g = move_regex.findall(move_list)
             if wikipedia.verbose:
                 wikipedia.output(u"%s moved pages" % len(g))
             for moved_title in g:
@@ -684,8 +688,7 @@ class RedirectRobot:
                                                        sd_tagging_sum)
                             targetPage.put(content, summ)
                             redir.put(content, summ)
-                        else:
-                            break # TODO Better implement loop redirect
+                        break # TODO Better implement loop redirect
                     else:
                         newRedir = targetPage
                         continue #
