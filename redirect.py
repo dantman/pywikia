@@ -283,16 +283,13 @@ class RedirectGenerator:
             #'':'',
         }
         for ns in namespaces:
-            # print (ns)
             params['apnamespace'] = ns
-            # print (apiQns)
+            if start:
+                params['apfrom'] = start
             while True:
-                if start:
-                    params['apfrom'] = start
                 data = query.GetData(params, self.site)
                 if "limits" in data: # process aplimit = max
                     params['aplimit'] = int(data['limits']['allpages'])
-                # wikipedia.output(u'===RESULT===\n%s\n' % data)
                 for x in data['query']['allpages']:
                     if until and x['title'] == until:
                         break
