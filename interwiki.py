@@ -536,6 +536,7 @@ class Global(object):
     """
     autonomous = False
     confirm = False
+    always = False
     select = False
     debug = True
     followredirect = True
@@ -1538,6 +1539,7 @@ class Subject(object):
         updatedSites = []
         notUpdatedSites = []
         # Process all languages here
+        globalvar.always = False
         if globalvar.limittwo:
             lclSite = self.originPage.site()
             lclSiteDone = False
@@ -1723,7 +1725,7 @@ class Subject(object):
             ask = True
         if globalvar.force:
             ask = False
-        if globalvar.confirm:
+        if globalvar.confirm and not globalvar.always:
             ask = True
         # If we need to ask, do so
         if ask:
@@ -1732,8 +1734,8 @@ class Subject(object):
                 answer = 'n'
             else:
                 answer = pywikibot.inputChoice(u'Submit?', 
-                            ['Yes', 'No', 'open in Browser', 'Give up'], 
-                            ['y', 'n', 'b', 'g'])
+                            ['Yes', 'No', 'open in Browser', 'Give up', 'Always'],
+                            ['y', 'n', 'b', 'g', 'a'])
                 if answer == 'b':
                     webbrowser.open("http://%s%s" % (
                         page.site().hostname(),
@@ -1741,6 +1743,10 @@ class Subject(object):
                     ))
                     pywikibot.input("Press Enter when finished in browser.")
                     return True
+                elif answer == 'a':
+                    # don't ask for the rest of this subject
+                    globalvar.always = True
+                    answer = 'y'
         else:
             # If we do not need to ask, allow
             answer = 'y'
