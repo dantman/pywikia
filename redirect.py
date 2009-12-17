@@ -187,6 +187,8 @@ class RedirectGenerator:
         self.site = wikipedia.getSite()
         self.xmlFilename = xmlFilename
         self.namespaces = namespaces
+        if use_api and self.namespaces == []:
+            self.namespaces = [ 0 ]
         self.offset = offset
         self.use_move_log = use_move_log
         self.use_api = use_api
@@ -263,35 +265,30 @@ class RedirectGenerator:
         else:
             return redict
 
-    def get_redirect_pageids_via_api(self, number=u'max', namespaces=[],
-                                     start=None, until=None):
+    def get_redirect_pageids_via_api(self):
         """
-        Generator which will yield page IDs of Pages that are redirects.
-        Get number of page ids in one go.
-        Iterates over namespaces, Main if an empty list.
-        In each namespace, start alphabetically from a pagetitle start,
-        which need not exist.
+        Return generator that yields page IDs of Pages that are redirects.
         """
-        if namespaces == []:
-            namespaces = [ 0 ]
         params = {
-            'action':'query',
-            'list':'allpages',
-            'apfilterredir':'redirects',
-            'aplimit':number,
-            'apdir':'ascending',
+            'action': 'query',
+            'list': 'allpages',
+            'apfilterredir': 'redirects',
+            'aplimit': self.api_number,
+            'apdir': 'ascending',
             #'':'',
         }
-        for ns in namespaces:
+        if self.api_number is None:
+            params['aplimit'] = "max"
+        for ns in self.namespaces:
             params['apnamespace'] = ns
-            if start:
-                params['apfrom'] = start
+            if self.api_start:
+                params['apfrom'] = self.api_start
             while True:
                 data = query.GetData(params, self.site)
                 if "limits" in data: # process aplimit = max
                     params['aplimit'] = int(data['limits']['allpages'])
                 for x in data['query']['allpages']:
-                    if until and x['title'] == until:
+                    if self.api_until and x['title'] == self.api_until:
                         break
                     yield x['pageid']
 
@@ -300,17 +297,13 @@ class RedirectGenerator:
                 else:
                     break
 
-    def _next_redirects_via_api_commandline(self, number='max', namespaces=[],
-                                            start=None, until=None ):
+    def _next_redirects_via_api_commandline(self):
         """
         Return a generator that retrieves pageids from the API 500 at a time
         and yields them as a list
         """
-        if namespaces == []:
-            namespaces = [ 0 ]
         apiQ = []
-        for pageid in self.get_redirect_pageids_via_api(number, namespaces,
-                                                        start, until):
+        for pageid in self.get_redirect_pageids_via_api():
             apiQ.append(pageid)
             if len(apiQ) >= 500:
                 yield apiQ
@@ -318,8 +311,7 @@ class RedirectGenerator:
         if apiQ:
             yield apiQ
 
-    def get_redirects_via_api(self, number=u'max', namespaces=[], start=None,
-                              until=None, maxlen=8):
+    def get_redirects_via_api(self, maxlen=8):
         """
         Return a generator that yields tuples of data about redirect Pages:
             0 - page title of a redirect page
@@ -339,21 +331,14 @@ class RedirectGenerator:
             2 - target page title of the redirect, or chain (may not exist)
             3 - target page of the redirect, or end of chain, or page title where
                 chain or loop detecton was halted, or None if unknown
-        Get number of page ids in one go.
-        Iterates over namespaces, Main if an empty list.
-        In each namespace, start alphabetically from a pagetitle start, which
-        need not exist.
         """
         import urllib
-        if namespaces == []:
-            namespaces = [ 0 ]
         params = {
             'action':'query',
             'redirects':1,
             #'':'',
         }
-        for apiQ in self._next_redirects_via_api_commandline(
-                                number, namespaces, start, until):
+        for apiQ in self._next_redirects_via_api_commandline():
             params['pageids'] = apiQ
             data = query.GetData(params, self.site)
             redirects = {}
@@ -389,10 +374,7 @@ class RedirectGenerator:
         if self.use_api:
             count = 0
             for (pagetitle, type, target, final) \
-                    in self.get_redirects_via_api(
-                        namespaces=self.namespaces,
-                        start=self.api_start,
-                        until=self.api_until, maxlen=2):
+                    in self.get_redirects_via_api(maxlen=2):
                 if type == 0:
                     yield pagetitle
                     if self.api_number:
@@ -403,7 +385,7 @@ class RedirectGenerator:
         elif self.xmlFilename == None:
             # retrieve information from the live wiki's maintenance page
             # broken redirect maintenance page's URL
-            path = self.site.broken_redirects_address(default_limit = False)
+            path = self.site.broken_redirects_address(default_limit=False)
             wikipedia.output(u'Retrieving special page...')
             maintenance_txt = self.site.getUrl(path)
 
@@ -430,9 +412,7 @@ class RedirectGenerator:
         if self.use_api:
             count = 0
             for (pagetitle, type, target, final) \
-                    in self.get_redirects_via_api(
-                         namespaces=self.namespaces, start=self.api_start,
-                         until=self.api_until, maxlen = 2):
+                    in self.get_redirects_via_api(maxlen=2):
                 if type != 0 and type != 1:
                     yield pagetitle
                     if self.api_number:
@@ -752,11 +732,7 @@ class RedirectRobot:
         delete_reason = wikipedia.translate(self.site, reason_broken)
         count = 0
         for (redir_name, code, target, final)\
-                in self.generator.get_redirects_via_api(
-                     namespaces=self.generator.namespaces,
-                     start=self.generator.api_start,
-                     until=self.generator.api_until,
-                     maxlen = 2):
+                in self.generator.get_redirects_via_api(maxlen=2):
             if code == 1:
                 continue
             elif code == 0:
@@ -765,8 +741,7 @@ class RedirectRobot:
             else:
                 self.fix_1_double_redirect(redir_name)
                 count += 1
-            # print ('%s .. %s' % (count, self.number))
-            if self.exiting or ( self.number and count >= self.number ):
+            if self.exiting or (self.number and count >= self.number):
                 break
 
     def run(self):
