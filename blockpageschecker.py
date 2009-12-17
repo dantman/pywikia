@@ -1,10 +1,10 @@
 # -*- coding: utf-8  -*-
 """
 This is a script originally written by Wikihermit and then rewritten by Filnik,
-to delete the templates used to warn in the pages that a page is blocked,
-when the page isn't blocked at all. Indeed, very often sysops block the pages
-for a setted time but then the forget to delete the warning! This script is useful
-if you want to delete those useless warning left in these pages.
+to delete the templates used to warn in the pages that a page is blocked, when
+the page isn't blocked at all. Indeed, very often sysops block the pages for a
+setted time but then the forget to delete the warning! This script is useful if
+you want to delete those useless warning left in these pages.
 
 Parameters:
 
@@ -20,21 +20,25 @@ These command line parameters can be used to specify which pages to work on:
                   Argument can also be given as "-page:pagetitle". You can
                   give this parameter multiple times to edit multiple pages.
 
--protectedpages:  Check all the blocked pages (useful when you have not categories
-                  or when you have problems with them. (add the namespace after ":" where
-                  you want to check - default checks all protected pages)
+-protectedpages:  Check all the blocked pages; useful when you have not
+                  categories or when you have problems with them. (add the
+                  namespace after ":" where you want to check - default checks
+                  all protected pages.)
 
 -moveprotected:   Same as -protectedpages, for moveprotected pages
 
 Furthermore, the following command line parameters are supported:
 
--always         Doesn't ask every time if the bot should make the change or not, do it always.
+-always         Doesn't ask every time if the bot should make the change or not,
+                do it always.
 
--debug          When the bot can't delete the template from the page (wrong regex or something like that)
-                it will ask you if it should open the page on your browser.
-                (attention: pages included may give false positives..)
+-debug          When the bot can't delete the template from the page (wrong
+                regex or something like that) it will ask you if it should open
+                the page on your browser.
+                (attention: pages included may give false positives!)
 
--move           The bot will check if the page is blocked also for the move option, not only for edit
+-move           The bot will check if the page is blocked also for the move
+                option, not only for edit
 
 --- Warning! ---
 You have to edit this script in order to add your preferences
@@ -59,7 +63,7 @@ python blockpageschecker.py -debug -protectedpages:4
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: blockpageschecker.py,v 1.5 2008/04/24 19.40.00 filnik Exp$'
+__version__ = '$Id$'
 #
 
 import re, webbrowser
@@ -207,9 +211,6 @@ def main():
     """ Main Function """
     # Loading the comments
     global categoryToCheck, comment, project_inserted
-    if config.mylang not in project_inserted:
-        pywikibot.output(u"Your project is not supported by this script. You have to edit the script and add it!")
-        return
     # always, define a generator to understand if the user sets one, defining what's genFactory
     always = False; generator = False; debug = False
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
@@ -241,6 +242,10 @@ def main():
                 generator = [pywikibot.Page(pywikibot.getSite(), arg[6:])]
         else:
             genFactory.handleArg(arg)
+
+    if config.mylang not in project_inserted:
+        pywikibot.output(u"Your project is not supported by this script.\nYou have to edit the script and add it!")
+        return
 
     # Load the right site
     site = pywikibot.getSite()
