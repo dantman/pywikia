@@ -5946,15 +5946,26 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             except urllib2.HTTPError, e:
                 if e.code in [401, 404]:
                     raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
-                output(u"Result:%s %s" % (e.code, e.msg))
-                raise 
+                elif e.code == 504:
+                    output(u'HTTPError: %s %s' % (e.code, e.msg))
+                    if retry:
+                        output(u"""WARNING: Could not open '%s'.Maybe the server or\n your connection is down. Retrying in %i minutes..."""
+                               % (url, retry_idle_time))
+                        time.sleep(retry_idle_time * 60)
+                        # Next time wait longer, but not longer than half an hour
+                        if retry_idle_time > 30:
+                            retry_idle_time = 30
+                        continue
+                    raise
+                else:
+                    output(u"Result: %s %s" % (e.code, e.msg))
+                    raise 
             except Exception, e:
                 output(u'%s' %e)
                 if retry:
                     output(u"""WARNING: Could not open '%s'. Maybe the server or\n your connection is down. Retrying in %i minutes..."""
                            % (url, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
