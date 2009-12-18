@@ -2975,6 +2975,7 @@ class Family:
             'sourceforge':      'sourceforge',
             'sourcextreme':     'sourcextreme',
             'squeak':           'squeak',
+            'strategy':         'strategy',
             'stockphotoss':     'stockphotoss',
             'strikiwiki':       'strikiwiki',
             'susning':          'susning',
