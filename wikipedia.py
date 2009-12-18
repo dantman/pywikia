@@ -6362,6 +6362,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 _dict = dict
 
             retry_idle_time = 1
+            retry_attempt = 0
             while True:
                 if api and self.versionnumber() >= 12 or self.versionnumber() >= 16:
                     params = {
@@ -6415,6 +6416,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     output(u'WARNING: No messages found in Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
+                    retry_attempt += 1
+                    if retry_attempt > config.maxretries:
+                        raise ServerError()
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
