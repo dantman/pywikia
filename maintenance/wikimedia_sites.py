@@ -42,10 +42,10 @@ for family in families:
         new.append(lang)
 
     if original == new:
-        print 'The lists match!'
+        wikipedia.output(u'The lists match!')
     else:
-        print "The lists don't match, the new list is:"
-        print '        self.languages_by_size = ['
+        wikipedia.output(u"The lists don't match, the new list is:")
+        wikipedia.output(u'        self.languages_by_size = [')
         line = '            '
         index = 0
         for lang in new:
@@ -54,9 +54,9 @@ for family in families:
                 line += u' '
             line += u"'%s'," % lang
             if index == 10:
-                print line
+                wikipedia.output(u'%s' % line)
                 line = '            '
                 index = 0
         if index > 0:
-            print line
-        print '        ]'
+            wikipedia.output(u'%s' % line)
+        wikipedia.output(u'        ]')
