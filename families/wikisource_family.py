@@ -89,7 +89,7 @@ class Family(family.Family):
             'de': u'Wikisource Diskussion',
             'el': u'Βικιθήκη συζήτηση',
             'es': u'Wikisource Discusión',
-            'et': u'Vikitekstid arutelu',
+            'et': u'Vikitekstide arutelu',
             'fa': u'بحث ویکی‌نبشته',
             'fi': u'Keskustelu Wikiaineistosta',
             'fo': u'Wikiheimild-kjak',

@@ -48,6 +48,7 @@ class Family(family.Family):
             'el': u'Βικιβιβλία',
             'eo': u'Vikilibroj',
             'es': u'Wikilibros',
+            'et': u'Vikiõpikud',
             'fa': u'ویکی‌نسک',
             'fi': u'Wikikirjasto',
             'fr': u'Wikilivres',
@@ -101,7 +102,7 @@ class Family(family.Family):
             'el': u'Βικιβιβλία συζήτηση',
             'eo': u'Vikilibroj diskuto',
             'es': u'Wikilibros Discusión',
-            'et': u'Wikibooks arutelu',
+            'et': u'Vikiõpikute arutelu',
             'eu': u'Wikibooks eztabaida',
             'fa': u'بحث ویکی‌نسک',
             'fi': u'Keskustelu Wikikirjastosta',
@@ -203,6 +204,7 @@ class Family(family.Family):
         }
 
         self.namespaces[102] = {
+            'ca': u'Viquiprojecte',
             'cy': u'Silff lyfrau',
             'de': u'Regal',
             'en': u'Cookbook',
@@ -217,6 +219,7 @@ class Family(family.Family):
         }
 
         self.namespaces[103] = {
+            'ca': u'Viquiprojecte Discussió',
             'cy': u'Sgwrs Silff lyfrau',
             'de': u'Regal Diskussion',
             'en': u'Cookbook talk',

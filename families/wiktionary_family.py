@@ -46,6 +46,8 @@ class Family(family.Family):
             'ar': u'ويكاموس',
             'ast': u'Uiccionariu',
             'bg': u'Уикиречник',
+            'bn': u'উইকিঅভিধান',
+            'br': u'Wikeriadur',
             'bs': u'Vikirječnik',
             'ca': u'Viccionari',
             'cs': u'Wikislovník',
@@ -53,7 +55,7 @@ class Family(family.Family):
             'el': u'Βικιλεξικό',
             'eo': u'Vikivortaro',
             'es': u'Wikcionario',
-            'et': u'Vikisõnaraamat',
+            'et': u'Vikisõnastik',
             'fa': u'ویکی‌واژه',
             'fi': u'Wikisanakirja',
             'fo': u'Wiktionary',
@@ -114,8 +116,8 @@ class Family(family.Family):
             'be': u'Wiktionary размовы',
             'bg': u'Уикиречник беседа',
             'bm': u'Discussion Wiktionary',
-            'bn': u'Wiktionary আলোচনা',
-            'br': u'Kaozeadenn Wiktionary',
+            'bn': u'উইকিঅভিধান আলোচনা',
+            'br': u'Kaozeadenn Wikeriadur',
             'bs': u'Razgovor s Vikirječnikom',
             'ca': u'Viccionari Discussió',
             'cs': u'Wikislovník diskuse',
@@ -126,7 +128,7 @@ class Family(family.Family):
             'el': u'Συζήτηση βικιλεξικού',
             'eo': u'Vikivortaro diskuto',
             'es': u'Wikcionario Discusión',
-            'et': u'Vikisõnaraamat arutelu',
+            'et': u'Vikisõnastiku arutelu',
             'eu': u'Wiktionary eztabaida',
             'fa': u'بحث ویکی‌واژه',
             'fi': u'Keskustelu Wikisanakirjasta',
@@ -277,6 +279,7 @@ class Family(family.Family):
             'de': u'Verzeichnis',
             'en': u'Concordance',
             'fr': u'Transwiki',
+            'ia': u'Appendice',
             'pl': u'Indeks',
             'pt': u'Vocabulário',
             'ro': u'Apendice',
@@ -291,6 +294,7 @@ class Family(family.Family):
             'de': u'Verzeichnis Diskussion',
             'en': u'Concordance talk',
             'fr': u'Discussion Transwiki',
+            'ia': u'Discussion Appendice',
             'pl': u'Dyskusja indeksu',
             'pt': u'Vocabulário Discussão',
             'ro': u'Discuţie Apendice',
@@ -341,10 +345,12 @@ class Family(family.Family):
 
         self.namespaces[108] = {
             'en': u'Transwiki',
+            'pt': u'Citações',
         }
 
         self.namespaces[109] = {
             'en': u'Transwiki talk',
+            'pt': u'Citações Discussão',
         }
 
         self.namespaces[110] = {
