@@ -285,6 +285,7 @@ class RedirectGenerator:
                 params['apfrom'] = self.api_start
             done = False
             while not done:
+                wikipedia.output(u'\nRetrieving pages...', newline=False)
                 data = query.GetData(params, self.site)
                 if "limits" in data: # process aplimit = max
                     params['aplimit'] = int(data['limits']['allpages'])
@@ -340,6 +341,7 @@ class RedirectGenerator:
         }
         for apiQ in self._next_redirects_via_api_commandline():
             params['pageids'] = apiQ
+            wikipedia.output(u'.', newline=False)
             data = query.GetData(params, self.site)
             if 'error' in data:
                 raise RuntimeError("API query error: %s" % data)
