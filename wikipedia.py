@@ -5810,6 +5810,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                                % (url, retry_idle_time))
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
+                        retry_idle_time *= 2
                         if retry_idle_time > 30:
                             retry_idle_time = 30
                         continue
@@ -5823,7 +5824,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     output(u"""WARNING: Could not open '%s'. Maybe the server or\n your connection is down. Retrying in %i minutes..."""
                            % (url, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
@@ -5953,6 +5953,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                                % (url, retry_idle_time))
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
+                        retry_idle_time *= 2
                         if retry_idle_time > 30:
                             retry_idle_time = 30
                         continue
