@@ -1924,6 +1924,16 @@ class InterwikiBot(object):
                     if page.isTalkPage():
                         pywikibot.output(u'Skipping: %s is a talk page' % page.title())
                         continue
+                    if page.namespace() == 10:
+                        loc = None
+                        try:
+                            tmpl, loc = moved_links[page.site().lang]
+                            del tmpl
+                        except KeyError:
+                            pass
+                        if loc != None and loc in page.title():
+                            pywikibot.output(u'Skipping: %s is a templates subpage' % page.title())
+                            continue
                     break
 
                 if self.generateUntil:
