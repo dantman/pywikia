@@ -525,7 +525,7 @@ ignoreTemplates = {
     '_default': [u'delete'],
     'cs' : [u'Pracuje_se'],
     'de' : [u'inuse', u'löschen', u'sla', u'löschantrag', u'löschantragstext'],
-    'en' : [u'inuse'],
+    'en' : [u'inuse', u'softredirect'],
     'pdc': [u'lösche'],
 }
 
