@@ -8,7 +8,6 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikitech'
-
         self.langs = {
             'en': 'wikitech.leuksman.com',
         }
