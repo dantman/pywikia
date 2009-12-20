@@ -30,7 +30,7 @@ class Family(family.Family):
 
         # Override defaults
         self.namespaces[2]['pl'] = 'Wikiskryba'
-        self.namespaces[3]['pl'] = 'Dyskusja Wikiskryby'
+        self.namespaces[3]['pl'] = 'Dyskusja wikiskryby'
 
         # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
