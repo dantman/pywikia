@@ -1682,7 +1682,7 @@ not supported by PyWikipediaBot!"""
             return self._putPageOld(text, comment, watchArticle, minorEdit,
                 newPage, token, newToken, sysop, captcha, botflag, maxTries)
 
-        retry_attempt = 1
+        retry_attempt = 0
         retry_delay = 1
         dblagged = False
         params = {
@@ -1958,7 +1958,7 @@ not supported by PyWikipediaBot!"""
             predata['masteredit'] = '1'
 
         retry_delay = 1
-        retry_attempt = 1
+        retry_attempt = 0
         dblagged = False
         wait = 5
         while True:
@@ -5788,6 +5788,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         # case the server is down or overloaded).
         # Wait for retry_idle_time minutes (growing!) between retries.
         retry_idle_time = 1
+        retry_attempt = 0
         while True:
             try:
                 request = urllib2.Request(url, data, headers)
@@ -5806,6 +5807,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 elif e.code in [500, 504]:
                     output(u'HTTPError: %s %s' % (e.code, e.msg))
                     if config.retry_on_fail:
+                        retry_attempt += 1
+                        if retry_attempt > config.maxretries:
+                            raise ServerError()
                         output(u"""WARNING: Could not open '%s'.\nMaybe the server is down. Retrying in %i minutes..."""
                                % (url, retry_idle_time))
                         time.sleep(retry_idle_time * 60)
