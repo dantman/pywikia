@@ -44,10 +44,10 @@ class Family(family.Family):
             'cs': u'WoWWiki',
             'da': u'WoWWiki Danmark',
             'de': u'WoW-Wiki',
-            'el': u'WoWWiki ????????? ?d????',
+            'el': u'WoWWiki Ελληνικός οδηγός',
             'en': u'WoWWiki',
             'es': u'WarcraftWiki',
-            'fa': u'????? ???????',
+            'fa': u'دنیای وارکرفت',
             'fi': u'WoWWiki Suomi',
             'fr': u'WikiWoW',
             'he': u'Worldofwiki',
@@ -71,110 +71,110 @@ class Family(family.Family):
             'ru': u'WoWWiki',
             'tr': u'Wow Tr Wikiame',
             'zh': u'World of Warcraft Wiki',
-            'zh-tw': u'????????'
+            'zh-tw': u'魔獸世界百科全書'
         }
 
         self.namespaces[5] = {
             'cs': u'WoWWiki diskuse',
             'da': u'WoWWiki Danmark-diskussion',
             'de': u'WoW-Wiki Diskussion',
-            'el': u'WoWWiki ????????? ?d???? s???t?s?',
+            'el': u'WoWWiki Ελληνικός οδηγός συζήτηση',
             'en': u'WoWWiki talk',
-            'es': u'WarcraftWiki Discusi�n',
-            'fa': u'??? ????? ???????',
+            'es': u'WarcraftWiki Discusión',
+            'fa': u'بحث دنیای وارکرفت',
             'fi': u'Keskustelu WoWWiki Suomista',
             'fr': u'Discussion WikiWoW',
-            'he': u'???? Worldofwiki',
+            'he': u'שיחת Worldofwiki',
             'hr': u'Razgovor World of Warcraft Wiki',
             'hu': u'World of Warcraft Wiki-vita',
             'is': u'WoWWikispjall',
             'it': u'Discussioni WoWWiki Italia',
-            'ja': u'World of Warcraft Wiki-???',
-            'ko': u'World of Warcraft Wiki??',
+            'ja': u'World of Warcraft Wiki‐ノート',
+            'ko': u'World of Warcraft Wiki토론',
             'lt': u'World of Warcraft Wiki aptarimas',
             'lv': u'World of Warcraft diskusija',
             'nl': u'Overleg WoWWiki',
             'no': u'Wowwiki Norge-diskusjon',
             'pl': u'Dyskusja WoWWiki',
-            'pt': u'World of Warcraft Discuss�o',
-            'pt-br': u'WowWiki Br Discuss�o',
-            'ro': u'Discutie World of Warcraft Romania',
-            'ru': u'?????????? WoWWiki',
+            'pt': u'World of Warcraft Discussão',
+            'pt-br': u'WowWiki Br Discussão',
+            'ro': u'Discuţie World of Warcraft Romania',
+            'ru': u'Обсуждение WoWWiki',
             'sk': u'Diskusia k WoWwiki',
-            'sr': u'???????? ? Wow wiki',
+            'sr': u'Разговор о Wow wiki',
             'sv': u'WoWWiki Sverigediskussion',
-            'tr': u'Wow Tr Wikiame tartisma',
+            'tr': u'Wow Tr Wikiame tartışma',
             'zh': u'World of Warcraft Wiki talk',
-            'zh-tw': u'??????????'
+            'zh-tw': u'魔獸世界百科全書討論'
         }
 
         #wikia-wide defaults
         self.namespaces[110] = {
              '_default': 'Forum',
              'es': u'Foro',
-             'fa': u'?????',
+             'fa': u'فوروم',
              'fi': u'Foorumi',
-             'ru': u'?????'
+             'ru': u'Форум'
         }
         self.namespaces[111] = {
              '_default': 'Forum talk',
-             'es': u'Foro Discusi�n',
-             'fa': u'??? ?????',
+             'es': u'Foro Discusión',
+             'fa': u'بحث فوروم',
              'fi': u'Keskustelu foorumista',
              'pl': u'Dyskusja forum',
-             'ru': u'?????????? ??????'
+             'ru': u'Обсуждение форума'
         }
 
         self.namespaces[400] = {
             '_default': u'Video',
-            'ru': u'?????'
+            'ru': u'Видео'
         }
         self.namespaces[401] = {
             '_default': u'Video talk',
-            'ru': u'?????????? ?????'
+            'ru': u'Обсуждение видео'
         }
         self.namespaces[500] = { 
             '_default': u'User blog',
             'de': u'Benutzer Blog',
             'en': '', #disabled on en
-            'ru': u'???? ?????????'
+            'ru': u'Блог участника'
         }
         self.namespaces[501] = {
             '_default': u'User blog comment',
             'de': u'Benutzer Blog Kommentare',
             'en': '', #disabled on en
-            'ru': u'??????????? ????? ?????????'
+            'ru': u'Комментарий блога участника'
         }
         self.namespaces[502] = {
             '_default': u'Blog',
             'en': '', #disabled on en
-            'ru': u'????'
+            'ru': u'Блог'
         }
         self.namespaces[503] = {
             '_default': u'Blog talk',
             'de': u'Blog Diskussion',
             'en': '', #disabled on en
-            'ru': u'?????????? ?????'
+            'ru': u'Обсуждение блога'
         }
 
         #a few edge cases:
         self.namespaces[112] = {
-            'en': u'Guild', 'ru': u'??????'
+            'en': u'Guild', 'ru': u'Портал'
         }
         self.namespaces[113] = {
-            'en': u'Guild talk', 'ru': u'?????? talk'
+            'en': u'Guild talk', 'ru': u'Портал talk'
         }
         self.namespaces[114] = {
-            'en': u'Server', 'ru': u'???????'
+            'en': u'Server', 'ru': u'Гильдия'
         }
         self.namespaces[115] = {
-            'en': u'Server talk', 'ru': u'??????? talk'
+            'en': u'Server talk', 'ru': u'Гильдия talk'
         }
         self.namespaces[116] = {
-             'en': u'Portal', 'ru': u'??????'
+             'en': u'Portal', 'ru': u'Сервер'
         }
         self.namespaces[117] = {
-            'en': u'Portal talk', 'ru': u'?????? talk'
+            'en': u'Portal talk', 'ru': u'Сервер talk'
         }
 
         #and a few more        
