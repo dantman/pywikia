@@ -197,8 +197,7 @@ class CosmeticChangesToolkit:
         """
         oldText = text
         text = self.fixSelfInterwiki(text)
-        text = self.standardizeInterwiki(text)
-        text = self.standardizeCategories(text)
+        text = self.standardizePageFooter(text)
         text = self.cleanUpLinks(text)
         text = self.cleanUpSectionHeaders(text)
         text = self.putSpacesInLists(text)
@@ -209,9 +208,12 @@ class CosmeticChangesToolkit:
         text = self.removeNonBreakingSpaceBeforePercent(text)
         text = self.fixSyntaxSave(text)
         text = self.fixHtml(text)
+        text = self.fixTypo(text)
         try:
             text = isbn.hyphenateIsbnNumbers(text)
         except isbn.InvalidIsbnException, error:
+            if pywikibot.verbose:
+                pywikibot.output(u"ISBN error: %s" % error)
             pass
         if self.debug:
             pywikibot.showDiff(oldText, text)
@@ -226,25 +228,56 @@ class CosmeticChangesToolkit:
         text = interwikiR.sub(r'[[\1]]', text)
         return text
 
-    def standardizeInterwiki(self, text):
+    def standardizePageFooter(self, text):
         """
-        Makes sure that interwiki links are put to the correct position and
-        into the right order.
+        Makes sure that interwiki links, categories and star templates are
+        put to the correct position and into the right order.
+        This combines the old instances standardizeInterwiki and standardizeCategories
         """
-        if not self.talkpage and pywikibot.calledModuleName() <> 'interwiki':
-            interwikiLinks = pywikibot.getLanguageLinks(text, insite = self.site)
-            text = pywikibot.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template)
-        return text
+        starsList = ['Link[ _][FG][LA]', 'link[ _]adq', 'enllaç[ _]ad',
+                     'link[ _]ua', 'legătură[ _]af', 'destacado',
+                     'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
 
-    def standardizeCategories(self, text):
-        """
-        Makes sure that categories are put to the correct position, but
-        does not sort them.
-        """
-        # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
-        if self.site != pywikibot.getSite('de', 'wikipedia') and not self.template:
+        categories = None
+        interwikiLinks = None
+        allstars = []
+
+        # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia.
+        # See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
+        if not self.template and not '{{Personendaten' in text:
             categories = pywikibot.getCategoryLinks(text, site = self.site)
+
+        if not self.talkpage:# and pywikibot.calledModuleName() <> 'interwiki':
+            interwikiLinks = pywikibot.getLanguageLinks(text, insite = self.site)
+
+            # Removing the interwiki
+            text = pywikibot.removeLanguageLinks(text, site = self.site)
+            # Dealing the stars' issue
+            #starsList = list()
+            allstars = []
+            for star in starsList:
+                regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
+                found = regex.findall(text)
+                if found != []:
+                    if pywikibot.verbose:
+                        print found
+                    text = regex.sub('', text)
+                    allstars += found
+
+        # Adding categories
+        if categories != None:
             text = pywikibot.replaceCategoryLinks(text, categories, site = self.site)
+        # Adding stars templates
+        if allstars != []:
+            text = text.strip()+'\r\n\r\n'
+            allstars.sort()
+            for element in allstars:
+                text += '%s\r\n' % element.strip()
+                if pywikibot.verbose:
+                    pywikibot.output(u'%s' %element.strip())
+        # Adding the interwiki
+        if interwikiLinks != None:
+            text = pywikibot.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template)
         return text
 
     def translateAndCapitalizeNamespaces(self, text):
@@ -481,6 +514,16 @@ class CosmeticChangesToolkit:
         # TODO: maybe we can make the bot replace <p> tags with \r\n's.
         return text
 
+    def fixTypo(self, text):
+        # Solve wrong Nº sign with °C or °F
+        exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
+        pattern = re.compile(u'«.*?»', re.UNICODE)
+        exceptions.append(pattern)
+        text = pywikibot.replaceExcept(text, ur'(\d)\s*&nbsp;[º°]([CF])', ur'\1&nbsp;°\2', exceptions)
+        text = pywikibot.replaceExcept(text, ur'(\d)\s*[º°]([CF])', ur'\1&nbsp;°\2', exceptions)
+        text = pywikibot.replaceExcept(text, ur'º([CF])', ur'°\1', exceptions)
+        return text
+
 class CosmeticChangesBot:
     def __init__(self, generator, acceptall = False, comment=u'Robot: Cosmetic changes'):
         self.generator = generator
@@ -494,7 +537,7 @@ class CosmeticChangesBot:
             pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, namespace = page.namespace())
             changedText = ccToolkit.change(page.get())
-            if changedText != page.get():
+            if changedText.strip() != page.get().strip():
                 if not self.acceptall:
                     choice = pywikibot.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                     if choice == 'a':
