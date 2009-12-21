@@ -224,8 +224,9 @@ class CosmeticChangesToolkit:
         Interwiki links to the site itself are displayed like local links.
         Remove their language code prefix.
         """
-        interwikiR = re.compile(r'\[\[%s\s?:([^\[\]\n]*)\]\]' % self.site.lang)
-        text = interwikiR.sub(r'[[\1]]', text)
+        if not self.talkpage:
+            interwikiR = re.compile(r'\[\[%s\s?:([^\[\]\n]*)\]\]' % self.site.lang)
+            text = interwikiR.sub(r'[[\1]]', text)
         return text
 
     def standardizePageFooter(self, text):
