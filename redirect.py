@@ -118,6 +118,7 @@ msg_double={
 # Reason for deleting broken redirects
 reason_broken={
     'ar': u'روبوت: هدف التحويلة غير موجود',
+    'als': u'Wyterleitig wo kaputt isch', 
     'be-x-old': u'Робат: мэта перанакіраваньня не існуе',
     'cs': u'Přerušené přesměrování',
     'de': u'Bot: Weiterleitungsziel existiert nicht',
@@ -135,7 +136,7 @@ reason_broken={
     'kk': u'Бот: Айдату нысанасы жоқ болды',
     'ksh':u'Bot: Dė [[Special:BrokenRedirects|Ömlëijdong jingk ennet Liiere]]',
     'lt': u'robotas: Peradresavimas į niekur',
-    'nds':u'Bot: Kaputte Wiederleiden rutmakt',
+    'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
     'nl': u'Bot: doelpagina doorverwijzing bestaat niet',
     'nn': u'robot: målet for omdirigeringa eksisterer ikkje',
     'no': u'robot: målet for omdirigeringen eksisterer ikke',
@@ -151,24 +152,18 @@ reason_broken={
     'zh-yue': u'機械人：跳轉目標唔存在',
 }
 
-# Summary message for putting broken redirect to speedy delete
-sd_tagging_sum = {
-    'ar': u'روبوت: وسم للحذف السريع',
-    'cs': u'Robot označil ke smazání',
-    'en': u'Robot: Tagging for speedy deletion',
-    'ga': u'Róbó: Ag maircáil le luas-scrios',
-    'it': u'Bot: +Da cancellare subito',
-    'ja': u'ロボットによる:迷子のリダイレクトを即時削除へ',
-    'ksh':u'Bot: Di Ömlëijdong jeiht noh nörjendwoh.',
-    'nds':u'Bot: Kaputte Wiederleiden ward nich brukt',
-    'nl': u'Bot: gemarkeerd voor snelle verwijdering',
-    'war':u'Robot: Nautod o nagbinalikbalik nga redirek',
-    'zh': u'機器人: 將損壞的重定向提報快速刪除',
+# Reason for deleting redirect loops
+reason_loop={
+    'de': u'Bot: Weiterleitungsziel auf sich selbst',
+    'en': u'[[WP:CSD#G8|G8]]: [[Wikipedia:Redirect|Redirect]] target forms a redirect loop',
 }
 
 # Insert deletion template into page with a broken redirect
 sd_template = {
     'ar': u'{{شطب|تحويلة مكسورة}}',
+    'als':u'{{delete}}Wyterleitig wo kaputt isch--~~~~', 
+    'bar':u'{{delete}}Kaputte Weiterleitung--~~~~', 
+    'de': u'{{sla|Defekte Weiterleitung --~~~~}}',
     'cs': u'{{smazat|přerušené přesměrování}}',
     'en': u'{{db-r1}}',
     'ga': u'{{scrios|Athsheoladh briste}}',
@@ -176,6 +171,7 @@ sd_template = {
     'ja': u'{{即時削除|壊れたリダイレクト}}',
     'ksh':u'{{Schmieß fott}}Di Ömlëijdong jeiht noh nörjendwoh hen.<br />--~~~~~\n\n',
     'nds':u'{{delete}}Kaputte Wiederleiden, wat nich brukt ward.<br />--~~~~\n\n',
+    'pdc':u'{{lösche|Defekte Weiterleitung --~~~~}}',
     'war':u'{{delete}}Nautod o nagbinalikbalik nga redirek.--~~~~\n\n',
     'zh': u'{{delete|R1}}',
 }
@@ -569,7 +565,7 @@ class RedirectRobot:
                             redir_page.delete(reason, prompt = False)
                         except wikipedia.NoUsername:
                             if targetPage.site().lang in sd_template \
-                                    and targetPage.site().lang in sd_tagging_sum:
+                                    and targetPage.site().lang in reason_broken:
                                 wikipedia.output(
             u"No sysop in user-config.py, put page to speedy deletion.")
                                 content = redir_page.get(get_redirect=True)
@@ -578,7 +574,7 @@ class RedirectRobot:
                                     sd_template)+"\n"+content
                                 summary = wikipedia.translate(
                                     targetPage.site().lang,
-                                    sd_tagging_sum)
+                                    reason_broken)
                                 redir_page.put(content, summary)
 
                 except wikipedia.IsRedirectPage:
