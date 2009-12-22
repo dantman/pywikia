@@ -258,7 +258,7 @@ class CosmeticChangesToolkit:
             # Removing the interwiki
             text = pywikibot.removeLanguageLinks(text, site = self.site)
             # Dealing the stars' issue
-            if self.site.sitename() != 'wikipedia:nn'
+            if self.site.sitename() != 'wikipedia:nn':
                 for star in starsList:
                     regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
                     found = regex.findall(text)
