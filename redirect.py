@@ -422,7 +422,7 @@ class RedirectGenerator:
 
         elif self.xmlFilename == None:
             if self.use_move_log:
-                if config.use_api:
+                if self.use_api:
                     gen = self.get_moved_pages_redirects_via_api()
                 else:
                     gen = self.get_moved_pages_redirects()
