@@ -235,7 +235,7 @@ class CosmeticChangesToolkit:
         put to the correct position and into the right order.
         This combines the old instances standardizeInterwiki and standardizeCategories
         """
-        starsList = ['Link[ _][FG][LA]', 'link[ _]adq', 'enllaç[ _]ad',
+        starsList = ['Link[ _][AFG][LA]', 'link[ _]adq', 'enllaç[ _]ad',
                      'link[ _]ua', 'legătură[ _]af', 'destacado',
                      'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
 
@@ -245,7 +245,9 @@ class CosmeticChangesToolkit:
 
         # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia.
         # See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
-        if not self.template and not '{{Personendaten' in text:
+        # ignoring nn-wiki of cause of the comment line above iw section
+        if not self.template and not '{{Personendaten' in text and \
+           self.site.sitename() != 'wikipedia:nn':
             categories = pywikibot.getCategoryLinks(text, site = self.site)
 
         if not self.talkpage:# and pywikibot.calledModuleName() <> 'interwiki':
@@ -254,16 +256,15 @@ class CosmeticChangesToolkit:
             # Removing the interwiki
             text = pywikibot.removeLanguageLinks(text, site = self.site)
             # Dealing the stars' issue
-            #starsList = list()
-            allstars = []
-            for star in starsList:
-                regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
-                found = regex.findall(text)
-                if found != []:
-                    if pywikibot.verbose:
-                        print found
-                    text = regex.sub('', text)
-                    allstars += found
+            if self.site.sitename() != 'wikipedia:nn'
+                for star in starsList:
+                    regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
+                    found = regex.findall(text)
+                    if found != []:
+                        if pywikibot.verbose:
+                            print found
+                        text = regex.sub('', text)
+                        allstars += found
 
         # Adding categories
         if categories != None:
