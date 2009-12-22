@@ -309,6 +309,7 @@ good_name = {
     'no': (CAT, u"Anbefalte artikler"),
     'oc': (CAT, u"Bon article"),
     'pl': (CAT, u"Dobre artykuły"),
+    'ro': (BACK, u"Articol bun"),
     'ru': (CAT, u"Википедия:Хорошие статьи"),
     'simple': (CAT, u"Good articles"),
     'sr': (BACK,u"Иконица добар"),
