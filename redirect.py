@@ -19,17 +19,15 @@ and arguments can be:
 -xml           Retrieve information from a local XML dump
                (http://download.wikimedia.org). Argument can also be given as
                "-xml:filename.xml". Cannot be used with -api or -moves.
-               If neither of -xml -api -moves is given, info will be loaded
-               from a special page of the live wiki.
-
--api           Retrieve information from the wiki via MediaWikis application
-               program interface (API). Cannot be used with -xml or -moves.
-               If neither of -xml -api -moves is given, info will be loaded
-               from a special page of the live wiki.
 
 -moves         Use the page move log to find double-redirect candidates. Only
-               works with action "double", does not work with either -xml, or
-               -api. If neither of -xml -api -moves is given, info will be
+               works with action "double", does not work with -xml. You may
+               use -api option for retrieving pages via API
+
+-api           Retrieve information from the wiki via MediaWikis application
+               program interface (API). Cannot be used with -xml.
+
+               NOTE: If neither of -xml -api -moves is given, info will be
                loaded from a special page of the live wiki.
 
 -namespace:n   Namespace to process. Works only with an XML dump, or the API
@@ -63,7 +61,7 @@ and arguments can be:
 from __future__ import generators
 import wikipedia, config, query
 import xmlreader
-import re, sys
+import re, sys, datetime
 
 __version__='$Id$'
 
@@ -411,7 +409,7 @@ class RedirectGenerator:
                     yield key
 
     def retrieve_double_redirects(self):
-        if self.use_api:
+        if self.use_api and not self.use_move_log:
             count = 0
             for (pagetitle, type, target, final) \
                     in self.get_redirects_via_api(maxlen=2):
@@ -424,7 +422,11 @@ class RedirectGenerator:
 
         elif self.xmlFilename == None:
             if self.use_move_log:
-                for redir_page in self.get_moved_pages_redirects():
+                if config.use_api:
+                    gen = self.get_moved_pages_redirects_via_api()
+                else:
+                    gen = self.get_moved_pages_redirects()
+                for redir_page in gen:
                     yield redir_page.title()
                 return
             # retrieve information from the live wiki's maintenance page
@@ -454,10 +456,46 @@ class RedirectGenerator:
                     wikipedia.output(u'\nChecking redirect %i of %i...'
                                      % (num + 1, len(redict)))
 
+    def get_moved_pages_redirects_via_api(self):
+        if self.offset <= 0:
+            self.offset = 1
+        start = datetime.datetime.utcnow() \
+                 - datetime.timedelta(0, self.offset*3600)
+        offset_time = start.strftime("%Y%m%d%H%M%S")
+        params = {
+            'action'    :'query',
+            'list'      :'logevents',
+            'letype'    :'move',
+            'leprop'    :'title|details',
+            'lelimit'   : '500',
+            'lestart'   : offset_time,
+        }
+        data = query.GetData(params, encodeTitle = False)#['query']['logevents']
+        if 'warnings' in data:
+            raise
+        allmoves = data['query']['logevents']
+        wikipedia.output(u'Retrieving %d moved pages via API...' % len(allmoves))
+        if wikipedia.verbose:
+            wikipedia.output(u"[%s]" % offset_time)
+        for moved in allmoves:
+            moved_page = wikipedia.Page(self.site, moved['title'])
+            try:
+                if not moved_page.isRedirectPage():
+                    continue
+            except wikipedia.BadTitle:
+                continue
+            except wikipedia.ServerError:
+                continue
+            try:
+                for page in moved_page.getReferences(follow_redirects=True, redirectsOnly=True):
+                    yield page
+            except wikipedia.NoPage:
+                # original title must have been deleted after move
+                continue
+
     def get_moved_pages_redirects(self):
         '''generate redirects to recently-moved pages'''
         # this will run forever, until user interrupts it
-        import datetime
 
         move_regex = re.compile(
                 r'moved <a href.*?>(.*?)</a> to <a href=.*?>.*?</a>.*?</li>')
@@ -823,7 +861,7 @@ def main(*args):
         else:
             wikipedia.output(u'Unknown argument: %s' % arg)
 
-    if not action or (api and moved_pages) or (xmlFilename and moved_pages)\
+    if not action or (xmlFilename and moved_pages)\
                   or (api and xmlFilename):
         wikipedia.showHelp('redirect')
     else:
