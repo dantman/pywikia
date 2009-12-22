@@ -2288,7 +2288,7 @@ def main():
             if nextPage == "!":
                 pywikibot.output(u"Dump file is empty?! Starting at the beginning.")
             else:
-                nextPage = page.titleWithoutNamespace() + '!'
+                nextPage += '!'
             hintlessPageGen = pagegenerators.CombinedPageGenerator([hintlessPageGen, pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
         if not hintlessPageGen:
             pywikibot.output(u'No Dumpfiles found.')
