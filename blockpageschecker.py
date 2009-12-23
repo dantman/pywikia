@@ -189,23 +189,15 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP, TU):
     return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
 def debugQuest(site, page):
-    quest = pywikibot.input(u'Do you want to open the page on your [b]rowser, [g]ui or [n]othing?')
+    quest = pywikibot.inputChoice(u'Do you want to open the page?',['with browser', 'with gui', 'no'], ['b','g','n'], 'n')
     pathWiki = site.family.nicepath(site.lang)
     url = 'http://%s%s%s?&redirect=no' % (pywikibot.getSite().hostname(), pathWiki, page.urlname())
-    while 1:
-        if quest.lower() in ['b', 'B']:
-            webbrowser.open(url)
-            break
-        elif quest.lower() in ['g', 'G']:
-            import editarticle
-            editor = editarticle.TextEditor()
-            text = editor.edit(page.get())
-            break
-        elif quest.lower() in ['n', 'N']:
-            break
-        else:
-            pywikibot.output(u'wrong entry, type "b", "g" or "n"')
-            continue
+    if quest == 'b':
+        webbrowser.open(url)
+    elif quest == 'g':
+        import editarticle
+        editor = editarticle.TextEditor()
+        text = editor.edit(page.get())
 
 def main():
     """ Main Function """

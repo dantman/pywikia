@@ -649,11 +649,11 @@ class DisambiguationRobot(object):
 
                     if not self.always:
                         if edited:
-                            choice = pywikibot.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink, q=quit\n"
-                                               "        m=more context, l=list, a=add new, x=save in this form):")
+                            choice = pywikibot.input(u"Option (#, r#, [s]kip link, [e]dit page, [n]ext page, [u]nlink, [q]uit\n"
+                                               "        [m]ore context, [l]ist, [a]dd new, x=save in this form):")
                         else:
-                            choice = pywikibot.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink, q=quit\n"
-                                               "        m=more context, d=show disambiguation page, l=list, a=add new):")
+                            choice = pywikibot.input(u"Option (#, r#, [s]kip link, [e]dit page, [n]ext page, [u]nlink, [q]uit\n"
+                                               "        [m]ore context, show [d]isambiguation page, [l]ist, [a]dd new):")
                     else:
                         choice = self.always
                     if choice in ['a', 'A']:
