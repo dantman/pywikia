@@ -316,13 +316,14 @@ class CosmeticChangesToolkit:
             if not family.isDefinedNSLanguage(nsNumber, self.site.lang):
                 # Skip undefined namespaces
                 continue
-            if nsNumber == 6 and self.site.family.name == 'wikipedia' and \
-               self.site.lang in ('en', 'fr'):
-                # skip processing file namespace on en-wiki and fr-wiki
-                continue
             namespaces = list(family.namespace(self.site.lang, nsNumber, all = True))
             thisNs = namespaces.pop(0)
-
+            if nsNumber == 6 and self.site.family.name == 'wikipedia' and \
+               self.site.lang in ('en', 'fr'):
+                # do not change "Image" on en-wiki and fr-wiki
+                for image in [u'Image', u'image']:
+                    if image in namespaces:
+                        namespaces.remove(image)
             # skip main (article) namespace
             if thisNs and namespaces:
                 text = pywikibot.replaceExcept(text, r'\[\[\s*(' + '|'.join(namespaces) + ') *:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]', exceptions)
