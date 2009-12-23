@@ -184,6 +184,8 @@ msg_append = {
     'zh': u'; 細部更改',
 }
 
+nn_iw_msg = u'<!--interwiki (no, sv, da first; then other languages alphabetically by name)-->'
+
 class CosmeticChangesToolkit:
     def __init__(self, site, debug=False, redirect=False, namespace=None):
         self.site = site
@@ -226,7 +228,7 @@ class CosmeticChangesToolkit:
         Interwiki links to the site itself are displayed like local links.
         Remove their language code prefix.
         """
-        if not self.talkpage:
+        if not self.talkpage and pywikibot.calledModuleName() <> 'interwiki':
             interwikiR = re.compile(r'\[\[%s\s?:([^\[\]\n]*)\]\]' % self.site.lang)
             text = interwikiR.sub(r'[[\1]]', text)
         return text
@@ -236,20 +238,25 @@ class CosmeticChangesToolkit:
         Makes sure that interwiki links, categories and star templates are
         put to the correct position and into the right order.
         This combines the old instances standardizeInterwiki and standardizeCategories
+        The page footer has the following section in that sequence:
+        1. categories
+        2. additional information depending on local site policy
+        3. stars templates for featured and good articles
+        4. interwiki links
         """
-        starsList = ['Link[ _][AFG][LA]', 'link[ _]adq', 'enllaç[ _]ad',
-                     'link[ _]ua', 'legătură[ _]af', 'destacado',
+        starsList = ['link[ _][afgu]a', 'link[ _]adq', 'enllaç[ _]ad',
+                     'link[ _]fl', 'legătură[ _]af', 'destacado',
                      'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
 
         categories = None
         interwikiLinks = None
         allstars = []
+        hasCommentLine = False
 
         # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia.
         # See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22
         # ignoring nn-wiki of cause of the comment line above iw section
-        if not self.template and not '{{Personendaten' in text and \
-           self.site.sitename() != 'wikipedia:nn':
+        if not self.template and not '{{Personendaten' in text:
             categories = pywikibot.getCategoryLinks(text, site = self.site)
 
         if not self.talkpage:# and pywikibot.calledModuleName() <> 'interwiki':
@@ -257,20 +264,33 @@ class CosmeticChangesToolkit:
 
             # Removing the interwiki
             text = pywikibot.removeLanguageLinks(text, site = self.site)
-            # Dealing the stars' issue
-            if self.site.sitename() != 'wikipedia:nn':
-                for star in starsList:
-                    regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
-                    found = regex.findall(text)
-                    if found != []:
-                        if pywikibot.verbose:
-                            print found
-                        text = regex.sub('', text)
-                        allstars += found
+            # Removing the stars' issue
+            for star in starsList:
+                regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
+                found = regex.findall(text)
+                if found != []:
+                    if pywikibot.verbose:
+                        print found
+                    text = regex.sub('', text)
+                    allstars += found
 
+        # nn got a message between the categories and the iw's
+        # and they want to keep it there, first remove it
+        if self.site.language()=='nn':
+            regex = re.compile('(<!-- ?interwiki \(no(/nv)?, ?sv, ?da first; then other languages alphabetically by name\) ?-->)')
+            found = regex.findall(text)
+            if found != []:
+                if pywikibot.verbose:
+                    print found
+                hasCommentLine = True
+                text = regex.sub('', text)
+        
         # Adding categories
         if categories != None:
             text = pywikibot.replaceCategoryLinks(text, categories, site = self.site)
+        # Put the nn iw message back
+        if self.site.language()=='nn' and not self.talkpage and (interwikiLinks != None or hasCommentLine):
+            text = text + '\r\n\r\n' + nn_iw_msg
         # Adding stars templates
         if allstars != []:
             text = text.strip()+'\r\n\r\n'
