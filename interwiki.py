@@ -1453,7 +1453,7 @@ class Subject(object):
                     pywikibot.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
                     self.whereReport(page2, indent = 8)
                 while True:
-                    answer = pywikibot.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
+                    answer = pywikibot.input(u"Which variant should be used? (<number>, [n]one, [g]ive up) ").lower()
                     if answer:
                         if answer == 'g':
                             return None
