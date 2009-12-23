@@ -31,7 +31,7 @@ Todo:
 #
 __version__ = '$Id$'
 
-import sys, urllib, re,  StringIO, hashlib, base64
+import sys, urllib, re,  StringIO, hashlib, base64, time
 import wikipedia, config, query, imagerecat, upload
 
 import flickrapi                  # see: http://stuvel.eu/projects/flickrapi
@@ -68,7 +68,7 @@ def getPhoto(flickr = None, photo_id = ''):
         except flickrapi.exceptions.FlickrError:
             gotPhotos = False
             wikipedia.output(u'Flickr api problem, sleeping')
-            sleep(30)
+            time.sleep(30)
     return (photoInfo, photoSizes)
 
 def isAllowedLicense(photoInfo = None):
