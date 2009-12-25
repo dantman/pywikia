@@ -415,7 +415,7 @@ class CategoryMoveRobot:
                  deleteEmptySourceCat=True, titleRegex=None):
         site = pywikibot.getSite()
         self.editSummary = editSummary
-        self.oldCat = catlib.Category(site, 'Category:' + oldCatTitle)
+        self.oldCat = catlib.Category(site, oldCatTitle)
         self.newCatTitle = newCatTitle
         self.inPlace = inPlace
         self.moveCatPage = moveCatPage
@@ -425,7 +425,7 @@ class CategoryMoveRobot:
 
     def run(self):
         site = pywikibot.getSite()
-        newCat = catlib.Category(site, 'Category:' + self.newCatTitle)
+        newCat = catlib.Category(site, self.newCatTitle)
         # set edit summary message
         if not self.editSummary:
             try:
@@ -578,8 +578,8 @@ class CategoryRemoveRobot:
 
     msg_remove={
         'ar':u'روبوت: إزالة من %s',
-        'bat-smg':u'Robots: Trėnama ėš  %s',
-        'be-x-old':u'Робат: выключэньне з [[Катэгорыя:%s]]',
+        'bat-smg':u'Robots: Trėnama ėš %s',
+        'be-x-old':u'Робат: выключэньне з [[%s]]',
         'ca':u'Robot: Eliminant de %s',
         'da':u'Robot: Fjerner fra %s',
         'de':u'Bot: Entferne aus %s',
@@ -589,7 +589,8 @@ class CategoryRemoveRobot:
         'fr':u'Robot : Retiré depuis %s',
         'he':u'בוט: מסיר את הדף מהקטגוריה %s',
         'ia':u'Robot: Eliminate de %s',
-        'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
+        'is':u'Vélmenni: Fjarlægi [[%s]]',
+        'ja':u'ロボットによる:[[%s]]を除去',
         'kk':u'Бот: %s дегеннен аластатты',
         'ksh':u'Bot: uß de %s ußjedraare',
         'lb': u'Bot: Ewech huele vun %s',
@@ -598,16 +599,16 @@ class CategoryRemoveRobot:
         'nl':u'Bot: Verwijderd uit %s',
         'no':u'Robot: Fjerner ifra %s',
         'nn':u'robot: fjerna ifrå %s',
-        'pt':u'Bot: Removendo [[Categoria:%s]]',
+        'pt':u'Bot: Removendo [[%s]]',
         'ru':u'Робот: исключение из %s',
-        'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
+        'sr':u'Бот: Уклањање из категорије [[%s]]',
         'sv':u'Robot: Tar bort från %s',
-        'zh':u'機器人:移除目錄%s',
+        'zh':u'機器人:移除目錄 [[%s]]',
     }
 
     def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = True, titleRegex = None, inPlace = False):
         self.editSummary = editSummary
-        self.cat = catlib.Category(pywikibot.getSite(), 'Category:' + catTitle)
+        self.cat = catlib.Category(pywikibot.getSite(), catTitle)
         # get edit summary message
         self.useSummaryForDeletion = useSummaryForDeletion
         self.batchMode = batchMode
@@ -638,7 +639,11 @@ class CategoryRemoveRobot:
             else:
                 reason = pywikibot.translate(pywikibot.getSite(), self.deletion_reason_remove)
             talkPage = self.cat.toggleTalkPage()
-            self.cat.delete(reason, not self.batchMode)
+            try:
+                self.cat.delete(reason, not self.batchMode)
+            except pywikibot.NoUsername:
+                pywikibot.output(u'You\'re not setup sysop info, category will not delete.' % self.cat.site())
+                return
             if (talkPage.exists()):
                 talkPage.delete(reason=reason, prompt=not self.batchMode)
 
