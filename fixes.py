@@ -648,7 +648,7 @@ fixes = {
     },
     # These replacements will convert HTML tag from FCK-editor to wiki syntax.
     #
-	'fckeditor': {
+    'fckeditor': {
         'regex': True,
         'msg': {
             'en': u'Robot: Fixing rich-editor html',
@@ -656,8 +656,8 @@ fixes = {
          'replacements': [
             # replace <br> with a new line
             (r'(?i)<br>',                      r'\n'),
-			# replace &nbsp; with a space
-			(r'(?i)&nbsp;',                      r' '),
+            # replace &nbsp; with a space
+            (r'(?i)&nbsp;',                      r' '),
         ],
     },
 }
