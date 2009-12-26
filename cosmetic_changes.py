@@ -277,7 +277,7 @@ class CosmeticChangesToolkit:
         # nn got a message between the categories and the iw's
         # and they want to keep it there, first remove it
         if self.site.language()=='nn':
-            regex = re.compile('(<!-- ?interwiki \(no(/nv)?, ?sv, ?da first; then other languages alphabetically by name\) ?-->)')
+            regex = re.compile('(<!-- ?interwiki \(no(/nb)?, ?sv, ?da first; then other languages alphabetically by name\) ?-->)')
             found = regex.findall(text)
             if found != []:
                 if pywikibot.verbose:
