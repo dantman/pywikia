@@ -6883,7 +6883,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     loginfo = i['loginfo']
                 # pageid = rcItem['pageid']
                 # logid = rcItem['logid']
-                yield Page(self, i['title'], defaultNamespace=i['ns']), i['timestamp'], i['user'], comment, loginfo
+                page = Page(self, i['title'], defaultNamespace=i['ns'])
+                yield page, i['timestamp'], i['user'], comment, loginfo
             if not repeat:
                 break
 
@@ -8090,7 +8091,7 @@ def altlang(code):
         return ['ar']
     #French
     if code in ['bm', 'br', 'ht', 'kab', 'kg', 'ln', 'mg', 'nrm', 'oc',
-                'rw', 'sg', 'ty', 'wa']:
+                'pcd', 'rw', 'sg', 'ty', 'wa']:
         return ['fr']
     if code == 'co':
         return ['fr', 'it']
