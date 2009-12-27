@@ -37,6 +37,7 @@ class Family(family.Family):
             'ts', 'za', 'ss', 've', 'bi', 'ha', 'cr', 'dz', 'bxr', 'ch',
             'bug', 'xh', 'tn', 'ki', 'ik', 'rw', 'st', 'ny', 'tw', 'chy',
             'ak', 'fj', 'sn', 'ff', 'lg', 'lbe', 'rn', 'tum', 'sg', 'ng',
+            'pcd',
         ]
 
         if family.config.SSL_connection:
@@ -268,7 +269,7 @@ class Family(family.Family):
             'mwl': u'Wikipedia cumbersa',
             'myv': u'Википедиясь кортамось',
             'mzn': [u'Wikipedia گپ', u'بحث Wikipedia'],
-            'nah': [u'Wikipedia tēixnāmiquiliztli', u'Wikipedia Discusión'],
+            'nah': [u'Huiquipedia tēixnāmiquiliztli', u'Wikipedia tēixnāmiquiliztli', u'Wikipedia Discusión'],
             'nap': [u'Wikipedia chiàcchiera', u'Discussioni Wikipedia'],
             'nds': u'Wikipedia Diskuschoon',
             'nds-nl': u'Overleg Wikipedie',
@@ -280,6 +281,7 @@ class Family(family.Family):
             'oc': u'Discussion Wikipèdia',
             'os': u'Дискусси Википеди',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
+            'pcd': u'Discussion Wikipedia',
             'pdc': u'Wikipedia Diskussion',
             'pl': u'Dyskusja Wikipedii',
             'pms': u'Discussion ant sla Wikipedia',
