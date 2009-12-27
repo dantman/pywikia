@@ -8618,6 +8618,15 @@ def parsetime2stamp(tz):
 
 #Redirect Handler for urllib2
 class U2RedirectHandler(urllib2.HTTPRedirectHandler):
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        newreq = urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
+        if (newreq.get_method() == "GET"):
+            for cl in "Content-Length", "Content-length", "content-length", "CONTENT-LENGTH":
+                if newreq.has_header(cl):
+                    del newreq.headers[cl]
+        return newreq
+
     def http_error_301(self, req, fp, code, msg, headers):
         result = urllib2.HTTPRedirectHandler.http_error_301(
             self, req, fp, code, msg, headers)
