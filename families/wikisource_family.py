@@ -11,10 +11,10 @@ class Family(family.Family):
         self.name = 'wikisource'
 
         self.languages_by_size = [
-            'en', 'pt', 'ru', 'zh', 'fr', 'es', 'de', 'he', 'it', 'ar',
+            'en', 'zh', 'pt', 'ru', 'fr', 'es', 'de', 'he', 'it', 'ar',
             'fa', 'hu', 'pl', 'th', 'cs', 'ro', 'hr', 'te', 'fi', 'tr',
             'nl', 'sv', 'sl', 'sr', 'ko', 'uk', 'ja', 'el', 'la', 'li',
-            'ml', 'yi', 'vi', 'az', 'is', 'bn', 'bs', 'ca', 'hy', 'id',
+            'ml', 'vi', 'yi', 'az', 'bn', 'is', 'bs', 'ca', 'hy', 'id',
             'mk', 'no', 'da', 'et', 'ta', 'bg', 'lt', 'kn', 'gl', 'cy',
             'sk', 'zh-min-nan', 'fo',
         ]
@@ -179,6 +179,7 @@ class Family(family.Family):
             'el': u'Βιβλίο',
             'en': u'Author',
             'es': u'Página',
+            'et': u'Lehekülg',
             'fa': [u'مؤلف', u'Author'],
             'fr': u'Auteur',
             'hr': u'Stranica',
@@ -200,6 +201,7 @@ class Family(family.Family):
             'el': u'Συζήτηση βιβλίου',
             'en': u'Author talk',
             'es': u'Página Discusión',
+            'et': u'Lehekülje arutelu',
             'fa': [u'بحث مؤلف', u'Author talk'],
             'fr': u'Discussion Auteur',
             'hr': u'Razgovor o stranici',
@@ -215,11 +217,13 @@ class Family(family.Family):
         }
 
         self.namespaces[104] = {
+            '-': u'Page',
             'ar': u'صفحة',
             'ca': u'Llibre',
             'de': u'Index',
             'en': u'Page',
             'es': u'Índice',
+            'et': u'Register',
             'fa': [u'برگه', u'Page'],
             'fr': u'Page',
             'he': u'עמוד',
@@ -239,11 +243,13 @@ class Family(family.Family):
         }
 
         self.namespaces[105] = {
+            '-': u'Page talk',
             'ar': u'نقاش الصفحة',
             'ca': u'Llibre Discussió',
             'de': u'Index Diskussion',
             'en': u'Page talk',
             'es': u'Índice Discusión',
+            'et': u'Registri arutelu',
             'fa': [u'بحث برگه', u'Page talk'],
             'fr': u'Discussion Page',
             'he': u'שיחת עמוד',
@@ -263,8 +269,10 @@ class Family(family.Family):
         }
 
         self.namespaces[106] = {
+            '-': u'Index',
             'ar': u'فهرس',
             'en': u'Index',
+            'et': u'Autor',
             'he': u'ביאור',
             'hu': u'Index',
             'hy': u'Ինդեքս',
@@ -279,8 +287,10 @@ class Family(family.Family):
         }
 
         self.namespaces[107] = {
+            '-': u'Index talk',
             'ar': u'نقاش الفهرس',
             'en': u'Index talk',
+            'et': u'Autori arutelu',
             'he': u'שיחת ביאור',
             'hu': u'Index vita',
             'hy': u'Ինդեքսի քննարկում',

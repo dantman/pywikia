@@ -916,6 +916,8 @@ class Family:
                 '_default': u'Project',
                 'arc': u'ܘܝܩܝܦܕܝܐ',
                 'bn': u'উইকিপিডিয়া',
+                'nah': u'Huiquipedia',
+                'tk': u'Wikipediýa',
             },
             5: {
                 '_default': u'Project talk',
@@ -927,7 +929,8 @@ class Family:
                 'lmo': u'Wikipedia Ciciarada',
                 'mhr': u'Wikipediaын каҥашымаш',
                 'mzn': u'Wikipedia گپ',
-                'tk': u'Wikipedia çekişme',
+                'nah': u'Huiquipedia tēixnāmiquiliztli',
+                'tk': u'Wikipediýa çekişme',
                 'tt': u'Wikipedia бәхәсе',
             },
             6: {
