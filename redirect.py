@@ -189,6 +189,8 @@ class RedirectGenerator:
         self.api_start = start
         self.api_until = until
         self.api_number = number
+        if self.api_number is None:
+            self.api_number = 'max'
 
     def get_redirects_from_dump(self, alsoGetPageTitles=False):
         '''
@@ -271,8 +273,6 @@ class RedirectGenerator:
             'apdir': 'ascending',
             #'':'',
         }
-        if self.api_number is None:
-            params['aplimit'] = "max"
         for ns in self.namespaces:
             params['apnamespace'] = ns
             if self.api_start:
@@ -467,10 +467,10 @@ class RedirectGenerator:
             'list'      :'logevents',
             'letype'    :'move',
             'leprop'    :'title|details',
-            'lelimit'   : '500',
+            'lelimit'   : self.api_number,
             'lestart'   : offset_time,
         }
-        data = query.GetData(params, encodeTitle = False)#['query']['logevents']
+        data = query.GetData(params, encodeTitle = False)
         if 'warnings' in data:
             raise
         allmoves = data['query']['logevents']
