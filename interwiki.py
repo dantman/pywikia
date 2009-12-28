@@ -1924,6 +1924,9 @@ class InterwikiBot(object):
                     if page.isTalkPage():
                         pywikibot.output(u'Skipping: %s is a talk page' % page.title())
                         continue
+                    if page.isEmpty():
+                        pywikibot.output(u'Skipping: %s is a empty page' % page.title())
+                        continue                        
                     if page.namespace() == 10:
                         loc = None
                         try:
