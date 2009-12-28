@@ -10,17 +10,17 @@ These command line parameters can be used to specify which pages to work on:
 
 &params;
 
-    -xml           Retrieve information from a local XML dump (pages-articles
-                   or pages-meta-current, see http://download.wikimedia.org).
-                   Argument can also be given as "-xml:filename".
+    -xml          Retrieve information from a local XML dump (pages-articles
+                  or pages-meta-current, see http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
 
-    -namespace:n   Number or name of namespace to process. The parameter can be
-                   used multiple times. It works in combination with all other
-                   parameters, except for the -start parameter. If you e.g.
-                   want to iterate over all categories starting at M, use
-                   -start:Category:M.
+    -namespace:n  Number or name of namespace to process. The parameter can be
+                  used multiple times. It works in combination with all other
+                  parameters, except for the -start parameter. If you e.g.
+                  want to iterate over all categories starting at M, use
+                  -start:Category:M.
 
-    -always        Don't prompt you for each replacement.
+    -always       Don't prompt you for each replacement.
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
@@ -111,9 +111,11 @@ placeBeforeSections = {
         u'Lásd még',
     ],
     'it': [
-        u'Note',
+        u'Bibliografia',
+        u'Voci correlate',
+        u'Altri progetti',
+        u'Collegamenti esterni',
         u'Vedi anche',
-        u'Riferimenti',
     ],
     'ja':[
         u'関連項目',
@@ -151,7 +153,10 @@ placeBeforeSections = {
         u'Ver também',
         u'Notas',
     ],
-    'zh':[
+    'sk': [
+        u'Pozri aj',
+    ],
+    'zh': [
         u'外部連结',
         u'外部链接',
     ],
@@ -186,7 +191,8 @@ referencesSections = {
         u'Lähteet',
         u'Viitteet',
     ],
-    'fr': [
+    'fr': [             # [[fr:Aide:Note]]
+        u'Notes et références',
         u'Références',
         u'References',
         u'Notes'
@@ -203,8 +209,9 @@ referencesSections = {
     ],
     'it': [
         u'Note',
+        u'Riferimenti',
     ],
-    'ja':[
+    'ja': [
         u'脚注',
         u'脚注欄',
         u'脚注・出典',
@@ -212,7 +219,7 @@ referencesSections = {
         u'注釈',
         u'註',
     ],
-    'ko':[
+    'ko': [
         u'주석',
         u'각주'
         u'주석 및 참고 자료'
@@ -232,11 +239,16 @@ referencesSections = {
     ],
     'pl': [
         u'Przypisy',
+        u'Ogólne przypisy',
+        u'Notatki',
     ],
     'pt': [
         u'Referências',
     ],
-    'zh':[
+    'sk': [
+        u'Referencie',
+    ],
+    'zh': [
         u'參考文獻',
         u'参考文献',
         u'參考資料',
