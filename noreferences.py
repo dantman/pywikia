@@ -165,11 +165,13 @@ referencesSections = {
         u'مراجع',
         u'ملاحظات',
     ],
-    'de': [
-        u'Einzelnachweise', # The "Einzelnachweise" title is disputed, some people prefer the other variants
+    'de': [             #see [[de:WP:REF]]
+        u'Einzelnachweise',
+        u'Fußnoten',
+        u'Anmerkungen',
+        u'Belege',
         u'Quellen',
         u'Quellenangaben',
-        u'Fußnoten',
     ],
     'en': [             # not sure about which ones are preferred.
         u'References',
@@ -210,7 +212,7 @@ referencesSections = {
         u'注釈',
         u'註',
     ],
-    'ko':[              #
+    'ko':[
         u'주석',
         u'각주'
         u'주석 및 참고 자료'
