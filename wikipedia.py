@@ -4722,6 +4722,7 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = 
                     else:
                         includeOn  = '<noinclude>'
                         includeOff = '</noinclude>'
+                        separator = ''
                     # Do we have a noinclude at the end of the template?
                     parts = s2.split(includeOff)
                     lastpart = parts[-1]
