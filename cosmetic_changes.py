@@ -355,7 +355,7 @@ class CosmeticChangesToolkit:
             if not family.isDefinedNSLanguage(nsNumber, self.site.lang):
                 # Skip undefined namespaces
                 continue
-            namespaces = list(family.namespace(self.site.lang, nsNumber, all = True))
+            namespaces = list(self.site.namespace(nsNumber, all = True))
             thisNs = namespaces.pop(0)
             if nsNumber == 6 and family.name == 'wikipedia' and \
                self.site.lang in ('en', 'fr'):
