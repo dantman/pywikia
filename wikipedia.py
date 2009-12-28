@@ -1628,7 +1628,7 @@ not supported by PyWikipediaBot!"""
                 if verbose:
                     output(u'Cosmetic Changes for %s-%s enabled.' % (self.site().family.name, self.site().lang))
                 import cosmetic_changes
-                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), redirect=self.isRedirectPage(), namespace = self.namespace())
+                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), redirect=self.isRedirectPage(), namespace = self.namespace(), pageTitle=self.title())
                 newtext = ccToolkit.change(newtext)
                 if comment and old.strip().replace('\r\n', '\n') != newtext.strip().replace('\r\n', '\n'):
                     comment += translate(self.site(), cosmetic_changes.msg_append)
@@ -4587,7 +4587,7 @@ def expandmarker(text, marker = '', separator = ''):
 #        or change links to a different project, or any that are formatted
 #        as in-line interwiki links (e.g., "[[:es:Articulo]]".  (CONFIRM)
 
-def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
+def getLanguageLinks(text, insite = None, pageLink="[[]]", template_subpage=False):
     """
     Return a dict of interlanguage links found in text.
 
@@ -4601,7 +4601,10 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     result = {}
     # Ignore interwiki links within nowiki tags, includeonly tags, pre tags,
     # and HTML comments
-    text = removeDisabledParts(text)
+    tags = ['comments', 'nowiki', 'pre', 'source']
+    if not template_subpage:
+        tags += ['includeonly']
+    text = removeDisabledParts(text, tags)
 
     # This regular expression will find every link that is possibly an
     # interwiki link.
@@ -4669,7 +4672,7 @@ def removeLanguageLinksAndSeparator(text, site = None, marker = '', separator = 
     else:
         return removeLanguageLinks(text, site, marker)
 
-def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = False):
+def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = False, template_subpage = False):
     """Replace interlanguage links in the text with a new set of links.
 
     'new' should be a dict with the Site objects as keys, and Page objects
@@ -4712,17 +4715,23 @@ def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = 
                 s = separator + s + separator
                 newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
             else:
-                if template:
+                if template or template_subpage:
+                    if template_subpage:
+                        includeOn  = '<includeonly>'
+                        includeOff = '</includeonly>'
+                    else:
+                        includeOn  = '<noinclude>'
+                        includeOff = '</noinclude>'
                     # Do we have a noinclude at the end of the template?
-                    parts = s2.split('</noinclude>')
+                    parts = s2.split(includeOff)
                     lastpart = parts[-1]
                     if re.match('\s*%s' % marker, lastpart):
                         # Put the langlinks back into the noinclude's
-                        regexp = re.compile('</noinclude>\s*%s' % marker)
-                        newtext = regexp.sub(s + '</noinclude>', s2)
+                        regexp = re.compile('%s\s*%s' % (includeOff, marker))
+                        newtext = regexp.sub(s + includeOff, s2)
                     else:
                         # Put the langlinks at the end, inside noinclude's
-                        newtext = s2.replace(marker,'').strip() + separator + u'<noinclude>\n%s</noinclude>\n' % s
+                        newtext = s2.replace(marker,'').strip() + separator + u'%s\n%s%s\n' % (includeOn, s, includeOff)
                 else:
                     newtext = s2.replace(marker,'').strip() + separator + s
     else:

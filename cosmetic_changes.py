@@ -186,14 +186,43 @@ msg_append = {
 
 nn_iw_msg = u'<!--interwiki (no, sv, da first; then other languages alphabetically by name)-->'
 
+# This is from interwiki.py;
+# move it to family file and implement global instances
+moved_links = {
+    'ca' : (u'ús de la plantilla', u'/ús'),
+    'cs' : (u'dokumentace',   u'/doc'),
+    'de' : (u'dokumentation', u'/Meta'),
+    'en' : ([u'documentation',
+             u'template documentation',
+             u'template doc',
+             u'doc',
+             u'documentation, template'], u'/doc'),
+    'es' : ([u'documentación', u'documentación de plantilla'], u'/doc'),
+    'fr' : (u'/documentation', u'/Documentation'),
+    'hu' : (u'sablondokumentáció', u'/doc'),
+    'id' : (u'template doc',  u'/doc'),
+    'ja' : (u'documentation', u'/doc'),
+    'ka' : (u'თარგის ინფო',   u'/ინფო'),
+    'ko' : (u'documentation', u'/설명문서'),
+    'ms' : (u'documentation', u'/doc'),
+    'pl' : (u'dokumentacja',  u'/opis'),
+    'pt' : ([u'documentação', u'/doc'],  u'/doc'),
+    'ro' : (u'documentaţie',  u'/doc'),
+    'ru' : (u'doc',           u'/doc'),
+    'sv' : (u'dokumentation', u'/dok'),
+    'vi' : (u'documentation', u'/doc'),
+    'zh' : ([u'documentation', u'doc'], u'/doc'),
+}
+
 class CosmeticChangesToolkit:
-    def __init__(self, site, debug=False, redirect=False, namespace=None):
+    def __init__(self, site, debug=False, redirect=False, namespace=None, pageTitle=None):
         self.site = site
         self.debug = debug
         self.redirect = redirect
         self.namespace = namespace
         self.template = (self.namespace == 10)
         self.talkpage = self.namespace >= 0 and self.namespace % 2 == 1
+        self.title = pageTitle
 
     def change(self, text):
         """
@@ -260,7 +289,17 @@ class CosmeticChangesToolkit:
             categories = pywikibot.getCategoryLinks(text, site = self.site)
 
         if not self.talkpage:# and pywikibot.calledModuleName() <> 'interwiki':
-            interwikiLinks = pywikibot.getLanguageLinks(text, insite = self.site)
+            subpage = False
+            if self.template:
+                loc = None
+                try:
+                    tmpl, loc = moved_links[self.site.lang]
+                    del tmpl
+                except KeyError:
+                    pass
+                if loc != None and loc in self.title:
+                    subpage = True
+            interwikiLinks = pywikibot.getLanguageLinks(text, insite=self.site, template_subpage=subpage)
 
             # Removing the interwiki
             text = pywikibot.removeLanguageLinks(text, site = self.site)
@@ -301,7 +340,7 @@ class CosmeticChangesToolkit:
                     pywikibot.output(u'%s' %element.strip())
         # Adding the interwiki
         if interwikiLinks != None:
-            text = pywikibot.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template)
+            text = pywikibot.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template, template_subpage = subpage)
         return text
 
     def translateAndCapitalizeNamespaces(self, text):
@@ -560,7 +599,7 @@ class CosmeticChangesBot:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, namespace = page.namespace())
+            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True, namespace = page.namespace(), pageTitle=page.title())
             changedText = ccToolkit.change(page.get())
             if changedText.strip() != page.get().strip():
                 if not self.acceptall:
