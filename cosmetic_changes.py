@@ -332,7 +332,7 @@ class CosmeticChangesToolkit:
             text = text + '\r\n\r\n' + nn_iw_msg
         # Adding stars templates
         if allstars != []:
-            text = text.strip()+'\r\n\r\n'
+            text = text.strip()+self.site.family.interwiki_text_separator
             allstars.sort()
             for element in allstars:
                 text += '%s\r\n' % element.strip()
@@ -357,7 +357,7 @@ class CosmeticChangesToolkit:
                 continue
             namespaces = list(family.namespace(self.site.lang, nsNumber, all = True))
             thisNs = namespaces.pop(0)
-            if nsNumber == 6 and self.site.family.name == 'wikipedia' and \
+            if nsNumber == 6 and family.name == 'wikipedia' and \
                self.site.lang in ('en', 'fr'):
                 # do not change "Image" on en-wiki and fr-wiki
                 for image in [u'Image', u'image']:
