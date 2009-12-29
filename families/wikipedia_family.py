@@ -13,25 +13,25 @@ class Family(family.Family):
         self.languages_by_size = [
             'en', 'de', 'fr', 'pl', 'it', 'ja', 'nl', 'es', 'pt', 'ru',
             'sv', 'zh', 'no', 'fi', 'ca', 'uk', 'hu', 'cs', 'tr', 'ro',
-            'eo', 'ko', 'da', 'vo', 'ar', 'id', 'sk', 'vi', 'sr', 'he',
-            'lt', 'fa', 'bg', 'sl', 'hr', 'et', 'ms', 'new', 'simple', 'gl',
+            'ko', 'eo', 'da', 'vo', 'ar', 'id', 'sk', 'vi', 'sr', 'he',
+            'lt', 'fa', 'bg', 'sl', 'hr', 'et', 'new', 'ms', 'simple', 'gl',
             'th', 'nn', 'hi', 'ht', 'eu', 'el', 'te', 'ceb', 'mk', 'ka',
             'la', 'br', 'az', 'lb', 'bs', 'is', 'sh', 'mr', 'cy', 'sq',
-            'bpy', 'lv', 'tl', 'jv', 'be-x-old', 'pms', 'bn', 'oc', 'ta', 'be',
-            'io', 'an', 'nds', 'scn', 'sw', 'su', 'fy', 'af', 'nap', 'zh-yue',
+            'lv', 'bpy', 'tl', 'jv', 'be-x-old', 'pms', 'bn', 'oc', 'ta', 'io',
+            'be', 'an', 'sw', 'nds', 'scn', 'su', 'fy', 'af', 'nap', 'zh-yue',
             'ku', 'ast', 'bat-smg', 'ur', 'gu', 'ml', 'wa', 'qu', 'war', 'cv',
             'ksh', 'ga', 'tg', 'roa-tara', 'vec', 'kn', 'gd', 'uz', 'pam', 'lmo',
-            'yi', 'mi', 'zh-min-nan', 'nah', 'glk', 'hy', 'hsb', 'co', 'kk', 'als',
-            'roa-rup', 'sah', 'li', 'ia', 'tt', 'bcl', 'gan', 'os', 'arz', 'fiu-vro',
-            'nds-nl', 'tk', 'yo', 'vls', 'sa', 'fo', 'mn', 'am', 'nrm', 'dv',
-            'pag', 'rm', 'map-bms', 'wuu', 'gv', 'ne', 'bar', 'my', 'sco', 'se',
+            'yi', 'mi', 'zh-min-nan', 'nah', 'hy', 'glk', 'hsb', 'co', 'kk', 'als',
+            'roa-rup', 'sah', 'li', 'ia', 'tt', 'bcl', 'gan', 'os', 'yo', 'arz',
+            'fiu-vro', 'nds-nl', 'tk', 'vls', 'sa', 'fo', 'mn', 'am', 'nrm', 'dv',
+            'pag', 'rm', 'map-bms', 'wuu', 'gv', 'bar', 'ne', 'my', 'sco', 'se',
             'diq', 'fur', 'pnb', 'lij', 'nov', 'si', 'mt', 'bh', 'mzn', 'csb',
-            'ilo', 'pi', 'zh-classical', 'lad', 'km', 'ug', 'frp', 'sc', 'ang', 'mg',
+            'ilo', 'pi', 'zh-classical', 'lad', 'km', 'ug', 'frp', 'sc', 'mg', 'ang',
             'kw', 'haw', 'pdc', 'szl', 'ps', 'hif', 'kv', 'ie', 'pa', 'to',
             'hak', 'bo', 'myv', 'crh', 'gn', 'ln', 'stq', 'nv', 'jbo', 'arc',
-            'wo', 'mhr', 'ext', 'ace', 'ky', 'tpi', 'ty', 'cbk-zam', 'so', 'eml',
-            'zea', 'srn', 'ay', 'ckb', 'pap', 'ig', 'kab', 'kg', 'or', 'lo',
-            'ba', 'udm', 'dsb', 'rmy', 'kaa', 'cu', 'ce', 'sm', 'ks', 'av',
+            'mhr', 'wo', 'ext', 'ace', 'ky', 'tpi', 'ty', 'cbk-zam', 'so', 'eml',
+            'zea', 'srn', 'ay', 'ckb', 'pap', 'ig', 'kab', 'kg', 'or', 'ba',
+            'lo', 'udm', 'dsb', 'rmy', 'cu', 'kaa', 'ce', 'sm', 'ks', 'av',
             'tet', 'xal', 'got', 'ab', 'sd', 'mdf', 'na', 'pnt', 'iu', 'bm',
             'kl', 'pih', 'as', 'cdo', 'mwl', 'chr', 'ee', 'om', 'zu', 'ti',
             'ts', 'za', 'ss', 've', 'bi', 'ha', 'cr', 'dz', 'bxr', 'ch',
@@ -578,10 +578,12 @@ class Family(family.Family):
 
         self.namespaces[108] = {
             'als': u'Spruch',
+            'en': u'Book',
         }
 
         self.namespaces[109] = {
             'als': u'Spruch Diskussion',
+            'en': u'Book talk',
         }
 
         self.namespaces[110] = {

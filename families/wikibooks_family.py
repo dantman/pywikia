@@ -15,7 +15,7 @@ class Family(family.Family):
             'he', 'sq', 'fi', 'ru', 'vi', 'cs', 'hr', 'zh', 'sv', 'da',
             'ca', 'mk', 'tr', 'th', 'tl', 'sr', 'fa', 'id', 'is', 'ar',
             'ta', 'no', 'simple', 'ka', 'ko', 'gl', 'eo', 'bg', 'lt', 'ro',
-            'sk', 'el', 'la', 'ia', 'ang', 'cv', 'sl', 'et', 'mr', 'ur',
+            'sk', 'el', 'la', 'ia', 'ang', 'cv', 'et', 'sl', 'mr', 'ur',
             'uk', 'oc', 'ml', 'ms', 'eu', 'fy', 'ie', 'hi', 'tg', 'bn',
             'af', 'hy', 'bs', 'te', 'pa', 'ky', 'az', 'be', 'sa', 'ast',
             'zh-min-nan', 'tt', 'cy', 'mg', 'si', 'ku', 'co', 'tk', 'sw', 'ne',

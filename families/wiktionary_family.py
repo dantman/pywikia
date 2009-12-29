@@ -12,18 +12,18 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'fr', 'en', 'lt', 'tr', 'zh', 'ru', 'vi', 'io', 'pl', 'el',
-            'fi', 'hu', 'no', 'it', 'ta', 'de', 'sv', 'ko', 'pt', 'nl',
-            'lo', 'ku', 'ja', 'ar', 'es', 'ro', 'et', 'kn', 'id', 'te',
+            'fi', 'hu', 'no', 'it', 'ta', 'de', 'sv', 'pt', 'ko', 'nl',
+            'lo', 'ku', 'ja', 'ar', 'es', 'ro', 'kn', 'et', 'id', 'te',
             'gl', 'bg', 'uk', 'ca', 'vo', 'ml', 'fa', 'is', 'li', 'sr',
             'af', 'cs', 'sw', 'fy', 'scn', 'th', 'simple', 'br', 'oc', 'he',
             'sl', 'hy', 'sq', 'tt', 'la', 'hr', 'zh-min-nan', 'da', 'ast', 'tk',
             'wa', 'ur', 'hsb', 'kk', 'ky', 'wo', 'eo', 'ang', 'hi', 'ga',
             'gn', 'az', 'ia', 'co', 'sk', 'csb', 'st', 'ms', 'mr', 'ka',
             'tl', 'nds', 'kl', 'sd', 'ug', 'ti', 'mk', 'an', 'my', 'eu',
-            'sh', 'gu', 'mg', 'km', 'cy', 'lv', 'bn', 'ts', 'qu', 'ne',
+            'sh', 'gu', 'cy', 'ne', 'km', 'mg', 'lv', 'bn', 'ts', 'qu',
             'bs', 'fo', 'am', 'rw', 'chr', 'su', 'mn', 'om', 'nah', 'ie',
             'yi', 'be', 'iu', 'gd', 'tg', 'nn', 'zu', 'si', 'pa', 'dv',
-            'mt', 'tpi', 'kw', 'gv', 'roa-rup', 'mi', 'jv', 'uz', 'ps', 'ik',
+            'mt', 'kw', 'gv', 'tpi', 'roa-rup', 'mi', 'jv', 'uz', 'ps', 'ik',
             'so', 'sg', 'ha', 'ss', 'sa', 'ay', 'na', 'jbo', 'tn', 'sm',
             'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
