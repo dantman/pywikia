@@ -1941,7 +1941,10 @@ class InterwikiBot(object):
                     break
 
                 if self.generateUntil:
-                    if page.titleWithoutNamespace() > self.generateUntil:
+                    until = self.generateUntil
+                    if page.site().lang not in page.site().family.nocapitalize:
+                        until = until[0].upper()+until[1:]
+                    if page.titleWithoutNamespace() > until:
                         raise StopIteration
                 self.add(page, hints = globalvar.hints)
                 self.generated += 1
