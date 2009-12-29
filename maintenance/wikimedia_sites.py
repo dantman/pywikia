@@ -30,17 +30,16 @@ for family in families:
     text = f.read()
 
     if family == 'wikipedia':
-        p = re.compile(r'\[\[:([a-z\-]{2,}):\|\1\]\]')
+        p = re.compile(r"\[\[:([a-z\-]{2,}):\|\1\]\].*?'''([0-9,]{1,})'''</span>\]", re.DOTALL)
     else:
-        p = re.compile(r'\[http://([a-z\-]{2,}).%s.org/wiki/ \1]' % family)
+        p = re.compile(r"\[http://([a-z\-]{2,}).%s.org/wiki/ \1].*?'''([0-9,]{1,})'''\]" % family, re.DOTALL)
 
     new = []
-    for lang in p.findall(text):
+    for lang, cnt in p.findall(text):
         if lang in obsolete or lang in exceptions:
             # Ignore this language
             continue
         new.append(lang)
-
     if original == new:
         wikipedia.output(u'The lists match!')
     else:
