@@ -17,7 +17,8 @@ import wikipedia, editarticle
 __metaclass__ = type
 
 # The question asked
-question = u"""
+question = u"""(multiple numbers delimited with ',')
+
 b) blank page
 e) edit page
 d) delete page (need sysop right)
@@ -421,37 +422,48 @@ class PageHandler:
             if answer[0] == 'u':
                 # Answer entered as an utf8 string
                 try:
-                    answer=int(answer[1:])
+                    choices=answer[1:].split(',')
                 except ValueError:
                     # User entered wrong value
                     wikipedia.output(u'ERROR: "%s" is not valid' % answer)
                     continue
-                answered=True
             else:
                 try:
-                    answer=int(answer)
+                    choices=answer.split(',')
                 except ValueError:
                     # User entered wrong value
                     wikipedia.output(u'ERROR: "%s" is not valid' % answer)
                     continue
-                answered=True
-
-        # grab the template parameters
-        tpl = wikipedia.translate(wikipedia.getSite(), templates)[questionlist[answer]]
-        if tpl['pos'] == 'top':
-            wikipedia.output(u'prepending %s...' % questionlist[answer])
-            newcontent = questionlist[answer] + '\n' + self.content
-            self.page.put(newcontent, comment = tpl['msg'])
-        elif tpl['pos'] == 'bottom':
-            wikipedia.output(u'appending %s...' % questionlist[answer])
-            newcontent = self.content + '\n' + questionlist[answer]
-            self.page.put(newcontent, comment = tpl['msg'])
-        else:
-            wikipedia.output(u'ERROR: "pos" should be "top" or "bottom" for template %s. Contact a developer.' % questionlist[answer])
-            sys.exit("Exiting")
-
-        wikipedia.output(u'Probably added %s with comment %s' % (questionlist[answer], tpl ['msg']))
-
+            #test input
+            for choice in choices:
+                try:
+                    x=int(choice)
+                except ValueError:
+                    break
+                else:
+                    answered=x in range(1,len(questionlist)+1)
+            if not answered:
+                wikipedia.output(u'ERROR: "%s" is not valid' % answer)
+                continue
+        summary = u''
+        for choice in choices:
+            answer = int(choice)
+            # grab the template parameters
+            tpl = wikipedia.translate(wikipedia.getSite(), templates)[questionlist[answer]]
+            if tpl['pos'] == 'top':
+                wikipedia.output(u'prepending %s...' % questionlist[answer])
+                self.content = questionlist[answer] + '\n' + self.content
+            elif tpl['pos'] == 'bottom':
+                wikipedia.output(u'appending %s...' % questionlist[answer])
+                self.content += '\n' + questionlist[answer]
+            else:
+                wikipedia.output(u'ERROR: "pos" should be "top" or "bottom" for template %s. Contact a developer.' % questionlist[answer])
+                sys.exit("Exiting")
+            summary += tpl['msg']+' '
+            wikipedia.output(u'Probably added %s' % questionlist[answer])
+        wikipedia.output(newcontent)
+        self.page.put(newcontent, comment = summary)
+        wikipedia.output(u'with comment %s\n' % summary)
 
     def run(self):
         self.showpageinfo()
