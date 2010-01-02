@@ -318,20 +318,20 @@ class CosmeticChangesToolkit:
         if self.site.language()=='nn':
             regex = re.compile('(<!-- ?interwiki \(no(/nb)?, ?sv, ?da first; then other languages alphabetically by name\) ?-->)')
             found = regex.findall(text)
-            if found != []:
+            if found:
                 if pywikibot.verbose:
                     print found
                 hasCommentLine = True
                 text = regex.sub('', text)
         
         # Adding categories
-        if categories != None:
+        if categories:
             text = pywikibot.replaceCategoryLinks(text, categories, site = self.site)
         # Put the nn iw message back
-        if self.site.language()=='nn' and not self.talkpage and (interwikiLinks != None or hasCommentLine):
+        if self.site.language()=='nn' and not self.talkpage and (interwikiLinks or hasCommentLine):
             text = text + '\r\n\r\n' + nn_iw_msg
         # Adding stars templates
-        if allstars != []:
+        if allstars:
             text = text.strip()+self.site.family.interwiki_text_separator
             allstars.sort()
             for element in allstars:
@@ -339,7 +339,7 @@ class CosmeticChangesToolkit:
                 if pywikibot.verbose:
                     pywikibot.output(u'%s' %element.strip())
         # Adding the interwiki
-        if interwikiLinks != None:
+        if interwikiLinks:
             text = pywikibot.replaceLanguageLinks(text, interwikiLinks, site = self.site, template = self.template, template_subpage = subpage)
         return text
 
