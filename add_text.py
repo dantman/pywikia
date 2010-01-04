@@ -144,13 +144,36 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
     if not addText:
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
-        summary = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % addText)
+        summary = wikipedia.translate(wikipedia.getSite(), msg) % addText
 
     # When a page is tagged as "really well written" it has a star in the interwiki links.
     # This is a list of all the templates used (in regex format) to make the stars appear.
-    starsList = ['link[ _]fa', 'link[ _]adq', 'enllaç[ _]ad',
-                 'link[ _]ua', 'legătură[ _]af', 'destacado',
-                 'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
+    starsList = [
+        u'bueno',
+        u'cyswllt[ _]erthygl[ _]ddethol', u'dolen[ _]ed',
+        u'destacado', u'destaca[tu]',
+        u'enllaç[ _]ad',
+        u'enllaz[ _]ad',
+        u'leam[ _]vdc',
+        u'legătură[ _]af',
+        u'liamm[ _]pub',
+        u'lien[ _]adq',
+        u'lien[ _]ba',
+        u'liên[ _]kết[ _]bài[ _]chất[ _]lượng[ _]tốt',
+        u'liên[ _]kết[ _]chọn[ _]lọc',
+        u'ligam[ _]adq',
+        u'ligoelstara',
+        u'ligoleginda',
+        u'link[ _][afgu]a', u'link[ _]adq', u'link[ _]f[lm]', u'link[ _]km', u'link[ _]sm', u'linkfa',
+        u'na[ _]lotura',
+        u'nasc[ _]ar',
+        u'tengill[ _][úg]g',
+        u'ua',
+        u'yüm yg',
+        u'רא',
+        u'وصلة مقالة جيدة',
+        u'وصلة مقالة مختارة',
+    ]
 
     errorCount = 0
     site = wikipedia.getSite()
@@ -207,13 +230,18 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         if (site.language()==u'nn'):
             newtext = newtext + u'\n' + nn_iw_msg
         # Dealing the stars' issue
+        allstars = []
         for star in starsList:
-            regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}\n)' % star, re.I)
-            risultato = regex.findall(newtext)
-            if risultato != []:
+            regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
+            found = regex.findall(newtext)
+            if found != []:
                 newtext = regex.sub('', newtext)
-                for element in risultato:
-                    newtext += '\n%s' % element
+                allstars += found
+        if allstars != []:
+            newtext = newtext.strip()+'\r\n\r\n'
+            allstars.sort()
+            for element in allstars:
+                newtext += '%s\r\n' % element.strip()
         # Adding the interwiki
         newtext = wikipedia.replaceLanguageLinks(newtext, interwikiInside, site)
     # If instead the text must be added above...

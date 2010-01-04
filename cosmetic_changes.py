@@ -273,9 +273,32 @@ class CosmeticChangesToolkit:
         3. stars templates for featured and good articles
         4. interwiki links
         """
-        starsList = ['link[ _][afgu]a', 'link[ _]adq', 'enllaç[ _]ad',
-                     'link[ _]fl', 'legătură[ _]af', 'destacado',
-                     'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
+        starsList = [
+            u'bueno',
+            u'cyswllt[ _]erthygl[ _]ddethol', u'dolen[ _]ed',
+            u'destacado', u'destaca[tu]',
+            u'enllaç[ _]ad',
+            u'enllaz[ _]ad',
+            u'leam[ _]vdc',
+            u'legătură[ _]af',
+            u'liamm[ _]pub',
+            u'lien[ _]adq',
+            u'lien[ _]ba',
+            u'liên[ _]kết[ _]bài[ _]chất[ _]lượng[ _]tốt',
+            u'liên[ _]kết[ _]chọn[ _]lọc',
+            u'ligam[ _]adq',
+            u'ligoelstara',
+            u'ligoleginda',
+            u'link[ _][afgu]a', u'link[ _]adq', u'link[ _]f[lm]', u'link[ _]km', u'link[ _]sm', u'linkfa',
+            u'na[ _]lotura',
+            u'nasc[ _]ar',
+            u'tengill[ _][úg]g',
+            u'ua',
+            u'yüm yg',
+            u'רא',
+            u'وصلة مقالة جيدة',
+            u'وصلة مقالة مختارة',
+        ]
 
         categories = None
         interwikiLinks = None
