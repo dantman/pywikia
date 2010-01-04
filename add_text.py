@@ -155,7 +155,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         u'enllaç[ _]ad',
         u'enllaz[ _]ad',
         u'leam[ _]vdc',
-        u'legătură[ _]af',
+        u'legătură[ _]a[bcf]',
         u'liamm[ _]pub',
         u'lien[ _]adq',
         u'lien[ _]ba',
