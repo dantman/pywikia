@@ -154,7 +154,7 @@ template = {
     'it': ['Link AdQ'],
     'no': ['Link UA'],
     'oc': ['Ligam AdQ', 'Lien AdQ'],
-    'ro': [u'Legătură AF'],
+    'ro': [u'Legătură AC', u'Legătură AF'],
     'sv': ['UA', 'Link UA'],
     'tr': ['Link SM'],
     'vi': [u'Liên kết chọn lọc'],
