@@ -1233,11 +1233,13 @@ class Subject(object):
 
             # Register this fact at the todo-counter.
             counter.minus(page.site())
+
             # Now check whether any interwiki links should be added to the
             # todo list.
 
             if not page.exists():
-                pywikibot.output(u"NOTE: %s does not exist" % page.aslink(True))
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s does not exist. Skipping." % page.aslink(True))
                 if page == self.originPage:
                     # The page we are working on is the page that does not exist.
                     # No use in doing any work on it in that case.
@@ -1254,9 +1256,11 @@ class Subject(object):
                 except pywikibot.InvalidTitle:
                     # MW considers #redirect [[en:#foo]] as a redirect page,
                     # but we can't do anything useful with such pages
-                    pywikibot.output(u"NOTE: %s redirects to an invalid title" % page.aslink(True))
+                    if not globalvar.quiet or pywikibot.verbose:
+                        pywikibot.output(u"NOTE: %s redirects to an invalid title" % page.aslink(True))
                     continue
-                pywikibot.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
                 if page == self.originPage:
                     if globalvar.initialredirect:
                         if globalvar.contentsondisk:
@@ -1274,25 +1278,38 @@ class Subject(object):
                             counter.minus(site, count)
                         self.todo = PageTree()
                 elif not globalvar.followredirect:
-                    pywikibot.output(u"NOTE: not following redirects.")
+                    if not globalvar.quiet or pywikibot.verbose:
+                        pywikibot.output(u"NOTE: not following redirects.")
                 elif page.site().family == redirectTargetPage.site().family \
                     and not self.skipPage(page, redirectTargetPage, counter):
                     if self.addIfNew(redirectTargetPage, counter, page):
                         if config.interwiki_shownew or pywikibot.verbose:
                             pywikibot.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
-
+                continue
+            
+            # must be behind the page.isRedirectPage() part
+            # otherwise a redirect error would be raised
+            if page.isEmpty() and not page.isCategory():
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is empty. Skipping." % page.aslink(True))
+                if page == self.originPage:
+                    for site, count in self.todo.siteCounts():
+                        counter.minus(site, count)
+                    self.todo = PageTree()
+                    self.done = PageTree() 
                 continue
 
             elif page.section():
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is a page section. Skipping." % page.aslink(True))
                 continue
 
-
             # Page exists, isnt a redirect, and is a plain link (no section)
-
             try:
                 iw = page.interwiki()
             except pywikibot.NoSuchSite:
-                pywikibot.output(u"NOTE: site %s does not exist" % page.site())
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: site %s does not exist" % page.site())
                 continue
 
             (skip, alternativePage) = self.disambigMismatch(page, counter)
@@ -1347,7 +1364,8 @@ class Subject(object):
                    sys.exit()
                 iw = ()
             elif page.isEmpty() and not page.isCategory():
-                pywikibot.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                 # Ignore the interwiki links
                 self.done.remove(page)
                 iw = ()
