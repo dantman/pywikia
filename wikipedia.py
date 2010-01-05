@@ -6515,9 +6515,45 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             text = self.getUrl(url, sysop = sysop)
             
             self._getUserDataOld(text, sysop = sysop, force = force)
-        
 
+    
     def search(self, query, number = 10, namespaces = None):
+        """
+        Yield search results for query.
+        Use API when enabled use_api and version >= 1.11,
+        or use Special:Search.
+        """
+        if config.use_api and self.versionnumber() >= 11:
+            _search = self._search_with_api
+        else:
+            _search = self._search_without_api
+        return _search(query, number, namespaces)
+
+    def _search_with_api(self, q, number, namespaces):
+        """Yield search results (using api) for query."""
+        params = {
+            'action': 'query',
+            'list': 'search',
+            'srsearch': q,
+            'srlimit': number
+        }
+        if namespaces:
+            params['srnamespace'] = namespaces
+        
+        offset = 0
+        while True:
+            params['sroffset'] = offset
+            data = query.GetData(params, self)['query']
+            if 'error' in data:
+                raise RuntimeError('%s' % data['error'])
+            if not data['search']:
+                break
+            for s in data['search']:
+                offset += 1
+                page = Page(self, s['title'])
+                yield page, s['snippet'], '', s['size'], s['wordcount'], s['timestamp']
+
+    def _search_without_api(self, query, number, namespaces):
         """Yield search results (using Special:Search page) for query."""
         throttle = True
         path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
