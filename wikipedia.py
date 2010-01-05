@@ -784,8 +784,7 @@ not supported by PyWikipediaBot!"""
         
         pagetext = pageInfo['revisions'][0]['*']
         pagetext = pagetext.rstrip()
-        if self.site().lang == 'eo':
-            pagetext = decodeEsperantoX(pagetext)
+        # pagetext must not decodeEsperantoX() if loaded via API
         m = self.site().redirectRegex().match(pagetext)
         if m:
             # page text matches the redirect pattern
