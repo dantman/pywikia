@@ -864,7 +864,7 @@ class WelcomeBot(object):
                         welcome_comment = wikipedia.translate(self.site, summary)
                         try:
                             #append welcomed, welcome_count++
-                            ustp.put(welcome_text, welcome_comment)
+                            ustp.put(welcome_text, welcome_comment, minorEdit=False)
                             welcomed_count += 1
                             self._totallyCount += 1
                             self.welcomed_users.append(users)
