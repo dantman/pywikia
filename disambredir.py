@@ -124,13 +124,10 @@ def workon(page, links):
         page.put(text, comment)
 
 def main():
+    global mysite, linktrail, page
     start = []
-    test = False
     for arg in wikipedia.handleArgs():
-        if arg.startswith("-test"):
-            test = True
-        else:
-            start.append(arg)
+        start.append(arg)
     if start:
         start = " ".join(start)
     else:
