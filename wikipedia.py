@@ -730,7 +730,7 @@ not supported by PyWikipediaBot!"""
                 raise NotImplementedError
         except NotImplementedError:
             return self._getEditPageOld(get_redirect, throttle, sysop, oldid, change_edit_time)
-        
+
         params = {
             'action': 'query',
             'titles': self.title(),
@@ -742,7 +742,7 @@ not supported by PyWikipediaBot!"""
         }
         if oldid:
             params['rvstartid'] = oldid
-        
+
         if throttle:
             get_throttle()
         textareaFound = False
@@ -758,31 +758,36 @@ not supported by PyWikipediaBot!"""
                     raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
                 elif 'invalid' in pageInfo:
                     raise BadTitle('BadTitle: %s' % self)
-            else: #vaild Title
+            else: #valid Title
                 if 'revisions' in pageInfo:
                     textareaFound = True
-        
+
         self.editRestriction = ''
         self.moveRestriction = ''
-        self._userName = pageInfo['revisions'][0]['user']
-        
+        lastRev = pageInfo['revisions'][0]
+
+        # Note: user may be hidden and mw returns 'userhidden' flag
+        if 'userhidden' in lastRev:
+            self._userName = None
+        else:
+            self._userName = lastRev['user']
+
         for restr in pageInfo['protection']:
             if restr['type'] == 'edit':
                 self.editRestriction = restr['level']
             elif restr['type'] == 'move':
                 self.moveRestriction = restr['level']    
-        
-        self._revisionId = pageInfo['revisions'][0]['revid']
-        
+
+        self._revisionId = lastRev['revid']
+
         if change_edit_time:
-            self._editTime = parsetime2stamp(pageInfo['revisions'][0]['timestamp'])
+            self._editTime = parsetime2stamp(lastRev['timestamp'])
             if "starttimestamp" in pageInfo:
                 self._startTime = parsetime2stamp(pageInfo["starttimestamp"])
-            
-            
+
         self._isWatched = False #cannot handle in API in my research for now.
-        
-        pagetext = pageInfo['revisions'][0]['*']
+
+        pagetext = lastRev['*']
         pagetext = pagetext.rstrip()
         # pagetext must not decodeEsperantoX() if loaded via API
         m = self.site().redirectRegex().match(pagetext)
@@ -4101,10 +4106,6 @@ class _GetAll(object):
             
     def getDataApi(self):
         pagenames = [page.sectionFreeTitle() for page in self.pages]
-        ## We need to use X convention for requested page titles.
-        #if self.site.lang == 'eo':
-        #    pagenames = [encodeEsperantoX(pagetitle) for pagetitle in pagenames]
-        
         params = {
             'action': 'query',
             'meta':'siteinfo',
@@ -4114,15 +4115,15 @@ class _GetAll(object):
             'rvprop': ['content', 'timestamp', 'user', 'comment', 'size'],#'ids', 
             'inprop': ['protection', 'talkid', 'subjectid'], #, 'url', 'readable'
         }
-        
+
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
-        
+
         #get_throttle.setDelay(time.time() - now)
         return query.GetData(params, self.site)
-    
+
 def getall(site, pages, throttle=True, force=False):
     """Use Special:Export to bulk-retrieve a group of pages from site
 
@@ -6452,7 +6453,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 raise KeyError("MediaWiki key '%s' does not exist on %s" % (key, self))
 
     def has_mediawiki_message(self, key):
-        """Return True iff this site defines a MediaWiki message for 'key'."""
+        """Return True if this site defines a MediaWiki message for 'key'."""
         #return key in self._mediawiki_messages
         try:
             v = self.mediawiki_message(key)
