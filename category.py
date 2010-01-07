@@ -125,6 +125,7 @@ msg_add={
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
     'szl':u'Bot dodowo: [[Kategoria:%s]]',
+    'uk':u'Робот: додано [[Категорія:%s]]',
     'zh':u'機器人:新增目錄 [[Category:%s]]',
     }
 
@@ -159,6 +160,7 @@ msg_change={
     'ru':u'Робот: изменение %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
+    'uk':u'Робот: змінено [[Категорія:%s]]',
     'zh':u'機器人:變更目錄 [[%s]]→[[%s]]',
     }
 
@@ -194,6 +196,7 @@ deletion_reason_move = {
     'ru':u'Робот: категория переименована в [[:Категория:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[:Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[:Category:%s|%s]]',
+    'uk':u'Робот: категорію перейменовано на [[Категорія:%s]]',
     'zh':u'機器人:移動目錄至 [[:Category:%s|%s]]',
     }
 
