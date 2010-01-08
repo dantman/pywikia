@@ -112,7 +112,7 @@ class DjVuTextBot:
       
     def get_page(self, pageno):
         wikipedia.output(unicode("fetching page %d" % (pageno)))
-        cmd = u"djvutxt -page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
+        cmd = u"djvutxt --page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
         os.system ( cmd.encode(sys.stdout.encoding) )
 
         f = codecs.open(u"%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
