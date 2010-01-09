@@ -216,8 +216,8 @@ class HTTPPool(list):
 
 class CheckUsage(object):
     def __init__(self, limit = 100, 
-            mysql_default_server = 3, mysql_host_prefix = 'sql-s', mysql_kwargs = {}, 
-            no_db = False, use_autoconn = False, 
+            mysql_default_server = 3, mysql_host_prefix = 'sql-s', mysql_host_suffix = '',
+            mysql_kwargs = {}, no_db = False, use_autoconn = False, 
             
             http_retry_timeout = 30, http_max_retries = -1, 
             http_callback = lambda *args: None,
@@ -262,7 +262,7 @@ class CheckUsage(object):
         cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
         for dbname, domain, server in cursor.fetchall():
             if server not in self.servers:
-                self.servers[server] = self.connect_mysql(mysql_host_prefix + str(server))
+                self.servers[server] = self.connect_mysql(mysql_host_prefix + str(server) + mysql_host_suffix)
             
             # FIXME: wikimediafoundation!
             # TODO: This is one big mess
