@@ -65,6 +65,7 @@ class CategoryRedirectBot(object):
                 'hu': "Kategória:Kategóriaátirányítások",
                 'ja': "Category:移行中のカテゴリ",
                 'no': "Kategori:Wikipedia omdirigertekategorier",
+                'pl': "Kategoria:Przekierowania kategorii",
                 'simple': "Category:Category redirects",
                 'zh': u"Category:已重定向的分类",
             },
@@ -82,6 +83,7 @@ class CategoryRedirectBot(object):
             'ja': u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
             'ksh': u"Bot: Sigk uß en ömjeleidt Saachjropp eruß jesammdt.",
             'no': u"Robot: Flytter sider ut av omdirigeringskategori",
+            'pl': u"Robot: Usuwa strony z przekierowanej kategorii",
             'commons': u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])',
             'zh': u'机器人：改变已重定向分类中的页面的分类',
         }
@@ -95,6 +97,7 @@ class CategoryRedirectBot(object):
             'ja':u"ロボットによる: 移行中のカテゴリとしてタグ付け",
             'ksh':u"Bot: Ömleidungsschalbon dobeijedonn.",
             'no':u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
+            'pl':u"Robot: Dodaje szablon przekierowanej kategorii",
             'zh':u"机器人: 增加分类重定向模板，用于维护",
         }
 
@@ -108,6 +111,7 @@ class CategoryRedirectBot(object):
             'ja': u"ロボットによる: 二重リダイレクト修正",
             'no': u"Robot: Ordner doble omdirigeringer",
             'ksh': u"Bot: dubbel Ömleidung eruß jemaat.",
+            'pl': u"Robot: Poprawia podwójne przekierowanie",
             'zh': u"Bot: 修复双重重定向",
         }
 
@@ -121,6 +125,7 @@ class CategoryRedirectBot(object):
             'ja': u"移行中のカテゴリのメンテナンス・ボット",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
             'ksh': u"Bot för de Saachjroppe ier Ömleidunge.",
+            'pl': u"Robot porządkujący przekierowania kategorii",
             'zh': u"分类重定向维护机器人",
         }
 
@@ -137,6 +142,12 @@ aanjepaß krijje:
 %s
 ~~~~
 """,
+            'pl': u"""\
+Następujące zabezpieczone strony wykryto jako wymagające \
+poprawy kategorii:
+%s
+~~~~
+""",
             'zh': u"""\
 下列被保护页面被检测出需要更新 \
 分类链接:
@@ -150,6 +161,7 @@ aanjepaß krijje:
                 'en': u"* %s is in %s, which is a redirect to %s",
                 'fr': u"* %s est dans %s, qui est une redirection vers %s",
                 'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",
+                'pl': u"* %s jest w %s, która jest przekierowaniem do %s",
             })
 
     def change_category(self, article, oldCat, newCat, comment=None,
