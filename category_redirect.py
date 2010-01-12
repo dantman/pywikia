@@ -67,6 +67,7 @@ class CategoryRedirectBot(object):
                 'no': "Kategori:Wikipedia omdirigertekategorier",
                 'pl': "Kategoria:Przekierowania kategorii",
                 'simple': "Category:Category redirects",
+                'vi': u"Thể loại:Thể loại đổi hướng",
                 'zh': u"Category:已重定向的分类",
             },
             'commons': {
@@ -85,6 +86,7 @@ class CategoryRedirectBot(object):
             'no': u"Robot: Flytter sider ut av omdirigeringskategori",
             'pl': u"Robot: Usuwa strony z przekierowanej kategorii",
             'commons': u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])',
+            'vi': u"Robot: bỏ trang ra khỏi thể loại đổi hướng",
             'zh': u'机器人：改变已重定向分类中的页面的分类',
         }
 
@@ -98,6 +100,7 @@ class CategoryRedirectBot(object):
             'ksh':u"Bot: Ömleidungsschalbon dobeijedonn.",
             'no':u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
             'pl':u"Robot: Dodaje szablon przekierowanej kategorii",
+            'vi':u"Robot: thêm bản mẫu đổi hướng thể loại để dễ bảo trì",
             'zh':u"机器人: 增加分类重定向模板，用于维护",
         }
 
@@ -112,6 +115,7 @@ class CategoryRedirectBot(object):
             'no': u"Robot: Ordner doble omdirigeringer",
             'ksh': u"Bot: dubbel Ömleidung eruß jemaat.",
             'pl': u"Robot: Poprawia podwójne przekierowanie",
+            'vi': u"Robot: sửa thể loại đổi hướng kép",
             'zh': u"Bot: 修复双重重定向",
         }
 
@@ -126,6 +130,7 @@ class CategoryRedirectBot(object):
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
             'ksh': u"Bot för de Saachjroppe ier Ömleidunge.",
             'pl': u"Robot porządkujący przekierowania kategorii",
+            'vi': u"Robot theo dõi thể loại đổi hướng",
             'zh': u"分类重定向维护机器人",
         }
 
@@ -148,6 +153,12 @@ poprawy kategorii:
 %s
 ~~~~
 """,
+			'vi': u"""\
+Các trang đã khóa sau cần phải cập nhật \
+liên kết thể loại:
+%s
+~~~~
+""",
             'zh': u"""\
 下列被保护页面被检测出需要更新 \
 分类链接:
@@ -162,6 +173,7 @@ poprawy kategorii:
                 'fr': u"* %s est dans %s, qui est une redirection vers %s",
                 'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",
                 'pl': u"* %s jest w %s, która jest przekierowaniem do %s",
+                'vi': u"* %s đang thuộc %s, là thể loại đổi hướng đến %s",
             })
 
     def change_category(self, article, oldCat, newCat, comment=None,
@@ -308,7 +320,6 @@ poprawy kategorii:
                              % waited)
                     continue
                 else:
-                    # raise error
                     raise APIError(result['error'])
             waited = 0
             if type(result) is list:
@@ -626,7 +637,6 @@ poprawy kategorii:
                                  % u"\n".join((self.edit_request_item % item)
                                              for item in self.edit_requests))
 
-
 def main(*args):
     global bot
     try:
@@ -640,7 +650,6 @@ def main(*args):
         bot.run()
     finally:
         pywikibot.stopme()
-
 
 if __name__ == "__main__":
     main()
