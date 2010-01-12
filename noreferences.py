@@ -51,6 +51,7 @@ msg = {
     'en':u'Robot: Adding missing <references /> tag',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
+    'hu':u'Hiányzó {{Források}} pótlása',
     'it':u'Bot: Aggiungo il tag <references /> mancante',
     'ja':u'ロボットによる: <references /> タグの補完。',
     'ko':u'봇: 이전에 없던 <references /> 추가',
@@ -273,7 +274,7 @@ referencesTemplates = {
         'es': ['Listaref', 'Reflist', 'muchasref'],
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
-        'hu': [u'reflist'],
+        'hu': [u'reflist',u'források'],
         'it': [u'References'],
         'ja': [u'Reflist', u'脚注リスト'],
         'ko': [u'주석', u'Reflist'],
@@ -294,6 +295,7 @@ referencesTemplates = {
 referencesSubstitute = {
     'wikipedia': {
         'fi': u'{{viitteet}}',
+        'hu': u'{{Források}}',
     },
 }
 
