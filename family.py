@@ -2677,7 +2677,8 @@ class Family:
             },
         }
 
-        # letters that can follow a wikilink and are regarded as part of this link
+        # letters that can follow a wikilink and are regarded as part
+        # of this link
         # This depends on the linktrail setting in LanguageXx.php and on
         # [[MediaWiki:Linktrail]].
         # Note: this is a regular expression.
@@ -2710,6 +2711,8 @@ class Family:
         # for line in f.readlines():
         #     s = line[:line.index('\t')]
         #     print (("            '%s':" % s).ljust(20) + ("'%s'," % s))
+
+        # TODO: replace this with API interwikimap call
         self.known_families = {
             'abbenormal':       'abbenormal',
             'aboutccc':         'aboutccc',
@@ -3157,7 +3160,7 @@ class Family:
         # a list of languages. If there are at least the number of interwiki
         # links, all languages in the list should be placed at the front as
         # well as in the normal list.
-        self.interwiki_putfirst_doubled = {}
+        self.interwiki_putfirst_doubled = {}  # THIS APPEARS TO BE UNUSED!
 
         # Some families, e. g. commons and meta, are not multilingual and
         # forward interlanguage links to another family (wikipedia).
@@ -3274,7 +3277,9 @@ class Family:
         elif fallback:
             return self.linktrails[fallback]
         else:
-            raise KeyError('ERROR: linktrail in language %s unknown' % code)
+            raise KeyError(
+                "ERROR: linktrail in language %s unknown"
+                % code)
 
     def namespace(self, code, ns_number, fallback = '_default', all = False):
         if not self.isDefinedNS(ns_number):
@@ -3408,7 +3413,7 @@ class Family:
             return self.disambiguationTemplates[fallback]
         else:
             raise KeyError(
-                'ERROR: title for disambig template in language %s unknown'
+                "ERROR: title for disambig template in language %s unknown"
                 % code)
 
     # Returns the title of the special namespace in language 'code', taken from
@@ -3912,6 +3917,16 @@ class Family:
            wiki"""
         return self.code2encoding(code),
 
+    # aliases
+    def encoding(self, code):
+        """Return the encoding for a specific language wiki"""
+        return self.code2encoding(code)
+
+    def encodings(self, code):
+        """Return a list of historical encodings for a specific language
+           wiki"""
+        return self.code2encodings(code)
+
     def __cmp__(self, otherfamily):
         try:
             return cmp(self.name, otherfamily.name)
@@ -3920,6 +3935,9 @@ class Family:
 
     def __hash__(self):
         return hash(self.name)
+
+    def __repr__(self):
+        return 'Family("%s")' % self.name
 
     def RversionTab(self, code):
         """Change this to some regular expression that shows the page we
@@ -3940,7 +3958,7 @@ class Family:
         return datetime.utcnow() + self.servergmtoffset
 
     def isPublic(self):
-        """Does the wiki require logging in before viewing it ?"""
+        """Does the wiki require logging in before viewing it?"""
         return True
 
     def post_get_convert(self, site, getText):

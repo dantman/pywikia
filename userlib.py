@@ -2,6 +2,11 @@
 """
 Library to work with users, their pages and talk pages.
 """
+#
+# (C) Pywikipedia bot team, 2008-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
 
 import re

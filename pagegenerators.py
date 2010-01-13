@@ -15,26 +15,26 @@ These parameters are supported to specify which pages titles to print:
 """
 __version__='$Id$'
 
-parameterHelp = """\
+parameterHelp = u"""\
 -cat              Work on all pages which are in a specific category.
                   Argument can also be given as "-cat:categoryname" or
-                  as "-cat:categoryname#fromtitle" (using | instead of #
+                  as "-cat:categoryname|fromtitle" (using # instead of |
                   is also allowed in this one and the following)
 
 -catr             Like -cat, but also recursively includes pages in
                   subcategories, sub-subcategories etc. of the
                   given category.
                   Argument can also be given as "-catr:categoryname" or
-                  as "-catr:categoryname#fromtitle".
+                  as "-catr:categoryname|fromtitle".
 
 -subcats          Work on all subcategories of a specific category.
                   Argument can also be given as "-subcats:categoryname" or
-                  as "-subcats:categoryname#fromtitle".
+                  as "-subcats:categoryname|fromtitle".
 
 -subcatsr         Like -subcats, but also includes sub-subcategories etc. of
                   the given category.
                   Argument can also be given as "-subcatsr:categoryname" or
-                  as "-subcatsr:categoryname#fromtitle".
+                  as "-subcatsr:categoryname|fromtitle".
 
 -uncat            Work on all pages which are not categorised.
 
@@ -50,22 +50,12 @@ parameterHelp = """\
 -filelinks        Work on all pages that use a certain image/media file.
                   Argument can also be given as "-filelinks:filename".
 
--yahoo            Work on all pages that are found in a Yahoo search.
-                  Depends on python module pYsearch.  See yahoo_appid in
-                  config.py for instructions.
-
 -search           Work on all pages that are found in a MediaWiki search
                   across all namespaces.
 
--google           Work on all pages that are found in a Google search.
-                  You need a Google Web API license key. Note that Google
-                  doesn't give out license keys anymore. See google_key in
-                  config.py for instructions.
-                  Argument can also be given as "-google:searchstring".
-
--namespace        Filters the page generator to only yield pages in the
+-namespace        Filter the page generator to only yield pages in the
                   specified namespaces.  Separate multiple namespace
-                  numbers with commas.
+                  numbers with commas. Example "-namespace:0,2,4"
 
 -interwiki        Work on the given page and all equivalent pages in other
                   languages. This can, for example, be used to fight
@@ -77,14 +67,19 @@ parameterHelp = """\
 -links            Work on all pages that are linked from a certain page.
                   Argument can also be given as "-links:linkingpagetitle".
 
--new              Work on the 60 newest pages. If given as -new:x, will work
-                  on the x newest pages.
-
 -imagelinks       Work on all images that are linked from a certain page.
                   Argument can also be given as "-imagelinks:linkingpagetitle".
 
 -newimages        Work on the 100 newest images. If given as -newimages:x,
                   will work on the x newest images.
+
+-new              Work on the 60 recent new pages. If given as -new:x,
+                  will work on the x newest pages.
+
+-recentchanges    Work on new and edited pages returned by
+                  [[Special:Recentchanges]]. Can also be given as
+                  "-recentchanges:n" where n is the number of pages to be
+                  returned, else 100 pages are returned.
 
 -ref              Work on all pages that link to a certain page.
                   Argument can also be given as "-ref:referredpagetitle".
@@ -135,11 +130,6 @@ parameterHelp = """\
 -gorandom         Specifies that the robot should starting at the random pages 
                   returned by [[Special:Random]].
 
--recentchanges    Work on new and edited pages returned by
-                  [[Special:Recentchanges]]. Can also be given as
-                  "-recentchanges:n" where n is the number of pages to be
-                  returned, else 100 pages are returned.
-
 -redirectonly     Work on redirect pages only, not their target pages.
                   The robot goes alphabetically through all redirect pages
                   on the wiki, starting at the named page. The
@@ -148,13 +138,22 @@ parameterHelp = """\
                   You can also include a namespace. For example,
                   "-redirectonly:Template:!" will make the bot work on
                   all redirect pages in the template namespace.
+
+-google           Work on all pages that are found in a Google search.
+                  You need a Google Web API license key. Note that Google
+                  doesn't give out license keys anymore. See google_key in
+                  config.py for instructions.
+                  Argument can also be given as "-google:searchstring".
+
+-yahoo            Work on all pages that are found in a Yahoo search.
+                  Depends on python module pYsearch.  See yahoo_appid in
+                  config.py for instructions.
 """
 
+docuReplacements = {'&params;': parameterHelp}
 
 
-docuReplacements = {
-    '&params;': parameterHelp
-}
+
 
 
 # Standard library imports
@@ -309,9 +308,10 @@ def WithoutInterwikiPageGenerator(number = 100, repeat = False, site = None):
         yield page
 
 def InterwikiPageGenerator(page):
+    """Iterator over all interwiki (non-language) links on a page."""
     yield page
-    for iwPage in page.interwiki():
-        yield iwPage
+    for link in page.interwiki():
+        yield link
 
 def ReferringPageGenerator(referredPage, followRedirects=False,
                            withTemplateInclusion=True,
@@ -333,9 +333,10 @@ def CategorizedPageGenerator(category, recurse=False, start=None):
     If start is a string value, only pages whose title comes after start
     alphabetically are included.
     '''
-    for page in category.articles(recurse = recurse, startFrom = start):
-        if page.title() >= start:
-            yield page
+    # TODO: page generator could be modified to use cmstartsortkey ...
+    for a in category.articles(recurse = recurse, startFrom = start):
+        if start is None or a.title() >= start:
+            yield a
 
 def SubCategoriesPageGenerator(category, recurse=False, start=None):
     '''
@@ -345,9 +346,12 @@ def SubCategoriesPageGenerator(category, recurse=False, start=None):
     recurse is an int, only subcategories to that depth will be included
     (e.g., recurse=2 will get pages in subcats and sub-subcats, but will
     not go any further).
+    If start is a string value, only categories whose sortkey comes after
+    start alphabetically are included.
     '''
-    for page in category.subcategories(recurse = recurse, startFrom = start):
-        yield page
+    # TODO: page generator could be modified to use cmstartsortkey ...
+    for s in category.subcategories(recurse = recurse, startFrom = start):
+        yield s
 
 def UnCategorizedCategoryGenerator(number = 100, repeat = False, site = None):
     if site is None:
@@ -461,8 +465,8 @@ def TextfilePageGenerator(filename=None, site=None):
                 yield wikipedia.Page(site, title)
     f.close()
 
-def PagesFromTitlesGenerator(iterable, site = None):
-    """Generates pages from the titles (unicode strings) yielded by iterable"""
+def PagesFromTitlesGenerator(iterable, site=None):
+    """Generate pages from the titles (unicode strings) yielded by iterable."""
     if site is None:
         site = wikipedia.getSite()
     for title in iterable:

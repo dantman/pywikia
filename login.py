@@ -1,11 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-
 """
 Script to log the robot in to a wiki account.
 
 Suggestion is to make a special account to use for robot use only. Make
-sure this robot account is well known on your home wikipedia before using.
+sure this robot account is well known on your home wiki before using.
 
 Parameters:
 
@@ -37,19 +36,20 @@ Parameters:
                 check the output. Using -log is recommended: this will output a
                 lot of data
 
-If not given as parameter, the script will ask for your username and password
-(password entry will be hidden), log in to your home wiki using this
-combination, and store the resulting cookies (containing your password hash,
+If not given as parameter, the script will ask for your username and
+password (password entry will be hidden), log in to your home wiki using
+this combination, and store the resulting cookies (containing your password
 so keep it secured!) in a file in the login-data subdirectory.
 
-All scripts in this library will be looking for this cookie file and will use
-the login information if it is present.
+All scripts in this library will be looking for this cookie file and will
+use the login information if it is present.
 
 To log out, throw away the XX-login.data file that is created in the login-data
 subdirectory.
 """
 #
 # (C) Rob W.W. Hooft, 2003
+# (C) Pywikipedia bot team, 2003-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -80,11 +80,11 @@ def show (mysite, sysop = False):
         wikipedia.output(u"You are not logged in on %s." % repr(mysite))
 
 class LoginManager:
-    def __init__(self, password = None, sysop = False, site = None, username=None, verbose=False):
+    def __init__(self, password=None, sysop=False, site=None, username=None, verbose=False):
         self.site = site or wikipedia.getSite()
         self.sysop = sysop
         if username:
-            self.username=username
+            self.username = username
             # perform writeback.
             if site.family.name not in config.usernames:
                 config.usernames[site.family.name]={}
@@ -92,7 +92,8 @@ class LoginManager:
         else:
             if sysop:
                 try:
-                    self.username = config.sysopnames[self.site.family.name][self.site.lang]
+                    self.username = config.sysopnames\
+                                    [self.site.family.name][self.site.lang]
                 except:
                     raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
             else:
@@ -110,7 +111,8 @@ class LoginManager:
         Checks whether the bot is listed on a specific page to comply with
         the policy on the respective wiki.
         """
-        if self.site.family.name in botList and self.site.language() in botList[self.site.family.name]:
+        if self.site.family.name in botList \
+                and self.site.language() in botList[self.site.family.name]:
             botListPageTitle = wikipedia.translate(self.site.language(), botList)
             botListPage = wikipedia.Page(self.site, botListPageTitle)
             for linkedPage in botListPage.linkedPages():
@@ -225,11 +227,12 @@ class LoginManager:
 
     def storecookiedata(self, filename, data):
         """
-        Stores cookie data.
+        Store cookie data.
 
         The argument data is the raw data, as returned by getCookie().
 
-        Returns nothing."""
+        Returns nothing.
+        """
         s = u''
         for v, k in data.iteritems():
             s += "%s=%s\n" % (v, k)
@@ -239,8 +242,10 @@ class LoginManager:
 
     def readPassword(self):
         """
-        Reads passwords from a file. DO NOT FORGET TO REMOVE READ
-        ACCESS FOR OTHER USERS!!! Use chmod 600 password-file.
+        Read passwords from a file.
+
+        DO NOT FORGET TO REMOVE READ ACCESS FOR OTHER USERS!!!
+        Use chmod 600 password-file.
         All lines below should be valid Python tuples in the form
         (code, family, username, password) or (username, password)
         to set a default password for an username. Default usernames
@@ -252,8 +257,8 @@ class LoginManager:
         ("my_sysop_user", "my_sysop_password")
         ("en", "wikipedia", "my_en_user", "my_en_pass")
         """
-        file = open(wikipedia.config.datafilepath(config.password_file), 'r')
-        for line in file:
+        password_f = open(wikipedia.config.datafilepath(config.password_file), 'r')
+        for line in password_f:
             if not line.strip(): continue
             entry = eval(line)
             if len(entry) == 2:   #for default userinfo
@@ -263,13 +268,16 @@ class LoginManager:
                   entry[1] == self.site.family.name and \
                   entry[2] == self.username:
                     self.password = entry[3]
-        file.close()
+        password_f.close()
 
     def login(self, api = config.use_api_login, retry = False):
         if not self.password:
             # As we don't want the password to appear on the screen, we set
             # password = True
-            self.password = wikipedia.input(u'Password for user %s on %s:' % (self.username, self.site), password = True)
+            self.password = wikipedia.input(
+                                u'Password for user %s on %s:'
+                                % (self.username, self.site),
+                                password = True)
 
         self.password = self.password.encode(self.site.encoding())
 
@@ -335,7 +343,8 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg.startswith("-pass"):
             if len(arg) == 5:
-                password = wikipedia.input(u'Password for all accounts:', password = True)
+                password = wikipedia.input(u'Password for all accounts:',
+                                           password = True)
             else:
                 password = arg[6:]
         elif arg == "-clean":

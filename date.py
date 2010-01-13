@@ -19,7 +19,6 @@ import types
 import re
 import wikipedia
 
-
 #
 # Different collections of well known formats
 #
@@ -147,7 +146,6 @@ def dh_millenniumBC( value, pattern ):
     return dh_noConv( value, pattern, formatLimits['MillenniumBC'][0] )
 
 
-
 def decSinglVal( v ):
     return v[0]
 
@@ -199,34 +197,34 @@ def alwaysTrue( x ):
        to accept all other values"""
     return True
 
-def monthName(lang,ind):
+def monthName(lang, ind):
     return formats['MonthName'][lang](ind)
 
 
 # Helper for KN: digits representation
-_knDigits=u'೦೧೨೩೪೫೬೭೮೯'
-_knDigitsToLocal=dict([(ord(unicode(i)), _knDigits[i]) for i in range(10)])
-_knLocalToDigits=dict([(ord(_knDigits[i]), unicode(i)) for i in range(10)])
+_knDigits = u'೦೧೨೩೪೫೬೭೮೯'
+_knDigitsToLocal = dict([(ord(unicode(i)), _knDigits[i]) for i in range(10)])
+_knLocalToDigits = dict([(ord(_knDigits[i]), unicode(i)) for i in range(10)])
 
 # Helper for Urdu/Persian languages
-_faDigits=u'۰۱۲۳۴۵۶۷۸۹'
-_faDigitsToLocal=dict([(ord(unicode(i)), _faDigits[i]) for i in range(10)])
-_faLocalToDigits=dict([(ord(_faDigits[i]), unicode(i)) for i in range(10)])
+_faDigits = u'۰۱۲۳۴۵۶۷۸۹'
+_faDigitsToLocal = dict([(ord(unicode(i)), _faDigits[i]) for i in range(10)])
+_faLocalToDigits = dict([(ord(_faDigits[i]), unicode(i)) for i in range(10)])
 
 # Helper for HI:, MR:
-_hiDigits=u'०१२३४५६७८९'
-_hiDigitsToLocal=dict([(ord(unicode(i)), _hiDigits[i]) for i in range(10)])
-_hiLocalToDigits=dict([(ord(_hiDigits[i]), unicode(i)) for i in range(10)])
+_hiDigits = u'०१२३४५६७८९'
+_hiDigitsToLocal = dict([(ord(unicode(i)), _hiDigits[i]) for i in range(10)])
+_hiLocalToDigits = dict([(ord(_hiDigits[i]), unicode(i)) for i in range(10)])
 
 # Helper for BN:
-_bnDigits=u'০১২৩৪৫৬৭৮৯'
-_bnDigitsToLocal=dict([(ord(unicode(i)), _bnDigits[i]) for i in range(10)])
-_bnLocalToDigits=dict([(ord(_bnDigits[i]), unicode(i)) for i in range(10)])
+_bnDigits = u'০১২৩৪৫৬৭৮৯'
+_bnDigitsToLocal = dict([(ord(unicode(i)), _bnDigits[i]) for i in range(10)])
+_bnLocalToDigits = dict([(ord(_bnDigits[i]), unicode(i)) for i in range(10)])
 
 # Helper for GU:
-_guDigits=u'૦૧૨૩૪૫૬૭૮૯'
-_guDigitsToLocal=dict([(ord(unicode(i)), _guDigits[i]) for i in range(10)])
-_guLocalToDigits=dict([(ord(_guDigits[i]), unicode(i)) for i in range(10)])
+_guDigits = u'૦૧૨૩૪૫૬૭૮૯'
+_guDigitsToLocal = dict([(ord(unicode(i)), _guDigits[i]) for i in range(10)])
+_guLocalToDigits = dict([(ord(_guDigits[i]), unicode(i)) for i in range(10)])
 
 def intToLocalDigitsStr( value, digitsToLocalDict ):
     # Encode an integer value into a textual form.
@@ -279,7 +277,7 @@ _digitDecoders = {
     'T' : ( _decimalDigits, lambda v: unicode(v+543), lambda v: int(v)-543 ),
 }
 
-# Allows to search for '(%%)|(%d)|(%R)|...", and allows one digit 1-9  too set the size of zero-padding for numbers
+# Allows to search for '(%%)|(%d)|(%R)|...", and allows one digit 1-9  to set the size of zero-padding for numbers
 _reParameters = re.compile(u'|'.join([ u'(%%[1-9]?%s)' % s for s in _digitDecoders.keys() ]))
 
 # A map of   sitecode+pattern  to  (re matching object and corresponding decoders)
@@ -301,7 +299,7 @@ def escapePattern2( pattern ):
         for s in _reParameters.split(pattern):
             if s is None:
                 pass
-            elif len(s) in [2,3] and s[0]=='%' and s[-1] in _digitDecoders and (len(s)==2 or s[1] in _decimalDigits):
+            elif len(s) in [2, 3] and s[0] == '%' and s[-1] in _digitDecoders and (len(s) == 2 or s[1] in _decimalDigits):
                 # Must match a "%2d" or "%d" style
                 dec = _digitDecoders[s[-1]]
                 if type(dec) in _stringTypes:
@@ -741,7 +739,7 @@ formats = {
         'ca' :      lambda m: multi( m, [
             (lambda v: dh_decAD( v, u'Dècada de %d' ),  lambda p: p == 1970),
             (lambda v: dh_decAD( v, u'Dècada del %d' ), alwaysTrue)]),
-         
+
          #1970s => '1970-1979'
         'cs' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'1-9'),                                              lambda p: p == 1),
@@ -1033,29 +1031,29 @@ formats = {
             (lambda v: dh_centuryBC( v, u'%dde eeu v.C.' ),             alwaysTrue)]),
         'bg' :      lambda v: dh_centuryBC( v, u'%d век пр.н.е.' ),
         'br' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 1, u'Iañ kantved kt JK'),          lambda p: p == 1),
-            (lambda v: dh_constVal( v, 2, u'Eil kantved kt JK'),          lambda p: p == 2),
-            (lambda v: dh_centuryBC( v, u'%Re kantved kt JK'),            lambda p: p in [2,3]),
-            (lambda v: dh_centuryBC( v, u'%Rvet kantved kt JK'),          alwaysTrue)]),
+            (lambda v: dh_constVal( v, 1, u'Iañ kantved kt JK'),        lambda p: p == 1),
+            (lambda v: dh_constVal( v, 2, u'Eil kantved kt JK'),        lambda p: p == 2),
+            (lambda v: dh_centuryBC( v, u'%Re kantved kt JK'),          lambda p: p in [2,3]),
+            (lambda v: dh_centuryBC( v, u'%Rvet kantved kt JK'),        alwaysTrue)]),
         'ca' :      lambda v: dh_centuryBC( v, u'Segle %R aC' ),
         'cs' :      lambda v: dh_centuryBC( v, u'%d. století př. n. l.' ),
         'da' :      lambda v: dh_centuryBC( v, u'%d. århundrede f.Kr.' ),
         'de' :      lambda v: dh_centuryBC( v, u'%d. Jahrhundert v. Chr.' ),
         'el' :      lambda v: dh_centuryBC( v, u'%dος αιώνας π.Χ.' ),
         'en' :      lambda m: multi( m, [
-            (lambda v: dh_centuryBC( v, u'%dst century BC' ),             lambda p: p == 1 or (p > 20 and p%10 == 1)),
-            (lambda v: dh_centuryBC( v, u'%dnd century BC' ),            lambda p: p == 2 or (p > 20 and p%10 == 2)),
-            (lambda v: dh_centuryBC( v, u'%drd century BC' ),             lambda p: p == 3 or (p > 20 and p%10 == 3)),
-            (lambda v: dh_centuryBC( v, u'%dth century BC' ),             alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%dst century BC' ),           lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_centuryBC( v, u'%dnd century BC' ),           lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_centuryBC( v, u'%drd century BC' ),           lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_centuryBC( v, u'%dth century BC' ),           alwaysTrue)]),
         'eo' :      lambda v: dh_centuryBC( v, u'%d-a jarcento a.K.' ),
         'es' :      lambda v: dh_centuryBC( v, u'Siglo %R adC' ),
         'et' :      lambda v: dh_centuryBC( v, u'%d. aastatuhat eKr' ),
         'fi' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata eaa.'),                lambda p: p == 1),
-            (lambda v: dh( v, u'%d00-luku eaa.', lambda i: i-1, lambda ii: ii[0]+1 ),    alwaysTrue)]),
+            (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata eaa.'),               lambda p: p == 1),
+            (lambda v: dh( v, u'%d00-luku eaa.', lambda i: i-1, lambda ii: ii[0]+1 ),   alwaysTrue)]),
         'fr' :      lambda m: multi( m, [
-            (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),                       lambda p: p == 1),
-            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),                        alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),                     lambda p: p == 1),
+            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),                      alwaysTrue)]),
         'he' :      lambda v: dh_centuryBC( v, u'המאה ה־%d לפני הספירה' ),
         'hr' :      lambda v: dh_centuryBC( v, u'%d. stoljeće p.n.e.' ),
         'id' :      lambda v: dh_centuryBC( v, u'Abad ke-%d SM' ),
@@ -1491,21 +1489,21 @@ addFmt ('zh-min-nan',True,  makeMonthList( u"%%d nî %d goe̍h" ))
 # In addition, tuple contains start, end, and step values that will be used to test the formats table for internal consistency.
 #
 formatLimits = {
-    'MonthName'            : (lambda v: 1<=v and v<13,                 1,13),
-    'Number'            : (lambda v: 0<=v and v<1000000,            0,1001),
+    'MonthName'         : (lambda v: 1 <=v and v < 13,                 1, 13),
+    'Number'            : (lambda v: 0 <=v and v < 1000000,            0, 1001),
 
-    'YearAD'            : (lambda v: 0<=v and v<2501,               0,2501),
-    'YearBC'            : (lambda v: 0<=v and v<4001,               0,501),   # zh: has years as old as 前1700年
-    'DecadeAD'            : (lambda v: 0<=v and v<2501,               0,2501),  # At some point need to re-add  "and v%10==0" to the limitation
-    'DecadeBC'            : (lambda v: 0<=v and v<4001,               0,501),   # zh: has decades as old as 前1700年代
-    'CenturyAD'            : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'CenturyBC'            : (lambda v: 1<=v and v<91,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'MillenniumAD'        : (lambda v: 1<=v and v<6,                  1,4),     # For milleniums, only test first 3 AD Milleniums,
-    'MillenniumBC'        : (lambda v: 1<=v and v<20,                 1,2),     # And only 1 BC Millenium
-    'CenturyAD_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'CenturyBC_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'Cat_Year_MusicAlbums'    : (lambda v: 1950<=v and v<2021,        1950,2021),
-    'CurrEvents'            : (lambda v: 0<=v and v<1,              0,1),
+    'YearAD'            : (lambda v: 0 <=v and v < 2501,               0, 2501),
+    'YearBC'            : (lambda v: 0 <=v and v < 4001,               0, 501),   # zh: has years as old as 前1700年
+    'DecadeAD'          : (lambda v: 0 <=v and v < 2501,               0, 2501),  # At some point need to re-add  "and v%10==0" to the limitation
+    'DecadeBC'          : (lambda v: 0 <=v and v < 4001,               0, 501),   # zh: has decades as old as 前1700年代
+    'CenturyAD'         : (lambda v: 1 <=v and v < 41,                 1, 23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'CenturyBC'         : (lambda v: 1 <=v and v < 91,                 1, 23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'MillenniumAD'      : (lambda v: 1 <=v and v < 6,                  1, 4),     # For milleniums, only test first 3 AD Milleniums,
+    'MillenniumBC'      : (lambda v: 1 <=v and v < 20,                 1, 2),     # And only 1 BC Millenium
+    'CenturyAD_Cat'     : (lambda v: 1 <=v and v < 41,                 1, 23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'CenturyBC_Cat'     : (lambda v: 1 <=v and v < 41,                 1, 23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'Cat_Year_MusicAlbums'  : (lambda v: 1950 <= v and v < 2021,        1950, 2021),
+    'CurrEvents'            : (lambda v: 0 <= v and v < 1,              0, 1),
 }
 
 # All month of year articles are in the same format
@@ -1517,7 +1515,7 @@ _formatLimit_DayOfMonth31 = (lambda v: 1 <= v and v < 32,           1, 32)
 _formatLimit_DayOfMonth30 = (lambda v: 1 <= v and v < 31,           1, 31)
 _formatLimit_DayOfMonth29 = (lambda v: 1 <= v and v < 30,           1, 30)
 for monthId in range(12):
-    if (monthId+1) in [1,3,5,7,8,10,12]:
+    if (monthId + 1) in [1, 3, 5, 7, 8, 10, 12]:
         formatLimits[dayMnthFmts[monthId]] = _formatLimit_DayOfMonth31      # 31 days a month
     elif (monthId+1) == 2: # February
         formatLimits[dayMnthFmts[monthId]] = _formatLimit_DayOfMonth29      # 29 days a month
@@ -1567,8 +1565,6 @@ def formatYear(lang, year):
     else:
         return formats['YearAD'][lang](year)
 
-
-
 #
 #
 #  Map testing methods
@@ -1603,7 +1599,7 @@ def testMapEntry( formatName, showAll = True, value = None ):
     for code, convFunc in formats[formatName].iteritems():
 #        import time
 #        startClock = time.clock()
-        for value in range(start,stop,step):
+        for value in range(start, stop, step):
             try:
                 if not predicate(value):
                     raise AssertionError("     Not a valid value for this format.")
@@ -1618,11 +1614,14 @@ def testMapEntry( formatName, showAll = True, value = None ):
 #        wikipedia.output( u"%s\t%s\t%f" % (formatName, code, time.clock() - startClock) )
 
 def test(quick = False, showAll = False):
-    """This is a test function, to be used interactivelly to test entire format convesion map at once
+    """This is a test function, to be used interactively to test entire
+    format conversion map at once
+
     Usage example:
         run python interpreter
         >>> import date
         >>> date.test()
+
     """
     for formatName in formats.keys():
 
