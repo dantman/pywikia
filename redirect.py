@@ -690,11 +690,15 @@ class RedirectRobot:
                 else:
                     wikipedia.output(
                         u'   Links to: %s.'
-                          % targetPage.aslink())
+                        % targetPage.aslink())
+                    if targetPage.site().sitename() == 'wikipedia:en' \
+                       and targetPage.title() == 'Target page name':
+                        wikipedia.output(u"Skipping: Redirect source is vandalized.")
+                        break
                     if targetPage.site() != self.site:
                         wikipedia.output(
-                u'Warning: redirect target (%s) is on a different site.'
-                             % (targetPage.aslink()))
+                            u'Warning: redirect target (%s) is on a different site.'
+                            % (targetPage.aslink()))
                         if self.always:
                             break  # skip if automatic
                     # watch out for redirect loops
@@ -703,8 +707,8 @@ class RedirectRobot:
                                           targetPage.sectionFreeTitle())
                                       ) > 0:
                         wikipedia.output(
-                           u'Warning: Redirect target %s forms a redirect loop.'
-                              % targetPage.aslink())
+                            u'Warning: Redirect target %s forms a redirect loop.'
+                            % targetPage.aslink())
                         break ###xqt doesn't work. edits twice!
                         try:
                             content = targetPage.get(get_redirect=True)
@@ -761,7 +765,7 @@ class RedirectRobot:
                              % redir.title())
                     except wikipedia.Error, error:
                         wikipedia.output(
-                        u"Unexpected error occurred trying to save [[%s]]: %s"
+                            u"Unexpected error occurred trying to save [[%s]]: %s"
                              % (redir.title(), error))
                 break
 
