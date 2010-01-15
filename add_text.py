@@ -83,6 +83,7 @@ docuReplacements = {
 msg = {
     'ar': u'بوت: إضافة %s',
     'cs': u'Robot přidal %s',
+    'de': u'Bot: "%s" hinzugefügt',
     'en': u'Bot: Adding %s',
     'fr': u'Robot : Ajoute %s',
     'he': u'בוט: מוסיף %s',
@@ -150,7 +151,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
     if not addText:
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
-        summary = wikipedia.translate(wikipedia.getSite(), msg) % addText
+        summary = wikipedia.translate(wikipedia.getSite(), msg) % addText[:200]
 
     # When a page is tagged as "really well written" it has a star in the interwiki links.
     # This is a list of all the templates used (in regex format) to make the stars appear.
@@ -260,18 +261,18 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
     if putText and text != newtext:
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         wikipedia.showDiff(text, newtext)
-    choice = ''
     # Let's put the changes.
-    while 1:
+    while True:
         # If someone load it as module, maybe it's not so useful to put the text in the page
         if putText:
             if not always:
-                choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-            if choice == 'a':
-                always = True
-            if choice == 'n':
-                return (False, False, always)
-            if choice == 'y' or always:
+                choice = wikipedia.inputChoice(u'Do you want to accept these changes?',
+                                               ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                if choice == 'a':
+                    always = True
+                elif choice == 'n':
+                    return (False, False, always)
+            if always or choice == 'y':
                 try:
                     if always:
                         page.put(newtext, summary)
@@ -284,7 +285,7 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                     errorCount += 1
                     if errorCount < 5:
                         wikipedia.output(u'Server Error! Wait..')
-                        time.sleep(3)
+                        time.sleep(5)
                         continue
                     else:
                         raise wikipedia.ServerError(u'Fifth Server Error!')
