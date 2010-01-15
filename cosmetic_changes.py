@@ -241,6 +241,7 @@ class CosmeticChangesToolkit:
         text = self.removeNonBreakingSpaceBeforePercent(text)
         text = self.fixSyntaxSave(text)
         text = self.fixHtml(text)
+        text = self.fixStyle(text)
         text = self.fixTypo(text)
         try:
             text = isbn.hyphenateIsbnNumbers(text)
@@ -407,7 +408,8 @@ class CosmeticChangesToolkit:
                 # differently for images and categories.
                 try:
                     page = pywikibot.Page(self.site, titleWithSection)
-                except pywikibot.InvalidTitle:
+                #except pywikibot.InvalidTitle:
+                except: #empty self link occures
                     return match.group()
                 if page.namespace() == 0:
                     # Replace underlines by spaces, also multiple underlines
@@ -598,12 +600,25 @@ class CosmeticChangesToolkit:
         # horizontal line with attributes; can't be done with wiki syntax
         # so we only make it XHTML compliant
         text = pywikibot.replaceExcept(text, r'(?i)<hr ([^>/]+?)>', r'<hr \1 />', exceptions)
+        #remove empty <ref/>-tag
+        text = pywikibot.replaceExcept(text, r'(?i)<ref\s*/>', r'', exceptions)
         # TODO: maybe we can make the bot replace <p> tags with \r\n's.
         return text
 
-    def fixTypo(self, text):
-        # Solve wrong Nº sign with °C or °F
+    def fixStyle(self, text):
         exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
+        # convert prettytable to wikitable class
+        if self.site.language in ('de', 'en'):
+           text = pywikibot.replaceExcept(text, ur'(class="[^"]*)prettytable([^"]*")', ur'\1wikitable\2', exceptions)
+        return text
+
+    def fixTypo(self, text):
+        exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
+        # change <number> ccm -> <number> cm³
+        text = pywikibot.replaceExcept(text, ur'(\d)\s*&nbsp;ccm', ur'\1&nbsp;cm³', exceptions)
+        text = pywikibot.replaceExcept(text, ur'(\d)\s*ccm', ur'\1&nbsp;cm³', exceptions)
+        # Solve wrong Nº sign with °C or °F
+        # additional exception requested on fr-wiki for this stuff
         pattern = re.compile(u'«.*?»', re.UNICODE)
         exceptions.append(pattern)
         text = pywikibot.replaceExcept(text, ur'(\d)\s*&nbsp;[º°]([CF])', ur'\1&nbsp;°\2', exceptions)
