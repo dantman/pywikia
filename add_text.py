@@ -13,7 +13,12 @@ Furthermore, the following command line parameters are supported:
 
 -page             Use a page as generator
 
+-talkpage         Put the text onto the talk page instead the generated on
+-talk
+
 -text             Define which text to add. "\n" are interpreted as newlines.
+
+-textfile         Define a texfile name which contains the text to add
 
 -summary          Define the summary to use
 
@@ -67,6 +72,7 @@ __version__ = '$Id: add_text.py,v 1.5 2008/04/25 17:08:30 filnik Exp$'
 
 import re, pagegenerators, urllib2, urllib
 import wikipedia
+import codecs, config
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
@@ -140,7 +146,7 @@ def untaggedGenerator(untaggedProject, limit = 500):
             yield wikipedia.Page(wikipedia.getSite(), result)
 
 def add_text(page = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
-             always = False, up = False, putText = True, oldTextGiven = None):
+             always = False, up = False, putText = True, oldTextGiven = None, create=False):
     if not addText:
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
@@ -186,8 +192,12 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         try:
             text = page.get()
         except wikipedia.NoPage:
-            wikipedia.output(u"%s doesn't exist, skip!" % page.title())
-            return (False, False, always) # continue
+            if create:
+                wikipedia.output(u"%s doesn't exist, creating it!" % page.title())
+                text = u''
+            else:
+                wikipedia.output(u"%s doesn't exist, skip!" % page.title())
+                return (False, False, always) # continue
         except wikipedia.IsRedirectPage:
             wikipedia.output(u"%s is a redirect, skip!" % page.title())
             return (False, False, always) # continue
@@ -298,13 +308,21 @@ def main():
     # If none, the var is setted only for check purpose.
     summary = None; addText = None; regexSkip = None; regexSkipUrl = None;
     generator = None; always = False
+    textfile=None
+    talkPage=False
+    namespaces=[]
     # Load a lot of default generators
     genFactory = pagegenerators.GeneratorFactory()
     # Put the text above or below the text?
     up = False
     # Loading the arguments
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-text'):
+        if arg.startswith('-textfile'):
+            if len(arg) == 9:
+                textfile = wikipedia.input(u'Which textfile do you want to add?')
+            else:
+                textfile = arg[10:]
+        elif arg.startswith('-text'):
             if len(arg) == 5:
                 addText = wikipedia.input(u'What text do you want to add?')
             else:
@@ -339,17 +357,30 @@ def main():
             up = True
         elif arg == '-always':
             always = True
+        elif arg == '-talk' or arg == '-talkpage':
+            talkPage = True
         else:
             genFactory.handleArg(arg)
-
+    if textfile and not addText:
+        f = codecs.open(textfile, 'r', config.textfile_encoding)
+        addText = f.read()
+        f.close()
     if not generator:
         generator = genFactory.getCombinedGenerator()
     # Check if there are the minimal settings
     if not generator:
         raise NoEnoughData('You have to specify the generator you want to use for the script!')
+    if talkPage:
+        generator = pagegenerators.PageWithTalkPageGenerator(generator)
+        site = wikipedia.getSite()
+        for namespace in site.namespaces():
+            index = site.getNamespaceIndex(namespace)
+            if index%2==1 and index>0:
+                namespaces += [index]
+        generator = pagegenerators.NamespaceFilterPageGenerator(generator, namespaces)
     # Main Loop
     for page in generator:
-        (text, newtext, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True)
+        (text, newtext, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True, create=talkPage)
 
 if __name__ == "__main__":
     try:
