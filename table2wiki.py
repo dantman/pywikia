@@ -7,15 +7,15 @@ These command line parameters can be used to specify which pages to work on:
 
 &params;
 
--xml           - Retrieve information from a local XML dump (pages_current, see
-                 http://download.wikimedia.org).
-                 Argument can also be given as "-xml:filename".
-                 Searches for pages with HTML tables, and tries to convert them
-                 on the live wiki.
+-xml              Retrieve information from a local XML dump (pages_current, see
+                  http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
+                  Searches for pages with HTML tables, and tries to convert them
+                  on the live wiki.
 
--sql           - Retrieve information from a local mirror.
-                 Searches for pages with HTML tables, and tries to convert them
-                 on the live wiki.
+-sql              Retrieve information from a local mirror.
+                  Searches for pages with HTML tables, and tries to convert them
+                  on the live wiki.
 
 -namespace:n      Number or name of namespace to process. The parameter can be
                   used multiple times. It works in combination with all other
@@ -25,14 +25,14 @@ These command line parameters can be used to specify which pages to work on:
 
 This SQL query can be used to find pages to work on:
 
-                 SELECT CONCAT('[[', cur_title, ']]')
-                     FROM cur
-                     WHERE (cur_text LIKE '%<table%'
-                         OR cur_text LIKE '%<TABLE%')
-                         AND cur_title REGEXP "^[A-N]"
-                         AND cur_namespace=0
-                     ORDER BY cur_title
-                     LIMIT 500
+                  SELECT CONCAT('[[', cur_title, ']]')
+                      FROM cur
+                      WHERE (cur_text LIKE '%<table%'
+                          OR cur_text LIKE '%<TABLE%')
+                          AND cur_title REGEXP "^[A-N]"
+                          AND cur_namespace=0
+                      ORDER BY cur_title
+                      LIMIT 500
 
 Example:
 
@@ -61,56 +61,59 @@ docuReplacements = {
     '&params;':     pagegenerators.parameterHelp,
 }
 
-msg_no_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول',
-                   'de':u'Bot: Tabellensyntax konvertiert',
-                   'en':u'User-controlled Bot: table syntax updated',
-                   'es':u'Bot controlado: actualizada sintaxis de tabla',
-                   'fr':u'Robot : wikification syntaxe tableaux',
-                   'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה',
-                   'ia':u'Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
-                   'ja':u'ロボットによる: 表をHTMLからウィキ文法に更新',
-                   'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді',
-                   'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė',
-                   'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax',
-                   'no':u'bot: Konverter tabellsyntaks',
-                   'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli',
-                   'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada',
-                   'zh':u'機器人：表格語法更新',
-                  }
+msg_no_warnings = {
+    'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول',
+    'de':u'Bot: Tabellensyntax konvertiert',
+    'en':u'User-controlled Bot: table syntax updated',
+    'es':u'Bot controlado: actualizada sintaxis de tabla',
+    'fr':u'Robot : wikification syntaxe tableaux',
+    'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה',
+    'ia':u'Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
+    'ja':u'ロボットによる: 表をHTMLからウィキ文法に更新',
+    'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді',
+    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė',
+    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax',
+    'no':u'bot: Konverter tabellsyntaks',
+    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli',
+    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada',
+    'zh':u'機器人：表格語法更新',
+}
 
-msg_one_warning = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
-                   'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
-                   'en':u'User-controlled Bot: table syntax updated - %d warning!',
-                   'es':u'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
-                   'fr':u'Robot : wikification syntaxe tableaux - %d avertissements !',
-                   'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - אזהרה אחת!',
-                   'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimento!',
-                   'ja':u'ボットによる: 表をHTMLからウィキ文法に更新 - 警告 %d',
-                   'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
-                   'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
-                   'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
-                   'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
-                   'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżenie!',
-                   'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
-                   'zh':u'機器人：表格語法更新 - %d 注意！',
-                  }
+msg_one_warning = {
+    'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
+    'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
+    'en':u'User-controlled Bot: table syntax updated - %d warning!',
+    'es':u'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
+    'fr':u'Robot : wikification syntaxe tableaux - %d avertissements !',
+    'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - אזהרה אחת!',
+    'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimento!',
+    'ja':u'ボットによる: 表をHTMLからウィキ文法に更新 - 警告 %d',
+    'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
+    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
+    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
+    'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
+    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżenie!',
+    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
+    'zh':u'機器人：表格語法更新 - %d 注意！',
+}
 
-msg_multiple_warnings = {'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
-                         'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!',
-                         'en':u'User-controlled Bot: table syntax updated - %d warnings!',
-                         'es':u'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
-                         'fr':u'Robot : wikification syntaxe tableaux - %d avertissements !',
-                         'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - %d אזהרות!',
-                         'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
-                         'ja':u'ボットによる: 表をHTMLからウィキ文法に更新 - 警告 %d',
-                         'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
-                         'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimai!',
-                         'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
-                         'no':u'bot: Konverterer tabellsyntaks – %d advarsler!',
-                         'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżeń!',
-                         'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
-                         'zh':u'機器人：表格語法更新 - 注意 %d',
-                        }
+msg_multiple_warnings = {
+    'ar':u'بوت بواسطة مستخدم: تحديث تهيئة الجدول - %d تحذير!',
+    'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!',
+    'en':u'User-controlled Bot: table syntax updated - %d warnings!',
+    'es':u'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
+    'fr':u'Robot : wikification syntaxe tableaux - %d avertissements !',
+    'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - %d אזהרות!',
+    'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
+    'ja':u'ボットによる: 表をHTMLからウィキ文法に更新 - 警告 %d',
+    'kk':u'Басқарылмалы бот: Кесте пішімі түзетілді - %d құлақтандыру!',
+    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimai!',
+    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
+    'no':u'bot: Konverterer tabellsyntaks – %d advarsler!',
+    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżeń!',
+    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
+    'zh':u'機器人：表格語法更新 - 注意 %d',
+}
 
 class TableXmlDumpPageGenerator:
     '''
@@ -216,11 +219,11 @@ class Table2WikiRobot:
         ##################
         # <tr> with attributes
         newTable = re.sub("(?i)[\r\n]*<tr(?P<attr> [^>]*?)>[\r\n]*",
-                         r"\r\n|-----\g<attr>\r\n", newTable)
+                         r"\r\n|-\g<attr>\r\n", newTable)
 
         # <tr> without attributes
         newTable = re.sub("(?i)[\r\n]*<tr>[\r\n]*",
-                         r"\r\n|-----\r\n", newTable)
+                         r"\r\n|-\r\n", newTable)
 
         ##################
         # normal <td> without arguments
