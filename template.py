@@ -332,6 +332,7 @@ class TemplateRobot:
         # empty string if there are none.
 
         replacements = []
+        exceptions = {}
 
         for old, new in self.templates.iteritems():
             if not pywikibot.getSite().nocapitalize:
@@ -345,10 +346,11 @@ class TemplateRobot:
                 replacements.append((templateRegex, ''))
             elif self.subst:
                 replacements.append((templateRegex, '{{subst:' + old + '\g<parameters>}}'))
+                exceptions['inside-tags']=['ref']
             else:
                 replacements.append((templateRegex, '{{' + new + '\g<parameters>}}'))
 
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions = {}, acceptall = self.acceptAll, addedCat=self.addedCat, editSummary=self.editSummary)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions, acceptall = self.acceptAll, addedCat=self.addedCat, editSummary=self.editSummary)
         replaceBot.run()
 
 def main():
