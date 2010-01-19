@@ -113,6 +113,12 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.inRevisionTag = True
         elif name == 'contributor':
             self.inContributorTag = True
+            # username might be deleted
+            try:
+                if attrs['deleted'] == 'deleted':
+                    self.username = u''
+            except KeyError:
+                pass
         elif name == 'text':
             self.destination = 'text'
             self.text=u''
