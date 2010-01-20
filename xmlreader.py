@@ -337,15 +337,18 @@ Consider installing the python-celementtree package.''')
         text = revision.findtext("{%s}text" % self.uri)
         editRestriction, moveRestriction \
                 = parseRestrictions(self.restrictions)
-        return XmlEntry(title=self.title, id=self.pageid, text=text or u'',
-                       username=username, ipedit=bool(ipeditor),
-                       timestamp=timestamp,
-                       editRestriction=editRestriction,
-                       moveRestriction=moveRestriction,
-                       revisionid=revisionid,
-                       comment=comment,
-                       redirect=self.isredirect
-                      )
+        return XmlEntry(title=self.title,
+                        id=self.pageid,
+                        text=text or u'',
+                        username=username or u'', #username might be deleted
+                        ipedit=bool(ipeditor),
+                        timestamp=timestamp,
+                        editRestriction=editRestriction,
+                        moveRestriction=moveRestriction,
+                        revisionid=revisionid,
+                        comment=comment,
+                        redirect=self.isredirect
+                       )
 
     def regex_parse(self):
         """
