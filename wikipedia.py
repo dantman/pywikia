@@ -8037,6 +8037,9 @@ def handleArgs(*args):
         elif arg.startswith('-daemonize:'):
             import daemonize
             daemonize.daemonize(redirect_std = arg[11:])
+        elif arg == "-cosmeticchanges" or arg == "-cc":
+            config.cosmetic_changes = not config.cosmetic_changes
+            output(u'NOTE: option cosmetic_changes is %s\n' % config.cosmetic_changes)
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
@@ -8514,6 +8517,10 @@ Global arguments available for all bots:
 
 -verbose          Have the bot provide additional output that may be useful in
 -v                debugging.
+
+-cosmeticchanges  Toggles the cosmetic_changes setting made in config.py or
+-cc               user_config.py to its inverse and overrules it. All other
+                  settings and restrictions are untouched.
 '''
     output(globalHelp, toStdout = True)
     try:
