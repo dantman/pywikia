@@ -377,7 +377,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
                 except flickrapi.exceptions.FlickrError:
                     gotPhotos = False
                     wikipedia.output(u'Flickr api problem, sleeping')
-                    sleep(30)
+                    time.sleep(30)
                     
     # http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
     # Get the photos in a photoset
@@ -403,7 +403,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
                 except flickrapi.exceptions.FlickrError:
                     gotPhotos = False
                     wikipedia.output(u'Flickr api problem, sleeping')
-                    sleep(30)
+                    time.sleep(30)
     
     # http://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
     # Get the (public) photos uploaded by a user
@@ -429,7 +429,7 @@ def getPhotos(flickr=None, user_id=u'', group_id=u'', photoset_id=u'', start_id=
                 except flickrapi.exceptions.FlickrError:
                     gotPhotos = False
                     wikipedia.output(u'Flickr api problem, sleeping')
-                    sleep(30)
+                    time.sleep(30)
                 
     return
 
