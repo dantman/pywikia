@@ -97,7 +97,7 @@ def treat(text, linkedPage, targetPage):
         context = 15
         # at the beginning of the link, start red color.
         # at the end of the link, reset the color to default
-        wikipedia.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
+        #wikipedia.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
         choice = 'y'
 
         # The link looks like this:
@@ -163,6 +163,7 @@ def workon(page):
         text = treat(text, page2, target)
     if text != page.get():
         comment = wikipedia.translate(mysite, msg)
+        wikipedia.showDiff(page.get() ,text)
         try:
             page.put(text, comment)
         except (wikipedia.Error):

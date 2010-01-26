@@ -248,14 +248,22 @@ ignore_title = {
         ],
         'de': [
             u'.+/Archiv.*',
+            u'.+/[aA]rchiv.*',
+            u'.+/Baustelle.*',
             u'.+/Spielwiese',
+            u'.+/[tT]est.*',
+            u'Benutzer:.+/[Ll]og.*',
             u'Benutzer:C.Löser/.+',
             u'Benutzer:Katharina/Begriffsklärungen',
             u'Benutzer:Kirschblut/.+buchstabenkürzel',
             u'Benutzer:Mathias Schindler/.+',
             u'Benutzer:Noisper/Dingliste/[A-Z]',
+            u'Benutzer:Professor Einstein.*'
+            u'Benutzer:Sebbot/.+',
             u'Benutzer:SirJective/.+',
-            u'Benutzer:SrbBot/Index/.+',
+            u'Benutzer:Srbauer.*',
+            u'Benutzer:Steindy.*',
+            u'Benutzer:SrbBot.*',
             u'Benutzer:PortalBot/.+',
             u'Benutzer:Xqbot/.+',
             u'Benutzer Diskussion:.+',
@@ -263,6 +271,7 @@ ignore_title = {
             u'Liste griechischer Wortstämme in deutschen Fremdwörtern',
             u'Liste von Gräzismen',
             u'Portal:Abkürzungen/.+',
+            u'Portal:Astronomie/Moves',
             u'Wikipedia:Administratoren/Anfragen',
             u'Wikipedia:Archiv/.+',
             u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
@@ -650,11 +659,10 @@ class DisambiguationRobot(object):
                     # Highlight the title in purple.
                     pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % refPage.title())
 
-                    # at the beginning of the link, start red color.
-                    # at the end of the link, reset the color to default
-                    pywikibot.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
-
                     if not self.always:
+                        # at the beginning of the link, start red color.
+                        # at the end of the link, reset the color to default
+                        pywikibot.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
                         if edited:
                             choice = pywikibot.input(u"Option (#, r#, [s]kip link, [e]dit page, [n]ext page, [u]nlink, [q]uit\n"
                                                "        [m]ore context, [l]ist, [a]dd new, x=save in this form):")
