@@ -675,9 +675,9 @@ class Family(family.Family):
             # set value to None, instead of a list, to retrieve names from
             # the live wiki ([[MediaWiki:Disambiguationspage]]
             '_default': [u'Disambig'],
-            'af':  [u'Dubbelsinnig', u'Disambig'],
+            'af':  None,
             'als': [u'Begriffsklärung', u'Disambig'],
-            'an':  [u'Desambig', u'Disambig'],
+            'an':  None,
             'ang': [u'Disambig', u'Geodis'],
             'ar':  [u'Disambig', u'توضيح'],
             'arc': [u'ܕ'],
