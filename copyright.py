@@ -133,6 +133,7 @@ pages_for_exclusion_database = [
     ('en', 'Wikipedia:Mirrors_and_forks/Pqr', 'Pqr.txt'),
     ('en', 'Wikipedia:Mirrors_and_forks/Stu', 'Stu.txt'),
     ('en', 'Wikipedia:Mirrors_and_forks/Vwxyz', 'Vwxyz.txt'),
+    ('es', 'Wikipedia:Espejos de Wikipedia/Espejos_que_cumplen_la_GFDL_y_CC-BY-SA', 'Espejos.txt'),
     #('de', 'Wikipedia:Weiternutzung', 'Weiternutzung.txt'),
     ('it', 'Wikipedia:Cloni', 'Cloni.txt'),
     #('pl', 'Wikipedia:Mirrory_i_forki_polskiej_Wikipedii', 'Mirrory_i_forki_polskiej_Wikipedii.txt'),
@@ -142,6 +143,7 @@ pages_for_exclusion_database = [
 
 reports_cat = {
     'it': u'Segnalazioni automatiche sospetti problemi di copyright',
+    'es': u'Wikipedia:Páginas para revisar en busca de posible violación de copyright',
 }
 
 wikipedia_names = {
@@ -245,6 +247,7 @@ editsection_names = {
 
 sections_to_skip = {
     'en':['References', 'Further reading', 'Citations', 'External links'],
+    'es':[u'Referencias', u'Ver también', u'Bibliografía', u'Enlaces externos', u'Notas'],
     'fr':['Liens externes'],
     'it':['Bibliografia', 'Discografia', 'Opere bibliografiche', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni', 'Pubblicazioni principali', 'Bibliografia parziale'],
     'ja':[u'脚注',u'脚注欄',u'脚注・出典',u'出典',u'注釈'],
