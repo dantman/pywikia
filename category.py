@@ -578,6 +578,7 @@ class CategoryRemoveRobot:
         'pt':u'Bot: Categoria foi unida',
         'ru':u'Робот: категория расформирована',
         'sv':u'Robot: Kategorin upplöstes',
+        'uk':u'Робот: категорія розформована',
         'zh':u'機器人:本目錄已解散',
     }
 
@@ -609,6 +610,7 @@ class CategoryRemoveRobot:
         'ru':u'Робот: исключение из %s',
         'sr':u'Бот: Уклањање из категорије [[%s]]',
         'sv':u'Robot: Tar bort från %s',
+        'uk':u'Робот: видалення з %s',
         'zh':u'機器人:移除目錄 [[%s]]',
     }
 
