@@ -358,9 +358,7 @@ def add_category(sort_by_last_name = False, create_pages = False):
             while answer not in ('y','n','a'):
                 answer = pywikibot.inputChoice(u'%s'% (page.aslink()),  ['Yes', 'No', 'All'],['y', 'n', 'a'], 'n')
                 if answer == 'a':
-                    confirm = ''
-                    while confirm not in ('y','n'):
-                        confirm = pywikibot.inputChoice(u"""\
+                    confirm = pywikibot.inputChoice(u"""\
 This should be used if and only if you are sure that your links are correct!
 Are you sure?""", ['Yes', 'No'], ['y', 'n'], 'n')
                     if confirm == 'n':
@@ -741,7 +739,7 @@ class CategoryTidyRobot:
         flag = False
         while not flag:
             print ''
-            choice = pywikibot.inputChoice(u'Choice:', ['jump', 'skip', 'remove', 'print'], ['j', 's', 'r', '?'], 's')
+            choice = pywikibot.input(u'Choice:', ['jump', 'skip', 'remove', 'print'], ['j', 's', 'r', '?'], 's')
             if choice in ['s', 'S']:
                 flag = True
             elif choice == '':
