@@ -739,7 +739,7 @@ class CategoryTidyRobot:
         flag = False
         while not flag:
             print ''
-            choice = pywikibot.input(u'Choice:', ['jump', 'skip', 'remove', 'print'], ['j', 's', 'r', '?'], 's')
+            choice = pywikibot.input(u'Choice:')
             if choice in ['s', 'S']:
                 flag = True
             elif choice == '':
