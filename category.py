@@ -164,6 +164,11 @@ msg_change={
     'zh':u'機器人:變更目錄 [[%s]]→[[%s]]',
     }
 
+msg_replace={
+    'en':u'Robot: Replacing category %(oldcat)s with %(newcat)s',
+    'de':u'Bot: Ersetze Kategorie %(oldcat)s durch %(newcat)s',
+    }
+
 deletion_reason_move = {
     'ar':u'روبوت: التصنيف نقل إلى [[:تصنيف:%s|%s]]',
     'bat-smg':u'Robots: Kateguorėjė bova parvadėnta i [[:Kateguorėjė:%s|%s]]',
@@ -716,30 +721,33 @@ class CategoryTidyRobot:
 
         subcatlist = self.catDB.getSubcats(current_cat)
         supercatlist = self.catDB.getSupercats(current_cat)
-        print
+        alternatives = u'\n'
         if len(subcatlist) == 0:
-            print 'This category has no subcategories.'
-            print
+            alternatives += u'This category has no subcategories.\n\n'
         if len(supercatlist) == 0:
-            print 'This category has no supercategories.'
-            print
+            alternatives += u'This category has no supercategories.\n\n'
         # show subcategories as possible choices (with numbers)
         for i in range(len(supercatlist)):
             # layout: we don't expect a cat to have more than 10 supercats
-            pywikibot.output(u'u%d - Move up to %s' % (i, supercatlist[i].title()))
+            alternatives += (u"u%d - Move up to %s\n" % (i, supercatlist[i].title()))
         for i in range(len(subcatlist)):
             # layout: we don't expect a cat to have more than 100 subcats
-            pywikibot.output(u'%2d - Move down to %s' % (i, subcatlist[i].title()))
-        print ' j - Jump to another category'
-        print ' s - Skip this article'
-        print ' r - Remove this category tag'
-        print ' ? - Print first part of the page (longer and longer)'
-        pywikibot.output(u'Enter - Save category as %s' % current_cat.title())
-
+            alternatives += (u"%2d - Move down to %s\n" % (i, subcatlist[i].title()))
+        alternatives += u" j - Jump to another category\n"
+        alternatives += u" s - Skip this article\n"
+        alternatives += u" r - Remove this category tag\n"
+        alternatives += u" l - list these options again\n"
+        alternatives += u" m - more context\n"
+        alternatives += (u"Enter - Save category as %s\n" % current_cat.title())
         flag = False
+        longchoice = True
         while not flag:
-            print ''
-            choice = pywikibot.input(u'Choice:')
+            if longchoice:
+                longchoice = False
+                pywikibot.output(alternatives)
+                choice = pywikibot.input(u"Option:")
+            else:
+                choice = pywikibot.input(u"Option (#, [j]ump, [s]kip, [r]emove, [l]ist, [m]ore context, [RETURN]):")
             if choice in ['s', 'S']:
                 flag = True
             elif choice == '':
@@ -747,7 +755,9 @@ class CategoryTidyRobot:
                 if current_cat == original_cat:
                     print 'No changes necessary.'
                 else:
-                    catlib.change_category(article, original_cat, current_cat, comment = self.editSummary)
+                    newcat = u'[[:%s|%s]]' % (current_cat.title(savetitle=True, decode=True), current_cat.titleWithoutNamespace())
+                    editsum = pywikibot.translate(pywikibot.getSite(), msg_replace) % {'oldcat': original_cat.titleWithoutNamespace(), 'newcat': newcat}
+                    catlib.change_category(article, original_cat, current_cat, comment = editsum)
                 flag = True
             elif choice in ['j', 'J']:
                 newCatTitle = pywikibot.input(u'Please enter the category the article should be moved to:')
@@ -759,7 +769,9 @@ class CategoryTidyRobot:
                 # remove the category tag
                 catlib.change_category(article, original_cat, None, comment = self.editSummary)
                 flag = True
-            elif choice == '?':
+            elif choice in ['l', 'L']:
+                longchoice = True
+            elif choice in ['m', 'M', '?']:
                 contextLength += 500
                 print
                 pywikibot.output(full_text[:contextLength])
