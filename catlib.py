@@ -473,8 +473,7 @@ class Category(wikipedia.Page):
         Returns true if copying was successful, false if target page already
         existed.
         """
-        catname = self.site().category_namespace() + ':' + catname
-        targetCat = wikipedia.Page(self.site(), catname)
+        targetCat = wikipedia.Page(self.site(), catname, defaultNamespace=14)
         if targetCat.exists():
             wikipedia.output('Target page %s already exists!' % targetCat.title())
             return False
