@@ -923,6 +923,7 @@ class Family:
                 'bn': u'উইকিপিডিয়া',
                 'nah': u'Huiquipedia',
                 'tk': u'Wikipediýa',
+                'tt': u'Википедия',
             },
             5: {
                 '_default': u'Project talk',
@@ -936,7 +937,7 @@ class Family:
                 'mzn': u'Wikipedia گپ',
                 'nah': u'Huiquipedia tēixnāmiquiliztli',
                 'tk': u'Wikipediýa çekişme',
-                'tt': u'Wikipedia бәхәсе',
+                'tt': u'Википедия бәхәсе',
             },
             6: {
                 '_default': [u'File', u'Image'],
