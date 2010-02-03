@@ -122,10 +122,18 @@ def treat(text, linkedPage, targetPage):
             continue
         replaceit = choice in "rR"
 
+        # remove preleading ":"
+        if link_text[0]==':':
+            link_text = link_text[1:]
         if link_text[0].isupper():
             new_page_title = targetPage.title()
         else:
             new_page_title = targetPage.title()[0].lower() + targetPage.title()[1:]
+
+        # remove preleading ":"
+        if new_page_title[0]==':':
+            new_page_title = new_page_title[1:]
+
         if replaceit and trailing_chars:
             newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
         elif replaceit or (new_page_title == link_text and not section):
@@ -146,13 +154,17 @@ def workon(page):
     try:
         text = page.get()
     except wikipedia.IsRedirectPage:
+        wikipedia.output(u'%s is a redirect page. Skipping' % page.aslink())
+        return
+    except wikipedia.NoPage:
+        wikipedia.output(u'%s does not exist. Skipping' % page.aslink())
         return
     wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
     links = page.linkedPages()
     if len(links) > 0:
         wikipedia.getall(mysite,links)
     else:
-        wikipedia.output('No any links.')
+        wikipedia.output('Nothing left to do.')
         return
     
     for page2 in links:
