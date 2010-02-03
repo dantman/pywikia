@@ -247,18 +247,18 @@ ignore_title = {
             u'Wikipedia:Links til sider med flertydige titler'
         ],
         'de': [
-            u'.+/Archiv.*',
             u'.+/[aA]rchiv.*',
             u'.+/Baustelle.*',
             u'.+/Spielwiese',
             u'.+/[tT]est.*',
+            u'.*Diskussion:.+',
             u'Benutzer:.+/[Ll]og.*',
             u'Benutzer:C.Löser/.+',
             u'Benutzer:Katharina/Begriffsklärungen',
             u'Benutzer:Kirschblut/.+buchstabenkürzel',
             u'Benutzer:Mathias Schindler/.+',
             u'Benutzer:Noisper/Dingliste/[A-Z]',
-            u'Benutzer:Professor Einstein.*'
+            u'Benutzer:Professor Einstein.*',
             u'Benutzer:Sebbot/.+',
             u'Benutzer:SirJective/.+',
             u'Benutzer:Srbauer.*',
@@ -281,12 +281,13 @@ ignore_title = {
             u'Wikipedia:ISBN-Suche',
             u'Wikipedia:Liste mathematischer Themen/BKS',
             u'Wikipedia:Liste mathematischer Themen/Redirects',
+            u'Wikipedia:Meinungsbilder/.+',
             u'Wikipedia:Löschkandidaten/.+',
             u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
             u'Wikipedia:WikiProjekt Verwaiste Seiten/Begriffsklärungen',
             u'Wikipedia:Qualitätssicherung/.+',
         ],
-         'en': [
+        'en': [
             u'Wikipedia:Links to disambiguating pages',
             u'Wikipedia:Disambiguation pages with links',
             u'Wikipedia:Multiple-place names \([A-Z]\)',
