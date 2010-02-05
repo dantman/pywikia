@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import family
 
 __version__ = '$Id$'
@@ -17,7 +17,7 @@ class Family(family.Family):
             'lt', 'bg', 'fa', 'sl', 'hr', 'et', 'new', 'ms', 'simple', 'th',
             'gl', 'nn', 'hi', 'ht', 'eu', 'el', 'te', 'ceb', 'mk', 'ka',
             'la', 'br', 'az', 'bs', 'lb', 'sh', 'is', 'mr', 'cy', 'sq',
-            'lv', 'bpy', 'jv', 'tl', 'pms', 'be-x-old', 'bn', 'ta', 'oc', 'an',
+            'lv', 'bpy', 'jv', 'tl', 'pms', 'be-x-old', 'ta', 'bn', 'oc', 'an',
             'io', 'be', 'sw', 'nds', 'scn', 'fy', 'su', 'qu', 'af', 'zh-yue',
             'nap', 'ast', 'ku', 'gu', 'ur', 'bat-smg', 'ml', 'war', 'wa', 'cv',
             'ksh', 'ga', 'tg', 'roa-tara', 'vec', 'lmo', 'kn', 'gd', 'uz', 'pam',
@@ -26,13 +26,13 @@ class Family(family.Family):
             'fiu-vro', 'mn', 'nds-nl', 'vls', 'tk', 'sa', 'fo', 'am', 'nrm', 'dv',
             'pag', 'rm', 'map-bms', 'wuu', 'ne', 'gv', 'bar', 'pnb', 'my', 'sco',
             'diq', 'se', 'fur', 'lij', 'si', 'nov', 'mt', 'bh', 'mzn', 'csb',
-            'ilo', 'pi', 'zh-classical', 'km', 'lad', 'ug', 'sc', 'frp', 'mg', 'ang',
+            'ilo', 'pi', 'zh-classical', 'ug', 'km', 'lad', 'sc', 'frp', 'mg', 'ang',
             'kw', 'haw', 'pdc', 'szl', 'ps', 'hif', 'ckb', 'bo', 'pa', 'kv',
-            'ie', 'to', 'hak', 'crh', 'myv', 'gn', 'stq', 'ln', 'nv', 'mhr',
-            'jbo', 'arc', 'ace', 'ky', 'ext', 'wo', 'tpi', 'ty', 'cbk-zam', 'so',
-            'eml', 'zea', 'srn', 'ay', 'pap', 'kab', 'ig', 'kg', 'ba', 'or',
+            'ie', 'to', 'hak', 'crh', 'myv', 'gn', 'stq', 'ln', 'mhr', 'nv',
+            'ace', 'jbo', 'arc', 'ky', 'ext', 'wo', 'tpi', 'ty', 'cbk-zam', 'so',
+            'eml', 'zea', 'srn', 'ay', 'pap', 'ig', 'kab', 'kg', 'ba', 'or',
             'lo', 'udm', 'dsb', 'rmy', 'cu', 'kaa', 'sm', 'ab', 'ce', 'xal',
-            'av', 'ks', 'tet', 'got', 'sd', 'mdf', 'na', 'kl', 'pnt', 'iu',
+            'av', 'ks', 'tet', 'got', 'sd', 'mdf', 'kl', 'na', 'pnt', 'iu',
             'bm', 'pih', 'as', 'mwl', 'pcd', 'cdo', 'om', 'chr', 'ee', 'zu',
             'ti', 'za', 'ts', 'ss', 've', 'bi', 'ha', 'dz', 'bxr', 'ch',
             'cr', 'bug', 'xh', 'tn', 'ki', 'ik', 'rw', 'sg', 'st', 'ny',
