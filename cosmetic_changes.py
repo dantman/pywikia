@@ -214,6 +214,37 @@ moved_links = {
     'zh' : ([u'documentation', u'doc'], u'/doc'),
 }
 
+# Template which should be replaced or removed.
+# Use a list with two entries. The first entry will be replaced by the second.
+# Examples:
+# For removing {{Foo}}, the list must be:
+#           (u'Foo', None),
+#
+# The following also works:
+#           (u'Foo', ''),
+#
+# For replacing {{Foo}} with {{Bar}} the list must be:
+#           (u'Foo', u'Bar'),
+#
+# This also removes all template parameters of {{Foo}}
+# For replacing {{Foo}} with {{Bar}} but keep the template
+# parameters in its original order, please use:
+#           (u'Foo', u'Bar\g<parameters>),
+
+deprecatedTemplates = {
+    'wikipedia': {
+        'de': [
+            (u'Stub', None),
+            (u'Belege', u'Belege fehlen\g<parameters>'),
+            (u'Quelle', u'Belege fehlen\g<parameters>'),
+            (u'Quellen', u'Belege fehlen\g<parameters>'),
+        ],
+        'pdc':[
+            (u'Schkiss', None),
+        ],
+    }
+}
+
 class CosmeticChangesToolkit:
     def __init__(self, site, debug=False, redirect=False, namespace=None, pageTitle=None):
         self.site = site
@@ -235,6 +266,7 @@ class CosmeticChangesToolkit:
         text = self.cleanUpSectionHeaders(text)
         text = self.putSpacesInLists(text)
         text = self.translateAndCapitalizeNamespaces(text)
+        text = self.replaceDeprecatedTemplates(text)
         text = self.resolveHtmlEntities(text)
         text = self.validXhtml(text)
         text = self.removeUselessSpaces(text)
@@ -570,6 +602,21 @@ class CosmeticChangesToolkit:
             text = pywikibot.replaceExcept(text, r'(?m)^(?P<bullet>[:;]*(\*+|#+)[:;\*#]*)(?P<char>[^\s\*#:;].+?)', '\g<bullet> \g<char>', exceptions)
         return text
 
+    def replaceDeprecatedTemplates(self, text):
+        exceptions = ['comment', 'math', 'nowiki', 'pre']
+        if self.site.family.name in deprecatedTemplates and self.site.lang in deprecatedTemplates[self.site.family.name]:
+            for template in deprecatedTemplates[self.site.family.name][self.site.lang]:
+                old = template[0]
+                new = template[1]
+                if new == None:
+                    new = ''
+                else:
+                    new = '{{'+new+'}}'
+                if not self.site.nocapitalize:
+                    old = '[' + old[0].upper() + old[0].lower() + ']' + old[1:]
+                text = pywikibot.replaceExcept(text, r'\{\{([mM][sS][gG]:)?' + old + '(?P<parameters>\|[^}]+|)}}', new, exceptions)
+        return text
+
     #from fixes.py
     def fixSyntaxSave(self, text):
         exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
@@ -600,6 +647,12 @@ class CosmeticChangesToolkit:
         # horizontal line with attributes; can't be done with wiki syntax
         # so we only make it XHTML compliant
         text = pywikibot.replaceExcept(text, r'(?i)<hr ([^>/]+?)>', r'<hr \1 />', exceptions)
+        # a header where only spaces are in the same line
+        for level in range(1, 7):
+            equals = '\\1%s \\2 %s\\3' % ("="*level, "="*level)
+            text = pywikibot.replaceExcept(text,
+                                           r'(?i)([\r\n]) *<h%d> *([^<]+?) *</h%d> *([\r\n])'%(level, level),
+                                           r'%s'%equals, exceptions)
         #remove empty <ref/>-tag
         text = pywikibot.replaceExcept(text, r'(?i)<ref\s*/>', r'', exceptions)
         # TODO: maybe we can make the bot replace <p> tags with \r\n's.
@@ -631,6 +684,7 @@ class CosmeticChangesBot:
         self.generator = generator
         self.acceptall = acceptall
         self.comment = comment
+        self.done = False
 
     def treat(self, page):
         try:
@@ -641,9 +695,13 @@ class CosmeticChangesBot:
             changedText = ccToolkit.change(page.get())
             if changedText.strip() != page.get().strip():
                 if not self.acceptall:
-                    choice = pywikibot.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                    choice = pywikibot.inputChoice(u'Do you want to accept these changes?',
+                                                   ['Yes', 'No', 'All', 'Quit'], ['y', 'N', 'a', 'q'], 'N')
                     if choice == 'a':
                         self.acceptall = True
+                    elif choice == 'q':
+                        self.done = True
+                        return
                 if self.acceptall or choice == 'y':
                     page.put(changedText, comment=self.comment)
             else:
@@ -654,10 +712,13 @@ class CosmeticChangesBot:
             pywikibot.output("Page %s is a redirect; skipping." % page.aslink())
         except pywikibot.LockedPage:
             pywikibot.output("Page %s is locked?!" % page.aslink())
+        except pywikibot.EditConflict:
+            pywikibot.output("An edit conflict has occured at %s." % page.aslink())
 
     def run(self):
         try:
             for page in self.generator:
+                if self.done: break
                 self.treat(page)
         except KeyboardInterrupt:
             pywikibot.output('\nQuitting program...')
