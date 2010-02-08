@@ -2427,9 +2427,17 @@ not supported by PyWikipediaBot!"""
                 if self.site().isInterwikiLink(name):
                     continue
 
-                # {{DEFAULTSORT:...}} or {{#if: }}
-                if name.startswith('DEFAULTSORT:') or name.startswith('#'):
+                # {{#if: }}
+                if name.startswith('#'):
                     continue
+                # {{DEFAULTSORT:...}} or {{#if: }}
+                defaultKeys = self.site().siteinfo('magicwords')['defaultsort']
+                found = False
+                for key in defaultKeys:
+                    if name.startswith(key):
+                        found = True
+                        break
+                if found: continue
 
                 try:
                     name = Page(self.site(), name).title()
@@ -4210,12 +4218,12 @@ class Throttle(object):
         self.lock = threading.RLock()
         self.mindelay = mindelay
         self.maxdelay = maxdelay
-        self.pid = False # If self.pid remains False, we're not checking for multiple processes
         self.now = 0
+        self.pid = False # If self.pid remains False, we're not checking for multiple processes
         self.next_multiplicity = 1.0
         self.checkdelay = 240 # Check the file with processes again after this many seconds
         self.dropdelay = 360 # Drop processes from the list that have not made a check in this many seconds
-        self.releasepid = 100000 # Free the process id
+        self.releasepid = 1200 # Free the process id
         self.lastwait = 0.0
         self.delay = 0
         if multiplydelay:
@@ -6328,8 +6336,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if not hasattr(self, '_info'):
             self._info = data
         else:
-            for k, v in data.iteritems():
-                self._info[k] = v 
+            if key == 'magicwords':
+                self._info[key]={}
+                for entry in data[key]:
+                    self._info[key][entry['name']] = entry['aliases']
+            else:
+                for k, v in data.iteritems():
+                    self._info[k] = v 
         #data pre-process
         try:
             if dump:
@@ -6527,10 +6540,16 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         Use API when enabled use_api and version >= 1.11,
         or use Special:Search.
         """
-        if config.use_api and self.versionnumber() >= 11:
-            _search = self._search_with_api
-        else:
+        try:
+            if config.use_api and self.versionnumber() >= 11:
+                apiUrl = self.site().api_address()
+                del apiUrl
+            else:
+                raise NotImplementedError
+        except NotImplementedError:
             _search = self._search_without_api
+        else:
+            _search = self._search_with_api
         return _search(query, number, namespaces)
 
     def _search_with_api(self, q, number, namespaces):
