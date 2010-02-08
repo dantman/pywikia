@@ -26,7 +26,7 @@ __version__='$Id: touch.py 6549 2009-03-24 02:58:56Z nicdumz $'
 #
 
 import wikipedia as pywikibot
-import pagegenerators, catlib, config
+import pagegenerators, config
 import sys
 
 docuReplacements = {'&params;': pagegenerators.parameterHelp}

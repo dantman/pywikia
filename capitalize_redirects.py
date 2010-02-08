@@ -28,7 +28,7 @@ __version__ = '$Id$'
 
 import time, sys, re
 import wikipedia as pywikibot
-import pagegenerators, catlib
+import pagegenerators
 
 docuReplacements = {
     '&params;': pagegenerators.parameterHelp
