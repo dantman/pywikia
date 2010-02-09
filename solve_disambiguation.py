@@ -249,6 +249,7 @@ ignore_title = {
         'de': [
             u'.+/[aA]rchiv.*',
             u'.+/Baustelle.*',
+            u'.+/Index',
             u'.+/Spielwiese',
             u'.+/[tT]est.*',
             u'.*Diskussion:.+',
@@ -272,6 +273,10 @@ ignore_title = {
             u'Portal:Abkürzungen/.+',
             u'Portal:Astronomie/Moves',
             u'Portal:Astronomie/Index/.+',
+            u'Portal:Hund',
+            u'Portal:Hund/Beobachtungsliste',
+            u'Portal:Marxismus',
+            u'Portal:Täuferbewegung/Seitenindex',
             u'Wikipedia:Administratoren/Anfragen',
             u'Wikipedia:Archiv/.+',
             u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
@@ -286,6 +291,8 @@ ignore_title = {
             u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
             u'Wikipedia:WikiProjekt Verwaiste Seiten/Begriffsklärungen',
             u'Wikipedia:Qualitätssicherung/.+',
+            u'Vorlage:Infobox Weltraum',
+            u'Vorlage:Navigationsleiste Raumfahrt',
         ],
         'en': [
             u'Wikipedia:Links to disambiguating pages',
