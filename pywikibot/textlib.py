@@ -198,14 +198,19 @@ def removeDisabledParts(text, tags = ['*']):
     'parts' parameter, which defaults to all.
     """
     regexes = {
-            'comments' :   r'<!--.*?-->',
-            'includeonly': r'<includeonly>.*?</includeonly>',
-            'nowiki':      r'<nowiki>.*?</nowiki>',
-            'pre':         r'<pre>.*?</pre>',
-            'source':      r'<source .*?</source>',
+            'comments' :       r'<!--.*?-->',
+            'includeonly':     r'<includeonly>.*?</includeonly>',
+            'nowiki':          r'<nowiki>.*?</nowiki>',
+            'pre':             r'<pre>.*?</pre>',
+            'source':          r'<source .*?</source>',
+            'syntaxhighlight': r'<syntaxhighlight .*?</syntaxhighlight>',
     }
     if '*' in tags:
         tags = regexes.keys()
+    # add alias
+    tags = set(tags)
+    if 'source' in tags:
+        tags.add('syntaxhighlight')
     toRemoveR = re.compile('|'.join([regexes[tag] for tag in tags]),
                            re.IGNORECASE | re.DOTALL)
     return toRemoveR.sub('', text)
@@ -254,9 +259,9 @@ def expandmarker(text, marker = '', separator = ''):
         marker = text[firstinseparator:firstinmarker] + marker
     return marker
 
-
+#-------------------------------------------------
 # Functions dealing with interwiki language links
-
+#-------------------------------------------------
 # Note - MediaWiki supports two kinds of interwiki links; interlanguage and
 #        interproject.  These functions only deal with links to a
 #        corresponding page in another language on the same project (e.g.,
@@ -302,8 +307,8 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]", template_subpage=Fa
             site = insite.getSite(code = lang)
             try:
                 result[site] = pywikibot.Page(site, pagetitle, insite = insite)
-            except InvalidTitle:
-                output(
+            except pywikibot.InvalidTitle:
+                pywikibot.output(
         u"[getLanguageLinks] Text contains invalid interwiki link [[%s:%s]]."
                            % (lang, pagetitle))
                 continue
@@ -486,8 +491,9 @@ def interwikiSort(sites, insite = None):
         sites = insite.interwiki_putfirst_doubled(sites) + sites
     return sites
 
-
+#---------------------------------------
 # Functions dealing with category links
+#---------------------------------------
 
 def getCategoryLinks(text, site):
     import catlib
@@ -665,6 +671,9 @@ def categoryFormat(categories, insite = None):
     #catLinks.sort()
     return sep.join(catLinks) + '\r\n'
 
+#---------------------------------------
+# Functions dealing with external links
+#---------------------------------------
 
 def compileLinkR(withoutBracketed=False, onlyBracketed=False):
     """Return a regex that matches external links."""
@@ -695,6 +704,9 @@ def compileLinkR(withoutBracketed=False, onlyBracketed=False):
     linkR = re.compile(regex)
     return linkR
 
+#----------------------------------
+# Functions dealing with templates
+#----------------------------------
 
 def extract_templates_and_params(text, get_redirect=False):
     """Return list of template calls found in text.
@@ -805,7 +817,9 @@ def extract_templates_and_params(text, get_redirect=False):
             result.append((name, params))
     return result
 
+#----------------
 # I18N functions
+#----------------
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of

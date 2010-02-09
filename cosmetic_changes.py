@@ -275,6 +275,7 @@ class CosmeticChangesToolkit:
         text = self.fixHtml(text)
         text = self.fixStyle(text)
         text = self.fixTypo(text)
+        text = self.fixArabicLetters(text)
         try:
             text = isbn.hyphenateIsbnNumbers(text)
         except isbn.InvalidIsbnException, error:
@@ -677,6 +678,40 @@ class CosmeticChangesToolkit:
         text = pywikibot.replaceExcept(text, ur'(\d)\s*&nbsp;[º°]([CF])', ur'\1&nbsp;°\2', exceptions)
         text = pywikibot.replaceExcept(text, ur'(\d)\s*[º°]([CF])', ur'\1&nbsp;°\2', exceptions)
         text = pywikibot.replaceExcept(text, ur'º([CF])', ur'°\1', exceptions)
+        return text
+
+    def fixArabicLetters(self, text):
+        if self.site.lang=='ckb':
+            exceptions = [
+                'gallery',
+                'hyperlink',
+                'interwiki',
+                'link',
+                'math',
+                'pre',
+                'template',
+                'timeline',
+                'ref',
+                'source',
+                'startspace',
+            ]
+            text = pywikibot.replaceExcept(text, u',', u'،', exceptions)
+            text = pywikibot.replaceExcept(text, ur'ه([.، ])', ur'ە\1', exceptions)
+            text = pywikibot.replaceExcept(text, u'ه‌', u'ە', exceptions)
+            text = pywikibot.replaceExcept(text, u'ه', u'ھ', exceptions)
+            text = pywikibot.replaceExcept(text, u'ك', u'ک', exceptions)
+            text = pywikibot.replaceExcept(text, ur'[ىي]', u'ی', exceptions)
+            # replace persian digits
+            for i in range(0,10):
+                text = pywikibot.replaceExcept(text, u'۰۱۲۳۴۵۶۷۸۹'[i], u'٠١٢٣٤٥٦٧٨٩'[i], exceptions)
+            # do not change digits in class, style and table params
+            pattern = re.compile(u'=".*?"', re.UNICODE)
+            exceptions.append(pattern)
+            # do not change digits inside html-tags
+            pattern = re.compile(u'<[/]*?[^</]+?[/]*?>', re.UNICODE)
+            exceptions.append(pattern)
+            for i in range(0,10):
+                text = pywikibot.replaceExcept(text, str(i), u'٠١٢٣٤٥٦٧٨٩'[i], exceptions)
         return text
 
 class CosmeticChangesBot:

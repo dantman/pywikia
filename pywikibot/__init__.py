@@ -16,6 +16,8 @@ from textlib import *
 
 import wikipedia
 
+link_regex = re.compile(r'\[\[(?P<title>[^\]|[#<>{}]*)(\|.*?)?\]\]')
+
 
 def showDiff(oldtext, newtext):
     """

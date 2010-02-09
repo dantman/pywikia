@@ -7437,10 +7437,12 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         special redirect tag.
 
         """
-        if default:
-            return self.family.redirect.get(self.lang, [u"REDIRECT"])[0]
-        else:
-            return self.family.redirect.get(self.lang, None)
+        tag = self.siteinfo('magicwords').get('redirect')[0][1:]
+        if tag:
+            # remove first "#" letter
+            return tag[0][1:]
+        elif default:
+            return u'REDIRECT'
 
     def redirectRegex(self):
         """Return a compiled regular expression matching on redirect pages.
@@ -7448,24 +7450,23 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         Group 1 in the regex match object will be the target title.
 
         """
-
+        #NOTE: this is needed, since the API can give false positives!
+        default = 'REDIRECT'
         try:
-            redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
-            redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
+            keywords = self.siteinfo('magicwords')['redirect']
+            pattern = r'(?:' + '|'.join(keywords) + ')'
         except KeyError:
             # no localized keyword for redirects
-            redirKeywordsR = r'redirect'
-
-        # A redirect starts with hash (#), followed by a keyword, then
-        # arbitrary stuff, then a wikilink. The wikilink may contain
-        # a label, although this is not useful.
-
+            pattern = r'#%s' % default
         if self.versionnumber() > 12:
             # in MW 1.13 (at least) a redirect directive can follow whitespace
             prefix = r'\s*'
         else:
             prefix = r'[\r\n]*'
-        return re.compile(prefix + '#' + redirKeywordsR
+        # A redirect starts with hash (#), followed by a keyword, then
+        # arbitrary stuff, then a wikilink. The wikilink may contain
+        # a label, although this is not useful.
+        return re.compile(prefix + pattern
                                  + '\s*:?\s*\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
 
