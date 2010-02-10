@@ -7437,7 +7437,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         special redirect tag.
 
         """
-        tag = self.siteinfo('magicwords').get('redirect')[0][1:]
+        tag = self.siteinfo('magicwords').get('redirect')
         if tag:
             # remove first "#" letter
             return tag[0][1:]
