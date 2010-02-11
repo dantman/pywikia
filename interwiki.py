@@ -538,7 +538,6 @@ class Global(object):
     confirm = False
     always = False
     select = False
-    debug = True
     followredirect = True
     initialredirect = False
     force = False
@@ -1527,7 +1526,7 @@ class Subject(object):
             raise "Bugcheck: finish called before done"
         if not self.workonme:
             return
-        if self.forcedStop:
+        if self.forcedStop: # autonomous with problem
             pywikibot.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
         if self.originPage.isRedirectPage():
@@ -1543,7 +1542,7 @@ class Subject(object):
         pywikibot.output(u"======Post-processing %s======" % self.originPage.aslink(True))
         # Assemble list of accepted interwiki links
         new = self.assemble()
-        if new is None: # User said give up or autonomous with problem
+        if new is None: # User said give up
             pywikibot.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
 
@@ -1732,8 +1731,7 @@ class Subject(object):
             return False
         if newtext == oldtext:
             return False
-        if globalvar.debug:
-            pywikibot.showDiff(oldtext, newtext)
+        pywikibot.showDiff(oldtext, newtext)
 
         # pywikibot.output(u"NOTE: Replace %s" % page.aslink())
         # Determine whether we need permission to submit
