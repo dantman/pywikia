@@ -13,7 +13,7 @@ class Family(family.Family):
         self.languages_by_size = [
             'sr', 'en', 'pl', 'de', 'fr', 'it', 'pt', 'es', 'zh', 'ja',
             'sv', 'ru', 'nl', 'he', 'fi', 'ar', 'cs', 'sd', 'hu', 'no',
-            'uk', 'ta', 'ca', 'bg', 'ro', 'tr', 'th', 'bs',
+            'uk', 'ta', 'bg', 'ca', 'ro', 'tr', 'th', 'bs',
         ]
 
         if family.config.SSL_connection:
@@ -86,6 +86,22 @@ class Family(family.Family):
             'zh': [u'Wikinews talk', u'维基新闻讨论'],
         }
 
+        self.namespaces[90] = {
+            'en': u'Thread',
+        }
+        
+        self.namespaces[91] = {
+            'en': u'Thread talk',
+        }
+        
+        self.namespaces[92] = {
+            'en': u'Summary',
+        }
+        
+        self.namespaces[93] = {
+            'en': u'Summary talk',
+        }
+        
         self.namespaces[100] = {
             'ar': u'بوابة',
             'cs': u'Portál',
