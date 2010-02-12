@@ -1230,6 +1230,10 @@ class Subject(object):
                 if dictName is not None:
                     pywikibot.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))
 
+                    # Abort processing if the bot is running in autonomous mode.
+                    if globalvar.autonomous:
+                        self.makeForcedStop(counter)
+
             # Register this fact at the todo-counter.
             counter.minus(page.site())
 
