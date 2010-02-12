@@ -116,7 +116,7 @@ stopme(): Put this on a bot when it is not or not communicating with the Wiki
 """
 from __future__ import generators
 #
-# (C) Pywikipedia bot team, 2003-2009
+# (C) Pywikipedia bot team, 2003-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -1286,7 +1286,7 @@ not supported by PyWikipediaBot!"""
             for s in self.getReferencesOld(follow_redirects, withTemplateInclusion, onlyTemplateInclusion, redirectsOnly):
                 yield s
             return
-            
+
         params = {
             'action': 'query',
             'list': [],
@@ -1314,13 +1314,13 @@ not supported by PyWikipediaBot!"""
                 params['eifilterredir'] = 'redirects'
             if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
                 params['eilimit'] = 500
-        
+
         allDone = False
-        
+
         while not allDone:
             if not internal:
                 output(u'Getting references to %s via API...' % self.aslink())
-            
+
             datas = query.GetData(params, self.site())
             data = datas['query'].values()
             if len(data) == 2:
@@ -1333,7 +1333,7 @@ not supported by PyWikipediaBot!"""
                 pg = Page(self.site(), blp['title'], defaultNamespace = blp['ns'])
                 if pg in refPages:
                     continue
-                
+
                 yield pg
                 refPages.add(pg)
                 if follow_redirects and 'redirect' in blp and 'redirlinks' in blp:
@@ -1341,7 +1341,7 @@ not supported by PyWikipediaBot!"""
                         plk = Page(self.site(), p['title'], defaultNamespace = p['ns'])
                         if plk in refPages:
                             continue
-                        
+
                         yield plk
                         refPages.add(plk)
                         if follow_redirects and 'redirect' in p:
@@ -1352,7 +1352,7 @@ not supported by PyWikipediaBot!"""
                             continue
                 else:
                     continue
-            
+
             if 'query-continue' in datas:
                 if 'backlinks' in datas['query-continue']:
                     params['blcontinue'] = datas['query-continue']['backlinks']['blcontinue']
@@ -1361,8 +1361,8 @@ not supported by PyWikipediaBot!"""
                     params['eicontinue'] = datas['query-continue']['embeddedin']['eicontinue']
             else:
                 allDone = True
-            
-    
+
+
     def getReferencesOld(self,
             follow_redirects=True, withTemplateInclusion=True,
             onlyTemplateInclusion=False, redirectsOnly=False):
@@ -2542,10 +2542,10 @@ not supported by PyWikipediaBot!"""
             dataQuery = self._versionhistory
         else:
             thisHistoryDone = True
-        
+
         if not thisHistoryDone:
             dataQuery.extend(self._getVersionHistory(getAll, skip, reverseOrder, revCount))
-        
+
         if reverseOrder:
             # Return only revCount edits, even if the version history is extensive
             if dataQuery != []:
@@ -2562,7 +2562,7 @@ not supported by PyWikipediaBot!"""
         if len(self._versionhistory) > revCount and not getAll:
             return self._versionhistory[:revCount]
         return self._versionhistory
-    
+
     def _getVersionHistory(self, getAll = False, skipFirst = False, reverseOrder = False,
                                revCount=500):
         """Load history informations by API query.
@@ -2588,11 +2588,11 @@ not supported by PyWikipediaBot!"""
         while not thisHistoryDone:
             if reverseOrder:
                 params['rvdir'] = 'newer'
-            
+
             result = query.GetData(params, self.site())
             if 'error' in result:
                 raise RuntimeError("%s" % result['error'])
-            
+
             if 'query-continue' in result and getAll:
                 params['rvstartid'] = result['query-continue']['revisions']['rvstartid']
             else:
@@ -2680,8 +2680,7 @@ not supported by PyWikipediaBot!"""
                     thisHistoryDone = True
         
         return dataQ
-    
-    
+
     def getVersionHistoryTable(self, forceReload=False, reverseOrder=False,
                                getAll=False, revCount=500):
         """Return the version history as a wiki table."""
@@ -2771,13 +2770,13 @@ not supported by PyWikipediaBot!"""
         }
         if movesubpages:
             params['movesubpages'] = 1
-        
+
         if movetalkpage:
             params['movetalk'] = 1
-        
+
         if not leaveRedirect:
             params['noredirect'] = 1
-        
+
         result = query.GetData(params, self.site(), sysop=sysop)
         if 'error' in result:
             err = result['error']['code']
@@ -2811,8 +2810,7 @@ not supported by PyWikipediaBot!"""
                     output(u'Page %s is moved and no longer exist.' % self.title() )
                     #delattr(self, '_contents')
             return True
-        
-    
+
     def _moveOld(self, newtitle, reason=None, movetalkpage=True, movesubpages=False, sysop=False,
              throttle=True, deleteAndMove=False, safe=True, fixredirects=True, leaveRedirect=True):
         
@@ -2834,7 +2832,7 @@ not supported by PyWikipediaBot!"""
             reason = input(u'Please enter a reason for the move:')
         if self.isTalkPage():
             movetalkpage = False
-        
+
         host = self.site().hostname()
         address = self.site().move_address()
         token = self.site().getToken(sysop = sysop)
@@ -2846,40 +2844,40 @@ not supported by PyWikipediaBot!"""
         if deleteAndMove:
             predata['wpDeleteAndMove'] = self.site().mediawiki_message('delete_and_move_confirm')
             predata['wpConfirm'] = '1'
-        
+
         if movetalkpage:
             predata['wpMovetalk'] = '1'
         else:
             predata['wpMovetalk'] = '0'
-        
+
         if self.site().versionnumber() >= 13:
             if fixredirects:
                 predata['wpFixRedirects'] = '1'
             else:
                 predata['wpFixRedirects'] = '0'
-        
+
         if leaveRedirect:
             predata['wpLeaveRedirect'] = '1'
         else:
             predata['wpLeaveRedirect'] = '0'
-        
+
         if movesubpages:
             predata['wpMovesubpages'] = '1'
         else:
             predata['wpMovesubpages'] = '0'
-        
+
         if token:
             predata['wpEditToken'] = token
-        
+
         response, data = self.site().postForm(address, predata, sysop = sysop)
-        
+
         if data == u'' or self.site().mediawiki_message('pagemovedsub') in data:
             #Move Success
             if deleteAndMove:
                 output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
             else:
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
-            
+
             if hasattr(self, '_contents'):
                 #self.__init__(self.site(), newtitle, defaultNamespace = self._namespace)
                 try:
@@ -2887,7 +2885,7 @@ not supported by PyWikipediaBot!"""
                 except NoPage:
                     output(u'Page %s is moved and no longer exist.' % self.title() )
                     #delattr(self, '_contents')
-            
+
             return True
         else:
             #Move Failure
@@ -3041,7 +3039,7 @@ not supported by PyWikipediaBot!"""
         output(u'Loading list of deleted revisions for [[%s]]...' % self.title())
 
         self._deletedRevs = {}
-        
+
         if config.use_api and self.site().versionnumber() >= 12:
             params = {
                 'action': 'query',
@@ -3059,17 +3057,17 @@ not supported by PyWikipediaBot!"""
                 for x in data['query']['deletedrevs']:
                     if x['title'] != self.title():
                         continue
-                    
+
                     for y in x['revisions']:
                         count += 1
                         self._deletedRevs[parsetime2stamp(y['timestamp'])] = [y['timestamp'], y['user'], y['comment'] , y['*'], False]
-                
+
                 if 'query-continue' in data and data['query-continue']['deletedrevs']['drcontinue'].split('|')[1] == self.titleWithoutNamespace():
                     params['drcontinue'] = data['query-continue']['deletedrevs']['drcontinue']
                 else:
                     break
             self._deletedRevsModified = False
-            
+
         else:
             address = self.site().undelete_view_address(self.urlname())
             text = self.site().getUrl(address, sysop = True)
@@ -3086,7 +3084,7 @@ not supported by PyWikipediaBot!"""
                         ]
 
             self._deletedRevsModified = False
-        
+
         return self._deletedRevs.keys()
 
     def getDeletedRevision(self, timestamp, retrieveText=False):
@@ -3146,7 +3144,7 @@ not supported by PyWikipediaBot!"""
                 if ... #decide whether to undelete a revision
                     pg.markDeletedRevision(rev) #mark for undeletion
             pg.undelete('This will restore only selected revisions.')
-        
+
         """
         # Login
         self._getActionUser(action = 'undelete', sysop = True)
@@ -3173,25 +3171,25 @@ not supported by PyWikipediaBot!"""
                     if self._deletedRevs[ts][4]:
                         selected.append(ts)
                 params['timestamps'] = ts,
-            
+
             result = query.GetData(params, self.site(), sysop=True)
             if 'error' in result:
                 raise RuntimeError("%s" % result['error'])
             elif 'undelete' in result:
                 output(u'Page %s undeleted' % self.aslink())
-            
+
             return result
-            
+
         else:
             address = self.site().undelete_address()
-            
+
             formdata = {
                 'target': self.title(),
                 'wpComment': comment,
                 'wpEditToken': token,
                 'restore': self.site().mediawiki_message('undeletebtn')
             }
-            
+
             if self._deletedRevs and self._deletedRevsModified:
                 for ts in self._deletedRevs:
                     if self._deletedRevs[ts][4]:
@@ -3201,9 +3199,8 @@ not supported by PyWikipediaBot!"""
             #TODO: Check for errors below (have we succeeded? etc):
             result = self.site().postForm(address,formdata,sysop=True)
             output(u'Page %s undeleted' % self.aslink())
-        
+
             return result
-        
 
     def protect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
                 move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
@@ -3257,7 +3254,7 @@ not supported by PyWikipediaBot!"""
             except NotImplementedError:
                 return self._oldProtect( editcreate, move, unprotect, reason, editcreate_duration,
                 move_duration, cascading, prompt, throttle)
-            
+
             token = self.site().getToken(self, sysop = True)
 
             # Translate 'none' to ''
@@ -3275,14 +3272,14 @@ not supported by PyWikipediaBot!"""
 
             if self.exists():
                 protections.append("edit=%s" % editcreate)
-                
+
                 protections.append("move=%s" % move)
                 expiry.append(move_duration)
             else:
                 protections.append("create=%s" % editcreate)
-                
+
             expiry.append(editcreate_duration)
-            
+
             params = {
                 'action': 'protect',
                 'title': self.title(),
@@ -3301,9 +3298,9 @@ not supported by PyWikipediaBot!"""
                     output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
                 else:
                     params['cascade'] = 1
-            
+
             result = query.GetData(params, self.site(), sysop=True)
-            
+
             if 'error' in result: #error occured
                 err = result['error']['code']
                 output('%s' % result)
@@ -3315,7 +3312,7 @@ not supported by PyWikipediaBot!"""
                 if result['protect']:
                     output(u'Changed protection level of page %s.' % self.aslink())
                     return True
-            
+
         return False
 
     def _oldProtect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
@@ -3487,11 +3484,11 @@ not supported by PyWikipediaBot!"""
             data = self.getVersionHistory(getAll=True, revCount = limit)
         else:
             data = self.getVersionHistory(revCount = limit)
-        
+
         result = []
         for i in data:
             result.append({'user':i[2],'timestamp':i[1]})
-        
+
         return result
 
 class ImagePage(Page):
@@ -3568,8 +3565,7 @@ class ImagePage(Page):
                     infos.append(info)
                     if limit == 1:
                         break
-            
-            
+
                 if 'query-continue' in data and limit != 1:
                     params['iistart'] = data['query-continue']['imageinfo']['iistart']
                 else:
@@ -3725,7 +3721,7 @@ class ImagePage(Page):
             'iulimit': config.special_page_limit,
             #'': '',
         }
-        
+
         while True:
             data = query.GetData(params, self.site())
             if 'error' in data:
@@ -3806,13 +3802,13 @@ class _GetAll(object):
                             raise RuntimeError(data['error'])
                         else:
                             break
-                
+
                 self.headerDoneApi(data['query'])
                 if 'normalized' in data['query']:
                     self._norm = dict([(x['from'],x['to']) for x in data['query']['normalized']])
                 for vals in data['query']['pages'].values():
                     self.oneDoneApi(vals)
-                
+
             else:
                 while True:
                     try:
@@ -3861,7 +3857,7 @@ class _GetAll(object):
             for pl in self.pages:
                 if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                     pl._getexception = NoPage
-    
+
     def oneDone(self, entry):
         title = entry.title
         username = entry.username
@@ -3964,7 +3960,7 @@ class _GetAll(object):
         for id in self.site.family.namespaces:
             if self.site.family.isDefinedNSLanguage(id, lang) and id not in header.namespaces:
                 output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id))
-    
+
     def getData(self):
         address = self.site.export_address()
         pagenames = [page.sectionFreeTitle() for page in self.pages]
@@ -4016,13 +4012,13 @@ class _GetAll(object):
         for page2 in self.pages:
             if hasattr(self, '_norm') and page2.sectionFreeTitle() in self._norm:
                 page2._title = self._norm[page2.sectionFreeTitle()]
-            
+
             if page2.sectionFreeTitle() == page.sectionFreeTitle():
                 if 'missing' in data:
                     page2._getexception = NoPage
                     successful = True
                     break
-                
+
                 if 'invalid' in data:
                     page2._getexception = BadTitle
                     successful = True
@@ -4115,7 +4111,7 @@ class _GetAll(object):
         for id in self.site.family.namespaces:
             if self.site.family.isDefinedNSLanguage(id, lang) and u'%i' % id not in header['namespaces']:
                 output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id ) )
-            
+
     def getDataApi(self):
         pagenames = [page.sectionFreeTitle() for page in self.pages]
         params = {
@@ -5608,8 +5604,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 #keep anonymous mode if not login and centralauth not enable
                 self._cookies[index] = None
                 self._isLoggedIn[index] = False
-                
-    
+
     def _readCookies(self, filename):
         """read login cookie file and return a dictionary."""
         try:
@@ -5638,7 +5633,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 # So we need add centralauth username data into siteattribute
                 self._userName[index] = self._cookies[index][self.family.cross_projects_cookie_username]
 
-        
+
         for k, v in datas.iteritems():
             #put key and values into save cache
             if self.family.cross_projects and k in self.family.cross_projects_cookies:
@@ -5652,13 +5647,12 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             f = open(config.datafilepath('login-data', filename), 'w')
             f.write(cache[0])
             f.close()
-            
+
         filename = '%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop))
         f = open(config.datafilepath('login-data', filename), 'w')
         f.write(cache[1])
         f.close()
-        
-    
+
     def _removeCookies(self, name):
         # remove cookies.
         # ToDo: remove all local datas if cross_projects enable.
@@ -5670,7 +5664,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         file = config.datafilepath('login-data', '%s-%s-%s-login.data' % (self.family.name, self.lang, name))
         if os.path.exists(file):
             os.remove(file)
-    
+
     def updateCookies(self, datas, sysop = False):
         """Check and update the current cookies datas and save back to files."""
         index = self._userIndex(sysop)
@@ -5685,8 +5679,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 self._cookies[index][k] = v
         
         self._setupCookies(self._cookies[index], sysop)
-        
-    
+
     def urlEncode(self, query):
         """Encode a query so that it can be sent using an http POST request."""
         if not query:
@@ -5926,7 +5919,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
            Returns the HTML text of the page converted to unicode.
         """
 
-        
         if retry is None:
             retry = config.retry_on_fail
 
@@ -5939,7 +5931,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             #'Cache-Control': 'max-age=0',
             #'': '',
         }
-        
+
         if not no_hostname and self.cookies(sysop = sysop):
             headers['Cookie'] = self.cookies(sysop = sysop)
         if compress:
@@ -6302,13 +6294,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         # protection for key in other datatype
         if type(key) not in [str, unicode]:
            key = 'general'
-        
+
         if self._info and key in self._info and not force:
             if dump:
                 return self._info
             else:
                 return self._info[key]
-        
+
         params = {
             'action':'query',
             'meta':'siteinfo',
@@ -6332,7 +6324,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             data = query.GetData(params, self)['query']
         except NotImplementedError:
             return None
-        
+
         if not hasattr(self, '_info'):
             self._info = data
         else:
@@ -6351,8 +6343,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 return self._info[key]
         except KeyError:
             return None
-        
-    
+
     def mediawiki_message(self, key, forceReload = False):
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
@@ -6371,7 +6362,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                         api = True
                 except NotImplementedError:
                     api = False
-                
+
                 usePHP = False
                 elementtree = True
                 try:
@@ -6562,7 +6553,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         }
         if namespaces:
             params['srnamespace'] = namespaces
-        
+
         offset = 0
         while True:
             params['sroffset'] = offset
@@ -7071,7 +7062,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             }
             if redirect:
                 params['rnredirect'] = 1
-            
+
             data = query.GetData(params, self)
             return Page(self, data['query']['random'][0]['title'])
         else:
@@ -8024,7 +8015,7 @@ def handleArgs(*args):
     args may be passed as an argument, thereby overriding sys.argv
 
     """
-    global default_code, default_family, verbose
+    global default_code, default_family, verbose, debug
     # get commandline arguments
     if not args:
         args = sys.argv[1:]
@@ -8061,9 +8052,12 @@ def handleArgs(*args):
         elif arg.startswith('-daemonize:'):
             import daemonize
             daemonize.daemonize(redirect_std = arg[11:])
-        elif arg == "-cosmeticchanges" or arg == "-cc":
+        elif arg == '-cosmeticchanges' or arg == '-cc':
             config.cosmetic_changes = not config.cosmetic_changes
             output(u'NOTE: option cosmetic_changes is %s\n' % config.cosmetic_changes)
+        # global debug option for development purposes. Normally does nothing.
+        elif arg == '-debug':
+            debug = True
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
@@ -8082,6 +8076,7 @@ sys.path.append(config.datafilepath('userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 verbose = 0
+debug = False
 
 default_family = config.family
 default_code = config.mylang

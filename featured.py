@@ -32,7 +32,7 @@ This script understands various command-line arguments:
 
 -quiet            no corresponding pages are displayed.
 
--debug            for debug purposes. No changes will be made.
+-dry              for debug purposes. No changes will be made.
 
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy--zz|-fromall]
 
@@ -41,8 +41,9 @@ __version__ = '$Id$'
 
 #
 # (C) Maxim Razin, 2005
-# (C) Leonardo Gregianin, 2006-2007
-# (C) xqt, 2009
+# (C) Leonardo Gregianin, 2005-2008
+# (C) xqt, 2009-2010
+# (C) Pywikipedia bot team, 2005-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -351,11 +352,11 @@ def featuredArticles(site, pType):
     arts=[]
     try:
         if pType == 'good':
-	    method=good_name[site.lang][0]
-	elif pType == 'list':
-	    method=lists_name[site.lang][0]
+        method=good_name[site.lang][0]
+    elif pType == 'list':
+        method=lists_name[site.lang][0]
         else:
-	    method=featured_name[site.lang][0]
+        method=featured_name[site.lang][0]
     except KeyError:
         wikipedia.output(u'Error: language %s doesn\'t has %s category source.' % (site.lang, feature))
         return arts
@@ -452,8 +453,7 @@ def getTemplateList (lang, pType):
             templates = template['_default']
     return templates
 
-
-def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet, debug = False):
+def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet, dry = False):
     if not fromsite.lang in cache:
         cache[fromsite.lang]={}
     if not tosite.lang in cache[fromsite.lang]:
@@ -523,7 +523,7 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet, debug
                             text=(text[:m.end()]
                                   + (u" {{%s|%s}}" % (templatelist[0], fromsite.lang))
                                   + text[m.end():])
-                        if not debug:
+                        if not dry:
                             try:
                                 atrans.put(text, comment)
                             except wikipedia.LockedPage:
@@ -541,7 +541,7 @@ if __name__=="__main__":
     doAll = False
     part  = False
     quiet = False
-    debug = False
+    dry = False
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':
             interactive=1
@@ -564,8 +564,8 @@ if __name__=="__main__":
             processType = 'list'
         elif arg == '-quiet':
             quiet = True
-        elif arg == '-debug':
-            debug = True
+        elif arg == '-dry':
+            dry = True
 
     if part:
         try:
@@ -574,7 +574,7 @@ if __name__=="__main__":
                 ll1,ll2=fromlang[0].split("--",1)
                 if not ll1: ll1=""
                 if not ll2: ll2="zzzzzzz"
-		if processType == 'good':
+        if processType == 'good':
                     fromlang=[ll for ll in good_name.keys() if ll>=ll1 and ll<=ll2]
                 elif processType == 'list':
                     fromlang=[ll for ll in good_lists.keys() if ll>=ll1 and ll<=ll2]
@@ -582,15 +582,15 @@ if __name__=="__main__":
                     fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
         except:
             pass
-			
+
     if doAll:
-	if processType == 'good':
+    if processType == 'good':
             fromlang=good_name.keys()
-	elif processType == 'list':
+    elif processType == 'list':
             fromlang=lists_name.keys()
-	else:
-	    fromlang=featured_name.keys()
-			
+    else:
+        fromlang=featured_name.keys()
+
     filename="cache/" + processType
     try:
         cache=pickle.load(file(filename,"rb"))
@@ -603,7 +603,7 @@ if __name__=="__main__":
         sys.exit(1)
 
     fromlang.sort()
-    
+
     #test whether this site has template enabled
     hasTemplate = False
     if not featuredcount:
@@ -623,7 +623,7 @@ if __name__=="__main__":
                 break
             elif  fromsite != wikipedia.getSite():
                 featuredWithInterwiki(fromsite, wikipedia.getSite(),
-                                      template_on_top, processType, quiet, debug)
+                                      template_on_top, processType, quiet, dry)
     except KeyboardInterrupt:
         wikipedia.output('\nQuitting program...')
     finally:

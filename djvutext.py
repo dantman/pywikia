@@ -6,7 +6,7 @@ namespace.  It is intended to be used for Wikisource.
 
 The following parameters are supported:
 
-    -debug         If given, doesn't do any real changes, but only shows
+    -dry           If given, doesn't do any real changes, but only shows
                    what would have been changed.
     -ask           Ask for confirmation before uploading each page.
                    (Default: ask when overwriting pages)
@@ -18,6 +18,11 @@ The following parameters are supported:
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 """
+#
+# (C) Pywikipedia bot team, 2008-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
 import wikipedia
 import os, sys
@@ -49,14 +54,14 @@ class DjVuTextBot:
     def __init__(self, djvu, index, pages, ask=False, debug=False):
         """
         Constructor. Parameters:
-       djvu : filename
-       index : page name
-       pages : page range
+        djvu : filename
+        index : page name
+        pages : page range
         """
         self.djvu = djvu
         self.index = index
         self.pages = pages
-        self.debug = debug
+        self.dry = debug
         self.ask = ask
 
     def NoOfImages(self):
@@ -103,9 +108,7 @@ class DjVuTextBot:
     def has_text(self):
         cmd = u"djvudump \"%s\" > \"%s\".out" % (self.djvu, self.djvu)
         os.system ( cmd.encode(sys.stdout.encoding) )
-
         f = codecs.open(u"%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
-
         s = f.read()
         f.close()
         return s.find('TXTz') >= 0
@@ -114,9 +117,7 @@ class DjVuTextBot:
         wikipedia.output(unicode("fetching page %d" % (pageno)))
         cmd = u"djvutxt --page=%d \"%s\" \"%s.out\"" % (pageno, self.djvu, self.djvu)
         os.system ( cmd.encode(sys.stdout.encoding) )
-
         f = codecs.open(u"%s.out" % self.djvu, 'r', config.textfile_encoding, 'replace')
-
         djvu_text = f.read()
         f.close()
         return djvu_text
@@ -137,7 +138,7 @@ class DjVuTextBot:
         text = u'<noinclude>{{PageQuality|1|%s}}<div class="pagetext">\n\n\n</noinclude>%s<noinclude><references/></div></noinclude>' % (self.username,djvutxt)
 
         # convert to wikisyntax
-        #   this adds a second line feed, which makes a new paragraph
+        # this adds a second line feed, which makes a new paragraph
         text = text.replace('', "\n")
 
         # only save if something was changed
@@ -156,8 +157,8 @@ class DjVuTextBot:
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         wikipedia.showDiff(old_text, text)
 
-        if self.debug:
-            wikipedia.inputChoice(u'Debug mode... Press enter to continue', [], [], 'dummy')
+        if self.dry:
+            wikipedia.inputChoice(u'Dry mode... Press enter to continue', [], [], 'dummy')
             return
 
         if ask:
@@ -182,13 +183,13 @@ def main():
     djvu = None
     pages = None
     # what would have been changed.
-    debug = False
+    dry = False
     ask = False
 
     # Parse command line arguments
     for arg in wikipedia.handleArgs():
-        if arg.startswith("-debug"):
-            debug = True
+        if arg.startswith("-dry"):
+            dry = True
         elif arg.startswith("-ask"):
             ask = True
         elif arg.startswith("-djvu:"):
@@ -226,7 +227,7 @@ def main():
 
         wikipedia.output(u"uploading text from %s to %s" % (djvu, index_page.aslink()) )
 
-        bot = DjVuTextBot(djvu, index, pages, ask, debug)
+        bot = DjVuTextBot(djvu, index, pages, ask, dry)
         if not bot.has_text():
             raise ValueError("No text layer in djvu file")
 

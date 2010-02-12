@@ -32,8 +32,8 @@ Furthermore, the following command line parameters are supported:
 -always         Doesn't ask every time if the bot should make the change or not,
                 do it always.
 
--debug          When the bot can't delete the template from the page (wrong
-                regex or something like that) it will ask you if it should open
+-show           When the bot can't delete the template from the page (wrong
+                regex or something like that) it will ask you if it should show
                 the page on your browser.
                 (attention: pages included may give false positives!)
 
@@ -53,13 +53,14 @@ python blockpageschecker.py -always
 
 python blockpageschecker.py -cat:Geography -always
 
-python blockpageschecker.py -debug -protectedpages:4
+python blockpageschecker.py -show -protectedpages:4
 
 """
 #
 # (C) Monobi a.k.a. Wikihermit, 2007
-# (C) Filnik, 2007-2008-2009
-# (C) NicDumZ, 2008
+# (C) Filnik, 2007-2009
+# (C) NicDumZ, 2008-2009
+# (C) Pywikipedia bot team, 2007-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -188,7 +189,7 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP, TU):
                 return ('autoconfirmed-move', catchRegex)
     return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
-def debugQuest(site, page):
+def showQuest(site, page):
     quest = pywikibot.inputChoice(u'Do you want to open the page?',['with browser', 'with gui', 'no'], ['b','g','n'], 'n')
     pathWiki = site.family.nicepath(site.lang)
     url = 'http://%s%s%s?&redirect=no' % (pywikibot.getSite().hostname(), pathWiki, page.urlname())
@@ -204,7 +205,7 @@ def main():
     # Loading the comments
     global categoryToCheck, comment, project_inserted
     # always, define a generator to understand if the user sets one, defining what's genFactory
-    always = False; generator = False; debug = False
+    always = False; generator = False; show = False
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
@@ -214,8 +215,8 @@ def main():
             always = True
         elif arg == '-move':
             moveBlockCheck = True
-        elif arg == '-debug':
-            debug = True
+        elif arg == '-show':
+            show = True
         elif arg.startswith('-protectedpages'):
             if len(arg) == 15:
                 generator = site.protectedpages(namespace = 0)
@@ -278,8 +279,8 @@ def main():
             continue
         except pywikibot.IsRedirectPage:
             pywikibot.output("%s is a redirect! Skipping..." % pagename)
-            if debug:
-                debugQuest(site, page)
+            if show:
+                showQuest(site, page)
             continue
         """
         # This check does not work :

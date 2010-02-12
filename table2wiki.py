@@ -46,10 +46,12 @@ KNOWN BUGS
 Broken HTML tables will most likely result in broken wiki tables!
 Please check every article you change.
 """
-
+#
 # (C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
+# (C) Pywikipedia bot team, 2003-2010
 #
 # Distributed under the terms of the MIT license.
+#
 __version__='$Id$'
 
 import re, sys, time
@@ -131,9 +133,8 @@ class TableXmlDumpPageGenerator:
                 yield wikipedia.Page(wikipedia.getSite(), entry.title)
 
 class Table2WikiRobot:
-    def __init__(self, generator, debug = False, quietMode = False):
+    def __init__(self, generator, quietMode = False):
         self.generator = generator
-        self.debug = debug
         self.quietMode = quietMode
 
     def convertTable(self, table):
@@ -465,16 +466,12 @@ class Table2WikiRobot:
             if not table:
                 # no more HTML tables left
                 break
-            print ">> Table %i <<" % (convertedTables + 1)
+            wikipedia.output(">> Table %i <<" % (convertedTables + 1))
             # convert the current table
             newTable, warningsThisTable, warnMsgsThisTable = self.convertTable(table)
             # show the changes for this table
-            if self.debug:
-                print table
-                print newTable
-            elif not self.quietMode:
+            if not self.quietMode:
                 wikipedia.showDiff(table.replace('##table##', 'table'), newTable)
-            print ""
             warningSum += warningsThisTable
             for msg in warnMsgsThisTable:
                 warningMessages += 'In table %i: %s' % (convertedTables + 1, msg)
@@ -542,14 +539,12 @@ def main():
     articles = []
     # if -file is not used, this temporary array is used to read the page title.
     page_title = []
-    debug = False
 
     # Which namespaces should be processed?
     # default to [] which means all namespaces will be processed
     namespaces = []
 
     xmlfilename = None
-
     gen = None
 
     # This factory is responsible for processing command line arguments
@@ -584,8 +579,6 @@ LIMIT 200"""
             print "Automatic mode!\n"
         elif arg.startswith('-quiet'):
             quietMode = True
-        elif arg.startswith('-debug'):
-            debug = True
         else:
             if not genFactory.handleArg(arg):
                 page_title.append(arg)
@@ -599,15 +592,15 @@ LIMIT 200"""
 
     if not gen:
         gen = genFactory.getCombinedGenerator()
-    if not gen:
-        # show help
+
+    if gen:
+        if namespaces != []:
+            gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        bot = Table2WikiRobot(preloadingGen, quietMode)
+        bot.run()
+    else:
         wikipedia.showHelp('table2wiki')
-        sys.exit(0)
-    if namespaces != []:
-        gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen)
-    bot = Table2WikiRobot(preloadingGen, debug, quietMode)
-    bot.run()
 
 if __name__ == "__main__":
     try:
