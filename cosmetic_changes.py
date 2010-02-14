@@ -229,7 +229,7 @@ moved_links = {
 # This also removes all template parameters of {{Foo}}
 # For replacing {{Foo}} with {{Bar}} but keep the template
 # parameters in its original order, please use:
-#           (u'Foo', u'Bar\g<parameters>),
+#           (u'Foo', u'Bar\g<parameters>'),
 
 deprecatedTemplates = {
     'wikipedia': {
@@ -667,7 +667,7 @@ class CosmeticChangesToolkit:
         return text
 
     def fixTypo(self, text):
-        exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace']
+        exceptions = ['nowiki', 'comment', 'math', 'pre', 'source', 'startspace', 'gallery', 'hyperlink', 'interwiki', 'link']
         # change <number> ccm -> <number> cm³
         text = pywikibot.replaceExcept(text, ur'(\d)\s*&nbsp;ccm', ur'\1&nbsp;cm³', exceptions)
         text = pywikibot.replaceExcept(text, ur'(\d)\s*ccm', ur'\1&nbsp;cm³', exceptions)
@@ -686,7 +686,8 @@ class CosmeticChangesToolkit:
                 'gallery',
                 'hyperlink',
                 'interwiki',
-                'link',
+                # but changes letters inside wikilinks
+                #'link',
                 'math',
                 'pre',
                 'template',
