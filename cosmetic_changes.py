@@ -698,7 +698,7 @@ class CosmeticChangesToolkit:
                 'startspace',
             ]
             text = pywikibot.replaceExcept(text, u',', u'،', exceptions)
-            text = pywikibot.replaceExcept(text, ur'ه([.، ])', ur'ە\1', exceptions)
+            text = pywikibot.replaceExcept(text, ur'ه([.،_<\]\s])', ur'ە\1', exceptions)
             text = pywikibot.replaceExcept(text, u'ه‌', u'ە', exceptions)
             text = pywikibot.replaceExcept(text, u'ه', u'ھ', exceptions)
             text = pywikibot.replaceExcept(text, u'ك', u'ک', exceptions)
