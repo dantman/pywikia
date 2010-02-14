@@ -59,7 +59,7 @@ def CAT(site,name):
 def BACK(site,name):
     name = site.namespace(10) + ':' + name
     p=wikipedia.Page(site, name)
-    return [page for page in p.getReferences(follow_redirects = False)]
+    return [page for page in p.getReferences(follow_redirects = False, onlyTemplateInclusion=True)]
 
 msg = {
     'als':u'Bötli: [[%s:%s]] isch en bsunders glungener Artikel',
@@ -189,7 +189,7 @@ featured_name = {
     'an': (CAT, u"Articlos destacatos"),
     'ar': (CAT, u"مقالات مختارة"),
     'ast':(CAT, u"Uiquipedia:Artículos destacaos"),
-    'az': (BACK,u"Seçkin məqalə"),
+    'az': (BACK,u"Seçilmiş məqalə"),
     'bar':(CAT, u"Berig"),
     'bat-smg': (CAT, u"Vikipedėjės pavīzdėnē straipsnē"),
     'be-x-old':(CAT, u"Вікіпэдыя:Выбраныя артыкулы"),
@@ -209,7 +209,7 @@ featured_name = {
     'el': (BACK,u"Αξιόλογο άρθρο"),
     'eo': (CAT, u"Elstaraj artikoloj"),
     'en': (CAT, u"Featured articles"),
-    'es': (CAT, u"Wikipedia:Artículos destacados"),
+    'es': (BACK, u"Artículo destacado"),
     'et': (CAT, u"Eeskujulikud artiklid"),
     'eu': (CAT, u"Nabarmendutako artikuluak"),
     'ext':(BACK,u"Destacau"),
@@ -224,7 +224,7 @@ featured_name = {
     'hsb':(CAT, u"Ekscelentny"),
     'hu': (CAT, u"Kiemelt cikkek"),
     'hy': (BACK,u"Ընտրված հոդված"),
-    'ia': (CAT, u"Articulos eminente"),
+    'ia': (CAT, u"Wikipedia:Articulos eminente"),
     'id': (BACK, u"Featured article"),
    #'id': (CAT, u"Artikel bagus utama"),
     'is': (CAT, u"Wikipedia:Úrvalsgreinar"),
@@ -235,6 +235,7 @@ featured_name = {
     'kn': (BACK,u"ವಿಶೇಷ ಲೇಖನ"),
     'ko': (CAT, u"알찬 글"),
     'ksh':(CAT, u"Exzälenter Aatikkel"),
+	'kv': (CAT, u"Википедия:Бур гижӧдъяс"),
     'la': (CAT, u"Paginae mensis"),
     'li': (CAT, u"Wikipedia:Sjterartikele"),
     'lmo':(CAT, u"Articol ben faa"),
@@ -242,7 +243,7 @@ featured_name = {
     'lt': (CAT, u"Vikipedijos pavyzdiniai straipsniai"),
     'lv': (CAT, u"Vērtīgi raksti"),
    #'lv': (CAT, u"Nedēļas raksti"),
-    'mk': (CAT, u"Избрани статии на главната страница"),
+    'mk': (BACK, u"Избрана"),
     'ml': (BACK,u"Featured"),
     'mr': (CAT, u"मुखपृष्ठ सदर लेख"),
     'ms': (BACK,u"Rencana pilihan"),
@@ -255,7 +256,7 @@ featured_name = {
     'pl': (CAT, u"Artykuły na medal"),
     'pt': (CAT, u"!Artigos destacados"),
     'ro': (CAT, u"Articole de calitate"),
-    'ru': (CAT, u"Википедия:Избранные статьи"),
+    'ru': (BACK, u"Избранная статья"),
     'sco':(CAT, u"Featurt"),
     'sh': (CAT, u"Izabrani članci"),
     'simple': (CAT, u"Very good articles"),
@@ -265,7 +266,7 @@ featured_name = {
     'sr': (CAT, u"Изабрани"),
     'sv': (CAT, u"Wikipedia:Utmärkta artiklar"),
     'sw': (BACK,u"Makala_nzuri_sana"),
-    'szl':(CAT, u"Wyrůžńůne artikle"),
+    'szl':(CAT, u"Wyrůżńůne artikle"),
     'ta': (CAT, u"சிறப்புக் கட்டுரைகள்"),
     'te': (CAT, u"విశేషవ్యాసాలు"),
     'th': (BACK,u"บทความคัดสรร"),
@@ -280,7 +281,7 @@ featured_name = {
     'vo': (CAT, u"Yegeds gudik"),
     'wa': (CAT, u"Raspepyî årtike"),
     'yi': (CAT, u"רעקאמענדירטע ארטיקלען"),
-    'yo': (BACK,u"Ayoka pataki"),
+    'yo': (BACK,u"Àyọkà pàtàkì"),
     'zh': (CAT, u"特色条目"),
     'zh-classical': (CAT, u"卓著"),
     'zh-yue': (BACK, u"正文"),
@@ -352,11 +353,11 @@ def featuredArticles(site, pType):
     arts=[]
     try:
         if pType == 'good':
-        method=good_name[site.lang][0]
-    elif pType == 'list':
-        method=lists_name[site.lang][0]
+            method=good_name[site.lang][0]
+        elif pType == 'list':
+            method=lists_name[site.lang][0]
         else:
-        method=featured_name[site.lang][0]
+            method=featured_name[site.lang][0]
     except KeyError:
         wikipedia.output(u'Error: language %s doesn\'t has %s category source.' % (site.lang, feature))
         return arts
@@ -574,7 +575,7 @@ if __name__=="__main__":
                 ll1,ll2=fromlang[0].split("--",1)
                 if not ll1: ll1=""
                 if not ll2: ll2="zzzzzzz"
-        if processType == 'good':
+                if processType == 'good':
                     fromlang=[ll for ll in good_name.keys() if ll>=ll1 and ll<=ll2]
                 elif processType == 'list':
                     fromlang=[ll for ll in good_lists.keys() if ll>=ll1 and ll<=ll2]
@@ -584,12 +585,12 @@ if __name__=="__main__":
             pass
 
     if doAll:
-    if processType == 'good':
+        if processType == 'good':
             fromlang=good_name.keys()
-    elif processType == 'list':
+        elif processType == 'list':
             fromlang=lists_name.keys()
-    else:
-        fromlang=featured_name.keys()
+        else:
+            fromlang=featured_name.keys()
 
     filename="cache/" + processType
     try:
