@@ -406,7 +406,7 @@ class CosmeticChangesToolkit:
         Makes sure that localized namespace names are used.
         """
         # arz uses english stylish codes
-        if self.site.sitename() == 'wikipedia:arz'
+        if self.site.sitename() == 'wikipedia:arz':
             return text
         family = self.site.family
         # wiki links aren't parsed here.
