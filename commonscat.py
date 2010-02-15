@@ -7,9 +7,26 @@ another langauge page, the bot will use it.
 
 You could probably use it at articles as well, but this isnt tested.
 
-This bot uses pagegenerators to get a list of pages. For example to go through all categories:
-commonscat.py -start:Category:!
+This bot uses pagegenerators to get a list of pages. The following options are
+supported:
 
+&params;
+
+-always           Don't prompt you for each replacement. Warning message
+                  has not to be confirmed. ATTENTION: Use this with care!
+
+-summary:XYZ      Set the action summary message for the edit to XYZ.
+                  There is no predefined message text yet and this option is
+                  recommended.
+
+-checkcurrent     Work on all category pages that use the primary commonscat
+                  template.
+
+For example to go through all categories:
+commonscat.py -start:Category:!
+"""
+# TODO:
+"""
 Commonscat bot:
 
 Take a page. Follow the interwiki's and look for the commonscat template
@@ -28,7 +45,8 @@ TODO:
 """
 
 #
-# (C) Multichill, 2008
+# (C) Multichill, 2008-2009
+# (C) Pywikipedia bot team, 2008-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -36,121 +54,53 @@ __version__ = '$Id$'
 
 import wikipedia, config, pagegenerators, add_text, re
 
-#Primary template, list of alternatives
+docuReplacements = {
+    '&params;': pagegenerators.parameterHelp
+}
+
+# Primary template, list of alternatives
+# No entry needed if it is like _default
 commonscatTemplates = {
     '_default': (u'Commonscat', []),
     'af' : (u'CommonsKategorie', [u'commonscat']),
-    'als' : (u'Commonscat', []),
-    'an' : (u'Commonscat', []),
-    'ang' : (u'Commonscat', []),
     'ar' : (u'تصنيف كومنز', [u'Commonscat', u'تصنيف كومونز', u'Commons cat', u'CommonsCat']),
-    'ast' : (u'Commonscat', []), # No alternatives found
     'az' : (u'CommonsKat', []),
-    'bar' : (u'Commonscat', []),
-    'bat-smg' : (u'Commonscat', []),
-    'be' : (u'Commonscat', []), # No alternatives found
-    'bg' : (u'Commonscat', []),
     'bn' : (u'কমন্সক্যাট', [u'Commonscat']),
-    'br' : (u'Commonscat', []), # No alternatives found
-    'ca' : (u'Commonscat', []),
-    'cbk-zam' : (u'Commonscat', []), # No alternatives found
-    'chr' : (u'Commonscat', []), # No alternatives found
     'crh' : (u'CommonsKat', [u'Commonscat']),
     'cs' : (u'Commonscat', [u'Commons cat']),
-    'cu' : (u'Commonscat', []), # No alternatives found
-    'cv' : (u'Commonscat', []), # No alternatives found
     'da' : (u'Commonscat', [u'Commons cat', u'Commonskat', u'Commonscat2']),
-    'de' : (u'Commonscat', []), # No alternatives found
-    'diq' : (u'Commonscat', []), # No alternatives found
-    'dv' : (u'Commonscat', []), # No alternatives found
-    'el' : (u'Commonscat', []), # No alternatives found
+    'de' : (u'Commonscat', [u'CommonsCat',]),
     'en' : (u'Commons category', [u'Commoncat', u'Commons2', u'Cms-catlist-up', u'Catlst commons', u'Commonscategory', u'Commonscat', u'Commons cat']),
-    'eo' : (u'Commonscat', []), # No alternatives found
     'es' : (u'Commonscat', [u'Ccat', u'Commons cat', u'Categoría Commons', u'Commonscat-inline']),
     'eu' : (u'Commonskat', [u'Commonscat']),
     'fa' : (u'انبار-رده', [u'Commonscat', u'Commons cat', u'انبار رده', u'Commons category']),
-    'fi' : (u'Commonscat', []), # No alternatives found
     'fr' : (u'Commonscat', [u'CommonsCat', u'Commons cat', u'Commons category']),
     'frp' : (u'Commonscat', [u'CommonsCat']), 
-    'fy' : (u'Commonscat', []),
     'ga' : (u'Catcómhaoin', [u'Commonscat']),
-    'gd' : (u'Commonscat', []), # No alternatives found
-    'gv' : (u'Commonscat', []), # No alternatives found
-    'ha' : (u'Commonscat', []),
-    'he' : (u'Commonscat', []),
     'hi' : (u'Commonscat', [u'Commons2', u'Commons cat', u'Commons category']),
-    'hr' : (u'Commonscat', []),
     'hu' : (u'Közvagyonkat', []),
     'hy' : (u'Commons cat', [u'Commonscat']),
-    'ia' : (u'Commonscat', []),
     'id' : (u'Commonscat', [u'Commons cat', u'Commons2', u'CommonsCat', u'Commons category']),
-    'io' : (u'Commonscat', []),
-    'is' : (u'CommonsCat', []),
-    'it' : (u'Commonscat', []),
     'ja' : (u'Commonscat', [u'Commons cat', u'Commons category']),
     'jv' : (u'Commonscat', [u'Commons cat']),
-    'ka' : (u'Commonscat', []),
     'kaa' : (u'Commons cat', [u'Commonscat']),
-    'kg' : (u'Commonscat', []), # No alternatives found
     'kk' : (u'Commonscat', [u'Commons2']),
-    'km' : (u'Commonscat', []),
-    'kn' : (u'Commonscat', []), # No alternatives found
     'ko' : (u'Commonscat', [u'Commons cat', u'공용분류']),
     'la' : (u'CommuniaCat', []),
-    'lad' : (u'Commonscat', []),
-    'lbe' : (u'Commonscat', []), # No alternatives found
-    'li' : (u'Commonscat', []),
-    'lo' : (u'Commonscat', []),
-    'lt' : (u'Commonscat', []),
-    'lv' : (u'Commonscat', []),
-    'mi' : (u'Commonscat', []),
     'mk' : (u'Ризница-врска', [u'Commonscat', u'Commons cat', u'CommonsCat', u'Commons2', u'Commons category']),
     'ml' : (u'Commonscat', [u'Commons cat', u'Commons2']),
-    'mn' : (u'Commonscat', []),
-    'ms' : (u'Commonscat', []),
-    'nah' : (u'Commonscat', []),
-    'nds-nl' : (u'Commonscat', []),
-    'new' : (u'Commonscat', []), # No alternatives found
-    'nl' : (u'Commonscat', []), # No alternatives found
     'nn' : (u'Commonscat', [u'Commons cat']),
-    'no' : (u'Commonscat', []), # No alternatives found
-    'oc' : (u'Commonscat', []),
-    'om' : (u'Commonscat', []),
     'os' : (u'Commonscat', [u'Commons cat']),
-    'pam' : (u'Commonscat', []),
-    'pl' : (u'Commonscat', []), # No alternatives found
     'pt' : (u'Commonscat', [u'Commons cat']),
-    'qu' : (u'Commonscat', []),
     'ro' : (u'Commonscat', [u'Commons cat']),
     'ru' : (u'Commonscat', [u'Викисклад-кат']),
-    'sah' : (u'Commonscat', []),
-    'scn' : (u'Commonscat', []),
-    'sd' : (u'Commonscat', []), # No alternatives found
-    'se' : (u'Commonscat', []),
-    'sh' : (u'Commonscat', []),
-    'si' : (u'Commonscat', []),
-    'simple' : (u'Commonscat', []),
-    'sk' : (u'Commonscat', []), # No alternatives found
     'sl' : (u'Kategorija v Zbirki', [u'Commonscat', u'Kategorija v zbirki', u'Commons cat', u'Katzbirke']),
-    'so' : (u'Commonscat', []),
-    'sr' : (u'Commonscat', []),
-    'su' : (u'Commonscat', []),
     'sv' : (u'Commonscat', [u'Commonscat-rad', u'Commonskat', u'Commons cat']),
     'sw' : (u'Commonscat', [u'Commons2', u'Commons cat']),
-    'ta' : (u'Commonscat', []),
     'te' : (u'Commonscat', [u'Commons cat']),
-    'th' : (u'Commonscat', []),
-    'tl' : (u'Commonscat', []),
     'tr' : (u'CommonsKat', [u'Commonscat', u'Commons cat']),
-    'tt' : (u'Commonscat', []),
-    'udm' : (u'Commonscat', []),
     'uk' : (u'Commonscat', [u'Commons cat', u'Category', u'Commonscat-inline']),
-    'uz' : (u'Commonscat', []),
     'vi' : (u'Commonscat', [u'Commons2', u'Commons cat', u'Commons category', u'Commons+cat']),
-    'vls' : (u'Commonscat', []),
-    'war' : (u'Commonscat', []),
-    'xal' : (u'Commonscat', []),
-    'zea' : (u'Commonscat', []),
     'zh' : (u'Commonscat', [u'Commons cat']),
     'zh-classical' : (u'共享類', [u'Commonscat']),
     'zh-yue' : (u'同享類', [u'Commonscat', u'共享類 ', u'Commons cat']),
@@ -230,7 +180,6 @@ def updateInterwiki (wikipediaPage = None, commonsPage = None):
         #This doesnt seem to work. Newtext has some trailing whitespace
         wikipedia.showDiff(oldtext, newtext)
         commonsPage.put(newtext=newtext, comment=comment)
-
 
 def addCommonscat (page = None, summary = None, always = False):
     '''
@@ -324,24 +273,29 @@ def checkCommonscatLink (name = ""):
     If the page is a redirect this function tries to follow it.
     If the page doesnt exists the function will return an empty string
     '''
-    #wikipedia.output("getCommonscat: " + name );
+    if wikipedia.verbose:
+        wikipedia.output("getCommonscat: " + name );
     try:
         #This can throw a wikipedia.BadTitle
         commonsPage = wikipedia.Page(wikipedia.getSite("commons", "commons"), "Category:" + name);
 
         if not commonsPage.exists():
-            #wikipedia.output("getCommonscat : The category doesnt exist.");
+            if wikipedia.verbose:
+                wikipedia.output("getCommonscat: The category doesnt exist.");
             return u''
         elif commonsPage.isRedirectPage():
-            #wikipedia.output("getCommonscat : The category is a redirect");
+            if wikipedia.verbose:
+                wikipedia.output("getCommonscat: The category is a redirect");
             return checkCommonscatLink(commonsPage.getRedirectTarget().titleWithoutNamespace());
         elif "Category redirect" in commonsPage.templates():
-            #wikipedia.output("getCommonscat : The category is a category redirect");
+            if wikipedia.verbose:
+                wikipedia.output("getCommonscat: The category is a category redirect");
             for template in commonsPage.templatesWithParams():
                 if ((template[0]=="Category redirect") and (len(template[1]) > 0)):
                     return checkCommonscatLink(template[1][0])
         elif commonsPage.isDisambig():
-            #wikipedia.output("getCommonscat : The category is disambigu");
+            if wikipedia.verbose:
+                wikipedia.output("getCommonscat: The category is disambiguation");
             return u''
         else:
             return commonsPage.titleWithoutNamespace()
@@ -366,11 +320,6 @@ def main():
                 summary = wikipedia.input(u'What summary do you want to use?')
             else:
                 summary = arg[9:]
-        elif arg.startswith('-page'):
-            if len(arg) == 5:
-                generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
-            else:
-                generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         elif arg.startswith('-checkcurrent'):
             checkcurrent = True
             primaryCommonscat, commonscatAlternatives = getCommonscatTemplate(wikipedia.getSite().language())
@@ -389,7 +338,15 @@ def main():
     pregenerator = pagegenerators.PreloadingGenerator(generator)
 
     for page in pregenerator:
-        if(page.exists() and not page.isRedirectPage() and not page.isDisambig()):
+        if not page.exists():
+           wikipedia.output(u'Page %s does not exist. Skipping.' % page.aslink())
+        elif page.isRedirectPage():
+           wikipedia.output(u'Page %s is a redirect. Skipping.' % page.aslink())
+        elif page.isCategoryRedirect():
+           wikipedia.output(u'Page %s is a category redirect. Skipping.' % page.aslink())
+        elif page.isDisambig():
+           wikipedia.output(u'Page %s is a disambiguation. Skipping.' % page.aslink())
+        else:
             (status, always) = addCommonscat(page, summary, always)
 
 if __name__ == "__main__":
