@@ -405,6 +405,9 @@ class CosmeticChangesToolkit:
         """
         Makes sure that localized namespace names are used.
         """
+        # arz uses english stylish codes
+        if self.site.sitename() == 'wikipedia:arz'
+            return text
         family = self.site.family
         # wiki links aren't parsed here.
         exceptions = ['nowiki', 'comment', 'math', 'pre']
@@ -711,6 +714,9 @@ class CosmeticChangesToolkit:
             exceptions.append(pattern)
             # do not change digits inside html-tags
             pattern = re.compile(u'<[/]*?[^</]+?[/]*?>', re.UNICODE)
+            exceptions.append(pattern)
+            # do not change digits inside file links
+            pattern = re.compile(u'\[\[.+?:.+?\..+?\|.+?\]\]', re.UNICODE)
             exceptions.append(pattern)
             for i in range(0,10):
                 text = pywikibot.replaceExcept(text, str(i), u'٠١٢٣٤٥٦٧٨٩'[i], exceptions)
