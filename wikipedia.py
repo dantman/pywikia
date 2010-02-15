@@ -1205,7 +1205,10 @@ not supported by PyWikipediaBot!"""
             return False
         if not hasattr(self, "_catredirect"):
             if not text:
-                text = self.get(get_redirect=True)
+                try:
+                    text = self.get(get_redirect=True)
+                except NoPage:
+                    return False
             catredirs = self.site().category_redirects()
             for (t, args) in self.templatesWithParams(thistxt=text):
                 template = Page(self.site(), t, defaultNamespace=10
