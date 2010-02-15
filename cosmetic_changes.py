@@ -700,6 +700,10 @@ class CosmeticChangesToolkit:
                 'source',
                 'startspace',
             ]
+            # do not change inside file links
+            namespaces = list(self.site.namespace(6, all = True))
+            pattern = re.compile(u'\[\[(' + '|'.join(namespaces) + '):.+?\..+?\]\]', re.UNICODE)
+            exceptions.append(pattern)
             text = pywikibot.replaceExcept(text, u',', u'،', exceptions)
             text = pywikibot.replaceExcept(text, ur'ه([.،_<\]\s])', ur'ە\1', exceptions)
             text = pywikibot.replaceExcept(text, u'ه‌', u'ە', exceptions)
@@ -714,9 +718,6 @@ class CosmeticChangesToolkit:
             exceptions.append(pattern)
             # do not change digits inside html-tags
             pattern = re.compile(u'<[/]*?[^</]+?[/]*?>', re.UNICODE)
-            exceptions.append(pattern)
-            # do not change digits inside file links
-            pattern = re.compile(u'\[\[.+?:.+?\..+?\|.+?\]\]', re.UNICODE)
             exceptions.append(pattern)
             for i in range(0,10):
                 text = pywikibot.replaceExcept(text, str(i), u'٠١٢٣٤٥٦٧٨٩'[i], exceptions)
