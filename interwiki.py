@@ -287,7 +287,7 @@ have to break it off, use "-continue" next time.
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
 # (C) Yuri Astrakhan, 2005-2006
-# (C) Pywikipedia bot team, 2007-2009
+# (C) Pywikipedia bot team, 2007-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -937,7 +937,8 @@ class Subject(object):
         """
         for tree in [self.done, self.pending]:
             for page in tree.filter(site):
-                if page.exists() and not page.isDisambig() and not page.isRedirectPage():
+                if page.exists() and not page.isDisambig() \
+                   and not page.isRedirectPage() and not page.isCategoryRedirect():
                     return page
         return None
 
@@ -951,7 +952,7 @@ class Subject(object):
         for tree in [self.done, self.pending, self.todo]:
             for page in tree.filter(site):
                 if page.namespace() == self.originPage.namespace():
-                    if page.exists() and not page.isRedirectPage():
+                    if page.exists() and not page.isRedirectPage() and not page.isCategoryRedirect():
                         return page
         return None
 
@@ -1182,7 +1183,8 @@ class Subject(object):
         if not self.workonme:
             # Do not ask hints for pages that we don't work on anyway
             return
-        if (self.untranslated or globalvar.askhints) and not self.hintsAsked and not self.originPage.isRedirectPage():
+        if (self.untranslated or globalvar.askhints) and not self.hintsAsked \
+           and not self.originPage.isRedirectPage() and not self.originPage.isCategoryRedirect():
             # Only once!
             self.hintsAsked = True
             if globalvar.untranslated:
@@ -1253,23 +1255,33 @@ class Subject(object):
                     self.done = PageTree() 
                 continue
 
-            elif page.isRedirectPage():
+            elif page.isRedirectPage() or page.isCategoryRedirect():
+                if page.isRedirectPage():
+                    redir = u''
+                else:
+                    redir = u'category '
                 try:
-                    redirectTargetPage = page.getRedirectTarget()
+                    if page.isRedirectPage():
+                        redirectTargetPage = page.getRedirectTarget()
+                    else:
+                        redirectTargetPage = page.getCategoryRedirectTarget()
                 except pywikibot.InvalidTitle:
                     # MW considers #redirect [[en:#foo]] as a redirect page,
                     # but we can't do anything useful with such pages
                     if not globalvar.quiet or pywikibot.verbose:
-                        pywikibot.output(u"NOTE: %s redirects to an invalid title" % page.aslink(True))
+                        pywikibot.output(u"NOTE: %s redirects to an invalid title"
+                                         % page.aslink(True))
                     continue
                 if not globalvar.quiet or pywikibot.verbose:
-                    pywikibot.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
+                    pywikibot.output(u"NOTE: %s is %sredirect to %s"
+                                     % (page.aslink(True), redir, redirectTargetPage.aslink(True)))
                 if page == self.originPage:
                     if globalvar.initialredirect:
                         if globalvar.contentsondisk:
                             redirectTargetPage = StoredPage(redirectTargetPage)
                         #don't follow double redirects; it might be a self loop
-                        if not redirectTargetPage.isRedirectPage():
+                        if not redirectTargetPage.isRedirectPage() \
+                           and not redirectTargetPage.isCategoryRedirect():
                             self.originPage = redirectTargetPage
                             self.todo.add(redirectTargetPage)
                             counter.plus(redirectTargetPage.site())
@@ -1282,12 +1294,13 @@ class Subject(object):
                         self.todo = PageTree()
                 elif not globalvar.followredirect:
                     if not globalvar.quiet or pywikibot.verbose:
-                        pywikibot.output(u"NOTE: not following redirects.")
+                        pywikibot.output(u"NOTE: not following %sredirects." % redir)
                 elif page.site().family == redirectTargetPage.site().family \
                     and not self.skipPage(page, redirectTargetPage, counter):
                     if self.addIfNew(redirectTargetPage, counter, page):
                         if config.interwiki_shownew or pywikibot.verbose:
-                            pywikibot.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
+                            pywikibot.output(u"%s: %s gives new %sredirect %s"
+                                             %  (self.originPage.aslink(), page.aslink(True), redir, redirectTargetPage.aslink(True)))
                 continue
             
             # must be behind the page.isRedirectPage() part
@@ -1326,7 +1339,7 @@ class Subject(object):
 
             duplicate = None
             for p in self.done.filter(page.site()):
-                if p != page and p.exists() and not p.isRedirectPage():
+                if p != page and p.exists() and not p.isRedirectPage() and not p.isCategoryRedirect():
                     duplicate = p
                     break
 
@@ -1428,7 +1441,7 @@ class Subject(object):
         # Each value will be a list of pages.
         new = {}
         for page in self.done:
-            if page.exists() and not page.isRedirectPage():
+            if page.exists() and not page.isRedirectPage() and not page.isCategoryRedirect():
                 site = page.site()
                 if site == self.originPage.site():
                     if page != self.originPage:
@@ -1534,6 +1547,8 @@ class Subject(object):
             pywikibot.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
         if self.originPage.isRedirectPage():
+            return
+        if self.originPage.isCategoryRedirect():
             return
         if not self.untranslated and globalvar.untranslatedonly:
             return
