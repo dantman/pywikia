@@ -186,10 +186,12 @@ These arguments define how much user confirmation is required:
 
 These arguments specify in which way the bot should follow interwiki links:
 
-    -noredirect    do not follow redirects. (note: without ending colon)
+    -noredirect    do not follow redirects nor category redirects.
+                   (note: without ending colon)
 
-    -initialredirect  work on its target if a redirect is entered on the
-                   command line. (note: without ending colon)
+    -initialredirect  work on its target if a redirect or category redirect is
+                   entered on the command line or by a generator.
+                   (note: without ending colon)
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
