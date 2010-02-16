@@ -2151,7 +2151,7 @@ not supported by PyWikipediaBot!"""
                 return self._putPageOld(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
-            if data.strip() != u"":
+            if  response.status != 302 and data.strip() != u"":
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
                 output(u"ERROR: Unexpected response from wiki server.")
