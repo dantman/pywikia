@@ -202,32 +202,6 @@ ignorelist = [
     re.compile('.*[\./@]bodo\.kommune\.no(/.*)?'), # bot can't handle their redirects
 ]
 
-def compileLinkR(withoutBracketed = False, onlyBracketed = False):
-    # RFC 2396 says that URLs may only contain certain characters.
-    # For this regex we also accept non-allowed characters, so that the bot
-    # will later show these links as broken ('Non-ASCII Characters in URL').
-    # Note: While allowing parenthesis inside URLs, MediaWiki will regard
-    # right parenthesis at the end of the URL as not part of that URL.
-    # The same applies to dot, comma, colon and some other characters.
-    notAtEnd = '\]\s\)\.:;,<>"'
-    # So characters inside the URL can be anything except whitespace,
-    # closing squared brackets, quotation marks, greater than and less
-    # than, and the last character also can't be parenthesis or another
-    # character disallowed by MediaWiki.
-    notInside = '\]\s<>"'
-    # The first half of this regular expression is required because '' is
-    # not allowed inside links. For example, in this wiki text:
-    #       ''Please see http://www.example.org.''
-    # .'' shouldn't be considered as part of the link.
-    regex = r'(?P<url>http[s]?://[^' + notInside + ']*?[^' + notAtEnd + '](?=[' + notAtEnd+ ']*\'\')|http[s]?://[^' + notInside + ']*[^' + notAtEnd + '])'
-
-    if withoutBracketed:
-        regex = r'(?<!\[)' + regex
-    elif onlyBracketed:
-        regex = r'\[' + regex
-    linkR = re.compile(regex)
-    return linkR
-
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     text = wikipedia.removeDisabledParts(text)
 
@@ -245,7 +219,7 @@ def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     while templateWithParamsR.search(text):
         text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
 
-    linkR = compileLinkR(withoutBracketed, onlyBracketed)
+    linkR = wikipedia.compileLinkR(withoutBracketed, onlyBracketed)
 
     # Remove HTML comments in URLs as well as URLs in HTML comments.
     # Also remove text inside nowiki links etc.
