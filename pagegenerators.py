@@ -108,8 +108,13 @@ parameterHelp = u"""\
                   Argument can be given as "-unwatched:n" where
                   n is the maximum number of articles to work on.
 
--usercontribs     Work on all articles that were edited by a certain user :
-                  Example : -usercontribs:DumZiBoT
+-usercontribs     Work on articles that were edited by a certain user.
+                  Example: -usercontribs:DumZiBoT
+                  Normally up to 250 distinct pages are given. To get an other
+                  number of pages, add the number behind the username
+                  delimited with ";"
+                  Example: -usercontribs:DumZiBoT;500
+                  returns 500 distinct pages to work on.
 
 -weblink          Work on all articles that contain an external link to
                   a given URL; may be given as "-weblink:url"
@@ -148,6 +153,9 @@ parameterHelp = u"""\
 -yahoo            Work on all pages that are found in a Yahoo search.
                   Depends on python module pYsearch.  See yahoo_appid in
                   config.py for instructions.
+
+-page             Work on a single page. Argument can also be given as
+                  "-page:pagetitle".
 """
 
 docuReplacements = {'&params;': parameterHelp}
@@ -485,12 +493,8 @@ def UserContributionsGenerator(username, number = 250, namespaces = [], site = N
     Yields number unique pages edited by user:username
     namespaces : list of namespace numbers to fetch contribs from
     """
-    
     if site is None:
         site = pywikibot.getSite()
-    if number > 500:
-        # the api does not allow more than 500 results for anonymous users
-        number = 500
     user = userlib.User(site, username)
     for page in user.contributions(number, namespaces):
         yield page[0]
@@ -994,7 +998,13 @@ class GeneratorFactory:
             else:
                 gen = UnwatchedPagesPageGenerator(number = int(arg[11:]))
         elif arg.startswith('-usercontribs'):
-            gen = UserContributionsGenerator(arg[14:])
+            args = arg[14:].split(';')
+            number = None
+            try:
+                number = int(args[1])
+            except:
+                number = 250
+            gen = UserContributionsGenerator(args[0], number)
         elif arg.startswith('-withoutinterwiki'):
             if len(arg) == 17:
                 gen = WithoutInterwikiPageGenerator()
