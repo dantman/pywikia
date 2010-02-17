@@ -4395,9 +4395,6 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
                           if nothing is changed, it is added at the end
 
     """
-    # Hyperlink regex is defined in weblinkchecker.py
-    import weblinkchecker
-
     if site is None:
         site = getSite()
 
@@ -4431,7 +4428,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         # depth, we'd need recursion which can't be done in Python's re.
         # After all, the language of correct parenthesis words is not regular.
         'template':    re.compile(r'(?s){{(({{(({{.*?}})|.)*}})|.)*}}'),
-        'hyperlink':   weblinkchecker.compileLinkR(),
+        'hyperlink':   compileLinkR(),
         'gallery':     re.compile(r'(?is)<gallery.*?>.*?</gallery>'),
         # this matches internal wikilinks, but also interwiki, categories, and
         # images.
