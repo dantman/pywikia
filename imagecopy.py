@@ -206,18 +206,19 @@ nowCommonsMessage = {
 moveToCommonsTemplate = {
     'ar': [u'نقل إلى كومنز'],
     'en': [u'Commons ok', u'Copy to Wikimedia Commons', u'Move to commons', u'Movetocommons', u'To commons', u'Copy to Wikimedia Commons by BotMultichill'],
-    'fi':[u'Commonsiin'],
-    'fr':[u'Image pour Commons'],
+    'fi': [u'Commonsiin'],
+    'fr': [u'Image pour Commons'],
     'hsb':[u'Kopěruj do Wikimedia Commons'],
-    'hu':[u'Commonsba'],
-    'is':[u'Færa á Commons'],
-    'ms':[u'Hantar ke Wikimedia Commons'],
+    'hu': [u'Commonsba'],
+    'is': [u'Færa á Commons'],
+    'ms': [u'Hantar ke Wikimedia Commons'],
     'nl': [u'Verplaats naar Wikimedia Commons', u'VNC'],
-    'ru':[u'На Викисклад'],
-    'sl':[u'Skopiraj v Zbirko'],
-    'sr':[u'За оставу'],
-    'sv':[u'Till Commons'],
-    'zh':[u'Copy to Wikimedia Commons'],
+    'pl': [u'Do Commons', u'NaCommons', u'Na Commons'],
+    'ru': [u'На Викисклад'],
+    'sl': [u'Skopiraj v Zbirko'],
+    'sr': [u'За оставу'],
+    'sv': [u'Till Commons'],
+    'zh': [u'Copy to Wikimedia Commons'],
 }
 
 imageMoveMessage = {
@@ -280,8 +281,7 @@ class imageTransfer (threading.Thread):
         if self.category:
             CH = CH.replace(u'{{subst:Unc}} <!-- Remove this line once you have added categories -->', u'')
             CH = CH + u'[[Category:' + self.category + u']]'
-            
-                
+        
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
 
@@ -293,7 +293,7 @@ class imageTransfer (threading.Thread):
             #Remove the move to commons templates
             if self.imagePage.site().language() in moveToCommonsTemplate:
                 for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
-                    imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
+                    imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'[^\}]*\}\}', u'', imtxt)
 
             #add {{NowCommons}}
             if self.imagePage.site().language() in nowCommonsTemplate:
