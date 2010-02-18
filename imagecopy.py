@@ -222,13 +222,14 @@ moveToCommonsTemplate = {
 }
 
 imageMoveMessage = {
-    '_default': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
-    'ar': u'[[:File:%s|الصورة]] تم نقلها إلى [[:commons:Image:%s|كومنز]].',
-    'en': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
-    'hu': u'[[:File:%s|Kép]] átmozgatva a [[:commons:Image:%s|Commons]]ba.',
-    'nl': u'[[:File:%s|Bestand]] is verplaatst naar [[:commons:Image:%s|commons]].',
-    'ru': u'[[:File:%s|Файл]] перемещён на [[:commons:Image:%s|Викисклад]].',
-    'zh': u'[[:File:%s|本檔案]]已移至[[:commons:Image:%s|維基共享資源]]',
+    '_default': u'[[:File:%s|File]] moved to [[:commons:File:%s|commons]].',
+    'ar': u'[[:File:%s|الصورة]] تم نقلها إلى [[:commons:File:%s|كومنز]].',
+    'en': u'[[:File:%s|File]] moved to [[:commons:File:%s|commons]].',
+    'hu': u'[[:File:%s|Kép]] átmozgatva a [[:commons:File:%s|Commons]]ba.',
+    'nl': u'[[:File:%s|Bestand]] is verplaatst naar [[:commons:File:%s|commons]].',
+    'pl': u'[[:File:%s|Plik]] przeniesiona do [[:commons:File:%s|commons]].',
+    'ru': u'[[:File:%s|Файл]] перемещён на [[:commons:File:%s|Викисклад]].',
+    'zh': u'[[:File:%s|本檔案]]已移至[[:commons:File:%s|維基共享資源]]',
 }
 
 def pageTextPost(url,parameters):
