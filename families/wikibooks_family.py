@@ -12,14 +12,14 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'de', 'fr', 'hu', 'pt', 'ja', 'nl', 'es', 'pl', 'it',
-            'he', 'sq', 'fi', 'ru', 'vi', 'cs', 'hr', 'zh', 'sv', 'da',
+            'he', 'sq', 'fi', 'vi', 'ru', 'cs', 'hr', 'zh', 'sv', 'da',
             'ca', 'tr', 'th', 'mk', 'sr', 'tl', 'fa', 'id', 'is', 'ar',
-            'no', 'ta', 'ka', 'ko', 'simple', 'gl', 'eo', 'lt', 'bg', 'ro',
+            'no', 'ta', 'ka', 'ko', 'gl', 'simple', 'eo', 'lt', 'bg', 'ro',
             'sk', 'el', 'la', 'ia', 'ang', 'cv', 'sl', 'et', 'mr', 'ur',
-            'uk', 'oc', 'az', 'ml', 'ms', 'eu', 'fy', 'hi', 'ie', 'tg',
-            'hy', 'bn', 'af', 'te', 'bs', 'pa', 'ky', 'sa', 'be', 'ast',
-            'tt', 'zh-min-nan', 'cy', 'mg', 'si', 'ku', 'co', 'tk', 'sw', 'ne',
-            'als', 'su', 'vo', 'uz', 'na', 'mn', 'kn', 'kk', 'nds', 'za',
+            'uk', 'ml', 'oc', 'az', 'ms', 'eu', 'fy', 'hi', 'ie', 'tg',
+            'hy', 'bn', 'af', 'bs', 'te', 'pa', 'sa', 'ky', 'be', 'ast',
+            'tt', 'zh-min-nan', 'cy', 'mg', 'si', 'ku', 'ne', 'co', 'tk', 'sw',
+            'su', 'als', 'vo', 'uz', 'na', 'kn', 'mn', 'kk', 'nds', 'za',
             'zu', 'my',
         ]
 

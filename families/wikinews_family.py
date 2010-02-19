@@ -12,8 +12,8 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'sr', 'en', 'pl', 'de', 'fr', 'it', 'pt', 'es', 'zh', 'ja',
-            'sv', 'ru', 'nl', 'he', 'fi', 'ar', 'cs', 'sd', 'hu', 'no',
-            'uk', 'ta', 'bg', 'ca', 'ro', 'tr', 'th', 'bs',
+            'sv', 'ru', 'nl', 'fi', 'he', 'ar', 'cs', 'sd', 'hu', 'no',
+            'bg', 'ta', 'uk', 'ro', 'ca', 'tr', 'th', 'bs',
         ]
 
         if family.config.SSL_connection:
