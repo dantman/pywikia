@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import family
 
 __version__ = '$Id$'
@@ -21,22 +21,22 @@ class Family(family.Family):
             'be', 'io', 'sw', 'nds', 'scn', 'qu', 'fy', 'su', 'af', 'zh-yue',
             'ast', 'nap', 'gu', 'ku', 'ur', 'bat-smg', 'ml', 'war', 'wa', 'cv',
             'ksh', 'ga', 'tg', 'lmo', 'roa-tara', 'vec', 'kn', 'gd', 'hy', 'uz',
-            'pam', 'yi', 'mi', 'zh-min-nan', 'nah', 'glk', 'als', 'kk', 'sah', 'li',
+            'pam', 'yi', 'mi', 'zh-min-nan', 'nah', 'kk', 'als', 'glk', 'sah', 'li',
             'hsb', 'co', 'roa-rup', 'tt', 'yo', 'ia', 'os', 'bcl', 'gan', 'arz',
-            'fiu-vro', 'mn', 'nds-nl', 'vls', 'tk', 'sa', 'fo', 'am', 'nrm', 'dv',
+            'fiu-vro', 'mn', 'nds-nl', 'vls', 'tk', 'sa', 'fo', 'am', 'dv', 'nrm',
             'pag', 'rm', 'pnb', 'map-bms', 'ne', 'wuu', 'bar', 'gv', 'my', 'sco',
             'diq', 'se', 'fur', 'lij', 'si', 'nov', 'mt', 'bh', 'ug', 'mzn',
             'csb', 'ilo', 'pi', 'zh-classical', 'km', 'lad', 'sc', 'frp', 'mg', 'ang',
             'kw', 'pdc', 'haw', 'szl', 'ps', 'ckb', 'hif', 'pa', 'bo', 'ie',
             'kv', 'hak', 'to', 'crh', 'myv', 'stq', 'gn', 'ln', 'mhr', 'nv',
-            'ace', 'jbo', 'ky', 'arc', 'ext', 'wo', 'tpi', 'ty', 'cbk-zam', 'so',
+            'ace', 'jbo', 'arc', 'ky', 'ext', 'wo', 'ty', 'tpi', 'cbk-zam', 'so',
             'eml', 'zea', 'srn', 'ay', 'pap', 'kab', 'ig', 'ba', 'kg', 'or',
             'lo', 'udm', 'dsb', 'rmy', 'cu', 'kaa', 'ab', 'sm', 'ce', 'xal',
             'av', 'ks', 'tet', 'got', 'sd', 'kl', 'mdf', 'na', 'pnt', 'iu',
-            'bm', 'pih', 'mwl', 'pcd', 'as', 'cdo', 'ee', 'om', 'chr', 'zu',
+            'bm', 'pih', 'mwl', 'pcd', 'as', 'cdo', 'chr', 'ee', 'om', 'zu',
             'ti', 'za', 'ts', 'ss', 've', 'bi', 'ha', 'dz', 'ch', 'bxr',
-            'cr', 'bug', 'xh', 'tn', 'ki', 'ik', 'sg', 'rw', 'st', 'ny',
-            'tw', 'chy', 'ak', 'sn', 'fj', 'ff', 'lbe', 'lg', 'tum', 'rn',
+            'cr', 'bug', 'xh', 'tn', 'ki', 'sg', 'ik', 'rw', 'st', 'ny',
+            'tw', 'chy', 'ak', 'sn', 'fj', 'ff', 'lg', 'lbe', 'tum', 'rn',
             'ng',
         ]
 
@@ -663,8 +663,7 @@ class Family(family.Family):
                    u'Chuyển hướng thể loại',
                    u'Categoryredirect',
                    u'Category redirect',
-                   u'Catredirect',
-                   u'Categoryredirect',),
+                   u'Catredirect',),
             'yi': (u'קאטעגאריע אריבערפירן',),
             'zh': (u'分类重定向',
                    u'Cr',
