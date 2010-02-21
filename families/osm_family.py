@@ -58,8 +58,5 @@ class Family(family.Family):
             '_default': u'NL talk',
         }
 
-    def scriptpath(self, code):
-        return ''
-
     def version(self, code):
-        return "1.13.3"
+        return "1.15.1"
