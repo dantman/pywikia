@@ -77,7 +77,7 @@ def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = Tr
             wikipedia.output(u"%s: (%d items)" % (data.keys()[0], titlecount ) )
         
         for k, v in params.iteritems():
-            if k not in ['action', 'format', 'file', 'xml']:
+            if k not in ['action', 'format', 'file', 'xml', 'text']:
                 if k == 'lgpassword' and wikipedia.verbose == 1:
                     v = u'XXXXX'
                 elif not isinstance(v, unicode):
