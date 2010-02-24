@@ -122,6 +122,7 @@ msg_add={
     'pl':u'Robot dodaje [[Kategoria:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'ru':u'Робот: добавление [[Категория:%s]]',
+    'sk':u'Robot pridal [[Kategória:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
     'szl':u'Bot dodowo: [[Kategoria:%s]]',
@@ -158,6 +159,7 @@ msg_change={
     'pt':u'Bot: Modificando [[%s]]',
     'pl':u'Robot przenosi %s',
     'ru':u'Робот: изменение %s',
+    'sk':u'Robot pridal [[Kategória:%s]]',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
     'uk':u'Робот: змінено [[Категорія:%s]]',
@@ -165,8 +167,10 @@ msg_change={
     }
 
 msg_replace={
-    'en':u'Robot: Replacing category %(oldcat)s with %(newcat)s',
+    'cs':u'Robot nahradil kategorii %(oldcat)s za %(newcat)s',
     'de':u'Bot: Ersetze Kategorie %(oldcat)s durch %(newcat)s',
+    'en':u'Robot: Replacing category %(oldcat)s with %(newcat)s',
+    'sk':u'Robot nahradil kategóriu %(oldcat)s za %(newcat)s', 
     }
 
 deletion_reason_move = {
@@ -199,6 +203,7 @@ deletion_reason_move = {
     'pt':u'Bot: Categoria [[:Category:%s|%s]] foi movida',
     'pl':u'Robot przenosi kategorię do [[:Category:%s|%s]]',
     'ru':u'Робот: категория переименована в [[:Категория:%s|%s]]',
+    'sk':u'Kategória bola presunutá na [[:Kategória:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[:Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[:Category:%s|%s]]',
     'uk':u'Робот: категорію перейменовано на [[Категорія:%s]]',
