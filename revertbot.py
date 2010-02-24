@@ -3,7 +3,8 @@ import wikipedia, query, userlib
 __version__ = '$Id$'
 
 """
-    Copyright 2008 - Bryan Tong Minh
+    (c) Bryan Tong Minh, 2008
+    (c) Pywikipedia team, 2008-2010
     Licensed under the terms of the MIT license.
 """
 
@@ -61,6 +62,8 @@ class BaseRevertBot(object):
                         self.log(u'%s: %s' % (item['title'], result))
                     else:
                         self.log(u'Skipped %s' % item['title'])
+                else:
+                    self.log(u'Skipped %s by callback' % item['title'])
             except StopIteration:
                 return
 
@@ -92,9 +95,37 @@ class BaseRevertBot(object):
         if self.comment: comment += ': ' + self.comment
 
         page = wikipedia.Page(self.site, item['title'])
-        page.put(rev['*'], comment)
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.aslink(True, True))
+        old = page.get()
+        new = rev['*']
+        wikipedia.showDiff(old, new)
+        page.put(new, comment)
         return comment
 
     def log(self, msg):
         wikipedia.output(msg)
 
+import re
+
+class myRevertBot(BaseRevertBot):
+        
+    def callback(self, item):
+        if 'top' in item:
+            page = wikipedia.Page(self.site, item['title'])
+            text=page.get()
+            pattern = re.compile(u'\[\[.+?:.+?\..+?\]\]', re.UNICODE)
+            return pattern.search(text) >= 0
+        return False
+
+def main():
+    item = None
+    for arg in wikipedia.handleArgs():
+        continue
+    bot = myRevertBot(site = wikipedia.getSite())
+    bot.revert_contribs()
+
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
