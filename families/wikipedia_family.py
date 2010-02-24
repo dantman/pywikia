@@ -19,25 +19,24 @@ class Family(family.Family):
             'ka', 'br', 'az', 'bs', 'lb', 'sh', 'is', 'mr', 'cy', 'sq',
             'lv', 'jv', 'bpy', 'tl', 'pms', 'be-x-old', 'ta', 'bn', 'oc', 'an',
             'be', 'io', 'sw', 'nds', 'scn', 'qu', 'fy', 'su', 'af', 'zh-yue',
-            'ast', 'nap', 'gu', 'ku', 'ur', 'bat-smg', 'war', 'ml', 'wa', 'cv',
-            'ksh', 'ga', 'tg', 'lmo', 'roa-tara', 'vec', 'kn', 'gd', 'hy', 'uz',
+            'ast', 'nap', 'gu', 'ku', 'war', 'ur', 'bat-smg', 'ml', 'wa', 'cv',
+            'ksh', 'ga', 'lmo', 'tg', 'roa-tara', 'vec', 'kn', 'gd', 'hy', 'uz',
             'pam', 'yi', 'mi', 'zh-min-nan', 'nah', 'kk', 'als', 'glk', 'sah', 'li',
             'hsb', 'co', 'roa-rup', 'tt', 'yo', 'ia', 'os', 'bcl', 'arz', 'gan',
             'fiu-vro', 'mn', 'nds-nl', 'vls', 'tk', 'sa', 'fo', 'am', 'dv', 'nrm',
             'pag', 'pnb', 'rm', 'map-bms', 'ne', 'wuu', 'bar', 'gv', 'my', 'sco',
-            'diq', 'se', 'fur', 'lij', 'si', 'nov', 'mt', 'bh', 'mzn', 'ug',
+            'diq', 'se', 'fur', 'lij', 'si', 'nov', 'mt', 'bh', 'ug', 'mzn',
             'csb', 'ilo', 'pi', 'zh-classical', 'km', 'lad', 'sc', 'frp', 'mg', 'ang',
             'kw', 'pdc', 'haw', 'szl', 'ps', 'ckb', 'hif', 'pa', 'bo', 'ie',
             'kv', 'hak', 'to', 'crh', 'myv', 'stq', 'gn', 'ln', 'mhr', 'nv',
             'ace', 'arc', 'jbo', 'ky', 'ext', 'wo', 'ty', 'tpi', 'cbk-zam', 'so',
-            'eml', 'zea', 'srn', 'ay', 'pap', 'kab', 'ig', 'ba', 'kg', 'or',
+            'eml', 'zea', 'srn', 'kab', 'ay', 'pap', 'ig', 'ba', 'kg', 'or',
             'lo', 'udm', 'dsb', 'rmy', 'cu', 'kaa', 'ab', 'sm', 'ce', 'xal',
-            'av', 'ks', 'tet', 'got', 'sd', 'kl', 'mdf', 'na', 'pnt', 'iu',
-            'bm', 'pih', 'mwl', 'pcd', 'as', 'cdo', 'chr', 'ee', 'om', 'zu',
+            'av', 'ks', 'tet', 'got', 'sd', 'kl', 'mdf', 'na', 'pnt', 'bm',
+            'iu', 'pih', 'mwl', 'pcd', 'as', 'cdo', 'chr', 'ee', 'om', 'zu',
             'ti', 'za', 'ts', 'ss', 've', 'bi', 'ha', 'dz', 'ch', 'bxr',
             'cr', 'bug', 'xh', 'tn', 'ki', 'sg', 'ik', 'rw', 'st', 'tw',
             'ny', 'chy', 'ak', 'sn', 'fj', 'ff', 'lg', 'lbe', 'tum', 'rn',
-            'ng',
         ]
 
         if family.config.SSL_connection:
@@ -1048,6 +1047,7 @@ class Family(family.Family):
             'mo': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Moldovan_Wikipedia
             'mus': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Muscogee_Wikipedia
             'nb': 'no',
+            'ng': None, #(not reachable) http://meta.wikimedia.org/wiki/Inactive_wikis
             'jp': 'ja',
             'ru-sib': None, # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Siberian_Wikipedia
             'tlh': None,
