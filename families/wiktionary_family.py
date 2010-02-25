@@ -368,11 +368,11 @@ class Family(family.Family):
         }
 
         self.namespaces[112] = {
-            'en': u'WT',
+         #   'en': u'WT',
         }
 
         self.namespaces[113] = {
-            'en': u'WT talk',
+         #   'en': u'WT talk',
         }
 
         self.namespaces[114] = {
