@@ -61,17 +61,11 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         'comment':     re.compile(r'(?s)<!--.*?-->'),
         # section headers
         'header':      re.compile(r'\r\n=+.+=+ *\r\n'),
-        'includeonly': re.compile(r'(?is)<includeonly>.*?</includeonly>'),
-        'math':        re.compile(r'(?is)<math>.*?</math>'),
-        'noinclude':   re.compile(r'(?is)<noinclude>.*?</noinclude>'),
-        # wiki tags are ignored inside nowiki tags.
-        'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
         # preformatted text
         'pre':         re.compile(r'(?ism)<pre>.*?</pre>'),
         'source':      re.compile(r'(?is)<source .*?</source>'),
         # inline references
         'ref':         re.compile(r'(?ism)<ref[ >].*?</ref>'),
-        'timeline':    re.compile(r'(?is)<timeline>.*?</timeline>'),
         # lines that start with a space are shown in a monospace font and
         # have whitespace preserved.
         'startspace':  re.compile(r'(?m)^ (.*?)$'),
@@ -92,7 +86,8 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         # this matches internal wikilinks, but also interwiki, categories, and
         # images.
         'link':        re.compile(r'\[\[[^\]\|]*(\|[^\]]*)?\]\]'),
-        'interwiki':   re.compile(r'(?i)\[\[(%s)\s?:[^\]]*\]\][\s]*'
+        # also finds links to foreign sites with preleading ":"
+        'interwiki':   re.compile(r'(?i)\[\[:?(%s)\s?:[^\]]*\]\][\s]*'
                                    % '|'.join(site.validLanguageLinks()
                                               + site.family.obsolete.keys())
                                   ),
@@ -111,9 +106,11 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         if isinstance(exc, str) or isinstance(exc, unicode):
             # assume it's a reference to the exceptionRegexes dictionary
             # defined above.
-            if exc not in exceptionRegexes:
-                raise ValueError("Unknown tag type: " + exc)
-            dontTouchRegexes.append(exceptionRegexes[exc])
+            if exc in exceptionRegexes:
+                dontTouchRegexes.append(exceptionRegexes[exc])
+            else:
+                # nowiki, noinclude, includeonly, timeline, math ond other extensions
+                dontTouchRegexes.append(re.compile(r'(?is)<%s>.*?</%s>' % (exc, exc)))
             # handle alias
             if exc == 'source':
                 dontTouchRegexes.append(re.compile(r'(?is)<syntaxhighlight .*?</syntaxhighlight>'))
