@@ -5928,6 +5928,59 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             yield page, '', '', '', '', ''
 
     # TODO: avoid code duplication for the following methods
+
+    def logpages(self, number=50, mode='', user=None, repeat=False, namespace=[], offset=-1):
+        if config.use_api:
+            apiURL = self.api_address()
+            del apiURL
+        else:
+            raise NotImplementedError
+        if mode not in ('block', 'protect', 'rights', 'delete', 'upload',
+                        'move', 'import', 'patrol', 'merge', 'suppress',
+                        'review', 'stable', 'gblblock', 'renameuser',
+                        'globalauth', 'gblrights', 'abusefilter', 'newusers'):
+            raise NotImplementedError
+        params = {
+            'action'    : 'query',
+            'list'      : 'logevents',
+            'letype'    : mode,
+            'lelimit'   : int(number),
+        }
+        
+        if number > config.special_page_limit:
+            params['lelimit'] = config.special_page_limit
+            if number > 5000 and self.site().isAllowed('apihighlimits'):
+                params['lelimit'] = 5000
+        if user:
+            params['leuser'] = user
+        nbresults = 0
+        while True:
+            result = query.GetData(params, self)
+            if 'error' in result or 'warnings' in result:
+                output('%s' % result)
+                raise Error
+            for c in result['query']['logevents']:
+                if not namespace or c['ns'] in namespace:
+                    yield (Page(self, c['title'], defaultNamespace=c['ns']),
+                           c['user'],
+                           parsetime2stamp(c['timestamp']),
+                           c['comment'],
+                           )
+
+                nbresults += 1
+                if nbresults >= number:
+                    break
+            if 'query-continue' in result and nbresults < number:
+                params['ucstart'] = result['query-continue']['logevents']['ucstart']
+            elif repeat:
+                nbresults = 0
+                try:
+                    params.pop('ucstart')
+                except KeyError:
+                    pass
+            else:
+                break
+        return
     def newpages(self, number = 10, get_redirect = False, repeat = False, namespace = 0):
         """Yield new articles (as Page objects) from Special:Newpages.
 

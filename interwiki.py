@@ -190,8 +190,9 @@ These arguments specify in which way the bot should follow interwiki links:
                    (note: without ending colon)
 
     -initialredirect  work on its target if a redirect or category redirect is
-                   entered on the command line or by a generator.
-                   (note: without ending colon)
+                   entered on the command line or by a generator (note: without
+                   ending colon). It is recommended to use this option with
+                   -movelog pagegenerator.
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also

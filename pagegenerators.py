@@ -115,6 +115,19 @@ parameterHelp = u"""\
                   delimited with ";"
                   Example: -usercontribs:DumZiBoT;500
                   returns 500 distinct pages to work on.
+                  
+-<mode>log        Work on articles that were on a specified special:log.
+                  You have options for every type of logs given by the
+                  <mode> parameter which could be one of the following:
+                      block, protect, rights, delete, upload, move, import,
+                      patrol, merge, suppress, review, stable, gblblock,
+                      renameuser, globalauth, gblrights, abusefilter, newusers
+                  Examples:
+                  -movelog gives 500 pages from move log (should be redirects)
+                  -deletelog:10 gives 10 pages from deletion log
+                  -protect:Dummy gives 500 pages from protect by user Dummy
+                  -patrol:Dummy;20 gives 20 pages patroled by user Dummy
+                  In some cases this must be written as -patrol:"Dummy;20"
 
 -weblink          Work on all articles that contain an external link to
                   a given URL; may be given as "-weblink:url"
@@ -285,6 +298,12 @@ def PrefixingPageGenerator(prefix, namespace = None, includeredirects = True, si
     title = page.titleWithoutNamespace()
     for page in site.prefixindex(prefix = title, namespace = namespace, includeredirects = includeredirects):
         yield page
+
+def LogpagesPageGenerator(number = 500, mode='', user=None, repeat = False, site = None, namespace=[]):
+    if site is None:
+        site = pywikibot.getSite()
+    for page in site.logpages(number=number, mode=mode, user=user, repeat=repeat, namespace=namespace):
+        yield page[0]
 
 def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, site = None, namespace = 0):
     if site is None:
@@ -1145,7 +1164,7 @@ class GeneratorFactory:
             limit = arg[11:] or pywikibot.input(
                 u'How many images do you want to load?')
             gen = NewimagesPageGenerator(number = int(limit))
-        elif arg.startswith('-new'):
+        elif arg == ('-new') or arg.startswith('-new:'):
             if len(arg) >=5:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
             else:
@@ -1175,7 +1194,25 @@ class GeneratorFactory:
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
         else:
-            pass
+            mode, log, user = arg.partition('log')
+            if log == 'log':
+              number = 500
+              if not user:
+                  user = None
+              else:
+                  try:
+                      number = int(user[1:])
+                      user = None
+                  except ValueError:
+                      user = user[1:]
+              if user:
+                  result = user.split(';')
+                  user = result[0]
+                  try:
+                      number = int(result[1])
+                  except:
+                      pass
+              gen = LogpagesPageGenerator(number, mode[1:], user)
         if gen:
             self.gens.append(gen)
             return self.getCombinedGenerator()
