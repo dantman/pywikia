@@ -988,8 +988,8 @@ def translate(code, xdict):
 
     # If xdict attribute is wikipedia, define the xdite had multiple projects
     if 'wikipedia' in xdict: 
-        if default_family in xdict:
-            xdict = xdict[default_family]
+        if pywikibot.default_family in xdict:
+            xdict = xdict[pywikibot.default_family]
         else:
             xdict = xdict['wikipedia']
 
