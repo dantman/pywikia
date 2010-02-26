@@ -5946,7 +5946,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             'letype'    : mode,
             'lelimit'   : int(number),
         }
-        
+
         if number > config.special_page_limit:
             params['lelimit'] = config.special_page_limit
             if number > 5000 and self.site().isAllowed('apihighlimits'):
@@ -5971,16 +5971,17 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 if nbresults >= number:
                     break
             if 'query-continue' in result and nbresults < number:
-                params['ucstart'] = result['query-continue']['logevents']['ucstart']
+                params['lestart'] = result['query-continue']['logevents']['lestart']
             elif repeat:
                 nbresults = 0
                 try:
-                    params.pop('ucstart')
+                    params.pop('lestart')
                 except KeyError:
                     pass
             else:
                 break
         return
+
     def newpages(self, number = 10, get_redirect = False, repeat = False, namespace = 0):
         """Yield new articles (as Page objects) from Special:Newpages.
 
