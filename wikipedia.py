@@ -4828,10 +4828,13 @@ class Site(object):
                 'meta': 'userinfo',
                 'uiprop': 'blockinfo',
             }
+            data = query.GetData(params, self)
+            if not data or 'error' in data:
+                return False
             if self.versionnumber() == 11:     # fix for version 1.11 API.
-                data = query.GetData(params, self)['userinfo']
+                data = data['userinfo']
             else:
-                data = query.GetData(params, self)['query']['userinfo']
+                data = data['query']['userinfo']
             return 'blockedby' in data
         except NotImplementedError:
             return False
