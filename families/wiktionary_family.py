@@ -19,12 +19,12 @@ class Family(family.Family):
             'sl', 'hr', 'hy', 'sq', 'tt', 'la', 'zh-min-nan', 'da', 'tk', 'ast',
             'wa', 'ur', 'hsb', 'kk', 'ky', 'wo', 'eo', 'ang', 'hi', 'ga',
             'gn', 'az', 'ia', 'co', 'lv', 'sk', 'ka', 'ne', 'csb', 'st',
-            'ms', 'tl', 'mr', 'nds', 'kl', 'eu', 'sd', 'ug', 'ti', 'cy',
+            'ms', 'tl', 'mr', 'eu', 'nds', 'kl', 'sd', 'ug', 'ti', 'cy',
             'mk', 'ps', 'an', 'sh', 'my', 'bn', 'gu', 'km', 'mg', 'ts',
             'qu', 'bs', 'fo', 'am', 'rw', 'chr', 'su', 'om', 'mn', 'nah',
             'ie', 'yi', 'iu', 'be', 'ss', 'gd', 'tg', 'si', 'nn', 'zu',
-            'kw', 'dv', 'pa', 'gv', 'mt', 'tpi', 'sg', 'roa-rup', 'mi', 'jv',
-            'uz', 'ik', 'so', 'ha', 'sa', 'ay', 'na', 'jbo', 'tn', 'sm',
+            'kw', 'dv', 'pa', 'mt', 'gv', 'tpi', 'sg', 'roa-rup', 'mi', 'jv',
+            'uz', 'ik', 'so', 'ha', 'ay', 'sa', 'na', 'jbo', 'tn', 'sm',
             'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
 
