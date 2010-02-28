@@ -333,7 +333,11 @@ class DiscussionThread(object):
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d %Y (%Z)")
             if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %B %d %Y (%Z)")
+            if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %B %d, %Y (%Z)")
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%d. %Bta %Y kello %H.%M (%Z)")
             if not TIME:
