@@ -263,6 +263,7 @@ ignore_title = {
             u'Benutzer:Sebbot/.+',
             u'Benutzer:SirJective/.+',
             u'Benutzer:Srbauer.*',
+            u'Benutzer:SteEis.',
             u'Benutzer:Steindy.*',
             u'Benutzer:SrbBot.*',
             u'Benutzer:PortalBot/.+',
