@@ -272,7 +272,7 @@ featured_name = {
     'th': (BACK,u"บทความคัดสรร"),
     'tl': (BACK,u"Napiling artikulo"),
     'tr': (BACK,u"Seçkin madde"),
-   #'tt': (CAT, u"Şäp mäqälä"),
+    'tt': (CAT, u"Сайланган мәкаләләр"),
     'uk': (CAT, u"Вибрані статті"),
     'ur': (CAT, u"منتخب مقالے"),
     'uz': (CAT, u"Vikipediya:Tanlangan maqolalar"),
