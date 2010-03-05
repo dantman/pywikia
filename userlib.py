@@ -619,11 +619,17 @@ if __name__ == '__main__':
     """
     Simple testing code for the [[User:Example]] on the English Wikipedia.
     """
-    try:
-        Site = wikipedia.getSite()
-        exampleUser = User(Site, 'Example')
-        wikipedia.output(exampleUser.getUserPage().get())
-        wikipedia.output(exampleUser.getUserPage('Lipsum').get())
-        wikipedia.output(exampleUser.getUserTalkPage().get())
-    finally:
-        wikipedia.stopme()
+    wikipedia.output("""
+    This module is not for direct usage from the command prompt.
+    In code, the usage is as follows:
+    
+    >>> exampleUser = User("en", 'Example')
+    >>> wikipedia.output(exampleUser.getUserPage().get())
+    >>> wikipedia.output(exampleUser.getUserPage('Lipsum').get())
+    >>> wikipedia.output(exampleUser.getUserTalkPage().get())
+    """)
+    
+    # unit tests
+    import tests.test_userlib
+    import unittest
+    unittest.main(tests.test_userlib)
