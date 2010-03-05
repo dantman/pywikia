@@ -32,6 +32,10 @@ class BlockIDError(UnblockError): pass
 
 class AlreadyUnblocked(UnblockError): pass
 
+class InvalidUser(wikipedia.InvalidTitle):
+    """The mediawiki API does not allow IP lookups."""
+    pass
+
 class User(object):
     """
     A class that represents a Wiki user.
@@ -606,14 +610,19 @@ class _GetAllUI(object):
                 #if self._blocked: #Get block ID
         
     def getData(self):
-        datas = {}
+        users = {}
         params = {
             'action': 'query',
             'list': 'users',
             'usprop': ['blockinfo', 'groups', 'editcount', 'registration', 'emailable', 'gender'],
             'ususers': u'|'.join([n.name() for n in self.users]),
         }
-        return dict([(n['name'], n) for n in query.GetData(params, self.site)['query']['users']])
+        data = query.GetData(params, self.site)
+        for user in data['query']['users']:
+            if u'invalid' in user:
+                raise InvalidUser("User name '%s' is invalid. IP addresses are not supported." % user['name'])
+            users[user['name']] = user
+        return users
 
 if __name__ == '__main__':
     """
