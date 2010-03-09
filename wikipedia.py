@@ -1190,7 +1190,7 @@ not supported by PyWikipediaBot!"""
                         t[:1].upper() + t[1:] for t in distl
                     )
             disambigInPage = self._site._disambigtemplates.intersection(self.templates())
-            self._isDisambig = len(disambigInPage) > 0
+            self._isDisambig = self.namespace() != 10 and len(disambigInPage) > 0
         return self._isDisambig
 
     def getReferences(self, follow_redirects=True, withTemplateInclusion=True,
