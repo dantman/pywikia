@@ -4144,12 +4144,13 @@ class Throttle(object):
         self.releasepid = 1200 # Free the process id
         self.lastwait = 0.0
         self.delay = 0
-        if multiplydelay:
+        self.multiplydelay = multiplydelay
+        if self.multiplydelay:
             self.checkMultiplicity()
         self.setDelay(mindelay)
 
     def logfn(self):
-        return config.datafilepath('logs', 'throttle.log')
+        return config.datafilepath('pywikibot', 'throttle.ctrl')
 
     def checkMultiplicity(self):
         self.lock.acquire()
@@ -4211,7 +4212,7 @@ class Throttle(object):
 
     def getDelay(self):
         thisdelay = self.delay
-        if self.pid: # If self.pid, we're checking for multiple processes
+        if self.multiplydelay: # If self.pid, we're checking for multiple processes
             if time.time() > self.checktime + self.checkdelay:
                 self.checkMultiplicity()
             if thisdelay < (self.mindelay * self.next_multiplicity):
@@ -4595,6 +4596,7 @@ class Site(object):
     mediawiki_message: Retrieve the text of a specified MediaWiki message
     has_mediawiki_message: True if this site defines specified MediaWiki
                            message
+    has_api: True if this site's family provides api interface
 
     shared_image_repository: Return tuple of image repositories used by this
         site.
@@ -5677,21 +5679,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
         if (not self._mediawiki_messages) or forceReload:
-            api = False
+            api = self.has_api()
             if verbose:
                 output(u"Retrieving mediawiki messages from Special:Allmessages")
             # Only MediaWiki r27393/1.12 and higher support XML output for Special:Allmessages
             if self.versionnumber() < 12:
                 usePHP = True
             else:
-                try:
-                    if config.use_api:
-                        x = self.api_address()
-                        del x
-                        api = True
-                except NotImplementedError:
-                    api = False
-
                 usePHP = False
                 elementtree = True
                 try:
@@ -5797,6 +5791,17 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             return True
         except KeyError:
             return False
+        
+    def has_api(self):
+        """Return True if this sites family has api interface."""
+        try:
+            if config.use_api:
+                x = self.apipath()
+                del x
+                return True
+        except NotImplementedError:
+            pass
+        return False
 
     def _load(self, sysop = False, force = False):
         """
@@ -5814,16 +5819,10 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         if verbose:
             output(u'Getting information for site %s' % self)
 
-        try:
-            api_url = self.api_address()
-            del api_url
-        except NotImplementedError:
-            config.use_api = False
-
         # Get data
         # API Userinfo is available from version 1.11
         # preferencetoken available from 1.14
-        if config.use_api and self.versionnumber() >= 11:
+        if self.has_api() and self.versionnumber() >= 11:
             #Query userinfo
             params = {
                 'action': 'query',
@@ -5860,66 +5859,47 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         Use API when enabled use_api and version >= 1.11,
         or use Special:Search.
         """
-        try:
-            if config.use_api and self.versionnumber() >= 11:
-                apiUrl = self.site().api_address()
-                del apiUrl
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
-            _search = self._search_without_api
+        if self.has_api() and self.versionnumber() >= 11:
+            #Yield search results (using api) for query.
+            params = {
+                'action': 'query',
+                'list': 'search',
+                'srsearch': q,
+                'srlimit': number
+            }
+            if namespaces:
+                params['srnamespace'] = namespaces
+
+            offset = 0
+            while True:
+                params['sroffset'] = offset
+                data = query.GetData(params, self)['query']
+                if 'error' in data:
+                    raise RuntimeError('%s' % data['error'])
+                if not data['search']:
+                    break
+                for s in data['search']:
+                    offset += 1
+                    page = Page(self, s['title'])
+                    yield page, s['snippet'], '', s['size'], s['wordcount'], s['timestamp']
         else:
-            _search = self._search_with_api
-        return _search(query, number, namespaces)
-
-    def _search_with_api(self, q, number, namespaces):
-        """Yield search results (using api) for query."""
-        params = {
-            'action': 'query',
-            'list': 'search',
-            'srsearch': q,
-            'srlimit': number
-        }
-        if namespaces:
-            params['srnamespace'] = namespaces
-
-        offset = 0
-        while True:
-            params['sroffset'] = offset
-            data = query.GetData(params, self)['query']
-            if 'error' in data:
-                raise RuntimeError('%s' % data['error'])
-            if not data['search']:
-                break
-            for s in data['search']:
-                offset += 1
-                page = Page(self, s['title'])
-                yield page, s['snippet'], '', s['size'], s['wordcount'], s['timestamp']
-
-    def _search_without_api(self, query, number, namespaces):
-        """Yield search results (using Special:Search page) for query."""
-        throttle = True
-        path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
-                                   n=number, ns=namespaces)
-        get_throttle()
-        html = self.getUrl(path)
-
-        entryR = re.compile(ur'<li><a href=".+?" title="(?P<title>.+?)">.+?</a>',
-                            re.DOTALL)
-
-        for m in entryR.finditer(html):
-            page = Page(self, m.group('title'))
-            yield page, '', '', '', '', ''
+            #Yield search results (using Special:Search page) for query.
+            throttle = True
+            path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
+                                       n=number, ns=namespaces)
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile(ur'<li><a href=".+?" title="(?P<title>.+?)">.+?</a>',
+                                re.DOTALL)
+            for m in entryR.finditer(html):
+                page = Page(self, m.group('title'))
+                yield page, '', '', '', '', ''
 
     # TODO: avoid code duplication for the following methods
 
     def logpages(self, number=50, mode='', user=None, repeat=False, namespace=[], offset=-1):
-        if config.use_api:
-            apiURL = self.api_address()
-            del apiURL
-        else:
-            raise NotImplementedError
-        if mode not in ('block', 'protect', 'rights', 'delete', 'upload',
+        if not self.has_api() or \
+           mode not in ('block', 'protect', 'rights', 'delete', 'upload',
                         'move', 'import', 'patrol', 'merge', 'suppress',
                         'review', 'stable', 'gblblock', 'renameuser',
                         'globalauth', 'gblrights', 'abusefilter', 'newusers'):
@@ -5986,14 +5966,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         #       should use both offset and limit parameters, and have an
         #       option to fetch older rather than newer pages
         seen = set()
-        try:
-            d = self.apipath()
-            del d
-        except NotImplementedError:
-            config.use_api = False
-
+        api = self.has_api()
         while True:
-            if config.use_api and self.versionnumber() >= 10:
+            if api and self.versionnumber() >= 10:
                 params = {
                     'action': 'query',
                     'list': 'recentchanges',
@@ -6668,18 +6643,12 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
-        #Check API can work
-        if config.use_api:
-            try:
-                d = self.api_address()
-                del d
-            except NotImplementedError:
-                config.use_api = False
-
+        api = self.has_api()
         urlsToRetrieve = [siteurl]
         if not siteurl.startswith('*.'):
             urlsToRetrieve.append('*.' + siteurl)
-        if config.use_api and self.versionnumber() >= 11:
+
+        if api and self.versionnumber() >= 11:
             output(u'Querying API exturlusage...')
             for url in urlsToRetrieve:
                 params = {
