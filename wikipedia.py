@@ -2156,7 +2156,7 @@ not supported by PyWikipediaBot!"""
         text = self.get()
 
         # Replace {{PAGENAME}} by its value
-        for pagenametext in self.site().family.pagenamecodes(
+        for pagenametext in self.site().pagenamecodes(
                                                    self.site().language()):
             text = text.replace(u"{{%s}}" % pagenametext, self.title())
 
@@ -2363,8 +2363,8 @@ not supported by PyWikipediaBot!"""
                 # {{#if: }}
                 if name.startswith('#'):
                     continue
-                # {{DEFAULTSORT:...}} or {{#if: }}
-                defaultKeys = self.site().siteinfo('magicwords')['defaultsort']
+                # {{DEFAULTSORT:...}}
+                defaultKeys = self.site().getmagicwords('defaultsort')
                 found = False
                 for key in defaultKeys:
                     if name.startswith(key):
@@ -6757,19 +6757,18 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 return True
         return False
 
-    def redirect(self, default = False):
+    def getmagicwords(self, word):
+        """Return list of localized "word" magic words for the site."""
+        return self.siteinfo('magicwords').get(word)
+
+    def redirect(self, default=False):
         """Return the localized redirect tag for the site.
 
-        If default is True, falls back to 'REDIRECT' if the site has no
-        special redirect tag.
+        Argument is ignored (but maintained for backwards-compatibility).
 
         """
-        tag = self.siteinfo('magicwords').get('redirect')
-        if tag:
-            # remove first "#" letter
-            return tag[0][1:]
-        elif default:
-            return u'REDIRECT'
+        # return the magic word without the preceding '#' character
+        return self.getmagicwords('redirect')[0].lstrip("#")
 
     def redirectRegex(self):
         """Return a compiled regular expression matching on redirect pages.
@@ -6780,7 +6779,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         #NOTE: this is needed, since the API can give false positives!
         default = 'REDIRECT'
         try:
-            keywords = self.siteinfo('magicwords')['redirect']
+            keywords = self.getmagicwords('redirect')
             pattern = r'(?:' + '|'.join(keywords) + ')'
         except KeyError:
             # no localized keyword for redirects
@@ -6796,6 +6795,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         return re.compile(prefix + pattern
                                  + '\s*:?\s*\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
+
+    def pagenamecodes(self, default=True):
+        """Return list of localized PAGENAME tags for the site."""
+        return self.getmagicwords('pagename')
+
+    def pagename2codes(self, default=True):
+        """Return list of localized PAGENAMEE tags for the site."""
+        return self.getmagicwords('pagenamee')
 
     def resolvemagicwords(self, wikitext):
         """Replace the {{ns:xx}} marks in a wikitext with the namespace names"""

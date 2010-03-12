@@ -1,8 +1,16 @@
 # -*- coding: utf-8  -*-
-import config, urllib, re
-from datetime import timedelta, datetime
 
+#
+# (C) Pywikipedia bot team, 2004-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__='$Id$'
+
+import config
+import re
+import urllib
+from datetime import timedelta, datetime
 
 # Parent class for all wiki families
 
@@ -2678,8 +2686,8 @@ class Family:
             },
         }
 
-        # letters that can follow a wikilink and are regarded as part
-        # of this link
+        # letters that can follow a wikilink and are regarded as part of
+        # this link
         # This depends on the linktrail setting in LanguageXx.php and on
         # [[MediaWiki:Linktrail]].
         # Note: this is a regular expression.
@@ -3113,7 +3121,9 @@ class Family:
 
         # A list with the name for cross-project cookies.
         # default for wikimedia centralAuth extensions.
-        self.cross_projects_cookies = ['centralauth_Session', 'centralauth_Token', 'centralauth_User']
+        self.cross_projects_cookies = ['centralauth_Session',
+                                       'centralauth_Token',
+                                       'centralauth_User']
         self.cross_projects_cookie_username = 'centralauth_User'
 
         # A list with the name in the cross-language flag permissions
@@ -3448,51 +3458,6 @@ class Family:
 
     def category_namespaces(self, code):
         return self.namespace(code, 14, all = True)
-
-    # So can be pagename code
-    pagename = {
-        'bg': [u'СТРАНИЦА'],
-        'he': [u'שם הדף'],
-        'kk': [u'БЕТАТАУЫ'],
-        'nn': ['SIDENAMN', 'SIDENAVN'],
-        'ru': [u'НАЗВАНИЕСТРАНИЦЫ'],
-        'sr': [u'СТРАНИЦА'],
-        'tt': [u'BİTİSEME']
-    }
-
-    pagenamee = {
-        'he': [u'שם הדף מקודד'],
-        'kk': [u'БЕТАТАУЫ2'],
-        'nn': ['SIDENAMNE', 'SIDENAVNE'],
-        'ru': [u'НАЗВАНИЕСТРАНИЦЫ2'],
-        'sr': [u'СТРАНИЦЕ']
-    }
-
-    def pagenamecodes(self, code):
-        pos = ['PAGENAME']
-        pos2 = []
-        if code in self.pagename:
-            pos = pos + self.pagename[code]
-        elif code == 'als':
-            return self.pagenamecodes('de')
-        elif code == 'bm':
-            return self.pagenamecodes('fr')
-        for p in pos:
-            pos2 += [p, p.lower()]
-        return pos2
-
-    def pagename2codes(self, code):
-        pos = ['PAGENAME']
-        pos2 = []
-        if code in self.pagenamee:
-            pos = pos + self.pagenamee[code]
-        elif code == 'als':
-            return self.pagename2codes('de')
-        elif code == 'bm':
-            return self.pagename2codes('fr')
-        for p in pos:
-            pos2 += [p, p.lower()]
-        return pos2
 
     # Methods
     def protocol(self, code):
