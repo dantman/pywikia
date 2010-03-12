@@ -125,6 +125,12 @@ class Family(family.Family):
         self.namespaces[133] = {
             '_default': u'نقاش المساعدة',
         }
+        self.namespaces[200] = {
+            '_default': u'Grants',
+        }
+        self.namespaces[201] = {
+            '_default': u'Grants talk',
+        }
 
         self.interwiki_forward = 'wikipedia'
         self.cross_allowed = ['meta',]
