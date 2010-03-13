@@ -3664,11 +3664,8 @@ class _GetAll(object):
 
     def run(self):
         if self.pages:
-            doAPI = None
-            # API Implemented Check
-            # doAPI = self.site.has_api()
             
-            if doAPI:
+            if self.site.has_api():
                 while True:
                     try:
                         data = self.getDataApi()
@@ -3691,7 +3688,6 @@ class _GetAll(object):
                     self._norm = dict([(x['from'],x['to']) for x in data['query']['normalized']])
                 for vals in data['query']['pages'].values():
                     self.oneDoneApi(vals)
-
             else:
                 while True:
                     try:
@@ -3737,6 +3733,7 @@ class _GetAll(object):
                 except PageNotFound:
                     return
                 # All of the ones that have not been found apparently do not exist
+
             for pl in self.pages:
                 if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                     pl._getexception = NoPage
