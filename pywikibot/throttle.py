@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 """
-Mechanics to slow down wiki read and/or write rate.
+Mechanics to slow down wiki page download rate.
 """
 #
 # (C) Pywikipedia bot team, 2008
@@ -9,15 +9,12 @@ Mechanics to slow down wiki read and/or write rate.
 #
 __version__ = '$Id$'
 
-import pywikibot
-from pywikibot import config
+import wikipedia as pywikibot
+import config
 
-import logging
 import math
 import threading
 import time
-
-logger = logging.getLogger("pywiki.wiki.throttle")
 
 pid = False     # global process identifier
                 # when the first Throttle is instantiated, it will set this
@@ -31,15 +28,16 @@ class Throttle(object):
     Calling this object blocks the calling thread until at least 'delay'
     seconds have passed since the previous call.
 
-    Each Site initiates one Throttle object (site.throttle) to control the
-    rate of access.
+    The framework initiates two Throttle objects: get_throttle to control
+    the rate of read access, and put_throttle to control the rate of write
+    access.
 
     """
-    def __init__(self, site, mindelay=None, maxdelay=None, writedelay=None,
+    def __init__(self, mindelay=None, maxdelay=None, writedelay=None,
                  multiplydelay=True, verbosedelay=False):
         self.lock = threading.RLock()
-        self.mysite = str(site)
-        self.ctrlfilename = config.datafilepath('throttle.ctrl')
+        self.mysite = None
+        self.ctrlfilename = config.datafilepath('pywikibot', 'throttle.ctrl')
         self.mindelay = mindelay
         if self.mindelay is None:
             self.mindelay = config.minthrottle
@@ -52,8 +50,8 @@ class Throttle(object):
         self.last_read = 0
         self.last_write = 0
         self.next_multiplicity = 1.0
-        self.checkdelay = 300  # Check logfile again after this many seconds
-        self.dropdelay = 600   # Ignore processes that have not made
+        self.checkdelay = 120  # Check logfile again after this many seconds
+        self.dropdelay = 360   # Ignore processes that have not made
                                # a check in this many seconds
         self.releasepid = 1200 # Free the process id after this many seconds
         self.lastwait = 0.0
@@ -63,15 +61,15 @@ class Throttle(object):
         self.multiplydelay = multiplydelay
         if self.multiplydelay:
             self.checkMultiplicity()
-        self.setDelays()
+        self.setDelay()
 
     def checkMultiplicity(self):
         """Count running processes for site and set process_multiplicity."""
         global pid
         self.lock.acquire()
-        mysite = self.mysite
-        pywikibot.output(u"Checking multiplicity: pid = %(pid)s" % globals(),
-                         level=pywikibot.DEBUG)
+        mysite = self.mysite = str(pywikibot.getSite())
+        if pywikibot.verbose:
+            pywikibot.output(u"Checking multiplicity: pid = %(pid)s" % globals())
         try:
             processes = []
             my_pid = pid or 1  # start at 1 if global pid not yet set
@@ -124,14 +122,14 @@ class Throttle(object):
                 pass
             f.close()
             self.process_multiplicity = count
-            if self.verbosedelay:
+            if self.verbosedelay or pywikibot.verbose:
                 pywikibot.output(
                     u"Found %(count)s %(mysite)s processes running, including this one."
                     % locals())
         finally:
             self.lock.release()
 
-    def setDelays(self, delay=None, writedelay=None, absolute=False):
+    def setDelay(self, delay=None, writedelay=None, absolute=False):
         """Set the nominal delays in seconds. Defaults to config values."""
         self.lock.acquire()
         try:
@@ -158,12 +156,11 @@ class Throttle(object):
         account of how much time has elapsed since the last access.
 
         """
-        global pid
         if write:
             thisdelay = self.writedelay
         else:
             thisdelay = self.delay
-        if pid and self.multiplydelay: # We're checking for multiple processes
+        if self.multiplydelay: # We're checking for multiple processes
             if time.time() > self.checktime + self.checkdelay:
                 self.checkMultiplicity()
             if thisdelay < (self.mindelay * self.next_multiplicity):
@@ -228,10 +225,6 @@ class Throttle(object):
 
         Parameter requestsize is the number of Pages to be read/written;
         multiply delay time by an appropriate factor.
-
-        Because this seizes the throttle lock, it will prevent any other
-        thread from writing to the same site until the wait expires.
-
         """
         self.lock.acquire()
         try:
@@ -243,7 +236,7 @@ class Throttle(object):
             # the delay time for the server.
             self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
             # Announce the delay if it exceeds a preset limit
-            if wait > config.noisysleep:
+            if wait > config.noisysleep or pywikibot.verbose:
                 pywikibot.output(u"Sleeping for %(wait).1f seconds, %(now)s"
                                  % {'wait': wait,
                                     'now' : time.strftime("%Y-%m-%d %H:%M:%S",
