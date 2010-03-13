@@ -656,13 +656,7 @@ not supported by PyWikipediaBot!"""
 
         This method returns the raw wiki text as a unicode string.
         """
-        try:
-            if config.use_api and self.site().versionnumber() > 11:
-                x = self.site().api_address()
-                del x
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 12:
             return self._getEditPageOld(get_redirect, throttle, sysop, oldid, change_edit_time)
 
         params = {
@@ -1209,13 +1203,7 @@ not supported by PyWikipediaBot!"""
         * redirectsOnly         - if True, only returns redirects to self.
 
         """
-        try:
-            if config.use_api and self.site().versionnumber() > 9:
-                d = self.site().apipath()
-                del d
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+        if not self.site().has_api():
             for s in self.getReferencesOld(follow_redirects, withTemplateInclusion, onlyTemplateInclusion, redirectsOnly):
                 yield s
             return
@@ -1543,7 +1531,7 @@ not supported by PyWikipediaBot!"""
         if not force:
             if not self.botMayEdit(username):
                 raise LockedPage(u'Not allowed to edit %s because of a restricting template' % self.aslink())
-            elif config.use_api and self.namespace() in [2,3] and ( '.css' in self.title() or '.js' in self.title()):
+            elif self.site().has_api() and self.namespace() in [2,3] and ( '.css' in self.title() or '.js' in self.title()):
                 # API enable: if title is .css or .js in ns2,3 , it need permission `editusercssjs`
                 sysop = self._getActionUser(action = 'editusercssjs', restriction = self.editRestriction, sysop=True)
 
@@ -1584,7 +1572,7 @@ not supported by PyWikipediaBot!"""
         newPage = not self.exists()
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
-        if self.site().lang == 'eo' and not config.use_api:
+        if self.site().lang == 'eo' and not self.site().has_api():
             newtext = encodeEsperantoX(newtext)
             comment = encodeEsperantoX(comment)
 
@@ -1613,13 +1601,8 @@ not supported by PyWikipediaBot!"""
         Don't use this directly, use put() instead.
 
         """
-        try:
-            if config.use_api and self.site().versionnumber() >= 13:
-                apitest = self.site().api_address()
-                del apitest
-            else:
-                raise NotImplementedError #No enable api or version not support
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 13:
+            # api not enabled or version not supported
             return self._putPageOld(text, comment, watchArticle, minorEdit,
                 newPage, token, newToken, sysop, captcha, botflag, maxTries)
 
@@ -2501,13 +2484,7 @@ not supported by PyWikipediaBot!"""
         """Load history informations by API query.
            Internal use for self.getVersionHistory(), don't use this function directly.
         """
-        try:
-            if config.use_api and self.site().versionnumber() >= 8:
-                x = self.site().api_address()
-                del x
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 8:
             return self._getVersionHistoryOld(reExist, getAll, skipFirst, reverseOrder, revCount)
         dataQ = []
         thisHistoryDone = False
@@ -2664,13 +2641,7 @@ not supported by PyWikipediaBot!"""
         to move and delete if not directly requested.
 
         * fixredirects has no effect in MW < 1.13"""
-        try:
-            if config.use_api and self.site().versionnumber() >= 12:
-                x = self.site().api_address()
-                del x
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 12:
             return self._moveOld(newtitle, reason, movetalkpage, sysop,
               throttle, deleteAndMove, safe, fixredirects, leaveRedirect)
         # Login
@@ -2895,13 +2866,8 @@ not supported by PyWikipediaBot!"""
 
             token = self.site().getToken(self, sysop = True)
             reason = reason.encode(self.site().encoding())
-            try:
-                d = self.site().api_address()
-                del d
-            except NotImplementedError:
-                config.use_api = False
 
-            if config.use_api and self.site().versionnumber() >= 12:
+            if self.site().has_api() and self.site().versionnumber() >= 12:
                 #API Mode
                 params = {
                     'action': 'delete',
@@ -2973,7 +2939,7 @@ not supported by PyWikipediaBot!"""
 
         self._deletedRevs = {}
 
-        if config.use_api and self.site().versionnumber() >= 12:
+        if self.site().has_api() and self.site().versionnumber() >= 12:
             params = {
                 'action': 'query',
                 'list': 'deletedrevs',
@@ -3090,7 +3056,7 @@ not supported by PyWikipediaBot!"""
         if throttle:
             put_throttle()
         
-        if config.use_api and self.site().versionnumber() >= 12:
+        if self.site().has_api() and self.site().versionnumber() >= 12:
             params = {
                 'action': 'undelete',
                 'title': self.title(),
@@ -3178,15 +3144,10 @@ not supported by PyWikipediaBot!"""
                 answer = 'y'
                 self.site()._noProtectPrompt = True
         if answer == 'y':
-            try:
-                if config.use_api and self.site().versionnumber() >= 12:
-                    x = self.site().api_address()
-                    del x
-                else:
-                    raise NotImplementedError
-            except NotImplementedError:
-                return self._oldProtect( editcreate, move, unprotect, reason, editcreate_duration,
-                move_duration, cascading, prompt, throttle)
+            if not self.site().has_api() or self.site().versionnumber() < 12:
+                return self._oldProtect(editcreate, move, unprotect, reason,
+                                        editcreate_duration, move_duration,
+                                        cascading, prompt, throttle)
 
             token = self.site().getToken(self, sysop = True)
 
@@ -3637,16 +3598,11 @@ class ImagePage(Page):
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n' + u'\n|----\n'.join(lines) + '\n|}'
 
     def usingPages(self):
-        try:
-            if config.use_api and self.site().versionnumber() >= 11:
-                x = self.site().api_address()
-                del x
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 11:
             for a in self._usingPagesOld():
                 yield a
             return
+
         params = {
             'action': 'query',
             'list': 'imageusage',
@@ -3709,14 +3665,8 @@ class _GetAll(object):
     def run(self):
         if self.pages:
             doAPI = None
-            #if config.use_api:
-            #    # API Implemented Check
-            #    try:
-            #        doAPI = True
-            #        d = self.site.api_address()
-            #        del d
-            #    except NotImplementedError:
-            #        doAPI = False
+            # API Implemented Check
+            # doAPI = self.site.has_api()
             
             if doAPI:
                 while True:
@@ -4074,10 +4024,9 @@ def getall(site, pages, throttle=True, force=False):
     """
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
-    output(u'Getting %d pages from %s' % (len(pages), site), newline = False)
-    #if config.use_api:
-    #    output(u' via API...')
-    #else:
+    output(u'Getting %d pages from %s' % (len(pages), site), newline=False)
+    if site.has_api():
+        output(u' via API', newline=False)
     output(u'...')
     limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
     
@@ -4600,6 +4549,7 @@ class Site(object):
             return 1
         else:
             return 0
+
     def username(self, sysop = False):
         return self._userName[self._userIndex(sysop = sysop)]
 
@@ -4682,7 +4632,6 @@ class Site(object):
         else:
             self._load(sysop = sysop)
             index = self._userIndex(sysop)
-            ##output('%s' % self._rights[index]) #for debug use
             return right in self._rights[index]
 
     def server_time(self):
@@ -5645,7 +5594,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         index = self._userIndex(sysop)
         if self._userData[index] and not force:
             return
-
         if verbose:
             output(u'Getting information for site %s' % self)
 
@@ -6224,7 +6172,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 break
 
     def randompage(self, redirect = False):
-        if config.use_api and self.versionnumber() >= 12:
+        if self.has_api() and self.versionnumber() >= 12:
             params = {
                 'action': 'query',
                 'list': 'random',
@@ -6273,10 +6221,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             page = Page(self, start)
             namespace = page.namespace()
             start = page.titleWithoutNamespace()
-        try:
-            api_url = self.api_address()
-            del api_url
-        except NotImplementedError:
+
+        if not self.has_api():
             for page in self._allpagesOld(start, namespace, includeredirects, throttle):
                 yield page
             return
