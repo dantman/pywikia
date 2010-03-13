@@ -1193,26 +1193,26 @@ class GeneratorFactory:
             gen = RegexFilterPageGenerator(site.allpages(), regex)
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
-        else:
+        elif arg.startswith('-'):
             mode, log, user = arg.partition('log')
             if log == 'log':
-              number = 500
-              if not user:
-                  user = None
-              else:
-                  try:
-                      number = int(user[1:])
-                      user = None
-                  except ValueError:
-                      user = user[1:]
-              if user:
-                  result = user.split(';')
-                  user = result[0]
-                  try:
-                      number = int(result[1])
-                  except:
-                      pass
-              gen = LogpagesPageGenerator(number, mode[1:], user)
+                number = 500
+                if not user:
+                    user = None
+                else:
+                    try:
+                        number = int(user[1:])
+                        user = None
+                    except ValueError:
+                        user = user[1:]
+                if user:
+                    result = user.split(';')
+                    user = result[0]
+                    try:
+                        number = int(result[1])
+                    except:
+                        pass
+                gen = LogpagesPageGenerator(number, mode[1:], user)
         if gen:
             self.gens.append(gen)
             return self.getCombinedGenerator()
