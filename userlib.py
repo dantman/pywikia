@@ -553,16 +553,16 @@ def getall(site, users, throttle=True, force=False):
     users = list(users)  # if pages is an iterator, we need to make it a list
     if len(users) > 1: wikipedia.output(u'Getting %d users data from %s...' % (len(users), site))
     
-    if len(users) > 500:
-        for urg in range(0, len(users), 500):
-            if urg == range(0, len(users), 500)[-1]: #latest
+    if len(users) > 250: # max load prevents HTTPError 400
+        for urg in range(0, len(users), 250):
+            if urg == range(0, len(users), 250)[-1]: #latest
                 k = users[urg:]
                 _GetAllUI(site, k, throttle, force).run()
                 users[urg:] = k
             else:
-                k = users[urg:urg + 500]
+                k = users[urg:urg + 250]
                 _GetAllUI(site, k, throttle, force).run()
-                users[urg:urg + 500] = k
+                users[urg:urg + 250] = k
     else:
         _GetAllUI(site, users, throttle, force).run()
 

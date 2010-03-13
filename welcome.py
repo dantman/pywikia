@@ -673,13 +673,8 @@ class WelcomeBot(object):
         #    if self._checkQueue:
         #        for nm in self._checkQueue:
         #            yield userlib.User(self.site, nm)
-        try:
-            if config.use_api and self.site.versionnumber() >= 13:
-                x = self.site.api_address()
-                del x
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+
+        if not self.site.has_api() or self.site.versionnumber() < 13:
             for x in self._parseNewUserLogOld():
                 yield x
             return
@@ -813,7 +808,7 @@ class WelcomeBot(object):
     def run(self):
         while True:
             welcomed_count = 0
-            if globalvar.quick and config.use_api:
+            if globalvar.quick and self.site.has_api():
                 us = [x for x in self.parseNewUserLog()]
                 showStatus()
                 try:
