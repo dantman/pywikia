@@ -13,6 +13,7 @@ import difflib
 
 from exceptions import *
 from textlib import *
+from throttle import *
 
 import wikipedia
 

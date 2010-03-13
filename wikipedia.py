@@ -4118,176 +4118,6 @@ def setUserAgent(s):
 # Default User-agent
 setUserAgent('PythonWikipediaBot/1.0')
 
-# Mechanics to slow down page download rate.
-class Throttle(object):
-    """For internal use only - control rate of access to wiki server
-
-    Calling this object blocks the calling thread until at least 'delay'
-    seconds have passed since the previous call.
-
-    The framework initiates two Throttle objects: get_throttle to control
-    the rate of read access, and put_throttle to control the rate of write
-    access.
-
-    """
-    def __init__(self, mindelay=config.minthrottle,
-                 maxdelay=config.maxthrottle,
-                 multiplydelay=True):
-        self.lock = threading.RLock()
-        self.mindelay = mindelay
-        self.maxdelay = maxdelay
-        self.now = 0
-        self.pid = False # If self.pid remains False, we're not checking for multiple processes
-        self.next_multiplicity = 1.0
-        self.checkdelay = 240 # Check the file with processes again after this many seconds
-        self.dropdelay = 360 # Drop processes from the list that have not made a check in this many seconds
-        self.releasepid = 1200 # Free the process id
-        self.lastwait = 0.0
-        self.delay = 0
-        self.multiplydelay = multiplydelay
-        if self.multiplydelay:
-            self.checkMultiplicity()
-        self.setDelay(mindelay)
-
-    def logfn(self):
-        return config.datafilepath('pywikibot', 'throttle.ctrl')
-
-    def checkMultiplicity(self):
-        self.lock.acquire()
-        try:
-            processes = {}
-            my_pid = 1
-            count = 1
-            try:
-                f = open(self.logfn(), 'r')
-            except IOError:
-                if not self.pid:
-                    pass
-                else:
-                    raise
-            else:
-                now = time.time()
-                for line in f.readlines():
-                    try:
-                        line = line.split(' ')
-                        pid = int(line[0])
-                        ptime = int(line[1].split('.')[0])
-                        if now - ptime <= self.releasepid:
-                            if now - ptime <= self.dropdelay and pid != self.pid:
-                                count += 1
-                            processes[pid] = ptime
-                            if pid >= my_pid:
-                                my_pid = pid+1
-                    except (IndexError,ValueError):
-                        pass    # Sometimes the file gets corrupted - ignore that line
-
-            if not self.pid:
-                self.pid = my_pid
-            self.checktime = time.time()
-            processes[self.pid] = self.checktime
-            try:
-                f = open(self.logfn(), 'w')
-                for p in processes:
-                    f.write(str(p)+' '+str(processes[p])+'\n')
-            except IOError:
-                pass
-            f.close()
-            self.process_multiplicity = count
-            if verbose:
-                output(u"Checked for running processes. %s processes currently running, including the current process." % count)
-        finally:
-            self.lock.release()
-
-    def setDelay(self, delay = config.minthrottle, absolute = False):
-        self.lock.acquire()
-        try:
-            if absolute:
-                self.maxdelay = delay
-                self.mindelay = delay
-            self.delay = delay
-            # Don't count the time we already waited as part of our waiting time :-0
-            self.now = time.time()
-        finally:
-            self.lock.release()
-
-    def getDelay(self):
-        thisdelay = self.delay
-        if self.multiplydelay: # If self.pid, we're checking for multiple processes
-            if time.time() > self.checktime + self.checkdelay:
-                self.checkMultiplicity()
-            if thisdelay < (self.mindelay * self.next_multiplicity):
-                thisdelay = self.mindelay * self.next_multiplicity
-            elif thisdelay > self.maxdelay:
-                thisdelay = self.maxdelay
-            thisdelay *= self.process_multiplicity
-        return thisdelay
-
-    def waittime(self):
-        """Calculate the time in seconds we will have to wait if a query
-           would be made right now"""
-        # Take the previous requestsize in account calculating the desired
-        # delay this time
-        thisdelay = self.getDelay()
-        now = time.time()
-        ago = now - self.now
-        if ago < thisdelay:
-            delta = thisdelay - ago
-            return delta
-        else:
-            return 0.0
-
-    def drop(self):
-        """Remove me from the list of running bots processes."""
-        self.checktime = 0
-        processes = {}
-        try:
-            f = open(self.logfn(), 'r')
-        except IOError:
-            return
-        else:
-            now = time.time()
-            for line in f.readlines():
-                try:
-                    line = line.split(' ')
-                    pid = int(line[0])
-                    ptime = int(line[1].split('.')[0])
-                    if now - ptime <= self.releasepid and pid != self.pid:
-                        processes[pid] = ptime
-                except (IndexError,ValueError):
-                    pass    # Sometimes the file gets corrupted - ignore that line
-        try:
-            f = open(self.logfn(), 'w')
-            for p in processes:
-                f.write(str(p)+' '+str(processes[p])+'\n')
-        except IOError:
-            pass
-        f.close()
-
-    def __call__(self, requestsize=1):
-        """
-        Block the calling program if the throttle time has not expired.
-
-        Parameter requestsize is the number of Pages to be read/written;
-        multiply delay time by an appropriate factor.
-        """
-        self.lock.acquire()
-        try:
-            waittime = self.waittime()
-            # Calculate the multiplicity of the next delay based on how
-            # big the request is that is being posted now.
-            # We want to add "one delay" for each factor of two in the
-            # size of the request. Getting 64 pages at once allows 6 times
-            # the delay time for the server.
-            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-            # Announce the delay if it exceeds a preset limit
-            if waittime > config.noisysleep:
-                output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-            time.sleep(waittime)
-            self.now = time.time()
-        finally:
-            self.lock.release()
-
-# end of category specific code
 def url2link(percentname, insite, site):
     """Convert urlname of a wiki page into interwiki link format.
 
@@ -7378,9 +7208,11 @@ def handleArgs(*args):
         elif arg.startswith('-lang:'):
             default_code = arg[6:]
         elif arg.startswith('-putthrottle:'):
-            put_throttle.setDelay(int(arg[13:]), absolute = True)
+            config.put_throttle = int(arg[len("-putthrottle:") : ])
+            put_throttle.setDelay()
         elif arg.startswith('-pt:'):
-            put_throttle.setDelay(int(arg[4:]), absolute = True)
+            config.put_throttle = int(arg[len("-pt:") : ])
+            put_throttle.setDelay()
         elif arg == '-log':
             setLogfileStatus(True)
         elif arg.startswith('-log:'):
@@ -7768,8 +7600,8 @@ def debugDump(name, site, error, data):
     f.close()
     output( u'ERROR: %s caused error %s. Dump %s created.' % (name,error,filename) )
 
-get_throttle = Throttle(config.minthrottle,config.maxthrottle)
-put_throttle = Throttle(config.put_throttle,config.put_throttle,multiplydelay=False)
+get_throttle = Throttle()
+put_throttle = Throttle(write=True)
 
 def decompress_gzip(data):
     # Use cStringIO if available

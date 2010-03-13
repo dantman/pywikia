@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 """
-Mechanics to slow down wiki page download rate.
+Mechanics to slow down wiki read and/or write rate.
 """
 #
 # (C) Pywikipedia bot team, 2008
@@ -34,7 +34,7 @@ class Throttle(object):
 
     """
     def __init__(self, mindelay=None, maxdelay=None, writedelay=None,
-                 multiplydelay=True, verbosedelay=False):
+                 multiplydelay=True, verbosedelay=False, write=False):
         self.lock = threading.RLock()
         self.mysite = None
         self.ctrlfilename = config.datafilepath('pywikibot', 'throttle.ctrl')
@@ -62,6 +62,7 @@ class Throttle(object):
         if self.multiplydelay:
             self.checkMultiplicity()
         self.setDelay()
+        self.write = write
 
     def checkMultiplicity(self):
         """Count running processes for site and set process_multiplicity."""
@@ -225,10 +226,15 @@ class Throttle(object):
 
         Parameter requestsize is the number of Pages to be read/written;
         multiply delay time by an appropriate factor.
+
+        Because this seizes the throttle lock, it will prevent any other
+        thread from writing to the same site the script started with
+        until the wait expires.
+
         """
         self.lock.acquire()
         try:
-            wait = self.waittime(write=write)
+            wait = self.waittime(write=write or self.write)
             # Calculate the multiplicity of the next delay based on how
             # big the request is that is being posted now.
             # We want to add "one delay" for each factor of two in the
@@ -236,13 +242,15 @@ class Throttle(object):
             # the delay time for the server.
             self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
             # Announce the delay if it exceeds a preset limit
-            if wait > config.noisysleep or pywikibot.verbose:
-                pywikibot.output(u"Sleeping for %(wait).1f seconds, %(now)s"
-                                 % {'wait': wait,
-                                    'now' : time.strftime("%Y-%m-%d %H:%M:%S",
-                                                          time.localtime())
-                                } )
-            time.sleep(wait)
+            if wait > 0:
+                if wait > config.noisysleep or pywikibot.verbose:
+                    pywikibot.output(
+                        u"Sleeping for %(wait).1f seconds, %(now)s"
+                        % {'wait': wait,
+                           'now' : time.strftime("%Y-%m-%d %H:%M:%S",
+                                                 time.localtime())
+                        } )
+                time.sleep(wait)
             if write:
                 self.last_write = time.time()
             else:
