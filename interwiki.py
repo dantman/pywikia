@@ -497,6 +497,7 @@ msg = {
 # Subpage templates. Must be in lower case,
 # whereas subpage itself must be case sensitive
 moved_links = {
+    'bn' : (u'documentation', u'/doc'),
     'ca' : (u'ús de la plantilla', u'/ús'),
     'cs' : (u'dokumentace',   u'/doc'),
     'de' : (u'dokumentation', u'/Meta'),
