@@ -70,7 +70,7 @@ deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'es':u'{{enlace roto2|%s}}',
                'it':u'{{Collegamento interrotto|%s}}',
                'en':u'[%s] {{dead link}}',
-               'pl':u'{{Martwy link}}',
+               'pl':u'[%s] {{Martwy link}}',
                }
 
 comment = {'ar':u'عنوان مولد بالبوت',
