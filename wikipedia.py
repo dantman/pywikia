@@ -2687,7 +2687,6 @@ not supported by PyWikipediaBot!"""
             if err == 'articleexists':
                 if safe:
                     output(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
-                    return False
                 else:
                     try:
                         # Try to delete and move
@@ -2695,11 +2694,11 @@ not supported by PyWikipediaBot!"""
                     except NoUsername:
                         # We dont have the user rights to delete
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
-                        return False
             #elif err == 'protectedpage':
             #    
             else:
                 output("Unknown Error: %s" % result)
+            return False
         elif 'move' in result:
             if deleteAndMove:
                 output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
