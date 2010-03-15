@@ -3870,13 +3870,13 @@ class _GetAll(object):
 
     def oneDoneApi(self, data):
         title = data['title']
+        editRestriction = ''
+        moveRestriction = ''
         try:
             username = data['revisions'][0]['user']
             ipedit = 'anon' in data['revisions'][0]
             timestamp = data['revisions'][0]['timestamp']
             text = data['revisions'][0]['*']
-            editRestriction = ''
-            moveRestriction = ''
             for revs in data['protection']:
                 if revs['type'] == 'edit':
                     editRestriction = revs['level']
