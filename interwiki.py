@@ -508,8 +508,15 @@ moved_links = {
              u'documentation, template'], u'/doc'),
     'es' : ([u'documentación', u'documentación de plantilla'], u'/doc'),
     'eu' : (u'txantiloi dokumentazioa', u'/dok'),
-    'fi' : (u'mallineohje', None), # no idea how to handle this type of subpage at :Metasivu:
-    'fr' : (u'/documentation', u'/Documentation'),
+    # fi: no idea how to handle this type of subpage at :Metasivu:
+    'fi' : (u'mallineohje', None),
+    'fr' : ([u'/documentation', u'documentation', u'doc_modèle',
+             u'documentation modèle', u'documentation modèle compliqué',
+             u'documentation modèle en sous-page',
+             u'documentation modèle compliqué en sous-page',
+             u'documentation modèle utilisant les parserfunctions en sous-page',
+            ],
+            u'/Documentation'),
     'hu' : (u'sablondokumentáció', u'/doc'),
     'id' : (u'template doc',  u'/doc'),
     'ja' : (u'documentation', u'/doc'),
