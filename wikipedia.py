@@ -3663,12 +3663,8 @@ class _GetAll(object):
 
     def run(self):
         if self.pages:
-            doAPI = None
-            # API Implemented Check
-            # doAPI = self.site.has_api()
             # Sometimes query does not contains revisions
-            
-            if doAPI:
+            if  self.site.has_api() and debug:
                 while True:
                     try:
                         data = self.getDataApi()
@@ -3874,21 +3870,25 @@ class _GetAll(object):
 
     def oneDoneApi(self, data):
         title = data['title']
-        editRestriction = ''
-        moveRestriction = ''
-        try:
-            username = data['revisions'][0]['user']
-            ipedit = 'anon' in data['revisions'][0]
-            timestamp = data['revisions'][0]['timestamp']
-            text = data['revisions'][0]['*']
+        if not ('missing' in data or 'invalid' in data):
+            revisionId = data['lastrevid']
+            rev = None
+            try:
+                rev = data['revisions']
+            except KeyError:
+                raise u'NOTE: Last revision of [[%s]] not found' % title
+            else:
+                username = rev[0]['user']
+                ipedit = 'anon' in rev[0]
+                timestamp = rev[0]['timestamp']
+                text = rev[0]['*']
+            editRestriction = ''
+            moveRestriction = ''
             for revs in data['protection']:
                 if revs['type'] == 'edit':
                     editRestriction = revs['level']
                 elif revs['type'] == 'move':
                     moveRestriction = revs['level']
-            revisionId = data['lastrevid']
-        except KeyError:
-            pass
         
         page = Page(self.site, title)
         successful = False
@@ -3913,13 +3913,15 @@ class _GetAll(object):
                     if editRestriction == 'autoconfirmed':
                         page2._editrestriction = True
                     page2._permalink = revisionId
-                    page2._userName = username
-                    page2._ipedit = ipedit
+                    if rev:
+                        page2._userName = username
+                        page2._ipedit = ipedit
+                        page2._editTime = timestamp
+                        page2._contents = text
+                    else:
+                        raise u'BUG?>>: Last revision of [[%s]] not found' % title
                     page2._revisionId = revisionId
-                    page2._editTime = timestamp
                     section = page2.section()
-                    # Store the content
-                    page2._contents = text
                     if 'redirect' in data:
                         ## output(u"%s is a redirect" % page2.aslink())
                         m = self.site.redirectRegex().match(text)
@@ -4029,7 +4031,6 @@ def getall(site, pages, throttle=True, force=False):
     #    output(u' via API', newline=False)
     output(u'...')
     limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
-    
     if len(pages) > limit:
         # separate export pages for bulk-retrieve
         
@@ -5681,7 +5682,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                         'move', 'import', 'patrol', 'merge', 'suppress',
                         'review', 'stable', 'gblblock', 'renameuser',
                         'globalauth', 'gblrights', 'abusefilter', 'newusers'):
-            raise NotImplementedError
+            raise NotImplementedError, mode
         params = {
             'action'    : 'query',
             'list'      : 'logevents',
@@ -5691,7 +5692,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         if number > config.special_page_limit:
             params['lelimit'] = config.special_page_limit
-            if number > 5000 and self.site().isAllowed('apihighlimits'):
+            if number > 5000 and self.isAllowed('apihighlimits'):
                 params['lelimit'] = 5000
         if user:
             params['leuser'] = user

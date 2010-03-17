@@ -1195,7 +1195,7 @@ class GeneratorFactory:
             gen = YahooSearchPageGenerator(arg[7:])
         elif arg.startswith('-'):
             mode, log, user = arg.partition('log')
-            if log == 'log':
+            if log == 'log' and mode not in ['-', '-no']: #exclude -log, -nolog
                 number = 500
                 if not user:
                     user = None
