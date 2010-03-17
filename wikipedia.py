@@ -3663,8 +3663,12 @@ class _GetAll(object):
 
     def run(self):
         if self.pages:
+            doAPI = None
+            # API Implemented Check
+            # doAPI = self.site.has_api()
+            # Sometimes query does not contains revisions
             
-            if self.site.has_api():
+            if doAPI:
                 while True:
                     try:
                         data = self.getDataApi()
@@ -4021,8 +4025,8 @@ def getall(site, pages, throttle=True, force=False):
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
     output(u'Getting %d pages from %s' % (len(pages), site), newline=False)
-    if site.has_api():
-        output(u' via API', newline=False)
+    #if site.has_api():
+    #    output(u' via API', newline=False)
     output(u'...')
     limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
     
