@@ -425,7 +425,7 @@ class LinkChecker(object):
                     msg = error[1]
                 except IndexError:
                     print u'### DEBUG information for #2972249'
-                    raise IndexError, error
+                    raise IndexError, type(error)
             # TODO: decode msg. On Linux, it's encoded in UTF-8.
             # How is it encoded in Windows? Or can we somehow just
             # get the English message?
