@@ -680,7 +680,7 @@ def compileLinkR(withoutBracketed=False, onlyBracketed=False):
     # Note: While allowing parenthesis inside URLs, MediaWiki will regard
     # right parenthesis at the end of the URL as not part of that URL.
     # The same applies to dot, comma, colon and some other characters.
-    notAtEnd = '\]\s\)\.:;,<>"'
+    notAtEnd = '\]\s\)\.:;,<>"\|'
     # So characters inside the URL can be anything except whitespace,
     # closing squared brackets, quotation marks, greater than and less
     # than, and the last character also can't be parenthesis or another
