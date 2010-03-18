@@ -179,6 +179,7 @@ talk_report_archive = {
     'ja': u'\nウェブ・ページはインターネット・アーカイブによって保存されました。アーカイブに保管された適切なバージョンにリンクすることを検討してください: [%s]. ',
     'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te verwijzen naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
+    'pl': u'\nStrona została zarchiwizowana przez Internet Archive. Możesz wykorzystać link archiwalny: [%s]. ',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
     'zh': u'这个网页已经被保存在互联网档案馆（Internet Archive）。请为该网页提供一个合适的存档版本： [%s]。',
 }
