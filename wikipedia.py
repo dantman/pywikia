@@ -3664,7 +3664,7 @@ class _GetAll(object):
     def run(self):
         if self.pages:
             # Sometimes query does not contains revisions
-            if  self.site.has_api() and debug:
+            if  self.site.has_api():
                 while True:
                     try:
                         data = self.getDataApi()
@@ -4026,10 +4026,8 @@ def getall(site, pages, throttle=True, force=False):
     """
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
-    output(u'Getting %d pages from %s' % (len(pages), site), newline=False)
-    if site.has_api() and debug:
-        output(u' via API', newline=False)
-    output(u'...')
+    output(u'Getting %d pages %s from %s...'
+           % (len(pages), iif(site.has_api(), u'via API', u'') site))
     limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
     if len(pages) > limit:
         # separate export pages for bulk-retrieve
@@ -4056,6 +4054,11 @@ def setAction(s):
     """Set a summary to use for changed page submissions"""
     global action
     action = s
+
+def iif(q, a, b):
+    """inline if"""
+    if q: return a
+    else: return b
 
 # Default action
 setAction('Wikipedia python library')
