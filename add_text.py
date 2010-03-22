@@ -128,7 +128,8 @@ def pageText(url):
     return text
 
 def untaggedGenerator(untaggedProject, limit = 500):
-    """ Function to get the pages returned by this tool: http://toolserver.org/~daniel/WikiSense/UntaggedImages.php """
+    """ Function to get the pages returned by this tool:
+    http://toolserver.org/~daniel/WikiSense/UntaggedImages.php """
     lang = untaggedProject.split('.', 1)[0]
     project = '.' + untaggedProject.split('.', 1)[1]
     if lang == 'commons':
@@ -141,20 +142,23 @@ def untaggedGenerator(untaggedProject, limit = 500):
     results = re.findall(regexp, text)
     if results == []:
         print link
-        raise NothingFound('Nothing found! Try to use the tool by yourself to be sure that it works!')
+        raise NothingFound(
+'Nothing found! Try to use the tool by yourself to be sure that it works!')
     else:
         for result in results:
             yield wikipedia.Page(wikipedia.getSite(), result)
 
-def add_text(page = None, addText = None, summary = None, regexSkip = None, regexSkipUrl = None,
-             always = False, up = False, putText = True, oldTextGiven = None, create=False):
+def add_text(page = None, addText = None, summary = None, regexSkip = None,
+             regexSkipUrl = None, always = False, up = False, putText = True,
+             oldTextGiven = None, create=False):
     if not addText:
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
         summary = wikipedia.translate(wikipedia.getSite(), msg) % addText[:200]
 
-    # When a page is tagged as "really well written" it has a star in the interwiki links.
-    # This is a list of all the templates used (in regex format) to make the stars appear.
+    # When a page is tagged as "really well written" it has a star in the
+    # interwiki links. This is a list of all the templates used (in regex
+    # format) to make the stars appear.
     starsList = [
         u'bueno',
         u'cyswllt[ _]erthygl[ _]ddethol', u'dolen[ _]ed',
@@ -171,7 +175,8 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         u'ligam[ _]adq',
         u'ligoelstara',
         u'ligoleginda',
-        u'link[ _][afgu]a', u'link[ _]adq', u'link[ _]f[lm]', u'link[ _]km', u'link[ _]sm', u'linkfa',
+        u'link[ _][afgu]a', u'link[ _]adq', u'link[ _]f[lm]', u'link[ _]km',
+        u'link[ _]sm', u'linkfa',
         u'na[ _]lotura',
         u'nasc[ _]ar',
         u'tengill[ _][úg]g',
@@ -194,7 +199,8 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
             text = page.get()
         except wikipedia.NoPage:
             if create:
-                wikipedia.output(u"%s doesn't exist, creating it!" % page.title())
+                wikipedia.output(u"%s doesn't exist, creating it!"
+                                 % page.title())
                 text = u''
             else:
                 wikipedia.output(u"%s doesn't exist, skip!" % page.title())
@@ -210,12 +216,14 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         url = '%s%s' % (pathWiki, page.urlname())
         result = re.findall(regexSkipUrl, site.getUrl(url))
         if result != []:
-            wikipedia.output(u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
+            wikipedia.output(
+u'Exception! regex (or word) used with -exceptUrl is in the page. Skip!')
             return (False, False, always) # continue
     if regexSkip != None:
         result = re.findall(regexSkip, text)
         if result != []:
-            wikipedia.output(u'Exception! regex (or word) used with -except is in the page. Skip!')
+            wikipedia.output(
+u'Exception! regex (or word) used with -except is in the page. Skip!')
             return (False, False, always) # continue
     # If not up, text put below
     if not up:
@@ -243,7 +251,8 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
         # Dealing the stars' issue
         allstars = []
         for star in starsList:
-            regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
+            regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star,
+                               re.I)
             found = regex.findall(newtext)
             if found != []:
                 newtext = regex.sub('', newtext)
@@ -259,15 +268,18 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
     else:
         newtext = addText + '\n' + text
     if putText and text != newtext:
-        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+                         % page.title())
         wikipedia.showDiff(text, newtext)
     # Let's put the changes.
     while True:
-        # If someone load it as module, maybe it's not so useful to put the text in the page
+        # If someone load it as module, maybe it's not so useful to put the
+        # text in the page
         if putText:
             if not always:
-                choice = wikipedia.inputChoice(u'Do you want to accept these changes?',
-                                               ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                choice = wikipedia.inputChoice(
+                    u'Do you want to accept these changes?',
+                    ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                 if choice == 'a':
                     always = True
                 elif choice == 'n':
@@ -290,13 +302,16 @@ def add_text(page = None, addText = None, summary = None, regexSkip = None, rege
                     else:
                         raise wikipedia.ServerError(u'Fifth Server Error!')
                 except wikipedia.SpamfilterError, e:
-                    wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                    wikipedia.output(
+                        u'Cannot change %s because of blacklist entry %s'
+                        % (page.title(), e.url))
                     return (False, False, always)
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Error putting page: %s' % error.args)
                     return (False, False, always)
                 except wikipedia.LockedPage:
-                    wikipedia.output(u'Skipping %s (locked page)' % page.title())
+                    wikipedia.output(u'Skipping %s (locked page)'
+                                     % page.title())
                     return (False, False, always)
                 else:
                     # Break only if the errors are one after the other...
@@ -320,7 +335,8 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg.startswith('-textfile'):
             if len(arg) == 9:
-                textfile = wikipedia.input(u'Which textfile do you want to add?')
+                textfile = wikipedia.input(
+                    u'Which textfile do you want to add?')
             else:
                 textfile = arg[10:]
         elif arg.startswith('-text'):
@@ -335,7 +351,10 @@ def main():
                 summary = arg[9:]
         elif arg.startswith('-page'):
             if len(arg) == 5:
-                generator = [wikipedia.Page(wikipedia.getSite(), wikipedia.input(u'What page do you want to use?'))]
+                generator = [wikipedia.Page(
+                    wikipedia.getSite(),
+                    wikipedia.input(u'What page do you want to use?')
+                    )]
             else:
                 generator = [wikipedia.Page(wikipedia.getSite(), arg[6:])]
         elif arg.startswith('-excepturl'):
@@ -350,7 +369,8 @@ def main():
                 regexSkip = arg[8:]
         elif arg.startswith('-untagged'):
             if len(arg) == 9:
-                untaggedProject = wikipedia.input(u'What project do you want to use?')
+                untaggedProject = wikipedia.input(
+                    u'What project do you want to use?')
             else:
                 untaggedProject = arg[10:]
             generator = untaggedGenerator(untaggedProject)
@@ -370,7 +390,8 @@ def main():
         generator = genFactory.getCombinedGenerator()
     # Check if there are the minimal settings
     if not generator:
-        raise NoEnoughData('You have to specify the generator you want to use for the script!')
+        raise NoEnoughData(
+            'You have to specify the generator you want to use for the script!')
     if talkPage:
         generator = pagegenerators.PageWithTalkPageGenerator(generator)
         site = wikipedia.getSite()
@@ -378,10 +399,13 @@ def main():
             index = site.getNamespaceIndex(namespace)
             if index%2==1 and index>0:
                 namespaces += [index]
-        generator = pagegenerators.NamespaceFilterPageGenerator(generator, namespaces)
+        generator = pagegenerators.NamespaceFilterPageGenerator(
+            generator, namespaces)
     # Main Loop
     for page in generator:
-        (text, newtext, always) = add_text(page, addText, summary, regexSkip, regexSkipUrl, always, up, True, create=talkPage)
+        (text, newtext, always) = add_text(page, addText, summary, regexSkip,
+                                           regexSkipUrl, always, up, True,
+                                           create=talkPage)
 
 if __name__ == "__main__":
     try:

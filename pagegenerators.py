@@ -13,7 +13,25 @@ These parameters are supported to specify which pages titles to print:
 
 &params;
 """
+#
+# (C) Pywikipedia bot team, 2005-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__='$Id$'
+
+import wikipedia as pywikibot
+import config
+
+import traceback
+import Queue
+import re
+import sys
+import threading
+import codecs
+
+import urllib, urllib2, time
+import date, catlib, userlib, query
 
 parameterHelp = u"""\
 -cat              Work on all pages which are in a specific category.
@@ -172,16 +190,6 @@ parameterHelp = u"""\
 """
 
 docuReplacements = {'&params;': parameterHelp}
-
-# Standard library imports
-import re, codecs, sys
-import threading, Queue, traceback
-import urllib, urllib2, time
-
-# Application specific imports
-import wikipedia as pywikibot
-import date, catlib, userlib, query
-import config
 
 # For python 2.4 compatibility
 # see http://www.mail-archive.com/python-dev@python.org/msg12668.html
