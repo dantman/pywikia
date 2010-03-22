@@ -251,7 +251,7 @@ class Throttle(object):
                                                  time.localtime())
                         } )
                 time.sleep(wait)
-            if write:
+            if write or self.write:
                 self.last_write = time.time()
             else:
                 self.last_read = time.time()
