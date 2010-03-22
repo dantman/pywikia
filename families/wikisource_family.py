@@ -12,7 +12,7 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'zh', 'pt', 'ru', 'fr', 'es', 'de', 'it', 'he', 'ar',
-            'fa', 'hu', 'pl', 'th', 'cs', 'ro', 'hr', 'te', 'fi', 'tr',
+            'hu', 'fa', 'pl', 'th', 'cs', 'ro', 'hr', 'te', 'fi', 'tr',
             'nl', 'sv', 'sl', 'ko', 'uk', 'sr', 'vi', 'ja', 'el', 'la',
             'li', 'yi', 'ml', 'bn', 'az', 'is', 'bs', 'ca', 'hy', 'id',
             'no', 'mk', 'da', 'et', 'ta', 'bg', 'lt', 'gl', 'kn', 'cy',
@@ -148,6 +148,7 @@ class Family(family.Family):
             'pl': u'Strona',
             'pt': u'Portal',
             'sl': u'Stran',
+            'te': u'ద్వారము',
             'tr': u'Kişi',
             'vi': u'Chủ đề',
         }
@@ -168,6 +169,7 @@ class Family(family.Family):
             'pl': u'Dyskusja strony',
             'pt': u'Portal Discussão',
             'sl': u'Pogovor o strani',
+            'te': u'ద్వారము చర్చ',
             'tr': u'Kişi tartışma',
             'vi': u'Thảo luận Chủ đề',
         }
@@ -190,6 +192,7 @@ class Family(family.Family):
             'no': u'Forfatter',
             'pl': u'Indeks',
             'pt': u'Autor',
+            'te': u'రచయిత',
             'vi': u'Tác gia',
             'zh': u'Author',
         }
@@ -212,6 +215,7 @@ class Family(family.Family):
             'no': u'Forfatterdiskusjon',
             'pl': u'Dyskusja indeksu',
             'pt': u'Autor Discussão',
+            'te': u'రచయిత చర్చ',
             'vi': u'Thảo luận Tác gia',
             'zh': u'Author talk',
         }
