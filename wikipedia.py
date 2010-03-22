@@ -680,6 +680,8 @@ not supported by PyWikipediaBot!"""
             data = query.GetData(params, self.site(), sysop=sysop)
             if 'error' in data:
                 raise RuntimeError("API query error: %s" % data)
+            if not 'pages' in data['query']:
+                raise RuntimeError("API query error, no pages found: %s" % data)
             pageInfo = data['query']['pages'].values()[0]
             if data['query']['pages'].keys()[0] == "-1":
                 if 'missing' in pageInfo:
@@ -3664,7 +3666,7 @@ class _GetAll(object):
     def run(self):
         if self.pages:
             # Sometimes query does not contains revisions
-            if  self.site.has_api():
+            if  self.site.has_api() and debug:
                 while True:
                     try:
                         data = self.getDataApi()
@@ -4027,7 +4029,7 @@ def getall(site, pages, throttle=True, force=False):
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
     output(u'Getting %d pages %s from %s...'
-           % (len(pages), iif(site.has_api(), u'via API', u''), site))
+           % (len(pages), iif(site.has_api() and debug, u'via API', u''), site))
     limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
     if len(pages) > limit:
         # separate export pages for bulk-retrieve
@@ -6235,9 +6237,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         params = {
             'action'     : 'query',
             'list'       : 'allpages',
-            'aplimit'   : config.special_page_limit,
+            'aplimit'    : config.special_page_limit,
             'apnamespace': namespace,
-            'apfrom': start
+            'apfrom'     : start
         }
 
         if not includeredirects:
@@ -6250,7 +6252,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             if throttle:
                 get_throttle()
             data = query.GetData(params, self)
-
+            if 'warnings' in data:
+                warning = data['warnings']['allpages']['*']
+                raise str(warning)
             count = 0
             for p in data['query']['allpages']:
                 count += 1
@@ -7184,6 +7188,7 @@ def handleArgs(*args):
         # global debug option for development purposes. Normally does nothing.
         elif arg == '-debug':
             debug = True
+            config.special_page_limit = 500
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
