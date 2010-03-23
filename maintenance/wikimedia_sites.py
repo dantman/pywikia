@@ -54,19 +54,15 @@ def update_family():
         else:
             wikipedia.output(u"The lists don't match, the new list is:")
             text = u'        self.languages_by_size = [\r\n'
-            line = '            '
-            index = 0
+            line = '           '
             for lang in new:
-                index += 1
-                if index > 1:
-                    line += u' '
-                line += u"'%s'," % lang
-                if index == 10:
+                if len(line)+len(lang) <= 76:
+                    line += u" '%s'," % lang
+                else:
                     text += u'%s\r\n' % line
-                    line = '            '
-                    index = 0
-            if index > 0:
-                text += u'%s\r\n' % line
+                    line = '           '
+                    line += u" '%s'," % lang
+            text += u'%s\r\n' % line
             text += u'        ]'
             wikipedia.output(text)
             family_file_name = '../families/%s_family.py' % family
