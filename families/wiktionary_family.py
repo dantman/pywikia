@@ -244,7 +244,6 @@ class Family(family.Family):
             'ro': u'Portal',
             'ru': [u'Приложение', u'Appendix'],
             'sr': u'Портал',
-            'sv': u'WT',
             'tr': u'Portal',
             'uk': u'Додаток',
         }
@@ -270,7 +269,6 @@ class Family(family.Family):
             'ro': u'Discuţie Portal',
             'ru': [u'Обсуждение приложения', u'Appendix talk'],
             'sr': u'Разговор о порталу',
-            'sv': u'WT-diskussion',
             'tr': u'Portal tartışma',
             'uk': u'Обговорення додатка',
         }
