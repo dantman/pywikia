@@ -1185,7 +1185,8 @@ class Subject(object):
         return False
 
     def reportInterwikilessPage(self, page):
-        pywikibot.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
+        if not globalvar.quiet or pywikibot.verbose:
+            pywikibot.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
         if config.without_interwiki:
             f = codecs.open(
                 pywikibot.config.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
