@@ -171,7 +171,7 @@ badword at all but can be used for some bad-nickname.
 # (C) Alfio, 2005
 # (C) Kyle/Orgullomoore, 2006-2007
 # (C) Siebrand Mazeland, 2006-2007
-# (C) Filnik, 2007
+# (C) Filnik, 2007-2010
 # (C) Daniel Herding, 2007
 # (C) Alex Shih-Han Lin, 2009
 #
@@ -479,6 +479,7 @@ class WelcomeBot(object):
     def __init__(self):
         #Initial
         self.site = wikipedia.getSite()
+        self.bname = dict()
         
         self._totallyCount = 0
         self.welcomed_users = list()
@@ -564,14 +565,14 @@ class WelcomeBot(object):
                 if wname.lower() in str(name).lower():
                     name = name.lower().replace(wname.lower(), '')
                     for bname in self._blacklist:
-                        self.bname = bname
+                        self.bname[name] = bname
                         return bname.lower() in name.lower()
         except UnicodeEncodeError:
             pass  
         try:
             for bname in self._blacklist:
                 if bname.lower() in str(name).lower(): #bad name positive
-                    self.bname = bname
+                    self.bname[name] = bname
                     return True
         except UnicodeEncodeError:
             pass          
@@ -618,7 +619,7 @@ class WelcomeBot(object):
                     # Adding the log.
                     rep_text += wikipedia.translate(self.site, report_text) % username
                     if self.site.lang == 'it':
-                        rep_text = "%s%s}}" % (rep_text, self.bname)
+                        rep_text = "%s%s}}" % (rep_text, self.bname[username])
 
             com = wikipedia.translate(self.site, comment)
             if rep_text != '':
