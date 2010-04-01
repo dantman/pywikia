@@ -7,8 +7,9 @@ to the working page by an administrator) and performs them.
 Syntax: python cfd.py
 
 """
-
+#
 # (C) Ben McIlwain, 2008
+# (C) Pywikipedia bot team, 2009-2010
 #
 # Distributed under the terms of the MIT license.
 
@@ -18,12 +19,6 @@ import category
 
 # The locateion of the CFD working page.
 cfdPage = 'Wikipedia:Categories for discussion/Working'
-
-
-# A list of templates that signify that a category is redirected.
-# If the category is redirect, we do NOT want to move articles to it.
-# The safest thing to do here is abort and wait for human intervention.
-redirTemplates = ['Category redirect', 'Categoryredirect', 'CR', 'Catredirect', 'Seecat', 'Cat redirect']
 
 # Regular expression declarations
 # See the en-wiki CFD working page at [[Wikipedia:Categories for discussion/Working]]
@@ -97,7 +92,12 @@ def main():
                 summary = "Robot - Speedily moving category " + src + " to " + dest + " per [[WP:CFD|CFD]]."
             else:
                 continue
-            if categoryIsRedirect(dest):
+            # If the category is redirect, we do NOT want to move articles to
+            # it. The safest thing to do here is abort and wait for human
+            # intervention.
+            destpage = wikipedia.Page(
+                wikipedia.getSite(), dest, defaultNamespace=14)
+            if destpage.isCategoryRedirect():
                 summary = 'CANCELED. Destination is redirect: ' + summary
                 wikipedia.output(summary, toStdout=True)
                 robot = None
@@ -125,16 +125,6 @@ def main():
             robot.run()
         summary = ""
         robot = None
-
-# Returns true if the category is a redirected category, meaning we should
-# NOT run the bot and instead let humans handle the exception.
-def categoryIsRedirect(pageTitle):
-    page = wikipedia.Page(wikipedia.getSite(), "Category:" + pageTitle)
-    templates = page.templates(get_redirect=True)
-    for redirTemplate in redirTemplates:
-        if redirTemplate in templates:
-            return True
-    return False
 
 # This function grabs the wiki source of a category page and attempts to
 # extract a link to the CFD per-day discussion page from the CFD template.
