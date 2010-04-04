@@ -307,7 +307,7 @@ timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
             'commons':u"\n*[[:File:%s]] " + timeselected,
-            'ar':u"\n*[[:صورة:%s]] " + timeselected,
+            'ar':u"\n*[[:ملف:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:File:%s]] " + timeselected,
             'ga':u"\n*[[:File:%s]] " + timeselected,
@@ -403,12 +403,14 @@ duplicates_user_talk_text = {
 duplicates_comment_talk = {
         '_default':None,
         'commons': u'Bot: Dupe file found',
+        'ar'     : u'بوت: ملف مكرر تم العثور عليه',
         'it'     : u"Bot: Notifico il file doppio trovato",
         }
 # Comment used by the bot while it reports the problem in the image
 duplicates_comment_image = {
         '_default':None,
         'commons': u'Bot: Tagging dupe file',
+        'ar'     : u'بوت: وسم ملف مكرر',
         'it'     : u'Bot: File doppio, da cancellare',
         }
 # Regex to detect the template put in the image's decription to find the dupe

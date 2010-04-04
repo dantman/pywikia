@@ -167,6 +167,7 @@ msg_change={
     }
 
 msg_replace={
+    'ar':u'روبوت: استبدال التصنيف %(oldcat)s ب %(newcat)s',
     'cs':u'Robot nahradil kategorii %(oldcat)s za %(newcat)s',
     'de':u'Bot: Ersetze Kategorie %(oldcat)s durch %(newcat)s',
     'en':u'Robot: Replacing category %(oldcat)s with %(newcat)s',

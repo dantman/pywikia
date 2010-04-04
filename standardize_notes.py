@@ -84,6 +84,7 @@ fixes = {
         # all pages which contain nowiki tags.
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
+               'ar':u'روبوت: إضافة/ترتيب المراجع.',
                'en':u'Robot: Adding/sorting references.',
                'ar':u'روبوت: إضافة/ترتيب المراجع.',
                'fr':u'Robot : Ajoute/trie les références.',

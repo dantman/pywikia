@@ -152,6 +152,7 @@ reason_broken={
 
 # Reason for deleting redirect loops
 reason_loop={
+    'ar': u'بوت: هدف التحويلة يصنع عقدة تحويل',
     'de': u'Bot: Weiterleitungsziel auf sich selbst',
     'en': u'[[WP:CSD#G8|G8]]: [[Wikipedia:Redirect|Redirect]] target forms a redirect loop',
 }

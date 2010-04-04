@@ -246,6 +246,7 @@ editsection_names = {
 }
 
 sections_to_skip = {
+    'ar':['مراجع', 'قراءة أخرى', 'ملاحظات', 'وصلات خارجية'],
     'en':['References', 'Further reading', 'Citations', 'External links'],
     'es':[u'Referencias', u'Ver también', u'Bibliografía', u'Enlaces externos', u'Notas'],
     'fr':['Liens externes'],

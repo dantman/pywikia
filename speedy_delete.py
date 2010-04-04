@@ -251,7 +251,7 @@ class SpeedyRobot:
     deletion_messages = {
         'wikipedia':{
             'ar': {
-                u'_default': u'حذف مرشح للحذف السريع حسب [[ويكيبيديا:حذف سريع|معايير الحذف السريع]]',
+                u'_default': u'حذف مرشح للحذف السريع حسب [[وProject:حذف سريع|معايير الحذف السريع]]',
                 },
             'cs': {
                 u'_default': u'Bylo označeno k [[Wikipedie:Rychlé smazání|rychlému smazání]]',

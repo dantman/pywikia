@@ -37,8 +37,8 @@ class DjVuTextBot:
     # Edit summary message that should be used.
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
-        'en': u'Robot: creating page with text extracted from DjVu',
         'ar': u'روبوت: إنشاء صفحة بنص مستخرج من DjVu',
+        'en': u'Robot: creating page with text extracted from DjVu',
         'fr': u'Bot: Creating page with texte extracted from DjVu',
         'nl': u'Bot: pagina aangemaakt met tekst geëxtraheerd uit DjVu-bestand',
         'pt': u'Bot: criando página com texto extraído do DjVu',

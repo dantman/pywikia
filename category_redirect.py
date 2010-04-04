@@ -169,6 +169,7 @@ liên kết thể loại:
 
         self.edit_request_item = pywikibot.translate(self.site.lang,
             {
+                'ar': u"* %s موجودة في %s, وهي تحويلة إلى %s",
                 'en': u"* %s is in %s, which is a redirect to %s",
                 'fr': u"* %s est dans %s, qui est une redirection vers %s",
                 'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",

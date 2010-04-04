@@ -64,6 +64,7 @@ import sys, query, wikipedia, re, codecs
 
 class CaseChecker( object ):
     msgRename = {
+        'ar': u'تغيير اسم لحالة مخلوطة',
         'en': u'mixed case rename',
         'ru': u'[[ВП:КЛ]]',
     }

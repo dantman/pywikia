@@ -124,6 +124,7 @@ msg_good = {
 
 msg_lists = {
     'als':u'Bötli: [[%s:%s]] isch e bsunders glungene Lischte',
+    'ar': u'بوت: [[%s:%s]] هي قائمة مختارة',
     'de': u'Bot: [[%s:%s]] ist eine informative Liste',
     'en': u'Bot: [[%s:%s]] is a featured list',
     'es': u'Bot: Enlace a lista destacado para: [[%s:%s]]',
@@ -325,6 +326,7 @@ good_name = {
 }
 
 lists_name = {
+    'ar': (BACK, u'قائمة مختارة'),
     'da': (BACK, u'FremragendeListe'),
     'de': (BACK, u'Informativ'),
     'en': (BACK, u'Featured list'),
