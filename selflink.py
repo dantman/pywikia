@@ -109,11 +109,18 @@ class SelflinkBot:
         should be reset to 0. This is required after the user has edited the
         article.
         """
-        # ignore interwiki links and links to sections of the same page as well as section links
-        if not match.group('title') or page.site().isInterwikiLink(match.group('title')) or match.group('section'):
+        # ignore interwiki links and links to sections of the same page as well
+        # as section links
+        if not match.group('title') \
+           or page.site().isInterwikiLink(match.group('title')) \
+           or match.group('section'):
             return text, False
-
-        linkedPage = wikipedia.Page(page.site(), match.group('title'))
+        try:
+            linkedPage = wikipedia.Page(page.site(), match.group('title'))
+        except wikipedia.InvalidTitle, err:
+            wikipedia.output(u'Warning: %s' % err)
+            return text, False
+            
         # Check whether the link found is to the current page itself.
         if linkedPage != page:
             # not a self-link
