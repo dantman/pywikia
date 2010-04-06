@@ -13,6 +13,9 @@ These command line parameters can be used to specify which pages to work on:
                    or pages-meta-current, see http://download.wikimedia.org).
                    Argument can also be given as "-xml:filename".
 
+    -always        Unlink always but don't prompt you for each replacement.
+                   ATTENTION: Use this with care!
+
     -namespace:n   Number of namespace to process. The parameter can be used
                    multiple times. It works in combination with all other
                    parameters, except for the -start parameter. If you e.g.
@@ -90,7 +93,7 @@ class XmlDumpSelflinkPageGenerator:
 
 class SelflinkBot:
 
-    def __init__(self, generator):
+    def __init__(self, generator, always=False):
         self.generator = generator
         linktrail = wikipedia.getSite().linktrail()
         # The regular expression which finds links. Results consist of four groups:
@@ -100,6 +103,8 @@ class SelflinkBot:
         # group linktrail is the link trail, that's letters after ]] which are part of the word.
         # note that the definition of 'letter' varies from language to language.
         self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
+        self.always = always
+        self.done = False
 
     def handleNextLink(self, page, text, match, context = 100):
         """
@@ -128,32 +133,46 @@ class SelflinkBot:
         else:
             # at the beginning of the link, start red color.
             # at the end of the link, reset the color to default
-            wikipedia.output(text[max(0, match.start() - context) : match.start()] + '\03{lightred}' + text[match.start() : match.end()] + '\03{default}' + text[match.end() : match.end() + context])
-            choice = wikipedia.inputChoice(u'\nWhat shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'edit', 'more context'], ['U', 'b', 's', 'e', 'm'], 'u')
-            wikipedia.output(u'')
-
-            if choice == 's':
-                # skip this link
-                return text, False
-            elif choice == 'e':
-                editor = editarticle.TextEditor()
-                newText = editor.edit(text, jumpIndex = match.start())
-                # if user didn't press Cancel
-                if newText:
-                    return newText, True
-                else:
-                    return text, True
-            elif choice == 'm':
-                # show more context by recursive self-call
-                return self.handleNextLink(page, text, match, context = context + 100)
+            if self.always:
+                choice = 'a'
             else:
-                new = match.group('label') or match.group('title')
-                new += match.group('linktrail')
-                if choice == 'u':
-                    return text[:match.start()] + new + text[match.end():], False
-                else:
-                    # make bold
-                    return text[:match.start()] + "'''" + new + "'''" + text[match.end():], False
+                wikipedia.output(
+                    text[max(0, match.start() - context) : match.start()] \
+                    + '\03{lightred}' + text[match.start() : match.end()] \
+                    + '\03{default}' + text[match.end() : match.end() + context])
+                choice = wikipedia.inputChoice(
+                    u'\nWhat shall be done with this selflink?\n',
+                    ['unlink', 'make bold', 'skip', 'edit', 'more context',
+                     'unlink all', 'quit'],
+                    ['U', 'b', 's', 'e', 'm', 'a', 'q'], 'u')
+                wikipedia.output(u'')
+
+                if choice == 's':
+                    # skip this link
+                    return text, False
+                elif choice == 'e':
+                    editor = editarticle.TextEditor()
+                    newText = editor.edit(text, jumpIndex = match.start())
+                    # if user didn't press Cancel
+                    if newText:
+                        return newText, True
+                    else:
+                        return text, True
+                elif choice == 'm':
+                    # show more context by recursive self-call
+                    return self.handleNextLink(page, text, match, context = context + 100)
+                elif choice == 'a':
+                    self.always = True
+                elif choice == 'q':
+                    self.done = True
+                    return text, False
+            new = match.group('label') or match.group('title')
+            new += match.group('linktrail')
+            if choice == 'b':
+                # make bold
+                return text[:match.start()] + "'''" + new + "'''" + text[match.end():], False
+            else:
+                return text[:match.start()] + new + text[match.end():], False
 
     def treat(self, page):
         # Show the title of the page we're working on.
@@ -196,6 +215,7 @@ class SelflinkBot:
         wikipedia.setAction(comment)
 
         for page in self.generator:
+            if self.done: break
             self.treat(page)
 
 def main():
@@ -211,6 +231,7 @@ def main():
     # that are also used by other scripts and that determine on which pages
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
+    always = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-xml'):
@@ -236,6 +257,8 @@ LIMIT 100"""
                 namespaces.append(int(arg[11:]))
             except ValueError:
                 namespaces.append(arg[11:])
+        elif arg == '-always':
+            always = True
         else:
             if not genFactory.handleArg(arg):
                 pageTitle.append(arg)
@@ -251,7 +274,7 @@ LIMIT 100"""
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = SelflinkBot(preloadingGen)
+        bot = SelflinkBot(preloadingGen, always)
         bot.run()
 
 if __name__ == "__main__":
