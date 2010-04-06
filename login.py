@@ -39,7 +39,7 @@ Parameters:
 If not given as parameter, the script will ask for your username and
 password (password entry will be hidden), log in to your home wiki using
 this combination, and store the resulting cookies (containing your password
-so keep it secured!) in a file in the login-data subdirectory.
+hash, so keep it secured!) in a file in the login-data subdirectory.
 
 All scripts in this library will be looking for this cookie file and will
 use the login information if it is present.
@@ -57,13 +57,14 @@ __version__='$Id$'
 
 import re, os, query
 import urllib2
-import wikipedia, config
+import config
+import wikipedia
 
 # On some wikis you are only allowed to run a bot if there is a link to
 # the bot's user page in a specific list.
 botList = {
     'wikipedia': {
-        'en': u'Wikipedia:Registered bots',
+        'en': u'Wikipedia:Bot/Status',
         # Disabled because they are now using a template system which
         # we can't check with our current code.
         #'simple': u'Wikipedia:Bots',
