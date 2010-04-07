@@ -64,7 +64,7 @@ import wikipedia
 # the bot's user page in a specific list.
 botList = {
     'wikipedia': {
-        'en': u'Wikipedia:Bot/Status',
+        'en': u'Wikipedia:Bots/Status',
         # Disabled because they are now using a template system which
         # we can't check with our current code.
         #'simple': u'Wikipedia:Bots',
