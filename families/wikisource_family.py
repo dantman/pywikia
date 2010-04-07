@@ -382,7 +382,7 @@ class Family(family.Family):
         ]
 
     def version(self, code):
-        return '1.16-wmf'
+        return '1.16wmf3'
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')

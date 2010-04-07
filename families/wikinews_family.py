@@ -223,7 +223,7 @@ class Family(family.Family):
         return 'utf-8'
 
     def version(self, code):
-        return '1.16-wmf'
+        return '1.16wmf3'
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')
