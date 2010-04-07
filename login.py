@@ -124,7 +124,7 @@ class LoginManager:
             # No bot policies on other
             return True
 
-    def getCookie(self, api = config.use_api_login, remember=True, captcha = None):
+    def getCookie(self, api=config.use_api_login, remember=True, captcha = None):
         """
         Login to the site.
 
@@ -157,17 +157,22 @@ class LoginManager:
                 predata["wpCaptchaWord"] = captcha['answer']
             login_address = self.site.login_address()
             address = login_address + '&action=submit'
-        
+
         if api:
-            response, data = query.GetData(predata, self.site, sysop=self.sysop, back_response = True)
-            if data['login']['result'] != "Success":
-                faildInfo = data['login']['result']
-                #if faildInfo == "NotExists":
-                #    
-                #elif faildInfo == "WrongPass":
-                #    
-                #elif faildInfo == "Throttled":
-                #    
+            while True:
+                response, data = query.GetData(predata, self.site, sysop=self.sysop, back_response = True)
+                result = data['login']['result']
+                if result == "NeedToken":
+                    predata["lgtoken"] = data["login"]["token"]
+                    continue
+                break
+            if result != "Success":
+                #if result == "NotExists":
+                #
+                #elif result == "WrongPass":
+                #
+                #elif result == "Throttled":
+                #
                 return False
         else:
             response, data = self.site.postData(address, self.site.urlEncode(predata), sysop=self.sysop)
@@ -182,9 +187,9 @@ class LoginManager:
                 fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
                 wikipedia.output(u"%s/%s\n%s" % (response.code, response.msg, fakeresponsemsg))
             #wikipedia.cj.save(wikipedia.COOKIEFILE)
-            
+
         Reat=re.compile(': (.*?)=(.*?);')
-    
+
         L = {}
         if hasattr(response, 'sheaders'):
             ck = response.sheaders
@@ -194,14 +199,14 @@ class LoginManager:
             m = Reat.search(eat)
             if m:
                 L[m.group(1)] = m.group(2)
-    
+
         got_token = got_user = False
         for Ldata in L.keys():
             if 'Token' in Ldata:
                 got_token = True
             if 'User' in Ldata or 'UserName' in Ldata:
                 got_user = True
-    
+
         if got_token and got_user:
             #process the basic information to Site()
             index = self.site._userIndex(self.sysop)
@@ -218,7 +223,7 @@ class LoginManager:
             else:
                 # clean type login, setup the new cookies files.
                 self.site._setupCookies(L, self.sysop)
-            
+
             return True
         elif not captcha:
             solve = self.site.solveCaptcha(data)
@@ -286,7 +291,7 @@ class LoginManager:
             wikipedia.output(u"Logging in to %s as %s via API." % (self.site, self.username))
         else:
             wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
-        
+
         try:
             cookiedata = self.getCookie(api)
         except NotImplementedError:
@@ -294,7 +299,7 @@ class LoginManager:
             api = False
             return self.login(False, retry)
         if cookiedata:
-            fn = '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username) 
+            fn = '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username)
             #self.storecookiedata(fn,cookiedata)
             wikipedia.output(u"Should be logged in now")
             # Show a warning according to the local bot policy
@@ -306,13 +311,13 @@ class LoginManager:
             if api:
                 wikipedia.output(u"API login failed, retrying using standard webpage.")
                 return self.login(False, retry)
-            
+
             if retry:
                 self.password = None
                 return self.login(api, True)
             else:
                 return False
-    
+
     def logout(self, api = config.use_api):
         flushCk = False
         if api and self.site.versionnumber() >= 12:
@@ -322,16 +327,16 @@ class LoginManager:
             text = self.site.getUrl(self.site.get_address("Special:UserLogout"))
             if self.site.mediawiki_message('logouttext') in text: #confirm loggedout
                 flushCk = True
-        
+
         if flushCk:
             self.site._removeCookies(self.username)
             return True
-        
+
         return False
 
     def showCaptchaWindow(self, url):
         pass
-    
+
 def main():
     username = password = None
     sysop = False
@@ -361,7 +366,7 @@ def main():
         else:
             wikipedia.showHelp('login')
             return
-    
+
     if wikipedia.verbose > 1:
         wikipedia.output(u"WARNING: Using -v -v on login.py might leak private data. When sharing, please double check your password is not readable and log out your bots session.")
         verbose = True # only use this verbose when running from login.py
@@ -378,7 +383,8 @@ def main():
                 else:
                     try:
                         site = wikipedia.getSite(lang, familyName)
-                        loginMan = LoginManager(password, sysop = sysop, site = site, verbose=verbose)
+                        loginMan = LoginManager(password, sysop=sysop,
+                                                site=site, verbose=verbose)
                         if clean:
                             loginMan.logout()
                         else:
