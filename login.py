@@ -57,32 +57,34 @@ __version__='$Id$'
 
 import re, os, query
 import urllib2
+import wikipedia as pywikibot
 import config
-import wikipedia
 
 # On some wikis you are only allowed to run a bot if there is a link to
 # the bot's user page in a specific list.
+# If bots are listed in a template, the templates name must be given as
+# second parameter, otherwise it must be None
 botList = {
     'wikipedia': {
-        'en': u'Wikipedia:Bots/Status',
-        # Disabled because they are now using a template system which
-        # we can't check with our current code.
-        #'simple': u'Wikipedia:Bots',
+        'en': [u'Wikipedia:Bots/Status', 'BotS'],
+        'simple': [u'Wikipedia:Bots', '/links']
     },
     'gentoo': {
-        'en': u'Help:Bots',
+        'en': [u'Help:Bots', None],
     }
 }
 
 def show (mysite, sysop = False):
     if mysite.loggedInAs(sysop = sysop):
-        wikipedia.output(u"You are logged in on %s as %s." % (repr(mysite), mysite.loggedInAs(sysop=sysop)))
+        pywikibot.output(u"You are logged in on %s as %s."
+                         % (repr(mysite), mysite.loggedInAs(sysop=sysop)))
     else:
-        wikipedia.output(u"You are not logged in on %s." % repr(mysite))
+        pywikibot.output(u"You are not logged in on %s." % repr(mysite))
 
 class LoginManager:
-    def __init__(self, password=None, sysop=False, site=None, username=None, verbose=False):
-        self.site = site or wikipedia.getSite()
+    def __init__(self, password=None, sysop=False, site=None, username=None,
+                 verbose=False):
+        self.site = site or pywikibot.getSite()
         self.sysop = sysop
         if username:
             self.username = username
@@ -96,12 +98,12 @@ class LoginManager:
                     self.username = config.sysopnames\
                                     [self.site.family.name][self.site.lang]
                 except:
-                    raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+                    raise pywikibot.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
             else:
                 try:
                     self.username = config.usernames[self.site.family.name][self.site.lang]
                 except:
-                    raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+                    raise pywikibot.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
         self.password = password
         self.verbose = verbose
         if getattr(config, 'password_file', ''):
@@ -113,15 +115,21 @@ class LoginManager:
         the policy on the respective wiki.
         """
         if self.site.family.name in botList \
-                and self.site.language() in botList[self.site.family.name]:
-            botListPageTitle = wikipedia.translate(self.site.language(), botList)
-            botListPage = wikipedia.Page(self.site, botListPageTitle)
-            for linkedPage in botListPage.linkedPages():
-                if linkedPage.titleWithoutNamespace() == self.username:
-                    return True
+           and self.site.language() in botList[self.site.family.name]:
+            botListPageTitle, botTemplate = botList[self.site.family.name][self.site.language()]
+            botListPage = pywikibot.Page(self.site, botListPageTitle)
+            if botTemplate:
+                for template in botListPage.templatesWithParams():
+                    if template[0] == botTemplate \
+                       and template[1][0] == self.username:
+                        return True
+            else:
+                for linkedPage in botListPage.linkedPages():
+                    if linkedPage.titleWithoutNamespace() == self.username:
+                        return True
             return False
         else:
-            # No bot policies on other
+            # No bot policies on other sites
             return True
 
     def getCookie(self, api=config.use_api_login, remember=True, captcha = None):
@@ -179,14 +187,14 @@ class LoginManager:
             if self.verbose:
                 fakepredata = predata
                 fakepredata['wpPassword'] = u'XXXXX'
-                wikipedia.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
+                pywikibot.output(u"self.site.postData(%s, %s)" % (address, self.site.urlEncode(fakepredata)))
                 trans = config.transliterate
                 config.transliterate = False #transliteration breaks for some reason
-                #wikipedia.output(fakedata.decode(self.site.encoding()))
+                #pywikibot.output(fakedata.decode(self.site.encoding()))
                 config.transliterate = trans
                 fakeresponsemsg = re.sub(r"(session|Token)=..........", r"session=XXXXXXXXXX", data)
-                wikipedia.output(u"%s/%s\n%s" % (response.code, response.msg, fakeresponsemsg))
-            #wikipedia.cj.save(wikipedia.COOKIEFILE)
+                pywikibot.output(u"%s/%s\n%s" % (response.code, response.msg, fakeresponsemsg))
+            #pywikibot.cj.save(pywikibot.COOKIEFILE)
 
         Reat=re.compile(': (.*?)=(.*?);')
 
@@ -242,7 +250,7 @@ class LoginManager:
         s = u''
         for v, k in data.iteritems():
             s += "%s=%s\n" % (v, k)
-        f = open(wikipedia.config.datafilepath('login-data',filename), 'w')
+        f = open(pywikibot.config.datafilepath('login-data',filename), 'w')
         f.write(s)
         f.close()
 
@@ -263,7 +271,7 @@ class LoginManager:
         ("my_sysop_user", "my_sysop_password")
         ("en", "wikipedia", "my_en_user", "my_en_pass")
         """
-        password_f = open(wikipedia.config.datafilepath(config.password_file), 'r')
+        password_f = open(pywikibot.config.datafilepath(config.password_file), 'r')
         for line in password_f:
             if not line.strip(): continue
             entry = eval(line)
@@ -276,40 +284,42 @@ class LoginManager:
                     self.password = entry[3]
         password_f.close()
 
-    def login(self, api = config.use_api_login, retry = False):
+    def login(self, api=config.use_api_login, retry = False):
         if not self.password:
             # As we don't want the password to appear on the screen, we set
             # password = True
-            self.password = wikipedia.input(
-                                u'Password for user %s on %s:'
-                                % (self.username, self.site),
+            self.password = pywikibot.input(
+                                u'Password for user %(name)s on %(site)s:'
+                                % {'name': self.username, 'site': self.site},
                                 password = True)
 
         self.password = self.password.encode(self.site.encoding())
 
         if api:
-            wikipedia.output(u"Logging in to %s as %s via API." % (self.site, self.username))
+            pywikibot.output(u"Logging in to %(site)s as %(name)s via API."
+                             % {'name': self.username, 'site': self.site})
         else:
-            wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
+            pywikibot.output(u"Logging in to %(site)s as %(name)s"
+                             % {'name': self.username, 'site': self.site})
 
         try:
             cookiedata = self.getCookie(api)
         except NotImplementedError:
-            wikipedia.output('API disabled because this site does not support.\nRetrying by ordinary way...')
+            pywikibot.output('API disabled because this site does not support.\nRetrying by ordinary way...')
             api = False
             return self.login(False, retry)
         if cookiedata:
             fn = '%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username)
             #self.storecookiedata(fn,cookiedata)
-            wikipedia.output(u"Should be logged in now")
+            pywikibot.output(u"Should be logged in now")
             # Show a warning according to the local bot policy
             if not self.botAllowed():
-                wikipedia.output(u'*** Your username is not listed on [[%s]].\n*** Please make sure you are allowed to use the robot before actually using it!' % botList[self.site.family.name][self.site.lang])
+                pywikibot.output(u'*** Your username is not listed on [[%s]].\n*** Please make sure you are allowed to use the robot before actually using it!' % botList[self.site.family.name][self.site.lang])
             return True
         else:
-            wikipedia.output(u"Login failed. Wrong password or CAPTCHA answer?")
+            pywikibot.output(u"Login failed. Wrong password or CAPTCHA answer?")
             if api:
-                wikipedia.output(u"API login failed, retrying using standard webpage.")
+                pywikibot.output(u"API login failed, retrying using standard webpage.")
                 return self.login(False, retry)
 
             if retry:
@@ -346,10 +356,10 @@ def main():
     clean = False
     testonly = False
 
-    for arg in wikipedia.handleArgs():
+    for arg in pywikibot.handleArgs():
         if arg.startswith("-pass"):
             if len(arg) == 5:
-                password = wikipedia.input(u'Password for all accounts:',
+                password = pywikibot.input(u'Password for all accounts:',
                                            password = True)
             else:
                 password = arg[6:]
@@ -364,11 +374,11 @@ def main():
         elif arg == "-test":
             testonly = True
         else:
-            wikipedia.showHelp('login')
+            pywikibot.showHelp('login')
             return
 
-    if wikipedia.verbose > 1:
-        wikipedia.output(u"WARNING: Using -v -v on login.py might leak private data. When sharing, please double check your password is not readable and log out your bots session.")
+    if pywikibot.verbose > 1:
+        pywikibot.output(u"WARNING: Using -v -v on login.py might leak private data. When sharing, please double check your password is not readable and log out your bots session.")
         verbose = True # only use this verbose when running from login.py
     if logall:
         if sysop:
@@ -379,30 +389,30 @@ def main():
         for familyName in namedict.iterkeys():
             for lang in namedict[familyName].iterkeys():
                 if testonly:
-                    show(wikipedia.getSite(lang, familyName), sysop)
+                    show(pywikibot.getSite(lang, familyName), sysop)
                 else:
                     try:
-                        site = wikipedia.getSite(lang, familyName)
+                        site = pywikibot.getSite(lang, familyName)
                         loginMan = LoginManager(password, sysop=sysop,
                                                 site=site, verbose=verbose)
                         if clean:
                             loginMan.logout()
                         else:
                             if not forceLogin and site.loggedInAs(sysop = sysop):
-                                wikipedia.output(u'Already logged in on %s' % site)
+                                pywikibot.output(u'Already logged in on %s' % site)
                             else:
                                 loginMan.login()
-                    except wikipedia.NoSuchSite:
-                        wikipedia.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
+                    except pywikibot.NoSuchSite:
+                        pywikibot.output(lang+ u'.' + familyName + u' is not a valid site, please remove it from your config')
 
     elif testonly:
-        show(wikipedia.getSite(), sysop)
+        show(pywikibot.getSite(), sysop)
     elif clean:
         try:
-            site = wikipedia.getSite()
+            site = pywikibot.getSite()
             lgm = LoginManager(site = site)
             lgm.logout()
-        except wikipedia.NoSuchSite:
+        except pywikibot.NoSuchSite:
             pass
     else:
         loginMan = LoginManager(password, sysop = sysop, verbose=verbose)
@@ -412,4 +422,4 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()
