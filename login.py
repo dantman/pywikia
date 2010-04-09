@@ -172,6 +172,28 @@ class LoginManager:
                 result = data['login']['result']
                 if result == "NeedToken":
                     predata["lgtoken"] = data["login"]["token"]
+                    # build the cookie (q&d-fix)
+                    ####
+                    Reat=re.compile(': (.*?)=(.*?);')
+                    L = {}
+                    L["cookieprefix"] = "pdcwiki"
+                    #print '---------# data #---------'
+                    #print data
+                    #if got_token and got_user:
+                    #process the basic information to Site()
+                    index = self.site._userIndex(self.sysop)
+                    #print index
+                    #API result came back username, token and sessions.
+                    if ['lgtoken'] in data['login'].keys():
+                        self.site._userName[index] = data['login']['lgusername']
+                        self.site._token[index] = data['login']['lgtoken'] + "+\\"
+                    if self.site._cookies[index]:
+                        #if user is trying re-login, update the new information
+                        self.site.updateCookies(L, self.sysop)
+                    else:
+                        # clean type login, setup the new cookies files.
+                        self.site._setupCookies(L, self.sysop)
+                    ####
                     continue
                 break
             if result != "Success":
