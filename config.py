@@ -76,7 +76,7 @@ SSL_connection = False
 password_file = None
 
 # Login using the API. This is less likely to break.
-use_api_login = False
+use_api_login = True
 
 # Enable data recieve from all avalible API.
 
