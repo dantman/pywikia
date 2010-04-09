@@ -157,7 +157,7 @@ class Family(family.Family):
             'sr': u'Разговор о викикњигама',
             'su': u'Obrolan Wikibooks',
             'sv': u'Wikibooksdiskussion',
-            'sw': u'Wikibooks majadiliano',
+            'sw': u'Majadiliano ya Wikibooks',
             'ta': u'Wikibooks பேச்சு',
             'te': u'Wikibooks చర్చ',
             'tg': u'Баҳси Wikibooks',
