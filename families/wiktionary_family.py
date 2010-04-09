@@ -18,11 +18,11 @@ class Family(family.Family):
             'sw', 'simple', 'fy', 'oc', 'br', 'he', 'hr', 'sl', 'hy', 'sq',
             'tt', 'la', 'zh-min-nan', 'da', 'wa', 'tk', 'ast', 'ur', 'hsb',
             'kk', 'ky', 'eo', 'wo', 'lv', 'ang', 'hi', 'ka', 'ga', 'gn', 'az',
-            'ia', 'co', 'eu', 'sk', 'my', 'ne', 'csb', 'st', 'ms', 'tl', 'mr',
+            'ia', 'co', 'eu', 'my', 'sk', 'ne', 'csb', 'st', 'ms', 'tl', 'mr',
             'cy', 'nds', 'kl', 'sd', 'ug', 'ti', 'mk', 'ps', 'an', 'sh', 'bn',
             'gu', 'mg', 'km', 'ss', 'ts', 'qu', 'bs', 'fo', 'am', 'rw', 'chr',
-            'su', 'be', 'om', 'mn', 'nah', 'ie', 'iu', 'yi', 'gd', 'tg', 'si',
-            'nn', 'gv', 'zu', 'kw', 'mt', 'dv', 'pa', 'tpi', 'sg', 'roa-rup',
+            'be', 'su', 'om', 'mn', 'nah', 'ie', 'iu', 'yi', 'gd', 'kw', 'tg',
+            'si', 'nn', 'gv', 'zu', 'mt', 'dv', 'pa', 'tpi', 'sg', 'roa-rup',
             'mi', 'uz', 'jv', 'ik', 'so', 'ha', 'ay', 'sa', 'na', 'jbo', 'tn',
             'sm', 'lb', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
@@ -159,7 +159,7 @@ class Family(family.Family):
             'kn': u'Wiktionary ಚರ್ಚೆ',
             'ko': u'위키낱말사전토론',
             'ku': u'Wiktionary nîqaş',
-            'kw': u'Kescows Wiktionary',
+            'kw': u'Keskows Wiktionary',
             'la': u'Disputatio Victionarii',
             'lb': u'Wiktionary Diskussioun',
             'li': u'Euverlèk Wiktionary',
@@ -200,7 +200,7 @@ class Family(family.Family):
             'sr': u'Разговор о викиречнику',
             'su': u'Obrolan Wiktionary',
             'sv': u'Wiktionarydiskussion',
-            'sw': u'Wiktionary majadiliano',
+            'sw': u'Majadiliano ya Wiktionary',
             'ta': u'Wiktionary பேச்சு',
             'te': u'Wiktionary చర్చ',
             'tg': u'Баҳси Wiktionary',
@@ -462,7 +462,7 @@ class Family(family.Family):
         self.interwiki_attop = ['pl']
 
     def version(self, code):
-        return '1.16wmf3'
+        return '1.16wmf4'
 
     def shared_image_repository(self, code):
         return ('commons', 'commons')

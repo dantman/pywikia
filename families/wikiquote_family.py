@@ -52,7 +52,7 @@ class Family(family.Family):
             'kk': u'Уикидәйек',
             'ko': u'위키인용집',
             'la': u'Vicicitatio',
-            'ml': u'വിക്കി ചൊല്ലുകള്‍',
+            'ml': u'വിക്കി ചൊല്ലുകൾ',
             'pl': u'Wikicytaty',
             'ro': u'Wikicitat',
             'ru': u'Викицитатник',
@@ -112,7 +112,7 @@ class Family(family.Family):
             'lb': u'Wikiquote Diskussioun',
             'li': u'Euverlèk Wikiquote',
             'lt': u'Wikiquote aptarimas',
-            'ml': u'വിക്കി ചൊല്ലുകള്‍ സംവാദം',
+            'ml': u'വിക്കി ചൊല്ലുകൾ സംവാദം',
             'mr': u'Wikiquote चर्चा',
             'nds': u'Wikiquote Diskuschoon',
             'nl': u'Overleg Wikiquote',
@@ -270,7 +270,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return '1.16wmf3'
+        return '1.16wmf4'
 
     def code2encodings(self, code):
         """
