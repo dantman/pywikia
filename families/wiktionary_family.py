@@ -154,7 +154,7 @@ class Family(family.Family):
             'jv': u'Dhiskusi Wiktionary',
             'ka': u'ვიქსიკონი განხილვა',
             'kk': u'Уикисөздік талқылауы',
-            'kl': [u'Wiktionaryip oqalliffia', u'Wiktionary-diskussion'],
+            'kl': u'Wiktionary-p oqalliffia',
             'km': u'ការពិភាក្សាអំពីWiktionary',
             'kn': u'Wiktionary ಚರ್ಚೆ',
             'ko': u'위키낱말사전토론',
