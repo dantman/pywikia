@@ -92,6 +92,7 @@ msg = {
     'nl': u'Bot: verwijzing naar etalage-artikel voor [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en utmerka artikkel',
     'nn': u'bot: [[%s:%s]] er ein god artikkel',
+    'nv': u'Naaltsoos [[%s:%s]] kʼad nizhónígo ályaa',
     'mk': u'Бот: Интервики за избрани статии за [[%s:%s]]',
     'pl': u'Bot: Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Bot: Ligando artigos destacados para [[%s:%s]]',
