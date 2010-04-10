@@ -2427,7 +2427,7 @@ class Family:
                 'ksh': [u'Saachjrupp', u'Sachjrop', u'Saachjropp', u'Kattejori', u'Kategorie', u'Katejori'],
                 'ku': u'Kategorî',
                 'kv': u'Категория',
-                'kw': u'Klass',
+                'kw': [u'Klass', u'Class'],
                 'la': u'Categoria',
                 'lad': u'Categoría',
                 'lb': u'Kategorie',

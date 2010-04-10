@@ -449,6 +449,7 @@ msg = {
     'no': (u'robot ', u'legger til', u'fjerner', u'endrer'),
     'nov': (u'robote ', u'Adid', u'Ekartad', u'Modifikad'),
     'nrm': (u'robot ', u'ajouôte', u'hale', u'amende'),
+    'nv': (u'botígíí díí naaltsoos tʼáá bíniʼ łahgo áyiilaa ', u'(+)', u'(-)', u'(+/-)'),
     'os': (u'Робот ', u'баххæст кодта', u'Баивта', u'Аиуварс'),
     'pdc': (u'Bot: ', u'dezu geduh', u'raus gnumme', u'gennert'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),

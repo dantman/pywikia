@@ -253,6 +253,7 @@ featured_name = {
     'nl': (CAT, u"Wikipedia:Etalage-artikelen"),
     'nn': (BACK,u"God artikkel"),
     'no': (CAT, u"Utmerkede artikler"),
+    'nv': (CAT, u"Naaltsoos nizhónígo ályaaígíí"),
     'oc': (CAT, u"Article de qualitat"),
     'pl': (CAT, u"Artykuły na medal"),
     'pt': (CAT, u"!Artigos destacados"),
