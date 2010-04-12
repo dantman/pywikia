@@ -6046,6 +6046,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             'list'      : 'recentchanges',
             'rctype'    : rctype,
             'rcprop'    : ['user','comment','timestamp','title','ids','loginfo'],    #','flags','sizes','redirect','patrolled']
+            'rcnamespace' : namespace,
             'rclimit'   : int(number),
             }
         if rcstart: params['rcstart'] = rcstart
