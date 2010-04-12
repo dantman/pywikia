@@ -7449,7 +7449,7 @@ Global arguments available for all bots:
         raise
         output(u'Sorry, no help available for %s' % moduleName)
 
-page_put_queue = Queue.Queue()
+page_put_queue = Queue.Queue(config.max_queue_size)
 def async_put():
     """Daemon; take pages from the queue and try to save them on the wiki."""
     while True:
