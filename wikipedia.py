@@ -6005,7 +6005,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             if not repeat:
                 break
 
-    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
+    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rcdir='older', rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
         """
         Yield ImagePages from APIs, call: action=query&list=recentchanges&rctype=edit|new&rclimit=500
 
@@ -6044,6 +6044,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         params = {
             'action'    : 'query',
             'list'      : 'recentchanges',
+            'rcdir'     : rcdir,
             'rctype'    : rctype,
             'rcprop'    : ['user','comment','timestamp','title','ids','loginfo'],    #','flags','sizes','redirect','patrolled']
             'rcnamespace' : namespace,
