@@ -201,6 +201,7 @@ def removeDisabledParts(text, tags = ['*']):
             'pre':             r'<pre>.*?</pre>',
             'source':          r'<source .*?</source>',
             'syntaxhighlight': r'<syntaxhighlight .*?</syntaxhighlight>',
+            'sql':             r'<sql>.*?</sql>',
     }
     if '*' in tags:
         tags = regexes.keys()
