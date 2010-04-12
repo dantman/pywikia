@@ -674,27 +674,31 @@ not supported by PyWikipediaBot!"""
         if throttle:
             get_throttle()
         textareaFound = False
-        retry_idle_time = 1
-        while not textareaFound:
-            
-            data = query.GetData(params, self.site(), sysop=sysop)
-            if 'error' in data:
-                raise RuntimeError("API query error: %s" % data)
-            if not 'pages' in data['query']:
-                raise RuntimeError("API query error, no pages found: %s" % data)
-            pageInfo = data['query']['pages'].values()[0]
-            if data['query']['pages'].keys()[0] == "-1":
-                if 'missing' in pageInfo:
-                    raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
-                elif 'invalid' in pageInfo:
-                    raise BadTitle('BadTitle: %s' % self)
-            else: #valid Title
-                if 'revisions' in pageInfo:
-                    textareaFound = True
+        # retrying loop is done by query.GetData
+        data = query.GetData(params, self.site(), sysop=sysop)
+        if 'error' in data:
+            raise RuntimeError("API query error: %s" % data)
+        if not 'pages' in data['query']:
+            raise RuntimeError("API query error, no pages found: %s" % data)
+        pageInfo = data['query']['pages'].values()[0]
+        if data['query']['pages'].keys()[0] == "-1":
+            if 'missing' in pageInfo:
+                raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
+            elif 'invalid' in pageInfo:
+                raise BadTitle('BadTitle: %s' % self)
+        elif 'revisions' in pageInfo: #valid Title
+            lastRev = pageInfo['revisions'][0]
+            if lastRev['*']:
+                textareaFound = True
+        # I got page date with 'revisions' in pageInfo but
+        # lastRev['*'] = False instead of the content. The Page itself was
+        # deleted but there was not 'missing' in pageInfo as expected
+        # I raise a ServerError() yet, but maybe it should be NoPage().
+        if not textareaFound:
+            raise ServerError('ServerError: No textarea found in %s' % self)
 
         self.editRestriction = ''
         self.moveRestriction = ''
-        lastRev = pageInfo['revisions'][0]
 
         # Note: user may be hidden and mw returns 'userhidden' flag
         if 'userhidden' in lastRev:
