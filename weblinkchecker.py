@@ -143,7 +143,7 @@ talk_report = {
     'nl': u'== %s ==\nTijdens enkele automatische controles bleek de onderstaande externe verwijzing onbereikbaar. Controleer alstublieft of de verwijzing inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe verwijzing.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
     # This is not a good solution as it only works on the Norwegian Wikipedia, not on Wiktionary etc.
     'no': u'%s{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
-    'pl': u'== %s ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
+    'pl': u'{{Martwy link dyskusja|numer=%s|link=%s|IA=%s}}',
     'pt': u'== %s ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
     'sr': u'== %s ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
     'zh': u'== %s ==\n\n一个自动运行的bot发现下列外部链接可能已经失效。请帮助修复错误的链接或者移除它!\n\n%s\n%s--~~~~',
@@ -162,7 +162,7 @@ talk_report_caption = {
     'nds': u'Weblenk geiht nich mehr',
     'nl': u'Dode verwijzing',
     'no': u'',
-    'pl': u'Martwy link',
+    'pl': u'',
     'pt': u'Link quebrado',
     'sr': u'Покварене спољашње повезнице',
     'zh': u'失效链接',
@@ -179,7 +179,7 @@ talk_report_archive = {
     'ja': u'\nウェブ・ページはインターネット・アーカイブによって保存されました。アーカイブに保管された適切なバージョンにリンクすることを検討してください: [%s]. ',
     'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te verwijzen naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
-    'pl': u'\nStrona została zarchiwizowana przez Internet Archive. Możesz wykorzystać link archiwalny: [%s]. ',
+    'pl': u'%s',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
     'zh': u'这个网页已经被保存在互联网档案馆（Internet Archive）。请为该网页提供一个合适的存档版本： [%s]。',
 }
