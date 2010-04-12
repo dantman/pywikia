@@ -129,6 +129,12 @@ class Family(family.Family):
         self.namespaces[1223] = {
             '_default': [u'Osm talk'],
         }
+        self.namespaces[1224] = {
+            '_default': [u'WikiReader'],
+        }
+        self.namespaces[1225] = {
+            '_default': [u'WikiReader talk'],
+        }
 
     def version(self, code):
-        return "1.16alpha"
+        return "1.17alpha"
