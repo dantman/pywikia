@@ -362,9 +362,10 @@ class CosmeticChangesToolkit:
             # Removing the interwiki
             text = pywikibot.removeLanguageLinks(text, site = self.site)
             # Removing the stars' issue
+            starstext = pywikibot.removeDisabledParts(text)
             for star in starsList:
                 regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star, re.I)
-                found = regex.findall(text)
+                found = regex.findall(starstext)
                 if found != []:
                     if pywikibot.verbose:
                         print found
@@ -699,6 +700,7 @@ class CosmeticChangesToolkit:
                 'ref',
                 'source',
                 'startspace',
+                'inputbox',
             ]
             # do not change inside file links
             namespaces = list(self.site.namespace(6, all = True))

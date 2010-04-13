@@ -250,10 +250,11 @@ u'Exception! regex (or word) used with -except is in the page. Skip!')
             newtext = newtext + u'\n' + nn_iw_msg
         # Dealing the stars' issue
         allstars = []
+        starstext = wikipedia.removeDisabledParts(text)
         for star in starsList:
             regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}[\s]*)' % star,
                                re.I)
-            found = regex.findall(newtext)
+            found = regex.findall(starstext)
             if found != []:
                 newtext = regex.sub('', newtext)
                 allstars += found
