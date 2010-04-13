@@ -10,6 +10,7 @@ import os
 import time
 import sys
 import wikipediatools
+import config
 
 cache = None
 
@@ -73,3 +74,6 @@ def getversion_nightly():
 if __name__ == '__main__':
     print 'Pywikipedia %s' % getversion()
     print 'Python %s' % sys.version
+    print 'config-settings:'
+    print 'use_api =', config.use_api
+    print 'use_api_login =', config.use_api_login
