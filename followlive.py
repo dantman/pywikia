@@ -461,8 +461,8 @@ class PageHandler:
                 sys.exit("Exiting")
             summary += tpl['msg']+' '
             wikipedia.output(u'Probably added %s' % questionlist[answer])
-        wikipedia.output(newcontent)
-        self.page.put(newcontent, comment = summary)
+#        wikipedia.output(newcontent) bug #2986247
+        self.page.put(self.content, comment = summary)
         wikipedia.output(u'with comment %s\n' % summary)
 
     def run(self):
