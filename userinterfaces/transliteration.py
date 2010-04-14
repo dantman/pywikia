@@ -1343,7 +1343,69 @@ class transliterator(object):
             self.trans[char] = u"."
         for char in u"ๆ":
             self.trans[char] = u"(2)"
-              
+
+        # Korean (Revised Romanization system within possible, incomplete)
+        for char in u"국":
+            self.trans[char] = u"guk"
+        for char in u"명":
+            self.trans[char] = u"myeong"
+        for char in u"검":
+            self.trans[char] = u"geom"
+        for char in u"타":
+            self.trans[char] = u"ta"
+        for char in u"분":
+            self.trans[char] = u"bun"
+        for char in u"사":
+            self.trans[char] = u"sa"
+        for char in u"류":
+            self.trans[char] = u"ryu"
+        for char in u"포":
+            self.trans[char] = u"po"
+        for char in u"르":
+            self.trans[char] = u"reu"
+        for char in u"투":
+            self.trans[char] = u"tu"
+        for char in u"갈":
+            self.trans[char] = u"gal"
+        for char in u"어":
+            self.trans[char] = u"eo"
+        for char in u"노":
+            self.trans[char] = u"no"
+        for char in u"웨":
+            self.trans[char] = u"we"
+        for char in u"이":
+            self.trans[char] = u"i"
+        for char in u"라":
+            self.trans[char] = u"ra"
+        for char in u"틴":
+            self.trans[char] = u"tin"
+        for char in u"루":
+            self.trans[char] = u"ru"
+        for char in u"마":
+            self.trans[char] = u"ma"
+        for char in u"니":
+            self.trans[char] = u"ni"
+        for char in u"아":
+            self.trans[char] = u"a"
+        for char in u"독":
+            self.trans[char] = u"dok"
+        for char in u"일":
+            self.trans[char] = u"il"
+        for char in u"모":
+            self.trans[char] = u"mo"
+        for char in u"크":
+            self.trans[char] = u"keu"
+        for char in u"샤":
+            self.trans[char] = u"sya"
+        for char in u"영":
+            self.trans[char] = u"yeong"
+        for char in u"불":
+            self.trans[char] = u"bul"
+        for char in u"가":
+            self.trans[char] = u"ga"
+        for char in u"리":
+            self.trans[char] = u"ri"
+
               
     def transliterate(self, char, default="?", prev="-", next="-"):
         if char in self.trans:
