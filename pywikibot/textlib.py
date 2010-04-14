@@ -677,10 +677,10 @@ def compileLinkR(withoutBracketed=False, onlyBracketed=False):
     # RFC 2396 says that URLs may only contain certain characters.
     # For this regex we also accept non-allowed characters, so that the bot
     # will later show these links as broken ('Non-ASCII Characters in URL').
-    # Note: While allowing parenthesis inside URLs, MediaWiki will regard
-    # right parenthesis at the end of the URL as not part of that URL.
-    # The same applies to dot, comma, colon and some other characters.
-    notAtEnd = '\]\s\)\.:;,<>"\|'
+    # Note: While allowing dots inside URLs, MediaWiki will regard
+    # dots at the end of the URL as not part of that URL.
+    # The same applies to comma, colon and some other characters.
+    notAtEnd = '\]\s\.:;,<>"\|'
     # So characters inside the URL can be anything except whitespace,
     # closing squared brackets, quotation marks, greater than and less
     # than, and the last character also can't be parenthesis or another
