@@ -688,7 +688,7 @@ not supported by PyWikipediaBot!"""
                 raise BadTitle('BadTitle: %s' % self)
         elif 'revisions' in pageInfo: #valid Title
             lastRev = pageInfo['revisions'][0]
-            if lastRev['*']:
+            if lastRev['*'] is not None:
                 textareaFound = True
         # I got page date with 'revisions' in pageInfo but
         # lastRev['*'] = False instead of the content. The Page itself was
