@@ -15,7 +15,13 @@ For fastest processing, XmlDump uses the cElementTree library if available
 http://www.effbot.org/ for earlier versions). If not found, it falls back
 to the older method using regular expressions.
 """
+#
+# (C) Pywikipedia bot team, 2005-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__='$Id$'
+#
 
 import threading
 import xml.sax
@@ -285,6 +291,13 @@ Consider installing the python-celementtree package.''')
         if self.filename.endswith('.bz2'):
             import bz2
             source = bz2.BZ2File(self.filename)
+        elif self.filename.endswith('.7z'):
+            import subprocess
+            source = subprocess.Popen('7za e -bd -so %s 2>/dev/null'
+                                      % self.filename,
+                                      shell=True,
+                                      stdout=subprocess.PIPE,
+                                      bufsize=65535).stdout
         else:
             # assume it's an uncompressed XML file
             source = open(self.filename)
