@@ -283,7 +283,7 @@ netext = {
         'zh-yue': u'{{歡迎}}--%s',
     },
     'wikinews':{
-        'it': u'{{subst:benvenuto|%s}}',
+        'it': u'{{subst:benvenuto}}',
         'zh': u'{{subst:welcome}} %s',
     },
     'wiktionary':{
@@ -848,7 +848,8 @@ class WelcomeBot(object):
                             continue
                         welcome_text = wikipedia.translate(self.site, netext)
                         if globalvar.randomSign:
-                            welcome_text = welcome_text % choice(self.defineSign())
+                            if self.site.family != 'wikinews':
+                                welcome_text = welcome_text % choice(self.defineSign())
                             if self.site.family == 'wiktionary' and self.site.lang == 'it':
                                 pass
                             else:
