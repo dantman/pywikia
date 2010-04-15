@@ -190,7 +190,9 @@ def understandBlock(text, TTP, TSP, TSMP, TTMP, TU):
     return ('editable', r'\A\n') # If editable means that we have no regex, won't change anything with this regex
 
 def showQuest(site, page):
-    quest = pywikibot.inputChoice(u'Do you want to open the page?',['with browser', 'with gui', 'no'], ['b','g','n'], 'n')
+    quest = pywikibot.inputChoice(u'Do you want to open the page?',
+                                  ['with browser', 'with gui', 'no'],
+                                  ['b','g','n'], 'n')
     pathWiki = site.family.nicepath(site.lang)
     url = 'http://%s%s%s?&redirect=no' % (pywikibot.getSite().hostname(), pathWiki, page.urlname())
     if quest == 'b':
@@ -290,16 +292,16 @@ def main():
             pywikibot.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
             continue
         """
-        try:
+        if restrictions.has_key('edit'):
             editRestr = restrictions['edit']
-            if editRestr and editRestr[0] == 'sysop':
-                try:
-                    config.sysopnames[site.family.name][site.lang]
-                except:
-                    pywikibot.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
-                    continue
-        except KeyError:
-            continue
+        else:
+            editRestr = None
+        if editRestr and editRestr[0] == 'sysop':
+            try:
+                config.sysopnames[site.family.name][site.lang]
+            except:
+                pywikibot.output("%s is sysop-protected : this account can't edit it! Skipping..." % pagename)
+                continue
 
         # Understand, according to the template in the page, what should be the protection
         # and compare it with what there really is.
