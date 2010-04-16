@@ -1385,6 +1385,7 @@ class IsbnBot:
         self.format = format
         self.always = always
         self.isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+[Xx]?)')
+        self.comment = pywikibot.translate(pywikibot.getSite(), msg)
 
     def treat(self, page):
         try:
@@ -1425,7 +1426,7 @@ class IsbnBot:
 
             if self.always:
                 try:
-                    page.put(text)
+                    page.put(text, comment=self.comment)
                 except pywikibot.EditConflict:
                     pywikibot.output(u'Skipping %s because of edit conflict' % (page.title(),))
                 except pywikibot.SpamfilterError, e:
@@ -1434,13 +1435,10 @@ class IsbnBot:
                     pywikibot.output(u'Skipping %s (locked page)' % (page.title(),))
             else:
                 # Save the page in the background. No need to catch exceptions.
-                page.put_async(text)
+                page.put_async(text, self.comment)
 
 
     def run(self):
-        comment = pywikibot.translate(pywikibot.getSite(), msg)
-        pywikibot.setAction(comment)
-
         for page in self.generator:
             self.treat(page)
 
@@ -1479,9 +1477,9 @@ def main():
             if not genFactory.handleArg(arg):
                 pageTitle.append(arg)
 
+    site = pywikibot.getSite()
     if pageTitle:
-        page = pywikibot.Page(pywikibot.getSite(), ' '.join(pageTitle))
-        gen = iter([page])
+        gen = iter([pywikibot.Page(site, t) for t in pageTitle])
     if not gen:
         gen = genFactory.getCombinedGenerator()
     if not gen:
