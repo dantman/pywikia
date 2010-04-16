@@ -1156,14 +1156,14 @@ class Subject(object):
                     pywikibot.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), disambig.aslink(True)))
                     return (True, None)
                 else:
-                    choice = pywikibot.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
+                    choice = pywikibot.inputChoice(u'WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             elif not self.originPage.isDisambig() and page.isDisambig():
                 nondisambig = self.getFoundNonDisambig(page.site())
                 if nondisambig:
                     pywikibot.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), nondisambig.aslink(True)))
                     return (True, None)
                 else:
-                    choice = pywikibot.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
+                    choice = pywikibot.inputChoice(u'WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             if choice == 'n':
                 return (True, None)
             elif choice == 'a':
@@ -1191,7 +1191,7 @@ class Subject(object):
         if config.without_interwiki:
             f = codecs.open(
                 pywikibot.config.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
-            f.write("# %s \n" % page.aslink(forceInterwiki=True))
+            f.write(u"# %s \n" % page.aslink(forceInterwiki=True))
             f.close()
 
     def askForHints(self, counter):
@@ -1317,7 +1317,7 @@ class Subject(object):
                             pywikibot.output(u"%s: %s gives new %sredirect %s"
                                              %  (self.originPage.aslink(), page.aslink(True), redir, redirectTargetPage.aslink(True)))
                 continue
-            
+
             # must be behind the page.isRedirectPage() part
             # otherwise a redirect error would be raised
             if page.isEmpty() and not page.isCategory():
@@ -1381,10 +1381,10 @@ class Subject(object):
                     f = codecs.open(
                             pywikibot.config.datafilepath('autonomous_problems.dat'),
                             'a', 'utf-8')
-                    f.write("* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
+                    f.write(u"* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
                     if config.interwiki_graph and config.interwiki_graph_url:
                         filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
-                        f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
+                        f.write(u" [%s%s graph]" % (config.interwiki_graph_url, filename))
                     f.write("\n")
                     f.close()
                 # FIXME: What errors are we catching here? 
@@ -1460,7 +1460,7 @@ class Subject(object):
                 site = page.site()
                 if site == self.originPage.site():
                     if page != self.originPage:
-                        self.problem("Found link to %s" % page.aslink(True) )
+                        self.problem(u"Found link to %s" % page.aslink(True) )
                         self.whereReport(page)
                         errorCount += 1
                 else:
@@ -1473,7 +1473,7 @@ class Subject(object):
         for site, pages in new.iteritems():
             if len(pages) > 1:
                 errorCount += 1
-                self.problem("Found more than one link for %s" % site)
+                self.problem(u"Found more than one link for %s" % site)
 
         if not errorCount and not globalvar.select:
             # no errors, so all lists have only one item
@@ -1755,7 +1755,9 @@ class Subject(object):
         pywikibot.output(u"Changes to be made: %s" % mods)
         oldtext = page.get()
         template = (page.namespace() == 10)
-        newtext = pywikibot.replaceLanguageLinks(oldtext, new, site = page.site(), template = template)
+        newtext = pywikibot.replaceLanguageLinks(oldtext, new,
+                                                 site = page.site(),
+                                                 template = template)
         # This is for now. Later there should be different funktions for each kind
         if not botMayEdit(page):
             if template:
@@ -1771,7 +1773,7 @@ class Subject(object):
         # Determine whether we need permission to submit
         ask = False
         if removing and removing != [page.site()]:   # Allow for special case of a self-pointing interwiki link
-            self.problem('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
+            self.problem(u'Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
             ask = True
         if globalvar.force:
             ask = False
@@ -1791,7 +1793,7 @@ class Subject(object):
                         page.site().hostname(),
                         page.site().nice_get_address(page.title())
                     ))
-                    pywikibot.input("Press Enter when finished in browser.")
+                    pywikibot.input(u"Press Enter when finished in browser.")
                     return True
                 elif answer == 'a':
                     # don't ask for the rest of this subject
@@ -1854,7 +1856,7 @@ class Subject(object):
         elif answer == 'g':
             raise GiveUpOnPage
         else:
-            raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
+            raise LinkMustBeRemoved(u'Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
 
     def reportBacklinks(self, new, updatedSites):
         """
