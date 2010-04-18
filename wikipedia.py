@@ -5732,16 +5732,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                     if dump:
                         # dump result only.
                         yield c
-                        continue
-                    
-                    if c['ns'] == 6:
-                        p_ret = ImagePage(self, c['title'])
                     else:
-                        p_ret = Page(self, c['title'], defaultNamespace=c['ns'])
-                    
-                    yield (p_ret, c['user'],
-                       parsetime2stamp(c['timestamp']),
-                       c['comment'], )
+                        if c['ns'] == 6:
+                            p_ret = ImagePage(self, c['title'])
+                        else:
+                            p_ret = Page(self, c['title'], defaultNamespace=c['ns'])
+                        
+                        yield (p_ret, c['user'],
+                          parsetime2stamp(c['timestamp']),
+                          c['comment'], )
 
                 nbresults += 1
                 if nbresults >= number:

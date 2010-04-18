@@ -689,22 +689,21 @@ class WelcomeBot(object):
 
         count_auto = 0
         wikipedia.output("Querying new user log from API....")
-        while True:
-            for x in self.site.logpages(number = int(globalvar.queryLimit), mode = 'newusers',start = starttime, dump = True):
-                someone_found = True
-                if 'user' not in x:
-                    continue
-                #created twice?
-                if not globalvar.welcomeAuto and x['action'] == 'create2':
-                    continue
-                if not globalvar.welcomeAuto and x['action'] == 'autocreate':
-                    if not globalvar.quick:
-                        showStatus(3)
-                        wikipedia.output(u'%s has been created automatically.' % x['user'])
-                    count_auto += 1
-                    continue
+        for x in self.site.logpages(number = globalvar.queryLimit, mode = 'newusers',start = starttime, dump = True):
+            someone_found = True
+            if 'user' not in x:
+                continue
+            #created twice?
+            if not globalvar.welcomeAuto and x['action'] == 'create2':
+                continue
+            if not globalvar.welcomeAuto and x['action'] == 'autocreate':
+                if not globalvar.quick:
+                    showStatus(3)
+                    wikipedia.output(u'%s has been created automatically.' % x['user'])
+                count_auto += 1
+                continue
 
-                yield userlib.User(self.site, x['user'])
+            yield userlib.User(self.site, x['user'])
 
         if someone_found:
             if globalvar.quick and count_auto > 0:
