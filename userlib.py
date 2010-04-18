@@ -285,7 +285,7 @@ class User(object):
                 yield p,t,c,a
             return
 
-        for s in self.site().logpages(number, mode = 'upload', user = self.name(), dump = True)
+        for s in self.site().logpages(number, mode = 'upload', user = self.name(), dump = True):
             yield wikipedia.ImagePage(self.site(), s['title']), s['timestamp'], s['comment'], s['pageid'] > 0
         return
 

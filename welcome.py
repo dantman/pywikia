@@ -690,7 +690,7 @@ class WelcomeBot(object):
         count_auto = 0
         wikipedia.output("Querying new user log from API....")
         while True:
-            for x in self.site.logpages(number = int(globalvar.queryLimit), mode = 'newusers',start = starttime, dump = True)
+            for x in self.site.logpages(number = int(globalvar.queryLimit), mode = 'newusers',start = starttime, dump = True):
                 someone_found = True
                 if 'user' not in x:
                     continue
