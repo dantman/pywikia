@@ -5686,7 +5686,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
     # TODO: avoid code duplication for the following methods
 
     def logpages(self, number = 50, mode = '', title = None, user = None, repeat = False,
-                 namespace = [], start = None, end = None, tag = None):
+                 namespace = [], start = None, end = None, tag = None, dump = False):
         
         if not self.has_api() or self.versionnumber() < 11 or \
            mode not in ('block', 'protect', 'rights', 'delete', 'upload',
@@ -5727,6 +5727,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             for c in result['query']['logevents']:
                 if (not namespace or c['ns'] in namespace) and \
                    not c.has_key('actionhidden'):
+                    if dump:
+                        # dump result only.
+                        yield c
+                        continue
+                    
                     if c['ns'] == 6:
                         p_ret = ImagePage(self, c['title'])
                     else:
