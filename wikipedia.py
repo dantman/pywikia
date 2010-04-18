@@ -5685,7 +5685,9 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     # TODO: avoid code duplication for the following methods
 
-    def logpages(self, number = 50, mode = '', title = None, user = None, repeat = False, namespace = [], offset=-1):
+    def logpages(self, number = 50, mode = '', title = None, user = None, repeat = False,
+                 namespace = [], start = None, end = None, tag = None):
+        
         if not self.has_api() or self.versionnumber() < 11 or \
            mode not in ('block', 'protect', 'rights', 'delete', 'upload',
                         'move', 'import', 'patrol', 'merge', 'suppress',
@@ -5698,7 +5700,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             'letype'    : mode,
             'lelimit'   : int(number),
             'ledir'     : 'older',
-            'leprop'    : ['ids', 'title', 'type', 'user', 'timestamp', 'comment', 'derails',],
+            'leprop'    : ['ids', 'title', 'type', 'user', 'timestamp', 'comment', 'details',],
         }
 
         if number > config.special_page_limit:
@@ -5709,6 +5711,13 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             params['leuser'] = user
         if title:
             params['letitle'] = title
+        if start:
+            params['lestart'] = start
+        if end:
+            params['leend'] = end
+        if tag and self.versionnumber() >= 16: # tag support from mw:r58399
+            params['letag'] = tag
+        
         nbresults = 0
         while True:
             result = query.GetData(params, self)
@@ -5986,8 +5995,6 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                            No more than 500 (5000 for bots) allowed.
                            Default: 10
         """
-        #    def logpages(self, number=50, mode='', user=None, repeat=False, namespace=[], offset=-1):
-        #return self.logpages(number, mode='upload', user = leuser, repeat)
         params = {
             'action'    :'query',
             'list'      :'logevents',
