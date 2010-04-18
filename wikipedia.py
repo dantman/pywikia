@@ -5685,8 +5685,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     # TODO: avoid code duplication for the following methods
 
-    def logpages(self, number=50, mode='', user=None, repeat=False, namespace=[], offset=-1):
-        if not self.has_api() or \
+    def logpages(self, number = 50, mode = '', title = None, user = None, repeat = False, namespace = [], offset=-1):
+        if not self.has_api() or self.versionnumber() < 11 or \
            mode not in ('block', 'protect', 'rights', 'delete', 'upload',
                         'move', 'import', 'patrol', 'merge', 'suppress',
                         'review', 'stable', 'gblblock', 'renameuser',
@@ -5697,6 +5697,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             'list'      : 'logevents',
             'letype'    : mode,
             'lelimit'   : int(number),
+            'ledir'     : 'older',
+            'leprop'    : ['ids', 'title', 'type', 'user', 'timestamp', 'comment', 'derails',],
         }
 
         if number > config.special_page_limit:
@@ -5705,6 +5707,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 params['lelimit'] = 5000
         if user:
             params['leuser'] = user
+        if title:
+            params['letitle'] = title
         nbresults = 0
         while True:
             result = query.GetData(params, self)
@@ -5714,11 +5718,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             for c in result['query']['logevents']:
                 if (not namespace or c['ns'] in namespace) and \
                    not c.has_key('actionhidden'):
-                    yield (Page(self, c['title'], defaultNamespace=c['ns']),
-                           c['user'],
-                           parsetime2stamp(c['timestamp']),
-                           c['comment'],
-                           )
+                    if c['ns'] == 6:
+                        p_ret = ImagePage(self, c['title'])
+                    else:
+                        p_ret = Page(self, c['title'], defaultNamespace=c['ns'])
+                    
+                    yield (p_ret, c['user'],
+                       parsetime2stamp(c['timestamp']),
+                       c['comment'], )
 
                 nbresults += 1
                 if nbresults >= number:
@@ -5755,9 +5762,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         #       should use both offset and limit parameters, and have an
         #       option to fetch older rather than newer pages
         seen = set()
-        api = self.has_api()
         while True:
-            if api and self.versionnumber() >= 10:
+            if self.has_api() and self.versionnumber() >= 10:
                 params = {
                     'action': 'query',
                     'list': 'recentchanges',
@@ -5980,6 +5986,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                            No more than 500 (5000 for bots) allowed.
                            Default: 10
         """
+        #    def logpages(self, number=50, mode='', user=None, repeat=False, namespace=[], offset=-1):
+        #return self.logpages(number, mode='upload', user = leuser, repeat)
         params = {
             'action'    :'query',
             'list'      :'logevents',
