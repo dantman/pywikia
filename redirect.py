@@ -463,23 +463,10 @@ class RedirectGenerator:
         start = datetime.datetime.utcnow() \
                  - datetime.timedelta(0, self.offset*3600)
         offset_time = start.strftime("%Y%m%d%H%M%S")
-        params = {
-            'action'    :'query',
-            'list'      :'logevents',
-            'letype'    :'move',
-            'leprop'    :'title|details',
-            'lelimit'   : self.api_number,
-            'lestart'   : offset_time,
-        }
-        data = query.GetData(params, encodeTitle = False)
-        if 'warnings' in data:
-            raise
-        allmoves = data['query']['logevents']
         wikipedia.output(u'Retrieving %d moved pages via API...' % len(allmoves))
         if wikipedia.verbose:
             wikipedia.output(u"[%s]" % offset_time)
-        for moved in allmoves:
-            moved_page = wikipedia.Page(self.site, moved['title'])
+        for moved_page,u,t,c in self.site.logpages(number = api_number, mode = 'move',start = offset_time):
             try:
                 if not moved_page.isRedirectPage():
                     continue

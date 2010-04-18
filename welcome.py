@@ -680,26 +680,17 @@ class WelcomeBot(object):
                 yield x
             return
 
-        params = {
-            'action':'query',
-            'list':'logevents',
-            'letype':'newusers',
-            'ledir':'older',
-            'leprop':'ids|type|user',
-            'lelimit':int(globalvar.queryLimit),
-        }
+        starttime = None
         if globalvar.timeoffset != 0:
             now = self.site.server_time() - timedelta(minutes=globalvar.timeoffset)
-            params['lestart'] = int(now.strftime("%Y%m%d%H%M%S"))
+            starttime = int(now.strftime("%Y%m%d%H%M%S"))
         elif globalvar.offset != 0:
-            params['lestart'] = globalvar.offset
+            starttime = globalvar.offset
 
         count_auto = 0
         wikipedia.output("Querying new user log from API....")
         while True:
-            lev = query.GetData(params, self.site)
-            count = len(lev['query']['logevents'])
-            for x in lev['query']['logevents']:
+            for x in self.site.logpages(number = int(globalvar.queryLimit), mode = 'newusers',start = starttime, dump = True)
                 someone_found = True
                 if 'user' not in x:
                     continue
@@ -715,10 +706,6 @@ class WelcomeBot(object):
 
                 yield userlib.User(self.site, x['user'])
 
-            if count < globalvar.queryLimit and 'query-continue' in lev:
-                params['lestart'] = lev['query-continue']['logevents']['lestart']
-            else:
-                break
         if someone_found:
             if globalvar.quick and count_auto > 0:
                 showStatus()

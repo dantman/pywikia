@@ -1238,26 +1238,9 @@ def uploadedYesterday(site = None):
     today = datetime.utcnow()
     yesterday = today + timedelta(days=-1)
 
-    params = {
-        'action'    :'query',
-        'list'      :'logevents',
-        'leprop'    :'title',
-        'letype'    :'upload',
-        'ledir'     :'newer',
-        'lelimit'   :'5000',
-        'lestart'   :yesterday.strftime(dateformat),
-        'leend'     :today.strftime(dateformat)
-        }
-
-    data = query.GetData(params, site, encodeTitle = False)
-    try:
-        for item in data['query']['logevents']:
-            result.append(item['title'])
-    except IndexError:
-        raise NoPage(u'API Error, nothing found in the APIs')
-    except KeyError:
-        raise NoPage(u'API Error, nothing found in the APIs')
-
+    for item in site.logpages( number = 5000, mode = 'upload', start = yesterday.strftime(dateformat),
+                end = today.strftime(dateformat), newer = True, dump = True):
+        result.append(item['title'])
     return pagegenerators.PagesFromTitlesGenerator(result, site)
 
 def recentChanges(site = None, delay=0, block=70):

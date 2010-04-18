@@ -5686,7 +5686,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
     # TODO: avoid code duplication for the following methods
 
     def logpages(self, number = 50, mode = '', title = None, user = None, repeat = False,
-                 namespace = [], start = None, end = None, tag = None, dump = False):
+                 namespace = [], start = None, end = None, tag = None, newer = False, dump = False):
         
         if not self.has_api() or self.versionnumber() < 11 or \
            mode not in ('block', 'protect', 'rights', 'delete', 'upload',
@@ -5707,6 +5707,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             params['lelimit'] = config.special_page_limit
             if number > 5000 and self.isAllowed('apihighlimits'):
                 params['lelimit'] = 5000
+        if newer:
+            params['ledir'] = 'newer'
         if user:
             params['leuser'] = user
         if title:
