@@ -220,13 +220,7 @@ class UploadRobot:
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
-        try:
-            if config.use_api and self.targetSite.versionnumber() >= 16:
-                x = self.targetSite.api_address()
-                del x
-            else:
-                raise NotImplementedError
-        except NotImplementedError:
+        if not self.targetSite.has_api() or self.targetSite.versionnumber() < 16:
             return self._uploadImageOld(debug)
         
         if not hasattr(self,'_contents'):

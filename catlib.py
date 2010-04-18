@@ -179,13 +179,7 @@ class Category(wikipedia.Page):
 
         This should not be used outside of this module.
         """
-        try:
-            if wikipedia.config.use_api and self.site().versionnumber() >= 11:
-                api_url = self.site().api_address()
-                del api_url
-            else:
-                raise NotImplementedError # version not support
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 11:
             for tag, page in self._oldParseCategory(purge, startFrom):
                 yield tag, page
             return

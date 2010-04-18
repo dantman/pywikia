@@ -59,13 +59,7 @@ def isWatched(pageName, site=None):
     return pageName in watchlist
 
 def refresh(site, sysop=False):
-    try:
-        if wikipedia.config.use_api and site.versionnumber() >= 10:
-            x = site.api_address()
-            del x
-        else:
-            raise NotImplementedError
-    except NotImplementedError:
+    if not site.has_api() or site.versionnumber() < 10:
         _refreshOld(site)
     
     # get watchlist special page's URL
@@ -79,7 +73,7 @@ def refresh(site, sysop=False):
         'wlprop': 'title',
     }
     
-    wikipedia.output(u'Retrieving watchlist for %s' % repr(site))
+    wikipedia.output(u'Retrieving watchlist for %s via API.' % repr(site))
     #wikipedia.put_throttle() # It actually is a get, but a heavy one.
     watchlist = []
     while True:
