@@ -285,26 +285,9 @@ class User(object):
                 yield p,t,c,a
             return
 
-        params = {
-            'action': 'query',
-            'list': 'logevents',
-            'letype': 'upload',
-            'leuser': self.name(),
-            'lelimit': int(number),
-        }
-        count = 0
-        while True:
-            data = query.GetData(params, self.site())
-            for info in data['query']['logevents']:
-                count += 1
-                yield wikipedia.ImagePage(self.site(), info['title']), info['timestamp'], info['comment'], False
-
-                if count >= number:
-                    break
-            if 'query-continue' in data and count < number:
-                params['lestart'] = data['query-continue']['logevents']['lestart']
-            else:
-                break
+        for s in self.site().logpages(number, mode = 'upload', user = self.name(), dump = True)
+            yield wikipedia.ImagePage(self.site(), s['title']), s['timestamp'], s['comment'], s['pageid'] > 0
+        return
 
     def _uploadedImagesOld(self, number = 10):
         """Yield ImagePages from Special:Log&type=upload"""

@@ -6000,34 +6000,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                            No more than 500 (5000 for bots) allowed.
                            Default: 10
         """
-        params = {
-            'action'    :'query',
-            'list'      :'logevents',
-            'letype'    :'upload',
-            'lelimit'   :int(number),
-            }
-        if lestart: params['lestart'] = lestart
-        if leend: params['leend'] = leend
-        if leuser: params['leuser'] = leuser
-        if letitle: params['letitle'] = letitle
-        while True:
-            if self.versionnumber() >= 11:
-                imagesData = query.GetData(params, self, encodeTitle = False)
-            else:
-                raise NotImplementedError("The site version is not support this action.")
-            
-            if 'error' in imagesData:
-                raise RuntimeError('%s' % data['error'])
-
-            for i in imagesData['query']['logevents']:
-                comment = ''
-                if 'comment' in i:
-                    comment = i['comment']
-                #pageid = i['pageid']
-                ##logid = i['logid'] #no use current now
-                yield ImagePage(self, i['title']), i['timestamp'], i['user'], comment
-            if not repeat:
-                break
+        
+        for o, u, t, c in self.logpages(number = number, mode = 'upload', title = letitle, user = leuser,
+                 repeat = repeat, start = lestart, end = leend):
+            yield o, t, u, c
+        return
 
     def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rcdir='older', rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
         """
