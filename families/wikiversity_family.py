@@ -38,7 +38,7 @@ class Family(family.Family):
         }
         self.namespaces[5] = {
             '_default': [u'Wikiversity talk', self.namespaces[5]['_default']],
-            'cs': u'Wikiverzita diskuse',
+            'cs': u'Diskuse k Wikiverzitě',
             'de': u'Wikiversity Diskussion',
             'el': u'Συζήτηση Βικιεπιστημίου',
             'es': u'Wikiversidad Discusión',
@@ -58,7 +58,7 @@ class Family(family.Family):
             'ja': u'School',
         }
         self.namespaces[101] = {
-            'cs': u'Fórum diskuse',
+            'cs': u'Diskuse k fóru',
             'el': u'Συζήτηση Σχολής',
             'en': u'School talk',
             'it': u'Discussioni facoltà',

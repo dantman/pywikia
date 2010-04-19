@@ -61,7 +61,7 @@ class Family(family.Family):
             'bg': u'Уикиновини беседа',
             'bs': u'Razgovor s Wikivijestima',
             'ca': u'Viquinotícies Discussió',
-            'cs': u'Wikizprávy diskuse',
+            'cs': u'Diskuse k Wikizprávám',
             'de': u'Wikinews Diskussion',
             'es': u'Wikinoticias Discusión',
             'fi': u'Keskustelu Wikiuutisista',
@@ -122,7 +122,7 @@ class Family(family.Family):
 
         self.namespaces[101] = {
             'ar': u'نقاش البوابة',
-            'cs': u'Portál diskuse',
+            'cs': u'Diskuse k portálu',
             'de': u'Portal Diskussion',
             'en': u'Portal talk',
             'es': u'Comentarios Discusión',

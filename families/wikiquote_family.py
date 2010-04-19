@@ -79,7 +79,7 @@ class Family(family.Family):
             'br': u'Kaozeadenn Wikiarroud',
             'bs': u'Razgovor s Wikicitatima',
             'ca': u'Viquidites Discussió',
-            'cs': u'Wikicitáty diskuse',
+            'cs': u'Diskuse k Wikicitátům',
             'cy': u'Sgwrs Wikiquote',
             'da': u'Wikiquote-diskussion',
             'de': u'Wikiquote Diskussion',

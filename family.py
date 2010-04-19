@@ -17,7 +17,8 @@ from datetime import timedelta, datetime
 class Family:
     def __init__(self):
         self.name = None
-            # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
+
+        # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
             'ace', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'an', 'arc',
             'roa-rup', 'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'bm', 'bn',
@@ -781,7 +782,7 @@ class Family:
                 'ch': u'Kombetsasion ni muna\'sesetbi',
                 'ckb': u'لێدوانی بەکارھێنەر',
                 'crh': [u'Qullanıcı muzakeresi', u'Къулланыджы музакереси'],
-                'cs': u'Uživatel diskuse',
+                'cs': u'Diskuse s wikipedistou',
                 'csb': u'Diskùsëjô brëkòwnika',
                 'cu': u'По́льꙃєватєлꙗ бєсѣ́да',
                 'cv': u'Хутшăнаканăн канашлу страници',
@@ -948,6 +949,7 @@ class Family:
                 'arc': [u'ܡܡܠܠܐ ܕ ܘܝܩܝܦܕܝܐ', u'ܘܝܩܝܦܕܝܐ talk'],
                 'bn': u'উইকিপিডিয়া আলোচনা',
                 'ckb': u'لێدوانی Wikipedia',
+                'cs': u'Diskuse k Wikipedii',
                 'kl': u'Wikipedia-p oqalliffia',
                 'krc': u'Википедия сюзюу',
                 'kw': [u'Kescows Wikipedia', u'Cows Wikipedia'],
@@ -1189,7 +1191,7 @@ class Family:
                 'ch': u'Kombetsasion ni litratu',
                 'ckb': u'لێدوانی پەڕگە',
                 'crh': [u'Fayl muzakeresi', u'Resim muzakeresi', u'Ресим музакереси'],
-                'cs': u'Soubor diskuse',
+                'cs': u'Diskuse k souboru',
                 'csb': u'Diskùsëjô òbrôzków',
                 'cu': [u'Дѣ́ла бєсѣ́да', u'Ви́да бєсѣ́да'],
                 'cv': u'Ӳкерчĕке сӳтсе явмалли',
@@ -1437,7 +1439,7 @@ class Family:
                 'ceb': u'Hisgot sa MediaWiki',
                 'ckb': u'لێدوانی میدیاویکی',
                 'crh': [u'MediaViki muzakeresi', u'МедиаВики музакереси'],
-                'cs': u'MediaWiki diskuse',
+                'cs': u'Diskuse k MediaWiki',
                 'csb': u'Diskùsëjô MediaWiki',
                 'cu': u'MediaWiki бєсѣ́да',
                 'cv': u'MediaWiki сӳтсе явмалли',
@@ -1806,7 +1808,7 @@ class Family:
                 'ceb': u'Hisgot sa Plantilya',
                 'ckb': u'لێدوانی داڕێژە',
                 'crh': [u'Şablon muzakeresi', u'Шаблон музакереси'],
-                'cs': u'Šablona diskuse',
+                'cs': u'Diskuse k šabloně',
                 'csb': u'Diskùsëjô Szablónë',
                 'cu': u'Обраꙁьца́ бєсѣ́да',
                 'cv': u'Шаблона сӳтсе явмалли',
@@ -2181,7 +2183,7 @@ class Family:
                 'ch': u'Kombetsasion ni ayudo',
                 'ckb': u'لێدوانی یارمەتی',
                 'crh': [u'Yardım muzakeresi', u'Разговор о помоћи'],
-                'cs': u'Nápověda diskuse',
+                'cs': u'Diskuse k nápovědě',
                 'csb': u'Diskùsëjô Pòmòcë',
                 'cu': u'По́мощи бєсѣ́да',
                 'cv': u'Пулăшăва сӳтсе явмалли',
@@ -2559,7 +2561,7 @@ class Family:
                 'ch': u'Kombetsasion ni katigoria',
                 'ckb': u'لێدوانی پۆل',
                 'crh': [u'Kategoriya muzakeresi', u'Категория музакереси'],
-                'cs': u'Kategorie diskuse',
+                'cs': u'Diskuse ke kategorii',
                 'csb': u'Diskùsëjô Kategòrëji',
                 'cu': [u'Катигорі́ѩ бєсѣ́да', u'Катигорїѩ бесѣда'  ],
                 'cv': u'Категорине сӳтсе явмалли',
