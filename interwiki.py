@@ -62,6 +62,12 @@ These command-line arguments can be used to specify which pages to work on:
 
     -quiet:        Use this option to get less output
 
+    -async:        Put page on queue to be saved to wiki asynchronously. This
+                   enables loading pages during saving throtteling and gives a
+                   better performance.
+                   NOTE: For post-processing it always assumes that saving the
+                   the pages was sucessful.
+
 Additionaly, these arguments can be used to restrict the bot to certain pages:
 
     -namespace:n   Number or name of namespace to process. The parameter can be
@@ -329,7 +335,8 @@ except NameError:
         return seq2
 
 import wikipedia as pywikibot
-import config, pagegenerators, catlib
+import config, catlib
+import pagegenerators
 import titletranslate, interwiki_graph
 import webbrowser
 
@@ -584,6 +591,7 @@ class Global(object):
     minlinks = 0
     quiet  = False
     restoreAll = False
+    async  = False
 
     def readOptions(self, arg):
         """ Read all commandline parameters for the global container """
@@ -678,6 +686,8 @@ class Global(object):
             self.nobackonly = True
         elif arg == '-quiet':
             self.quiet = True
+        elif arg == '-async':
+            self.async = True
         elif arg.startswith('-lack:'):
             remainder = arg[6:].split(':')
             self.lacklanguage = remainder[0]
@@ -1817,9 +1827,13 @@ class Subject(object):
             if not globalvar.quiet or pywikibot.verbose:
                 pywikibot.output(u"NOTE: Updating live wiki...")
             timeout=60
-            while 1:
+            while True:
                 try:
-                    status, reason, data = page.put(newtext, comment = mcomment)
+                    if globalvar.async:
+                        page.put_async(newtext, comment = mcomment)
+                        status = 302
+                    else:
+                        status, reason, data = page.put(newtext, comment = mcomment)
                 except pywikibot.LockedPage:
                     pywikibot.output(u'Page %s is locked. Skipping.' % (page.title(),))
                     raise SaveError
