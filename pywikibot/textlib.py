@@ -77,10 +77,10 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
         # improve wiki source code readability.
         # 'template':    re.compile(r'(?s){{.*?}}'),
         # The regex above fails on nested templates. This regex can handle
-        # templates cascaded up to level 3, but no deeper. For arbitrary
+        # templates cascaded up to level 2, but no deeper. For arbitrary
         # depth, we'd need recursion which can't be done in Python's re.
         # After all, the language of correct parenthesis words is not regular.
-        'template':    re.compile(r'(?s){{(({{(({{.*?}})|.)*}})|.)*}}'),
+        'template':    re.compile(r'(?s){{(({{.*?}})?.*?)*}}'),
         'hyperlink':   compileLinkR(),
         'gallery':     re.compile(r'(?is)<gallery.*?>.*?</gallery>'),
         # this matches internal wikilinks, but also interwiki, categories, and
