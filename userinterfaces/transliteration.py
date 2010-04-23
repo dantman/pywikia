@@ -1417,6 +1417,16 @@ class transliterator(object):
             self.trans[char] = u"syu"
         for char in u"키":
             self.trans[char] = u"ki"
+        for char in u"프":
+            self.trans[char] = u"peu"
+        for char in u"랑":
+            self.trans[char] = u"rang"
+        for char in u"스":
+            self.trans[char] = u"seu"
+        for char in u"로":
+            self.trans[char] = u"ro"
+        for char in u"메":
+            self.trans[char] = u"me"
 
               
     def transliterate(self, char, default="?", prev="-", next="-"):
