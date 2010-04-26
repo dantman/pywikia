@@ -318,7 +318,7 @@ good_name = {
     'ru': (CAT, u"Википедия:Хорошие статьи"),
     'simple': (CAT, u"Good articles"),
     'sr': (BACK,u"Иконица добар"),
-    'sv': (CAT, u"Wikipedia:Läsvärda artiklar"),
+    'sv': (CAT, u"Wikipedia:Bra artiklar"),
     'tr': (BACK,u"Kaliteli madde"),
     'uk': (CAT, u"Вікіпедія:Добрі статті"),
     'uz': (CAT, u"Vikipediya:Yaxshi maqolalar"),
