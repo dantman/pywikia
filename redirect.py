@@ -463,10 +463,13 @@ class RedirectGenerator:
         start = datetime.datetime.utcnow() \
                  - datetime.timedelta(0, self.offset*3600)
         offset_time = start.strftime("%Y%m%d%H%M%S")
-        wikipedia.output(u'Retrieving %d moved pages via API...' % len(allmoves))
+        wikipedia.output(u'Retrieving %d moved pages via API...'
+                         % self.api_number)
         if wikipedia.verbose:
             wikipedia.output(u"[%s]" % offset_time)
-        for moved_page,u,t,c in self.site.logpages(number = api_number, mode = 'move',start = offset_time):
+        for moved_page,u,t,c in self.site.logpages(number=self.api_number,
+                                                   mode='move',
+                                                   start=offset_time):
             try:
                 if not moved_page.isRedirectPage():
                     continue
@@ -475,7 +478,8 @@ class RedirectGenerator:
             except wikipedia.ServerError:
                 continue
             try:
-                for page in moved_page.getReferences(follow_redirects=True, redirectsOnly=True):
+                for page in moved_page.getReferences(follow_redirects=True,
+                                                     redirectsOnly=True):
                     yield page
             except wikipedia.NoPage:
                 # original title must have been deleted after move
