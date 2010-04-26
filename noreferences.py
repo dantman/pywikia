@@ -49,6 +49,7 @@ msg = {
     'cs':u'Robot doplnil chybějící <references />',
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
+    'eo':u'Roboto: Aldono de "<references />"',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
     'hu':u'Hiányzó {{Források}} pótlása',
@@ -90,6 +91,13 @@ placeBeforeSections = {
         u'External links',
         u'See also',
         u'Notes'
+    ],
+    'eo': [
+        u'Eksteraj ligiloj',
+        u'Ekstera ligilo',
+        u'Eksteraj ligoj',
+        u'Ekstera ligo',
+        u'Rete'
     ],
     'es': [
         u'Enlaces externos',
@@ -184,6 +192,9 @@ referencesSections = {
         u'Footnotes',
         u'Notes',
     ],
+    'eo': [
+        u'Referencoj',
+    ],
     'es': [
         u'Referencias',
         u'Notas',
@@ -271,6 +282,7 @@ referencesTemplates = {
         'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],
+        'eo': [u'Referencoj'],
         'es': ['Listaref', 'Reflist', 'muchasref'],
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
