@@ -2354,12 +2354,14 @@ not supported by PyWikipediaBot!"""
                     continue
                 # {{DEFAULTSORT:...}}
                 defaultKeys = self.site().getmagicwords('defaultsort')
-                found = False
-                for key in defaultKeys:
-                    if name.startswith(key):
-                        found = True
-                        break
-                if found: continue
+                # It seems some wikis does not have this magic key
+                if defaultKeys:
+                    found = False
+                    for key in defaultKeys:
+                        if name.startswith(key):
+                            found = True
+                            break
+                    if found: continue
 
                 try:
                     name = Page(self.site(), name).title()
