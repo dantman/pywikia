@@ -114,6 +114,7 @@ msg_good = {
     'en': u'Bot: [[%s:%s]] is a good article',
     'eo': u'roboto: [[%s:%s]] estas artikolo leginda',
     'es': u'Bot: Enlace a artículo bueno para: [[%s:%s]]',
+    'fi': u'Botti: [[%s:%s]] on hyvä artikkeli',
     'fr': u'Bot: Lien BA pour [[%s:%s]]',
     'ksh':u'bot: [[%s:%s]] ess_enen jooden Atikkel',
     'no': u'bot: [[%s:%s]] er en anbefalt artikkel',
@@ -129,7 +130,7 @@ msg_lists = {
     'de': u'Bot: [[%s:%s]] ist eine informative Liste',
     'en': u'Bot: [[%s:%s]] is a featured list',
     'es': u'Bot: Enlace a lista destacado para: [[%s:%s]]',
-    'fi': u'Botti: [[%s:%s]] on suositeltu luetteloon',
+    'fi': u'Botti: [[%s:%s]] on suositeltu luettelo',
     'ksh':u'bot: [[%s:%s]] ess_en joode Leß',
     'sv': u'Bot: [[%s:%s]] är en utmärkt list',
 }
