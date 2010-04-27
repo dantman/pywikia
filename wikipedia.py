@@ -641,7 +641,6 @@ not supported by PyWikipediaBot!"""
                         output("The IP address is blocked, retry by login.")
                     self.site().forceLogin(sysop=sysop)
                     return self.get(force, get_redirect, throttle, sysop, change_edit_time)
-
         return self._contents
 
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
@@ -1536,10 +1535,17 @@ not supported by PyWikipediaBot!"""
         # Determine if we are allowed to edit
         if not force:
             if not self.botMayEdit(username):
-                raise LockedPage(u'Not allowed to edit %s because of a restricting template' % self.aslink())
-            elif self.site().has_api() and self.namespace() in [2,3] and ( '.css' in self.title() or '.js' in self.title()):
-                # API enable: if title is .css or .js in ns2,3 , it need permission `editusercssjs`
-                sysop = self._getActionUser(action = 'editusercssjs', restriction = self.editRestriction, sysop=True)
+                raise LockedPage(
+                    u'Not allowed to edit %s because of a restricting template'
+                    % self.aslink())
+            elif self.site().has_api() and self.namespace() in [2,3] \
+                 and (self.title().endswith('.css') or \
+                      self.title().endswith('.js')):
+                # API enable: if title ends with .css or .js in ns2,3
+                # it needs permission 'editusercssjs'
+                sysop = self._getActionUser(action='editusercssjs',
+                                            restriction=self.editRestriction,
+                                            sysop=True)
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
@@ -1741,8 +1747,9 @@ not supported by PyWikipediaBot!"""
                 #cannot handle longpageerror and PageNoSave yet
                 if errorCode == 'maxlag' or response.code == 503:
                     # server lag; wait for the lag time and retry
-                    m = re.search('Waiting for (.+?): (.+?) seconds lagged', data['error']['info'])
-                    timelag = int(m.group(2))
+                    lagpattern = re.compile(r"Waiting for [\d.]+: (?P<lag>\d+) seconds? lagged")
+                    lag = lagpattern.search(data['error']['info'])
+                    timelag = int(lag.group("lag"))
                     output(u"Pausing %d seconds due to database server lag." % min(timelag,300))
                     dblagged = True
                     time.sleep(min(timelag,300))
@@ -7510,7 +7517,7 @@ def _flush():
         remainingPages = page_put_queue.qsize() - 1
             # -1 because we added a None element to stop the queue
         remainingSeconds = datetime.timedelta(
-                            seconds=(remainingPages * put_throttle.getDelay()))
+            seconds=(remainingPages * put_throttle.getDelay(wait=True)))
         return (remainingPages, remainingSeconds)
 
     page_put_queue.put((None, None, None, None, None, None, None))
