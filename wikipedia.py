@@ -7517,7 +7517,7 @@ def _flush():
         remainingPages = page_put_queue.qsize() - 1
             # -1 because we added a None element to stop the queue
         remainingSeconds = datetime.timedelta(
-            seconds=(remainingPages * put_throttle.getDelay(wait=True)))
+            seconds=(remainingPages * put_throttle.getDelay(True)))
         return (remainingPages, remainingSeconds)
 
     page_put_queue.put((None, None, None, None, None, None, None))
