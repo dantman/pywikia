@@ -2173,11 +2173,49 @@ not supported by PyWikipediaBot!"""
         category links in the page text.
 
         """
-        try:
-            category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
-        except NoPage:
-            category_links_to_return = []
-        return category_links_to_return
+#  New add API query.
+
+#   api.php?action=query&prop=categories&titles=Albert%20Einstein
+
+#
+        if not self.site().has_api():
+            try:
+                category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
+            except NoPage:
+                category_links_to_return = []
+            return category_links_to_return
+
+        params = {
+            'action': 'query',
+            'prop'  : 'categories',
+            'titles' : self.title(),
+        }
+        if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+            params['cllimit'] = 500
+        
+
+        allDone = False
+        cats=[]
+        while not allDone:
+            output(u'Getting categories in %s via API...' % self.aslink())
+
+            datas = query.GetData(params, self.site())
+            data=datas['query']['pages'].values()[0]
+            if "categories" in data:
+                for c in data['categories']:
+                    cats.append(c['title'])
+#            if len(data) == 2:
+#                data = data[0] + data[1]
+#            else:
+#                data = data[0]
+            
+            if 'query-continue' in datas:
+                if 'categories' in datas['query-continue']:
+                    params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
+                
+            else:
+                allDone = True
+        return cats
 
     def __cmp__(self, other):
         """Test for equality and inequality of Page objects"""
