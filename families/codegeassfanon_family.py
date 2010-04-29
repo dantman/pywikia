@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family, wikia_basefamily
 
-# The Bleach Wiki. (bleach.wikia.com)
+# The Code Geass Fanon Wiki. (codegeassfanon.wikia.com)
 
 class Family(wikia_basefamily.Family):
 
@@ -9,9 +9,9 @@ class Family(wikia_basefamily.Family):
 		
 		wikia_basefamily.Family.__init__(self)
 		
-		self.name               = 'bleach'
-		self.langs              = { 'en': u'bleach.wikia.com', }
-		self.wikia['projectns'] = 'Bleach Wiki'
+		self.name               = 'codegeassfanon'
+		self.langs              = { 'en': u'codegeassfanon.wikia.com', }
+		self.wikia['projectns'] = 'Code Geass Fanon Wiki'
 		
 		wikia_basefamily.Family.initNamespaces(self)
 		
