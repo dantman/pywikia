@@ -1,24 +1,47 @@
 # -*- coding: utf-8  -*-
-""" File containing all standard fixes """
+"""
+File containing all standard fixes
+
+"""
+
+#
+# (C) Pywikipedia team, 2008-2009
+#
 __version__ = '$Id$'
+#
+# Distributed under the terms of the MIT license.
+#
 
 help = u"""
-                       * HTML       -  Convert HTML tags to wiki syntax, and
-                                       fix XHTML.
-                       * isbn        - Fix badly formatted ISBNs.
-                       * syntax     -  Try to fix bad wiki markup. Do not run
-                                       this in automatic mode, as the bot may
-                                       make mistakes.
-                       * syntax-safe - Like syntax, but less risky, so you can
-                                       run this in automatic mode.
-                       * case-de     - fix upper/lower case errors in German
-                       * grammar-de  - fix grammar and typography in German
-                       * vonbis      - Ersetze Binde-/Gedankenstrich durch "bis" in German
-                       * music       - Links auf Begriffsklärungen in German
-                       * datum       - specific date formats in German
-                       * correct-ar  - Corrections for Arabic Wikipedia and any Arabic wiki.
-                       * yu-tld      - the yu top-level domain will soon be disabled, see
-                                       http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
+                  * HTML        - Convert HTML tags to wiki syntax, and
+                                  fix XHTML.
+                                    **) NOTE below
+                  * isbn        - Fix badly formatted ISBNs.
+                                    **) NOTE below
+                  * syntax      - Try to fix bad wiki markup. Do not run
+                                  this in automatic mode, as the bot may
+                                  make mistakes.
+                  * syntax-safe - Like syntax, but less risky, so you can
+                                  run this in automatic mode.
+                                    **) NOTE below
+                  * case-de     - fix upper/lower case errors in German
+                  * grammar-de  - fix grammar and typography in German
+                  * vonbis      - Ersetze Binde-/Gedankenstrich durch "bis"
+                                  in German
+                  * music       - Links auf Begriffsklärungen in German
+                  * datum       - specific date formats in German
+                  * correct-ar  - Corrections for Arabic Wikipedia and any
+                                  Arabic wiki.
+                  * yu-tld      - the yu top-level domain will soon be
+                                  disabled, see
+                  * fckeditor   - Try to convert FCKeditor HTML tags to wiki
+                                  syntax.
+                                  http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
+                                  
+                                    **) NOTE: these fixes are part of the
+                                        cosmetic_changes.py. You may use
+                                        that script instead.
+
 """
 
 fixes = {
@@ -42,7 +65,7 @@ fixes = {
             'nl':u'Bot: conversie/reparatie HTML',
             'pl':u'Robot konwertuje/naprawia HTML',
             'pt':u'Bot: Corrigindo HTML',
-            'ru':u'Бот: коррекция HTML',            
+            'ru':u'Бот: коррекция HTML',
             'sr':u'Бот: Поправка HTML-а',
             'sv':u'Bot: Konverterar/korrigerar HTML',
             'uk':u'Бот: корекцiя HTML',
@@ -53,9 +76,9 @@ fixes = {
             # Keep in mind that MediaWiki automatically converts <br> to <br />
             # when rendering pages, so you might comment the next two lines out
             # to save some time/edits.
-            #r'(?i)<br>':                      r'<br />',
+            #(r'(?i)<br>',                      r'<br />'),
             # linebreak with attributes
-            #r'(?i)<br ([^>/]+?)>':            r'<br \1 />',
+            #(r'(?i)<br ([^>/]+?)>',            r'<br \1 />'),
             (r'(?i)<b>(.*?)</b>',              r"'''\1'''"),
             (r'(?i)<strong>(.*?)</strong>',    r"'''\1'''"),
             (r'(?i)<i>(.*?)</i>',              r"''\1''"),
@@ -247,7 +270,7 @@ fixes = {
             'cs':u'Oprava wikisyntaxe',
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
-            'eo':u'Bot: Korektado de vikia sintakso',            
+            'eo':u'Bot: Korektado de vikia sintakso',
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
@@ -256,9 +279,9 @@ fixes = {
             'nl':u'Bot: reparatie wikisyntaxis',
             'pl':u'Robot poprawia wiki-składnię',
             'pt':u'Bot: Corrigindo sintaxe wiki',
-            'ru':u'Бот: Коррекция вики синтаксиса',            
+            'ru':u'Бот: Коррекция вики синтаксиса',
             'sr':u'Бот: Поправка вики синтаксе',
-            'uk':u'Бот: Корекцiя вiкi-синтаксису',            
+            'uk':u'Бот: Корекцiя вiкi-синтаксису',
             'zh':u'機器人: 修正wiki語法',
         },
         'replacements': [
@@ -556,7 +579,7 @@ fixes = {
             (u'Special:Listgrouprights', u'Special:ListGroupRights'),
             (u'Special:Listusers',       u'Special:ListUsers'),
             (u'Special:Newimages',       u'Special:NewImages'),
-            (u'Special:Prefixindex',   u'Special:PrefixIndex'),
+            (u'Special:Prefixindex',     u'Special:PrefixIndex'),
             (u'Special:Protectedpages',  u'Special:ProtectedPages'),
             (u'Special:Recentchanges',   u'Special:RecentChanges'),
             (u'Special:Specialpages',    u'Special:SpecialPages'),
@@ -621,6 +644,20 @@ fixes = {
             (u'www.politika.co.yu',          u'www.politika.rs'),
             (u'www.mfa.gov.yu',              u'www.mfa.gov.rs'),
             (u'www.drzavnauprava.sr.gov.yu', u'www.drzavnauprava.gov.rs'),
+        ],
+    },
+    # These replacements will convert HTML tag from FCK-editor to wiki syntax.
+    #
+    'fckeditor': {
+        'regex': True,
+        'msg': {
+            'en': u'Robot: Fixing rich-editor html',
+         },
+         'replacements': [
+            # replace <br> with a new line
+            (r'(?i)<br>',                      r'\n'),
+            # replace &nbsp; with a space
+            (r'(?i)&nbsp;',                      r' '),
         ],
     },
 }

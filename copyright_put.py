@@ -27,9 +27,10 @@ append_day_to_wiki_save_path = False
 append_date_to_entries = False
 
 msg_table = {
+    'en': {'_default': [u'New entries', u'New entries']},
+    'es': {'_default': [u'Entradas nuevas', u'Entradas nuevas']},
     'it': {'_default': [u'Pagine nuove', u'Nuove voci'],
            'feed': [u'Aggiunte a voci esistenti', u'Testo aggiunto in']},
-    'en': {'_default': [u'New entries', u'New entries']}
 }
 
 template_cat = {
@@ -38,8 +39,9 @@ template_cat = {
 }
 
 stat_msg = {
-    'en': [u'Statistics', u'Page', u'Entries', u'Size', u'Total', 'Update'],
     'ar': [u'إحصاءات', u'صفحة', u'مدخلات', u'حجم', u'إجمالي', 'تحديث'],
+    'en': [u'Statistics', u'Page', u'Entries', u'Size', u'Total', 'Update'],
+    'es': [u'Estadísticas', u'Página', u'Entradas', u'Tamaño', u'Total', u'Actualizacion'],
     'it': [u'Statistiche', u'Pagina', u'Segnalazioni', u'Lunghezza', u'Totale', u'Ultimo aggiornamento'],
 }
 
@@ -51,6 +53,7 @@ def get_wiki_save_page(stat_page = False):
 
     wiki_save_path = {
         '_default': u'User:%s/Report' % config.usernames[site.family.name][site.lang],
+        'es': u'Usuario:%s/Reporte' % config.usernames[site.family.name][site.lang],
         'it': u'Utente:RevertBot/Report'
     }
 

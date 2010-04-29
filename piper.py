@@ -20,7 +20,7 @@ The following parameters are supported:
 
 &params;
 
-    -debug         If given, doesn't do any real changes, but only shows
+    -dry           If given, doesn't do any real changes, but only shows
                    what would have been changed.
 
     -always        Always commit changes without asking you to accept them
@@ -34,7 +34,13 @@ genFactory.handleArg() which means pagegenerators.py arguments are
 supported.
 
 """
+#
+# (C) Pywikipedia bot team, 2008-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
+
 import wikipedia
 import pagegenerators
 
@@ -68,7 +74,7 @@ class PiperBot:
             * always    - If True, don't prompt for changes
         """
         self.generator = generator
-        self.debug = debug
+        self.dry = debug
         self.always = always
         self.filters = filters
 
@@ -104,16 +110,6 @@ class PiperBot:
 
         return unicode_text
 
-    # debug
-    #def savePage(self, name, text):
-    #    mungedName = name.replace(":", "_").replace("/", "_").replace(" ", "_")
-    #
-    #    saveName = "/tmp/piper/%s" % mungedName
-    #    file = open(saveName, 'w')
-    #    file.write(text.encode("utf-8"))
-    #    file.close()
-    #    print "Wrote to %s" % saveName
-
     def treat(self, page):
         """
         Loads the given page, does some changes, and saves it.
@@ -128,9 +124,6 @@ class PiperBot:
             wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
             return
 
-        # debug
-        # self.savePage(page.title(), text)
-
         # Munge!
         for program in self.filters:
             text = self.pipe(program, text);
@@ -142,7 +135,7 @@ class PiperBot:
             wikipedia.output(u"\n\n>>> %s <<<" % page.title())
             # show what was changed
             wikipedia.showDiff(page.get(), text)
-            if not self.debug:
+            if not self.dry:
                 if not self.always:
                     choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
                 else:
@@ -169,9 +162,9 @@ def main():
     # This temporary array is used to read the page title if one single
     # page to work on is specified by the arguments.
     pageTitleParts = []
-    # If debug is True, doesn't do any real changes, but only show
+    # If dry is True, doesn't do any real changes, but only show
     # what would have been changed.
-    debug = False
+    dry = False
     # will become True when the user uses the -always flag.
     always = False
     # The program to pipe stuff through
@@ -179,8 +172,8 @@ def main():
 
     # Parse command line arguments
     for arg in wikipedia.handleArgs():
-        if arg.startswith("-debug"):
-            debug = True
+        if arg.startswith("-dry"):
+            dry = True
         elif arg.startswith("-filter:"):
             prog = arg[8:]
             filters.append(prog)
@@ -204,7 +197,7 @@ def main():
         # The preloading generator is responsible for downloading multiple
         # pages from the wiki simultaneously.
         gen = pagegenerators.PreloadingGenerator(gen)
-        bot = PiperBot(gen, debug, filters, always)
+        bot = PiperBot(gen, dry, filters, always)
         bot.run()
     else:
         wikipedia.showHelp()

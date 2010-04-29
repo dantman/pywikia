@@ -24,8 +24,8 @@ and for a description.
 __version__='$Id$'
 
 import os, sys, time
-import urllib
-import wikipedia, config
+import urllib, mimetypes
+import wikipedia, config, query
 
 def post_multipart(site, address, fields, files, cookies):
     """
@@ -47,9 +47,12 @@ def encode_multipart_formdata(fields, files):
     lines = []
     for (key, value) in fields:
         lines.append('--' + boundary)
-        lines.append('Content-Disposition: form-data; name="%s"' % key)
+        lines.append('Content-Disposition: form-data; name="%s"' % str(key))
         lines.append('')
-        lines.append(value)
+        try:
+            lines.append(str(value))
+        except UnicodeEncodeError:
+            lines.append(value.encode('utf-8'))
     for (key, filename, value) in files:
         lines.append('--' + boundary)
         lines.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
@@ -63,13 +66,12 @@ def encode_multipart_formdata(fields, files):
     return content_type, body
 
 def get_content_type(filename):
-    import mimetypes
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
 
 class UploadRobot:
     def __init__(self, url, urlEncoding = None, description = u'', useFilename = None, keepFilename = False,
-                 verifyDescription = True, ignoreWarning = False, targetSite = None):
+                 verifyDescription = True, ignoreWarning = False, targetSite = None, uploadByUrl = False):
         """
         ignoreWarning - Set this to True if you want to upload even if another
                         file would be overwritten or another mistake would be
@@ -88,6 +90,7 @@ class UploadRobot:
         else:
             self.targetSite = targetSite or wikipedia.getSite()
         self.targetSite.forceLogin()
+        self.uploadByUrl = uploadByUrl
 
     def urlOK(self):
         '''
@@ -96,14 +99,8 @@ class UploadRobot:
         '''
         return self.url != '' and ('://' in self.url or os.path.exists(self.url))
 
-    def upload_image(self, debug=False):
-        """Gets the image at URL self.url, and uploads it to the target wiki.
-           Returns the filename which was used to upload the image.
-           If the upload fails, the user is asked whether to try again or not.
-           If the user chooses not to retry, returns null.
-        """
-
-        if not self._retrieved:
+    def read_file_content(self):
+        if not self._retrieved or self.uploadByUrl:
             # Get file contents
             wikipedia.output(u'Reading file %s' % self.url)
             if '://' in self.url:
@@ -111,10 +108,13 @@ class UploadRobot:
                 dt = 15
 
                 while not self._retrieved:
-                    uo = wikipedia.MyURLopener()
+                    uo = wikipedia.MyURLopener
+                    headers = [('User-agent', wikipedia.useragent)]
+
                     if resume:
                         wikipedia.output(u"Resume download...")
-                        uo.addheader('Range', 'bytes=%s-' % rlen)
+                        headers.append(('Range', 'bytes=%s-' % rlen))
+                    uo.addheaders = headers
 
                     file = uo.open(self.url)
 
@@ -157,16 +157,20 @@ class UploadRobot:
                 file = open(self.url,"rb")
                 self._contents = file.read()
                 file.close()
-
+    
+    def process_filename(self):
         # Isolate the pure name
         filename = self.url
+        
         if '/' in filename:
             filename = filename.split('/')[-1]
+        
         if '\\' in filename:
             filename = filename.split('\\')[-1]
+        
         if self.urlEncoding:
-            filename = urllib.unquote(filename)
-            filename = filename.decode(self.urlEncoding)
+            filename = urllib.unquote(filename.decode(self.urlEncoding))
+        
         if self.useFilename:
             filename = self.useFilename
         if not self.keepFilename:
@@ -195,9 +199,6 @@ class UploadRobot:
         # MediaWiki doesn't allow spaces in the file name.
         # Replace them here to avoid an extra confirmation form
         filename = filename.replace(' ', '_')
-        # Convert the filename (currently Unicode) to the encoding used on the
-        # target wiki
-        encodedFilename = filename.encode(self.targetSite.encoding())
         # A proper description for the submission.
         wikipedia.output(u"The suggested description is:")
         wikipedia.output(self.description)
@@ -211,18 +212,107 @@ class UploadRobot:
                 # if user saved / didn't press Cancel
                 if newDescription:
                         self.description = newDescription
+        return filename
+    
+    def upload_image(self, debug=False, sessionKey = 0):
+        """Gets the image at URL self.url, and uploads it to the target wiki.
+           Returns the filename which was used to upload the image.
+           If the upload fails, the user is asked whether to try again or not.
+           If the user chooses not to retry, returns null.
+        """
+        if not self.targetSite.has_api() or self.targetSite.versionnumber() < 16:
+            return self._uploadImageOld(debug)
+        
+        if not hasattr(self,'_contents'):
+            self.read_file_content()
+        
+        filename = self.process_filename()
+        
+        params = {
+            'action': 'upload',
+            'token': self.targetSite.getToken(),
+            'comment': self.description,
+            'filename': filename,
+            #'': '',
+        }
+        if sessionKey:
+            params['sessionkey'] = sessionKey
+        if self.uploadByUrl:
+            params['url'] = self.url
+        elif not self.uploadByUrl and not sessionKey:
+            params['file'] = self._contents
+        
+        if self.ignoreWarning:
+            params['ignorewarnings'] = 1
+        
+        wikipedia.output(u'Uploading file to %s via API....' % self.targetSite)
+        
+        data = query.GetData(params, self.targetSite)
+        
+        if wikipedia.verbose:
+            wikipedia.output("%s" % data)
+        
+        if 'error' in data: # error occured
+            errCode = data['error']['code']
+            wikipedia.output("%s" % data)
+        else:
+            data = data['upload']
+            if data['result'] == u'Warning': #upload success but return warning.
+                wikipedia.output("Got warning message:")
+                for k,v in data['warnings'].iteritems():
+                    if k == 'duplicate-archive':
+                        wikipedia.output("\tThe file is duplicate a deleted file %s." % v)
+                    elif k == 'was-deleted':
+                        wikipedia.output("\tThis file was deleted for %s." % v)
+                    elif k == 'emptyfile':
+                        wikipedia.output("\tFile %s is an empty file." % v)
+                    elif k == 'exists':
+                        wikipedia.output("\tFile %s is exists." % v)
+                    elif k == 'duplicate':
+                        wikipedia.output("\tUploaded file is duplicate with %s." % v)
+                    elif k == 'badfilename':
+                        wikipedia.output("\tTarget filename is invalid.")
+                    elif k == 'filetype-unwanted-type':
+                        wikipedia.output("\tFile %s type is unwatched type." % v)
+                answer = wikipedia.inputChoice(u"Do you want to ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
+                if answer == "y":
+                    self.ignoreWarning = 1
+                    self.keepFilename = True
+                    return self.upload_image(debug, sessionKey = data['sessionkey'])
+                else:
+                    wikipedia.output("Upload aborted.")
+                    return
+                
+            elif data['result'] == u'Success': #No any warning, upload and online complete.
+                wikipedia.output(u"Upload successful.")
+                return filename #data['filename']
+        
 
-        formdata = {}
-        formdata["wpUploadDescription"] = self.description
-    #     if self.targetSite.version() >= '1.5':
-    #         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
-    #         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
-        formdata["wpUploadAffirm"] = "1"
-        formdata["wpUpload"] = "upload bestand"
+    def _uploadImageOld(self, debug=False):
+        if not hasattr(self,'_contents'):
+            self.read_file_content()
+        
+        filename = self.process_filename()
+        # Convert the filename (currently Unicode) to the encoding used on the
+        # target wiki
+        encodedFilename = filename.encode(self.targetSite.encoding())
+
+
+        formdata = {
+            'wpUploadDescription': self.description,
+            'wpUploadAffirm': '1',
+            'wpUpload': 'upload bestand',
+            'wpEditToken': self.targetSite.getToken(), # Get an edit token so we can do the upload
+            'wpDestFile': filename, # Set the new filename
+        }
         # This somehow doesn't work.
         if self.ignoreWarning:
             formdata["wpIgnoreWarning"] = "1"
 
+        if self.uploadByUrl:
+            formdata["wpUploadFileURL"]  = self.url
+            formdata["wpSourceType"] = 'Url'
+        
         # try to encode the strings to the encoding used by the target site.
         # if that's not possible (e.g. because there are non-Latin-1 characters and
         # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
@@ -237,26 +327,28 @@ class UploadRobot:
         # don't upload if we're in debug mode
         if not debug:
             wikipedia.output(u'Uploading file to %s...' % self.targetSite)
-            response, returned_html = post_multipart(self.targetSite,
-                                  self.targetSite.upload_address(),
-                                  formdata.items(),
-                                  (('wpUploadFile', encodedFilename, self._contents),),
-                                  cookies = self.targetSite.cookies()
-                                  )
+
+            if self.uploadByUrl:
+                # Just do a post with all the fields filled out
+                response, returned_html = self.targetSite.postForm(self.targetSite.upload_address(), formdata.items(), cookies = self.targetSite.cookies())
+            else:
+                response, returned_html = post_multipart(self.targetSite, self.targetSite.upload_address(),
+                                  formdata.items(), (('wpUploadFile', encodedFilename, self._contents),),
+                                  cookies = self.targetSite.cookies())
             # There are 2 ways MediaWiki can react on success: either it gives
             # a 200 with a success message, or it gives a 302 (redirection).
             # Do we know how the "success!" HTML page should look like?
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
             success_msg = self.targetSite.mediawiki_message('successfulupload')
-            if success_msg in returned_html or response.status == 302:
+            if success_msg in returned_html or response.code == 302:
                  wikipedia.output(u"Upload successful.")
             # The following is not a good idea, because the server also gives a 200 when
             # something went wrong.
-            #if response.status in [200, 302]:
+            #if response.code in [200, 302]:
             #    wikipedia.output(u"Upload successful.")
 
-            elif response.status == 301:
+            elif response.code == 301:
                 wikipedia.output(u"Following redirect...")
                 address = response.getheader('Location')
                 wikipedia.output(u"Changed upload address to %s. Please update %s.py" % (address, self.targetSite.family.__module__))
@@ -270,18 +362,18 @@ class UploadRobot:
                 except:
                     pass
                 wikipedia.output(u'%s\n\n' % returned_html)
-                wikipedia.output(u'%i %s' % (response.status, response.reason))
+                wikipedia.output(u'%i %s' % (response.code, response.msg))
 
                 if self.targetSite.mediawiki_message('uploadwarning') in returned_html:
                     answer = wikipedia.inputChoice(u"You have recevied an upload warning message. Ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
                     if answer == "y":
                         self.ignoreWarning = 1
                         self.keepFilename = True
-                        return self.upload_image(debug)
+                        return self._uploadImageOld(debug)
                 else:
                     answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
                     if answer == "y":
-                        return self.upload_image(debug)
+                        return self._uploadImageOld(debug)
                     else:
                         return
         return filename

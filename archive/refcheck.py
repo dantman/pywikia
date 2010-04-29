@@ -1,4 +1,13 @@
+#!/usr/bin/python
 """
+##################################################
+This script with all its function has been merged
+to templatecount.py. please use:
+
+  templatecount.py -count
+
+xqt 2009-10-30
+##################################################
 This script checks references to see if they are properly formatted.  Right now
 it just counts the total number of transclusions of any number of given templates.
 
@@ -28,19 +37,22 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
+templates = ['ref', 'note', 'ref label', 'note label', 'reflist']
+
 class ReferencesRobot:
     #def __init__(self):
         #Nothing
     def countRefs(self, templates, namespaces):
         mysite = wikipedia.getSite()
+        mytpl  = mysite.template_namespace()+':'
         finalText = [u'Number of transclusions per template',u'------------------------------------']
         for template in templates:
-            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
+            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mytpl + template), onlyTemplateInclusion = True)
             if namespaces:
                 gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
             count = 0
             for page in gen:
-                count = count + 1
+                count += 1
             finalText.append(u'%s: %d' % (template, count))
         for line in finalText:
             wikipedia.output(line)
@@ -49,7 +61,6 @@ def main():
     doCount = False
     argsList = []
     namespaces = []
-    #templates = ['ref', 'note', 'ref label', 'note label']
     for arg in wikipedia.handleArgs():
         if arg == '-count':
             doCount = True
@@ -63,10 +74,16 @@ def main():
 
     if doCount:
         robot = ReferencesRobot()
-        if argsList:
+        if not argsList:
+           argsList = templates
+        choice = ''
+        if 'reflist' in argsList:
+            wikipedia.output(u'NOTE: it will take a long time to count "reflist".')
+            choice = wikipedia.inputChoice(u'Proceed anyway?', ['yes', 'no', 'skip'], ['y', 'n', 's'], 'y')
+            if choice == 's':
+                argsList.remove('reflist')
+        if choice <> 'n':
             robot.countRefs(argsList, namespaces)
-        else:
-            robot.countRefs(['ref', 'note', 'ref label', 'note label'], namespaces)
     else:
         wikipedia.showHelp('refcheck')
 
@@ -76,6 +93,3 @@ if __name__ == "__main__":
     finally:
         wikipedia.stopme()
 
-    #preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber=100)
-    #for page in preloadingGen:
-        #pagetext = page.get()

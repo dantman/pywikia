@@ -64,7 +64,7 @@ loaded = {}
 
 def get(key, site = None, allowreload = True):
     site = site or wikipedia.getSite()
-    if loaded.has_key(site):
+    if site in loaded:
         # Use cached copy if it exists.
         dictionary = loaded[site]
     else:
@@ -84,7 +84,7 @@ def get(key, site = None, allowreload = True):
         f.close()
         loaded[site] = dictionary
     key = key[0].lower() + key[1:]
-    if dictionary.has_key(key):
+    if key in dictionary:
         return dictionary[key]
     elif allowreload:
         refresh_messages(site = site)

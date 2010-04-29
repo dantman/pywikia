@@ -26,6 +26,7 @@ msg_created_for_renaming = {
     'ar':u'روبوت: نقل من %s. المؤلفون: %s',
     'de':u'Bot: Verschoben von %s. Autoren: %s',
     'en':u'Robot: Moved from %s. Authors: %s',
+    'es':u'Bot: Traslado desde %s. Autores: %s',
     'fi':u'Botti siirsi luokan %s. Muokkaajat: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     'he':u'בוט: הועבר מהשם %s. כותבים: %s',
@@ -178,56 +179,55 @@ class Category(wikipedia.Page):
 
         This should not be used outside of this module.
         """
-        try:
-            if wikipedia.config.use_api and self.site().versionnumber() >= 11:
-                api_url = self.site().api_address()
-                del api_url
-            else:
-                raise NotImplementedError # version not support
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 11:
             for tag, page in self._oldParseCategory(purge, startFrom):
                 yield tag, page
             return
         
         currentPageOffset = None
+        params = {
+            'action': 'query',
+            'list': 'categorymembers',
+            'cmtitle': self.title(),
+            'cmprop': ['title', 'ids', 'sortkey', 'timestamp'],
+            #'': '',
+        }
         while True:
-            params = {
-                'action': 'query',
-                'list': 'categorymembers',
-                'cmtitle': self.title(),
-                'cmprop': 'title',#|ids|sortkey|timestamp',
-                #'': '',
-            }
             if wikipedia.config.special_page_limit > 500:
                 params['cmlimit'] = 500
             else:
                 params['cmlimit'] = wikipedia.config.special_page_limit
 
-            
             if currentPageOffset:
                 params['cmcontinue'] = currentPageOffset
                 wikipedia.output('Getting [[%s]] list from %s...'
                                  % (self.title(), currentPageOffset[:-1])) # cmcontinue last key is '|'
             elif startFrom:
-                params['cmstart'] = startFrom
+                params['cmstartsortkey'] = startFrom
                 wikipedia.output('Getting [[%s]] list starting at %s...'
                                  % (self.title(), startFrom))
             else:
                 wikipedia.output('Getting [[%s]]...' % self.title())
-            
+
             wikipedia.get_throttle()
             data = query.GetData(params, self.site())
-            
+            if 'error' in data:
+                raise RuntimeError("%s" % data['error'])
+            count = 0
+
             for memb in data['query']['categorymembers']:
+                count += 1
                 # For MediaWiki versions where subcats look like articles
-                if isCatTitle(memb['title'], self.site()):
-                    yield SUBCATEGORY, Category(self.site(), memb['title'])
-                elif memb['ns'] == 6 and self.site().image_namespace() in memb['title']:
+                if memb['ns'] == 14:
+                    yield SUBCATEGORY, Category(self.site(), memb['title'], sortKey=memb['sortkey'])
+                elif memb['ns'] == 6:
                     yield ARTICLE, wikipedia.ImagePage(self.site(), memb['title'])
                 else:
-                    yield ARTICLE, wikipedia.Page(self.site(), memb['title'])
+                    yield ARTICLE, wikipedia.Page(self.site(), memb['title'], defaultNamespace=memb['ns'])
+                if count >= params['cmlimit']:
+                    break
             # try to find a link to the next list page
-            if data.has_key('query-continue'):
+            if 'query-continue' in data and count < params['cmlimit']:
                 currentPageOffset = data['query-continue']['categorymembers']['cmcontinue']
             else:
                 break
@@ -467,8 +467,7 @@ class Category(wikipedia.Page):
         Returns true if copying was successful, false if target page already
         existed.
         """
-        catname = self.site().category_namespace() + ':' + catname
-        targetCat = wikipedia.Page(self.site(), catname)
+        targetCat = wikipedia.Page(self.site(), catname, defaultNamespace=14)
         if targetCat.exists():
             wikipedia.output('Target page %s already exists!' % targetCat.title())
             return False

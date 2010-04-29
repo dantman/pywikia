@@ -425,33 +425,33 @@ def translate(text, type, from_lang, debug_mode=False, to_lang=None):
     else:
         print_debug("\n Translating type " + type)
         # check if the translation database knows this type of table
-        if not types.has_key(type):
+        if not type in types:
             print "Unknown table type: " + type
             return
-        if types.get(type).has_key("translations"):
+        if "translations" in types.get(type):
             print_debug("\nDirect translations for type " + type + "\n")
             for item in types.get(type).get("translations"):
                 # check if the translation database includes the source language
-                if not item.has_key(from_lang):
+                if not from_lang in item:
                     print_debug(from_lang + " translation for item not found in translation table, skipping item")
                     continue
                 # if it's necessary to replace a substring
                 if string.find(text, item.get(from_lang)) > -1:
                      # check if the translation database includes the target language
-                     if not item.has_key(to_lang):
+                     if not to_lang in item:
                          print_debug("Can't translate \"" + item.get(from_lang) + "\". Please make sure that there is a translation in copy_table.py.")
                      else:
                          print_debug(item.get(from_lang) + " => " + item.get(to_lang))
                          # translate a substring
                          text = string.replace(text, item.get(from_lang), item.get(to_lang))
-        if types.get(type).has_key("regexes"):
+        if 'regexes' in types.get(type):
             # work on regular expressions
             print_debug("\nWorking on regular expressions for type " + type + "\n")
             regexes = types.get(type).get("regexes")
-            if regexes.has_key(from_lang):
+            if from_lang in regexes:
                 for item in regexes.get(from_lang):
                     # only work on regular expressions that have a replacement for the target language
-                    if regexes.get(from_lang).get(item).has_key(to_lang):
+                    if to_lang in regexes.get(from_lang).get(item):
                         replacement = regexes.get(from_lang).get(item).get(to_lang)
                         regex = re.compile(item)
                         # if the regular expression doesn't match anyway, we don't want it to print a debug message
@@ -459,7 +459,7 @@ def translate(text, type, from_lang, debug_mode=False, to_lang=None):
                             print_debug(item + " => " + replacement)
                             text = re.sub(regex, replacement, text)
         # recursively use translation lists which are included in the current list
-        if types.get(type).has_key("includes"):
+        if "includes" in types.get(type):
             for inc in types.get(type).get("includes"):
                 text = translate(text, inc, from_lang, debug_mode, to_lang)
         return text

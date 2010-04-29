@@ -89,7 +89,8 @@ This next example substitutes templates test1, test2, and space test on all page
 #
 __version__='$Id$'
 #
-import wikipedia, config
+import wikipedia as pywikibot
+import config
 import replace, pagegenerators
 import re, sys, string, catlib
 
@@ -115,7 +116,7 @@ class XmlDumpTemplatePageGenerator:
         Yield page objects until the entire XML dump has been read.
         """
         import xmlreader
-        mysite = wikipedia.getSite()
+        mysite = pywikibot.getSite()
         dump = xmlreader.XmlDump(self.xmlfilename)
         # regular expression to find the original template.
         # {{vfd}} does the same thing as {{Vfd}}, so both will be found.
@@ -124,7 +125,7 @@ class XmlDumpTemplatePageGenerator:
         templatePatterns = []
         for template in self.templates:
             templatePattern = template.titleWithoutNamespace()
-            if not wikipedia.getSite().nocapitalize:
+            if not pywikibot.getSite().nocapitalize:
                 templatePattern = '[' + templatePattern[0].upper() + templatePattern[0].lower() + ']' + templatePattern[1:]
             templatePattern = re.sub(' ', '[_ ]', templatePattern)
             templatePatterns.append(templatePattern)
@@ -132,7 +133,7 @@ class XmlDumpTemplatePageGenerator:
 
         for entry in dump.parse():
             if templateRegex.search(entry.text):
-                page = wikipedia.Page(mysite, entry.title)
+                page = pywikibot.Page(mysite, entry.title)
                 yield page
 
 class TemplateRobot:
@@ -148,6 +149,7 @@ class TemplateRobot:
         'de':u'Bot: Ändere Vorlage: %s',
         'en':u'Robot: Changing template: %s',
         'es':u'Robot: Cambiada la plantilla: %s',
+        'fi':u'Botti korvasi mallineen: %s',
         'fr':u'Robot : Change modèle: %s',
         'he':u'בוט: משנה תבנית: %s',
         'hu':u'Robot: Sablon csere: %s',
@@ -173,6 +175,7 @@ class TemplateRobot:
         'de':u'Bot: Ändere Vorlagen: %s',
         'en':u'Robot: Changing templates: %s',
         'es':u'Robot: Cambiando las plantillas: %s',
+        'fi':u'Botti korvasi mallineet: %s',
         'fr':u'Robot : Modifie modèles %s',
         'he':u'בוט: משנה תבניות: %s',
         'kk':u'Бот: Мына үлгілер өзгертілді: %s',
@@ -195,6 +198,7 @@ class TemplateRobot:
         'de':u'Bot: Entferne Vorlage: %s',
         'en':u'Robot: Removing template: %s',
         'es':u'Robot: Retirando la plantilla: %s',
+        'fi':u'Botti poisti mallineen: %s',
         'fr':u'Robot : Enlève le modèle: %s',
         'he':u'בוט: מסיר תבנית: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
@@ -220,6 +224,7 @@ class TemplateRobot:
         'de':u'Bot: Entferne Vorlagen: %s',
         'en':u'Robot: Removing templates: %s',
         'es':u'Robot: Retirando las plantillas: %s',
+        'fi':u'Botti poisti mallineet: %s',
         'he':u'בוט: מסיר תבניות: %s',
         'fr':u'Robot : Enlève modèles : %s',
         'kk':u'Бот: Мына үлгілер аластатылды: %s',
@@ -243,6 +248,7 @@ class TemplateRobot:
         'de':u'Bot: Umgehe Vorlage: %s',
         'en':u'Robot: Substituting template: %s',
         'es':u'Robot: Sustituyendo la plantilla: %s',
+        'fi':u'Botti substasi mallineen: %s',
         'fr':u'Robot : Remplace modèle : %s',
         'he':u'בוט: מכליל תבנית בקוד הדף: %s',
         'kk':u'Бот: Мына үлгі бәделдірленді: %s',
@@ -253,6 +259,7 @@ class TemplateRobot:
         'pl':u'Robot podmienia szablon: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
         'ru':u'Робот: подстановка шаблона: %s',
+        'uk':u'Робот: підстановка шаблону: %s',
         'zh':u'機器人: 更換模板 %s',
     }
 
@@ -263,6 +270,7 @@ class TemplateRobot:
         'de':u'Bot: Umgehe Vorlagen: %s',
         'en':u'Robot: Substituting templates: %s',
         'es':u'Robot: Sustituyendo las plantillas: %s',
+        'fi':u'Botti substasi mallineet: %s',
         'fr':u'Robot : Remplace modèles : %s',
         'he':u'בוט: מכליל תבניות בקוד הדף: %s',
         'kk':u'Бот: Мына үлгілер бәделдірленді: %s',
@@ -273,6 +281,7 @@ class TemplateRobot:
         'pl':u'Robot podmienia szablony: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
         'ru':u'Робот: подстановка шаблонов: %s',
+        'uk':u'Робот: підстановка шаблонів: %s',
         'zh':u'機器人: 更換模板 %s',
     }
 
@@ -296,27 +305,27 @@ class TemplateRobot:
         self.acceptAll = acceptAll
         self.addedCat = addedCat
         if self.addedCat:
-            self.addedCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.addedCat)
+            self.addedCat = catlib.Category(pywikibot.getSite(), 'Category:' + self.addedCat)
 
         # get edit summary message if it's empty
         if (self.editSummary==''):
             oldTemplateNames = (', ').join(self.templates.keys())
-            mysite = wikipedia.getSite()
+            mysite = pywikibot.getSite()
             if self.remove:
                 if len(self.templates) > 1:
-                    self.editSummary = wikipedia.translate(mysite, self.msgs_remove) % oldTemplateNames
+                    self.editSummary = pywikibot.translate(mysite, self.msgs_remove) % oldTemplateNames
                 else:
-                    self.editSummary = wikipedia.translate(mysite, self.msg_remove) % oldTemplateNames
+                    self.editSummary = pywikibot.translate(mysite, self.msg_remove) % oldTemplateNames
             elif self.subst:
                 if len(self.templates) > 1:
-                    self.editSummary = wikipedia.translate(mysite, self.msgs_subst) % oldTemplateNames
+                    self.editSummary = pywikibot.translate(mysite, self.msgs_subst) % oldTemplateNames
                 else:
-                    self.editSummary = wikipedia.translate(mysite, self.msg_subst) % oldTemplateNames
+                    self.editSummary = pywikibot.translate(mysite, self.msg_subst) % oldTemplateNames
             else:
                 if len(self.templates) > 1:
-                    self.editSummary = wikipedia.translate(mysite, self.msgs_change) % oldTemplateNames
+                    self.editSummary = pywikibot.translate(mysite, self.msgs_change) % oldTemplateNames
                 else:
-                    self.editSummary = wikipedia.translate(mysite, self.msg_change) % oldTemplateNames
+                    self.editSummary = pywikibot.translate(mysite, self.msg_change) % oldTemplateNames
 
     def run(self):
         """
@@ -329,9 +338,10 @@ class TemplateRobot:
         # empty string if there are none.
 
         replacements = []
+        exceptions = {}
 
         for old, new in self.templates.iteritems():
-            if not wikipedia.getSite().nocapitalize:
+            if not pywikibot.getSite().nocapitalize:
                 pattern = '[' + re.escape(old[0].upper()) + re.escape(old[0].lower()) + ']' + re.escape(old[1:])
             else:
                 pattern = re.escape(old)
@@ -342,10 +352,11 @@ class TemplateRobot:
                 replacements.append((templateRegex, ''))
             elif self.subst:
                 replacements.append((templateRegex, '{{subst:' + old + '\g<parameters>}}'))
+                exceptions['inside-tags']=['ref']
             else:
                 replacements.append((templateRegex, '{{' + new + '\g<parameters>}}'))
 
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions = {}, acceptall = self.acceptAll, addedCat=self.addedCat, editSummary=self.editSummary)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions, acceptall = self.acceptAll, addedCat=self.addedCat, editSummary=self.editSummary)
         replaceBot.run()
 
 def main():
@@ -361,14 +372,14 @@ def main():
     # If xmlfilename is None, references will be loaded from the live wiki.
     xmlfilename = None
     # read command line parameters
-    for arg in wikipedia.handleArgs():
+    for arg in pywikibot.handleArgs():
         if arg == '-remove':
             remove = True
         elif arg == '-subst':
             subst = True
         elif arg.startswith('-xml'):
             if len(arg) == 4:
-                xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
+                xmlfilename = pywikibot.input(u'Please enter the XML dump\'s filename: ')
             else:
                 xmlfilename = arg[5:]
         elif arg.startswith('-namespace:'):
@@ -384,7 +395,7 @@ def main():
             acceptAll = True
         else:
             if not genFactory.handleArg(arg):
-                templateNames.append(arg)
+                templateNames.append(pywikibot.Page(pywikibot.getSite(), arg, defaultNamespace=10).titleWithoutNamespace())
 
     if subst or remove:
         for templateName in templateNames:
@@ -394,13 +405,13 @@ def main():
             for i in range(0, len(templateNames), 2):
                 templates[templateNames[i]] = templateNames[i + 1]
         except IndexError:
-            wikipedia.output(u'Unless using -subst or -remove, you must give an even number of template names.')
+            pywikibot.output(u'Unless using -subst or -remove, you must give an even number of template names.')
             return
 
     oldTemplates = []
-    ns = wikipedia.getSite().template_namespace()
+    ns = pywikibot.getSite().template_namespace()
     for templateName in templates.keys():
-        oldTemplate = wikipedia.Page(wikipedia.getSite(), ns + ':' + templateName)
+        oldTemplate = pywikibot.Page(pywikibot.getSite(), templateName, defaultNamespace=10)
         oldTemplates.append(oldTemplate)
 
     if xmlfilename:
@@ -425,4 +436,4 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

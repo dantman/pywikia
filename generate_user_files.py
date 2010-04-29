@@ -49,6 +49,10 @@ def create_user_config():
         mylang = raw_input("The language code of the site we're working on (default: 'en'): ") or 'en'
         username = raw_input("Username (%s %s): " % (mylang, fam)) or 'UnnamedBot'
         username = unicode(username, console_encoding)
+        while True:
+            choice = raw_input("Which variant of user_config.py:\n[S]mall or [E]xtended (with further informations)? ").upper()
+            if choice in ['S','E']:
+                break
 
         #
         # I don't like this solution. Temporary for me.
@@ -67,7 +71,8 @@ def create_user_config():
         config_text = '\n'.join(res)
 
         f = codecs.open(_fnc, "w", "utf-8")
-        f.write("""# -*- coding: utf-8  -*-
+        if choice == 'E':
+            f.write("""# -*- coding: utf-8  -*-
 
 # This is an automatically generated file. You can find more configuration parameters in 'config.py' file.
 
@@ -85,6 +90,12 @@ usernames['%s']['%s'] = u'%s'
 
 
 %s""" % (fam, mylang, fam, mylang, username, config_text))
+        else:
+            f.write("""# -*- coding: utf-8  -*-
+family = '%s'
+mylang = '%s'
+usernames['%s']['%s'] = u'%s'
+""" % (fam, mylang, fam, mylang, username))
         f.close()
         print("'%s' written." % _fnc)
 

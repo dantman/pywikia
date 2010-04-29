@@ -31,7 +31,7 @@ Specific arguments:
 -autosummary    Use MediaWikis autosummary when creating a new page,
                 overrides -summary in this case
 -minor          set minor edit flag on page edits
--debug          Do not really upload pages, just check and report
+-dry            Do not really upload pages, just check and report
                 messages
 
 If the page to be uploaded already exists:
@@ -42,6 +42,7 @@ If the page to be uploaded already exists:
 """
 #
 # (C) Andre Engels, 2004
+# (C) Pywikipedia bot team, 2005-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -71,7 +72,7 @@ class PageFromFileRobot:
         'ia': u'Importation automatic de articulos',
         'id': u'Impor artikel automatis',
         'it': u'Caricamento automatico',
-        'ja': u'ロボットによる: 記事の作成',
+        'ja': u'記事の自動取り込み',
         'ksh': u'Bot: automatesch huhjelaade',
         'nl': u'Geautomatiseerde import',
         'no': u'bot: Automatisk import',
@@ -89,7 +90,7 @@ class PageFromFileRobot:
         'fr': u'rajouté en haut',
         'id': u'ditambahkan di atas',
         'it': u'aggiungo in cima',
-        'ja': u'ロボットによる: 冒頭への追加',
+        'ja': u'冒頭への追加',
         'ksh': u'un dofüürjesaz',
         'nl': u'bovenaan toegevoegd',
         'no': u'legger til øverst',
@@ -106,7 +107,7 @@ class PageFromFileRobot:
         'fr': u'rajouté en bas',
         'id': u'ditambahkan di bawah',
         'it': u'aggiungo in fondo',
-        'ja': u'ロボットによる: 末尾への追加',
+        'ja': u'末尾への追加',
         'ksh': u'un aanjehange',
         'nl': u'onderaan toegevoegd',
         'no': u'legger til nederst',
@@ -123,7 +124,7 @@ class PageFromFileRobot:
         'fr': u'texte existant écrasé',
         'id': u'menimpa teks yang ada',
         'it': u'sovrascritto il testo esistente',
-        'ja': u'ロボットによる: ページの置換',
+        'ja': u'存在するテキストの上書き',
         'ksh': u'un komplët ußjetuusch',
         'nl': u'bestaande tekst overschreven',
         'no': u'erstatter eksisterende tekst',
@@ -139,7 +140,7 @@ class PageFromFileRobot:
         self.summary = summary
         self.minor = minor
         self.autosummary = autosummary
-        self.debug = debug
+        self.dry = debug
 
     def run(self):
         for title, contents in self.reader.run():
@@ -185,8 +186,8 @@ class PageFromFileRobot:
                 comment = ''
                 wikipedia.setAction('')
 
-        if self.debug:
-            wikipedia.output("*** Debug mode ***\n" + \
+        if self.dry:
+            wikipedia.output("*** Dry mode ***\n" + \
                 "\03{lightpurple}title\03{default}: " + title + "\n" + \
                 "\03{lightpurple}contents\03{default}:\n" + contents + "\n" \
                 "\03{lightpurple}comment\03{default}: " + comment + "\n")
@@ -282,7 +283,7 @@ def main():
     summary = None
     minor = False
     autosummary = False
-    debug = False
+    dry = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith("-start:"):
@@ -299,8 +300,8 @@ def main():
             append = "Bottom"
         elif arg == "-force":
             force=True
-        elif arg == "-debug":
-            debug = True
+        elif arg == "-dry":
+            dry = True
         elif arg == "-safe":
             force = False
             append = None
@@ -321,7 +322,7 @@ def main():
 
     reader = PageFromFileReader(filename, pageStartMarker, pageEndMarker, titleStartMarker, titleEndMarker, include, notitle)
 
-    bot = PageFromFileRobot(reader, force, append, summary, minor, autosummary, debug)
+    bot = PageFromFileRobot(reader, force, append, summary, minor, autosummary, dry)
     bot.run()
 
 if __name__ == "__main__":

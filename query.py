@@ -25,74 +25,101 @@ This module allow you to use the API in a simple and easy way.
 __version__ = '$Id$'
 #
 
-import wikipedia, urllib, time
+import wikipedia, time
 try:
     #For Python 2.6 newer
     import json
+    if not hasattr(json, 'loads'):
+        # 'json' can also be the name in for 
+        # http://pypi.python.org/pypi/python-json
+        raise ImportError
 except ImportError:
     import simplejson as json
     
 
-def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
+def GetData(params, site = None, useAPI = True, retryCount = 5, encodeTitle = True, sysop = False, back_response = False):
     """Get data from the query api, and convert it into a data object
     """
-    if site is None:
+    if not site:
         site = wikipedia.getSite()
-
+    data = {}
+    titlecount = 0
+    
     for k,v in params.iteritems():
-        if not IsString(v):
+        if k == u'file':
+            data[k] = v
+        elif type(v) == list:
+            if k in [u'titles', u'pageids', u'revids', u'ususers'] and len(v) > 10:
+                # Titles param might be long, case convert it to post request
+                titlecount = len(params[k])
+                data[k] = unicode(ListToParam(v))
+            else:
+                params[k] = unicode(ListToParam(v))
+            
+        elif not IsString(v):
             params[k] = unicode(v)
+        elif type(v) == unicode:
+            params[k] = ToUtf8(v)
 
-    params['format'] = 'json'
+    if 'format' not in params or params['format'] != u'json':
+        params['format'] = u'json'
 
     if not useAPI:
         params['noprofile'] = ''
-
-    for k,v in params.iteritems():
-        if type(v) == type(u''):
-            params[k] = ToUtf8(v)
-
-    # Titles param might be long, case convert it to post request
-    data = None
-    titlecount = 0
-    if 'titles' in params:
-        titlecount = params['titles'].count('|')
-        if encodeTitle:
-            data = {'titles' : params['titles']}
-            del params['titles']
+    
+    if data:
+        for k in data:
+            del params[k] 
+    
+    if wikipedia.verbose: #dump params info.
+        wikipedia.output(u"==== API action:%s ====" % params[u'action'])
+        if data and 'file' not in data:
+            wikipedia.output(u"%s: (%d items)" % (data.keys()[0], titlecount ) )
+        
+        for k, v in params.iteritems():
+            if k not in ['action', 'format', 'file', 'xml', 'text']:
+                if k == 'lgpassword' and wikipedia.verbose == 1:
+                    v = u'XXXXX'
+                elif not isinstance(v, unicode):
+                    v = v.decode('utf-8')
+                wikipedia.output(u"%s: %s" % (k, v) )
+        wikipedia.output(u'-' * 16 )
+        
 
     postAC = [
-        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect',
-        'block', 'unblock', 'move', 'emailuser','import', 'userrights',
+        'edit', 'login', 'purge', 'rollback', 'delete', 'undelete', 'protect', 'parse',
+        'block', 'unblock', 'move', 'emailuser','import', 'userrights', 'upload',
     ]
     if useAPI:
         if params['action'] in postAC:
             path = site.api_address()
+            cont = ''
         else:
-            path = site.api_address() + urllib.urlencode(params.items())
+            path = site.api_address() + site.urlEncode(params.items())
 
     else:
-        path = site.query_address() + urllib.urlencode(params.items())
+        path = site.query_address() + site.urlEncode(params.items())
 
-    if verbose:
-        if titlecount > 0:
-            wikipedia.output(u"Requesting %d titles from %s:%s" % (titlecount, site.lang, path))
+    if wikipedia.verbose:
+        if titlecount > 1:
+            wikipedia.output(u"Requesting %d %s from %s" % (titlecount, data.keys()[0], site))
         else:
-            wikipedia.output(u"Request %s:%s" % (site.lang, path))
+            wikipedia.output(u"Requesting API query from %s" % site)
 
     lastError = None
-    retry_idle_time = 5
+    retry_idle_time = 1
 
     while retryCount >= 0:
         try:
             jsontext = "Nothing received"
-            if site.hostname() in wikipedia.config.authenticate.keys():
-                params["Content-type"] = "application/x-www-form-urlencoded"
-                params["User-agent"] = useragent
-                res = urllib2.urlopen(urllib2.Request(site.protocol() + '://' + site.hostname() + address, site.urlEncode(params)))
-                jsontext = res.read()
+            if params['action'] == 'upload' and ('file' in data):
+                import upload
+                res, jsontext = upload.post_multipart(site, path, params.items(),
+                  (('file', params['filename'].encode(site.encoding()), data['file']),),
+                  site.cookies(sysop=sysop)
+                  )
             elif params['action'] in postAC:
-                res, jsontext = site.postData(path, urllib.urlencode(params.items()), cookies=site.cookies(sysop=sysop), sysop=sysop)
+                res, jsontext = site.postForm(path, params, sysop, site.cookies(sysop = sysop) )
             else:
                 if back_response:
                     res, jsontext = site.getUrl( path, retry=True, data=data, sysop=sysop, back_response=True)
@@ -101,24 +128,35 @@ def GetData(params, site = None, verbose = False, useAPI = True, retryCount = 5,
 
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
+            
+            jsontext = json.loads( jsontext )
+            
             if back_response:
-                return res, json.loads( jsontext )
+                return res, jsontext
             else:
-                return json.loads( jsontext )
+                return jsontext
 
         except ValueError, error:
+            if "<title>Wiki does not exist</title>" in jsontext:
+                raise wikipedia.NoSuchSite(u'Wiki %s does not exist yet' % site)
+
+            if 'Wikimedia Error' in jsontext: #wikimedia server error
+                raise wikipedia.ServerError
+            
             retryCount -= 1
             wikipedia.output(u"Error downloading data: %s" % error)
             wikipedia.output(u"Request %s:%s" % (site.lang, path))
-            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s\n%s' % (site.hostname(), path), jsontext)
             lastError = error
             if retryCount >= 0:
-                wikipedia.output(u"Retrying in %i seconds..." % retry_idle_time)
-                time.sleep(retry_idle_time)
+                wikipedia.output(u"Retrying in %i minutes..." % retry_idle_time)
+                time.sleep(retry_idle_time*60)
                 # Next time wait longer, but not longer than half an hour
                 retry_idle_time *= 2
-                if retry_idle_time > 300:
-                    retry_idle_time = 300
+                if retry_idle_time > 30:
+                    retry_idle_time = 30
+            else:
+                wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n%s\n%s' % (site.hostname(), path), jsontext)
+
 
 
     raise lastError
@@ -129,16 +167,26 @@ def GetInterwikies(site, titles, extraParams = None ):
     extraParams if given must be a dict() as taken by GetData()
     """
 
-    params = {'titles':ListToParam(titles), 'what' : 'redirects|langlinks'}
+    params = {
+        'action': 'query',
+        'prop': 'langlinks',
+        'titles': ListToParam(titles),
+        'redirects': 1,
+    }
     params = CombineParams( params, extraParams )
-    return GetData(site, params )
+    return GetData(params, site)
 
 def GetLinks(site, titles, extraParams = None ):
     """ Get list of templates for the given titles
     """
-    params = {'titles':ListToParam(titles), 'what': 'redirects|links'}
+    params = {
+        'action': 'query',
+        'prop': 'links',
+        'titles': ListToParam(titles),
+        'redirects': 1,
+    }
     params = CombineParams( params, extraParams )
-    return GetData(site, params )
+    return GetData(params, site)
 
 def GetDisambigTemplates(site):
     """This method will return a set of disambiguation templates.
@@ -149,13 +197,13 @@ def GetDisambigTemplates(site):
     """
 
     disambigs = set()
-    disambigName = u"template:disambig"
+    disambigName = wikipedia.translate(site, site.family.disambiguationTemplates())
     disListName = u"Wikipedia:Disambiguation Templates"
     disListId = 0
 
     templateNames = GetLinks(site, [disListName, disambigName])
     for id, page in templateNames['pages'].iteritems():
-        if page['title'] == disambigName:
+        if page['title'] in disambigName:
             if 'normalizedTitle' in page:
                 disambigs.add(page['normalizedTitle'])
             elif 'redirect' in page:
@@ -187,16 +235,16 @@ def CleanParams( params ):
     This method will convert it into a dictionary
     """
     if params is None:
-        return dict()
+        return {}
     pt = type( params )
-    if pt == type( {} ):
+    if pt == dict:
         return params
-    elif pt == type( () ):
+    elif pt == typle:
         if len( params ) != 2: raise "Tuple size must be 2"
         return {params[0]:params[1]}
-    elif pt == type( [] ):
+    elif pt == list:
         for p in params:
-            if p != type( () ) or len( p ) != 2: raise "Every list element must be a 2 item tuple"
+            if p != tuple or len( p ) != 2: raise "Every list element must be a 2 item tuple"
         return dict( params )
     else:
         raise "Unknown param type %s" % pt
@@ -217,7 +265,7 @@ def CombineParams( params1, params2 ):
             if len( v1 ) == 0:
                 params1[k] = v2
             elif len( v2 ) > 0:
-                if type('') != type(v1) or type('') != type(v2):
+                if str in [type(v1), type(v2)]:
                     raise "Both merged values must be of type 'str'"
                 params1[k] = v1 + '|' + v2
             # else ignore
@@ -245,15 +293,18 @@ def ListToParam( list ):
     encList = ''
     # items may not have one symbol - '|'
     for l in list:
-        if '|' in l: raise "item '%s' contains '|' symbol" % l
-        encList += ToUtf8(l) + '|'
+        if type(l) == str and u'|' in l:
+            raise wikipedia.Error("item '%s' contains '|' symbol" % l )
+        encList += ToUtf8(l) + u'|'
     return encList[:-1]
 
 def ToUtf8(s):
-    if type(s) != type(u''):
-        wikipedia.output("item %s is not unicode" % unicode(s))
-        raise
-    return s.encode('utf-8')
+    if type(s) != unicode:
+        try:
+            s = unicode(s)
+        except UnicodeDecodeError:
+            s = s.decode(wikipedia.config.console_encoding)
+    return s
 
 def IsString(s):
-    return type( s ) in [type( '' ), type( u'' )]
+    return type( s ) in [str, unicode]

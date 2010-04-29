@@ -287,8 +287,11 @@ class UI:
         try:
             import webbrowser
             wikipedia.output(u'Opening CAPTCHA in your web browser...')
-            webbrowser.open(url)
-            return wikipedia.input(u'What is the solution of the CAPTCHA that is shown in your web browser?')
+            if webbrowser.open(url):
+                return wikipedia.input(u'What is the solution of the CAPTCHA that is shown in your web browser?')
+            else:
+                raise
         except:
             wikipedia.output(u'Error in opening web browser: %s' % sys.exc_info()[0])
-            return wikipedia.input(u'What is the solution of the CAPTCHA at %s ?' % url)
+            wikipedia.output(u'Please copy this url to your web browser and open it:\n %s' % url)
+            return wikipedia.input(u'What is the solution of the CAPTCHA at this url ?')

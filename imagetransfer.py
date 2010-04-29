@@ -156,7 +156,7 @@ class ImageTransferBot:
         try:
             description = sourceImagePage.get()
             # try to translate license templates
-            if licenseTemplates.has_key((sourceSite.sitename(), self.targetSite.sitename())):
+            if (sourceSite.sitename(), self.targetSite.sitename()) in licenseTemplates:
                 for old, new in licenseTemplates[(sourceSite.sitename(), self.targetSite.sitename())].iteritems():
                     new = '{{%s}}' % new
                     old = re.compile('{{%s}}' % old)
@@ -181,10 +181,10 @@ class ImageTransferBot:
                 # upload to Commons was successful
                 reason = wikipedia.translate(sourceSite, nowCommonsMessage)
                 # try to delete the original image if we have a sysop account
-                if config.sysopnames.has_key(sourceSite.family.name) and config.sysopnames[sourceSite.family.name].has_key(sourceSite.lang):
+                if sourceSite.family.name in config.sysopnames and sourceSite.lang in config.sysopnames[sourceSite.family.name]:
                     if sourceImagePage.delete(reason):
                         return
-                if nowCommonsTemplate.has_key(sourceSite.lang) and config.usernames.has_key(sourceSite.family.name) and config.usernames[sourceSite.family.name].has_key(sourceSite.lang):
+                if sourceSite.lang in nowCommonsTemplate and sourceSite.family.name in config.usernames and sourceSite.lang in config.usernames[sourceSite.family.name]:
                     # add the nowCommons template.
                     wikipedia.output(u'Adding nowCommons template to %s' % sourceImagePage.title())
                     sourceImagePage.put(sourceImagePage.get() + '\n\n' + nowCommonsTemplate[sourceSite.lang] % targetFilename, comment = nowCommonsMessage[sourceSite.lang])

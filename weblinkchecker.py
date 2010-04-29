@@ -143,7 +143,7 @@ talk_report = {
     'nl': u'== %s ==\nTijdens enkele automatische controles bleek de onderstaande externe verwijzing onbereikbaar. Controleer alstublieft of de verwijzing inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe verwijzing.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
     # This is not a good solution as it only works on the Norwegian Wikipedia, not on Wiktionary etc.
     'no': u'%s{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
-    'pl': u'== %s ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
+    'pl': u'{{Martwy link dyskusja|numer=%s|link=%s|IA=%s}}',
     'pt': u'== %s ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
     'sr': u'== %s ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
     'zh': u'== %s ==\n\n一个自动运行的bot发现下列外部链接可能已经失效。请帮助修复错误的链接或者移除它!\n\n%s\n%s--~~~~',
@@ -162,7 +162,7 @@ talk_report_caption = {
     'nds': u'Weblenk geiht nich mehr',
     'nl': u'Dode verwijzing',
     'no': u'',
-    'pl': u'Martwy link',
+    'pl': u'',
     'pt': u'Link quebrado',
     'sr': u'Покварене спољашње повезнице',
     'zh': u'失效链接',
@@ -179,6 +179,7 @@ talk_report_archive = {
     'ja': u'\nウェブ・ページはインターネット・アーカイブによって保存されました。アーカイブに保管された適切なバージョンにリンクすることを検討してください: [%s]. ',
     'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te verwijzen naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
+    'pl': u'%s',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
     'zh': u'这个网页已经被保存在互联网档案馆（Internet Archive）。请为该网页提供一个合适的存档版本： [%s]。',
 }
@@ -202,32 +203,6 @@ ignorelist = [
     re.compile('.*[\./@]bodo\.kommune\.no(/.*)?'), # bot can't handle their redirects
 ]
 
-def compileLinkR(withoutBracketed = False, onlyBracketed = False):
-    # RFC 2396 says that URLs may only contain certain characters.
-    # For this regex we also accept non-allowed characters, so that the bot
-    # will later show these links as broken ('Non-ASCII Characters in URL').
-    # Note: While allowing parenthesis inside URLs, MediaWiki will regard
-    # right parenthesis at the end of the URL as not part of that URL.
-    # The same applies to dot, comma, colon and some other characters.
-    notAtEnd = '\]\s\)\.:;,<>"'
-    # So characters inside the URL can be anything except whitespace,
-    # closing squared brackets, quotation marks, greater than and less
-    # than, and the last character also can't be parenthesis or another
-    # character disallowed by MediaWiki.
-    notInside = '\]\s<>"'
-    # The first half of this regular expression is required because '' is
-    # not allowed inside links. For example, in this wiki text:
-    #       ''Please see http://www.example.org.''
-    # .'' shouldn't be considered as part of the link.
-    regex = r'(?P<url>http[s]?://[^' + notInside + ']*?[^' + notAtEnd + '](?=[' + notAtEnd+ ']*\'\')|http[s]?://[^' + notInside + ']*[^' + notAtEnd + '])'
-
-    if withoutBracketed:
-        regex = r'(?<!\[)' + regex
-    elif onlyBracketed:
-        regex = r'\[' + regex
-    linkR = re.compile(regex)
-    return linkR
-
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     text = wikipedia.removeDisabledParts(text)
 
@@ -245,7 +220,7 @@ def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     while templateWithParamsR.search(text):
         text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
 
-    linkR = compileLinkR(withoutBracketed, onlyBracketed)
+    linkR = wikipedia.compileLinkR(withoutBracketed, onlyBracketed)
 
     # Remove HTML comments in URLs as well as URLs in HTML comments.
     # Also remove text inside nowiki links etc.
@@ -446,7 +421,11 @@ class LinkChecker(object):
             if isinstance(error, basestring):
                 msg = error
             else:
-                msg = error[1]
+                try:
+                    msg = error[1]
+                except IndexError:
+                    print u'### DEBUG information for #2972249'
+                    raise IndexError, type(error)
             # TODO: decode msg. On Linux, it's encoded in UTF-8.
             # How is it encoded in Windows? Or can we somehow just
             # get the English message?
@@ -599,7 +578,7 @@ class History:
         """
         self.semaphore.acquire()
         now = time.time()
-        if self.historyDict.has_key(url):
+        if url in self.historyDict:
             timeSinceFirstFound = now - self.historyDict[url][0][1]
             timeSinceLastFound= now - self.historyDict[url][-1][1]
             # if the last time we found this dead link is less than an hour
@@ -623,7 +602,7 @@ class History:
         If the link was previously found dead, removes it from the .dat file
         and returns True, else returns False.
         """
-        if self.historyDict.has_key(url):
+        if url in self.historyDict:
             self.semaphore.acquire()
             try:
                 del self.historyDict[url]
@@ -789,6 +768,7 @@ def main():
     # that are also used by other scripts and that determine on which pages
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
+    global day
     day = 7
     for arg in wikipedia.handleArgs():
         if arg == '-talk':
@@ -805,7 +785,6 @@ def main():
         elif arg.startswith('-ignore:'):
             HTTPignore.append(int(arg[8:]))
         elif arg.startswith('-day:'):
-            global day
             day = int(arg[5:])
         else:
             if not genFactory.handleArg(arg):

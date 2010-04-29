@@ -60,6 +60,7 @@ class ImageRobot:
         'nl': u'Bot: afbeelding %s vervangen door %s',
         'pl': u'Robot zamienia obraz %s na %s',
         'pt': u'Bot: Alterando imagem %s para %s',
+        'ru': u'Бот: Замена файла %s на %s',
         'zh': u'機器人：取代圖像 %s 至 %s',
     }
 
@@ -80,6 +81,7 @@ class ImageRobot:
         'nn': u'robot: fjerna biletet %s',
         'pl': u'Robot usuwa obraz %s',
         'pt': u'Bot: Alterando imagem %s',
+        'ru': u'Бот: удалил файл %s',
         'zh': u'機器人：移除圖像 %s',
     }
 

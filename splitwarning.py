@@ -26,7 +26,7 @@ for line in logFile:
         family = m.group('family')
         code = m.group('code')
         if code in wikipedia.getSite().languages():
-            if not files.has_key(code):
+            if not code in files:
                 files[code] = codecs.open(
                                   wikipedia.config.datafilepath('logs',
                                          'warning-%s-%s.log' % (family, code)),

@@ -39,11 +39,18 @@ These command-line arguments can be used to specify which pages to work on:
                    This implies -noredirect.
 
     -restore:      restore a set of "dumped" pages the robot was working on
-                   when it terminated.
+                   when it terminated. The dump file will be subsequently
+                   removed.
+
+    -restore:all   restore a set of "dumped" pages of all dumpfiles to a given
+                   family remaining in the "interwiki-dumps" directory. All
+                   these dump files will be subsequently removed. If restoring
+                   process interrupts again, it saves all unprocessed pages in
+                   one new dump file of the given site.
 
     -continue:     like restore, but after having gone through the dumped pages,
                    continue alphabetically starting at the last of the dumped
-                   pages.
+                   pages. The dump file will be subsequently removed.
 
     -warnfile:     used as -warnfile:filename, reads all warnings from the
                    given file that apply to the home wiki language,
@@ -52,6 +59,14 @@ These command-line arguments can be used to specify which pages to work on:
                    implement warnfile suggestions without verifying them
                    against the live wiki is using the warnfile.py
                    script.
+
+    -quiet:        Use this option to get less output
+
+    -async:        Put page on queue to be saved to wiki asynchronously. This
+                   enables loading pages during saving throtteling and gives a
+                   better performance.
+                   NOTE: For post-processing it always assumes that saving the
+                   the pages was sucessful.
 
 Additionaly, these arguments can be used to restrict the bot to certain pages:
 
@@ -65,21 +80,22 @@ Additionaly, these arguments can be used to restrict the bot to certain pages:
                    that amount of pages and then stop. This is only useful in
                    combination with -start. The default is not to stop.
  
-    -until:        used as -until:title, specifies that the robot should process
-                   pages in wiki default sort order up to, and including, "title"
-                   and then stop. This is only useful in combination with -start.
-                   The default is not to stop.
+    -until:        used as -until:title, specifies that the robot should
+                   process pages in wiki default sort order up to, and
+                   including, "title" and then stop. This is only useful in
+                   combination with -start. The default is not to stop.
                    Note: do not specify a namespace, even if -start has one.
 
-    -bracket       only work on pages that have (in the home language) parenthesis
-                   in their title. All other pages are skipped.
+    -bracket       only work on pages that have (in the home language)
+                   parenthesis in their title. All other pages are skipped.
                    (note: without ending colon)
 
     -skipfile:     used as -skipfile:filename, skip all links mentioned in
                    the given file. This does not work with -number!
 
     -skipauto      use to skip all pages that can be translated automatically,
-                   like dates, centuries, months, etc. (note: without ending colon)
+                   like dates, centuries, months, etc.
+                   (note: without ending colon)
 
     -lack:         used as -lack:xx with xx a language code: only work on pages
                    without links to language xx. You can also add a number nn
@@ -93,7 +109,8 @@ These arguments are useful to provide hints to the bot:
                    useful if you specify a single page to work on. If no
                    text is given after the second ':', the name of the page
                    itself is used as the title for the hint, unless the
-                   -hintnobracket command line option (see there) is also selected.
+                   -hintnobracket command line option (see there) is also
+                   selected.
 
                    There are some special hints, trying a number of languages
                    at once:
@@ -152,7 +169,7 @@ These arguments are useful to provide hints to the bot:
 These arguments define how much user confirmation is required:
 
     -autonomous    run automatically, do not ask any questions. If a question
-                   to an operator is needed, write the name of the page
+    -auto          to an operator is needed, write the name of the page
                    to autonomous_problems.dat and continue on the next page.
                    (note: without ending colon)
 
@@ -175,10 +192,13 @@ These arguments define how much user confirmation is required:
 
 These arguments specify in which way the bot should follow interwiki links:
 
-    -noredirect    do not follow redirects. (note: without ending colon)
+    -noredirect    do not follow redirects nor category redirects.
+                   (note: without ending colon)
 
-    -initialredirect  work on its target if a redirect is entered on the
-                   command line. (note: without ending colon)
+    -initialredirect  work on its target if a redirect or category redirect is
+                   entered on the command line or by a generator (note: without
+                   ending colon). It is recommended to use this option with
+                   -movelog pagegenerator.
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
@@ -213,15 +233,15 @@ These arguments specify in which way the bot should follow interwiki links:
 The following arguments are only important for users who have accounts for
 multiple languages, and specify on which sites the bot should modify pages:
 
-    -localonly     only work on the local wiki, not on other wikis in the family
-                   I have a login at. (note: without ending colon)
+    -localonly     only work on the local wiki, not on other wikis in the
+                   family I have a login at. (note: without ending colon)
 
     -limittwo      only update two pages - one in the local wiki (if logged-in)
                    and one in the top available one.
                    For example, if the local page has links to de and fr,
                    this option will make sure that only local and de: (larger)
-                   site is updated. This option is useful to quickly set two way
-                   links without updating all of wiki's sites.
+                   site is updated. This option is useful to quickly set two
+                   way links without updating all of wiki's sites.
                    (note: without ending colon)
 
     -whenneeded    works like limittwo, but other languages are changed in the
@@ -267,15 +287,16 @@ All these options can be changed through the user-config.py configuration file.
 If interwiki.py is terminated before it is finished, it will write a dump file
 to the interwiki-dumps subdirectory. The program will read it if invoked with
 the "-restore" or "-continue" option, and finish all the subjects in that list.
-To run the interwiki-bot on all pages on a language, run it with option
-"-start:!", and if it takes so long you have to break it off, use "-continue"
-next time.
+After finishing the dump file will be deleted. To run the interwiki-bot on all
+pages on a language, run it with option "-start:!", and if it takes so long you
+have to break it off, use "-continue" next time.
+
 """
 #
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
 # (C) Yuri Astrakhan, 2005-2006
-# (C) Pywikipedia bot team, 2007-2009
+# (C) Pywikipedia bot team, 2007-2010
 #
 # Distributed under the terms of the MIT license.
 #
@@ -313,7 +334,9 @@ except NameError:
             seq2.reverse()
         return seq2
 
-import wikipedia, config, pagegenerators, catlib
+import wikipedia as pywikibot
+import config, catlib
+import pagegenerators
 import titletranslate, interwiki_graph
 import webbrowser
 
@@ -321,33 +344,7 @@ docuReplacements = {
     '&pagegenerators_help;': pagegenerators.parameterHelp
 }
 
-class XmlDumpLmoLinkPageGenerator:
-    """
-    Generator which will yield Pages that might contain selflinks.
-    These pages will be retrieved from a local XML dump file
-    (cur table).
-    """
-    def __init__(self, xmlFilename):
-        """
-        Arguments:
-            * xmlFilename  - The dump's path, either absolute or relative
-        """
-
-        self.xmlFilename = xmlFilename
-
-    def __iter__(self):
-        import xmlreader
-        mysite = wikipedia.getSite()
-        dump = xmlreader.XmlDump(self.xmlFilename)
-        r = re.compile(r'\d')
-        for entry in dump.parse():
-            if not r.search(entry.title):
-                selflinkR = re.compile(r'\[\[lmo:')
-                if selflinkR.search(entry.text):
-                    yield wikipedia.Page(mysite, entry.title)
-
-
-class SaveError(wikipedia.Error):
+class SaveError(pywikibot.Error):
     """
     An attempt to save a page with changed interwiki has failed.
     """
@@ -358,7 +355,7 @@ class LinkMustBeRemoved(SaveError):
     preferences or because the user chose not to change the page.
     """
 
-class GiveUpOnPage(wikipedia.Error):
+class GiveUpOnPage(pywikibot.Error):
     """
     The user chose not to work on this page and its linked pages any more.
     """
@@ -366,8 +363,12 @@ class GiveUpOnPage(wikipedia.Error):
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'als': (u'Bötli: ', u'Ygfüegt', u'Ussergnoh', u'Gändret'),
+    'am': (u'ሎሌ ', u'መጨመር', u'ማስወገድ', u'ማስተካከል'),
+    'ang': (u'Robot ', u'ēcung', u'fornimung', u'onhweorfung'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
+    'arc': (u'ܪܘܒܘܛ ', u'ܬܘܣܦܬܐ', u'ܠܚܝܐ', u'ܚܘܠܦܐ'),
     'az': (u'Bot redaktəsi ', u'əlavə edilir', u'çıxardılır', u'dəyişdirilir'),
+    'ba': (u'робот ', u'өҫтәне', u'юйҙы', u'үҙгәртте'),
     'bar': (u'Boterl: ', u'Aini', u'Aussi', u'Obàsst'),
     'bat-smg': (u'robots ', u'Pridedama', u'Trėnama', u'Keitama'),
     'bcl': (u'robot ', u'minadugang', u'minahali', u'minamodifikar'),
@@ -375,9 +376,11 @@ msg = {
     'be-x-old': (u'робат ', u'дадаў', u'выдаліў', u'зьмяніў'),
     'bg': (u'Робот ', u'Добавяне', u'Изтриване', u'Промяна'),
     'bn': (u'রোবট ', u'যোগ করছে', u'মুছে ফেলছে', u'পরিবর্তন সাধন করছে'),
+    'bo': (u'འཕྲུལ་ཆས་ཀྱི་མི། ', u'ཁ་སྣོན་རྒྱག་པ།', u'བསུབ་པ།', u'བསྐྱར་བཅོས་བྱེད་པ།'),
     'bpy': (u'রোবট ', u'তিলকরের', u'থেইকরের', u'বদালার'),
     'br': (u'Robot ', u'ouzhpennet', u'tennet', u'kemmet'),
     'ca': (u'Robot ', u'afegeix', u'esborra', u'modifica'),
+    'ce': (u'робот ', u'тIетоьхна', u'дIаяьккхина', u'хийцина'),
     'ceb': (u'robot ', u'Gidugang', u'Gitangtang', u'Gimodipikar'),
     'crh': (u'robot ', u'ekley', u'çetleştire', u'deñiştire'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
@@ -401,13 +404,17 @@ msg = {
     'frp': (u'robot ', u'Apond', u'Retire', u'Modifie'),
     'fur': (u'Robot: ', u'o zonti', u'o cambii', u'o gjavi'),
     'fy': (u'Bot ', u'- derby', u'- fuort', u'- oars'),
+    'ga': (u'róbat ', u'ag suimiú', u'ag baint', u'ag mionathrú'),
     'gl': (u'bot ', u'Engadido', u'Eliminado', u'Modificado'),
     'gn': (u'bot ', u'ojoapy', u'oñembogue', u'oñemoambue'),
+    'gu': (u'રોબોટ ', u'ઉમેરણ', u'હટાવ્યું', u'ફેરફાર'),
+    'gv': (u'bot ', u'currit stiagh ec', u'scryssit magh ec', u'caghlaait ec'),
     'he': (u'בוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot ', u'Dodaje', u'Uklanja', u'Mijenja'),
     'hsb': (u'bot ', u'přidał', u'wotstronił', u'změnił'),
     'ht': (u'wobo ', u'Ajoute', u'Anlve', u'Modifye'),
     'hu': (u'Bot: ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
+    'hy': (u'Ռոբոտը ', u'ավելացնում է․', u'հեռացնում է․', u'փոփոխում է․'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'id': (u'bot ', u'Menambah', u'Membuang', u'Mengubah'),
     'ie': (u'Bot: ', u'Adjuntet', u'Removet', u'Modificat'),
@@ -416,38 +423,49 @@ msg = {
     'it': (u'Bot: ', u'Aggiungo', u'Tolgo', u'Modifico'),
     'ja': (u'ロボットによる ', u'追加', u'除去', u'変更'),
     'ka': (u'ბოტის ', u'დამატება', u'წაშლა', u'შეცვლა'),
+    'kab': (u'a rubut ', u'ti merniwt', u'a ḍegger', u'a senfel'),
     'ko': (u'로봇이 ', u'더함', u'지움', u'바꿈'),
     'kk': (u'Боттың ', u'үстегені', u'аластағаны', u'түзеткені'),
+    'kl': (u'Robot ', u'Ilassut', u'Peersineq', u'Inisseeqqinneq'),
+    'km': (u'រ៉ូបូ ', u'បន្ថែម', u'ដកចេញ', u'កែសំរួល'),
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
     'ku': (u'robot ', u'serzêde kirin', u'jêbirin', u'guhêrandin'),
+    'kw': (u'robot ', u'ow keworra', u'ow dilea', u'ow chanjya'),
     'la': (u'bot ', u'addit', u'abdit', u'mutat'),
     'lb': (u'Bot ', u'Derbäi setzen', u'Ewech huelen', u'Änneren'),
     'lmo': (u'Robot ', u'jontant', u'trant via', u'modifiant'),
     'ln': (u'bot ', u'ebakisí', u'elongólí', u'ebongolí'),
+    'lo': (u'ໂຣບົດ ', u'ພວມເພີ່ມ', u'ພວມລຶບ', u'ພວມແປງ'),
     'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
     'mi': (u'he karetao ', u'e tāpiri ana', u'e tango ana', u'e whakarerekē ana'),
     'lv': (u'robots ', u'pievieno', u'izņem', u'izmaina'),
+    'mdf': (u'бот ', u'поладозе', u'нардазе', u'полафтозе'),
+    'mg': (u'Rôbô ', u'Nanampy', u'Nanala', u'Nanova'),
     'mk': (u'Бот ', u'Додава', u'Брише', u'Менува'),
     'ml': (u'യന്ത്രം ', u'ചേര്‍ക്കുന്നു', u'നീക്കുന്നു', u'പുതുക്കുന്നു'),
     'mn': (u'робот ', u'Нэмж байна', u'Арилгаж байна', u'Өөрчилж байна'),
     'mr': (u'सांगकाम्याने ',  u'वाढविले', u'काढले', u'बदलले'),
     'ms': (u'bot ', u'menambah', u'membuang', u'mengubah'),
+    'myv': (u'роботось ', u'путызеть', u'нардызеть', u'полавтызеть'),
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nah': (u'Tepozcuayollotl', u'Tlamahxiltilli', u'Tlaquixtilli', u'Tlapatlalli'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
-    'nds-nl': (u'bot', u'derbie', u'derof', u'aanders'),
+    'nds-nl': (u'bot ', u'derbie', u'derof', u'aanders'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
     'no': (u'robot ', u'legger til', u'fjerner', u'endrer'),
     'nov': (u'robote ', u'Adid', u'Ekartad', u'Modifikad'),
     'nrm': (u'robot ', u'ajouôte', u'hale', u'amende'),
+    'nv': (u'botígíí díí naaltsoos tʼáá bíniʼ łahgo áyiilaa ', u'(+)', u'(-)', u'(+/-)'),
     'os': (u'Робот ', u'баххæст кодта', u'Баивта', u'Аиуварс'),
+    'pdc': (u'Bot: ', u'dezu geduh', u'raus gnumme', u'gennert'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pms': (u'ël trigomiro ', u'a gionta', u'a gava', u'a modìfica'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
     'qu': (u'Rurana antacha ', u'Yapasqa', u'Qullusqa', u'Hukchasqa'),
     'ro': (u'Robot interwiki: ', u'Adăugat', u'Înlăturat',u'Modificat'),
     'ru': (u'робот ', u'добавил', u'удалил', u'изменил'),
+    'sah': (u'робот ', u'эптэ', u'сотто', u'уларытта'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
     'sq': (u'roboti ', u'shtoj', u'largoj', u'ndryshoj'),
@@ -460,30 +478,87 @@ msg = {
     'te': (u'యంత్రము  ', u'కలుపుతున్నది', u'తొలగిస్తున్నది', u'మార్పులు చేస్తున్నది'),
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
+    'tk': (u'robot ', u'goşdy', u'aýyrdy', u'üýtgetdi'),
     'tl': (u'robot ', u'dinagdag', u'tinanggal', u'binago'),
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
     'tr': (u'Bot değişikliği ', u'Ekleniyor', u'Kaldırılıyor', u'Değiştiriliyor'),
+    'tt': (u'робот ', u'кушты', u'бетерде', u'үзгәртте'),
     'th': (u'โรบอต ', u'เพิ่ม', u'ลบ', u'แก้ไข'),
+    'udm': (u'робот ', u'ватсаз', u'ӵушиз', u'воштӥз'),
     'uk': (u'робот ', u'додав', u'видалив', u'змінив'),
+    'ur': (u'روبالہ ', u'جمع', u'محو', u'ترمیم'),
     'uz': (u'Bot ', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
     'vec': (u'Bot: ', u'Zonto', u'Cavo', u'Canbio'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
     'war':(u'robot ', u'Gindugngan', u'Gintanggal', u'Ginliwat'),
+    'xal': (u'көдлвр ', u'немв', u'һарһв', u'сольв'),
     'yi': (u'באט ', u'צוגעלייגט', u'אראפגענומען', u'געענדערט'),
+    'yo': (u'Bot ', u'Fífikún', u'Yíyọkúrò', u'Títúnṣe'),
     'yue': (u'機械人 ', u'加', u'減', u'改'),
     'zh': (u'機器人 ', u'新增', u'移除', u'修改'),
     'zh-classical': (u'僕 ', u'增', u'削', u'修'),
+    'zh-min-nan': (u'bot ', u'ka-thiam', u'thiah-tû', u'siu-kái'),
     'zh-yue': (u'機械人 ', u'加', u'減', u'改'),
 }
 
+# Subpage templates. Must be in lower case,
+# whereas subpage itself must be case sensitive
+moved_links = {
+    'bn' : (u'documentation', u'/doc'),
+    'ca' : (u'ús de la plantilla', u'/ús'),
+    'cs' : (u'dokumentace',   u'/doc'),
+    'de' : (u'dokumentation', u'/Meta'),
+    'en' : ([u'documentation',
+             u'template documentation',
+             u'template doc',
+             u'doc',
+             u'documentation, template'], u'/doc'),
+    'es' : ([u'documentación', u'documentación de plantilla'], u'/doc'),
+    'eu' : (u'txantiloi dokumentazioa', u'/dok'),
+    # fi: no idea how to handle this type of subpage at :Metasivu:
+    'fi' : (u'mallineohje', None),
+    'fr' : ([u'/documentation', u'documentation', u'doc_modèle',
+             u'documentation modèle', u'documentation modèle compliqué',
+             u'documentation modèle en sous-page',
+             u'documentation modèle compliqué en sous-page',
+             u'documentation modèle utilisant les parserfunctions en sous-page',
+            ],
+            u'/Documentation'),
+    'hu' : (u'sablondokumentáció', u'/doc'),
+    'id' : (u'template doc',  u'/doc'),
+    'ja' : (u'documentation', u'/doc'),
+    'ka' : (u'თარგის ინფო',   u'/ინფო'),
+    'ko' : (u'documentation', u'/설명문서'),
+    'ms' : (u'documentation', u'/doc'),
+    'pl' : (u'dokumentacja',  u'/opis'),
+    'pt' : ([u'documentação', u'/doc'],  u'/doc'),
+    'ro' : (u'documentaţie',  u'/doc'),
+    'ru' : (u'doc',           u'/doc'),
+    'sv' : (u'dokumentation', u'/dok'),
+    'vi' : (u'documentation', u'/doc'),
+    'zh' : ([u'documentation', u'doc'], u'/doc'),
+}
+
+# A list of template names in different languages.
+# Pages which contains these shouldn't be changed.
+ignoreTemplates = {
+    '_default': [u'delete'],
+    'cs' : [u'Pracuje_se'],
+    'de' : [u'inuse', u'löschen', u'sla', u'löschantrag', u'löschantragstext'],
+    'en' : [u'inuse', u'softredirect'],
+    'pdc': [u'lösche'],
+}
+
 class Global(object):
-    """Container class for global settings.
-       Use of globals outside of this is to be avoided."""
+    """
+    Container class for global settings.
+    Use of globals outside of this is to be avoided.
+    """
     autonomous = False
     confirm = False
+    always = False
     select = False
-    debug = True
     followredirect = True
     initialredirect = False
     force = False
@@ -493,9 +568,7 @@ class Global(object):
     skipauto = False
     untranslated = False
     untranslatedonly = False
-    askhints = False
     auto = True
-    hintnobracket = False
     neverlink = []
     showtextlink = 0
     showtextlinkadd = 300
@@ -509,12 +582,124 @@ class Global(object):
     followinterwiki = True
     minsubjects = config.interwiki_min_subjects
     nobackonly = False
+    askhints = False
+    hintnobracket = False
+    hints = []
     hintsareright = False
     contentsondisk = config.interwiki_contents_on_disk
     lacklanguage = None
     minlinks = 0
+    quiet  = False
+    restoreAll = False
+    async  = False
 
-class StoredPage(wikipedia.Page):
+    def readOptions(self, arg):
+        """ Read all commandline parameters for the global container """
+        if arg == '-noauto':
+            self.auto = False
+        elif arg.startswith('-hint:'):
+            self.hints.append(arg[6:])
+        elif arg.startswith('-hintfile'):
+            hintfilename = arg[10:]
+            if (hintfilename is None) or (hintfilename == ''):
+                hintfilename = pywikibot.input(u'Please enter the hint filename:')
+            f = codecs.open(hintfilename, 'r', config.textfile_encoding)
+            R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
+            for pageTitle in R.findall(f.read()):
+                self.hints.append(pageTitle)
+            f.close()
+        elif arg == '-force':
+            self.force = True
+        elif arg == '-same':
+            self.same = True
+        elif arg == '-wiktionary':
+            self.same = 'wiktionary'
+        elif arg == '-untranslated':
+            self.untranslated = True
+        elif arg == '-untranslatedonly':
+            self.untranslated = True
+            self.untranslatedonly = True
+        elif arg == '-askhints':
+            self.untranslated = True
+            self.untranslatedonly = False
+            self.askhints = True
+        elif arg == '-hintnobracket':
+            self.hintnobracket = True
+        elif arg == '-confirm':
+            self.confirm = True
+        elif arg == '-select':
+            self.select = True
+        elif arg == '-autonomous' or arg == '-auto':
+            self.autonomous = True
+        elif arg == '-noredirect':
+            self.followredirect = False
+        elif arg == '-initialredirect':
+            self.initialredirect = True
+        elif arg == '-localonly':
+            self.localonly = True
+        elif arg == '-limittwo':
+            self.limittwo = True
+            self.strictlimittwo = True
+        elif arg.startswith('-whenneeded'):
+            self.limittwo = True
+            self.strictlimittwo = False
+            try:
+                self.needlimit = int(arg[12:])
+            except KeyError:
+                pass
+            except ValueError:
+                pass
+        elif arg.startswith('-skipfile:'):
+            skipfile = arg[10:]
+            skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
+            for page in skipPageGen:
+                self.skip.add(page)
+            del skipPageGen
+        elif arg == '-skipauto':
+            self.skipauto = True
+        elif arg.startswith('-neverlink:'):
+            self.neverlink += arg[11:].split(",")
+        elif arg.startswith('-ignore:'):
+            self.ignore += [pywikibot.Page(None,p) for p in arg[8:].split(",")]
+        elif arg.startswith('-ignorefile:'):
+            ignorefile = arg[12:]
+            ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
+            for page in ignorePageGen:
+                self.ignore.append(page)
+            del ignorePageGen
+        elif arg == '-showpage':
+            self.showtextlink += self.showtextlinkadd
+        elif arg == '-graph':
+            # override configuration
+            config.interwiki_graph = True
+        elif arg == '-bracket':
+            self.parenthesesonly = True
+        elif arg == '-localright':
+            self.followinterwiki = False
+        elif arg == '-hintsareright':
+            self.hintsareright = True
+        elif arg.startswith('-array:'):
+            self.minsubjects = int(arg[7:])
+        elif arg.startswith('-query:'):
+            self.maxquerysize = int(arg[7:])
+        elif arg == '-back':
+            self.nobackonly = True
+        elif arg == '-quiet':
+            self.quiet = True
+        elif arg == '-async':
+            self.async = True
+        elif arg.startswith('-lack:'):
+            remainder = arg[6:].split(':')
+            self.lacklanguage = remainder[0]
+            if len(remainder) > 1:
+                self.minlinks = int(remainder[1])
+            else:
+                self.minlinks = 1
+        else:
+            return False
+        return True
+
+class StoredPage(pywikibot.Page):
     """
     Store the Page contents on disk to avoid sucking too much
     memory when a big number of Page objects will be loaded
@@ -522,14 +707,14 @@ class StoredPage(wikipedia.Page):
     """
     
     # Please prefix the class members names by SP
-    # to avoid possible name clashes with wikipedia.Page
+    # to avoid possible name clashes with pywikibot.Page
 
     # path to the shelve
     SPpath = None
     # shelve
     SPstore = None
 
-    # attributes created by wikipedia.Page.__init__
+    # attributes created by pywikibot.Page.__init__
     SPcopy = [ '_editrestriction', 
                '_site', 
                '_namespace',
@@ -776,7 +961,8 @@ class Subject(object):
         """
         for tree in [self.done, self.pending]:
             for page in tree.filter(site):
-                if page.exists() and not page.isDisambig() and not page.isRedirectPage():
+                if page.exists() and not page.isDisambig() \
+                   and not page.isRedirectPage() and not page.isCategoryRedirect():
                     return page
         return None
 
@@ -790,7 +976,7 @@ class Subject(object):
         for tree in [self.done, self.pending, self.todo]:
             for page in tree.filter(site):
                 if page.namespace() == self.originPage.namespace():
-                    if page.exists() and not page.isRedirectPage():
+                    if page.exists() and not page.isRedirectPage() and not page.isCategoryRedirect():
                         return page
         return None
 
@@ -867,7 +1053,10 @@ class Subject(object):
             return False
         if globalvar.nobackonly:
             if page == self.originPage:
-                wikipedia.output("%s has a backlink from %s."%(page,linkingPage))
+                try:
+                    pywikibot.output(u"%s has a backlink from %s."%(page,linkingPage))
+                except UnicodeDecodeError:
+                    pywikibot.output(u"Found a backlink for a page.")
                 self.makeForcedStop(counter)
                 return False
 
@@ -908,31 +1097,31 @@ class Subject(object):
             if linkedPage.namespace() in nsmatch:
                 return False
             if globalvar.autonomous:
-                wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()))
+                pywikibot.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()))
                 # Fill up foundIn, so that we will not write this notice
                 self.foundIn[linkedPage] = [linkingPage]
                 return True
             else:
                 preferredPage = self.getFoundInCorrectNamespace(linkedPage.site())
                 if preferredPage:
-                    wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i because page %s in the correct namespace has already been found." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace(), preferredPage.aslink(True)))
+                    pywikibot.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i because page %s in the correct namespace has already been found." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace(), preferredPage.aslink(True)))
                     return True
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'Add an alternative', 'give up'], ['y', 'n', 'a', 'g'])
+                    choice = pywikibot.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No', 'Add an alternative', 'give up'], ['y', 'n', 'a', 'g'])
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
                         self.foundIn[linkedPage] = [linkingPage]
                         if choice == 'g':
                             self.makeForcedStop(counter)
                         elif choice == 'a':
-                            newHint = wikipedia.input(u'Give the alternative for language %s, not using a language code:' % linkedPage.site().language())
+                            newHint = pywikibot.input(u'Give the alternative for language %s, not using a language code:' % linkedPage.site().language())
                             if newHint:
-                                alternativePage = wikipedia.Page(linkedPage.site(), newHint)
+                                alternativePage = pywikibot.Page(linkedPage.site(), newHint)
                                 if alternativePage:
                                     # add the page that was entered by the user
                                     self.addIfNew(alternativePage, counter, None)
                         else:
-                            wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
+                            pywikibot.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
                         return True
         else:
             # same namespaces, no problem
@@ -941,10 +1130,10 @@ class Subject(object):
     def wiktionaryMismatch(self, page):
         if globalvar.same=='wiktionary':
             if page.title().lower() != self.originPage.title().lower():
-                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page.aslink(), self.originPage.aslink()))
+                pywikibot.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page.aslink(), self.originPage.aslink()))
                 return True
             elif page.title() != self.originPage.title() and self.originPage.site().nocapitalize and page.site().nocapitalize:
-                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page.aslink(), self.originPage.aslink()))
+                pywikibot.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page.aslink(), self.originPage.aslink()))
                 return True
         return False
 
@@ -964,32 +1153,32 @@ class Subject(object):
         """
         if globalvar.autonomous:
             if self.originPage.isDisambig() and not page.isDisambig():
-                wikipedia.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.originPage.aslink(True), page.aslink(True)))
+                pywikibot.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.originPage.aslink(True), page.aslink(True)))
                 return (True, None)
             elif not self.originPage.isDisambig() and page.isDisambig():
-                wikipedia.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.originPage.aslink(True), page.aslink(True)))
+                pywikibot.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.originPage.aslink(True), page.aslink(True)))
                 return (True, None)
         else:
             choice = 'y'
             if self.originPage.isDisambig() and not page.isDisambig():
                 disambig = self.getFoundDisambig(page.site())
                 if disambig:
-                    wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), disambig.aslink(True)))
+                    pywikibot.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), disambig.aslink(True)))
                     return (True, None)
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
+                    choice = pywikibot.inputChoice(u'WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             elif not self.originPage.isDisambig() and page.isDisambig():
                 nondisambig = self.getFoundNonDisambig(page.site())
                 if nondisambig:
-                    wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), nondisambig.aslink(True)))
+                    pywikibot.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), nondisambig.aslink(True)))
                     return (True, None)
                 else:
-                    choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
+                    choice = pywikibot.inputChoice(u'WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative', 'Give up'], ['y', 'n', 'a', 'g'])
             if choice == 'n':
                 return (True, None)
             elif choice == 'a':
-                newHint = wikipedia.input(u'Give the alternative for language %s, not using a language code:' % page.site().language())
-                alternativePage = wikipedia.Page(page.site(), newHint)
+                newHint = pywikibot.input(u'Give the alternative for language %s, not using a language code:' % page.site().language())
+                alternativePage = pywikibot.Page(page.site(), newHint)
                 return (True, alternativePage)
             elif choice == 'g':
                 self.makeForcedStop(counter)
@@ -999,41 +1188,43 @@ class Subject(object):
 
     def isIgnored(self, page):
         if page.site().language() in globalvar.neverlink:
-            wikipedia.output(u"Skipping link %s to an ignored language" % page.aslink())
+            pywikibot.output(u"Skipping link %s to an ignored language" % page.aslink())
             return True
         if page in globalvar.ignore:
-            wikipedia.output(u"Skipping link %s to an ignored page" % page.aslink())
+            pywikibot.output(u"Skipping link %s to an ignored page" % page.aslink())
             return True
         return False
 
     def reportInterwikilessPage(self, page):
-        wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
+        if not globalvar.quiet or pywikibot.verbose:
+            pywikibot.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
         if config.without_interwiki:
             f = codecs.open(
-                wikipedia.config.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
-            f.write("# %s \n" % page.aslink(forceInterwiki=True))
+                pywikibot.config.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
+            f.write(u"# %s \n" % page.aslink(forceInterwiki=True))
             f.close()
 
     def askForHints(self, counter):
         if not self.workonme:
             # Do not ask hints for pages that we don't work on anyway
             return
-        if (self.untranslated or globalvar.askhints) and not self.hintsAsked and not self.originPage.isRedirectPage():
+        if (self.untranslated or globalvar.askhints) and not self.hintsAsked \
+           and not self.originPage.isRedirectPage() and not self.originPage.isCategoryRedirect():
             # Only once!
             self.hintsAsked = True
             if globalvar.untranslated:
                 newhint = None
                 t = globalvar.showtextlink
                 if t:
-                    wikipedia.output(self.originPage.get()[:t])
+                    pywikibot.output(self.originPage.get()[:t])
                 # loop
                 while True:
-                    newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
+                    newhint = pywikibot.input(u'Give a hint (? to see pagetext):')
                     if newhint == '?':
                         t += globalvar.showtextlinkadd
-                        wikipedia.output(self.originPage.get()[:t])
+                        pywikibot.output(self.originPage.get()[:t])
                     elif newhint and not ':' in newhint:
-                        wikipedia.output(u'Please enter a hint in the format language:pagename or type nothing if you do not have a hint.')
+                        pywikibot.output(u'Please enter a hint in the format language:pagename or type nothing if you do not have a hint.')
                     elif not newhint:
                         break
                     else:
@@ -1064,16 +1255,21 @@ class Subject(object):
             if globalvar.skipauto:
                 dictName, year = page.autoFormat()
                 if dictName is not None:
-                    wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))
+                    pywikibot.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))
+
+                    # Abort processing if the bot is running in autonomous mode.
+                    if globalvar.autonomous:
+                        self.makeForcedStop(counter)
 
             # Register this fact at the todo-counter.
             counter.minus(page.site())
+
             # Now check whether any interwiki links should be added to the
             # todo list.
 
-
             if not page.exists():
-                wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s does not exist. Skipping." % page.aslink(True))
                 if page == self.originPage:
                     # The page we are working on is the page that does not exist.
                     # No use in doing any work on it in that case.
@@ -1084,22 +1280,36 @@ class Subject(object):
                     self.done = PageTree() 
                 continue
 
-            elif page.isRedirectPage():
+            elif page.isRedirectPage() or page.isCategoryRedirect():
+                if page.isRedirectPage():
+                    redir = u''
+                else:
+                    redir = u'category '
                 try:
-                    redirectTargetPage = page.getRedirectTarget()
-                except wikipedia.InvalidTitle:
+                    if page.isRedirectPage():
+                        redirectTargetPage = page.getRedirectTarget()
+                    else:
+                        redirectTargetPage = page.getCategoryRedirectTarget()
+                except pywikibot.InvalidTitle:
                     # MW considers #redirect [[en:#foo]] as a redirect page,
                     # but we can't do anything useful with such pages
-                    wikipedia.output(u"NOTE: %s redirects to an invalid title" % page.aslink(True))
+                    if not globalvar.quiet or pywikibot.verbose:
+                        pywikibot.output(u"NOTE: %s redirects to an invalid title"
+                                         % page.aslink(True))
                     continue
-                wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is %sredirect to %s"
+                                     % (page.aslink(True), redir, redirectTargetPage.aslink(True)))
                 if page == self.originPage:
                     if globalvar.initialredirect:
                         if globalvar.contentsondisk:
                             redirectTargetPage = StoredPage(redirectTargetPage)
-                        self.originPage = redirectTargetPage
-                        self.todo.add(redirectTargetPage)
-                        counter.plus(redirectTargetPage.site)
+                        #don't follow double redirects; it might be a self loop
+                        if not redirectTargetPage.isRedirectPage() \
+                           and not redirectTargetPage.isCategoryRedirect():
+                            self.originPage = redirectTargetPage
+                            self.todo.add(redirectTargetPage)
+                            counter.plus(redirectTargetPage.site())
                     else:
                         # This is a redirect page to the origin. We don't need to
                         # follow the redirection.
@@ -1108,30 +1318,44 @@ class Subject(object):
                             counter.minus(site, count)
                         self.todo = PageTree()
                 elif not globalvar.followredirect:
-                    wikipedia.output(u"NOTE: not following redirects.")
+                    if not globalvar.quiet or pywikibot.verbose:
+                        pywikibot.output(u"NOTE: not following %sredirects." % redir)
                 elif page.site().family == redirectTargetPage.site().family \
                     and not self.skipPage(page, redirectTargetPage, counter):
                     if self.addIfNew(redirectTargetPage, counter, page):
-                        if config.interwiki_shownew:
-                            wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
+                        if config.interwiki_shownew or pywikibot.verbose:
+                            pywikibot.output(u"%s: %s gives new %sredirect %s"
+                                             %  (self.originPage.aslink(), page.aslink(True), redir, redirectTargetPage.aslink(True)))
+                continue
 
+            # must be behind the page.isRedirectPage() part
+            # otherwise a redirect error would be raised
+            if page.isEmpty() and not page.isCategory():
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is empty. Skipping." % page.aslink(True))
+                if page == self.originPage:
+                    for site, count in self.todo.siteCounts():
+                        counter.minus(site, count)
+                    self.todo = PageTree()
+                    self.done = PageTree() 
                 continue
 
             elif page.section():
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is a page section. Skipping." % page.aslink(True))
                 continue
 
-
             # Page exists, isnt a redirect, and is a plain link (no section)
-
             try:
                 iw = page.interwiki()
-            except wikipedia.NoSuchSite:
-                wikipedia.output(u"NOTE: site %s does not exist" % page.site())
+            except pywikibot.NoSuchSite:
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: site %s does not exist" % page.site())
                 continue
 
             (skip, alternativePage) = self.disambigMismatch(page, counter)
             if skip:
-                wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
+                pywikibot.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
                 self.done.remove(page)
                 iw = ()
                 if alternativePage:
@@ -1140,7 +1364,7 @@ class Subject(object):
 
             duplicate = None
             for p in self.done.filter(page.site()):
-                if p != page and p.exists() and not p.isRedirectPage():
+                if p != page and p.exists() and not p.isRedirectPage() and not p.isCategoryRedirect():
                     duplicate = p
                     break
 
@@ -1157,32 +1381,32 @@ class Subject(object):
                     iw = ()
                     self.workonme = False
 
-            elif globalvar.autonomous and duplicate:
-                
-                wikipedia.output(u"Stopping work on %s because duplicate pages"\
+            elif globalvar.autonomous and duplicate and not skip:
+                pywikibot.output(u"Stopping work on %s because duplicate pages"\
                     " %s and %s are found" % (self.originPage.aslink(True), 
                                               duplicate.aslink(True), 
                                               page.aslink(True)))
                 self.makeForcedStop(counter)
                 try:
                     f = codecs.open(
-                            wikipedia.config.datafilepath('autonomous_problems.dat'),
+                            pywikibot.config.datafilepath('autonomous_problems.dat'),
                             'a', 'utf-8')
-                    f.write("* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
+                    f.write(u"* %s {Found more than one link for %s}" % (self.originPage.aslink(True), page.site()))
                     if config.interwiki_graph and config.interwiki_graph_url:
                         filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
-                        f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
+                        f.write(u" [%s%s graph]" % (config.interwiki_graph_url, filename))
                     f.write("\n")
                     f.close()
                 # FIXME: What errors are we catching here? 
                 # except: should be avoided!!
                 except:
                    #raise
-                   wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
+                   pywikibot.output(u'File autonomous_problems.dat open or corrupted! Try again with -restore.')
                    sys.exit()
                 iw = ()
             elif page.isEmpty() and not page.isCategory():
-                wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
+                if not globalvar.quiet or pywikibot.verbose:
+                    pywikibot.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                 # Ignore the interwiki links
                 self.done.remove(page)
                 iw = ()
@@ -1190,7 +1414,7 @@ class Subject(object):
             for linkedPage in iw:
                 if globalvar.hintsareright:
                     if linkedPage.site in self.hintedsites:
-                        wikipedia.output(u"NOTE: %s: %s extra interwiki on hinted site ignored %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                        pywikibot.output(u"NOTE: %s: %s extra interwiki on hinted site ignored %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
                         break
                 if not self.skipPage(page, linkedPage, counter):
                     if globalvar.followinterwiki or page == self.originPage:
@@ -1202,11 +1426,11 @@ class Subject(object):
                                 if prevPage != linkedPage and prevPage.site() == lpsite:
                                     # Still, this could be "no problem" as either may be a
                                     # redirect to the other. No way to find out quickly!
-                                    wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(True), page.aslink(True), linkedPage.aslink(True)))
+                                    pywikibot.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(True), page.aslink(True), linkedPage.aslink(True)))
                                     break
                             else:
-                                if config.interwiki_shownew:
-                                    wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                if config.interwiki_shownew or pywikibot.verbose:
+                                    pywikibot.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
         self.pending = PageTree()
@@ -1221,7 +1445,7 @@ class Subject(object):
 
     def problem(self, txt, createneed = True):
         """Report a problem with the resolution of this subject."""
-        wikipedia.output(u"ERROR: %s" % txt)
+        pywikibot.output(u"ERROR: %s" % txt)
         self.confirm = True
         if createneed:
             self.problemfound = True
@@ -1229,24 +1453,24 @@ class Subject(object):
     def whereReport(self, page, indent=4):
         for page2 in sorted(self.foundIn[page]):
             if page2 is None:
-                wikipedia.output(u" "*indent + "Given as a hint.")
+                pywikibot.output(u" "*indent + "Given as a hint.")
             else:
-                wikipedia.output(u" "*indent + page2.aslink(True))
+                pywikibot.output(u" "*indent + page2.aslink(True))
 
 
     def assemble(self):
         # No errors have been seen so far, except....
         errorCount = self.problemfound
-        mysite = wikipedia.getSite()
+        mysite = pywikibot.getSite()
         # Build up a dictionary of all pages found, with the site as key.
         # Each value will be a list of pages.
         new = {}
         for page in self.done:
-            if page.exists() and not page.isRedirectPage():
+            if page.exists() and not page.isRedirectPage() and not page.isCategoryRedirect():
                 site = page.site()
                 if site == self.originPage.site():
                     if page != self.originPage:
-                        self.problem("Found link to %s" % page.aslink(True) )
+                        self.problem(u"Found link to %s" % page.aslink(True) )
                         self.whereReport(page)
                         errorCount += 1
                 else:
@@ -1259,7 +1483,7 @@ class Subject(object):
         for site, pages in new.iteritems():
             if len(pages) > 1:
                 errorCount += 1
-                self.problem("Found more than one link for %s" % site)
+                self.problem(u"Found more than one link for %s" % site)
 
         if not errorCount and not globalvar.select:
             # no errors, so all lists have only one item
@@ -1280,15 +1504,15 @@ class Subject(object):
         # First loop over the ones that have more solutions
         for site, pages in new.iteritems():
             if len(pages) > 1:
-                wikipedia.output(u"=" * 30)
-                wikipedia.output(u"Links to %s" % site)
+                pywikibot.output(u"=" * 30)
+                pywikibot.output(u"Links to %s" % site)
                 i = 0
                 for page2 in pages:
                     i += 1
-                    wikipedia.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
+                    pywikibot.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
                     self.whereReport(page2, indent = 8)
                 while True:
-                    answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
+                    answer = pywikibot.input(u"Which variant should be used? (<number>, [n]one, [g]ive up) ").lower()
                     if answer:
                         if answer == 'g':
                             return None
@@ -1310,15 +1534,15 @@ class Subject(object):
         for site, pages in new.iteritems():
             if len(pages) == 1:
                 if not acceptall:
-                    wikipedia.output(u"=" * 30)
+                    pywikibot.output(u"=" * 30)
                     page2 = pages[0]
-                    wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
+                    pywikibot.output(u"Found link to %s in:" % page2.aslink(True))
                     self.whereReport(page2, indent = 4)
                 while True:
                     if acceptall:
                         answer = 'a'
                     else:
-                        answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'], 'a')
+                        answer = pywikibot.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'], 'a')
                     if answer == 'l': # accept all
                         acceptall = True
                         answer = 'a'
@@ -1344,10 +1568,12 @@ class Subject(object):
             raise "Bugcheck: finish called before done"
         if not self.workonme:
             return
-        if self.forcedStop:
-            wikipedia.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
+        if self.forcedStop: # autonomous with problem
+            pywikibot.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
         if self.originPage.isRedirectPage():
+            return
+        if self.originPage.isCategoryRedirect():
             return
         if not self.untranslated and globalvar.untranslatedonly:
             return
@@ -1357,11 +1583,11 @@ class Subject(object):
 #         if len(self.done) == 1:
 #             # No interwiki at all
 #             return
-        wikipedia.output(u"======Post-processing %s======" % self.originPage.aslink(True))
+        pywikibot.output(u"======Post-processing %s======" % self.originPage.aslink(True))
         # Assemble list of accepted interwiki links
         new = self.assemble()
-        if new is None: # User said give up or autonomous with problem
-            wikipedia.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
+        if new is None: # User said give up
+            pywikibot.output(u"======Aborted processing %s======" % self.originPage.aslink(True))
             return
 
         # Make sure new contains every page link, including the page we are processing
@@ -1374,13 +1600,14 @@ class Subject(object):
         updatedSites = []
         notUpdatedSites = []
         # Process all languages here
+        globalvar.always = False
         if globalvar.limittwo:
             lclSite = self.originPage.site()
             lclSiteDone = False
             frgnSiteDone = False
 
             for siteCode in lclSite.family.languages_by_size:
-                site = wikipedia.getSite(code = siteCode)
+                site = pywikibot.getSite(code = siteCode)
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and site in new):
                     if site == lclSite:
                         lclSiteDone = True   # even if we fail the update
@@ -1399,8 +1626,8 @@ class Subject(object):
                     try:
                         for page in new[site].interwiki():
                             old[page.site()] = page
-                    except wikipedia.NoPage:
-                        wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
+                    except pywikibot.NoPage:
+                        pywikibot.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
                     mods, mcomment, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
                     if (len(removing) > 0 and not globalvar.autonomous) or (len(modifying) > 0 and self.problemfound) or len(old) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
@@ -1409,7 +1636,7 @@ class Subject(object):
                                 updatedSites.append(site)
                         except SaveError:
                             notUpdatedSites.append(site)
-                        except wikipedia.NoUsername:
+                        except pywikibot.NoUsername:
                             pass
                         except GiveUpOnPage:
                             break
@@ -1468,16 +1695,16 @@ class Subject(object):
 
         if page.title() != page.sectionFreeTitle():
             # This is not a page, but a subpage. Do not edit it.
-            wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
+            pywikibot.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
             raise SaveError
         try:
             pagetext = page.get()
-        except wikipedia.NoPage:
-            wikipedia.output(u"Not editing %s: page does not exist" % page.aslink(True))
+        except pywikibot.NoPage:
+            pywikibot.output(u"Not editing %s: page does not exist" % page.aslink(True))
             raise SaveError
 
         # Show a message in purple.
-        wikipedia.output("\03{lightpurple}Updating links on page %s.\03{default}" % page.aslink(True))
+        pywikibot.output(u"\03{lightpurple}Updating links on page %s.\03{default}" % page.aslink(True))
 
         # clone original newPages dictionary, so that we can modify it to the local page's needs
         new = dict(newPages)
@@ -1487,18 +1714,18 @@ class Subject(object):
         # remove interwiki links to ignore
         for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', pagetext):
             try:
-                ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
-            except (wikipedia.NoSuchSite, wikipedia.InvalidTitle):
+                ignorepage = pywikibot.Page(page.site(), iw.groups()[0])
+            except (pywikibot.NoSuchSite, pywikibot.InvalidTitle):
                 continue
 
             try:
                 if (new[ignorepage.site()] == ignorepage) and (ignorepage.site() != page.site()):
                     
                     if (ignorepage not in interwikis):
-                        wikipedia.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage.aslink(), 'from': page.aslink()})
+                        pywikibot.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage.aslink(), 'from': page.aslink()})
                         new.pop(ignorepage.site())
                     else:
-                        wikipedia.output(u"NOTE: Not removing interwiki from %(from)s to %(to)s (exists both commented and non-commented)" % {'to': ignorepage.aslink(), 'from': page.aslink()})
+                        pywikibot.output(u"NOTE: Not removing interwiki from %(from)s to %(to)s (exists both commented and non-commented)" % {'to': ignorepage.aslink(), 'from': page.aslink()})
             except KeyError:
                 pass
 
@@ -1507,7 +1734,7 @@ class Subject(object):
         if pltmp != page:
             s = "None"
             if pltmp is not None: s = pltmp.aslink(True)
-            wikipedia.output(u"BUG>>> %s is not in the list of new links! Found %s." % (page.aslink(True), s))
+            pywikibot.output(u"BUG>>> %s is not in the list of new links! Found %s." % (page.aslink(True), s))
             raise SaveError
 
         # Avoid adding an iw link back to itself
@@ -1526,40 +1753,41 @@ class Subject(object):
             for rmsite in removing:
                 if rmsite != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
                     rmPage = old[rmsite]
-                    ##########
-                    # temporary hard-coded special case to get rid of thousands of broken links to the Lombard Wikipedia,
-                    # where useless bot-created articles were mass-deleted. See for example:
-                    # http://meta.wikimedia.org/wiki/Proposals_for_closing_projects/Closure_of_Lombard_Wikipedia#Road_Map
-                    if rmsite == wikipedia.getSite('lmo', 'wikipedia'):
-                        wikipedia.output('Found bad link to %s. As many lmo pages were deleted, it is assumed that it can be safely removed.' % rmPage.aslink())
-                    else:
-                    ##########
-                        new[rmsite] = old[rmsite]
-                        wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
+                    new[rmsite] = old[rmsite] #put it to new means don't delete it
+                    pywikibot.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmPage.aslink(True))
             # Re-Check what needs to get done
             mods, mcomment, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
         if not mods:
-            wikipedia.output(u'No changes needed' )
+            pywikibot.output(u'No changes needed' )
             return False
 
-        wikipedia.output(u"Changes to be made: %s" % mods)
+        pywikibot.output(u"Changes to be made: %s" % mods)
         oldtext = page.get()
-        newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site(), template = (page.namespace() == 10) )
+        template = (page.namespace() == 10)
+        newtext = pywikibot.replaceLanguageLinks(oldtext, new,
+                                                 site = page.site(),
+                                                 template = template)
+        # This is for now. Later there should be different funktions for each kind
+        if not botMayEdit(page):
+            if template:
+                pywikibot.output(u'SKIPPING: %s should have interwiki links on subpage.' % page.aslink(True))
+            else:
+                pywikibot.output(u'SKIPPING: %s is under construction or to be deleted.' % page.aslink(True))
+            return False
         if newtext == oldtext:
             return False
-        if globalvar.debug:
-            wikipedia.showDiff(oldtext, newtext)
+        pywikibot.showDiff(oldtext, newtext)
 
-        # wikipedia.output(u"NOTE: Replace %s" % page.aslink())
+        # pywikibot.output(u"NOTE: Replace %s" % page.aslink())
         # Determine whether we need permission to submit
         ask = False
         if removing and removing != [page.site()]:   # Allow for special case of a self-pointing interwiki link
-            self.problem('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
+            self.problem(u'Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)), createneed = False)
             ask = True
         if globalvar.force:
             ask = False
-        if globalvar.confirm:
+        if globalvar.confirm and not globalvar.always:
             ask = True
         # If we need to ask, do so
         if ask:
@@ -1567,59 +1795,69 @@ class Subject(object):
                 # If we cannot ask, deny permission
                 answer = 'n'
             else:
-                answer = wikipedia.inputChoice(u'Submit?', 
-                            ['Yes', 'No', 'open in Browser', 'Give up'], 
-                            ['y', 'n', 'b', 'g'])
+                answer = pywikibot.inputChoice(u'Submit?', 
+                            ['Yes', 'No', 'open in Browser', 'Give up', 'Always'],
+                            ['y', 'n', 'b', 'g', 'a'])
                 if answer == 'b':
                     webbrowser.open("http://%s%s" % (
                         page.site().hostname(),
                         page.site().nice_get_address(page.title())
                     ))
-                    wikipedia.input("Press Enter when finished in browser.")
+                    pywikibot.input(u"Press Enter when finished in browser.")
                     return True
+                elif answer == 'a':
+                    # don't ask for the rest of this subject
+                    globalvar.always = True
+                    answer = 'y'
         else:
             # If we do not need to ask, allow
             answer = 'y'
         # If we got permission to submit, do so
         if answer == 'y':
-            # Check whether we will have to wait for wikipedia. If so, make
+            # Check whether we will have to wait for pywikibot. If so, make
             # another get-query first.
             if bot:
-                while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
-                    wikipedia.output(u"NOTE: Performing a recursive query first to save time....")
+                while pywikibot.get_throttle.waittime() + 2.0 < pywikibot.put_throttle.waittime():
+                    if not globalvar.quiet or pywikibot.verbose:
+                        pywikibot.output(u"NOTE: Performing a recursive query first to save time....")
                     qdone = bot.oneQuery()
                     if not qdone:
                         # Nothing more to do
                         break
-            wikipedia.output(u"NOTE: Updating live wiki...")
+            if not globalvar.quiet or pywikibot.verbose:
+                pywikibot.output(u"NOTE: Updating live wiki...")
             timeout=60
-            while 1:
+            while True:
                 try:
-                    status, reason, data = page.put(newtext, comment = mcomment)
-                except wikipedia.LockedPage:
-                    wikipedia.output(u'Page %s is locked. Skipping.' % (page.title(),))
+                    if globalvar.async:
+                        page.put_async(newtext, comment = mcomment)
+                        status = 302
+                    else:
+                        status, reason, data = page.put(newtext, comment = mcomment)
+                except pywikibot.LockedPage:
+                    pywikibot.output(u'Page %s is locked. Skipping.' % (page.title(),))
                     raise SaveError
-                except wikipedia.EditConflict:
-                    wikipedia.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
+                except pywikibot.EditConflict:
+                    pywikibot.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
                     raise SaveError
-                except (wikipedia.SpamfilterError), error:
-                    wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % (error.url,))
+                except (pywikibot.SpamfilterError), error:
+                    pywikibot.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % (error.url,))
                     raise SaveError
-                except (wikipedia.PageNotSaved), error:
-                    wikipedia.output(u'ERROR putting page: %s' % (error.args,))
+                except (pywikibot.PageNotSaved), error:
+                    pywikibot.output(u'ERROR putting page: %s' % (error.args,))
                     raise SaveError
                 except (socket.error, IOError), error:
                     if timeout>3600:
                         raise
-                    wikipedia.output(u'ERROR putting page: %s' % (error.args,))
-                    wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
+                    pywikibot.output(u'ERROR putting page: %s' % (error.args,))
+                    pywikibot.output(u'Sleeping %i seconds before trying again.' % (timeout,))
                     timeout *= 2
                     time.sleep(timeout)
-                except wikipedia.ServerError:
-                    if timeout>3600:
+                except pywikibot.ServerError:
+                    if timeout > 3600:
                         raise
-                    wikipedia.output(u'ERROR putting page: ServerError.')
-                    wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
+                    pywikibot.output(u'ERROR putting page: ServerError.')
+                    pywikibot.output(u'Sleeping %i seconds before trying again.' % (timeout,))
                     timeout *= 2
                     time.sleep(timeout)
                 else:
@@ -1627,12 +1865,12 @@ class Subject(object):
             if str(status) == '302':
                 return True
             else:
-                wikipedia.output(u'%s %s' % (status, reason))
+                pywikibot.output(u'%s %s' % (status, reason))
                 return False
         elif answer == 'g':
             raise GiveUpOnPage
         else:
-            raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
+            raise LinkMustBeRemoved(u'Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), page.aslink(True)))
 
     def reportBacklinks(self, new, updatedSites):
         """
@@ -1651,8 +1889,8 @@ class Subject(object):
                 if not page.section():
                     try:
                         linkedPages = set(page.interwiki())
-                    except wikipedia.NoPage:
-                        wikipedia.output(u"WARNING: Page %s does no longer exist?!" % page.title())
+                    except pywikibot.NoPage:
+                        pywikibot.output(u"WARNING: Page %s does no longer exist?!" % page.title())
                         break
                     # To speed things up, create a dictionary which maps sites to pages.
                     # This assumes that there is only one interwiki link per language.
@@ -1663,18 +1901,18 @@ class Subject(object):
                         if expectedPage != page:
                             try:
                                 linkedPage = linkedPagesDict[expectedPage.site()]
-                                wikipedia.output(u"WARNING: %s: %s does not link to %s but to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True), linkedPage.aslink(True)))
+                                pywikibot.output(u"WARNING: %s: %s does not link to %s but to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True), linkedPage.aslink(True)))
                             except KeyError:
-                                wikipedia.output(u"WARNING: %s: %s does not link to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True)))
+                                pywikibot.output(u"WARNING: %s: %s does not link to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True)))
                     # Check for superfluous links
                     for linkedPage in linkedPages:
                         if linkedPage not in expectedPages:
                             # Check whether there is an alternative page on that language.
                             # In this case, it was already reported above.
                             if linkedPage.site() not in expectedSites:
-                                wikipedia.output(u"WARNING: %s: %s links to incorrect %s" % (page.site().family.name, page.aslink(True), linkedPage.aslink(True)))
+                                pywikibot.output(u"WARNING: %s: %s links to incorrect %s" % (page.site().family.name, page.aslink(True), linkedPage.aslink(True)))
         except (socket.error, IOError):
-            wikipedia.output(u'ERROR: could not report backlinks')
+            pywikibot.output(u'ERROR: could not report backlinks')
 
 class InterwikiBot(object):
     """A class keeping track of a list of subjects, controlling which pages
@@ -1707,47 +1945,74 @@ class InterwikiBot(object):
         self.generateNumber = number
         self.generateUntil = until
 
-    def dump(self):
-        site = wikipedia.getSite()
-        dumpfn = wikipedia.config.datafilepath(
+    def dump(self, append = True):
+        site = pywikibot.getSite()
+        dumpfn = pywikibot.config.datafilepath(
                      'interwiki-dumps',
                      'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
-        f = codecs.open(dumpfn, 'w', 'utf-8')
+        if append: mode = 'appended'
+        else: mode = 'written'
+        f = codecs.open(dumpfn, mode[0], 'utf-8')
         for subj in self.subjects:
             f.write(subj.originPage.aslink(None)+'\n')
         f.close()
-        wikipedia.output(u'Dump %s (%s) saved' % (site.lang, site.family.name))
+        pywikibot.output(u'Dump %s (%s) %s.' % (site.lang, site.family.name, mode))
+        return dumpfn
 
     def generateMore(self, number):
         """Generate more subjects. This is called internally when the
            list of subjects becomes too small, but only if there is a
            PageGenerator"""
         fs = self.firstSubject()
-        if fs:
-            wikipedia.output(u"NOTE: The first unfinished subject is " + fs.originPage.aslink(True))
-        wikipedia.output(u"NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number))
+        if fs and (not globalvar.quiet or pywikibot.verbose):
+            pywikibot.output(u"NOTE: The first unfinished subject is " + fs.originPage.aslink(True))
+        pywikibot.output(u"NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number))
         for i in range(number):
             try:
                 while True:
-                    page = self.pageGenerator.next()
+                    try:
+                        page = self.pageGenerator.next()
+                    except IOError:
+                        pywikibot.output(u'IOError occured; skipping')
+                        continue
                     if page in globalvar.skip:
-                        wikipedia.output(u'Skipping: %s is in the skip list' % page.title())
+                        pywikibot.output(u'Skipping: %s is in the skip list' % page.title())
                         continue
                     if globalvar.skipauto:
                         dictName, year = page.autoFormat()
                         if dictName is not None:
-                            wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
+                            pywikibot.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
                     if globalvar.parenthesesonly:
                         # Only yield pages that have ( ) in titles
                         if "(" not in page.title():
                             continue
+                    if page.isTalkPage():
+                        pywikibot.output(u'Skipping: %s is a talk page' % page.title())
+                        continue
+                    #doesn't work: page must be preloaded for this test
+                    #if page.isEmpty():
+                    #    pywikibot.output(u'Skipping: %s is a empty page' % page.title())
+                    #    continue
+                    if page.namespace() == 10:
+                        loc = None
+                        try:
+                            tmpl, loc = moved_links[page.site().lang]
+                            del tmpl
+                        except KeyError:
+                            pass
+                        if loc != None and loc in page.title():
+                            pywikibot.output(u'Skipping: %s is a templates subpage' % page.title())
+                            continue
                     break
 
                 if self.generateUntil:
-                    if page.titleWithoutNamespace() > self.generateUntil:
+                    until = self.generateUntil
+                    if page.site().lang not in page.site().family.nocapitalize:
+                        until = until[0].upper()+until[1:]
+                    if page.titleWithoutNamespace() > until:
                         raise StopIteration
-                self.add(page, hints = hints)
+                self.add(page, hints = globalvar.hints)
                 self.generated += 1
                 if self.generateNumber:
                     if self.generated >= self.generateNumber:
@@ -1776,8 +2041,8 @@ class InterwikiBot(object):
             # have to wait before submitting another modification to go live. Select
             # any language from counts.
             oc = self.counts
-        if wikipedia.getSite() in oc:
-            return wikipedia.getSite()
+        if pywikibot.getSite() in oc:
+            return pywikibot.getSite()
         for lang in oc:
             count = self.counts[lang]
             if count > max:
@@ -1788,7 +2053,7 @@ class InterwikiBot(object):
     def selectQuerySite(self):
         """Select the site the next query should go out for."""
         # How many home-language queries we still have?
-        mycount = self.counts.get(wikipedia.getSite(), 0)
+        mycount = self.counts.get(pywikibot.getSite(), 0)
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
@@ -1799,19 +2064,20 @@ class InterwikiBot(object):
                 while timeout<3600:
                     try:
                         self.generateMore(globalvar.maxquerysize - mycount)
-                    except wikipedia.ServerError:
+                    except pywikibot.ServerError:
                         # Could not extract allpages special page?
-                        wikipedia.output(u'ERROR: could not retrieve more pages. Will try again in %d seconds'%timeout)
+                        pywikibot.output(u'ERROR: could not retrieve more pages. Will try again in %d seconds'%timeout)
                         time.sleep(timeout)
                         timeout *= 2
                     else:
                         break
             # If we have a few, getting the home language is a good thing.
-            try:
-                if self.counts[wikipedia.getSite()] > 4:
-                    return wikipedia.getSite()
-            except KeyError:
-                pass
+            if not globalvar.restoreAll:
+                try:
+                    if self.counts[pywikibot.getSite()] > 4:
+                        return pywikibot.getSite()
+                except KeyError:
+                    pass
         # If getting the home language doesn't make sense, see how many
         # foreign page queries we can find.
         return self.maxOpenSite()
@@ -1826,7 +2092,7 @@ class InterwikiBot(object):
         # First find the best language to work on
         site = self.selectQuerySite()
         if site is None:
-            wikipedia.output(u"NOTE: Nothing left to do")
+            pywikibot.output(u"NOTE: Nothing left to do")
             return False
         # Now assemble a reasonable list of pages to get
         subjectGroup = []
@@ -1842,7 +2108,7 @@ class InterwikiBot(object):
                     # We have found enough pages to fill the bandwidth.
                     break
         if len(pageGroup) == 0:
-            wikipedia.output(u"NOTE: Nothing left to do 2")
+            pywikibot.output(u"NOTE: Nothing left to do 2")
             return False
         # Get the content of the assembled list in one blow
         gen = pagegenerators.PreloadingGenerator(iter(pageGroup))
@@ -1898,8 +2164,7 @@ def compareLanguages(old, new, insite):
     removing = sorted(oldiw - newiw)
     modifying = sorted(site for site in oldiw & newiw if old[site] != new[site])
 
-    mcomment = u''
-    mods = u''
+    mcomment = mods = u''
 
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
@@ -1908,11 +2173,10 @@ def compareLanguages(old, new, insite):
         # Use short format, just the language code
         fmt = lambda d, site: site.lang
 
+    head, add, rem, mod = pywikibot.translate(insite.lang, msg)
+
     colon = u': '
     comma = u', '
-
-    head, add, rem, mod = wikipedia.translate(insite.lang, msg)
-
     sep = u''
 
     if adding:
@@ -1923,10 +2187,29 @@ def compareLanguages(old, new, insite):
         sep = u' '
     if modifying:
         mods += (sep + mod + colon + comma.join([fmt(new, x) for x in modifying]))
-        sep = u' '
     if mods:
         mcomment = head + mods
     return mods, mcomment, adding, removing, modifying
+
+def botMayEdit (page):
+    tmpl = []
+    try:
+        tmpl, loc = moved_links[page.site().lang]
+    except KeyError:
+        pass
+    if type(tmpl) != list:
+        tmpl = [tmpl]
+    try:
+        tmpl += ignoreTemplates[page.site().lang]
+    except KeyError:
+        pass
+    tmpl += ignoreTemplates['_default']
+    if tmpl != []:
+        templates = page.templatesWithParams(get_redirect=True);
+        for template in templates:
+            if template[0].lower() in tmpl:
+                return False
+    return True
 
 def readWarnfile(filename, bot):
     import warnfile
@@ -1939,257 +2222,199 @@ def readWarnfile(filename, bot):
         hintStrings = ['%s:%s' % (hintedPage.site().language(), hintedPage.title()) for hintedPage in pagelist]
         bot.add(page, hints = hintStrings)
 
-#===========
+def main():
+    singlePageTitle = []
+    start = None
+    # Which namespaces should be processed?
+    # default to [] which means all namespaces will be processed
+    namespaces = []
+    number = None
+    until = None
+    warnfile = None
+    # a normal PageGenerator (which doesn't give hints, only Pages)
+    hintlessPageGen = None
+    optContinue = False
+    optRestore = False
+    restoredFiles = []
+    File2Restore  = []
+    dumpFileName = ''
+    append = True
+    newPages = None
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
 
+    for arg in pywikibot.handleArgs():
+        if globalvar.readOptions(arg):
+            continue
+        elif arg.startswith('-warnfile:'):
+            warnfile = arg[10:]
+        elif arg.startswith('-years'):
+            # Look if user gave a specific year at which to start
+            # Must be a natural number or negative integer.
+            if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
+                startyear = int(arg[7:])
+            else:
+                startyear = 1
+            # avoid problems where year pages link to centuries etc.
+            globalvar.followredirect = False
+            hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
+        elif arg.startswith('-days'):
+            if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
+                # Looks as if the user gave a specific month at which to start
+                # Must be a natural number.
+                startMonth = int(arg[6:])
+            else:
+                startMonth = 1
+            hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
+        elif arg.startswith('-new'):
+            if len(arg) > 5 and arg[4] == ':' and arg[5:].isdigit():
+                # Looks as if the user gave a specific number of pages
+                newPages = int(arg[5:])
+            else:
+                newPages = 100
+        elif arg.startswith('-restore'):
+            globalvar.restoreAll = arg[9:].lower() == 'all'
+            optRestore = not globalvar.restoreAll
+        elif arg == '-continue':
+            optContinue = True
+        elif arg.startswith('-namespace:'):
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
+        # deprecated for consistency with other scripts
+        elif arg.startswith('-number:'):
+            number = int(arg[8:])
+        elif arg.startswith('-until:'):
+            until = arg[7:]
+        else:
+            if not genFactory.handleArg(arg):
+                singlePageTitle.append(arg)
+
+    # ensure that we don't try to change main page
+    try:
+        site = pywikibot.getSite()
+        try:
+            mainpagename = site.siteinfo()['mainpage']
+        except TypeError: #pywikibot module handle
+            mainpagename = site.siteinfo['mainpage']
+        globalvar.skip.add(pywikibot.Page(site, mainpagename))
+    except pywikibot.Error:
+        pywikibot.output(u'Missing main page name')
+
+    if newPages is not None:
+        if len(namespaces) == 0:
+            ns = 0 
+        elif len(namespaces) == 1:
+            ns = namespaces[0]
+            if ns != 'all':
+                if isinstance(ns, unicode) or isinstance(ns, str):
+                    index = site.getNamespaceIndex(ns)
+                    if index is None:
+                        raise ValueError(u'Unknown namespace: %s' % ns)
+                    ns = index
+            namespaces = []
+        else:
+            ns = 'all'
+        hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
+
+    elif optRestore or optContinue or globalvar.restoreAll:
+        site = pywikibot.getSite()
+        if globalvar.restoreAll:
+            import glob
+            for FileName in glob.iglob('interwiki-dumps/interwikidump-*.txt'):
+                s = FileName.split('\\')[1].split('.')[0].split('-')
+                sitename = s[1]
+                for i in range(0,2): s.remove(s[0])
+                sitelang = '-'.join(s)
+                if site.family.name == sitename:
+                    File2Restore.append([sitename, sitelang])
+        else:
+            File2Restore.append([site.family.name, site.lang])
+        for sitename, sitelang in File2Restore:
+            dumpfn = pywikibot.config.datafilepath(
+                               'interwiki-dumps',
+                               u'interwikidump-%s-%s.txt'
+                                 % (sitename, sitelang))
+            pywikibot.output(u'Reading interwikidump-%s-%s.txt' % (sitename, sitelang))
+            site = pywikibot.getSite(sitelang, sitename)
+            if not hintlessPageGen:
+                hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpfn, site)
+            else:
+                hintlessPageGen = pagegenerators.CombinedPageGenerator([hintlessPageGen,pagegenerators.TextfilePageGenerator(dumpfn, site)])
+            restoredFiles.append(dumpfn)
+        if hintlessPageGen:
+            hintlessPageGen = pagegenerators.DuplicateFilterPageGenerator(hintlessPageGen)
+        if optContinue:
+            # We waste this generator to find out the last page's title
+            # This is an ugly workaround.
+            nextPage = "!"
+            namespace = 0
+            searchGen = pagegenerators.TextfilePageGenerator(dumpfn, site)
+            for page in searchGen:
+                lastPage = page.titleWithoutNamespace()
+                if lastPage > nextPage:
+                    nextPage = lastPage
+                    namespace = page.namespace()
+            if nextPage == "!":
+                pywikibot.output(u"Dump file is empty?! Starting at the beginning.")
+            else:
+                nextPage += '!'
+            hintlessPageGen = pagegenerators.CombinedPageGenerator([hintlessPageGen, pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
+        if not hintlessPageGen:
+            pywikibot.output(u'No Dumpfiles found.')
+            return
+
+    bot = InterwikiBot()
+
+    if not hintlessPageGen:
+        hintlessPageGen = genFactory.getCombinedGenerator()
+    if hintlessPageGen:
+        if len(namespaces) > 0:
+            hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
+        # we'll use iter() to create make a next() function available.
+        bot.setPageGenerator(iter(hintlessPageGen), number = number, until=until)
+    elif warnfile:
+        # TODO: filter namespaces if -namespace parameter was used
+        readWarnfile(warnfile, bot)
+    else:
+        singlePageTitle = ' '.join(singlePageTitle)
+        if not singlePageTitle:
+            singlePageTitle = pywikibot.input(u'Which page to check:')
+        singlePage = pywikibot.Page(pywikibot.getSite(), singlePageTitle)
+        bot.add(singlePage, hints = globalvar.hints)
+
+    try:
+        try:
+            append = not (optRestore or optContinue or globalvar.restoreAll)
+            bot.run()
+        except KeyboardInterrupt:
+            dumpFileName = bot.dump(append)
+        except:
+            dumpFileName = bot.dump(append)
+            raise
+    finally:
+        if globalvar.contentsondisk:
+            StoredPage.SPdeleteStore()
+        if dumpFileName:
+            try:
+                restoredFiles.remove(dumpFileName)
+            except ValueError:
+                pass
+        for dumpFileName in restoredFiles:
+            try:
+                os.remove(dumpFileName)
+                pywikibot.output(u'Dumpfile %s deleted' % dumpFileName.split('\\')[-1])
+            except WindowsError:
+                pass
+
+#===========
 globalvar=Global()
 
 if __name__ == "__main__":
     try:
-        singlePageTitle = []
-        hints = []
-        start = None
-        # Which namespaces should be processed?
-        # default to [] which means all namespaces will be processed
-        namespaces = []
-        number = None
-        until = None
-        warnfile = None
-        # a normal PageGenerator (which doesn't give hints, only Pages)
-        hintlessPageGen = None
-        optContinue = False
-        optRestore = False
-        newPages = None
-        # This factory is responsible for processing command line arguments
-        # that are also used by other scripts and that determine on which pages
-        # to work on.
-        genFactory = pagegenerators.GeneratorFactory()
-
-        for arg in wikipedia.handleArgs():
-            if arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
-                else:
-                    xmlFilename = arg[5:]
-                hintlessPageGen = XmlDumpLmoLinkPageGenerator(xmlFilename)
-            elif arg == '-noauto':
-                globalvar.auto = False
-            elif arg.startswith('-hint:'):
-                hints.append(arg[6:])
-            elif arg.startswith('-hintfile'):
-                hintfilename = arg[10:]
-                if (hintfilename is None) or (hintfilename == ''):
-                    hintfilename = wikipedia.input(u'Please enter the hint filename:')
-                f = codecs.open(hintfilename, 'r', config.textfile_encoding)
-                R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # hint or title ends either before | or before ]]
-                for pageTitle in R.findall(f.read()):
-                    hints.append(pageTitle)
-                f.close()
-            elif arg == '-force':
-                globalvar.force = True
-            elif arg == '-same':
-                globalvar.same = True
-            elif arg == '-wiktionary':
-                globalvar.same = 'wiktionary'
-            elif arg == '-untranslated':
-                globalvar.untranslated = True
-            elif arg == '-untranslatedonly':
-                globalvar.untranslated = True
-                globalvar.untranslatedonly = True
-            elif arg == '-askhints':
-                globalvar.untranslated = True
-                globalvar.untranslatedonly = False
-                globalvar.askhints = True
-            elif arg == '-noauto':
-                pass
-            elif arg == '-hintnobracket':
-                globalvar.hintnobracket = True
-            elif arg.startswith('-warnfile:'):
-                warnfile = arg[10:]
-            elif arg == '-confirm':
-                globalvar.confirm = True
-            elif arg == '-select':
-                globalvar.select = True
-            elif arg == '-autonomous':
-                globalvar.autonomous = True
-            elif arg == '-noredirect':
-                globalvar.followredirect = False
-            elif arg == '-initialredirect':
-                globalvar.initialredirect = True
-            elif arg == '-localonly':
-                globalvar.localonly = True
-            elif arg == '-limittwo':
-                globalvar.limittwo = True
-                globalvar.strictlimittwo = True
-            elif arg.startswith('-whenneeded'):
-                globalvar.limittwo = True
-                globalvar.strictlimittwo = False
-                try:
-                    globalvar.needlimit = int(arg[12:])
-                except KeyError:
-                    pass
-                except ValueError:
-                    pass
-            elif arg.startswith('-years'):
-                # Look if user gave a specific year at which to start
-                # Must be a natural number or negative integer.
-                if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
-                    startyear = int(arg[7:])
-                else:
-                    startyear = 1
-                # avoid problems where year pages link to centuries etc.
-                globalvar.followredirect = False
-                hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
-            elif arg.startswith('-days'):
-                if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
-                    # Looks as if the user gave a specific month at which to start
-                    # Must be a natural number.
-                    startMonth = int(arg[6:])
-                else:
-                    startMonth = 1
-                hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
-            elif arg.startswith('-new'):
-                if len(arg) > 5 and arg[4] == ':' and arg[5:].isdigit():
-                    # Looks as if the user gave a specific number of pages
-                    newPages = int(arg[5:])
-                else:
-                    newPages = 100
-            elif arg.startswith('-skipfile:'):
-                skipfile = arg[10:]
-                skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
-                for page in skipPageGen:
-                    globalvar.skip.add(page)
-                del skipPageGen
-            elif arg == '-skipauto':
-                globalvar.skipauto = True
-            elif arg == '-restore':
-                optRestore = True
-            elif arg == '-continue':
-                optContinue = True
-            elif arg.startswith('-namespace:'):
-                try:
-                    namespaces.append(int(arg[11:]))
-                except ValueError:
-                    namespaces.append(arg[11:])
-            # deprecated for consistency with other scripts
-            elif arg.startswith('-number:'):
-                number = int(arg[8:])
-            elif arg.startswith('-until:'):
-                until = arg[7:]
-            elif arg.startswith('-neverlink:'):
-                globalvar.neverlink += arg[11:].split(",")
-            elif arg.startswith('-ignore:'):
-                globalvar.ignore += [wikipedia.Page(None,p) for p in arg[8:].split(",")]
-            elif arg.startswith('-ignorefile:'):
-                ignorefile = arg[12:]
-                ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
-                for page in ignorePageGen:
-                    globalvar.ignore.append(page)
-                del ignorePageGen
-            elif arg == '-showpage':
-                globalvar.showtextlink += globalvar.showtextlinkadd
-            elif arg == '-graph':
-                # override configuration
-                config.interwiki_graph = True
-            elif arg == '-bracket':
-                globalvar.parenthesesonly = True
-            elif arg == '-localright':
-                globalvar.followinterwiki = False
-            elif arg == '-hintsareright':
-                globalvar.hintsareright = True
-            elif arg.startswith('-array:'):
-                globalvar.minsubjects = int(arg[7:])
-            elif arg.startswith('-query:'):
-                globalvar.maxquerysize = int(arg[7:])
-            elif arg.startswith('-lack:'):
-                remainder = arg[6:].split(':')
-                globalvar.lacklanguage = remainder[0]
-                if len(remainder) > 1:
-                    globalvar.minlinks = int(remainder[1])
-                else:
-                    globalvar.minlinks = 1
-            elif arg == '-back':
-                globalvar.nobackonly = True
-            else:
-                if not genFactory.handleArg(arg):
-                    singlePageTitle.append(arg)
-
-
-        # ensure that we don't try to change main page
-        try:
-            site = wikipedia.getSite()
-            mainpagename = site.mediawiki_message('mainpage')
-            globalvar.skip.add(wikipedia.Page(site, mainpagename))
-        except wikipedia.Error:
-            wikipedia.output(u'Missing main page name')
-
-        if newPages is not None:
-            if len(namespaces) == 0:
-                ns = 0 
-            elif len(namespaces) == 1:
-                ns = namespaces[0]
-                if ns != 'all':
-                    if isinstance(ns, unicode) or isinstance(ns, str):
-                        index = site.getNamespaceIndex(ns)
-                        if index is None:
-                            raise ValueError(u'Unknown namespace: %s' % ns)
-                        ns = index
-                namespaces = []
-            else:
-                ns = 'all'
-            hintlessPageGen = pagegenerators.NewpagesPageGenerator(newPages, namespace=ns)
-
-        if optRestore or optContinue:
-            site = wikipedia.getSite()
-            dumpFileName = wikipedia.config.datafilepath(
-                               'interwiki-dumps',
-                               u'interwikidump-%s-%s.txt'
-                                 % (site.family.name, site.lang))
-            hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpFileName)
-            if optContinue:
-                # We waste this generator to find out the last page's title
-                # This is an ugly workaround.
-                for page in hintlessPageGen:
-                    pass
-                try:
-                    nextPage = page.titleWithoutNamespace() + '!'
-                    namespace = page.namespace()
-                except NameError:
-                    wikipedia.output(u"Dump file is empty?! Starting at the beginning.")
-                    nextPage = "!"
-                    namespace = 0
-                # old generator is used up, create a new one
-                hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
-
-        bot = InterwikiBot()
-
-        if not hintlessPageGen:
-            hintlessPageGen = genFactory.getCombinedGenerator()
-        if hintlessPageGen:
-            if len(namespaces) > 0:
-                hintlessPageGen = pagegenerators.NamespaceFilterPageGenerator(hintlessPageGen, namespaces)
-            # we'll use iter() to create make a next() function available.
-            bot.setPageGenerator(iter(hintlessPageGen), number = number, until=until)
-        elif warnfile:
-            # TODO: filter namespaces if -namespace parameter was used
-            readWarnfile(warnfile, bot)
-        else:
-            singlePageTitle = ' '.join(singlePageTitle)
-            if not singlePageTitle:
-                singlePageTitle = wikipedia.input(u'Which page to check:')
-            singlePage = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
-            bot.add(singlePage, hints = hints)
-
-        try:
-            try:
-                bot.run()
-            except KeyboardInterrupt:
-                bot.dump()
-            except:
-                bot.dump()
-                raise
-        finally:
-            if globalvar.contentsondisk:
-                StoredPage.SPdeleteStore()
-
+        main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

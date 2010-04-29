@@ -13,17 +13,8 @@ def check_namespaces(site):
 #     we can get the namespace names without API.
         wikipedia.output(u'Warning! %s is not support API!' % site)
         return
-    predata = { 'action': 'query',
-                'meta': 'siteinfo',
-                'siprop': 'namespaces'}
-    try:
-        data = query.GetData(predata, site)['query']['namespaces']
-    except wikipedia.ServerError, e:
-        wikipedia.output(u'Warning! %s: %s' % (site, e))
-        return
-
     result = []
-    for namespace in data.itervalues():
+    for namespace in site.siteinfo('namespaces').itervalues():
         try:
             defined_namespace = site.namespace(namespace['id'])
         except KeyError:
@@ -39,7 +30,7 @@ def check_family(family):
     wikipedia.output(u'Checking namespaces for %s' % family.name)
     result = {}
     for lang in family.langs:
-        if not family.obsolete.has_key(lang):
+        if not lang in family.obsolete:
             site = wikipedia.getSite(lang, family)
             wikipedia.output(u'Checking %s' % site)
             namespaces = check_namespaces(site)

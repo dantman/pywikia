@@ -71,7 +71,7 @@ def needcheck(pl):
     if main:
         if pl.namespace() != 0:
             return False
-    if checked.has_key(pl):
+    if pl in checked:
         return False
     if skipdates:
         if isdate(pl.title()):

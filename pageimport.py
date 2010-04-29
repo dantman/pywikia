@@ -85,14 +85,7 @@ class Importer(wikipedia.Page):
                 # What namespace do you want?
                 'namespace': '',
             }
-            if self.site().hostname() in config.authenticate.keys():
-                predata['Content-type'] = 'application/x-www-form-urlencoded'
-                predata['User-agent'] = useragent
-                data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
-                data = u''
-            else:
-                response, data = self.site().postForm(address, predata, sysop = True)
+            response, data = self.site().postForm(address, predata, sysop = True)
             if data:
                 wikipedia.output(u'Page imported, checking...')
                 if wikipedia.Page(self.importsite, target).exists():

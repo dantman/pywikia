@@ -10,17 +10,17 @@ These command line parameters can be used to specify which pages to work on:
 
 &params;
 
-    -xml           Retrieve information from a local XML dump (pages-articles
-                   or pages-meta-current, see http://download.wikimedia.org).
-                   Argument can also be given as "-xml:filename".
+    -xml          Retrieve information from a local XML dump (pages-articles
+                  or pages-meta-current, see http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
 
-    -namespace:n   Number or name of namespace to process. The parameter can be
-                   used multiple times. It works in combination with all other
-                   parameters, except for the -start parameter. If you e.g.
-                   want to iterate over all categories starting at M, use
-                   -start:Category:M.
+    -namespace:n  Number or name of namespace to process. The parameter can be
+                  used multiple times. It works in combination with all other
+                  parameters, except for the -start parameter. If you e.g.
+                  want to iterate over all categories starting at M, use
+                  -start:Category:M.
 
-    -always        Don't prompt you for each replacement.
+    -always       Don't prompt you for each replacement.
 
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
@@ -49,10 +49,12 @@ msg = {
     'cs':u'Robot doplnil chybějící <references />',
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
+    'eo':u'Roboto: Aldono de "<references />"',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
+    'hu':u'Hiányzó {{Források}} pótlása',
     'it':u'Bot: Aggiungo il tag <references /> mancante',
-    'ja':u'ロボットによる: <references /> タグを追加。',
+    'ja':u'ロボットによる: <references /> タグの補完。',
     'ko':u'봇: 이전에 없던 <references /> 추가',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'nl':u'Bot: toevoeging ontbrekende <references /> tag',
@@ -90,6 +92,13 @@ placeBeforeSections = {
         u'See also',
         u'Notes'
     ],
+    'eo': [
+        u'Eksteraj ligiloj',
+        u'Ekstera ligilo',
+        u'Eksteraj ligoj',
+        u'Ekstera ligo',
+        u'Rete'
+    ],
     'es': [
         u'Enlaces externos',
         u'Véase también',
@@ -111,9 +120,11 @@ placeBeforeSections = {
         u'Lásd még',
     ],
     'it': [
-        u'Note',
+        u'Bibliografia',
+        u'Voci correlate',
+        u'Altri progetti',
+        u'Collegamenti esterni',
         u'Vedi anche',
-        u'Riferimenti',
     ],
     'ja':[
         u'関連項目',
@@ -148,9 +159,13 @@ placeBeforeSections = {
     'pt': [
         u'Ligações externas',
         u'Veja também',
+        u'Ver também',
         u'Notas',
     ],
-    'zh':[
+    'sk': [
+        u'Pozri aj',
+    ],
+    'zh': [
         u'外部連结',
         u'外部链接',
     ],
@@ -164,16 +179,21 @@ referencesSections = {
         u'مراجع',
         u'ملاحظات',
     ],
-    'de': [
-        u'Einzelnachweise', # The "Einzelnachweise" title is disputed, some people prefer the other variants
+    'de': [             #see [[de:WP:REF]]
+        u'Einzelnachweise',
+        u'Fußnoten',
+        u'Anmerkungen',
+        u'Belege',
         u'Quellen',
         u'Quellenangaben',
-        u'Fußnoten',
     ],
     'en': [             # not sure about which ones are preferred.
         u'References',
         u'Footnotes',
         u'Notes',
+    ],
+    'eo': [
+        u'Referencoj',
     ],
     'es': [
         u'Referencias',
@@ -183,7 +203,8 @@ referencesSections = {
         u'Lähteet',
         u'Viitteet',
     ],
-    'fr': [
+    'fr': [             # [[fr:Aide:Note]]
+        u'Notes et références',
         u'Références',
         u'References',
         u'Notes'
@@ -200,15 +221,17 @@ referencesSections = {
     ],
     'it': [
         u'Note',
+        u'Riferimenti',
     ],
-    'ja':[
+    'ja': [
         u'脚注',
         u'脚注欄',
         u'脚注・出典',
         u'出典',
         u'注釈',
+        u'註',
     ],
-    'ko':[              #
+    'ko': [
         u'주석',
         u'각주'
         u'주석 및 참고 자료'
@@ -228,12 +251,16 @@ referencesSections = {
     ],
     'pl': [
         u'Przypisy',
+        u'Ogólne przypisy',
+        u'Notatki',
     ],
     'pt': [
-        u'Ligações externas',
-        u'Veja também',
+        u'Referências',
     ],
-    'zh':[
+    'sk': [
+        u'Referencie',
+    ],
+    'zh': [
         u'參考文獻',
         u'参考文献',
         u'參考資料',
@@ -255,12 +282,13 @@ referencesTemplates = {
         'en': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
                u'Ref-list',u'Reference list',u'References-small',u'Reflink',
                u'Footnotes',u'FootnotesSmall'],
+        'eo': [u'Referencoj'],
         'es': ['Listaref', 'Reflist', 'muchasref'],
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
-        'hu': [u'reflist'],
+        'hu': [u'reflist',u'források'],
         'it': [u'References'],
-        'ja': [u'Reflist'],
+        'ja': [u'Reflist', u'脚注リスト'],
         'ko': [u'주석', u'Reflist'],
         'lt': [u'Reflist', u'Ref', u'Litref'],
         'nl': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',
@@ -269,6 +297,7 @@ referencesTemplates = {
                u'Bron3',u'ref',u'references',u'appendix',
                u'Noot',u'FootnotesSmall'],
         'pl': [u'przypisy', u'Przypisy'],
+        'pt': [u'Notas', 'ref-section'],
         'zh': [u'Reflist'],
     },
 }
@@ -278,6 +307,7 @@ referencesTemplates = {
 referencesSubstitute = {
     'wikipedia': {
         'fi': u'{{viitteet}}',
+        'hu': u'{{Források}}',
     },
 }
 
@@ -320,28 +350,28 @@ class NoReferencesBot:
         try:
             self.referencesText = referencesSubstitute[wikipedia.getSite().family.name][wikipedia.getSite().lang]
         except KeyError:
-            self.referencesText = u'<references/>'
+            self.referencesText = u'<references />'
 
     def lacksReferences(self, text, verbose = True):
         """
         Checks whether or not the page is lacking a references tag.
         """
         oldTextCleaned = wikipedia.removeDisabledParts(text)
-        if not self.refR.search(oldTextCleaned):
-            if verbose:
-                wikipedia.output(u'No changes necessary: no ref tags found.')
-            return False
-        elif self.referencesR.search(oldTextCleaned):
+        if self.referencesR.search(oldTextCleaned):
             if verbose:
                 wikipedia.output(u'No changes necessary: references tag found.')
             return False
+        elif self.referencesTemplates:
+            templateR = u'{{(' + u'|'.join(self.referencesTemplates) + ')'
+            if re.search(templateR, oldTextCleaned, re.IGNORECASE):
+                if verbose:
+                    wikipedia.output(u'No changes necessary: references template found.')
+                return False
+        elif not self.refR.search(oldTextCleaned):
+            if verbose:
+                wikipedia.output(u'No changes necessary: no ref tags found.')
+            return False
         else:
-            if self.referencesTemplates:
-                templateR = u'{{(' + u'|'.join(self.referencesTemplates) + ')'
-                if re.search(templateR, oldTextCleaned, re.IGNORECASE):
-                    if verbose:
-                        wikipedia.output(u'No changes necessary: references template found.')
-                    return False
             if verbose:
                 wikipedia.output(u'Found ref without references.')
             return True
@@ -417,7 +447,7 @@ class NoReferencesBot:
         return self.createReferenceSection(oldText, index)
 
     def createReferenceSection(self, oldText, index, ident = '=='):
-        newSection = u'\n%s %s %s\n\n%s\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident, self.referencesText)
+        newSection = u'\n%s %s %s\n%s\n' % (ident, wikipedia.translate(self.site, referencesSections)[0], ident, self.referencesText)
         return oldText[:index] + newSection + oldText[index:]
 
     def save(self, page, newText):

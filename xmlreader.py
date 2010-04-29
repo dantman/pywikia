@@ -15,7 +15,13 @@ For fastest processing, XmlDump uses the cElementTree library if available
 http://www.effbot.org/ for earlier versions). If not found, it falls back
 to the older method using regular expressions.
 """
+#
+# (C) Pywikipedia bot team, 2005-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__='$Id$'
+#
 
 import threading
 import xml.sax
@@ -56,7 +62,7 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid, comment):
+    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid, comment, redirect):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
@@ -68,6 +74,7 @@ class XmlEntry:
         self.moveRestriction = moveRestriction
         self.revisionid = revisionid
         self.comment = comment
+        self.isredirect = redirect
 
 
 class XmlHeaderEntry:
@@ -94,6 +101,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         self.id = u''
         self.revisionid = u''
         self.comment = u''
+        self.isredirect = False
 
     def setCallback(self, callback):
         self.callback = callback
@@ -111,6 +119,12 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.inRevisionTag = True
         elif name == 'contributor':
             self.inContributorTag = True
+            # username might be deleted
+            try:
+                if attrs['deleted'] == 'deleted':
+                    self.username = u''
+            except KeyError:
+                pass
         elif name == 'text':
             self.destination = 'text'
             self.text=u''
@@ -159,6 +173,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.inContributorTag = False
         elif name == 'restrictions':
             self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
+        elif name == 'redirect':
+            self.isredirect = True
         elif name == 'revision':
             # All done for this.
             # Remove trailing newlines and spaces
@@ -178,7 +194,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                              text, self.username, 
                              self.ipedit, timestamp, 
                              self.editRestriction, self.moveRestriction, 
-                             self.revisionid, self.comment)
+                             self.revisionid, self.comment, self.isredirect)
             self.inRevisionTag = False
             self.callback(entry)
         elif self.headercallback:
@@ -275,6 +291,13 @@ Consider installing the python-celementtree package.''')
         if self.filename.endswith('.bz2'):
             import bz2
             source = bz2.BZ2File(self.filename)
+        elif self.filename.endswith('.7z'):
+            import subprocess
+            source = subprocess.Popen('7za e -bd -so %s 2>/dev/null'
+                                      % self.filename,
+                                      shell=True,
+                                      stdout=subprocess.PIPE,
+                                      bufsize=65535).stdout
         else:
             # assume it's an uncompressed XML file
             source = open(self.filename)
@@ -313,6 +336,7 @@ Consider installing the python-celementtree package.''')
         self.title = elem.findtext("{%s}title" % self.uri)
         self.pageid = elem.findtext("{%s}id" % self.uri)
         self.restrictions = elem.findtext("{%s}restrictions" % self.uri)
+        self.isredirect = elem.findtext("{%s}redirect" % self.uri) is not None
 
     def _create_revision(self, revision):
         """Creates a Single revision"""
@@ -326,14 +350,18 @@ Consider installing the python-celementtree package.''')
         text = revision.findtext("{%s}text" % self.uri)
         editRestriction, moveRestriction \
                 = parseRestrictions(self.restrictions)
-        return XmlEntry(title=self.title, id=self.pageid, text=text or u'',
-                       username=username, ipedit=bool(ipeditor),
-                       timestamp=timestamp,
-                       editRestriction=editRestriction,
-                       moveRestriction=moveRestriction,
-                       revisionid=revisionid,
-                       comment=comment
-                      )
+        return XmlEntry(title=self.title,
+                        id=self.pageid,
+                        text=text or u'',
+                        username=username or u'', #username might be deleted
+                        ipedit=bool(ipeditor),
+                        timestamp=timestamp,
+                        editRestriction=editRestriction,
+                        moveRestriction=moveRestriction,
+                        revisionid=revisionid,
+                        comment=comment,
+                        redirect=self.isredirect
+                       )
 
     def regex_parse(self):
         """

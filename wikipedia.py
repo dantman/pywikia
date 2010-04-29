@@ -116,14 +116,14 @@ stopme(): Put this on a bot when it is not or not communicating with the Wiki
 """
 from __future__ import generators
 #
-# (C) Pywikipedia bot team, 2003-2007
+# (C) Pywikipedia bot team, 2003-2010
 #
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
 
 import os, sys
-import httplib, socket, urllib
+import httplib, socket, urllib, urllib2, cookielib
 import traceback
 import time, threading, Queue
 import math
@@ -139,6 +139,8 @@ import unicodedata
 import xmlreader
 from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup, SoupStrainer
 import weakref
+# Splitting the bot into library parts
+from pywikibot import *
 
 # Set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
@@ -160,78 +162,6 @@ try:
 except ValueError:
     WIDEBUILD = False
 
-
-# Local exceptions
-
-class Error(Exception):
-    """Wikipedia error"""
-
-class NoUsername(Error):
-    """Username is not in user-config.py"""
-
-class NoPage(Error):
-    """Page does not exist"""
-
-class NoSuchSite(Error):
-    """Site does not exist"""
-
-class IsRedirectPage(Error):
-    """Page is a redirect page"""
-
-class IsNotRedirectPage(Error):
-    """Page is not a redirect page"""
-
-class InvalidTitle(Error):
-    """Invalid page title"""
-
-class LockedPage(Error):
-    """Page is locked"""
-
-class SectionError(Error):
-    """The section specified by # does not exist"""
-
-class PageNotSaved(Error):
-    """Saving the page has failed"""
-
-class EditConflict(PageNotSaved):
-    """There has been an edit conflict while uploading the page"""
-
-class SpamfilterError(PageNotSaved):
-    """Saving the page has failed because the MediaWiki spam filter detected a blacklisted URL."""
-    def __init__(self, arg):
-        self.url = arg
-        self.args = arg,
-
-class LongPageError(PageNotSaved):
-    """Saving the page has failed because it is too long."""
-    def __init__(self, arg, arg2):
-        self.length = arg
-        self.limit = arg2,
-
-class MaxTriesExceededError(PageNotSaved):
-    """Saving the page has failed because the maximum number of attempts has been reached"""
-
-class ServerError(Error):
-    """Got unexpected server response"""
-
-class BadTitle(Error):
-    """Server responded with BadTitle."""
-
-# UserBlocked exceptions should in general not be caught. If the bot has
-# been blocked, the bot operator should address the reason for the block
-# before continuing.
-class UserBlocked(Error):
-    """Your username or IP has been blocked"""
-
-class PageNotFound(Error):
-    """Page not found in list"""
-
-class CaptchaError(Error):
-    """Captcha is asked and config.solve_captcha == False."""
-
-class NoHash(Error):
-    """ The APIs don't return any Hash for the image searched.
-        Really Strange, better to raise an error. """
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -337,7 +267,7 @@ class Page(object):
 
             if site is None:
                 site = getSite()
-            elif type(site) is str or type(site) is unicode:
+            elif type(site) in [str, unicode]:
                 site = getSite(site)
 
             self._site = site
@@ -445,7 +375,11 @@ not supported by PyWikipediaBot!"""
                     break
 
             sectionStart = t.find(u'#')
-            if sectionStart > 0:
+            # Categories does not have sections.
+            # But maybe there are magic words like {{#time|}}
+            # TODO: recognize magic word and templates inside links
+            # see http://la.wikipedia.org/w/index.php?title=997_Priska&diff=prev&oldid=1038880
+            if sectionStart > 0 and self._namespace not in [14]:
                 self._section = t[sectionStart+1 : ].lstrip(" ")
                 self._section = sectionencode(self._section,
                                               self.site().encoding())
@@ -699,11 +633,19 @@ not supported by PyWikipediaBot!"""
             except SectionError:
                 self._getexception = SectionError
                 raise
+            except UserBlocked:
+                if self.site().loggedInAs(sysop=sysop):
+                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                else:
+                    if verbose:
+                        output("The IP address is blocked, retry by login.")
+                    self.site().forceLogin(sysop=sysop)
+                    return self.get(force, get_redirect, throttle, sysop, change_edit_time)
         return self._contents
 
     def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
                      oldid=None, change_edit_time=True):
-        """Get the contents of the Page via the edit page.
+        """Get the contents of the Page via API query
 
         Do not use this directly, use get() instead.
 
@@ -713,11 +655,104 @@ not supported by PyWikipediaBot!"""
 
         This method returns the raw wiki text as a unicode string.
         """
+        if not self.site().has_api() or self.site().versionnumber() < 12:
+            return self._getEditPageOld(get_redirect, throttle, sysop, oldid, change_edit_time)
+
+        params = {
+            'action': 'query',
+            'titles': self.title(),
+            'prop': ['revisions', 'info'],
+            'rvprop': ['content', 'ids', 'flags', 'timestamp', 'user', 'comment', 'size'],
+            'rvlimit': 1,
+            'inprop': ['protection', 'talkid', 'subjectid', 'url', 'readable'],
+            #'intoken': 'edit',
+        }
+        if oldid:
+            params['rvstartid'] = oldid
+
+        if throttle:
+            get_throttle()
+        textareaFound = False
+        # retrying loop is done by query.GetData
+        data = query.GetData(params, self.site(), sysop=sysop)
+        if 'error' in data:
+            raise RuntimeError("API query error: %s" % data)
+        if not 'pages' in data['query']:
+            raise RuntimeError("API query error, no pages found: %s" % data)
+        pageInfo = data['query']['pages'].values()[0]
+        if data['query']['pages'].keys()[0] == "-1":
+            if 'missing' in pageInfo:
+                raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
+            elif 'invalid' in pageInfo:
+                raise BadTitle('BadTitle: %s' % self)
+        elif 'revisions' in pageInfo: #valid Title
+            lastRev = pageInfo['revisions'][0]
+            if lastRev['*'] is not None:
+                textareaFound = True
+        # I got page date with 'revisions' in pageInfo but
+        # lastRev['*'] = False instead of the content. The Page itself was
+        # deleted but there was not 'missing' in pageInfo as expected
+        # I raise a ServerError() yet, but maybe it should be NoPage().
+        if not textareaFound:
+            raise ServerError('ServerError: No textarea found in %s' % self)
+
+        self.editRestriction = ''
+        self.moveRestriction = ''
+
+        # Note: user may be hidden and mw returns 'userhidden' flag
+        if 'userhidden' in lastRev:
+            self._userName = None
+        else:
+            self._userName = lastRev['user']
+
+        for restr in pageInfo['protection']:
+            if restr['type'] == 'edit':
+                self.editRestriction = restr['level']
+            elif restr['type'] == 'move':
+                self.moveRestriction = restr['level']    
+
+        self._revisionId = lastRev['revid']
+
+        if change_edit_time:
+            self._editTime = parsetime2stamp(lastRev['timestamp'])
+            if "starttimestamp" in pageInfo:
+                self._startTime = parsetime2stamp(pageInfo["starttimestamp"])
+
+        self._isWatched = False #cannot handle in API in my research for now.
+
+        pagetext = lastRev['*']
+        pagetext = pagetext.rstrip()
+        # pagetext must not decodeEsperantoX() if loaded via API
+        m = self.site().redirectRegex().match(pagetext)
+        if m:
+            # page text matches the redirect pattern
+            if self.section() and not "#" in m.group(1):
+                redirtarget = "%s#%s" % (m.group(1), self.section())
+            else:
+                redirtarget = m.group(1)
+            if get_redirect:
+                self._redirarg = redirtarget
+            else:
+                raise IsRedirectPage(redirtarget)
+        if self.section():
+            # TODO: What the hell is this? Docu please.
+            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(pageInfo['revisions'][0]['*'],self.site().encoding()))
+            if not m:
+                try:
+                    self._getexception
+                except AttributeError:
+                    raise SectionError # Page has no section by this name
+        return pagetext
+
+    def _getEditPageOld(self, get_redirect=False, throttle=True, sysop=False,
+                     oldid=None, change_edit_time=True):
+        """Get the contents of the Page via the edit page."""
+
         if verbose:
             output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
         if oldid:
-            path = path + "&oldid="+oldid
+            path += "&oldid="+oldid
         # Make sure Brion doesn't get angry by waiting if the last time a page
         # was retrieved was not long enough ago.
         if throttle:
@@ -814,7 +849,7 @@ not supported by PyWikipediaBot!"""
         else:
             RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>', re.DOTALL)
         matchVersionTab = RversionTab.search(text)
-        if not matchVersionTab:
+        if not matchVersionTab and not self.site().family.name == 'wikitravel':
             raise NoPage(self.site(), self.aslink(forceInterwiki = True),"Page does not exist. In rare cases, if you are certain the page does exist, look into overriding family.RversionTab" )
         # Look if the page is on our watchlist
         matchWatching = Rwatchlist.search(text)
@@ -919,55 +954,57 @@ not supported by PyWikipediaBot!"""
             'prop'      :'info',
             'titles'    :self.title(),
             }
-        data = query.GetData(params, self.site(), encodeTitle = False)        
-        pageid = data['query']['pages'].keys()[0]
-        if data['query']['pages'][pageid].keys()[0] == 'lastrevid':
-            return data['query']['pages'][pageid]['lastrevid'] # if ok,
-                                                               # return the last revid
-        elif data['query']['pages'][pageid].keys()[0] == 'redirect':
-            raise IsRedirectPage        
+        data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages'].values()[0]
+        if 'redirect' in data:
+            raise IsRedirectPage
+        elif 'missing' in data:
+            raise NoPage
+        elif 'lastrevid' in data:
+            return data['lastrevid'] # if ok, return the last revid
         else:
             # should not exists, OR we have problems.
             # better double check in this situations
-            x = self.get()                
+            x = self.get()
             return True # if we reach this point, we had no problems.
 
     def getTemplates(self, tllimit = 5000):
         #action=query&prop=templates&titles=Main Page
         """
-        Returns the templates that are used in the page given.
-
-        It works through the APIs.
+        Returns the templates that are used in the page given by API.
 
         If no templates found, returns None.
 
-        Note: It returns "only" the first 5000 templates, if there
-        are more, they won't be returned, sorry.
         """
         params = {
-            'action'    :'query',
-            'prop'      :'templates',
-            'titles'    :self.title(),
-            'tllimit'   :tllimit,
-            }
+            'action': 'query',
+            'prop': 'templates',
+            'titles': self.title(),
+            'tllimit': tllimit,
+        }
+        if tllimit > config.special_page_limit:
+            params['tllimit'] = config.special_page_limit
+            if tllimit > 5000 and self.site.isAllowed('apihighlimits'):
+                params['tllimit'] = 5000
 
-        data = query.GetData(params, self.site(), encodeTitle = False)
-        try:
-            pageid = data['query']['pages'].keys()[0]
-        except KeyError:
-            if tllimit != 500:
-                return self.getTemplates(500)
+        tmpsFound = []
+        count = 0
+        while True:
+            data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages'].values()[0]
+            if "templates" not in data:
+                return []
+            
+            for tmp in data['templates']:
+                count += 1
+                tmpsFound.append(Page(self.site(), tmp['title'], defaultNamespace=tmp['ns']) )
+                if count >= tllimit:
+                    break
+            
+            if 'query-continue' in data and count < tllimit:
+                params["tlcontinue"] = data["query-continue"]["templates"]["tlcontinue"]
             else:
-                raise Error(data)
-        try:
-            templates = data['query']['pages'][pageid]['templates']
-        except KeyError:
-            return list()
-        templatesFound = list()
-        for template in templates:
-            templateName = template['title']
-            templatesFound.append(Page(self.site(), templateName))
-        return templatesFound
+                break
+
+        return tmpsFound
 
     def isRedirectPage(self):
         """Return True if this is a redirect, False if not or not existing."""
@@ -1015,6 +1052,10 @@ not supported by PyWikipediaBot!"""
         user_config.py, or using page.put(force=True).
 
         """
+
+        if self.site().family.name == 'wikitravel':        # Wikitravel's bot control.
+            self.site().family.bot_control(self.site())
+
         if config.ignore_bot_templates: #Check the "master ignore switch"
             return True
 
@@ -1024,9 +1065,9 @@ not supported by PyWikipediaBot!"""
             return True
 
         for template in templates:
-            if template[0] == 'Nobots':
+            if template[0].lower() == 'nobots':
                 return False
-            elif template[0] == 'Bots':
+            elif template[0].lower() == 'bots':
                 if len(template[1]) == 0:
                     return True
                 else:
@@ -1093,7 +1134,10 @@ not supported by PyWikipediaBot!"""
             return False
         if not hasattr(self, "_catredirect"):
             if not text:
-                text = self.get(get_redirect=True)
+                try:
+                    text = self.get(get_redirect=True)
+                except NoPage:
+                    return False
             catredirs = self.site().category_redirects()
             for (t, args) in self.templatesWithParams(thistxt=text):
                 template = Page(self.site(), t, defaultNamespace=10
@@ -1145,17 +1189,15 @@ not supported by PyWikipediaBot!"""
                         t[:1].upper() + t[1:] for t in distl
                     )
             disambigInPage = self._site._disambigtemplates.intersection(self.templates())
-            self._isDisambig = len(disambigInPage) > 0
+            self._isDisambig = self.namespace() != 10 and len(disambigInPage) > 0
         return self._isDisambig
 
-    def getReferences(self,
-            follow_redirects=True, withTemplateInclusion=True,
-            onlyTemplateInclusion=False, redirectsOnly=False):
-        """Yield all pages that link to the page.
+    def getReferences(self, follow_redirects=True, withTemplateInclusion=True,
+            onlyTemplateInclusion=False, redirectsOnly=False, internal = False):
+        """Yield all pages that link to the page by API
 
         If you need a full list of referring pages, use this:
             pages = [page for page in s.getReferences()]
-
         Parameters:
         * follow_redirects      - if True, also returns pages that link to a
                                   redirect pointing to the page.
@@ -1166,11 +1208,103 @@ not supported by PyWikipediaBot!"""
         * redirectsOnly         - if True, only returns redirects to self.
 
         """
+        if not self.site().has_api():
+            for s in self.getReferencesOld(follow_redirects, withTemplateInclusion, onlyTemplateInclusion, redirectsOnly):
+                yield s
+            return
+
+        params = {
+            'action': 'query',
+            'list': [],
+        }
+        if not onlyTemplateInclusion:
+            params['list'].append('backlinks')
+            params['bltitle'] = self.title()
+            params['bllimit'] = config.special_page_limit
+            params['blfilterredir'] = 'all'
+            if follow_redirects:
+                params['blredirect'] = 1
+            if redirectsOnly:
+                params['blfilterredir'] = 'redirects'
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+                params['bllimit'] = 500
+        
+        if withTemplateInclusion or onlyTemplateInclusion:
+            params['list'].append('embeddedin')
+            params['eititle'] = self.title()
+            params['eilimit'] = config.special_page_limit
+            params['eifilterredir'] = 'all'
+            if follow_redirects:
+                params['eiredirect'] = 1
+            if redirectsOnly:
+                params['eifilterredir'] = 'redirects'
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+                params['eilimit'] = 500
+
+        allDone = False
+
+        while not allDone:
+            if not internal:
+                output(u'Getting references to %s via API...' % self.aslink())
+
+            datas = query.GetData(params, self.site())
+            data = datas['query'].values()
+            if len(data) == 2:
+                data = data[0] + data[1]
+            else:
+                data = data[0]
+            
+            refPages = set()
+            for blp in data:
+                pg = Page(self.site(), blp['title'], defaultNamespace = blp['ns'])
+                if pg in refPages:
+                    continue
+
+                yield pg
+                refPages.add(pg)
+                if follow_redirects and 'redirect' in blp and 'redirlinks' in blp:
+                    for p in blp['redirlinks']:
+                        plk = Page(self.site(), p['title'], defaultNamespace = p['ns'])
+                        if plk in refPages:
+                            continue
+
+                        yield plk
+                        refPages.add(plk)
+                        if follow_redirects and 'redirect' in p:
+                            for zms in plk.getReferences(follow_redirects, withTemplateInclusion, 
+                                              onlyTemplateInclusion, redirectsOnly, internal=True):
+                                yield zms
+                        else:
+                            continue
+                else:
+                    continue
+
+            if 'query-continue' in datas:
+                if 'backlinks' in datas['query-continue']:
+                    params['blcontinue'] = datas['query-continue']['backlinks']['blcontinue']
+                
+                if 'embeddedin' in datas['query-continue']:
+                    params['eicontinue'] = datas['query-continue']['embeddedin']['eicontinue']
+            else:
+                allDone = True
+
+
+    def getReferencesOld(self,
+            follow_redirects=True, withTemplateInclusion=True,
+            onlyTemplateInclusion=False, redirectsOnly=False):
+        """Yield all pages that link to the page.
+        """
         # Temporary bug-fix while researching more robust solution:
         if config.special_page_limit > 999:
             config.special_page_limit = 999
         site = self.site()
         path = self.site().references_address(self.urlname())
+        if withTemplateInclusion:
+            path+=u'&hidetrans=0'
+        if onlyTemplateInclusion:
+            path+=u'&hidetrans=0&hidelinks=1&hideredirs=1&hideimages=1'
+        if redirectsOnly:
+            path+=u'&hideredirs=0&hidetrans=1&hidelinks=1&hideimages=1'
         content = SoupStrainer("div", id=self.site().family.content_id)
         try:
             next_msg = self.site().mediawiki_message('whatlinkshere-next')
@@ -1315,7 +1449,7 @@ not supported by PyWikipediaBot!"""
             api_url = self.site().api_address()
         except NotImplementedError:
             return restrictions
-        
+
         predata = {
             'action': 'query',
             'prop': 'info',
@@ -1323,19 +1457,19 @@ not supported by PyWikipediaBot!"""
             'titles': self.title(),
         }
         #if titles:
-        #    predata['titles'] = query.ListToParam(titles)
-        
+        #    predata['titles'] = titles
+
         text = query.GetData(predata, self.site())['query']['pages']
-        
+
         for pageid in text:
-            if text[pageid].has_key('missing'):
+            if 'missing' in text[pageid]:
                 self._getexception = NoPage
                 raise NoPage('Page %s does not exist' % self.aslink())
-            elif not text[pageid].has_key('pageid'):
+            elif not 'pageid' in text[pageid]:
                 # Don't know what may happen here.
                 # We may want to have better error handling
                 raise Error("BUG> API problem.")
-            if text[pageid]['protection'] != []: 
+            if text[pageid]['protection'] != []:
                 #if titles:
                 #    restrictions = dict([ detail['type'], [ detail['level'], detail['expiry'] ] ]
                 #        for detail in text[pageid]['protection'])
@@ -1401,7 +1535,17 @@ not supported by PyWikipediaBot!"""
         # Determine if we are allowed to edit
         if not force:
             if not self.botMayEdit(username):
-                raise LockedPage(u'Not allowed to edit %s because of a restricting template' % self.aslink())
+                raise LockedPage(
+                    u'Not allowed to edit %s because of a restricting template'
+                    % self.aslink())
+            elif self.site().has_api() and self.namespace() in [2,3] \
+                 and (self.title().endswith('.css') or \
+                      self.title().endswith('.js')):
+                # API enable: if title ends with .css or .js in ns2,3
+                # it needs permission 'editusercssjs'
+                sysop = self._getActionUser(action='editusercssjs',
+                                            restriction=self.editRestriction,
+                                            sysop=True)
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
@@ -1410,11 +1554,22 @@ not supported by PyWikipediaBot!"""
             self._editrestriction = False
         # If no comment is given for the change, use the default
         comment = comment or action
-        if config.cosmetic_changes and not self.isTalkPage():
-            old = newtext
-            if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
+        if config.cosmetic_changes and not self.isTalkPage() and not calledModuleName() == 'cosmetic_changes':
+            if config.cosmetic_changes_mylang_only:
+                cc = (self.site().family.name == config.family and self.site().lang == config.mylang) or \
+                     self.site().family.name in config.cosmetic_changes_enable.keys() and \
+                     self.site().lang in config.cosmetic_changes_enable[self.site().family.name]
+            else:
+                cc = True
+            cc = cc and not \
+                 (self.site().family.name in config.cosmetic_changes_disable.keys() and \
+                 self.site().lang in config.cosmetic_changes_disable[self.site().family.name])
+            if cc:
+                old = newtext
+                if verbose:
+                    output(u'Cosmetic Changes for %s-%s enabled.' % (self.site().family.name, self.site().lang))
                 import cosmetic_changes
-                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site())
+                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), redirect=self.isRedirectPage(), namespace = self.namespace(), pageTitle=self.title())
                 newtext = ccToolkit.change(newtext)
                 if comment and old.strip().replace('\r\n', '\n') != newtext.strip().replace('\r\n', '\n'):
                     comment += translate(self.site(), cosmetic_changes.msg_append)
@@ -1429,7 +1584,7 @@ not supported by PyWikipediaBot!"""
         newPage = not self.exists()
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
-        if self.site().lang == 'eo':
+        if self.site().lang == 'eo' and not self.site().has_api():
             newtext = encodeEsperantoX(newtext)
             comment = encodeEsperantoX(comment)
 
@@ -1458,17 +1613,12 @@ not supported by PyWikipediaBot!"""
         Don't use this directly, use put() instead.
 
         """
-        try:
-            if config.use_api and self.site().versionnumber() >= 13:
-                apitest = self.site().api_address()
-                del apitest
-            else:
-                raise NotImplementedError #No enable api or version not support
-        except NotImplementedError:
+        if not self.site().has_api() or self.site().versionnumber() < 13:
+            # api not enabled or version not supported
             return self._putPageOld(text, comment, watchArticle, minorEdit,
                 newPage, token, newToken, sysop, captcha, botflag, maxTries)
-        
-        retry_attempt = 1
+
+        retry_attempt = 0
         retry_delay = 1
         dblagged = False
         params = {
@@ -1477,12 +1627,12 @@ not supported by PyWikipediaBot!"""
             'text': self._encodeArg(text, 'text'),
             'summary': self._encodeArg(comment, 'summary'),
         }
-        
+
         if token:
             params['token'] = token
         else:
             params['token'] = self.site().getToken(sysop = sysop)
-        
+
         # Add server lag parameter (see config.py for details)
         if config.maxlag:
             params['maxlag'] = str(config.maxlag)
@@ -1491,29 +1641,29 @@ not supported by PyWikipediaBot!"""
             params['basetimestamp'] = self._editTime
         else:
             params['basetimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-        
+
         if self._startTime:
             params['starttimestamp'] = self._startTime
         else:
             params['starttimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-        
+
         if botflag:
             params['bot'] = 1
-        
+
         if minorEdit:
             params['minor'] = 1
         else:
             params['notminor'] = 1
-        
+
         if watchArticle:
             params['watch'] = 1
         #else:
         #    params['unwatch'] = 1
-        
+
         if captcha:
             params['captchaid'] = captcha['id']
             params['captchaword'] = captcha['answer']
-        
+
         while True:
             if (maxTries == 0):
                 raise MaxTriesExceededError()
@@ -1524,10 +1674,10 @@ not supported by PyWikipediaBot!"""
                 put_throttle()
             # Which web-site host are we submitting to?
             if newPage:
-                output(u'Creating page %s' % self.aslink())
+                output(u'Creating page %s via API' % self.aslink())
                 params['createonly'] = 1
             else:
-                output(u'Updating page %s' % self.aslink())
+                output(u'Updating page %s via API' % self.aslink())
                 params['nocreate'] = 1
             # Submit the prepared information
             try:
@@ -1560,7 +1710,7 @@ not supported by PyWikipediaBot!"""
             # Check blocks
             self.site().checkBlocks(sysop = sysop)
             # A second text area means that an edit conflict has occured.
-            if response.status == 500:
+            if response.code == 500:
                 output(u"Server error encountered; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
@@ -1568,7 +1718,7 @@ not supported by PyWikipediaBot!"""
                 if retry_delay > 30:
                     retry_delay = 30
                 continue
-            if data.has_key('error'):
+            if 'error' in data:
                 #All available error key in edit mode: (from ApiBase.php)
                 # 'noimageredirect-anon':"Anonymous users can't create image redirects",
                 # 'noimageredirect':"You don't have permission to create image redirects",
@@ -1585,22 +1735,24 @@ not supported by PyWikipediaBot!"""
                 #for debug only
                 #------------------------
                 if verbose:
-                    output("error occured, result:%s\nstatus:%s\nresponse:%s" % (data, response.status, response.reason))
+                    output("error occured, code:%s\ninfo:%s\nstatus:%s\nresponse:%s" % (
+                        data['error']['code'], data['error']['info'], response.code, response.msg))
                     faked = params
-                    del faked['text'], faked['format']
+                    if 'text' in faked:
+                        del faked['text']
                     output("OriginalData:%s" % faked)
                     del faked
                 #------------------------
                 errorCode = data['error']['code']
                 #cannot handle longpageerror and PageNoSave yet
-                if errorCode == 'maxlag' or response.status == 503:
-                        # server lag; Mediawiki recommends waiting 5 seconds
-                        # and retrying
-                    if verbose:
-                        output(data, newline=False)
-                    output(u"Pausing 5 seconds due to database server lag.")
+                if errorCode == 'maxlag' or response.code == 503:
+                    # server lag; wait for the lag time and retry
+                    lagpattern = re.compile(r"Waiting for [\d.]+: (?P<lag>\d+) seconds? lagged")
+                    lag = lagpattern.search(data['error']['info'])
+                    timelag = int(lag.group("lag"))
+                    output(u"Pausing %d seconds due to database server lag." % min(timelag,300))
                     dblagged = True
-                    time.sleep(5)
+                    time.sleep(min(timelag,300))
                     continue
                 elif errorCode == 'editconflict':
                     # 'editconflict':"Edit conflict detected",
@@ -1619,7 +1771,7 @@ not supported by PyWikipediaBot!"""
                         params['basetimestamp'] = self._editTime
                     else:
                         params['basetimestamp'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
-                    
+
                     if self._startTime:
                         params['starttimestamp'] = self._startTime
                     else:
@@ -1643,7 +1795,7 @@ not supported by PyWikipediaBot!"""
                     # 'customcssjsprotected': "You're not allowed to edit custom CSS and JavaScript pages"
                     # 'protectednamespace': "You're not allowed to edit pages in the ``\$1'' namespace"
                     # 'protectednamespace-interface':"You're not allowed to edit interface messages"
-                    # 
+                    #
                     # The page is locked. This should have already been
                     # detected when getting the page, but there are some
                     # reasons why this didn't work, e.g. the page might be
@@ -1667,26 +1819,26 @@ not supported by PyWikipediaBot!"""
                         return self._putPage(text, comment, watchArticle, minorEdit, newPage, token=self.site().getToken(sysop = sysop, getagain = True), newToken = True, sysop = sysop)
                 # I think the error message title was changed from "Wikimedia Error"
                 # to "Wikipedia has a problem", but I'm not sure. Maybe we could
-                # just check for HTTP Status 500 (Internal Server Error)?                    
+                # just check for HTTP Status 500 (Internal Server Error)?
                 else:
                     output("Unknown Error. API Error code:%s" % data['error']['code'] )
-                    output("Information:%s" %data['error']['info'])
+                    output("Information:%s" % data['error']['info'])
             else:
                 if data['edit']['result'] == u"Success":
                     #
                     # The status code for update page completed in ordinary mode is 302 - Found
                     # But API is always 200 - OK because it only send "success" back in string.
-                    # if the page update is successed, we need to return code 302 for cheat script who 
+                    # if the page update is successed, we need to return code 302 for cheat script who
                     # using status code
                     #
-                    return 302, response.reason, data
-            
+                    return 302, response.msg, data['edit']
+
             solve = self.site().solveCaptcha(data)
             if solve:
                 return self._putPage(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
-            
-            return response.status, response.reason, data
-        
+
+            return response.code, response.msg, data
+
 
     def _putPageOld(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, newToken=False, sysop=False,
@@ -1705,7 +1857,7 @@ not supported by PyWikipediaBot!"""
             'wpTextbox1': self._encodeArg(text, 'wikitext'),
             # As of October 2008, MW HEAD requires wpSection to be set.
             # We will need to fill this more smartly if we ever decide to edit by section
-            'wpSection': '', 
+            'wpSection': '',
         }
         if not botflag:
             predata['bot']='0'
@@ -1723,9 +1875,9 @@ not supported by PyWikipediaBot!"""
         else:
             predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
         if self._startTime:
-            predata['wpStarttime'] = self._startTime  
+            predata['wpStarttime'] = self._startTime
         else:
-            predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
+            predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
         if self._revisionId:
             predata['baseRevId'] = self._revisionId
         # Pass the minorEdit and watchArticle arguments to the Wiki.
@@ -1743,8 +1895,9 @@ not supported by PyWikipediaBot!"""
             predata['masteredit'] = '1'
 
         retry_delay = 1
-        retry_attempt = 1
+        retry_attempt = 0
         dblagged = False
+        wait = 5
         while True:
             if (maxTries == 0):
                 raise MaxTriesExceededError()
@@ -1759,30 +1912,21 @@ not supported by PyWikipediaBot!"""
             else:
                 output(u'Changing page %s' % self.aslink())
             # Submit the prepared information
-            if self.site().hostname() in config.authenticate.keys():
-                predata["Content-type"] = "application/x-www-form-urlencoded"
-                predata["User-agent"] = useragent
-                data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-                # I'm not sure what to check in this case, so I just assume
-                # things went ok.  Very naive, I agree.
-                data = u''
-                # No idea how to get the info now.
-                return None
             try:
                 response, data = self.site().postForm(address, predata, sysop)
-                if response.status == 503:
+                if response.code == 503:
                     if 'x-database-lag' in response.msg.keys():
                         # server lag; Mediawiki recommends waiting 5 seconds
                         # and retrying
                         if verbose:
                             output(data, newline=False)
-                        output(u"Pausing 5 seconds due to database server lag.")
+                        output(u"Pausing %d seconds due to database server lag." % wait)
                         dblagged = True
-                        time.sleep(5)
+                        time.sleep(wait)
+                        wait = min(wait*2, 300)
                         continue
                     # Squid error 503
-                    raise ServerError(response.status)
+                    raise ServerError(response.code)
             except httplib.BadStatusLine, line:
                 raise PageNotSaved('Bad status line: %s' % line.line)
             except ServerError:
@@ -1803,8 +1947,9 @@ not supported by PyWikipediaBot!"""
             # Check blocks
             self.site().checkBlocks(sysop = sysop)
             # A second text area means that an edit conflict has occured.
-            editconflict = re.compile('id=["\']wpTextbox2[\'"] name="wpTextbox2"')
-            if editconflict.search(data):
+            editconflict1 = re.compile('id=["\']wpTextbox2[\'"] name="wpTextbox2"')
+            editconflict2 = re.compile('name="wpTextbox2" id="wpTextbox2"')
+            if editconflict1.search(data) or editconflict2.search(data):
                 raise EditConflict(u'An edit conflict has occured.')
 
             # remove the wpAntispam keyword before checking for Spamfilter
@@ -1845,9 +1990,9 @@ not supported by PyWikipediaBot!"""
                 else:
                     predata['wpEdittime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                 if self._startTime:
-                    predata['wpStarttime'] = self._startTime  
+                    predata['wpStarttime'] = self._startTime
                 else:
-                    predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())     
+                    predata['wpStarttime'] = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                 continue
             if self.site().has_mediawiki_message("viewsource")\
                     and self.site().mediawiki_message('viewsource') in data:
@@ -1875,8 +2020,16 @@ not supported by PyWikipediaBot!"""
             # to "Wikipedia has a problem", but I'm not sure. Maybe we could
             # just check for HTTP Status 500 (Internal Server Error)?
             if ("<title>Wikimedia Error</title>" in data or "has a problem</title>" in data) \
-                or response.status == 500:
+                or response.code == 500:
                 output(u"Server error encountered; will retry in %i minute%s."
+                       % (retry_delay, retry_delay != 1 and "s" or ""))
+                time.sleep(60 * retry_delay)
+                retry_delay *= 2
+                if retry_delay > 30:
+                    retry_delay = 30
+                continue
+            if ("1213: Deadlock found when trying to get lock" in data):
+                output(u"Deadlock error encountered; will retry in %i minute%s."
                        % (retry_delay, retry_delay != 1 and "s" or ""))
                 time.sleep(60 * retry_delay)
                 retry_delay *= 2
@@ -1924,11 +2077,11 @@ not supported by PyWikipediaBot!"""
                 return self._putPageOld(text, comment, watchArticle, minorEdit, newPage, token, newToken, sysop, captcha=solve)
 
             # We are expecting a 302 to the action=view page. I'm not sure why this was removed in r5019
-            if data.strip() != u"":
+            if  response.code != 302 and data.strip() != u"":
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
                 output(u"ERROR: Unexpected response from wiki server.")
-                output(u"       %s (%s) " % (response.status, response.reason))
+                output(u"       %s (%s) " % (response.code, response.msg))
                 output(data)
                 # Unexpected responses should raise an error and not pass,
                 # be it silently or loudly. This should raise an error
@@ -1937,7 +2090,7 @@ not supported by PyWikipediaBot!"""
                 # We are on the preview page, so the page was not saved
                 raise PageNotSaved
 
-            return response.status, response.reason, data
+            return response.code, response.msg, data
 
     def canBeEdited(self):
         """Return bool indicating whether this page can be edited.
@@ -1974,16 +2127,14 @@ not supported by PyWikipediaBot!"""
         if ns < 0: # Special page
             return None
         if self.isTalkPage():
-            if self.namespace() == 1:
-                return Page(self.site(), self.titleWithoutNamespace())
-            else:
-                return Page(self.site(),
-                            self.site().namespace(ns - 1) + ':'
-                              + self.titleWithoutNamespace())
+            ns -= 1
         else:
-            return Page(self.site(),
-                        self.site().namespace(ns + 1) + ':'
-                          + self.titleWithoutNamespace())
+            ns += 1
+
+        if ns == 6:
+            return ImagePage(self.site(), self.titleWithoutNamespace())
+
+        return Page(self.site(), self.titleWithoutNamespace(), defaultNamespace=ns)
 
     def interwiki(self):
         """Return a list of interwiki links in the page text.
@@ -2001,7 +2152,7 @@ not supported by PyWikipediaBot!"""
         text = self.get()
 
         # Replace {{PAGENAME}} by its value
-        for pagenametext in self.site().family.pagenamecodes(
+        for pagenametext in self.site().pagenamecodes(
                                                    self.site().language()):
             text = text.replace(u"{{%s}}" % pagenametext, self.title())
 
@@ -2022,11 +2173,49 @@ not supported by PyWikipediaBot!"""
         category links in the page text.
 
         """
-        try:
-            category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
-        except NoPage:
-            category_links_to_return = []
-        return category_links_to_return
+#  New add API query.
+
+#   api.php?action=query&prop=categories&titles=Albert%20Einstein
+
+#
+        if not self.site().has_api():
+            try:
+                category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
+            except NoPage:
+                category_links_to_return = []
+            return category_links_to_return
+
+        params = {
+            'action': 'query',
+            'prop'  : 'categories',
+            'titles' : self.title(),
+        }
+        if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+            params['cllimit'] = 500
+        
+
+        allDone = False
+        cats=[]
+        while not allDone:
+            output(u'Getting categories in %s via API...' % self.aslink())
+
+            datas = query.GetData(params, self.site())
+            data=datas['query']['pages'].values()[0]
+            if "categories" in data:
+                for c in data['categories']:
+                    cats.append(c['title'])
+#            if len(data) == 2:
+#                data = data[0] + data[1]
+#            else:
+#                data = data[0]
+            
+            if 'query-continue' in datas:
+                if 'categories' in datas['query-continue']:
+                    params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
+                
+            else:
+                allDone = True
+        return cats
 
     def __cmp__(self, other):
         """Test for equality and inequality of Page objects"""
@@ -2089,7 +2278,7 @@ not supported by PyWikipediaBot!"""
                     continue
                 if not withImageLinks and page.isImage():
                     continue
-                if page.sectionFreeTitle():
+                if page.sectionFreeTitle() and page not in result:
                     result.append(page)
         return result
 
@@ -2107,21 +2296,19 @@ not supported by PyWikipediaBot!"""
         for page in self.linkedPages(withImageLinks = True):
             if page.isImage():
                 # convert Page object to ImagePage object
-                imagePage = ImagePage(page.site(), page.title())
-                results.append(imagePage)
+                results.append( ImagePage(page.site(), page.title()) )
         # Find images in galleries
         pageText = self.get(get_redirect=followRedirects)
         galleryR = re.compile('<gallery>.*?</gallery>', re.DOTALL)
         galleryEntryR = re.compile('(?P<title>(%s|%s):.+?)(\|.+)?\n' % (self.site().image_namespace(), self.site().family.image_namespace(code = '_default')))
         for gallery in galleryR.findall(pageText):
             for match in galleryEntryR.finditer(gallery):
-                page = ImagePage(self.site(), match.group('title'))
-                results.append(page)
+                results.append( ImagePage(self.site(), match.group('title')) )
         if loose:
             ns = getSite().image_namespace()
             imageR = re.compile('\w\w\w+\.(?:gif|png|jpg|jpeg|svg|JPG|xcf|pdf|mid|ogg|djvu)', re.IGNORECASE)
             for imageName in imageR.findall(pageText):
-                results.append(ImagePage(self.site(), ns + ':' + imageName))
+                results.append( ImagePage(self.site(), imageName) )
         return list(set(results))
 
     def templates(self, get_redirect=False):
@@ -2207,9 +2394,19 @@ not supported by PyWikipediaBot!"""
                 if self.site().isInterwikiLink(name):
                     continue
 
-                # {{DEFAULTSORT:...}} or {{#if: }}
-                if name.startswith('DEFAULTSORT:') or name.startswith('#'):
+                # {{#if: }}
+                if name.startswith('#'):
                     continue
+                # {{DEFAULTSORT:...}}
+                defaultKeys = self.site().getmagicwords('defaultsort')
+                # It seems some wikis does not have this magic key
+                if defaultKeys:
+                    found = False
+                    for key in defaultKeys:
+                        if name.startswith(key):
+                            found = True
+                            break
+                    if found: continue
 
                 try:
                     name = Page(self.site(), name).title()
@@ -2283,22 +2480,15 @@ not supported by PyWikipediaBot!"""
         unless getAll is True.
 
         """
-        site = self.site()
 
         # regular expression matching one edit in the version history.
         # results will have 4 groups: oldid, edit date/time, user name, and edit
         # summary.
-        if self.site().versionnumber() < 4:
-            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
-        elif self.site().versionnumber() < 15:
-            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
-        else:
-            editR = re.compile(r'<li class=".*?">\((?:\w*|<a[^<]*</a>)\)\s\((?:\w*|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <span class="minor">m</span>|)(?: <span class="history-size">.*?</span>|)(?: <span class=[\'"]comment[\'"]>\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\)|)\s*</li>', re.UNICODE)
-        startFromPage = None
         thisHistoryDone = False
         skip = False # Used in determining whether we need to skip the first page
+        dataQuery = []
+        hasData = False
 
-        RLinkToNextPage = re.compile('&amp;offset=(.*?)&amp;')
 
         # Are we getting by Earliest first?
         if reverseOrder:
@@ -2309,6 +2499,7 @@ not supported by PyWikipediaBot!"""
                 # Cause a reload, or at least make the loop run
                 thisHistoryDone = False
                 skip = True
+                dataQuery = self._versionhistoryearliest
             else:
                 thisHistoryDone = True
         elif not hasattr(self, '_versionhistory') or forceReload:
@@ -2317,11 +2508,95 @@ not supported by PyWikipediaBot!"""
             # Cause a reload, or at least make the loop run
             thisHistoryDone = False
             skip = True
+            dataQuery = self._versionhistory
         else:
             thisHistoryDone = True
 
+        if not thisHistoryDone:
+            dataQuery.extend(self._getVersionHistory(getAll, skip, reverseOrder, revCount))
+
+        if reverseOrder:
+            # Return only revCount edits, even if the version history is extensive
+            if dataQuery != []:
+                self._versionhistoryearliest = dataQuery
+                del dataQuery
+            if len(self._versionhistoryearliest) > revCount and not getAll:
+                return self._versionhistoryearliest[:revCount]
+            return self._versionhistoryearliest
+        
+        if dataQuery != []:
+            self._versionhistory = dataQuery
+            del dataQuery
+        # Return only revCount edits, even if the version history is extensive
+        if len(self._versionhistory) > revCount and not getAll:
+            return self._versionhistory[:revCount]
+        return self._versionhistory
+
+    def _getVersionHistory(self, getAll = False, skipFirst = False, reverseOrder = False,
+                               revCount=500):
+        """Load history informations by API query.
+           Internal use for self.getVersionHistory(), don't use this function directly.
+        """
+        if not self.site().has_api() or self.site().versionnumber() < 8:
+            return self._getVersionHistoryOld(reExist, getAll, skipFirst, reverseOrder, revCount)
+        dataQ = []
+        thisHistoryDone = False
+        params = {
+            'action': 'query',
+            'prop': 'revisions',
+            'titles': self.title(),
+            'rvlimit': revCount,
+            #'': '',
+        }
         while not thisHistoryDone:
-            path = site.family.version_history_address(self.site().language(), self.urlname(), revCount)
+            if reverseOrder:
+                params['rvdir'] = 'newer'
+
+            result = query.GetData(params, self.site())
+            if 'error' in result:
+                raise RuntimeError("%s" % result['error'])
+
+            if 'query-continue' in result and getAll:
+                params['rvstartid'] = result['query-continue']['revisions']['rvstartid']
+            else:
+                thisHistoryDone = True
+            
+            if skipFirst:
+                skipFirst = False
+            else:
+                for r in result['query']['pages'].values()[0]['revisions']:
+                    c = ''
+                    if 'comment' in r:
+                        c = r['comment']
+                    #revision id, edit date/time, user name, edit summary
+                    dataQ.append((r['revid'], r['timestamp'], r['user'], c))
+            
+                if len(result['query']['pages'].values()[0]['revisions']) < revCount:
+                    thisHistoryDone = True
+
+        return dataQ
+    
+    def _getVersionHistoryOld(self, getAll = False, skipFirst = False, 
+                               reverseOrder = False, revCount=500):
+        """Load the version history page and return history information.
+           Internal use for self.getVersionHistory(), don't use this function directly.
+        """
+        dataQ = []
+        thisHistoryDone = False
+        startFromPage = None
+        if self.site().versionnumber() < 4:
+            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+        elif self.site().versionnumber() < 15:
+            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> (?:<span class=\'history-user\'>|)<a href=".*?" title=".*?">([^<]*?)</a>.*?(?:</span>|).*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
+        elif self.site().versionnumber() < 16:
+            editR = re.compile(r'<li class=".*?">\((?:\w*|<a[^<]*</a>)\)\s\((?:\w*|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <span class="minor">.*?</span>|)(?: <span class="history-size">.*?</span>|)(?: <span class=[\'"]comment[\'"]>\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\)|)\s*</li>', re.UNICODE)
+        else:
+            editR = re.compile(r'<li(?: class="mw-tag[^>]+)?>\((?:\w+|<a[^<]*</a>)\)\s\((?:\w+|<a[^<]*</a>)\).*?<a href=".*?([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a [^>]*?>([^<]*?)</a>.*?</span></span>(?: <abbr class="minor"[^>]*?>.*?</abbr>|)(?: <span class="history-size">.*?</span>|)(?: <span class="comment">\((?:<span class="autocomment">|)(.*?)(?:</span>|)\)</span>)?(?: \(<span class="mw-history-undo">.*?</span>\))?(?: <span class="mw-tag-markers">.*?</span>\)</span>)?\s*</li>', re.UNICODE)
+
+        RLinkToNextPage = re.compile('&amp;offset=(.*?)&amp;')
+
+        while not thisHistoryDone:
+            path = self.site().family.version_history_address(self.site().language(), self.urlname(), config.special_page_limit)
 
             if reverseOrder:
                 path += '&dir=prev'
@@ -2341,112 +2616,33 @@ not supported by PyWikipediaBot!"""
                 else:
                     output(u'Getting version history of %s' % self.aslink(forceInterwiki = True))
 
-            txt = site.getUrl(path)
+            txt = self.site().getUrl(path)
 
             # save a copy of the text
             self_txt = txt
 
-            if reverseOrder:
-                # If we are getting all of the page history...
-                if getAll:
-                    if len(self._versionhistoryearliest) == 0:
-                        matchObj = RLinkToNextPage.search(self_txt)
-                        if matchObj:
-                            startFromPage = matchObj.group(1)
-                        else:
-                            thisHistoryDone = True
-
-                        edits = editR.findall(self_txt)
-                        edits.reverse()
-                        for edit in edits:
-                            self._versionhistoryearliest.append(edit)
-                        if len(edits) < revCount:
-                            thisHistoryDone = True
-                    else:
-                        if not skip:
-                            edits = editR.findall(self_txt)
-                            edits.reverse()
-                            for edit in edits:
-                                self._versionhistoryearliest.append(edit)
-                            if len(edits) < revCount:
-                                thisHistoryDone = True
-
-                            matchObj = RLinkToNextPage.search(self_txt)
-                            if matchObj:
-                                startFromPage = matchObj.group(1)
-                            else:
-                                thisHistoryDone = True
-
-                        else:
-                            # Skip the first page only,
-                            skip = False
-
-                            matchObj = RLinkToNextPage.search(self_txt)
-                            if matchObj:
-                                startFromPage = matchObj.group(1)
-                            else:
-                                thisHistoryDone = True
-                else:
-                    # If we are not getting all, we stop on the first page.
-                    for edit in editR.findall(self_txt):
-                        self._versionhistoryearliest.append(edit)
-                    self._versionhistoryearliest.reverse()
-
-                    thisHistoryDone = True
+            #Find the nextPage link, if not exist, the page is last history page
+            matchObj = RLinkToNextPage.search(self_txt)
+            if getAll and matchObj:
+                startFromPage = matchObj.group(1)
             else:
-                # If we are getting all of the page history...
-                if getAll:
-                    if len(self._versionhistory) == 0:
-                        matchObj = RLinkToNextPage.search(self_txt)
-                        if matchObj:
-                            startFromPage = matchObj.group(1)
-                        else:
-                            thisHistoryDone = True
+                thisHistoryDone = True
 
-                        edits = editR.findall(self_txt)
-                        for edit in edits:
-                            self._versionhistory.append(edit)
-                        if len(edits) < revCount:
-                            thisHistoryDone = True
-                    else:
-                        if not skip:
-                            edits = editR.findall(self_txt)
-                            for edit in edits:
-                                self._versionhistory.append(edit)
-                            if len(edits) < revCount:
-                                thisHistoryDone = True
-
-                            matchObj = RLinkToNextPage.findall(self_txt)
-                            if len(matchObj) >= 2:
-                                startFromPage = matchObj[1]
-                            else:
-                                thisHistoryDone = True
-                        else:
-                            # Skip the first page only,
-                            skip = False
-
-                            matchObj = RLinkToNextPage.search(self_txt)
-                            if matchObj:
-                                startFromPage = matchObj.group(1)
-                            else:
-                                thisHistoryDone = True
-                else:
-                    # If we are not getting all, we stop on the first page.
-                    for edit in editR.findall(self_txt):
-                        self._versionhistory.append(edit)
-
+            if not skipFirst:
+                edits = editR.findall(self_txt)
+            
+            if skipFirst:
+                # Skip the first page only,
+                skipFirst = False
+            else:
+                if reverseOrder:
+                    edits.reverse()
+                #for edit in edits:
+                dataQ.extend(edits)
+                if len(edits) < revCount:
                     thisHistoryDone = True
-
-        if reverseOrder:
-            # Return only revCount edits, even if the version history is extensive
-            if len(self._versionhistoryearliest) > revCount and not getAll:
-                return self._versionhistoryearliest[0:revCount]
-            return self._versionhistoryearliest
-
-        # Return only revCount edits, even if the version history is extensive
-        if len(self._versionhistory) > revCount and not getAll:
-            return self._versionhistory[0:revCount]
-        return self._versionhistory
+        
+        return dataQ
 
     def getVersionHistoryTable(self, forceReload=False, reverseOrder=False,
                                getAll=False, revCount=500):
@@ -2473,14 +2669,7 @@ not supported by PyWikipediaBot!"""
         }
         get_throttle(requestsize = 10)
         now = time.time()
-        if self.site().hostname() in config.authenticate.keys():
-            predata["Content-type"] = "application/x-www-form-urlencoded"
-            predata["User-agent"] = useragent
-            data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
-            data = response.read()
-        else:
-            response, data = self.site().postForm(address, predata)
+        response, data = self.site().postForm(address, predata)
         data = data.encode(self.site().encoding())
 #        get_throttle.setDelay(time.time() - now)
         output = []
@@ -2499,12 +2688,88 @@ not supported by PyWikipediaBot!"""
         users = set([edit[2] for edit in edits])
         return users
 
-    def move(self, newtitle, reason=None, movetalkpage=True, sysop=False,
+    def move(self, newtitle, reason=None, movetalkpage=True, movesubpages=False, sysop=False,
              throttle=True, deleteAndMove=False, safe=True, fixredirects=True, leaveRedirect=True):
         """Move this page to new title given by newtitle. If safe, don't try
         to move and delete if not directly requested.
 
         * fixredirects has no effect in MW < 1.13"""
+        if not self.site().has_api() or self.site().versionnumber() < 12:
+            return self._moveOld(newtitle, reason, movetalkpage, sysop,
+              throttle, deleteAndMove, safe, fixredirects, leaveRedirect)
+        # Login
+        try:
+            self.get()
+        except:
+            pass
+        sysop = self._getActionUser(action = 'move', restriction = self.moveRestriction, sysop = False)
+        if deleteAndMove:
+            sysop = self._getActionUser(action = 'delete', restriction = '', sysop = True)
+            Page(self.site(), newtitle).delete(self.site().mediawiki_message('delete_and_move_reason'), False, False)
+
+        # Check blocks
+        self.site().checkBlocks(sysop = sysop)
+
+        if throttle:
+            put_throttle()
+        if reason is None:
+            reason = input(u'Please enter a reason for the move:')
+        if self.isTalkPage():
+            movetalkpage = False
+        
+        params = {
+            'action': 'move',
+            'from': self.title(),
+            'to': newtitle,
+            'token': self.site().getToken(sysop=sysop),
+            'reason': reason,
+            #'': '',
+        }
+        if movesubpages:
+            params['movesubpages'] = 1
+
+        if movetalkpage:
+            params['movetalk'] = 1
+
+        if not leaveRedirect:
+            params['noredirect'] = 1
+
+        result = query.GetData(params, self.site(), sysop=sysop)
+        if 'error' in result:
+            err = result['error']['code']
+            if err == 'articleexists':
+                if safe:
+                    output(u'Page move failed: Target page [[%s]] already exists.' % newtitle)
+                else:
+                    try:
+                        # Try to delete and move
+                        return self.move(newtitle, reason, movetalkpage, movesubpages, throttle = throttle, deleteAndMove = True)
+                    except NoUsername:
+                        # We dont have the user rights to delete
+                        output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+            #elif err == 'protectedpage':
+            #    
+            else:
+                output("Unknown Error: %s" % result)
+            return False
+        elif 'move' in result:
+            if deleteAndMove:
+                output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
+            else:
+                output(u'Page %s moved to %s' % (self.title(), newtitle))
+            
+            if hasattr(self, '_contents'):
+                #self.__init__(self.site(), newtitle, defaultNamespace = self._namespace)
+                try:
+                    self.get(force=True, get_redirect=True, throttle=False)
+                except NoPage:
+                    output(u'Page %s is moved and no longer exist.' % self.title() )
+                    #delattr(self, '_contents')
+            return True
+
+    def _moveOld(self, newtitle, reason=None, movetalkpage=True, movesubpages=False, sysop=False,
+             throttle=True, deleteAndMove=False, safe=True, fixredirects=True, leaveRedirect=True):
+        
         # Login
         try:
             self.get()
@@ -2523,9 +2788,10 @@ not supported by PyWikipediaBot!"""
             reason = input(u'Please enter a reason for the move:')
         if self.isTalkPage():
             movetalkpage = False
+
         host = self.site().hostname()
         address = self.site().move_address()
-        token = self.site().getToken(self, sysop = sysop)
+        token = self.site().getToken(sysop = sysop)
         predata = {
             'wpOldTitle': self.title().encode(self.site().encoding()),
             'wpNewTitle': newtitle.encode(self.site().encoding()),
@@ -2534,36 +2800,51 @@ not supported by PyWikipediaBot!"""
         if deleteAndMove:
             predata['wpDeleteAndMove'] = self.site().mediawiki_message('delete_and_move_confirm')
             predata['wpConfirm'] = '1'
+
         if movetalkpage:
             predata['wpMovetalk'] = '1'
         else:
             predata['wpMovetalk'] = '0'
+
         if self.site().versionnumber() >= 13:
             if fixredirects:
                 predata['wpFixRedirects'] = '1'
             else:
                 predata['wpFixRedirects'] = '0'
+
         if leaveRedirect:
             predata['wpLeaveRedirect'] = '1'
         else:
             predata['wpLeaveRedirect'] = '0'
+
+        if movesubpages:
+            predata['wpMovesubpages'] = '1'
+        else:
+            predata['wpMovesubpages'] = '0'
+
         if token:
             predata['wpEditToken'] = token
-        if self.site().hostname() in config.authenticate.keys():
-            predata['Content-type'] = 'application/x-www-form-urlencoded'
-            predata['User-agent'] = useragent
-            data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-            data = u''
-        else:
-            response, data = self.site().postForm(address, predata, sysop = sysop)
+
+        response, data = self.site().postForm(address, predata, sysop = sysop)
+
         if data == u'' or self.site().mediawiki_message('pagemovedsub') in data:
+            #Move Success
             if deleteAndMove:
                 output(u'Page %s moved to %s, deleting the existing page' % (self.title(), newtitle))
             else:
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
+
+            if hasattr(self, '_contents'):
+                #self.__init__(self.site(), newtitle, defaultNamespace = self._namespace)
+                try:
+                    self.get(force=True, get_redirect=True, throttle=False)
+                except NoPage:
+                    output(u'Page %s is moved and no longer exist.' % self.title() )
+                    #delattr(self, '_contents')
+
             return True
         else:
+            #Move Failure
             self.site().checkBlocks(sysop = sysop)
             if self.site().mediawiki_message('articleexists') in data or self.site().mediawiki_message('delete_and_move') in data:
                 if safe:
@@ -2572,7 +2853,7 @@ not supported by PyWikipediaBot!"""
                 else:
                     try:
                         # Try to delete and move
-                        return self.move(newtitle = newtitle, reason = reason, movetalkpage = movetalkpage, throttle = throttle, deleteAndMove = True)
+                        return self._moveOld(newtitle, reason, movetalkpage, movesubpages, throttle = throttle, deleteAndMove = True)
                     except NoUsername:
                         # We dont have the user rights to delete
                         output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
@@ -2634,15 +2915,12 @@ not supported by PyWikipediaBot!"""
                 answer = 'y'
                 self.site()._noDeletePrompt = True
         if answer == 'y':
-            
+
             token = self.site().getToken(self, sysop = True)
-            try:
-                d = self.site().api_address()
-                del d
-            except NotImplementedError:
-                config.use_api = False
-            
-            if config.use_api and self.site().versionnumber() >= 12:
+            reason = reason.encode(self.site().encoding())
+
+            if self.site().has_api() and self.site().versionnumber() >= 12:
+                #API Mode
                 params = {
                     'action': 'delete',
                     'title': self.title(),
@@ -2650,7 +2928,7 @@ not supported by PyWikipediaBot!"""
                     'reason': reason,
                 }
                 datas = query.GetData(params, self.site(), sysop = True)
-                if datas.has_key('delete'):
+                if 'delete' in datas:
                     output(u'Page %s deleted' % self.aslink(forceInterwiki = True))
                     return True
                 else:
@@ -2659,30 +2937,22 @@ not supported by PyWikipediaBot!"""
                     else:
                         output(u'Deletion of %s failed for an unknown reason. The response text is:' % self.aslink(forceInterwiki = True))
                         output('%s' % datas)
-                    
+
                     return False
             else:
+                #Ordinary mode from webpage.
                 host = self.site().hostname()
                 address = self.site().delete_address(self.urlname())
 
-                reason = reason.encode(self.site().encoding())
                 predata = {
                     'wpDeleteReasonList': 'other',
                     'wpReason': reason,
-                    'wpComment': reason,
+                    #'wpComment': reason, <- which version?
                     'wpConfirm': '1',
-                    'wpConfirmB': '1'
+                    'wpConfirmB': '1',
+                    'wpEditToken': token,
                 }
-                if token:
-                    predata['wpEditToken'] = token
-                if self.site().hostname() in config.authenticate.keys():
-                    predata['Content-type'] = 'application/x-www-form-urlencoded'
-                    predata['User-agent'] = useragent
-                    data = self.site().urlEncode(predata)
-                    response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-                    data = u''
-                else:
-                    response, data = self.site().postForm(address, predata, sysop = True)
+                response, data = self.site().postForm(address, predata, sysop = True)
                 if data:
                     self.site().checkBlocks(sysop = True)
                     if self.site().mediawiki_message('actioncomplete') in data:
@@ -2719,22 +2989,53 @@ not supported by PyWikipediaBot!"""
         #TODO: Handle image file revisions too.
         output(u'Loading list of deleted revisions for [[%s]]...' % self.title())
 
-        address = self.site().undelete_view_address(self.urlname())
-        text = self.site().getUrl(address, sysop = True)
-        #TODO: Handle non-existent pages etc
-
-        rxRevs = re.compile(r'<input name="(?P<ts>(?:ts|fileid)\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>',re.DOTALL)
         self._deletedRevs = {}
-        for rev in rxRevs.finditer(text):
-            self._deletedRevs[rev.group('ts')] = [
-                    rev.group('date'),
-                    rev.group('editor'),
-                    rev.group('comment'),
-                    None,  #Revision text
-                    False, #Restoration marker
-                    ]
 
-        self._deletedRevsModified = False
+        if self.site().has_api() and self.site().versionnumber() >= 12:
+            params = {
+                'action': 'query',
+                'list': 'deletedrevs',
+                'drfrom': self.titleWithoutNamespace(),
+                'drnamespace': self.namespace(),
+                'drprop': ['revid','user','comment','content'],#','minor','len','token'],
+                'drlimit': 100,
+                'drdir': 'older',
+                #'': '',
+            }
+            count = 0
+            while True:
+                data = query.GetData(params, self.site(), sysop=True)
+                for x in data['query']['deletedrevs']:
+                    if x['title'] != self.title():
+                        continue
+
+                    for y in x['revisions']:
+                        count += 1
+                        self._deletedRevs[parsetime2stamp(y['timestamp'])] = [y['timestamp'], y['user'], y['comment'] , y['*'], False]
+
+                if 'query-continue' in data and data['query-continue']['deletedrevs']['drcontinue'].split('|')[1] == self.titleWithoutNamespace():
+                    params['drcontinue'] = data['query-continue']['deletedrevs']['drcontinue']
+                else:
+                    break
+            self._deletedRevsModified = False
+
+        else:
+            address = self.site().undelete_view_address(self.urlname())
+            text = self.site().getUrl(address, sysop = True)
+            #TODO: Handle non-existent pages etc
+
+            rxRevs = re.compile(r'<input name="(?P<ts>(?:ts|fileid)\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>',re.DOTALL)
+            for rev in rxRevs.finditer(text):
+                self._deletedRevs[rev.group('ts')] = [
+                        rev.group('date'),
+                        rev.group('editor'),
+                        rev.group('comment'),
+                        None,  #Revision text
+                        False, #Restoration marker
+                        ]
+
+            self._deletedRevsModified = False
+
         return self._deletedRevs.keys()
 
     def getDeletedRevision(self, timestamp, retrieveText=False):
@@ -2798,40 +3099,67 @@ not supported by PyWikipediaBot!"""
         """
         # Login
         self._getActionUser(action = 'undelete', sysop = True)
-
+        
         # Check blocks
         self.site().checkBlocks(sysop = True)
-
+        
+        token = self.site().getToken(self, sysop=True)
+        
         if throttle:
             put_throttle()
+        
+        if self.site().has_api() and self.site().versionnumber() >= 12:
+            params = {
+                'action': 'undelete',
+                'title': self.title(),
+                'reason': comment,
+                'token': token,
+            }
+            if self._deletedRevs and self._deletedRevsModified:
+                selected = []
+                
+                for ts in self._deletedRevs:
+                    if self._deletedRevs[ts][4]:
+                        selected.append(ts)
+                params['timestamps'] = ts,
 
-        address = self.site().undelete_address()
-        token = self.site().getToken(self, sysop=True)
+            result = query.GetData(params, self.site(), sysop=True)
+            if 'error' in result:
+                raise RuntimeError("%s" % result['error'])
+            elif 'undelete' in result:
+                output(u'Page %s undeleted' % self.aslink())
 
-        formdata = {
+            return result
+
+        else:
+            address = self.site().undelete_address()
+
+            formdata = {
                 'target': self.title(),
                 'wpComment': comment,
                 'wpEditToken': token,
                 'restore': self.site().mediawiki_message('undeletebtn')
-                }
+            }
 
-        if self._deletedRevs is not None and self._deletedRevsModified:
-            for ts in self._deletedRevs:
-                if self._deletedRevs[ts][4]:
-                    formdata['ts'+ts] = '1'
+            if self._deletedRevs and self._deletedRevsModified:
+                for ts in self._deletedRevs:
+                    if self._deletedRevs[ts][4]:
+                        formdata['ts'+ts] = '1'
 
-        self._deletedRevs = None
-        #TODO: Check for errors below (have we succeeded? etc):
-        result = self.site().postForm(address,formdata,sysop=True)
-        output(u'Page %s undeleted' % self.aslink())
-        return result
+            self._deletedRevs = None
+            #TODO: Check for errors below (have we succeeded? etc):
+            result = self.site().postForm(address,formdata,sysop=True)
+            output(u'Page %s undeleted' % self.aslink())
 
-    def protect(self, edit='sysop', move='sysop', unprotect=False,
-                reason=None, duration = None, cascading = False, prompt=True, throttle=True):
-        """(Un)protect a wiki page. Requires administrator status.
+            return result
 
+    def protect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
+                move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
+        """(Un)protect a wiki title. Requires administrator status.
+
+        If the title is not exist, the protection only ec (aka edit/create) available
         If reason is None,  asks for a reason. If prompt is True, asks the
-        user if he wants to protect the page. Valid values for edit and move
+        user if he wants to protect the page. Valid values for ec and move
         are:
            * '' (equivalent to 'none')
            * 'autoconfirmed'
@@ -2844,13 +3172,14 @@ not supported by PyWikipediaBot!"""
         # Check blocks
         self.site().checkBlocks(sysop = True)
 
-        address = self.site().protect_address(self.urlname())
+        #if self.exists() and editcreate != move: # check protect level if edit/move not same
+        #    if editcreate == 'sysop' and move != 'sysop':
+        #        raise Error("The level configuration is not safe")
+
         if unprotect:
-            address = self.site().unprotect_address(self.urlname())
-            # unprotect_address is actually an alias for protect_address...
-            edit = move = ''
+            editcreate = move = ''
         else:
-            edit, move = edit.lower(), move.lower()
+            editcreate, move = editcreate.lower(), move.lower()
         if throttle:
             put_throttle()
         if reason is None:
@@ -2867,62 +3196,139 @@ not supported by PyWikipediaBot!"""
                 answer = 'y'
                 self.site()._noProtectPrompt = True
         if answer == 'y':
-            host = self.site().hostname()
+            if not self.site().has_api() or self.site().versionnumber() < 12:
+                return self._oldProtect(editcreate, move, unprotect, reason,
+                                        editcreate_duration, move_duration,
+                                        cascading, prompt, throttle)
 
             token = self.site().getToken(self, sysop = True)
 
             # Translate 'none' to ''
-            if edit == 'none': edit = ''
-            if move == 'none': move = ''
+            protections = []
+            expiry = []
+            if editcreate == 'none':
+                editcreate = 'all'
+            if move == 'none':
+                move = 'all'
 
-            # Translate no duration to infinite
-            if duration == 'none' or duration is None: duration = 'infinite'
+            if editcreate_duration == 'none' or not editcreate_duration:
+                editcreate_duration = 'infinite'
+            if move_duration == 'none' or not move_duration:
+                move_duration = 'infinite'
 
-            # Get cascading
-            if cascading == False:
-                cascading = '0'
+            if self.exists():
+                protections.append("edit=%s" % editcreate)
+
+                protections.append("move=%s" % move)
+                expiry.append(move_duration)
             else:
-                if edit != 'sysop' or move != 'sysop':
+                protections.append("create=%s" % editcreate)
+
+            expiry.append(editcreate_duration)
+
+            params = {
+                'action': 'protect',
+                'title': self.title(),
+                'token': token,
+                'protections': protections,
+                'expiry': expiry,
+                #'': '',
+            }
+            if reason:
+                params['reason'] = reason
+
+            if cascading:
+                if editcreate != 'sysop' or move != 'sysop' or not self.exists():
                     # You can't protect a page as autoconfirmed and cascading, prevent the error
-                    cascading = '0'
+                    # Cascade only available exists page, create prot. not.
                     output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
                 else:
-                    cascading = '1'
+                    params['cascade'] = 1
 
-            predata = {
-                'mwProtect-cascade': cascading,
-                'mwProtect-level-edit': edit,
-                'mwProtect-level-move': move,
-                'mwProtect-reason': reason,
-                'mwProtect-expiry': duration,
-            }
-            if token:
-                predata['wpEditToken'] = token
-            if self.site().hostname() in config.authenticate.keys():
-                predata["Content-type"] = "application/x-www-form-urlencoded"
-                predata["User-agent"] = useragent
-                data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(
-                            urllib2.Request(
-                                self.site().protocol() + '://'
-                                    + self.site().hostname() + address,
-                                data))
-                data = u''
-            else:
-                response, data = self.site().postForm(address, predata,
-                                                      sysop=True)
+            result = query.GetData(params, self.site(), sysop=True)
 
-            if response.status == 302 and not data:
-                output(u'Changed protection level of page %s.' % self.aslink())
-                return True
+            if 'error' in result: #error occured
+                err = result['error']['code']
+                output('%s' % result)
+                #if err == '':
+                #    
+                #elif err == '':
+                #    
             else:
-                #Normally, we expect a 302 with no data, so this means an error
-                self.site().checkBlocks(sysop = True)
-                output(u'Failed to change protection level of page %s:'
-                       % self.aslink())
-                output(u"HTTP response code %s" % response.status)
-                output(data)
-                return False
+                if result['protect']:
+                    output(u'Changed protection level of page %s.' % self.aslink())
+                    return True
+
+        return False
+
+    def _oldProtect(self, editcreate = 'sysop', move = 'sysop', unprotect = False, reason = None, editcreate_duration = 'infinite',
+                move_duration = 'infinite', cascading = False, prompt = True, throttle = True):
+        """internal use for protect page by ordinary web page form"""
+        host = self.site().hostname()
+        token = self.site().getToken(sysop = True)
+
+        # Translate 'none' to ''
+        if editcreate == 'none': editcreate = ''
+        if move == 'none': move = ''
+
+        # Translate no duration to infinite
+        if editcreate_duration == 'none' or not editcreate_duration: editcreate_duration = 'infinite'
+        if move_duration == 'none' or not move_duration: move_duration = 'infinite'
+
+        # Get cascading
+        if cascading == False:
+            cascading = '0'
+        else:
+            if editcreate != 'sysop' or move != 'sysop' or not self.exists():
+                # You can't protect a page as autoconfirmed and cascading, prevent the error
+                # Cascade only available exists page, create prot. not.
+                cascading = '0'
+                output(u"NOTE: The page can't be protected with cascading and not also with only-sysop. Set cascading \"off\"")
+            else:
+                cascading = '1'
+
+        if unprotect:
+            address = self.site().unprotect_address(self.urlname())
+        else:
+            address = self.site().protect_address(self.urlname())
+
+        predata = {}
+        if self.site().versionnumber >= 10:
+            predata['mwProtect-cascade'] = cascading
+
+        predata['mwProtect-reason'] = reason
+
+        if not self.exists(): #and self.site().versionnumber() >= :
+            #create protect
+            predata['mwProtect-level-create'] = editcreate
+            predata['wpProtectExpirySelection-create'] = editcreate_duration
+        else:
+            #edit/move Protect
+            predata['mwProtect-level-edit'] = editcreate
+            predata['mwProtect-level-move'] = move
+
+            if self.site().versionnumber() >= 14:
+                predata['wpProtectExpirySelection-edit'] = editcreate_duration
+                predata['wpProtectExpirySelection-move'] = move_duration
+            else:
+                predata['mwProtect-expiry'] = editcreate_duration
+
+        if token:
+            predata['wpEditToken'] = token
+        
+        response, data = self.site().postForm(address, predata, sysop=True)
+
+        if response.code == 302 and not data:
+            output(u'Changed protection level of page %s.' % self.aslink())
+            return True
+        else:
+            #Normally, we expect a 302 with no data, so this means an error
+            self.site().checkBlocks(sysop = True)
+            output(u'Failed to change protection level of page %s:'
+                   % self.aslink())
+            output(u"HTTP response code %s" % response.code)
+            output(data)
+            return False
 
     def removeImage(self, image, put=False, summary=None, safe=True):
         """Remove all occurrences of an image from this Page."""
@@ -3020,20 +3426,16 @@ not supported by PyWikipediaBot!"""
     def getLatestEditors(self, limit = 1):
         """ Function to get the last editors of a page """
         #action=query&prop=revisions&titles=API&rvprop=timestamp|user|comment
-        params = {
-            'action'    :'query',
-            'prop'      :'revisions',
-            'rvprop'    :'user|timestamp',
-            'rvlimit'   :limit,
-            'titles'    :self.title(),
-            }
-        try:
-            data = query.GetData(params, self.site(), encodeTitle = False)['query']['pages']
-        except KeyError:
-            raise NoPage(u'API Error, nothing found in the APIs')
+        if hasattr(self, '_versionhistory'):
+            data = self.getVersionHistory(getAll=True, revCount = limit)
+        else:
+            data = self.getVersionHistory(revCount = limit)
 
-        # We don't know the page's id, if any other better idea please change it
-        return data[data.keys()[0]][u'revisions']
+        result = []
+        for i in data:
+            result.append({'user':i[2],'timestamp':i[1]})
+
+        return result
 
 class ImagePage(Page):
     """A subclass of Page representing an image descriptor wiki page.
@@ -3059,6 +3461,9 @@ class ImagePage(Page):
         if self.namespace() != 6:
             raise ValueError(u'BUG: %s is not in the image namespace!' % title)
         self._imagePageHtml = None
+        self._local = None
+        self._latestInfo = {}
+        self._infoLoaded = False
 
     def getImagePageHtml(self):
         """
@@ -3072,6 +3477,51 @@ class ImagePage(Page):
             self._imagePageHtml = self.site().getUrl(path)
         return self._imagePageHtml
 
+    def _loadInfo(self, limit = 1):
+        params = {
+            'action': 'query',
+            'prop': 'imageinfo',
+            'titles': self.title(),
+            'iiprop': ['timestamp', 'user', 'comment', 'url', 'size', 'dimensions', 'sha1', 'mime', 'metadata', 'archivename', 'bitdepth'],
+            'iilimit': limit,
+        }
+        try:
+            data = query.GetData(params, self.site())
+        except NotImplementedError:
+            output("API not work, loading page HTML.")
+            self.getImagePageHtml()
+            return
+            
+        if 'error' in data:
+            raise RuntimeError("%s" %data['error'])
+        count = 0
+        if data['query']['pages'].values()[0]["imagerepository"] == "shared":
+            self._local = False
+        else:
+            self._local = True
+        infos = []
+        
+        try:
+            while True:
+                for info in data['query']['pages'].values()[0]['imageinfo']:
+                    count += 1
+                    if count == 1 and 'iistart' not in params: 
+                    # count 1 and no iicontinue mean first image revision is latest.
+                        self._latestInfo = info
+                    infos.append(info)
+                    if limit == 1:
+                        break
+
+                if 'query-continue' in data and limit != 1:
+                    params['iistart'] = data['query-continue']['imageinfo']['iistart']
+                else:
+                    break
+        except KeyError:
+            output("Not image in imagepage")
+        self._infoLoaded = True
+        if limit > 1:
+            return infos
+
     def fileUrl(self):
         """Return the URL for the image described on this page."""
         # There are three types of image pages:
@@ -3084,45 +3534,40 @@ class ImagePage(Page):
         # is a full image link for .ogg and .mid files.
         #***********************
         #change to API query: action=query&titles=File:wiki.jpg&prop=imageinfo&iiprop=url
-        params = {
-            'action'    :'query',
-            'prop'      :'imageinfo',
-            'titles'    :self.title(),
-            'iiprop'    :'url',
-        }
-        imagedata = query.GetData(params, self.site(), encodeTitle = False)
-        try:
-            url = imagedata['query']['pages'].values()[0]['imageinfo'][0]['url']
-            return url
-#        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
-#        m = urlR.search(self.getImagePageHtml())
+        if not self._infoLoaded:
+            self._loadInfo()
+        
+        if self._infoLoaded:
+            return self._latestInfo['url']
+        
+        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
+        m = urlR.search(self.getImagePageHtml())
 
-#            url = m.group('url') or m.group('url2')
-        except KeyError:
-            raise NoPage(u'Image file URL for %s not found.'
-                         % self.aslink(forceInterwiki = True))
+        url = m.group('url') or m.group('url2')
         return url
 
     def fileIsOnCommons(self):
         """Return True if the image is stored on Wikimedia Commons"""
-        return self.fileUrl().startswith(
-            u'http://upload.wikimedia.org/wikipedia/commons/')
+        if not self._infoLoaded:
+            self._loadInfo()
+        
+        if self._infoLoaded:
+            return not self._local
+        
+        return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
 
     def fileIsShared(self):
         """Return True if image is stored on Wikitravel shared repository."""
         if 'wikitravel_shared' in self.site().shared_image_repository():
-            return self.fileUrl().startswith(
-                u'http://wikitravel.org/upload/shared/')
+            return self.fileUrl().startswith(u'http://wikitravel.org/upload/shared/')
         return self.fileIsOnCommons()
 
     # FIXME: MD5 might be performed on not complete file due to server disconnection
     # (see bug #1795683).
     def getFileMd5Sum(self):
         """Return image file's MD5 checksum."""
-        uo = MyURLopener()
-        f = uo.open(self.fileUrl())
-        md5Checksum = md5(f.read()).hexdigest()
-        return md5Checksum
+        f = MyURLopener.open(self.fileUrl())
+        return md5(f.read()).hexdigest()
 
     def getFileVersionHistory(self):
         """Return the image file's version history.
@@ -3132,6 +3577,15 @@ class ImagePage(Page):
 
         """
         result = []
+        infos = self._loadInfo(500)
+        #API query
+        if infos:
+            for i in infos:
+                result.append((i['timestamp'], i['user'], u"%s×%s" % (i['width'], i['height']), i['size'], i['comment']))
+            
+            return result
+        
+        #from ImagePage HTML
         history = re.search('(?s)<table class="wikitable filehistory">.+?</table>', self.getImagePageHtml())
         if history:
             lineR = re.compile(r'<tr>(?:<td>.*?</td>){1,2}<td.*?><a href=".+?">(?P<datetime>.+?)</a></td><td>.*?(?P<resolution>\d+\xd7\d+) <span.*?>\((?P<filesize>.+?)\)</span></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?:.*?<span class="comment">\((?P<comment>.*?)\)</span>)?</td></tr>')
@@ -3156,38 +3610,24 @@ class ImagePage(Page):
 
     def getLatestUploader(self):
         """ Function that uses the APIs to detect the latest uploader of the image """
-        params = {
-            'action'    :'query',
-            'prop'      :'imageinfo',
-            'titles'    :self.title(),
-            }
-        data = query.GetData(params, self.site(), encodeTitle = False)
-        try:
-            # We don't know the page's id, if any other better idea please change it
-            pageid = data['query']['pages'].keys()[0]
-            nick = data['query']['pages'][pageid][u'imageinfo'][0][u'user']
-            timestamp = data['query']['pages'][pageid][u'imageinfo'][0][u'timestamp']
-            return [nick, timestamp]
-        except KeyError:
-            raise NoPage(u'API Error, nothing found in the APIs')
+        if not self._infoLoaded:
+            self._loadInfo()
+        if self._infoLoaded:
+            return [self._latestInfo['user'], self._latestInfo['timestamp']]
         
+        inf = self.getFileVersionHistory()[0]
+        return [inf[1], inf[0]]
+
     def getHash(self):
         """ Function that return the Hash of an file in oder to understand if two
             Files are the same or not.
             """
         if self.exists():
-            params = {
-                'action'    :'query',
-                'titles'    :self.title(),
-                'prop'      :'imageinfo',
-                'iiprop'    :'sha1',
-                }
-            # First of all we need the Hash that identify an image
-            data = query.GetData(params, self.site(), encodeTitle = False)
-            pageid = data['query']['pages'].keys()[0]
+            if not self._infoLoaded:
+                self._loadInfo()
             try:
-                hash_found = data['query']['pages'][pageid][u'imageinfo'][0][u'sha1']
-            except (KeyError, IndexError):
+                return self._latestInfo['sha1']
+            except (KeyError, IndexError, TypeError):
                 try:
                     self.get()
                 except NoPage:
@@ -3198,8 +3638,6 @@ class ImagePage(Page):
                     return None
                 else:
                     raise NoHash('No Hash found in the APIs! Maybe the regex to catch it is wrong or someone has changed the APIs structure.')
-            else:
-                return hash_found
         else:
             output(u'File deleted before getting the Hash. Skipping...')
             return None
@@ -3208,10 +3646,37 @@ class ImagePage(Page):
         """Return the version history in the form of a wiki table."""
         lines = []
         for (datetime, username, resolution, size, comment) in self.getFileVersionHistory():
-            lines.append('| %s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
+            lines.append(u'| %s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n' + u'\n|----\n'.join(lines) + '\n|}'
 
     def usingPages(self):
+        if not self.site().has_api() or self.site().versionnumber() < 11:
+            for a in self._usingPagesOld():
+                yield a
+            return
+
+        params = {
+            'action': 'query',
+            'list': 'imageusage',
+            'iutitle': self.title(),
+            'iulimit': config.special_page_limit,
+            #'': '',
+        }
+
+        while True:
+            data = query.GetData(params, self.site())
+            if 'error' in data:
+                raise RuntimeError("%s" % data['error'])
+            
+            for iu in data['query']["imageusage"]:
+                yield Page(self.site(), iu['title'], defaultNamespace=iu['ns'])
+            
+            if 'query-continue' in data:
+                params['iucontinue'] = data['query-continue']['imageusage']['iucontinue']
+            else:
+                break
+    
+    def _usingPagesOld(self):
         """Yield Pages on which the image is displayed."""
         titleList = re.search('(?s)<h2 id="filelinks">.+?<!-- end content -->',
                               self.getImagePageHtml()).group()
@@ -3251,48 +3716,76 @@ class _GetAll(object):
 
     def run(self):
         if self.pages:
-            while True:
-                try:
-                    data = self.getData()
-                except (socket.error, httplib.BadStatusLine, ServerError):
-                    # Print the traceback of the caught exception
-                    output(u''.join(traceback.format_exception(*sys.exc_info())))
-                    output(u'DBG> got network error in _GetAll.run. ' \
-                            'Sleeping for %d seconds...' % self.sleeptime)
-                    self.sleep()
-                else:
-                    if "<title>Wiki does not exist</title>" in data:
-                        raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
-                    elif "</mediawiki>" not in data[-20:]:
-                        # HTML error Page got thrown because of an internal
-                        # error when fetching a revision.
-                        output(u'Received incomplete XML data. ' \
-                            'Sleeping for %d seconds...' % self.sleeptime)
-                        self.sleep()
-                    elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
-                        output(u'Got incorrect export page. ' \
-                            'Sleeping for %d seconds...' % self.sleeptime)
+            # Sometimes query does not contains revisions
+            if  self.site.has_api() and debug:
+                while True:
+                    try:
+                        data = self.getDataApi()
+                    except (socket.error, httplib.BadStatusLine, ServerError):
+                        # Print the traceback of the caught exception
+                        s = ''.join(traceback.format_exception(*sys.exc_info()))
+                        if not isinstance(s, unicode):
+                            s = s.decode('utf-8')
+                        output(u'%s\nDBG> got network error in _GetAll.run. ' \
+                                'Sleeping for %d seconds...' % (s, self.sleeptime))
                         self.sleep()
                     else:
-                        break
-            R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
-            m = R.match(data)
-            if m:
-                data = m.group(2)
-            handler = xmlreader.MediaWikiXmlHandler()
-            handler.setCallback(self.oneDone)
-            handler.setHeaderCallback(self.headerDone)
-            #f = open("backup.txt", "w")
-            #f.write(data)
-            #f.close()
-            try:
-                xml.sax.parseString(data, handler)
-            except (xml.sax._exceptions.SAXParseException, ValueError), err:
-                debugDump( 'SaxParseBug', self.site, err, data )
-                raise
-            except PageNotFound:
-                return
-            # All of the ones that have not been found apparently do not exist
+                        if 'error' in data:
+                            raise RuntimeError(data['error'])
+                        else:
+                            break
+
+                self.headerDoneApi(data['query'])
+                if 'normalized' in data['query']:
+                    self._norm = dict([(x['from'],x['to']) for x in data['query']['normalized']])
+                for vals in data['query']['pages'].values():
+                    self.oneDoneApi(vals)
+            else:
+                while True:
+                    try:
+                        data = self.getData()
+                    except (socket.error, httplib.BadStatusLine, ServerError):
+                        # Print the traceback of the caught exception
+                        s = ''.join(traceback.format_exception(*sys.exc_info()))
+                        if not isinstance(s, unicode):
+                            s = s.decode('utf-8')
+                        output(u'%s\nDBG> got network error in _GetAll.run. ' \
+                                'Sleeping for %d seconds...' % (s, self.sleeptime))
+                        self.sleep()
+                    else:
+                        if "<title>Wiki does not exist</title>" in data:
+                            raise NoSuchSite(u'Wiki %s does not exist yet' % self.site)
+                        elif "</mediawiki>" not in data[-20:]:
+                            # HTML error Page got thrown because of an internal
+                            # error when fetching a revision.
+                            output(u'Received incomplete XML data. ' \
+                                'Sleeping for %d seconds...' % self.sleeptime)
+                            self.sleep()
+                        elif "<siteinfo>" not in data: # This probably means we got a 'temporary unaivalable'
+                            output(u'Got incorrect export page. ' \
+                                'Sleeping for %d seconds...' % self.sleeptime)
+                            self.sleep()
+                        else:
+                            break
+                R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
+                m = R.match(data)
+                if m:
+                    data = m.group(2)
+                handler = xmlreader.MediaWikiXmlHandler()
+                handler.setCallback(self.oneDone)
+                handler.setHeaderCallback(self.headerDone)
+                #f = open("backup.txt", "w")
+                #f.write(data)
+                #f.close()
+                try:
+                    xml.sax.parseString(data, handler)
+                except (xml.sax._exceptions.SAXParseException, ValueError), err:
+                    debugDump( 'SaxParseBug', self.site, err, data )
+                    raise
+                except PageNotFound:
+                    return
+                # All of the ones that have not been found apparently do not exist
+
             for pl in self.pages:
                 if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                     pl._getexception = NoPage
@@ -3329,7 +3822,7 @@ class _GetAll(object):
                         ## output(u"%s is a redirect" % page2.aslink())
                         redirectto = m.group(1)
                         if section and not "#" in redirectto:
-                            redirectto = redirectto+"#"+section
+                            redirectto += "#" + section
                         page2._getexception = IsRedirectPage
                         page2._redirarg = redirectto
 
@@ -3393,7 +3886,7 @@ class _GetAll(object):
                     else:
                         flag = u"is '%s', but should be '%s'" % (ns, nshdr)
                     output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
-#                    self.site.family.namespaces[id][lang] = nshdr
+                    #self.site.family.namespaces[id][lang] = nshdr
             else:
                 output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
         for id in self.site.family.namespaces:
@@ -3421,19 +3914,161 @@ class _GetAll(object):
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
-        if self.site.hostname() in config.authenticate.keys():
-            predata["Content-type"] = "application/x-www-form-urlencoded"
-            predata["User-agent"] = useragent
-            data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data))
-            data = response.read()
-        else:
-            response, data = self.site.postForm(address, predata)
-            # The XML parser doesn't expect a Unicode string, but an encoded one,
-            # so we'll encode it back.
-            data = data.encode(self.site.encoding())
-#        get_throttle.setDelay(time.time() - now)
+        response, data = self.site.postForm(address, predata)
+        # The XML parser doesn't expect a Unicode string, but an encoded one,
+        # so we'll encode it back.
+        data = data.encode(self.site.encoding())
+        #get_throttle.setDelay(time.time() - now)
         return data
+
+    def oneDoneApi(self, data):
+        title = data['title']
+        if not ('missing' in data or 'invalid' in data):
+            revisionId = data['lastrevid']
+            rev = None
+            try:
+                rev = data['revisions']
+            except KeyError:
+                raise u'NOTE: Last revision of [[%s]] not found' % title
+            else:
+                username = rev[0]['user']
+                ipedit = 'anon' in rev[0]
+                timestamp = rev[0]['timestamp']
+                text = rev[0]['*']
+            editRestriction = ''
+            moveRestriction = ''
+            for revs in data['protection']:
+                if revs['type'] == 'edit':
+                    editRestriction = revs['level']
+                elif revs['type'] == 'move':
+                    moveRestriction = revs['level']
+        
+        page = Page(self.site, title)
+        successful = False
+        for page2 in self.pages:
+            if hasattr(self, '_norm') and page2.sectionFreeTitle() in self._norm:
+                page2._title = self._norm[page2.sectionFreeTitle()]
+
+            if page2.sectionFreeTitle() == page.sectionFreeTitle():
+                if 'missing' in data:
+                    page2._getexception = NoPage
+                    successful = True
+                    break
+
+                if 'invalid' in data:
+                    page2._getexception = BadTitle
+                    successful = True
+                    break
+                
+                if not (hasattr(page2,'_contents') or hasattr(page2,'_getexception')) or self.force:
+                    page2.editRestriction = editRestriction
+                    page2.moveRestriction = moveRestriction
+                    if editRestriction == 'autoconfirmed':
+                        page2._editrestriction = True
+                    page2._permalink = revisionId
+                    if rev:
+                        page2._userName = username
+                        page2._ipedit = ipedit
+                        page2._editTime = timestamp
+                        page2._contents = text
+                    else:
+                        raise u'BUG?>>: Last revision of [[%s]] not found' % title
+                    page2._revisionId = revisionId
+                    section = page2.section()
+                    if 'redirect' in data:
+                        ## output(u"%s is a redirect" % page2.aslink())
+                        m = self.site.redirectRegex().match(text)
+                        redirectto = m.group(1)
+                        if section and not "#" in redirectto:
+                            redirectto += "#" + section
+                        page2._getexception = IsRedirectPage
+                        page2._redirarg = redirectto
+
+                    # This is used for checking deletion conflict.
+                    # Use the data loading time.
+                    page2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                    if section:
+                        m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
+                        if not m:
+                            try:
+                                page2._getexception
+                                output(u"WARNING: Section not found: %s" % page2.aslink(forceInterwiki = True))
+                            except AttributeError:
+                                # There is no exception yet
+                                page2._getexception = SectionError
+                successful = True
+                # Note that there is no break here. The reason is that there
+                # might be duplicates in the pages list.
+        if not successful:
+            output(u"BUG>> title %s (%s) not found in list" % (title, page.aslink(forceInterwiki=True)))
+            output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
+            raise PageNotFound
+
+    def headerDoneApi(self, header):
+        p = re.compile('^MediaWiki (.+)$')
+        m = p.match(header['general']['generator'])
+        if m:
+            version = m.group(1)
+            if version != self.site.version():
+                output(u'WARNING: Family file %s contains version number %s, but it should be %s' % (self.site.family.name, self.site.version(), version))
+
+        # Verify case
+        if self.site.nocapitalize:
+            case = 'case-sensitive'
+        else:
+            case = 'first-letter'
+        if case != header['general']['case'].strip():
+            output(u'WARNING: Family file %s contains case %s, but it should be %s' % (self.site.family.name, case, header.case.strip()))
+
+        # Verify namespaces
+        lang = self.site.lang
+        ids = header['namespaces'].keys()
+        ids.sort()
+        for id in ids:
+            nshdr = header['namespaces'][id]['*']
+            id = header['namespaces'][id]['id']
+            if self.site.family.isDefinedNSLanguage(id, lang):
+                ns = self.site.namespace(id) or u''
+                if ns != nshdr:
+                    try:
+                        dflt = self.site.family.namespace('_default', id)
+                    except KeyError:
+                        dflt = u''
+                    if not ns and not dflt:
+                        flag = u"is not set, but should be '%s'" % nshdr
+                    elif dflt == ns:
+                        flag = u"is set to default ('%s'), but should be '%s'" % (ns, nshdr)
+                    elif dflt == nshdr:
+                        flag = u"is '%s', but should be removed (default value '%s')" % (ns, nshdr)
+                    else:
+                        flag = u"is '%s', but should be '%s'" % (ns, nshdr)
+                    output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
+                    #self.site.family.namespaces[id][lang] = nshdr
+            else:
+                output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
+        for id in self.site.family.namespaces:
+            if self.site.family.isDefinedNSLanguage(id, lang) and u'%i' % id not in header['namespaces']:
+                output(u"WARNING: Family file %s includes namespace['%s'][%i], but it should be removed (namespace doesn't exist in the site)" % (self.site.family.name, lang, id ) )
+
+    def getDataApi(self):
+        pagenames = [page.sectionFreeTitle() for page in self.pages]
+        params = {
+            'action': 'query',
+            'meta':'siteinfo',
+            'prop': ['info', 'revisions'],
+            'titles': pagenames,
+            'siprop': ['general', 'namespaces'],
+            'rvprop': ['content', 'timestamp', 'user', 'comment', 'size'],#'ids', 
+            'inprop': ['protection', 'talkid', 'subjectid'], #, 'url', 'readable'
+        }
+
+        # Slow ourselves down
+        get_throttle(requestsize = len(self.pages))
+        # Now make the actual request to the server
+        now = time.time()
+
+        #get_throttle.setDelay(time.time() - now)
+        return query.GetData(params, self.site)
 
 def getall(site, pages, throttle=True, force=False):
     """Use Special:Export to bulk-retrieve a group of pages from site
@@ -3444,27 +4079,39 @@ def getall(site, pages, throttle=True, force=False):
     """
     # TODO: why isn't this a Site method?
     pages = list(pages)  # if pages is an iterator, we need to make it a list
-    output(u'Getting %d pages from %s...' % (len(pages), site))
-    _GetAll(site, pages, throttle, force).run()
+    output(u'Getting %d pages %s from %s...'
+           % (len(pages), iif(site.has_api() and debug, u'via API', u''), site))
+    limit = config.special_page_limit / 4 # default is 500/4, but It might have good point for server.
+    if len(pages) > limit:
+        # separate export pages for bulk-retrieve
+        
+        for pagg in range(0, len(pages), limit):
+            if pagg == range(0, len(pages), limit)[-1]: #latest retrieve
+                k = pages[pagg:]
+                output(u'Getting pages %d - %d of %d...' % (pagg + 1, len(pages), len(pages)))
+                _GetAll(site, k, throttle, force).run()
+                pages[pagg:] = k
+            else:
+                k = pages[pagg:pagg + limit]
+                output(u'Getting pages %d - %d of %d...' % (pagg + 1, pagg + limit, len(pages)))
+                _GetAll(site, k, throttle, force).run()
+                pages[pagg:pagg + limit] = k
+            get_throttle(requestsize = len(pages) / 10) # one time to retrieve is 7.7 sec.
+    else:
+        _GetAll(site, pages, throttle, force).run()
 
 
 # Library functions
-
-def unescape(s):
-    """Replace escaped HTML-special characters by their originals"""
-    if '&' not in s:
-        return s
-    s = s.replace("&lt;", "<")
-    s = s.replace("&gt;", ">")
-    s = s.replace("&apos;", "'")
-    s = s.replace("&quot;", '"')
-    s = s.replace("&amp;", "&") # Must be last
-    return s
 
 def setAction(s):
     """Set a summary to use for changed page submissions"""
     global action
     action = s
+
+def iif(q, a, b):
+    """inline if"""
+    if q: return a
+    else: return b
 
 # Default action
 setAction('Wikipedia python library')
@@ -3477,749 +4124,6 @@ def setUserAgent(s):
 # Default User-agent
 setUserAgent('PythonWikipediaBot/1.0')
 
-# Mechanics to slow down page download rate.
-class Throttle(object):
-    """For internal use only - control rate of access to wiki server
-
-    Calling this object blocks the calling thread until at least 'delay'
-    seconds have passed since the previous call.
-
-    The framework initiates two Throttle objects: get_throttle to control
-    the rate of read access, and put_throttle to control the rate of write
-    access.
-
-    """
-    def __init__(self, mindelay=config.minthrottle,
-                 maxdelay=config.maxthrottle,
-                 multiplydelay=True):
-        self.lock = threading.RLock()
-        self.mindelay = mindelay
-        self.maxdelay = maxdelay
-        self.pid = False # If self.pid remains False, we're not checking for multiple processes
-        self.now = 0
-        self.next_multiplicity = 1.0
-        self.checkdelay = 240 # Check the file with processes again after this many seconds
-        self.dropdelay = 360 # Drop processes from the list that have not made a check in this many seconds
-        self.releasepid = 100000 # Free the process id
-        self.lastwait = 0.0
-        self.delay = 0
-        if multiplydelay:
-            self.checkMultiplicity()
-        self.setDelay(mindelay)
-
-    def logfn(self):
-        return config.datafilepath('logs', 'throttle.log')
-
-    def checkMultiplicity(self):
-        self.lock.acquire()
-        try:
-            processes = {}
-            my_pid = 1
-            count = 1
-            try:
-                f = open(self.logfn(), 'r')
-            except IOError:
-                if not self.pid:
-                    pass
-                else:
-                    raise
-            else:
-                now = time.time()
-                for line in f.readlines():
-                    try:
-                        line = line.split(' ')
-                        pid = int(line[0])
-                        ptime = int(line[1].split('.')[0])
-                        if now - ptime <= self.releasepid:
-                            if now - ptime <= self.dropdelay and pid != self.pid:
-                                count += 1
-                            processes[pid] = ptime
-                            if pid >= my_pid:
-                                my_pid = pid+1
-                    except (IndexError,ValueError):
-                        pass    # Sometimes the file gets corrupted - ignore that line
-
-            if not self.pid:
-                self.pid = my_pid
-            self.checktime = time.time()
-            processes[self.pid] = self.checktime
-            f = open(self.logfn(), 'w')
-            for p in processes:
-                f.write(str(p)+' '+str(processes[p])+'\n')
-            f.close()
-            self.process_multiplicity = count
-            if verbose:
-                output(u"Checked for running processes. %s processes currently running, including the current process." % count)
-        finally:
-            self.lock.release()
-
-    def setDelay(self, delay = config.minthrottle, absolute = False):
-        self.lock.acquire()
-        try:
-            if absolute:
-                self.maxdelay = delay
-                self.mindelay = delay
-            self.delay = delay
-            # Don't count the time we already waited as part of our waiting time :-0
-            self.now = time.time()
-        finally:
-            self.lock.release()
-
-    def getDelay(self):
-        thisdelay = self.delay
-        if self.pid: # If self.pid, we're checking for multiple processes
-            if time.time() > self.checktime + self.checkdelay:
-                self.checkMultiplicity()
-            if thisdelay < (self.mindelay * self.next_multiplicity):
-                thisdelay = self.mindelay * self.next_multiplicity
-            elif thisdelay > self.maxdelay:
-                thisdelay = self.maxdelay
-            thisdelay *= self.process_multiplicity
-        return thisdelay
-
-    def waittime(self):
-        """Calculate the time in seconds we will have to wait if a query
-           would be made right now"""
-        # Take the previous requestsize in account calculating the desired
-        # delay this time
-        thisdelay = self.getDelay()
-        now = time.time()
-        ago = now - self.now
-        if ago < thisdelay:
-            delta = thisdelay - ago
-            return delta
-        else:
-            return 0.0
-
-    def drop(self):
-        """Remove me from the list of running bots processes."""
-        self.checktime = 0
-        processes = {}
-        try:
-            f = open(self.logfn(), 'r')
-        except IOError:
-            return
-        else:
-            now = time.time()
-            for line in f.readlines():
-                try:
-                    line = line.split(' ')
-                    pid = int(line[0])
-                    ptime = int(line[1].split('.')[0])
-                    if now - ptime <= self.releasepid and pid != self.pid:
-                        processes[pid] = ptime
-                except (IndexError,ValueError):
-                    pass    # Sometimes the file gets corrupted - ignore that line
-        f = open(self.logfn(), 'w')
-        for p in processes:
-            f.write(str(p)+' '+str(processes[p])+'\n')
-        f.close()
-
-    def __call__(self, requestsize=1):
-        """
-        Block the calling program if the throttle time has not expired.
-
-        Parameter requestsize is the number of Pages to be read/written;
-        multiply delay time by an appropriate factor.
-        """
-        self.lock.acquire()
-        try:
-            waittime = self.waittime()
-            # Calculate the multiplicity of the next delay based on how
-            # big the request is that is being posted now.
-            # We want to add "one delay" for each factor of two in the
-            # size of the request. Getting 64 pages at once allows 6 times
-            # the delay time for the server.
-            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-            # Announce the delay if it exceeds a preset limit
-            if waittime > config.noisysleep:
-                output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-            time.sleep(waittime)
-            self.now = time.time()
-        finally:
-            self.lock.release()
-
-# functions to manipulate wikitext strings (by default, all text arguments
-# should be Unicode)
-# All return the modified text as a unicode object
-
-def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
-                  allowoverlap=False, marker = '', site = None):
-    """
-    Return text with 'old' replaced by 'new', ignoring specified types of text.
-
-    Skips occurences of 'old' within exceptions; e.g., within nowiki tags or
-    HTML comments. If caseInsensitive is true, then use case insensitive
-    regex matching. If allowoverlap is true, overlapping occurences are all
-    replaced (watch out when using this, it might lead to infinite loops!).
-
-    Parameters:
-        text            - a unicode string
-        old             - a compiled regular expression
-        new             - a unicode string (which can contain regular
-                          expression references), or a function which takes
-                          a match object as parameter. See parameter repl of
-                          re.sub().
-        exceptions      - a list of strings which signal what to leave out,
-                          e.g. ['math', 'table', 'template']
-        caseInsensitive - a boolean
-        marker          - a string that will be added to the last replacement;
-                          if nothing is changed, it is added at the end
-
-    """
-    # Hyperlink regex is defined in weblinkchecker.py
-    import weblinkchecker
-
-    if site is None:
-        site = getSite()
-
-    exceptionRegexes = {
-        'comment':     re.compile(r'(?s)<!--.*?-->'),
-        # section headers
-        'header':      re.compile(r'\r\n=+.+=+ *\r\n'),
-        'includeonly': re.compile(r'(?is)<includeonly>.*?</includeonly>'),
-        'math':        re.compile(r'(?is)<math>.*?</math>'),
-        'noinclude':   re.compile(r'(?is)<noinclude>.*?</noinclude>'),
-        # wiki tags are ignored inside nowiki tags.
-        'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
-        # preformatted text
-        'pre':         re.compile(r'(?ism)<pre>.*?</pre>'),
-        'source':      re.compile(r'(?is)<source .*?</source>'),
-        # inline references
-        'ref':         re.compile(r'(?ism)<ref[ >].*?</ref>'),
-        'timeline':    re.compile(r'(?is)<timeline>.*?</timeline>'),
-        # lines that start with a space are shown in a monospace font and
-        # have whitespace preserved.
-        'startspace':  re.compile(r'(?m)^ (.*?)$'),
-        # tables often have whitespace that is used to improve wiki
-        # source code readability.
-        # TODO: handle nested tables.
-        'table':       re.compile(r'(?ims)^{\|.*?^\|}|<table>.*?</table>'),
-        # templates with parameters often have whitespace that is used to
-        # improve wiki source code readability.
-        # 'template':    re.compile(r'(?s){{.*?}}'),
-        # The regex above fails on nested templates. This regex can handle
-        # templates cascaded up to level 3, but no deeper. For arbitrary
-        # depth, we'd need recursion which can't be done in Python's re.
-        # After all, the language of correct parenthesis words is not regular.
-        'template':    re.compile(r'(?s){{(({{(({{.*?}})|.)*}})|.)*}}'),
-        'hyperlink':   weblinkchecker.compileLinkR(),
-        'gallery':     re.compile(r'(?is)<gallery.*?>.*?</gallery>'),
-        # this matches internal wikilinks, but also interwiki, categories, and
-        # images.
-        'link':        re.compile(r'\[\[[^\]\|]*(\|[^\]]*)?\]\]'),
-        'interwiki':   re.compile(r'(?i)\[\[(%s)\s?:[^\]]*\]\][\s]*'
-                               % '|'.join(site.validLanguageLinks() + site.family.obsolete.keys())),
-
-    }
-
-    # if we got a string, compile it as a regular expression
-    if type(old) is str or type(old) is unicode:
-        if caseInsensitive:
-            old = re.compile(old, re.IGNORECASE | re.UNICODE)
-        else:
-            old = re.compile(old)
-
-    dontTouchRegexes = []
-    for exc in exceptions:
-        if isinstance(exc, str) or isinstance(exc, unicode):
-            # assume it's a reference to the exceptionRegexes dictionary
-            # defined above.
-            if exc not in exceptionRegexes:
-                raise ValueError("Unknown tag type: " + exc)
-            dontTouchRegexes.append(exceptionRegexes[exc])
-        else:
-            # assume it's a regular expression
-            dontTouchRegexes.append(exc)
-    index = 0
-    markerpos = len(text)
-    while True:
-        match = old.search(text, index)
-        if not match:
-            # nothing left to replace
-            break
-
-        # check which exception will occur next.
-        nextExceptionMatch = None
-        for dontTouchR in dontTouchRegexes:
-            excMatch = dontTouchR.search(text, index)
-            if excMatch and (
-                    nextExceptionMatch is None or
-                    excMatch.start() < nextExceptionMatch.start()):
-                nextExceptionMatch = excMatch
-
-        if nextExceptionMatch is not None and nextExceptionMatch.start() <= match.start():
-            # an HTML comment or text in nowiki tags stands before the next valid match. Skip.
-            index = nextExceptionMatch.end()
-        else:
-            # We found a valid match. Replace it.
-            if callable(new):
-                # the parameter new can be a function which takes the match as a parameter.
-                replacement = new(match)
-            else:
-                # it is not a function, but a string.
-
-                # it is a little hack to make \n work. It would be better to fix it
-                # previously, but better than nothing.
-                new = new.replace('\\n', '\n')
-
-                # We cannot just insert the new string, as it may contain regex
-                # group references such as \2 or \g<name>.
-                # On the other hand, this approach does not work because it can't
-                # handle lookahead or lookbehind (see bug #1731008):
-                #replacement = old.sub(new, text[match.start():match.end()])
-                #text = text[:match.start()] + replacement + text[match.end():]
-
-                # So we have to process the group references manually.
-                replacement = new
-
-                groupR = re.compile(r'\\(?P<number>\d+)|\\g<(?P<name>.+?)>')
-                while True:
-                    groupMatch = groupR.search(replacement)
-                    if not groupMatch:
-                        break
-                    groupID = groupMatch.group('name') or int(groupMatch.group('number'))
-                    replacement = replacement[:groupMatch.start()] + match.group(groupID) + replacement[groupMatch.end():]
-            text = text[:match.start()] + replacement + text[match.end():]
-
-            # continue the search on the remaining text
-            if allowoverlap:
-                index = match.start() + 1
-            else:
-                index = match.start() + len(replacement)
-            markerpos = match.start() + len(replacement)
-    text = text[:markerpos] + marker + text[markerpos:]
-    return text
-
-def removeDisabledParts(text, tags = ['*']):
-    """
-    Return text without portions where wiki markup is disabled
-
-    Parts that can/will be removed are --
-    * HTML comments
-    * nowiki tags
-    * pre tags
-    * includeonly tags
-
-    The exact set of parts which should be removed can be passed as the
-    'parts' parameter, which defaults to all.
-    """
-    regexes = {
-            'comments' :   r'<!--.*?-->',
-            'includeonly': r'<includeonly>.*?</includeonly>',
-            'nowiki':      r'<nowiki>.*?</nowiki>',
-            'pre':         r'<pre>.*?</pre>',
-            'source':      r'<source .*?</source>',
-    }
-    if '*' in tags:
-        tags = regexes.keys()
-    toRemoveR = re.compile('|'.join([regexes[tag] for tag in tags]),
-                           re.IGNORECASE | re.DOTALL)
-    return toRemoveR.sub('', text)
-
-def isDisabled(text, index, tags = ['*']):
-    """
-    Return True if text[index] is disabled, e.g. by a comment or by nowiki tags.
-
-    For the tags parameter, see removeDisabledParts() above.
-    """
-    # Find a marker that is not already in the text.
-    marker = findmarker(text, '@@', '@')
-    text = text[:index] + marker + text[index:]
-    text = removeDisabledParts(text, tags)
-    return (marker not in text)
-
-def findmarker(text, startwith = u'@', append = u'@'):
-    # find a string which is not part of text
-    if len(append) <= 0:
-        append = u'@'
-    mymarker = startwith
-    while mymarker in text:
-        mymarker += append
-    return mymarker
-
-def expandmarker(text, marker = '', separator = ''):
-    # set to remove any number of separator occurrences plus arbitrary
-    # whitespace before, after, and between them,
-    # by allowing to include them into marker.
-    if separator:
-        firstinmarker = text.find(marker)
-        firstinseparator = firstinmarker
-        lenseparator = len(separator)
-        striploopcontinue = True
-        while firstinseparator > 0 and striploopcontinue:
-            striploopcontinue = False
-            if (firstinseparator >= lenseparator) and (separator == text[firstinseparator-lenseparator:firstinseparator]):
-                firstinseparator -= lenseparator
-                striploopcontinue = True
-            elif text[firstinseparator-1] < ' ':
-                firstinseparator -= 1
-                striploopcontinue = True
-        marker = text[firstinseparator:firstinmarker] + marker
-    return marker
-
-# Part of library dealing with interwiki language links
-
-# Note - MediaWiki supports two kinds of interwiki links; interlanguage and
-#        interproject.  These functions only deal with links to a
-#        corresponding page in another language on the same project (e.g.,
-#        Wikipedia, Wiktionary, etc.) in another language. They do not find
-#        or change links to a different project, or any that are formatted
-#        as in-line interwiki links (e.g., "[[:es:Articulo]]".  (CONFIRM)
-
-def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
-    """
-    Return a dict of interlanguage links found in text.
-
-    Dict uses language codes as keys and Page objects as values.
-    Do not call this routine directly, use Page.interwiki() method
-    instead.
-
-    """
-    if insite is None:
-        insite = getSite()
-    result = {}
-    # Ignore interwiki links within nowiki tags, includeonly tags, pre tags,
-    # and HTML comments
-    text = removeDisabledParts(text)
-
-    # This regular expression will find every link that is possibly an
-    # interwiki link.
-    # NOTE: language codes are case-insensitive and only consist of basic latin
-    # letters and hyphens.
-    interwikiR = re.compile(r'\[\[([a-zA-Z\-]+)\s?:([^\[\]\n]*)\]\]')
-    for lang, pagetitle in interwikiR.findall(text):
-        lang = lang.lower()
-        # Check if it really is in fact an interwiki link to a known
-        # language, or if it's e.g. a category tag or an internal link
-        if lang in insite.family.obsolete:
-            lang = insite.family.obsolete[lang]
-        if lang in insite.validLanguageLinks():
-            if '|' in pagetitle:
-                # ignore text after the pipe
-                pagetitle = pagetitle[:pagetitle.index('|')]
-            # we want the actual page objects rather than the titles
-            site = insite.getSite(code = lang)
-            try:
-                result[site] = Page(site, pagetitle, insite = insite)
-            except InvalidTitle:
-                output(
-        u"[getLanguageLinks] Text contains invalid interwiki link [[%s:%s]]."
-                           % (lang, pagetitle))
-                continue
-    return result
-
-def removeLanguageLinks(text, site = None, marker = ''):
-    """Return text with all interlanguage links removed.
-
-    If a link to an unknown language is encountered, a warning is printed.
-    If a marker is defined, that string is placed at the location of the
-    last occurence of an interwiki link (at the end if there are no
-    interwiki links).
-
-    """
-    if site is None:
-        site = getSite()
-    if not site.validLanguageLinks():
-        return text
-    # This regular expression will find every interwiki link, plus trailing
-    # whitespace.
-    languages = '|'.join(site.validLanguageLinks() + site.family.obsolete.keys())
-    interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*'
-                            % languages, re.IGNORECASE)
-    text = replaceExcept(text, interwikiR, '',
-                         ['nowiki', 'comment', 'math', 'pre', 'source'], marker=marker)
-    return text.strip()
-
-def removeLanguageLinksAndSeparator(text, site = None, marker = '', separator = ''):
-    """Return text with all interlanguage links, plus any preceeding whitespace
-       and separateor occurrences removed.
-
-    If a link to an unknown language is encountered, a warning is printed.
-    If a marker is defined, that string is placed at the location of the
-    last occurence of an interwiki link (at the end if there are no
-    interwiki links).
-
-    """
-    if separator:
-        mymarker = findmarker(text, u'@L@')
-        newtext = removeLanguageLinks(text, site, mymarker)
-        mymarker = expandmarker(newtext, mymarker, separator)
-        return newtext.replace(mymarker, marker)
-    else:
-        return removeLanguageLinks(text, site, marker)
-
-def replaceLanguageLinks(oldtext, new, site = None, addOnly = False, template = False):
-    """Replace interlanguage links in the text with a new set of links.
-
-    'new' should be a dict with the Site objects as keys, and Page objects
-    as values (i.e., just like the dict returned by getLanguageLinks
-    function).
-    """
-    # Find a marker that is not already in the text.
-    marker = findmarker( oldtext, u'@@')
-    if site is None:
-        site = getSite()
-    separator = site.family.interwiki_text_separator
-    cseparator = site.family.category_text_separator
-    separatorstripped = separator.strip()
-    cseparatorstripped = cseparator.strip()
-    if addOnly:
-        s2 = oldtext
-    else:
-        s2 = removeLanguageLinksAndSeparator(oldtext, site = site, marker = marker, separator = separatorstripped)
-    s = interwikiFormat(new, insite = site)
-    if s:
-        if site.language() in site.family.interwiki_attop:
-            newtext = s + separator + s2.replace(marker,'').strip()
-        else:
-            # calculate what was after the language links on the page
-            firstafter = s2.find(marker)
-            if firstafter < 0:
-                firstafter = len(s2)
-            else:
-                firstafter += len(marker)
-            # Is there any text in the 'after' part that means we should keep it after?
-            if "</noinclude>" in s2[firstafter:]:
-                if separatorstripped:
-                    s = separator + s
-                newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
-            elif site.language() in site.family.categories_last:
-                cats = getCategoryLinks(s2, site = site)
-                s2 = removeCategoryLinksAndSeparator(s2.replace(marker,'',cseparatorstripped).strip(), site) + separator + s
-                newtext = replaceCategoryLinks(s2, cats, site=site, addOnly=True)
-            else:
-                if template:
-                    # Do we have a noinclude at the end of the template?
-                    parts = s2.split('</noinclude>')
-                    lastpart = parts[-1]
-                    if re.match('\s*%s' % marker, lastpart):
-                        # Put the langlinks back into the noinclude's
-                        regexp = re.compile('</noinclude>\s*%s' % marker)
-                        newtext = regexp.sub(s + '</noinclude>', s2)
-                    else:
-                        # Put the langlinks at the end, inside noinclude's
-                        newtext = s2.replace(marker,'').strip() + separator + u'<noinclude>\n%s</noinclude>\n' % s
-                else:
-                    newtext = s2.replace(marker,'').strip() + separator + s
-    else:
-        newtext = s2.replace(marker,'')
-    return newtext
-
-def interwikiFormat(links, insite = None):
-    """Convert interwiki link dict into a wikitext string.
-
-    'links' should be a dict with the Site objects as keys, and Page
-    objects as values.
-
-    Return a unicode string that is formatted for inclusion in insite
-    (defaulting to the current site).
-    """
-    if insite is None:
-        insite = getSite()
-    if not links:
-        return ''
-
-    ar = interwikiSort(links.keys(), insite)
-    s = []
-    for site in ar:
-        try:
-            link = links[site].aslink(forceInterwiki=True).replace('[[:', '[[')
-            s.append(link)
-        except AttributeError:
-            s.append(getSite(site).linkto(links[site], othersite=insite))
-    if insite.lang in insite.family.interwiki_on_one_line:
-        sep = u' '
-    else:
-        sep = u'\r\n'
-    s=sep.join(s) + u'\r\n'
-    return s
-
-# Sort sites according to local interwiki sort logic
-def interwikiSort(sites, insite = None):
-    if insite is None:
-      insite = getSite()
-    if not sites:
-      return []
-
-    sites.sort()
-    putfirst = insite.interwiki_putfirst()
-    if putfirst:
-        #In this case I might have to change the order
-        firstsites = []
-        for code in putfirst:
-            # The code may not exist in this family?
-            if code in insite.family.obsolete:
-                code = insite.family.obsolete[code]
-            if code in insite.validLanguageLinks():
-                site = insite.getSite(code = code)
-                if site in sites:
-                    del sites[sites.index(site)]
-                    firstsites = firstsites + [site]
-        sites = firstsites + sites
-    if insite.interwiki_putfirst_doubled(sites): #some implementations return False
-        sites = insite.interwiki_putfirst_doubled(sites) + sites
-
-    return sites
-
-# Wikitext manipulation functions dealing with category links
-def getCategoryLinks(text, site):
-    import catlib
-    """Return a list of category links found in text.
-
-    List contains Category objects.
-    Do not call this routine directly, use Page.categories() instead.
-
-    """
-    result = []
-    # Ignore category links within nowiki tags, pre tags, includeonly tags,
-    # and HTML comments
-    text = removeDisabledParts(text)
-    catNamespace = '|'.join(site.category_namespaces())
-    R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:\s*(?P<catName>.+?)(?:\|(?P<sortKey>.+?))?\s*\]\]' % catNamespace, re.I)
-    for match in R.finditer(text):
-        cat = catlib.Category(site, '%s:%s' % (match.group('namespace'), match.group('catName')), sortKey = match.group('sortKey'))
-        result.append(cat)
-    return result
-
-def removeCategoryLinks(text, site, marker = ''):
-    """Return text with all category links removed.
-
-    Put the string marker after the last replacement (at the end of the text
-    if there is no replacement).
-
-    """
-    # This regular expression will find every link that is possibly an
-    # interwiki link, plus trailing whitespace. The language code is grouped.
-    # NOTE: This assumes that language codes only consist of non-capital
-    # ASCII letters and hyphens.
-    catNamespace = '|'.join(site.category_namespaces())
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\]\s*' % catNamespace, re.I)
-    text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre', 'source'], marker = marker)
-    if marker:
-        #avoid having multiple linefeeds at the end of the text
-        text = re.sub('\s*%s' % re.escape(marker), '\r\n' + marker, text.strip())
-    return text.strip()
-
-def removeCategoryLinksAndSeparator(text, site = None, marker = '', separator = ''):
-    """Return text with all category links, plus any preceeding whitespace
-       and separateor occurrences removed.
-
-    Put the string marker after the last replacement (at the end of the text
-    if there is no replacement).
-
-    """
-    if separator:
-        mymarker = findmarker(text, u'@C@')
-        newtext = removeCategoryLinks(text, site, mymarker)
-        mymarker = expandmarker(newtext, mymarker, separator)
-        return newtext.replace(mymarker, marker)
-    else:
-        return removeCategoryLinks(text, site, marker)
-
-def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
-    """Replace the category oldcat with the category newcat and return
-       the modified text.
-
-    """
-    if site is None:
-        site = getSite()
-
-    catNamespace = '|'.join(site.category_namespaces())
-    title = oldcat.titleWithoutNamespace()
-    if not title:
-        return
-    # title might contain regex special characters
-    title = re.escape(title)
-    # title might not be capitalized correctly on the wiki
-    if title[0].isalpha() and not site.nocapitalize:
-        title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
-    # spaces and underscores in page titles are interchangeable, and collapsible
-    title = title.replace(r"\ ", "[ _]+").replace(r"\_", "[ _]+")
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
-                            % (catNamespace, title), re.I)
-    if newcat is None:
-        text = replaceExcept(oldtext, categoryR, '',
-                             ['nowiki', 'comment', 'math', 'pre', 'source'])
-    else:
-        text = replaceExcept(oldtext, categoryR,
-                             '[[%s:%s\\2' % (site.namespace(14),
-                                             newcat.titleWithoutNamespace()),
-                             ['nowiki', 'comment', 'math', 'pre', 'source'])
-    return text
-
-def replaceCategoryLinks(oldtext, new, site = None, addOnly = False):
-    """Replace the category links given in the wikitext given
-       in oldtext by the new links given in new.
-
-       'new' should be a list of Category objects.
-
-       If addOnly is True, the old category won't be deleted and
-       the category(s) given will be added
-       (and so they won't replace anything).
-    """
-
-    # Find a marker that is not already in the text.
-    marker = findmarker( oldtext, u'@@')
-    if site is None:
-        site = getSite()
-    if site.sitename() == 'wikipedia:de' and "{{Personendaten" in oldtext:
-        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia on pages that contain the person data template because of the non-standard placement of that template. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv/bis_2006#Position_der_Personendaten_am_.22Artikelende.22')
-    separator = site.family.category_text_separator
-    iseparator = site.family.interwiki_text_separator
-    separatorstripped = separator.strip()
-    iseparatorstripped = iseparator.strip()
-    if addOnly:
-        s2 = oldtext
-    else:
-        s2 = removeCategoryLinksAndSeparator(oldtext, site = site, marker = marker, separator = separatorstripped)
-    s = categoryFormat(new, insite = site)
-    if s:
-        if site.language() in site.family.category_attop:
-            newtext = s + separator + s2
-        else:
-            # calculate what was after the categories links on the page
-            firstafter = s2.find(marker)
-            if firstafter < 0:
-                firstafter = len(s2)
-            else:
-                firstafter += len(marker)
-            # Is there any text in the 'after' part that means we should keep it after?
-            if "</noinclude>" in s2[firstafter:]:
-                if separatorstripped:
-                    s = separator + s
-                newtext = s2[:firstafter].replace(marker,'') + s + s2[firstafter:]
-            elif site.language() in site.family.categories_last:
-                newtext = s2.replace(marker,'').strip() + separator + s
-            else:
-                interwiki = getLanguageLinks(s2)
-                s2 = removeLanguageLinksAndSeparator(s2.replace(marker,''), site, '', iseparatorstripped) + separator + s
-                newtext = replaceLanguageLinks(s2, interwiki, site = site, addOnly = True)
-    else:
-        newtext = s2.replace(marker,'')
-    return newtext.strip()
-
-def categoryFormat(categories, insite = None):
-    """Return a string containing links to all categories in a list.
-
-    'categories' should be a list of Category objects.
-
-    The string is formatted for inclusion in insite.
-    """
-    if not categories:
-        return ''
-    if insite is None:
-        insite = getSite()
-    catLinks = [category.aslink(noInterwiki = True) for category in categories]
-    if insite.category_on_one_line():
-        sep = ' '
-    else:
-        sep = '\r\n'
-    # Some people don't like the categories sorted
-    #catLinks.sort()
-    return sep.join(catLinks) + '\r\n'
-
-# end of category specific code
 def url2link(percentname, insite, site):
     """Convert urlname of a wiki page into interwiki link format.
 
@@ -4528,6 +4432,7 @@ class Site(object):
     mediawiki_message: Retrieve the text of a specified MediaWiki message
     has_mediawiki_message: True if this site defines specified MediaWiki
                            message
+    has_api: True if this site's family provides api interface
 
     shared_image_repository: Return tuple of image repositories used by this
         site.
@@ -4675,6 +4580,7 @@ class Site(object):
                 raise NoSuchSite("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
         self._mediawiki_messages = {}
+        self._info = {}
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
         self._userData = [False, False]
@@ -4692,14 +4598,6 @@ class Site(object):
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
 
-        #if persistent_http is None:
-        #    persistent_http = config.persistent_http
-        #self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
-        #if persistent_http:
-        #    if self.protocol() == 'http':
-        #        self.conn = httplib.HTTPConnection(self.hostname())
-        #    elif self.protocol() == 'https':
-        #        self.conn = httplib.HTTPSConnection(self.hostname())
         self.persistent_http = False
 
     def _userIndex(self, sysop = False):
@@ -4708,6 +4606,7 @@ class Site(object):
             return 1
         else:
             return 0
+
     def username(self, sysop = False):
         return self._userName[self._userIndex(sysop = sysop)]
 
@@ -4768,8 +4667,14 @@ class Site(object):
                 'meta': 'userinfo',
                 'uiprop': 'blockinfo',
             }
-            data = query.GetData(params, self)['query']['userinfo']
-            return data.has_key('blockby')
+            data = query.GetData(params, self)
+            if not data or 'error' in data:
+                return False
+            if self.versionnumber() == 11:     # fix for version 1.11 API.
+                data = data['userinfo']
+            else:
+                data = data['query']['userinfo']
+            return 'blockedby' in data
         except NotImplementedError:
             return False
 
@@ -4784,7 +4689,6 @@ class Site(object):
         else:
             self._load(sysop = sysop)
             index = self._userIndex(sysop)
-            ##output('%s' % self._rights[index]) #for debug use
             return right in self._rights[index]
 
     def server_time(self):
@@ -4802,10 +4706,26 @@ class Site(object):
         """Return a string containing the user's current cookies."""
         self._loadCookies(sysop = sysop)
         index = self._userIndex(sysop)
-        return self._cookies[index]
+        if self._cookies[index]:
+            #convert cookies dictionary data to string.
+            outputDatas = ""
+            for k, v in self._cookies[index].iteritems():
+                if v:
+                    outputDatas += "%s=%s; " % (k,v)
+                else:
+                    # protection for value ''
+                    outputDatas += "%s=none; " % k
+            return outputDatas
+        else:
+            return None
 
     def _loadCookies(self, sysop = False):
-        """Retrieve session cookies for login"""
+        """
+         Retrieve session cookies for login
+         if family datas define the cross projects, this function will search 
+         the central login file made by self or cross available project
+         functioin will read the cookiedata if got one of them is exist
+        """
         index = self._userIndex(sysop)
         if self._cookies[index] is not None:
             return
@@ -4825,16 +4745,107 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             self._cookies[index] = None
             self._isLoggedIn[index] = False
         else:
-            tmp = '%s-%s-%s-login.data' % (
-                    self.family.name, self.lang, username)
-            fn = config.datafilepath('login-data', tmp)
-            if not os.path.exists(fn):
+            # check central login data if cross_projects is available.
+            localFn = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
+            localPa = config.datafilepath('login-data', localFn)
+            if self.family.cross_projects:
+                for proj in [self.family.name] + self.family.cross_projects:
+                    #find all central data in all cross_projects
+                    centralFn = '%s-%s-central-login.data' % (proj, username)
+                    centralPa = config.datafilepath('login-data', centralFn)
+                    if os.path.exists(centralPa):
+                        self._cookies[index] = self._readCookies(centralFn)
+                        break
+            
+            if os.path.exists(localPa):
+                #read and dump local logindata into self._cookies[index]
+                # if self._cookies[index] is not availabe, read the local data and set the dictionary.
+                if type(self._cookies[index]) == dict:
+                    for k, v in self._readCookies(localFn).iteritems():
+                        if k not in self._cookies[index]:
+                            self._cookies[index][k] = v
+                else:
+                    self._cookies[index] = dict([(k,v) for k,v in self._readCookies(localFn).iteritems()])
+                #self._cookies[index] = query.CombineParams(self._cookies[index], self._readCookies(localFn))
+            elif not os.path.exists(localPa) and not self.family.cross_projects:
+                #keep anonymous mode if not login and centralauth not enable
                 self._cookies[index] = None
                 self._isLoggedIn[index] = False
+
+    def _readCookies(self, filename):
+        """read login cookie file and return a dictionary."""
+        try:
+            f = open( config.datafilepath('login-data', filename), 'r')
+            ck = re.compile("(.*?)=(.*?)\n")
+            data = dict([(x[0],x[1]) for x in ck.findall(f.read())])
+            #data = dict(ck.findall(f.read()))
+            f.close()
+            return data
+        except IOError:
+            return None
+    
+    def _setupCookies(self, datas, sysop = False):
+        """save the cookie dictionary to files
+           if cross_project enable, savefiles will separate two, centraldata and localdata.
+        """
+        index = self._userIndex(sysop)
+        if not self._cookies[index]:
+            self._cookies[index] = datas
+        cache = {0:"",1:""} #0 is central auth, 1 is local.
+        if not self.username(sysop):
+            if not self._cookies[index]:
+                return 
+            elif self.family.cross_projects_cookie_username in self._cookies[index]:
+                # Using centralauth to cross login data, it's not necessary to forceLogin, but Site() didn't know it.
+                # So we need add centralauth username data into siteattribute
+                self._userName[index] = self._cookies[index][self.family.cross_projects_cookie_username]
+
+
+        for k, v in datas.iteritems():
+            #put key and values into save cache
+            if self.family.cross_projects and k in self.family.cross_projects_cookies:
+                cache[0] += "%s=%s\n" % (k,v)
             else:
-                f = open(fn)
-                self._cookies[index] = '; '.join([x.strip() for x in f.readlines()])
-                f.close()
+                cache[1] += "%s=%s\n" % (k,v)
+        
+        # write the data.
+        if self.family.cross_projects and cache[0]:
+            filename = '%s-%s-central-login.data' % (self.family.name, self.username(sysop))
+            f = open(config.datafilepath('login-data', filename), 'w')
+            f.write(cache[0])
+            f.close()
+
+        filename = '%s-%s-%s-login.data' % (self.family.name, self.lang, self.username(sysop))
+        f = open(config.datafilepath('login-data', filename), 'w')
+        f.write(cache[1])
+        f.close()
+
+    def _removeCookies(self, name):
+        # remove cookies.
+        # ToDo: remove all local datas if cross_projects enable.
+        #
+        if self.family.cross_projects:
+            file = config.datafilepath('login-data', '%s-%s-central-login.data' % (self.family.name, name))
+            if os.path.exists(file):
+                os.remove( file )
+        file = config.datafilepath('login-data', '%s-%s-%s-login.data' % (self.family.name, self.lang, name))
+        if os.path.exists(file):
+            os.remove(file)
+
+    def updateCookies(self, datas, sysop = False):
+        """Check and update the current cookies datas and save back to files."""
+        index = self._userIndex(sysop)
+        if not self._cookies[index]:
+            self._setupCookies(datas, sysop)
+            
+        for k, v in datas.iteritems():
+            if k in self._cookies[index]:
+                if v != self._cookies[index][k]:
+                    self._cookies[index][k] = v
+            else:
+                self._cookies[index][k] = v
+        
+        self._setupCookies(self._cookies[index], sysop)
 
     def urlEncode(self, query):
         """Encode a query so that it can be sent using an http POST request."""
@@ -4867,11 +4878,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
     def solveCaptcha(self, data):
         if type(data) == dict: # API Mode result
-            if data.has_key("captcha"):
-                captype = data['captcha']['type']
-                id = data['captcha']['id']
+            if 'edit' in data and  data['edit']['result'] != u"Success":
+                data = data['edit']
+            if "captcha" in data:
+                data = data['captcha']
+                captype = data['type']
+                id = data['id']
                 if captype in ['simple', 'math', 'question']:
-                    answer = input('What is the answer to the captcha "%s" ?' % data['result']['captcha']['question'])
+                    answer = input('What is the answer to the captcha "%s" ?' % data['question'])
                 elif captype == 'image':
                     url = self.protocol() + '://' + self.hostname() + self.captcha_image_address(id)
                     answer = ui.askForCaptcha(url)
@@ -4899,7 +4913,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 raise CaptchaError('We have been prompted for a ReCaptcha, but pywikipedia does not yet support ReCaptchas')
             return None
 
-    def postForm(self, address, predata, sysop=False, cookies = None):
+    def postForm(self, address, predata, sysop = False, cookies = None):
         """Post http form data to the given address at this site.
 
         address - the absolute path without hostname.
@@ -4924,8 +4938,8 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             raise ServerError(e)
 
     def postData(self, address, data,
-                 contentType='application/x-www-form-urlencoded',
-                 sysop=False, compress=True, cookies=None):
+                 contentType = 'application/x-www-form-urlencoded',
+                 sysop = False, compress = True, cookies = None):
         """Post encoded data to the given http address at this site.
 
         address is the absolute path without hostname.
@@ -4936,60 +4950,128 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         body of the response.
         """
 
-        # TODO: add the authenticate stuff here
+        if address[-1] == "?":
+            address = address[:-1]
 
-        if False: #self.persistent_http:
-            conn = self.conn
-        else:
-            # Encode all of this into a HTTP request
-            if self.protocol() == 'http':
-                conn = httplib.HTTPConnection(self.hostname())
-            elif self.protocol() == 'https':
-                conn = httplib.HTTPSConnection(self.hostname())
-            # otherwise, it will crash, as other protocols are not supported
-
-        conn.putrequest('POST', address)
-        conn.putheader('Content-Length', str(len(data)))
-        conn.putheader('Content-type', contentType)
-        conn.putheader('User-agent', useragent)
+        headers = {
+            'User-agent': useragent,
+            'Content-Length': str(len(data)),
+            'Content-type':contentType,
+        }
         if cookies:
-            conn.putheader('Cookie', cookies)
-        if False: #self.persistent_http:
-            conn.putheader('Connection', 'Keep-Alive')
+            headers['Cookie'] = cookies
+        
         if compress:
-            conn.putheader('Accept-encoding', 'gzip')
-        conn.endheaders()
-        conn.send(data)
+            headers['Accept-encoding'] = 'gzip'
+        #print '%s' % headers
+        
+        url = '%s://%s%s' % (self.protocol(), self.hostname(), address)
+        # Try to retrieve the page until it was successfully loaded (just in
+        # case the server is down or overloaded).
+        # Wait for retry_idle_time minutes (growing!) between retries.
+        retry_idle_time = 1
+        retry_attempt = 0
+        while True:
+            try:
+                request = urllib2.Request(url, data, headers)
+                f = MyURLopener.open(request)
 
-        # Prepare the return values
-        # Note that this can raise network exceptions which are not
-        # caught here.
-        try:
-            response = conn.getresponse()
-        except httplib.BadStatusLine:
-            # Blub.
-            conn.close()
-            conn.connect()
+                # read & info can raise socket.error
+                text = f.read()
+                headers = f.info()
+                break
+            except KeyboardInterrupt:
+                raise
+            except urllib2.HTTPError, e:
+                if e.code in [401, 404]:
+                    raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
+                # just check for HTTP Status 500 (Internal Server Error)?
+                elif e.code in [500, 502, 504]:
+                    output(u'HTTPError: %s %s' % (e.code, e.msg))
+                    if config.retry_on_fail:
+                        retry_attempt += 1
+                        if retry_attempt > config.maxretries:
+                            raise MaxTriesExceededError()
+                        output(u"""WARNING: Could not open '%s'.\nMaybe the server is down. Retrying in %i minutes..."""
+                               % (url, retry_idle_time))
+                        time.sleep(retry_idle_time * 60)
+                        # Next time wait longer, but not longer than half an hour
+                        retry_idle_time *= 2
+                        if retry_idle_time > 30:
+                            retry_idle_time = 30
+                        continue
+                    raise
+                else:
+                    output(u"Result: %s %s" % (e.code, e.msg))
+                    raise 
+            except Exception, e:
+                output(u'%s' %e)
+                if config.retry_on_fail:
+                    output(u"""WARNING: Could not open '%s'. Maybe the server or\n your connection is down. Retrying in %i minutes..."""
+                           % (url, retry_idle_time))
+                    time.sleep(retry_idle_time * 60)
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                    continue
+                raise
+        
+        # check cookies return or not, if return, send its to update.
+        if hasattr(f, 'sheaders'):
+            ck = f.sheaders
+        else:
+            ck = f.info().getallmatchingheaders('set-cookie')
+        if ck:
+            Reat=re.compile(': (.*?)=(.*?);')
+            tmpc = {}
+            for d in ck:
+                m = Reat.search(d)
+                if m: tmpc[m.group(1)] = m.group(2)
+            if self.cookies(sysop):
+                self.updateCookies(tmpc, sysop)
+
+        resContentType = headers.get('content-type', '')
+        contentEncoding = headers.get('content-encoding', '')
+
+        # Ensure that all sent data is received
+        if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
+            output(u'Warning! len(text) does not match content-length: %s != %s' % \
+                (len(text), headers.get('content-length')))
             return self.postData(address, data, contentType, sysop, compress, cookies)
 
-        data = response.read()
+        if compress and contentEncoding == 'gzip':
+            text = decompress_gzip(text)
 
-        if compress and response.getheader('Content-Encoding') == 'gzip':
-            data = decompress_gzip(data)
-
-        data = data.decode(self.encoding())
-        response.close()
-
-        if True: #not self.persistent_http:
-            conn.close()
+        R = re.compile('charset=([^\'\";]+)')
+        m = R.search(resContentType)
+        if m:
+            charset = m.group(1)
+        else:
+            if verbose:
+                output(u"WARNING: No character set found.")
+            # UTF-8 as default
+            charset = 'utf-8'
+        # Check if this is the charset we expected
+        self.checkCharset(charset)
+        # Convert HTML to Unicode
+        try:
+            text = unicode(text, charset, errors = 'strict')
+        except UnicodeDecodeError, e:
+            print e
+            if no_hostname:
+                output(u'ERROR: Invalid characters found on %s, replaced by \\ufffd.' % path)
+            else:
+                output(u'ERROR: Invalid characters found on %s://%s%s, replaced by \\ufffd.' % (self.protocol(), self.hostname(), path))
+            # We use error='replace' in case of bad encoding.
+            text = unicode(text, charset, errors = 'replace')
 
         # If a wiki page, get user data
-        self._getUserData(data, sysop = sysop)
+        self._getUserDataOld(text, sysop = sysop)
 
-        return response, data
+        return f, text
 
-    def getUrl(self, path, retry = None, sysop = False, data = None,
-               compress = True, no_hostname = False, cookie_only=False, back_response=False):
+    def getUrl(self, path, retry = None, sysop = False, data = None, compress = True,
+               no_hostname = False, cookie_only=False, refer=None, back_response=False):
         """
         Low-level routine to get a URL from the wiki.
 
@@ -5005,85 +5087,90 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """
 
         if retry is None:
-            retry=config.retry_on_fail
+            retry = config.retry_on_fail
 
-        if False: #self.persistent_http and not data:
-            self.conn.putrequest('GET', path)
-            self.conn.putheader('User-agent', useragent)
-            self.conn.putheader('Cookie', self.cookies(sysop = sysop))
-            self.conn.putheader('Connection', 'Keep-Alive')
-            if compress:
-                    self.conn.putheader('Accept-encoding', 'gzip')
-            self.conn.endheaders()
+        headers = {
+            'User-agent': useragent,
+            #'Accept-Language': config.mylang,
+            #'Accept-Charset': config.textfile_encoding,
+            #'Keep-Alive': '115',
+            #'Connection': 'keep-alive',
+            #'Cache-Control': 'max-age=0',
+            #'': '',
+        }
 
-            # Prepare the return values
-            # Note that this can raise network exceptions which are not
-            # caught here.
-            try:
-                response = self.conn.getresponse()
-            except httplib.BadStatusLine:
-                # Blub.
-                self.conn.close()
-                self.conn.connect()
-                return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
-
-            text = response.read()
-            headers = dict(response.getheaders())
-
+        if not no_hostname and self.cookies(sysop = sysop):
+            headers['Cookie'] = self.cookies(sysop = sysop)
+        if compress:
+            headers['Accept-encoding'] = 'gzip'
+    
+        if refer:
+            headers['Refer'] = refer
+        
+        if no_hostname: # This allow users to parse also toolserver's script
+            url = path  # and other useful pages without using some other functions.
         else:
-            if self.hostname() in config.authenticate.keys():
-                uo = authenticateURLopener
-            else:
-                uo = MyURLopener()
-                if self.cookies(sysop = sysop):
-                    uo.addheader('Cookie', self.cookies(sysop = sysop))
-                if compress:
-                    uo.addheader('Accept-encoding', 'gzip')
-            if no_hostname == True: # This allow users to parse also toolserver's script
-                url = path          # and other useful pages without using some other functions.
-            else:
-                url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
-            data = self.urlEncode(data)
+            url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
+        data = self.urlEncode(data)
+        
+        # Try to retrieve the page until it was successfully loaded (just in
+        # case the server is down or overloaded).
+        # Wait for retry_idle_time minutes (growing!) between retries.
+        retry_idle_time = 1
+        while True:
+            try:
+                request = urllib2.Request(url, data, headers)
+                f = MyURLopener.open(request)
 
-            # Try to retrieve the page until it was successfully loaded (just in
-            # case the server is down or overloaded).
-            # Wait for retry_idle_time minutes (growing!) between retries.
-            retry_idle_time = 1
-            retrieved = False
-            while not retrieved:
-                try:
-                    if self.hostname() in config.authenticate.keys():
-                      request = urllib2.Request(url, data)
-                      request.add_header('User-agent', useragent)
-                      opener = urllib2.build_opener()
-                      f = opener.open(request)
-                    else:
-                        f = uo.open(url, data)
-
-                    # read & info can raise socket.error
-                    text = f.read()
-                    headers = f.info()
-
-                    retrieved = True
-                except KeyboardInterrupt:
-                    raise
-                except Exception, e:
+                # read & info can raise socket.error
+                text = f.read()
+                headers = f.info()
+                break
+            except KeyboardInterrupt:
+                raise
+            except urllib2.HTTPError, e:
+                if e.code in [401, 404]:
+                    raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
+                elif e.code == 504:
+                    output(u'HTTPError: %s %s' % (e.code, e.msg))
                     if retry:
-                        # We assume that the server is down. Wait some time, then try again.
-                        output(u"%s" % e)
-                        output(u"""\
-WARNING: Could not open '%s'. Maybe the server or
-your connection is down. Retrying in %i minutes..."""
-                               % (url,
-                                  retry_idle_time))
+                        output(u"""WARNING: Could not open '%s'.Maybe the server or\n your connection is down. Retrying in %i minutes..."""
+                               % (url, retry_idle_time))
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
                         retry_idle_time *= 2
                         if retry_idle_time > 30:
                             retry_idle_time = 30
-                    else:
-                        raise
-
+                        continue
+                    raise
+                else:
+                    output(u"Result: %s %s" % (e.code, e.msg))
+                    raise 
+            except Exception, e:
+                output(u'%s' %e)
+                if retry:
+                    output(u"""WARNING: Could not open '%s'. Maybe the server or\n your connection is down. Retrying in %i minutes..."""
+                           % (url, retry_idle_time))
+                    time.sleep(retry_idle_time * 60)
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                    continue
+                
+                raise
+        # check cookies return or not, if return, send its to update.
+        if hasattr(f, 'sheaders'):
+            ck = f.sheaders
+        else:
+            ck = f.info().getallmatchingheaders('set-cookie')
+        if not no_hostname and ck:
+            Reat=re.compile(': (.*?)=(.*?);')
+            tmpc = {}
+            for d in ck:
+                m = Reat.search(d)
+                if m: tmpc[m.group(1)] = m.group(2)
+            self.updateCookies(tmpc, sysop)
+        
         if cookie_only:
             return headers.get('set-cookie', '')
         contentType = headers.get('content-type', '')
@@ -5093,10 +5180,7 @@ your connection is down. Retrying in %i minutes..."""
         if int(headers.get('content-length', '0')) != len(text) and 'content-length' in headers:
             output(u'Warning! len(text) does not match content-length: %s != %s' % \
                 (len(text), headers.get('content-length')))
-            if False: #self.persistent_http
-                self.conn.close()
-                self.conn.connect()
-            return self.getUrl(path, retry, sysop, data, compress, back_response=back_response)
+            return self.getUrl(path, retry, sysop, data, compress, no_hostname, cookie_only, back_response)
 
         if compress and contentEncoding == 'gzip':
             text = decompress_gzip(text)
@@ -5125,14 +5209,117 @@ your connection is down. Retrying in %i minutes..."""
             text = unicode(text, charset, errors = 'replace')
 
         # If a wiki page, get user data
-        self._getUserData(text, sysop = sysop)
+        self._getUserDataOld(text, sysop = sysop)
 
         if back_response:
-            return response, text
-        else:
-            return text
+            return f, text
+        
+        return text
 
     def _getUserData(self, text, sysop = False, force = True):
+        """
+        Get the user data from an API query dict.
+
+        Parameters:
+        * text - the page text
+        * sysop - is the user a sysop?
+        """
+        
+        index = self._userIndex(sysop)
+        # Check for blocks
+        
+        if 'blockedby' in text and not self._isBlocked[index]:
+            # Write a warning if not shown earlier
+            if sysop:
+                account = 'Your sysop account'
+            else:
+                account = 'Your account'
+            output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
+        self._isBlocked[index] = 'blockedby' in text
+
+        # Check for new messages, the data must had key 'messages' in dict.
+        if 'messages' in text:
+            if not self._messages[index]:
+                # User has *new* messages
+                if sysop:
+                    output(u'NOTE: You have new messages in your sysop account on %s' % self)
+                else:
+                    output(u'NOTE: You have new messages on %s' % self)
+            self._messages[index] = True
+        else:
+            self._messages[index] = False
+
+        # Don't perform other checks if the data was already loaded
+        if self._userData[index] and not force:
+            return
+
+        # Get username.
+        # The data in anonymous mode had key 'anon'
+        # if 'anon' exist, username is IP address, not to collect it right now
+        if not 'anon' in text:
+            self._isLoggedIn[index] = True
+            self._userName[index] = text['name']
+        else:
+            self._isLoggedIn[index] = False
+            self._userName[index] = None
+
+        # Get user groups and rights
+        if 'groups' in text:
+            self._rights[index] = text['groups']
+            self._rights[index].extend(text['rights'])
+            # Warnings
+            # Don't show warnings for not logged in users, they will just fail to
+            # do any action
+            if self._isLoggedIn[index]:
+                if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
+                    # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
+                    if sysop:
+                        output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
+                    else:
+                        output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
+                if sysop and 'sysop' not in self._rights[index]:
+                    output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
+        else:
+            # 'groups' is not exists, set default rights
+            self._rights[index] = []
+            if self._isLoggedIn[index]:
+                # Logged in user
+                self._rights[index].append('user')
+                # Assume bot, and thus autoconfirmed
+                self._rights[index].extend(['bot', 'autoconfirmed'])
+                if sysop:
+                    # Assume user reported as a sysop indeed has the sysop rights
+                    self._rights[index].append('sysop')
+        # Assume the user has the default rights if API not query back
+        self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
+        #remove Duplicate rights
+        self._rights[index] = list(set(self._rights[index]))
+
+        # Get token
+        if 'preferencestoken' in text:
+            self._token[index] = text['preferencestoken']
+            if self._rights[index] is not None:
+                # Token and rights are loaded - user data is now loaded
+                self._userData[index] = True
+        elif self.versionnumber() < 14:
+            # uiprop 'preferencestoken' is start from 1.14, if 1.8~13, we need to use other way to get token
+            params = {
+                'action': 'query',
+                'prop': 'info',
+                'titles':'Non-existing page',
+                'intoken': 'edit',
+            }
+            data = query.GetData(params, self, sysop=sysop)['query']['pages'].values()[0]
+            if 'edittoken' in data:
+                self._token[index] = data['edittoken']
+                self._userData[index] = True
+            else:
+                output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+        else:
+            if not self._isBlocked[index]:
+                output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+    
+    def _getUserDataOld(self, text, sysop = False, force = True):
         """
         Get the user data from a wiki page data.
 
@@ -5143,219 +5330,198 @@ your connection is down. Retrying in %i minutes..."""
 
         index = self._userIndex(sysop)
 
-        if type(text) == dict: #text is dict, query from API
-            # Check for blocks
-            if text.has_key('blockedby') and not self._isBlocked[index]:
+        if '<div id="globalWrapper">' not in text:
+            # Not a wiki page
+            return
+        # Check for blocks - but only if version is 1.11 (userinfo is available)
+        # and the user data was not yet loaded
+        if self.versionnumber() >= 11 and (not self._userData[index] or force):
+            blocked = self._getBlock(sysop = sysop)
+            if blocked and not self._isBlocked[index]:
                 # Write a warning if not shown earlier
                 if sysop:
                     account = 'Your sysop account'
                 else:
                     account = 'Your account'
                 output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
-            self._isBlocked[index] = text.has_key('blockedby')
+            self._isBlocked[index] = blocked
 
-            # Check for new messages, the data must had key 'messages' in dict.
-            if text.has_key('messages'):
-                if not self._messages[index]:
-                    # User has *new* messages
-                    if sysop:
-                        output(u'NOTE: You have new messages in your sysop account on %s' % self)
-                    else:
-                        output(u'NOTE: You have new messages on %s' % self)
-                self._messages[index] = True
-            else:
-                self._messages[index] = False
-
-            # Don't perform other checks if the data was already loaded
-            if self._userData[index] and not force:
-                return
-
-            # Get username.
-            # The data in anonymous mode had key 'anon'
-            # if 'anon' exist, username is IP address, not to collect it right now
-            if not text.has_key('anon'): 
-                self._isLoggedIn[index] = True
-                self._userName[index] = text['name']
-            else:
-                self._isLoggedIn[index] = False
-                self._userName[index] = None
-
-            # Get user groups and rights
-            if text.has_key('groups') and text['groups'] != []:
-                self._rights[index] = text['groups']
-                self._rights[index].extend(text['rights'])
-                # Warnings
-                # Don't show warnings for not logged in users, they will just fail to
-                # do any action
-                if self._isLoggedIn[index]:
-                    if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
-                        # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
-                        if sysop:
-                            output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
-                        else:
-                            output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
-                    if sysop and 'sysop' not in self._rights[index]:
-                        output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
-            else:
-                # 'groups' is not exists, set default rights
-                self._rights[index] = []
-                if self._isLoggedIn[index]:
-                    # Logged in user
-                    self._rights[index].append('user')
-                    # Assume bot, and thus autoconfirmed
-                    self._rights[index].extend(['bot', 'autoconfirmed'])
-                    if sysop:
-                        # Assume user reported as a sysop indeed has the sysop rights
-                        self._rights[index].append('sysop')
-            # Assume the user has the default rights if API not query back
-            self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
-            #remove Duplicate rights
-            self._rights[index] = list(set(self._rights[index]))
-
-            # Get token
-            if text.has_key('preferencestoken'):
-                self._token[index] = text['preferencestoken']
-                if self._rights[index] is not None:
-                    # Token and rights are loaded - user data is now loaded
-                    self._userData[index] = True
-            else:
-                if not self._isBlocked[index]:
-                    output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+        # Check for new messages
+        if '<div class="usermessage">' in text:
+            if not self._messages[index]:
+                # User has *new* messages
+                if sysop:
+                    output(u'NOTE: You have new messages in your sysop account on %s' % self)
+                else:
+                    output(u'NOTE: You have new messages on %s' % self)
+            self._messages[index] = True
         else:
-            #ordinary mode to get data from edit page HTMLs and JavaScripts
-            
-            if '<div id="globalWrapper">' not in text:
-                # Not a wiki page
-                return
-            # Check for blocks - but only if version is 1.11 (userinfo is available)
-            # and the user data was not yet loaded
-            if self.versionnumber() >= 11 and (not self._userData[index] or force):
-                blocked = self._getBlock(sysop = sysop)
-                if blocked and not self._isBlocked[index]:
-                    # Write a warning if not shown earlier
-                    if sysop:
-                        account = 'Your sysop account'
-                    else:
-                        account = 'Your account'
-                    output(u'WARNING: %s on %s is blocked. Editing using this account will stop the run.' % (account, self))
-                self._isBlocked[index] = blocked
+            self._messages[index] = False
+        # Don't perform other checks if the data was already loaded
+        if self._userData[index] and not force:
+            return
 
-            # Check for new messages
-            if '<div class="usermessage">' in text:
-                if not self._messages[index]:
-                    # User has *new* messages
-                    if sysop:
-                        output(u'NOTE: You have new messages in your sysop account on %s' % self)
-                    else:
-                        output(u'NOTE: You have new messages on %s' % self)
-                self._messages[index] = True
-            else:
-                self._messages[index] = False
+        # Search for the the user page link at the top.
+        # Note that the link of anonymous users (which doesn't exist at all
+        # in Wikimedia sites) has the ID pt-anonuserpage, and thus won't be
+        # found here.
+        userpageR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
+        m = userpageR.search(text)
+        if m:
+            self._isLoggedIn[index] = True
+            self._userName[index] = m.group('username')
+        else:
+            self._isLoggedIn[index] = False
+            # No idea what is the user name, and it isn't important
+            self._userName[index] = None
 
-            # Don't perform other checks if the data was already loaded
-            if self._userData[index] and not force:
-                return
+        if self.family.name == 'wikitravel':    # fix for Wikitravel's user page link.
+            self = self.family.user_page_link(self,index)
 
-            # Search for the the user page link at the top.
-            # Note that the link of anonymous users (which doesn't exist at all
-            # in Wikimedia sites) has the ID pt-anonuserpage, and thus won't be
-            # found here.
-            userpageR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
-            m = userpageR.search(text)
-            if m:
-                self._isLoggedIn[index] = True
-                self._userName[index] = m.group('username')
-            else:
-                self._isLoggedIn[index] = False
-                # No idea what is the user name, and it isn't important
-                self._userName[index] = None
-
-            # Check user groups, if possible (introduced in 1.10)
-            groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
-            m = groupsR.search(text)
-            checkLocal = True
-            if default_code in self.family.cross_allowed: # if current languages in cross allowed list, check global bot flag.
-                globalgroupsR = re.compile(r'var wgGlobalGroups = \[\"(.+)\"\];')
-                mg = globalgroupsR.search(text)
-                if mg: # the account had global permission
-                    globalRights = mg.group(1)
-                    globalRights = globalRights.split('","')
-                    self._rights[index] = globalRights
-                    if self._isLoggedIn[index]:
-                        if 'Global_bot' in globalRights: # This account has the global bot flag, no need to check local flags.
-                            checkLocal = False
-                        else:
-                            output(u'Your bot account does not have global the bot flag, checking local flag.')
-            else:
-                if verbose: output(u'Note: this language does not allow global bots.')
-            if m and checkLocal:
-                rights = m.group(1)
-                rights = rights.split('", "')
-                if '*' in rights:
-                    rights.remove('*')
-                self._rights[index] = rights
-                # Warnings
-                # Don't show warnings for not logged in users, they will just fail to
-                # do any action
+        # Check user groups, if possible (introduced in 1.10)
+        groupsR = re.compile(r'var wgUserGroups = \[\"(.+)\"\];')
+        m = groupsR.search(text)
+        checkLocal = True
+        if default_code in self.family.cross_allowed: # if current languages in cross allowed list, check global bot flag.
+            globalgroupsR = re.compile(r'var wgGlobalGroups = \[\"(.+)\"\];')
+            mg = globalgroupsR.search(text)
+            if mg: # the account had global permission
+                globalRights = mg.group(1)
+                globalRights = globalRights.split('","')
+                self._rights[index] = globalRights
                 if self._isLoggedIn[index]:
-                    if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
-                        # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
-                        if sysop:
-                            output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
-                        else:
-                            output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
-                    if sysop and 'sysop' not in self._rights[index]:
-                        output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
-            else:
-                # We don't have wgUserGroups, and can't check the rights
-                self._rights[index] = []
-                if self._isLoggedIn[index]:
-                    # Logged in user
-                    self._rights[index].append('user')
-                    # Assume bot, and thus autoconfirmed
-                    self._rights[index].extend(['bot', 'autoconfirmed'])
+                    if 'Global_bot' in globalRights: # This account has the global bot flag, no need to check local flags.
+                        checkLocal = False
+                    else:
+                        output(u'Your bot account does not have global the bot flag, checking local flag.')
+        else:
+            if verbose: output(u'Note: this language does not allow global bots.')
+        if m and checkLocal:
+            rights = m.group(1)
+            rights = rights.split('", "')
+            if '*' in rights:
+                rights.remove('*')
+            self._rights[index] = rights
+            # Warnings
+            # Don't show warnings for not logged in users, they will just fail to
+            # do any action
+            if self._isLoggedIn[index]:
+                if 'bot' not in self._rights[index] and config.notify_unflagged_bot:
+                    # Sysop + bot flag = Sysop flag in MediaWiki < 1.7.1?
                     if sysop:
-                        # Assume user reported as a sysop indeed has the sysop rights
-                        self._rights[index].append('sysop')
-            # Assume the user has the default rights
-            self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
-            if 'bot' in self._rights[index] or 'sysop' in self._rights[index]:
-                self._rights[index].append('apihighlimits')
-            if 'sysop' in self._rights[index]:
-                self._rights[index].extend(['delete', 'undelete', 'block', 'protect', 'import', 'deletedhistory', 'unwatchedpages'])
+                        output(u'Note: Your sysop account on %s does not have a bot flag. Its edits will be visible in the recent changes.' % self)
+                    else:
+                        output(u'WARNING: Your account on %s does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.' % self)
+                if sysop and 'sysop' not in self._rights[index]:
+                    output(u'WARNING: Your sysop account on %s does not seem to have sysop rights. You may not be able to perform any sysop-restricted actions using it.' % self)
+        else:
+            # We don't have wgUserGroups, and can't check the rights
+            self._rights[index] = []
+            if self._isLoggedIn[index]:
+                # Logged in user
+                self._rights[index].append('user')
+                # Assume bot, and thus autoconfirmed
+                self._rights[index].extend(['bot', 'autoconfirmed'])
+                if sysop:
+                    # Assume user reported as a sysop indeed has the sysop rights
+                    self._rights[index].append('sysop')
+        # Assume the user has the default rights
+        self._rights[index].extend(['read', 'createaccount', 'edit', 'upload', 'createpage', 'createtalk', 'move', 'upload'])
+        if 'bot' in self._rights[index] or 'sysop' in self._rights[index]:
+            self._rights[index].append('apihighlimits')
+        if 'sysop' in self._rights[index]:
+            self._rights[index].extend(['delete', 'undelete', 'block', 'protect', 'import', 'deletedhistory', 'unwatchedpages'])
 
-            # Search for a token
-            tokenR = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-            tokenloc = tokenR.search(text)
-            if tokenloc:
-                self._token[index] = tokenloc.group(1)
-                if self._rights[index] is not None:
-                    # In this case, token and rights are loaded - user data is now loaded
-                    self._userData[index] = True
-            else:
+        # Search for a token
+        tokenR = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+        tokenloc = tokenR.search(text)
+        if tokenloc:
+            self._token[index] = tokenloc.group(1)
+            if self._rights[index] is not None:
+                # In this case, token and rights are loaded - user data is now loaded
+                self._userData[index] = True
+        else:
+            # Token not found
+            # Possible reason for this is the user is blocked, don't show a
+            # warning in this case, otherwise do show a warning
+            # Another possible reason is that the page cannot be edited - ensure
+            # there is a textarea and the tab "view source" is not shown
+            if u'<textarea' in text and u'<li id="ca-viewsource"' not in text and not self._isBlocked[index]:
                 # Token not found
-                # Possible reason for this is the user is blocked, don't show a
-                # warning in this case, otherwise do show a warning
-                # Another possible reason is that the page cannot be edited - ensure
-                # there is a textarea and the tab "view source" is not shown
-                if u'<textarea' in text and u'<li id="ca-viewsource"' not in text and not self._isBlocked[index]:
-                    # Token not found
-                    output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+                output(u'WARNING: Token not found on %s. You will not be able to edit any page.' % self)
+    
+    def siteinfo(self, key = 'general', force = False, dump = False):
+        """Get Mediawiki Site informations by API
+           dump - return all siteinfo datas
+            
+           some siprop params is huge data for MediaWiki, they take long times to read by testment.
+           these params could get, but only one by one.
+           
+        """
+        # protection for key in other datatype
+        if type(key) not in [str, unicode]:
+           key = 'general'
 
-    def mediawiki_message(self, key):
+        if self._info and key in self._info and not force:
+            if dump:
+                return self._info
+            else:
+                return self._info[key]
+
+        params = {
+            'action':'query',
+            'meta':'siteinfo',
+            'siprop':['general', 'namespaces', ],
+        }
+        #ver 1.10 handle
+        if self.versionnumber() > 10:
+            params['siprop'].extend(['statistics', ])
+            if key in ['specialpagealiases', 'interwikimap', 'namespacealiases', 'usergroups', ]:
+                if verbose: print 'getting huge siprop %s...' % key
+                params['siprop'] = [key]
+        
+        #ver 1.13 handle
+        if self.versionnumber() > 13:
+            if key not in ['specialpagealiases', 'interwikimap', 'namespacealiases', 'usergroups', ]:
+                params['siprop'].extend(['fileextensions', 'rightsinfo', ])
+            if key in ['magicwords', 'extensions', ]:
+                if verbose: print 'getting huge siprop %s...' % key
+                params['siprop'] = [key]
+        try:
+            data = query.GetData(params, self)['query']
+        except NotImplementedError:
+            return None
+
+        if not hasattr(self, '_info'):
+            self._info = data
+        else:
+            if key == 'magicwords':
+                self._info[key]={}
+                for entry in data[key]:
+                    self._info[key][entry['name']] = entry['aliases']
+            else:
+                for k, v in data.iteritems():
+                    self._info[k] = v 
+        #data pre-process
+        try:
+            if dump:
+                return self._info
+            else:
+                return self._info[key]
+        except KeyError:
+            return None
+
+    def mediawiki_message(self, key, forceReload = False):
         """Return the MediaWiki message text for key "key" """
         # Allmessages is retrieved once for all per created Site object
-        if not self._mediawiki_messages:
-            api = False
+        if (not self._mediawiki_messages) or forceReload:
+            api = self.has_api()
             if verbose:
-                output(
-                  u"Retrieving mediawiki messages from Special:Allmessages")
+                output(u"Retrieving mediawiki messages from Special:Allmessages")
             # Only MediaWiki r27393/1.12 and higher support XML output for Special:Allmessages
             if self.versionnumber() < 12:
                 usePHP = True
             else:
-                if config.use_api:
-                    api = True
                 usePHP = False
                 elementtree = True
                 try:
@@ -5371,34 +5537,30 @@ your connection is down. Retrying in %i minutes..."""
                         output(u'Elementtree was not found, using BeautifulSoup instead')
                     elementtree = False
 
-            if config.use_diskcache:
+            if config.use_diskcache and not api:
                 import diskcache
                 _dict = lambda x : diskcache.CachedReadOnlyDictI(x, prefix = "msg-%s-%s-" % (self.family.name, self.lang))
             else:
                 _dict = dict
 
             retry_idle_time = 1
+            retry_attempt = 0
             while True:
-                if api and self.versionnumber() >= 12:
+                if api and self.versionnumber() >= 12 or self.versionnumber() >= 16:
                     params = {
-                        'action':'query',
-                        'meta':'allmessages',
+                        'action': 'query',
+                        'meta': 'allmessages',
+                        'ammessages': key,
                     }
-                    try:
-                        datas = query.GetData(params, self)['query']['allmessages']
-                        self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
-                                for tag in datas])
-                    except KeyError:
-                        if verbose:
-                            output('API get messages had some error, retrying by ordinary.')
-                        api = False
-                        continue
-                    except NotImplementedError:
-                        api = False
-                        continue
+                    datas = query.GetData(params, self)['query']['allmessages'][0]
+                    if "missing" in datas:
+                        raise KeyError("message is not exist.")
+                    elif datas['name'] not in self._mediawiki_messages:
+                        self._mediawiki_messages[datas['name']] = datas['*']
+                    #self._mediawiki_messages = _dict([(tag['name'].lower(), tag['*'])
+                    #        for tag in datas if not 'missing' in tag])
                 elif usePHP:
-                    phppage = self.getUrl(self.get_address("Special:Allmessages")
-                                      + "&ot=php")
+                    phppage = self.getUrl(self.get_address("Special:Allmessages") + "&ot=php")
                     Rphpvals = re.compile(r"(?ms)'([^']*)' =&gt; '(.*?[^\\])',")
                     # Previous regexp don't match empty messages. Fast workaround...
                     phppage = re.sub("(?m)^('.*?' =&gt;) '',", r"\1 ' ',", phppage)
@@ -5406,8 +5568,7 @@ your connection is down. Retrying in %i minutes..."""
                         html2unicode(message.replace("\\'", "'")))
                             for (name, message) in Rphpvals.findall(phppage)])
                 else:
-                    xml = self.getUrl(self.get_address("Special:Allmessages")
-                                        + "&ot=xml")
+                    xml = self.getUrl(self.get_address("Special:Allmessages") + "&ot=xml")
                     # xml structure is :
                     # <messages lang="fr">
                     #    <message name="about">À propos</message>
@@ -5437,27 +5598,46 @@ your connection is down. Retrying in %i minutes..."""
                     output(u'WARNING: No messages found in Special:Allmessages. Maybe the server is down. Retrying in %i minutes...' % retry_idle_time)
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
+                    retry_attempt += 1
+                    if retry_attempt > config.maxretries:
+                        raise ServerError()
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
                     continue
                 break
 
+        if self.family.name == 'wikitravel':    # fix for Wikitravel's mediawiki message setting
+            self = self.family.mediawiki_message(self)
+
         key = key.lower()
         try:
             return self._mediawiki_messages[key]
         except KeyError:
-            raise KeyError("MediaWiki key '%s' does not exist on %s"
-                           % (key, self))
+            if not forceReload:
+                return self.mediawiki_message(key, True)
+            else:
+                raise KeyError("MediaWiki key '%s' does not exist on %s" % (key, self))
 
     def has_mediawiki_message(self, key):
-        """Return True iff this site defines a MediaWiki message for 'key'."""
-        #return self._mediawiki_messages.has_key(key)
+        """Return True if this site defines a MediaWiki message for 'key'."""
+        #return key in self._mediawiki_messages
         try:
             v = self.mediawiki_message(key)
             return True
         except KeyError:
             return False
+        
+    def has_api(self):
+        """Return True if this sites family has api interface."""
+        try:
+            if config.use_api:
+                x = self.apipath()
+                del x
+                return True
+        except NotImplementedError:
+            pass
+        return False
 
     def _load(self, sysop = False, force = False):
         """
@@ -5471,66 +5651,159 @@ your connection is down. Retrying in %i minutes..."""
         index = self._userIndex(sysop)
         if self._userData[index] and not force:
             return
-
         if verbose:
             output(u'Getting information for site %s' % self)
-        
-        try:
-            api_url = self.api_address()
-            del api_url
-        except NotImplementedError:
-            config.use_api = False
-        
+
         # Get data
         # API Userinfo is available from version 1.11
-        if config.use_api and self.versionnumber() >= 11:
+        # preferencetoken available from 1.14
+        if self.has_api() and self.versionnumber() >= 11:
             #Query userinfo
             params = {
                 'action': 'query',
                 'meta': 'userinfo',
-                'uiprop': 'blockinfo|groups|rights|hasmsg|ratelimits|preferencestoken',
+                'uiprop': ['blockinfo','groups','rights','hasmsg'],
             }
-            text = query.GetData(params, self, sysop=sysop)['query']['userinfo']
-            ##output('%s' % text) # for debug use only
+            if self.versionnumber() >= 12:
+                params['uiprop'].append('ratelimits')
+            if self.versionnumber() >= 14:
+                params['uiprop'].append('preferencestoken')
+
+            data = query.GetData(params, self, sysop=sysop)
+            
+            # Show the API error code instead making an index error
+            if 'error' in data:
+                raise RuntimeError('%s' % data['error'])
+
+            if self.versionnumber() == 11:
+                text = data['userinfo']
+            else:
+                text = data['query']['userinfo']
+
+            self._getUserData(text, sysop = sysop, force = force)
         else:
             url = self.edit_address('Non-existing_page')
             text = self.getUrl(url, sysop = sysop)
+            
+            self._getUserDataOld(text, sysop = sysop, force = force)
 
-        # Parse data
-        self._getUserData(text, sysop = sysop, force = force)
-
+    
     def search(self, query, number = 10, namespaces = None):
-        """Yield search results (using Special:Search page) for query."""
-        throttle = True
-        path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
-                                   n=number, ns=namespaces)
-        get_throttle()
-        html = self.getUrl(path)
+        """
+        Yield search results for query.
+        Use API when enabled use_api and version >= 1.11,
+        or use Special:Search.
+        """
+        if self.has_api() and self.versionnumber() >= 11:
+            #Yield search results (using api) for query.
+            params = {
+                'action': 'query',
+                'list': 'search',
+                'srsearch': q,
+                'srlimit': number
+            }
+            if namespaces:
+                params['srnamespace'] = namespaces
 
-        entryR = re.compile(ur'<li><a href=".+?" title="(?P<title>.+?)">.+?</a>'
-#                              '<br />(?P<match>.*?)<span style="color[^>]*>.+?: '
-#                              '(?P<relevance>[0-9.]+)% - '
-#                              '(?P<size>[0-9.]*) '
-#                              '(?P<sizeunit>[A-Za-z]) '
-#                              '\((?P<words>.+?) \w+\) - '
-#                              '(?P<date>.+?)</span></li>'
-                              , re.DOTALL)
-
-        for m in entryR.finditer(html):
-            page = Page(self, m.group('title'))
-            #match = m.group('match')
-            #relevance = m.group('relevance')
-            #size = m.group('size')
-            ## sizeunit appears to always be "KB"
-            #words = m.group('words')
-            #date = m.group('date')
-
-            #print "%s - %s %s (%s words) - %s" % (relevance, size, sizeunit, words, date)
-
-            #yield page, match, relevance, size, words, date
-            yield page, '', '', '', '', ''
+            offset = 0
+            while True:
+                params['sroffset'] = offset
+                data = query.GetData(params, self)['query']
+                if 'error' in data:
+                    raise RuntimeError('%s' % data['error'])
+                if not data['search']:
+                    break
+                for s in data['search']:
+                    offset += 1
+                    page = Page(self, s['title'])
+                    yield page, s['snippet'], '', s['size'], s['wordcount'], s['timestamp']
+        else:
+            #Yield search results (using Special:Search page) for query.
+            throttle = True
+            path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
+                                       n=number, ns=namespaces)
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile(ur'<li><a href=".+?" title="(?P<title>.+?)">.+?</a>',
+                                re.DOTALL)
+            for m in entryR.finditer(html):
+                page = Page(self, m.group('title'))
+                yield page, '', '', '', '', ''
 
     # TODO: avoid code duplication for the following methods
+
+    def logpages(self, number = 50, mode = '', title = None, user = None, repeat = False,
+                 namespace = [], start = None, end = None, tag = None, newer = False, dump = False):
+        
+        if not self.has_api() or self.versionnumber() < 11 or \
+           mode not in ('block', 'protect', 'rights', 'delete', 'upload',
+                        'move', 'import', 'patrol', 'merge', 'suppress',
+                        'review', 'stable', 'gblblock', 'renameuser',
+                        'globalauth', 'gblrights', 'abusefilter', 'newusers'):
+            raise NotImplementedError, mode
+        params = {
+            'action'    : 'query',
+            'list'      : 'logevents',
+            'letype'    : mode,
+            'lelimit'   : int(number),
+            'ledir'     : 'older',
+            'leprop'    : ['ids', 'title', 'type', 'user', 'timestamp', 'comment', 'details',],
+        }
+
+        if number > config.special_page_limit:
+            params['lelimit'] = config.special_page_limit
+            if number > 5000 and self.isAllowed('apihighlimits'):
+                params['lelimit'] = 5000
+        if newer:
+            params['ledir'] = 'newer'
+        if user:
+            params['leuser'] = user
+        if title:
+            params['letitle'] = title
+        if start:
+            params['lestart'] = start
+        if end:
+            params['leend'] = end
+        if tag and self.versionnumber() >= 16: # tag support from mw:r58399
+            params['letag'] = tag
+        
+        nbresults = 0
+        while True:
+            result = query.GetData(params, self)
+            if 'error' in result or 'warnings' in result:
+                output('%s' % result)
+                raise Error
+            for c in result['query']['logevents']:
+                if (not namespace or c['ns'] in namespace) and \
+                   not c.has_key('actionhidden'):
+                    if dump:
+                        # dump result only.
+                        yield c
+                    else:
+                        if c['ns'] == 6:
+                            p_ret = ImagePage(self, c['title'])
+                        else:
+                            p_ret = Page(self, c['title'], defaultNamespace=c['ns'])
+                        
+                        yield (p_ret, c['user'],
+                          parsetime2stamp(c['timestamp']),
+                          c['comment'], )
+
+                nbresults += 1
+                if nbresults >= number:
+                    break
+            if 'query-continue' in result and nbresults < number:
+                params['lestart'] = result['query-continue']['logevents']['lestart']
+            elif repeat:
+                nbresults = 0
+                try:
+                    params.pop('lestart')
+                except KeyError:
+                    pass
+            else:
+                break
+        return
+
     def newpages(self, number = 10, get_redirect = False, repeat = False, namespace = 0):
         """Yield new articles (as Page objects) from Special:Newpages.
 
@@ -5550,50 +5823,35 @@ your connection is down. Retrying in %i minutes..."""
         # TODO: Repeat mechanism doesn't make much sense as implemented;
         #       should use both offset and limit parameters, and have an
         #       option to fetch older rather than newer pages
-        # TODO: extract and return edit comment.
         seen = set()
-        try:
-            d = self.apipath()
-            del d
-        except NotImplementedError:
-            config.use_api = False
-
         while True:
-            if config.use_api and self.versionnumber() >= 10:
+            if self.has_api() and self.versionnumber() >= 10:
                 params = {
                     'action': 'query',
                     'list': 'recentchanges',
                     'rctype': 'new',
                     'rcnamespace': namespace,
                     'rclimit': int(number),
-                    'rcprop': 'title|timestamp|sizes|user|comment',
-                    'rcshow': '!bot|!redirect',
+                    'rcprop': ['ids','title','timestamp','sizes','user','comment'],
+                    'rcshow': ['!bot','!redirect'],
                     #'': '',
                 }
                 data = query.GetData(params, self)['query']['recentchanges']
-                
+
                 for np in data:
-                    date = np['timestamp']
-                    title = np['title']
-                    length = np['newlen']
-                    username = np['user']
-                    loggedIn = u''
-                    comment = np['comment']
-                    if title not in seen:
-                        seen.add(title)
-                        page = Page(self, title)
-                        yield page, date, length, loggedIn, username, comment
+                    if np['pageid'] not in seen:
+                        seen.add(np['pageid'])
+                        page = Page(self, np['title'], defaultNamespace=np['ns'])
+                        yield page, np['timestamp'], np['newlen'], u'', np['user'], np['comment']
             else:
                 path = self.newpages_address(n=number, namespace=namespace)
                 # The throttling is important here, so always enabled.
                 get_throttle()
                 html = self.getUrl(path)
 
-                entryR = re.compile(
-'<li[^>]*>(?P<date>.+?) \S*?<a href=".+?"'
-' title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]]'
-' .?<a href=".+?" title=".+?:(?P<username>.+?)">'
-                                    )
+                entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?"'
+                    ' title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]]'
+                    ' .?<a href=".+?" title=".+?:(?P<username>.+?)">')
                 for m in entryR.finditer(html):
                     date = m.group('date')
                     title = m.group('title')
@@ -5703,8 +5961,7 @@ your connection is down. Retrying in %i minutes..."""
             path = self.ancientpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile(
-'<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
                 date = m.group('date')
@@ -5791,42 +6048,13 @@ your connection is down. Retrying in %i minutes..."""
                            No more than 500 (5000 for bots) allowed.
                            Default: 10
         """
-        params = {
-            'action'    :'query',
-            'list'      :'logevents',
-            'letype'    :'upload',
-            'lelimit'   :int(number),
-            }
-        if lestart is not None: params['lestart'] = lestart
-        if leend is not None: params['leend'] = leend
-        if leuser is not None: params['leuser'] = leuser
-        if letitle is not None: params['letitle'] = letitle
-        while True:
-            try:
-                if self.versionnumber() >= 11:
-                    imagesData = query.GetData(params, self, encodeTitle = False)['query']['logevents']
-                else:
-                    raise NotImplementedError("The site version is not support this action.")
-            except KeyError: #no 'query' or 'logevents', error occured
-                raise ServerError("The APIs don't return the data, the site may be down")
-            except NotImplementedError:
-                raise ServerError("The site version is not support this action.")
+        
+        for o, u, t, c in self.logpages(number = number, mode = 'upload', title = letitle, user = leuser,
+                 repeat = repeat, start = lestart, end = leend):
+            yield o, t, u, c
+        return
 
-            for imageData in imagesData:
-                try:
-                    comment = imageData['comment']
-                except KeyError:
-                    comment = ''
-                pageid = imageData['pageid']
-                title = imageData['title']
-                timestamp = imageData['timestamp']
-                ##logid = imageData['logid'] #no use current now
-                user = imageData['user']
-                yield ImagePage(self, title), timestamp, user, comment
-            if not repeat:
-                break
-
-    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
+    def recentchanges(self, number = 100, rcstart = None, rcend = None, rcshow = None, rcdir='older', rctype ='edit|new', namespace=None, includeredirects=True, repeat = False):
         """
         Yield ImagePages from APIs, call: action=query&list=recentchanges&rctype=edit|new&rclimit=500
 
@@ -5865,36 +6093,36 @@ your connection is down. Retrying in %i minutes..."""
         params = {
             'action'    : 'query',
             'list'      : 'recentchanges',
+            'rcdir'     : rcdir,
             'rctype'    : rctype,
-            'rcprop'    : 'user|comment|timestamp|title|ids|loginfo',    #|flags|sizes|redirect|patrolled'
+            'rcprop'    : ['user','comment','timestamp','title','ids','loginfo'],    #','flags','sizes','redirect','patrolled']
+            'rcnamespace' : namespace,
             'rclimit'   : int(number),
             }
-        if rcstart is not None: params['rcstart'] = rcstart
-        if rcend is not None: params['rcend'] = rcend
-        if rcshow is not None: params['rcshow'] = rcshow
-        if rctype is not None: params['rctype'] = rctype
+        if rcstart: params['rcstart'] = rcstart
+        if rcend: params['rcend'] = rcend
+        if rcshow: params['rcshow'] = rcshow
+        if rctype: params['rctype'] = rctype
         while True:
             data = query.GetData(params, self, encodeTitle = False)
+            if 'error' in data:
+                raise RuntimeError('%s' % data['error'])
             try:
                 rcData = data['query']['recentchanges']
             except KeyError:
                 raise ServerError("The APIs don't return data, the site may be down")
 
-            for rcItem in rcData:
-                try:
-                    comment = rcItem['comment']
-                except KeyError:
-                    comment = ''
-                try:
-                    loginfo = rcItem['loginfo']
-                except KeyError:
-                    loginfo = ''
+            for i in rcData:
+                comment = ''
+                if 'comment' in i:
+                    comment = i['comment']
+                loginfo = ''
+                if 'loginfo' in i:
+                    loginfo = i['loginfo']
                 # pageid = rcItem['pageid']
-                title = rcItem['title']
-                timestamp = rcItem['timestamp']
                 # logid = rcItem['logid']
-                user = rcItem['user']
-                yield Page(self, title), timestamp, user, comment, loginfo
+                page = Page(self, i['title'], defaultNamespace=i['ns'])
+                yield page, i['timestamp'], i['user'], comment, loginfo
             if not repeat:
                 break
 
@@ -6001,8 +6229,8 @@ your connection is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def randompage(self):
-        if config.use_api and self.versionnumber() >= 12:
+    def randompage(self, redirect = False):
+        if self.has_api() and self.versionnumber() >= 12:
             params = {
                 'action': 'query',
                 'list': 'random',
@@ -6010,32 +6238,24 @@ your connection is down. Retrying in %i minutes..."""
                 'rnlimit': '1',
                 #'': '',
             }
+            if redirect:
+                params['rnredirect'] = 1
+
             data = query.GetData(params, self)
             return Page(self, data['query']['random'][0]['title'])
         else:
-            """Yield random page via Special:Random"""
-            html = self.getUrl(self.random_address())
+            if redirect:
+                """Yield random redirect page via Special:RandomRedirect."""
+                html = self.getUrl(self.randomredirect_address())
+            else:
+                """Yield random page via Special:Random"""
+                html = self.getUrl(self.random_address())
             m = re.search('var wgPageName = "(?P<title>.+?)";', html)
             if m is not None:
                 return Page(self, m.group('title'))
 
     def randomredirectpage(self):
-        if config.use_api and self.versionnumber() >= 12:
-            params = {
-                'action': 'query',
-                'list': 'random',
-                #'rnnamespace': '0',
-                'rnlimit': '1',
-                'rnredirect': '1',
-            }
-            data = query.GetData(params, self)
-            return Page(self, data['query']['random'][0]['title'])
-        else:
-            """Yield random redirect page via Special:RandomRedirect."""
-            html = self.getUrl(self.randomredirect_address())
-            m = re.search('var wgPageName = "(?P<title>.+?)";', html)
-            if m is not None:
-                return Page(self, m.group('title'))
+        return self.randompage(redirect = True)
 
     def allpages(self, start='!', namespace=None, includeredirects=True,
                  throttle=True):
@@ -6058,11 +6278,9 @@ your connection is down. Retrying in %i minutes..."""
         if namespace is None:
             page = Page(self, start)
             namespace = page.namespace()
-            start = page.titleWithoutNamespace()        
-        try:
-            api_url = self.api_address()
-            del api_url
-        except NotImplementedError:
+            start = page.titleWithoutNamespace()
+
+        if not self.has_api():
             for page in self._allpagesOld(start, namespace, includeredirects, throttle):
                 yield page
             return
@@ -6070,8 +6288,9 @@ your connection is down. Retrying in %i minutes..."""
         params = {
             'action'     : 'query',
             'list'       : 'allpages',
-            'aplimit'   : config.special_page_limit,
+            'aplimit'    : config.special_page_limit,
             'apnamespace': namespace,
+            'apfrom'     : start
         }
 
         if not includeredirects:
@@ -6080,16 +6299,22 @@ your connection is down. Retrying in %i minutes..."""
             params['apfilterredir'] = 'redirects'
 
         while True:
-            params['apfrom'] = start
+
             if throttle:
                 get_throttle()
             data = query.GetData(params, self)
-            
+            if 'warnings' in data:
+                warning = data['warnings']['allpages']['*']
+                raise str(warning)
+            count = 0
             for p in data['query']['allpages']:
+                count += 1
                 yield Page(self, p['title'])
-            
-            if data.has_key('query-continue'):
-                start = data['query-continue']['allpages']['apfrom']
+                if count >= config.special_page_limit:
+                    break
+
+            if 'query-continue' in data and count < params['aplimit']:
+                params['apfrom'] = data['query-continue']['allpages']['apfrom']
             else:
                 break
 
@@ -6143,8 +6368,7 @@ your connection is down. Retrying in %i minutes..."""
                 iend = returned_html.index(end_s,ibegin + 3)
             except ValueError:
                 if monobook_error:
-                    raise ServerError(
-"Couldn't extract allpages special page. Make sure you're using MonoBook skin.")
+                    raise ServerError("Couldn't extract allpages special page. Make sure you're using MonoBook skin.")
                 else:
                     # No list of wikilinks
                     break
@@ -6255,18 +6479,12 @@ your connection is down. Retrying in %i minutes..."""
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
-        #Check API can work
-        if config.use_api:
-            try:
-                d = self.api_address()
-                del d
-            except NotImplementedError:
-                config.use_api = False
-
+        api = self.has_api()
         urlsToRetrieve = [siteurl]
         if not siteurl.startswith('*.'):
             urlsToRetrieve.append('*.' + siteurl)
-        if config.use_api and self.versionnumber() >= 11:
+
+        if api and self.versionnumber() >= 11:
             output(u'Querying API exturlusage...')
             for url in urlsToRetrieve:
                 params = {
@@ -6275,19 +6493,22 @@ your connection is down. Retrying in %i minutes..."""
                     'eulimit': limit,
                     'euquery': url,
                 }
+                count = 0
                 while True:
                     data = query.GetData(params, self)
                     if data['query']['exturlusage'] == []:
                         break
                     for pages in data['query']['exturlusage']:
+                        count += 1
                         if not siteurl in pages['title']:
                             # the links themselves have similar form
-                            if pages['title'] in cache:
-                                continue
-                            else:
-                                cache.append(pages['title'])
-                                yield Page(self, pages['title'])
-                    if data.has_key(u'query-continue'):
+                            if pages['pageid'] not in cache:
+                                cache.append(pages['pageid'])
+                                yield Page(self, pages['title'], defaultNamespace=pages['ns'])
+                        if count >= limit:
+                            break
+                    
+                    if 'query-continue' in data and count < limit:
                             params['euoffset'] = data[u'query-continue'][u'exturlusage'][u'euoffset']
                     else:
                             break
@@ -6372,17 +6593,18 @@ your connection is down. Retrying in %i minutes..."""
                 return True
         return False
 
-    def redirect(self, default = False):
+    def getmagicwords(self, word):
+        """Return list of localized "word" magic words for the site."""
+        return self.siteinfo('magicwords').get(word)
+
+    def redirect(self, default=False):
         """Return the localized redirect tag for the site.
 
-        If default is True, falls back to 'REDIRECT' if the site has no
-        special redirect tag.
+        Argument is ignored (but maintained for backwards-compatibility).
 
         """
-        if default:
-            return self.family.redirect.get(self.lang, [u"REDIRECT"])[0]
-        else:
-            return self.family.redirect.get(self.lang, None)
+        # return the magic word without the preceding '#' character
+        return self.getmagicwords('redirect')[0].lstrip("#")
 
     def redirectRegex(self):
         """Return a compiled regular expression matching on redirect pages.
@@ -6390,26 +6612,33 @@ your connection is down. Retrying in %i minutes..."""
         Group 1 in the regex match object will be the target title.
 
         """
-
+        #NOTE: this is needed, since the API can give false positives!
+        default = 'REDIRECT'
         try:
-            redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
-            redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
+            keywords = self.getmagicwords('redirect')
+            pattern = r'(?:' + '|'.join(keywords) + ')'
         except KeyError:
             # no localized keyword for redirects
-            redirKeywordsR = r'redirect'
-
-        # A redirect starts with hash (#), followed by a keyword, then
-        # arbitrary stuff, then a wikilink. The wikilink may contain
-        # a label, although this is not useful.
-
+            pattern = r'#%s' % default
         if self.versionnumber() > 12:
             # in MW 1.13 (at least) a redirect directive can follow whitespace
             prefix = r'\s*'
         else:
             prefix = r'[\r\n]*'
-        return re.compile(prefix + '#' + redirKeywordsR
+        # A redirect starts with hash (#), followed by a keyword, then
+        # arbitrary stuff, then a wikilink. The wikilink may contain
+        # a label, although this is not useful.
+        return re.compile(prefix + pattern
                                  + '\s*:?\s*\[\[(.+?)(?:\|.*?)?\]\]',
                           re.IGNORECASE | re.UNICODE | re.DOTALL)
+
+    def pagenamecodes(self, default=True):
+        """Return list of localized PAGENAME tags for the site."""
+        return self.getmagicwords('pagename')
+
+    def pagename2codes(self, default=True):
+        """Return list of localized PAGENAMEE tags for the site."""
+        return self.getmagicwords('pagenamee')
 
     def resolvemagicwords(self, wikitext):
         """Replace the {{ns:xx}} marks in a wikitext with the namespace names"""
@@ -6417,7 +6646,7 @@ your connection is down. Retrying in %i minutes..."""
         defaults = []
         for namespace in self.family.namespaces.itervalues():
             value = namespace.get('_default', None)
-            if value:    
+            if value:
                 if isinstance(value, list):
                     defaults += value
                 else:
@@ -6434,7 +6663,7 @@ your connection is down. Retrying in %i minutes..."""
 
         def replacenumbered(match):
             return self.namespace(int(match.group(1)))
-        
+
         return numbered.sub(replacenumbered, wikitext)
 
     # The following methods are for convenience, so that you can access
@@ -6881,7 +7110,7 @@ your connection is down. Retrying in %i minutes..."""
         """
         if self.versionnumber() < 12:
             return None
-        
+
         if hash_found is None: # If the hash is none return None and not continue
             return None
         # Now get all the images with the same hash
@@ -6965,7 +7194,7 @@ def handleArgs(*args):
     args may be passed as an argument, thereby overriding sys.argv
 
     """
-    global default_code, default_family, verbose
+    global default_code, default_family, verbose, debug
     # get commandline arguments
     if not args:
         args = sys.argv[1:]
@@ -6985,9 +7214,11 @@ def handleArgs(*args):
         elif arg.startswith('-lang:'):
             default_code = arg[6:]
         elif arg.startswith('-putthrottle:'):
-            put_throttle.setDelay(int(arg[13:]), absolute = True)
+            config.put_throttle = int(arg[len("-putthrottle:") : ])
+            put_throttle.setDelay()
         elif arg.startswith('-pt:'):
-            put_throttle.setDelay(int(arg[4:]), absolute = True)
+            config.put_throttle = int(arg[len("-pt:") : ])
+            put_throttle.setDelay()
         elif arg == '-log':
             setLogfileStatus(True)
         elif arg.startswith('-log:'):
@@ -7002,6 +7233,13 @@ def handleArgs(*args):
         elif arg.startswith('-daemonize:'):
             import daemonize
             daemonize.daemonize(redirect_std = arg[11:])
+        elif arg == '-cosmeticchanges' or arg == '-cc':
+            config.cosmetic_changes = not config.cosmetic_changes
+            output(u'NOTE: option cosmetic_changes is %s\n' % config.cosmetic_changes)
+        # global debug option for development purposes. Normally does nothing.
+        elif arg == '-debug':
+            debug = True
+            config.special_page_limit = 500
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
@@ -7020,6 +7258,7 @@ sys.path.append(config.datafilepath('userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 verbose = 0
+debug = False
 
 default_family = config.family
 default_code = config.mylang
@@ -7043,244 +7282,6 @@ For other possible configuration variables check config.py.
 
 # Set socket timeout
 socket.setdefaulttimeout(config.socket_timeout)
-
-# Languages to use for comment text after the actual language but before
-# en:. For example, if for language 'xx', you want the preference of
-# languages to be:
-# xx:, then fr:, then ru:, then en:
-# you let altlang return ['fr','ru'].
-# This code is used by translate() below.
-
-def altlang(code):
-    #Amharic
-    if code in ['aa', 'om']:
-        return ['am']
-    #Arab
-    if code in ['arc', 'arz']:
-        return ['ar']
-    if code == 'kab':
-        return ['ar', 'fr']
-    #Bulgarian
-    if code in ['cu', 'mk']:
-        return ['bg', 'sr', 'sh']
-    #Czech
-    if code in ['cs', 'sk']:
-        return ['cs', 'sk']
-    #German
-    if code in ['als', 'bar', 'ksh']:
-        return ['de']
-    if code in ['als', 'lb']:
-        return ['de', 'fr']
-    if code == 'nds':
-        return ['nds-nl', 'de']
-    if code in ['dsb', 'hsb']:
-        return ['hsb', 'dsb', 'de']
-    if code == 'rm':
-        return ['de', 'it']
-    if code == 'stq':
-        return ['fy', 'de']
-    #Greek
-    if code == 'pnt':
-        return ['el']
-    #Esperanto
-    if code in ['io', 'nov']:
-        return ['eo']
-    #Spanish
-    if code in ['an', 'ast', 'ay', 'ca', 'ext', 'lad', 'nah', 'nv', 'qu']:
-        return ['es']
-    if code in ['gl', 'gn']:
-        return ['es', 'pt']
-    if code == ['eu']:
-        return ['es', 'fr']
-    if code in ['bcl', 'cbk-zam', 'ceb', 'ilo', 'pag', 'pam', 'tl', 'war']:
-        return ['es', 'tl']
-    #Estonian
-    if code == 'fiu-vro':
-        return ['et']
-    #Persian (Farsi)
-    if code in ['glk', 'mzn']:
-        return ['ar']
-    #French
-    if code in ['bm', 'br', 'ht', 'kab', 'kg', 'ln', 'mg', 'nrm', 'oc',
-                'rw', 'sg', 'ty', 'wa']:
-        return ['fr']
-    if code == 'co':
-        return ['fr', 'it']
-    #Hindi
-    if code in ['bh', 'pi', 'sa']:
-        return ['hi']
-    if code in ['ne', 'new']:
-        return ['ne', 'new', 'hi']
-    #Indonesian and Malay
-    if code in ['ace', 'bug', 'id', 'jv', 'ms', 'su']:
-        return ['id', 'ms', 'jv']
-    if code == 'map-bms':
-        return ['jv', 'id', 'ms']
-    #Inuit languages
-    if code in ['ik', 'iu']:
-        return ['iu', 'kl']
-    if code == 'kl':
-        return ['iu', 'da', 'no']
-    #Italian
-    if code in ['eml', 'fur', 'lij', 'lmo', 'nap', 'pms', 'roa-tara', 'sc',
-                'scn', 'vec']:
-        return ['it']
-    if code == 'frp':
-        return ['it', 'fr']
-    #Lithuanian
-    if code in ['bat-smg', 'ltg']:
-        return ['lt']
-    #Dutch
-    if code in ['fy', 'li', 'pap', 'srn', 'vls', 'zea']:
-        return ['nl']
-    if code == ['nds-nl']:
-        return ['nds', 'nl']
-    #Polish
-    if code in ['csb', 'szl']:
-        return ['pl']
-    #Portuguese
-    if code in ['fab', 'mwl', 'tet']:
-        return ['pt']
-    #Romanian
-    if code in ['mo', 'roa-rup']:
-        return ['ro']
-    #Russian and Belarusian
-    if code in ['ab', 'av', 'ba', 'bxr', 'ce', 'cv', 'kk', 'ky', 'lbe', 'mdf',
-                'mhr', 'myv', 'os', 'sah', 'tg', 'tt', 'udm', 'uk', 'xal']:
-        return ['ru']
-    if code in ['be', 'be-x-old']:
-        return ['be', 'be-x-old', 'ru']
-    if code == 'kaa':
-        return ['uz', 'ru']
-    #Serbocroatian
-    if code in ['bs', 'hr', 'sh', 'sr']:
-        return ['sh', 'hr', 'bs', 'sr']
-    #Turkish and Kurdish
-    if code in ['diq', 'ku']:
-        return ['ku', 'tr']
-    if code == 'ckb':
-        return ['ku', 'ar']
-    #Chinese
-    if code in ['minnan', 'zh', 'zh-classical', 'zh-min-nan', 'zh-tw']:
-        return ['zh', 'zh-tw', 'zh-cn', 'zh-classical']
-    if code in ['cdo', 'gan', 'hak', 'ii', 'wuu', 'za', 'zh-cdo', 'zh-classical',
-                'zh-cn', 'zh-yue']:
-        return ['zh', 'zh-cn', 'zh-tw', 'zh-classical']
-    #Scandinavian languages
-    if code in ['da', 'sv']:
-        return ['da', 'no', 'nb', 'sv', 'nn']
-    if code in ['fo', 'is']:
-        return ['da', 'no', 'nb', 'nn', 'sv']
-    if code == 'nn':
-        return ['no', 'nb', 'sv', 'da']
-    if code in ['nb', 'no']:
-        return ['no', 'nb', 'da', 'nn', 'sv']
-    if code == 'se':
-        return ['sv', 'no', 'nb', 'nn', 'fi']
-    #Other languages
-    if code in ['bi', 'tpi']:
-        return ['bi', 'tpi']
-    if code == 'yi':
-        return ['he', 'de']
-    if code in ['ia', 'ie']:
-        return ['ia', 'la', 'it', 'fr', 'es']
-    #Default value
-    return []
-
-def translate(code, xdict):
-    """Return the most appropriate translation from a translation dict.
-
-    Given a language code and a dictionary, returns the dictionary's value for
-    key 'code' if this key exists; otherwise tries to return a value for an
-    alternative language that is most applicable to use on the Wikipedia in
-    language 'code'.
-
-    The language itself is always checked first, then languages that
-    have been defined to be alternatives, and finally English. If none of
-    the options gives result, we just take the first language in the
-    list.
-
-    """
-    # If a site is given instead of a code, use its language
-    if hasattr(code,'lang'):
-        code = code.lang
-
-    if 'wikipedia' in xdict: # If xdict attribute is wikipedia, define the xdite had multiple projects
-        if default_family in xdict:
-            xdict = xdict[default_family]
-        else:
-            xdict = xdict['wikipedia']
-
-    if code in xdict:
-        return xdict[code]
-    for alt in altlang(code):
-        if alt in xdict:
-            return xdict[alt]
-    if '_default' in xdict:
-        return xdict['_default']
-    elif 'en' in xdict:
-        return xdict['en']
-    return xdict.values()[0]
-
-def showDiff(oldtext, newtext):
-    """
-    Prints a string showing the differences between oldtext and newtext.
-    The differences are highlighted (only on Unix systems) to show which
-    changes were made.
-    """
-    # For information on difflib, see http://pydoc.org/2.3/difflib.html
-    color = {
-        '+': 'lightgreen',
-        '-': 'lightred',
-    }
-    diff = u''
-    colors = []
-    # This will store the last line beginning with + or -.
-    lastline = None
-    # For testing purposes only: show original, uncolored diff
-    #     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-    #         print line
-    for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-        if line.startswith('?'):
-            # initialize color vector with None, which means default color
-            lastcolors = [None for c in lastline]
-            # colorize the + or - sign
-            lastcolors[0] = color[lastline[0]]
-            # colorize changed parts in red or green
-            for i in range(min(len(line), len(lastline))):
-                if line[i] != ' ':
-                    lastcolors[i] = color[lastline[0]]
-            diff += lastline + '\n'
-            # append one None (default color) for the newline character
-            colors += lastcolors + [None]
-        elif lastline:
-            diff += lastline + '\n'
-            # colorize the + or - sign only
-            lastcolors = [None for c in lastline]
-            lastcolors[0] = color[lastline[0]]
-            colors += lastcolors + [None]
-        lastline = None
-        if line[0] in ('+', '-'):
-            lastline = line
-    # there might be one + or - line left that wasn't followed by a ? line.
-    if lastline:
-        diff += lastline + '\n'
-        # colorize the + or - sign only
-        lastcolors = [None for c in lastline]
-        lastcolors[0] = color[lastline[0]]
-        colors += lastcolors + [None]
-
-    result = u''
-    lastcolor = None
-    for i in range(len(diff)):
-        if colors[i] != lastcolor:
-            if lastcolor is None:
-                result += '\03{%s}' % colors[i]
-            else:
-                result += '\03{default}'
-        lastcolor = colors[i]
-        result += diff[i]
-    output(result)
 
 def writeToCommandLogFile():
     """
@@ -7476,6 +7477,10 @@ Global arguments available for all bots:
 
 -verbose          Have the bot provide additional output that may be useful in
 -v                debugging.
+
+-cosmeticchanges  Toggles the cosmetic_changes setting made in config.py or
+-cc               user_config.py to its inverse and overrules it. All other
+                  settings and restrictions are untouched.
 '''
     output(globalHelp, toStdout = True)
     try:
@@ -7489,7 +7494,7 @@ Global arguments available for all bots:
         raise
         output(u'Sorry, no help available for %s' % moduleName)
 
-page_put_queue = Queue.Queue()
+page_put_queue = Queue.Queue(config.max_queue_size)
 def async_put():
     """Daemon; take pages from the queue and try to save them on the wiki."""
     while True:
@@ -7550,7 +7555,7 @@ def _flush():
         remainingPages = page_put_queue.qsize() - 1
             # -1 because we added a None element to stop the queue
         remainingSeconds = datetime.timedelta(
-                            seconds=(remainingPages * put_throttle.getDelay()))
+            seconds=(remainingPages * put_throttle.getDelay(True)))
         return (remainingPages, remainingSeconds)
 
     page_put_queue.put((None, None, None, None, None, None, None))
@@ -7574,7 +7579,7 @@ Really exit?"""
         get_throttle.drop()
     except NameError:
         pass
-    if config.use_diskcache:
+    if config.use_diskcache and not config.use_api:
         for site in _sites.itervalues():
             if site._mediawiki_messages:
                 try:
@@ -7602,8 +7607,8 @@ def debugDump(name, site, error, data):
     f.close()
     output( u'ERROR: %s caused error %s. Dump %s created.' % (name,error,filename) )
 
-get_throttle = Throttle(config.minthrottle,config.maxthrottle)
-put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
+get_throttle = Throttle()
+put_throttle = Throttle(write=True)
 
 def decompress_gzip(data):
     # Use cStringIO if available
@@ -7620,33 +7625,70 @@ def decompress_gzip(data):
             raise
     return data
 
-class MyURLopener(urllib.FancyURLopener):
-    version="PythonWikipediaBot/1.0"
+def parsetime2stamp(tz):
+    s = time.strptime(tz, "%Y-%m-%dT%H:%M:%SZ")
+    return int(time.strftime("%Y%m%d%H%M%S", s))
 
-    def http_error_default(self, url, fp, errcode, errmsg, headers):
-        if errcode == 401 or errcode == 404:
-            raise PageNotFound(u'Page %s could not be retrieved. Check your family file ?' % url)
-        else:
-            return urllib.FancyURLopener.http_error_default(self, url, fp, errcode, errmsg, headers)
+#Redirect Handler for urllib2
+class U2RedirectHandler(urllib2.HTTPRedirectHandler):
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        newreq = urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
+        if (newreq.get_method() == "GET"):
+            for cl in "Content-Length", "Content-length", "content-length", "CONTENT-LENGTH":
+                if newreq.has_header(cl):
+                    del newreq.headers[cl]
+        return newreq
+
+    def http_error_301(self, req, fp, code, msg, headers):
+        result = urllib2.HTTPRedirectHandler.http_error_301(
+            self, req, fp, code, msg, headers)
+        result.code = code
+        result.sheaders = [v for v in headers.__str__().split('\n') if v.startswith('Set-Cookie:')]
+        return result
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        result = urllib2.HTTPRedirectHandler.http_error_302(
+            self, req, fp, code, msg, headers)
+        result.code = code
+        result.sheaders = [v for v in headers.__str__().split('\n') if v.startswith('Set-Cookie:')]
+        return result
+
+# Site Cookies handler
+COOKIEFILE = config.datafilepath('login-data', 'cookies.lwp')
+cj = cookielib.LWPCookieJar()
+if os.path.isfile(COOKIEFILE):
+    cj.load(COOKIEFILE)
+
+cookieProcessor = urllib2.HTTPCookieProcessor(cj)
 
 
+MyURLopener = urllib2.build_opener(U2RedirectHandler)
 
-# Special opener in case we are using a site with authentication
+if config.proxy['host']:
+    proxyHandler = urllib2.ProxyHandler({'http':'http://%s/' % config.proxy['host'] })
+    
+    MyURLopener.add_handler(proxyHandler)
+    if config.proxy['auth']:
+        proxyAuth = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        proxyAuth.add_password(None, config.proxy['host'], config.proxy['auth'][0], config.proxy['auth'][1])
+        proxyAuthHandler = urllib2.ProxyBasicAuthHandler(proxyAuth)
+        
+        MyURLopener.add_handler(proxyAuthHandler)
+
 if config.authenticate:
-    import urllib2, cookielib
-    COOKIEFILE = config.datafilepath('login-data', 'cookies.lwp')
-    cj = cookielib.LWPCookieJar()
-    if os.path.isfile(COOKIEFILE):
-        cj.load(COOKIEFILE)
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
     for site in config.authenticate:
         passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
-    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)
-    urllib2.install_opener(authenticateURLopener)
+
+    MyURLopener.add_handler(authhandler)
+
+MyURLopener.addheaders = [('User-agent', useragent)]
 
 if __name__ == '__main__':
     import doctest
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
+

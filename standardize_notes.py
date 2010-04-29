@@ -46,7 +46,7 @@ __version__ = '$Id$'
 # 2005-07-15: Build list of all sections which may contain citations: doFindAllCitationSections(). (SEWilco)
 #
 
-from __future__ import generators
+#from __future__ import generators
 import subprocess, sys, re, random
 import socket, urllib, robotparser
 import wikipedia, pagegenerators, config
@@ -84,6 +84,7 @@ fixes = {
         # all pages which contain nowiki tags.
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
+               'ar':u'روبوت: إضافة/ترتيب المراجع.',
                'en':u'Robot: Adding/sorting references.',
                'ar':u'روبوت: إضافة/ترتيب المراجع.',
                'fr':u'Robot : Ajoute/trie les références.',
@@ -378,7 +379,7 @@ class ReplaceRobot:
         wikipedia.output( u"Reading existing Notes section" )
         self.doReadReferencesSection( new_text, refsectionname )
         while self.references and self.references[len(self.references)-1] == u'\n':
-                del self.references[len(self.references)-1]    # delete trailing empty lines
+            del self.references[len(self.references)-1]    # delete trailing empty lines
         # Convert any external links to footnote references
         wikipedia.output( u"Converting external links" )
         new_text = self.doConvertExternalLinks( new_text )
@@ -416,53 +417,53 @@ class ReplaceRobot:
                 new_text = new_text + text_line        # skip section, so retain text.
             else:
                 # TODO: recognize {{inline}} invisible footnotes when something can be done with them
-        #
-        # Ignore lines within comments
-        if not text_line.startswith( u'<!--' ):
-            # Fix erroneous external links in double brackets
-            Rextlink = re.compile(r'(?i)\[\[(?P<linkname>http://[^\]]+?)\]\]')
-            # TODO: compiling the regex each time might be inefficient
-            text_lineR = re.compile(Rextlink)
-            MOextlink = text_lineR.search(text_line)
-            while MOextlink:    # find all links on line
-                extlink_linkname = MOextlink.group('linkname')
-                # Rewrite double brackets to single ones
-                text_line=text_line[:MOextlink.start()] + '[%s]' % extlink_linkname + text_line[MOextlink.end(0):]
-                MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
-            # Regular expression to look for external link [linkname linktext] - linktext is optional.
-            # Also accepts erroneous pipe symbol as separator.
-            # Accepts wikilinks within <linktext>
-            #Rextlink = re.compile(r'[^\[]\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\][^\]]')
-            #Rextlink = re.compile(r'\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
-            Rextlink = re.compile(r'(?i)\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
-            # TODO: compiling the regex each time might be inefficient
-            text_lineR = re.compile(Rextlink)
-            MOextlink = text_lineR.search(text_line)
-            while MOextlink:    # find all links on line
-                extlink_linkname = MOextlink.group('linkname')
-                extlink_linktext = MOextlink.group('linktext')
-                self.refsequence += 1
-                ( refname, reftext ) = self.doConvertLinkTextToReference(self.refsequence, extlink_linkname, extlink_linktext)
-                self.references.append( reftext )    # append new entry to References
-                if extlink_linktext:
-                # If there was text as part of link, reinsert text before footnote.
-                text_line=text_line[:MOextlink.start(0)] + '%s{{ref|%s}}' % (extlink_linktext, refname) + text_line[MOextlink.end(0):]
-                else:
-                text_line=text_line[:MOextlink.start(0)] + '{{ref|%s}}' % refname + text_line[MOextlink.end(0):]
-                MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
-            # Search for {{doi}}
-            Rdoi = re.compile(r'(?i){{doi\|(?P<doilink>[^}|]*)}}')
-            # TODO: compiling the regex each time might be inefficient
-            doiR = re.compile(Rdoi)
-            MOdoi = doiR.search(text_line)
-            while MOdoi:        # find all doi on line
-                doi_link = MOdoi.group('doilink')
-                if doi_link:
-                self.refsequence += 1
-                ( refname, reftext ) = self.doConvertDOIToReference( self.refsequence, doi_link )
-                self.references.append( reftext )        # append new entry to References
-                text_line=text_line[:MOdoi.start(0)] + '{{ref|%s}}' % refname + text_line[MOdoi.end(0):]
-                MOdoi = doiR.search(text_line, MOdoi.start(0)+1)
+                #
+                # Ignore lines within comments
+                if not text_line.startswith( u'<!--' ):
+                    # Fix erroneous external links in double brackets
+                    Rextlink = re.compile(r'(?i)\[\[(?P<linkname>http://[^\]]+?)\]\]')
+                    # TODO: compiling the regex each time might be inefficient
+                    text_lineR = re.compile(Rextlink)
+                    MOextlink = text_lineR.search(text_line)
+                    while MOextlink:    # find all links on line
+                        extlink_linkname = MOextlink.group('linkname')
+                        # Rewrite double brackets to single ones
+                        text_line=text_line[:MOextlink.start()] + '[%s]' % extlink_linkname + text_line[MOextlink.end(0):]
+                        MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
+                    # Regular expression to look for external link [linkname linktext] - linktext is optional.
+                    # Also accepts erroneous pipe symbol as separator.
+                    # Accepts wikilinks within <linktext>
+                    #Rextlink = re.compile(r'[^\[]\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\][^\]]')
+                    #Rextlink = re.compile(r'\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
+                    Rextlink = re.compile(r'(?i)\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
+                    # TODO: compiling the regex each time might be inefficient
+                    text_lineR = re.compile(Rextlink)
+                    MOextlink = text_lineR.search(text_line)
+                    while MOextlink:    # find all links on line
+                        extlink_linkname = MOextlink.group('linkname')
+                        extlink_linktext = MOextlink.group('linktext')
+                        self.refsequence += 1
+                        ( refname, reftext ) = self.doConvertLinkTextToReference(self.refsequence, extlink_linkname, extlink_linktext)
+                        self.references.append( reftext )    # append new entry to References
+                        if extlink_linktext:
+                            # If there was text as part of link, reinsert text before footnote.
+                            text_line=text_line[:MOextlink.start(0)] + '%s{{ref|%s}}' % (extlink_linktext, refname) + text_line[MOextlink.end(0):]
+                        else:
+                            text_line=text_line[:MOextlink.start(0)] + '{{ref|%s}}' % refname + text_line[MOextlink.end(0):]
+                        MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
+                    # Search for {{doi}}
+                    Rdoi = re.compile(r'(?i){{doi\|(?P<doilink>[^}|]*)}}')
+                    # TODO: compiling the regex each time might be inefficient
+                    doiR = re.compile(Rdoi)
+                    MOdoi = doiR.search(text_line)
+                    while MOdoi:        # find all doi on line
+                        doi_link = MOdoi.group('doilink')
+                        if doi_link:
+                            self.refsequence += 1
+                            ( refname, reftext ) = self.doConvertDOIToReference( self.refsequence, doi_link )
+                            self.references.append( reftext )        # append new entry to References
+                            text_line=text_line[:MOdoi.start(0)] + '{{ref|%s}}' % refname + text_line[MOdoi.end(0):]
+                            MOdoi = doiR.search(text_line, MOdoi.start(0)+1)
                 new_text = new_text + text_line    # append new line to new text
         if new_text == '':
             new_text = original_text    # If somehow no new text, return original text
@@ -542,7 +543,7 @@ class ReplaceRobot:
                     if m.group('reftype').lower() in ( 'ref', 'ref_num', 'ref_label' ):    # confirm ref
                         refkey = m.group('refname').strip()
                         if refkey != '':
-                            if refusage.has_key( refkey ):
+                            if refkey in refusage:
                                 # wikipedia.output( u'refusage[%s] = %s' % (refkey,refusage[refkey]) )
                                 if refusage[refkey][2] == 0:    # if first use of reference
                                     text_line=text_line[:m.start(0)] + '{{ref|%s}}' % (refkey) + text_line[m.end(0):]
@@ -783,7 +784,7 @@ class ReplaceRobot:
                 if m.group('reftype').lower() in ( 'ref', 'ref_num', 'ref_label' ):    # confirm ref
                     refkey = m.group('refname').strip()
                     if refkey != '':
-                        if refusage.has_key(refkey):
+                        if refkey in refusage:
                             refusage[refkey][1] += 1    # duplicate use of reference
                             duplicatefound = True
                         else:
@@ -1100,11 +1101,11 @@ def main():
         except KeyError:
             wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
             return
-        if fix.has_key('regex'):
+        if 'regex' in fix:
             regex = fix['regex']
-        if fix.has_key('msg'):
+        if 'msg' in fix:
             editSummary = wikipedia.translate(wikipedia.getSite(), fix['msg'])
-        if fix.has_key('exceptions'):
+        if 'exceptions' in fix:
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 

@@ -37,6 +37,7 @@ msg = {
     'ja': u'ロボットによる:リダイレクト回避',
     'nn': u'robot: retta omdirigeringar',
     'no': u'Robot: Retter omdirigeringer',
+    'pl': u'Bot: naprawa przekierowań',
     'pt': u'Bot: Arrumando redirects',
     'sv': u'Bot: Rättar omdirigeringar',
     'vi': u'Robot: Sửa đổi hướng',
@@ -56,6 +57,7 @@ featured_articles = {
     'nl': u'Wikipedia:Etalage',
     'nn': u'Wikipedia:Gode artiklar',
     'no': u'Wikipedia:Anbefalte artikler',
+    'pl': u'Wikipedia:Artykuły_na_medal',
     'pt': u'Wikipedia:Os_melhores_artigos',
     'sv': u'Wikipedia:Utvalda_artiklar',
     'vi': u'Wikipedia:Bài_viết_chọn_lọc',
@@ -83,7 +85,7 @@ def treat(text, linkedPage, targetPage):
         # Make sure that next time around we will not find this same hit.
         curpos = m.start() + 1
         # ignore interwiki links and links to sections of the same page
-        if m.group('title') == '' or mysite.isInterwikiLink(m.group('title')):
+        if m.group('title').strip() == '' or mysite.isInterwikiLink(m.group('title')):
             continue
         else:
             actualLinkPage = wikipedia.Page(targetPage.site(), m.group('title'))
@@ -95,7 +97,7 @@ def treat(text, linkedPage, targetPage):
         context = 15
         # at the beginning of the link, start red color.
         # at the end of the link, reset the color to default
-        wikipedia.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
+        #wikipedia.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
         choice = 'y'
 
         # The link looks like this:
@@ -120,10 +122,18 @@ def treat(text, linkedPage, targetPage):
             continue
         replaceit = choice in "rR"
 
+        # remove preleading ":"
+        if link_text[0]==':':
+            link_text = link_text[1:]
         if link_text[0].isupper():
             new_page_title = targetPage.title()
         else:
             new_page_title = targetPage.title()[0].lower() + targetPage.title()[1:]
+
+        # remove preleading ":"
+        if new_page_title[0]==':':
+            new_page_title = new_page_title[1:]
+
         if replaceit and trailing_chars:
             newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
         elif replaceit or (new_page_title == link_text and not section):
@@ -137,15 +147,26 @@ def treat(text, linkedPage, targetPage):
         continue
     return text
 
+pageCache = []
+
 def workon(page):
     mysite = wikipedia.getSite()
     try:
         text = page.get()
     except wikipedia.IsRedirectPage:
+        wikipedia.output(u'%s is a redirect page. Skipping' % page.aslink())
+        return
+    except wikipedia.NoPage:
+        wikipedia.output(u'%s does not exist. Skipping' % page.aslink())
         return
     wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
     links = page.linkedPages()
-    wikipedia.getall(mysite,links)
+    if len(links) > 0:
+        wikipedia.getall(mysite,links)
+    else:
+        wikipedia.output('Nothing left to do.')
+        return
+    
     for page2 in links:
         try:
             target = page2.getRedirectTarget()
@@ -154,10 +175,11 @@ def workon(page):
         text = treat(text, page2, target)
     if text != page.get():
         comment = wikipedia.translate(mysite, msg)
+        wikipedia.showDiff(page.get() ,text)
         try:
             page.put(text, comment)
         except (wikipedia.Error):
-            wikipedia.output('Error : unable to put %s' % page.aslink())
+            wikipedia.output('Error: unable to put %s' % page.aslink())
 
 def main():
     start = '!'

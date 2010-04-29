@@ -15,6 +15,44 @@ treshold are then moved to another page (the archive), which can be named
 either basing on the thread's name or then name can contain a counter which
 will be incremented when the archive reaches a certain size.
 
+Trancluded template may contain the following parameters:
+
+{{TEMPLATE_PAGE 
+|archive             =
+|algo                =
+|counter             =
+|maxarchivesize      =
+|minthreadsleft      =
+|minthreadstoarchive =
+|archiveheader       =
+|key                 =
+}}
+
+Meanings of parameters are:
+
+archive              Name of the page to which archived threads will be put.
+                     Must be a subpage of the current page. Variables are
+                     supported.
+algo                 specifies the maximum age of a thread. Must be in the form
+                     old(<delay>) where <delay> specifies the age in hours or
+                     days like 24h or 5d.
+                     Default ist old(24h)
+counter              The current value of a counter which could be assigned as
+                     variable. Will be actualized by bot. Initial value is 1.
+maxarchivesize       The maximum archive size before incrementing the counter.
+                     Value can be given with appending letter like K or M which
+                     indicates KByte or MByte. Default value is 1000M.
+minthreadsleft       Minimum number of threads that should be left on a page.
+                     Default value is 5.
+minthreadstoarchive  The minimum number of threads to archive at once. Default
+                     value is 2.
+archiveheader        Content that will be put on new archive pages as the
+                     header. This parameter supports the use of variables.
+                     Default value is {{talkarchive}}
+key                  A secret key that (if valid) allows archives to not be
+                     subpages of the page being archived.
+
+
 Options:
   -h, --help            show this help message and exit
   -f FILE, --file=FILE  load list of pages from FILE
@@ -26,6 +64,7 @@ Options:
   -c PAGE, --calc=PAGE  calculate key for PAGE and exit
   -l LOCALE, --locale=LOCALE
                         switch to locale LOCALE
+  -L LANG, --lang=LANG  set the language code to work on
 """
 #
 # (C) Misza13, 2006-2007
@@ -125,7 +164,7 @@ messages = {
 }
 
 def message(key, lang=Site.language()):
-    if not messages.has_key(lang):
+    if not lang in messages:
         lang = '_default'
     return messages[lang][key]
 
@@ -170,24 +209,30 @@ def str2size(str):
     'B' (bytes) or 'T' (threads)."""
     if str[-1] in string.digits: #TODO: de-uglify
         return (int(str),'B')
-    elif str[-1] == 'K':
+    elif str[-1] in ['K', 'k']:
         return (int(str[:-1])*1024,'B')
     elif str[-1] == 'M':
         return (int(str[:-1])*1024*1024,'B')
     elif str[-1] == 'T':
         return (int(str[:-1]),'T')
     else:
-        return (0,'B')
+        return (int(str[:-1])*1024,'B')
 
 
 def int2month(num):
     """Returns the locale's full name of month 'num' (1-12)."""
-    return locale.nl_langinfo(locale.MON_1+num-1).decode('utf-8')
+    if hasattr(locale, 'nl_langinfo'):
+        return locale.nl_langinfo(locale.MON_1+num-1).decode('utf-8')
+    Months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+    return Site.mediawiki_message(Months[num-1])
 
 
 def int2month_short(num):
     """Returns the locale's abbreviated name of month 'num' (1-12)."""
-    return locale.nl_langinfo(locale.ABMON_1+num-1).replace('\xa0', '').decode('utf-8')
+    if hasattr(locale, 'nl_langinfo'):
+        return locale.nl_langinfo(locale.ABMON_1+num-1).replace('\xa0', '').decode('utf-8')
+    Months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    return Site.mediawiki_message(Months[num-1])
 
 
 def txt2timestamp(txt, format):
@@ -222,7 +267,7 @@ def generateTransclusions(Site, template, namespaces=[], eicontinue=''):
     for page_d in result['query']['embeddedin']:
         yield wikipedia.Page(Site, page_d['title'])
     
-    if result.has_key('query-continue'):
+    if 'query-continue' in result:
         eicontinue = result['query-continue']['embeddedin']['eicontinue']
         for page in generateTransclusions(Site, template, namespaces, eicontinue):
             yield page
@@ -267,7 +312,11 @@ class DiscussionThread(object):
             TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kl\.\W*(\d\d):(\d\d) \(.*?\)', line)
 #3. joulukuuta 2008 kello 16.26 (EET)
         if not TM:
-                TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kello \W*(\d\d).(\d\d) \(.*?\)', line)
+            TM = re.search(r'(\d\d?)\. (\S+) (\d\d\d\d) kello \W*(\d\d).(\d\d) \(.*?\)', line)
+        if not TM:
+# 14:23, 12. Jan. 2009 (UTC)
+            pat = re.compile(r'(\d\d):(\d\d), (\d\d?)\. (\S+)\.? (\d\d\d\d) \(UTC\)')
+            TM = pat.search(line)
         if TM:
 #            wikipedia.output(TM)
             TIME = txt2timestamp(TM.group(0),"%d. %b %Y kl. %H:%M (%Z)")
@@ -284,9 +333,15 @@ class DiscussionThread(object):
             if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d %Y (%Z)")
             if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %B %d %Y (%Z)")
+            if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (%Z)")
             if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %B %d, %Y (%Z)")
+            if not TIME:
                 TIME = txt2timestamp(TM.group(0),"%d. %Bta %Y kello %H.%M (%Z)")
+            if not TIME:
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %d. %b. %Y (%Z)")
             if TIME:
                 self.timestamp = max(self.timestamp,time.mktime(TIME))
 #                wikipedia.output(u'Time to be parsed: %s' % TM.group(0))
@@ -458,7 +513,7 @@ class PageArchiver(object):
             return
         if not self.force and not self.Page.title+'/' == archive[:len(self.Page.title)+1] and not self.key_ok():
             raise ArchiveSecurityError
-        if not self.archives.has_key(archive):
+        if not archive in self.archives:
             self.archives[archive] = DiscussionPage(archive,self,vars)
         return self.archives[archive].feedThread(thread,maxArchiveSize)
 
@@ -522,6 +577,7 @@ class PageArchiver(object):
 
 
 def main():
+    global Site, language
     from optparse import OptionParser
     parser = OptionParser(usage='usage: %prog [options] [LINKPAGE(s)]')
     parser.add_option('-f', '--file', dest='filename',
@@ -538,6 +594,8 @@ def main():
             help='calculate key for PAGE and exit', metavar='PAGE')
     parser.add_option('-l', '--locale', dest='locale',
             help='switch to locale LOCALE', metavar='LOCALE')
+    parser.add_option('-L', '--lang', dest='lang',
+            help='current language code', metavar='lang')
     parser.add_option('-T', '--timezone', dest='timezone',
             help='switch timezone to TIMEZONE', metavar='TIMEZONE')
     (options, args) = parser.parse_args()
@@ -548,7 +606,8 @@ def main():
     if options.timezone:
         os.environ['TZ'] = options.timezone
     #Or use the preset value
-    time.tzset()
+    if hasattr(time, 'tzset'):
+        time.tzset()
 
     if options.calc:
         if not options.salt:
@@ -568,6 +627,11 @@ def main():
         force = True
     else:
         force = False
+
+    if options.lang:
+        Site = wikipedia.getSite(options.lang)
+        language = Site.language()
+        if wikipedia.debug: print Site
 
     for a in args:
         pagelist = []
@@ -595,12 +659,12 @@ def main():
                 Archiver.run()
                 time.sleep(10)
             except:
-                wikipedia.output(u'Error occured while processing page [[%s]]' % pg.title())
+                wikipedia.output(u'Error occured while processing page %s' % pg.aslink(True))
                 traceback.print_exc()
-    else:
-        wikipedia.showHelp("archivebot")
 
 
 if __name__ == '__main__':
-    main()
-    wikipedia.stopme()
+    try:
+        main()
+    finally:
+        wikipedia.stopme()

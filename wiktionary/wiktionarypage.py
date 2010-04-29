@@ -149,7 +149,7 @@ class WiktionaryPage:
                 if aheader.type==u'lang':
                     context['lang']=aheader.contents
                 if aheader.type==u'pos':
-                    if not(context.has_key('lang')):
+                    if not 'lang' in context:
                         # This entry lacks a language indicator,
                         # so we assume it is the same language as the Wiktionary we're working on
                         context['lang']=self.wikilang
@@ -285,7 +285,7 @@ class WiktionaryPage:
                             sample = plural = diminutive = label = definition = ''
                             examples = []
 
-                            if not(self.entries.has_key(contentblock['context']['lang'])):
+                            if not contentblock['context']['lang'] in self.entries:
                                 # If no entry for this language has been foreseen yet
                                 # let's create one
                                 anentry = entry.Entry(contentblock['context']['lang'])
@@ -312,7 +312,7 @@ class WiktionaryPage:
             # Make sure we store the last definition
             if definition:
                 ameaning = meaning.Meaning(term=theterm, definition=definition, label=label, examples=examples)
-                if not(self.entries.has_key(contentblock['context']['lang'])):
+                if not contentblock['context']['lang'] in self.entries:
                     # If no entry for this language has been foreseen yet
                     # let's create one
                     anentry = entry.Entry(contentblock['context']['lang'])

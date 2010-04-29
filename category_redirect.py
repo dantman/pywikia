@@ -12,9 +12,17 @@ that haven't been edited for a certain cooldown period (currently 7 days)
 are taken into account.
 
 """
-__version__ = '$Id$'
 
-import wikipedia, catlib, query, pagegenerators
+#
+# (C) Pywikipedia team, 2008-2009
+#
+__version__ = '$Id$'
+#
+# Distributed under the terms of the MIT license.
+#
+
+import wikipedia as pywikibot
+import catlib, query, pagegenerators
 import cPickle
 import math
 import re
@@ -37,11 +45,11 @@ class APIError(Exception):
 class CategoryRedirectBot(object):
     def __init__(self):
         self.cooldown = 7 # days
-        self.site = wikipedia.getSite()
+        self.site = pywikibot.getSite()
         self.catprefix = self.site.namespace(14)+":"
         self.log_text = []
         self.edit_requests = []
-        self.log_page = wikipedia.Page(self.site,
+        self.log_page = pywikibot.Page(self.site,
                         u"User:%(user)s/category redirect log" %
                             {'user': self.site.loggedInAs()})
 
@@ -53,11 +61,14 @@ class CategoryRedirectBot(object):
                 'ar': u"تصنيف:تحويلات تصنيفات ويكيبيديا",
                 'cs': u"Kategorie:Zastaralé kategorie",
                 'da': "Kategori:Omdirigeringskategorier",
-                'en': "Category:Wikipedia category redirects",
+                'en': "Category:Wikipedia soft redirected categories",
+                'es': "Categoría:Wikipedia:Categorías redirigidas",
                 'hu': "Kategória:Kategóriaátirányítások",
                 'ja': "Category:移行中のカテゴリ",
                 'no': "Kategori:Wikipedia omdirigertekategorier",
+                'pl': "Kategoria:Przekierowania kategorii",
                 'simple': "Category:Category redirects",
+                'vi': u"Thể loại:Thể loại đổi hướng",
                 'zh': u"Category:已重定向的分类",
             },
             'commons': {
@@ -65,65 +76,19 @@ class CategoryRedirectBot(object):
             }
         }
 
-        # List of all templates that are used to mark category redirects
-        # (put the most preferred form first)
-        self.redir_templates = {
-            'wikipedia': {
-                'ar': (u"تحويل تصنيف",
-                       u"Category redirect",
-                       u"تحويلة تصنيف"),
-                'cs': (u"Zastaralá kategorie"),
-                'da': ("Kategoriomdirigering",),
-                'en': ("Category redirect",
-                       "Category redirect3",
-                       "Categoryredirect",
-                       "Empty category",
-                       "CR",
-                       "Catredirect",
-                       "Cat redirect",
-                       "Emptycat",
-                       "Emptycategory",
-                       "Empty cat",
-                       "Seecat"),
-                'fr': ("Catégorie redirigée",
-                       "Redirection de catégorie"),
-                'hu': ("Kat-redir",
-                       "Katredir"),
-                'ja': ("Category redirect",),
-                'no': ("Kategoriomdirigering",),
-                'simple': ("Category redirect",
-                           "Catredirect"),
-                'zh': (u"分类重定向",
-                       u"Cat-redirect",
-                       u"重定向分类",
-                       u"重定向分类",
-                       u"Cr",
-                       u"CR"),
-                },
-            'commons': {
-                'commons': (u'Category redirect',
-                            u'Categoryredirect',
-                            u'See cat',
-                            u'Seecat',
-                            u'Catredirect',
-                            u'Cat redirect',
-                            u'CatRed',
-                            u'Cat-red',
-                            u'Catredir',
-                            u'Redirect category',),
-                }
-            }
-
         self.move_comment = {
             'ar': u"روبوت: نقل الصفحات من تصنيف محول",
             'cs': u'Robot přesunul stránku ze zastaralé kategorie',
             'da': u"Robot: flytter sider ud af omdirigeringskategorien",
             'en': u"Robot: moving pages out of redirected category",
+            'es': u"Bot: moviendo páginas de categoría redirigida",
             'hu': u"Bot: Lapok automatikus áthelyezése átirányított kategóriából",
             'ja': u"ロボットによる: 移行中のカテゴリからのカテゴリ変更",
             'ksh': u"Bot: Sigk uß en ömjeleidt Saachjropp eruß jesammdt.",
             'no': u"Robot: Flytter sider ut av omdirigeringskategori",
+            'pl': u"Robot: Usuwa strony z przekierowanej kategorii",
             'commons': u'Robot: Changing category link (following [[Template:Category redirect|category redirect]])',
+            'vi': u"Robot: bỏ trang ra khỏi thể loại đổi hướng",
             'zh': u'机器人：改变已重定向分类中的页面的分类',
         }
 
@@ -132,10 +97,13 @@ class CategoryRedirectBot(object):
             'cs':u'Robot označil kategorii jako zastaralou',
             'da':u"Robot: tilføjer omdirigeringsskabelon for vedligeholdelse",
             'en':u"Robot: adding category redirect template for maintenance",
+            'es':u"Bot: añadiendo plantilla de categoría redirigida para mantenimiento",
             'hu':u"Bot: kategóriaátirányítás sablon hozzáadása",
             'ja':u"ロボットによる: 移行中のカテゴリとしてタグ付け",
             'ksh':u"Bot: Ömleidungsschalbon dobeijedonn.",
             'no':u"Robot: Legger til vedlikeholdsmal for kategoriomdirigering",
+            'pl':u"Robot: Dodaje szablon przekierowanej kategorii",
+            'vi':u"Robot: thêm bản mẫu đổi hướng thể loại để dễ bảo trì",
             'zh':u"机器人: 增加分类重定向模板，用于维护",
         }
 
@@ -144,11 +112,14 @@ class CategoryRedirectBot(object):
             'cs': u'Robot opravil dvojité přesměrování',
             'da': u"Robot: retter dobbelt omdirigering",
             'en': u"Robot: fixing double-redirect",
+            'es': u"Bot: reparando redirección doble",
             'fr': u"Robot : Correction des redirections doubles",
             'hu': u"Bot: Kettős átirányítás javítása",
             'ja': u"ロボットによる: 二重リダイレクト修正",
             'no': u"Robot: Ordner doble omdirigeringer",
             'ksh': u"Bot: dubbel Ömleidung eruß jemaat.",
+            'pl': u"Robot: Poprawia podwójne przekierowanie",
+            'vi': u"Robot: sửa thể loại đổi hướng kép",
             'zh': u"Bot: 修复双重重定向",
         }
 
@@ -157,24 +128,45 @@ class CategoryRedirectBot(object):
             'cs': u'Údržba přesměrované kategorie',
             'da': u"Bot til vedligeholdelse af kategoromdirigeringer",
             'en': u"Category redirect maintenance bot",
+            'es': u"Bot de mantenimento de categorías redirigidas",
             'fr': u"Robot de maintenance des redirection de catégorie",
             'hu': u"Kategóriaátirányítás-karbantartó bot",
             'ja': u"移行中のカテゴリのメンテナンス・ボット",
             'no': u"Bot for vedlikehold av kategoriomdirigeringer",
             'ksh': u"Bot för de Saachjroppe ier Ömleidunge.",
+            'pl': u"Robot porządkujący przekierowania kategorii",
+            'vi': u"Robot theo dõi thể loại đổi hướng",
             'zh': u"分类重定向维护机器人",
         }
 
-        self.edit_request_text = wikipedia.translate(self.site.lang,
+        self.edit_request_text = pywikibot.translate(self.site.lang,
             {'en': u"""\
 The following protected pages have been detected as requiring updates to \
 category links:
 %s
 ~~~~
 """,
+            'es': u"""\
+Se han detectado las siguientes páginas protegidas y se requieren actualizaciones de \
+enlaces de categorías:
+%s
+~~~~
+""",
             'ksh': u"""\
 Hee di Sigge sin jeschötz un möße ier Saachjroppe odder Lingks op Saachjroppe \
 aanjepaß krijje:
+%s
+~~~~
+""",
+            'pl': u"""\
+Następujące zabezpieczone strony wykryto jako wymagające \
+poprawy kategorii:
+%s
+~~~~
+""",
+            'vi': u"""\
+Các trang đã khóa sau cần phải cập nhật \
+liên kết thể loại:
 %s
 ~~~~
 """,
@@ -186,11 +178,15 @@ aanjepaß krijje:
 """,
             })
 
-        self.edit_request_item = wikipedia.translate(self.site.lang,
+        self.edit_request_item = pywikibot.translate(self.site.lang,
             {
-        'en': u"* %s is in %s, which is a redirect to %s",
-        'fr': u"* %s est dans %s, qui est une redirection vers %s",
+                'ar': u"* %s موجودة في %s, وهي تحويلة إلى %s",
+                'en': u"* %s is in %s, which is a redirect to %s",
+                'es': u"* %s está en %s, el cual redirecciona a %s",
+                'fr': u"* %s est dans %s, qui est une redirection vers %s",
                 'ksh': u"* %s es en %s, un dat es en Ömleidung op %s",
+                'pl': u"* %s jest w %s, która jest przekierowaniem do %s",
+                'vi': u"* %s đang thuộc %s, là thể loại đổi hướng đến %s",
             })
 
     def change_category(self, article, oldCat, newCat, comment=None,
@@ -199,42 +195,42 @@ aanjepaß krijje:
         Moves subcategories of oldCat as well. oldCat and newCat should be
         Category objects. If newCat is None, the category will be removed.
 
-        This is a copy of portions of catlib.change_category(), with some
-        changes.
+        This is a copy of portions of [old] catlib.change_category(), with
+        some changes.
 
         """
         oldtext = article.get(get_redirect=True, force=True)
-        newtext = wikipedia.replaceCategoryInPlace(oldtext, oldCat, newCat)
+        newtext = pywikibot.replaceCategoryInPlace(oldtext, oldCat, newCat)
         try:
             # even if no changes, still save the page, in case it needs
             # an update due to changes in a transcluded template
             article.put(newtext, comment)
             if newtext == oldtext:
-                wikipedia.output(
+                pywikibot.output(
                     u'No changes in made in page %s.' % article.aslink())
                 return False
             return True
-        except wikipedia.EditConflict:
-            wikipedia.output(
+        except pywikibot.EditConflict:
+            pywikibot.output(
                 u'Skipping %s because of edit conflict' % article.aslink())
-        except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % article.aslink())
+        except pywikibot.LockedPage:
+            pywikibot.output(u'Skipping locked page %s' % article.aslink())
             self.edit_requests.append((article.aslink(),
                                        oldCat.aslink(textlink=True),
                                        newCat.aslink(textlink=True)))
-        except wikipedia.SpamfilterError, error:
-            wikipedia.output(
+        except pywikibot.SpamfilterError, error:
+            pywikibot.output(
                 u'Changing page %s blocked by spam filter (URL=%s)'
                              % (article.aslink(), error.url))
-        except wikipedia.NoUsername:
-            wikipedia.output(
+        except pywikibot.NoUsername:
+            pywikibot.output(
                 u"Page %s not saved; sysop privileges required."
                              % article.aslink())
             self.edit_requests.append((article.aslink(textlink=True),
                                        oldCat.aslink(textlink=True),
                                        newCat.aslink(textlink=True)))
-        except wikipedia.PageNotSaved, error:
-            wikipedia.output(u"Saving page %s failed: %s"
+        except pywikibot.PageNotSaved, error:
+            pywikibot.output(u"Saving page %s failed: %s"
                              % (article.aslink(), error.message))
         return False
 
@@ -255,7 +251,7 @@ aanjepaß krijje:
                                                  cmlimit="max"):
                     found += len(result['categorymembers'])
                     for item in result['categorymembers']:
-                        article = wikipedia.Page(self.site, item['title'])
+                        article = pywikibot.Page(self.site, item['title'])
                         changed = self.change_category(article, oldCat, newCat,
                                                        comment=editSummary)
                         if changed: moved += 1
@@ -267,21 +263,21 @@ aanjepaß krijje:
                                                  cmnamespace="10",
                                                  cmlimit="max"):
                     for item in result['categorymembers']:
-                        doc = wikipedia.Page(self.site, item['title']+"/doc")
+                        doc = pywikibot.Page(self.site, item['title']+"/doc")
                         try:
                             old_text = doc.get()
-                        except wikipedia.Error:
+                        except pywikibot.Error:
                             continue
                         changed = self.change_category(doc, oldCat, newCat,
                                                        comment=editSummary)
                         if changed: moved += 1
 
                 if found:
-                    wikipedia.output(u"%s: %s found, %s moved"
+                    pywikibot.output(u"%s: %s found, %s moved"
                                      % (oldCat.title(), found, moved))
                 return (found, moved)
-            except wikipedia.ServerError:
-                wikipedia.output(u"Server error: retrying in 5 seconds...")
+            except pywikibot.ServerError:
+                pywikibot.output(u"Server error: retrying in 5 seconds...")
                 time.sleep(5)
                 continue
             except KeyboardInterrupt:
@@ -301,47 +297,42 @@ aanjepaß krijje:
     def query_results(self, **data):
         """Iterate results from API action=query, using data as parameters."""
         querydata = {'action': 'query',
-                     'maxlag': str(wikipedia.config.maxlag)}
+                     'maxlag': str(pywikibot.config.maxlag)}
         querydata = query.CombineParams(querydata, data)
-        if not querydata.has_key("action")\
-                or not querydata['action'] == 'query':
+        if not "action" in querydata or not querydata['action'] == 'query':
             raise ValueError(
                 "query_results: 'action' set to value other than 'query'"
                 )
         waited = 0
         while True:
             try:
-                response, result = query.GetData(predata, self,site back_response = True)
-                if response.status != 200:
-                    # WARNING: if the server is down, this could
-                    # cause an infinite loop
-                    wikipedia.output(u"HTTP error %i received; retrying..."
-                                      % response.status)
-                    time.sleep(5)
-                    continue
-                if data.startswith(u"unknown_action"):
-                    e = {'code': data[:14], 'info': data[16:]}
-                    raise APIError(e)
+                result = query.GetData(querydata, self.site)
+                #if data.startswith(u"unknown_action"):
+                #    e = {'code': data[:14], 'info': data[16:]}
+                #    raise APIError(e)
+            except pywikibot.ServerError:
+                pywikibot.output(u"Wikimedia Server Error; retrying...")
+                time.sleep(5)
+                continue
             except ValueError:
                 # if the result isn't valid JSON, there must be a server
                 # problem.  Wait a few seconds and try again
                 # WARNING: if the server is down, this could
                 # cause an infinite loop
-                wikipedia.output(u"Invalid API response received; retrying...")
+                pywikibot.output(u"Invalid API response received; retrying...")
                 time.sleep(5)
                 continue
-            if type(result) is dict and result.has_key("error"):
+            if type(result) is dict and "error" in result:
                 if result['error']['code'] == "maxlag":
                     print "Pausing due to server lag.\r",
                     time.sleep(5)
                     waited += 5
                     if waited % 30 == 0:
-                        wikipedia.output(
+                        pywikibot.output(
                             u"(Waited %i seconds due to server lag.)"
                              % waited)
                     continue
                 else:
-                    # raise error
                     raise APIError(result['error'])
             waited = 0
             if type(result) is list:
@@ -353,7 +344,7 @@ aanjepaß krijje:
                 # query returned no results
                 return
             yield result['query']
-            if result.has_key("query-continue"):
+            if 'query-continue' in result:
                 assert len(result['query-continue'].keys()) == 1, \
                        "More than one query-continue key returned: %s" \
                        % result['query-continue'].keys()
@@ -371,7 +362,7 @@ aanjepaß krijje:
         LOG_SIZE = 7  # Number of items to keep in active log
         try:
             log_text = self.log_page.get()
-        except wikipedia.NoPage:
+        except pywikibot.NoPage:
             log_text = u""
         log_items = {}
         header = None
@@ -381,6 +372,7 @@ aanjepaß krijje:
             if header is not None:
                 log_items.setdefault(header, [])
                 log_items[header].append(line)
+        all_log_text = log_text
         if len(log_items) < LOG_SIZE:
             return log_text
         # sort by keys and keep the first (LOG_SIZE-1) values
@@ -388,17 +380,21 @@ aanjepaß krijje:
                      in sorted(log_items.items(), reverse=True)[ : LOG_SIZE-1]]
         log_text = "\n".join("\n".join(line for line in text) for text in keep)
         # get permalink to older logs
-        history = self.log_page.getVersionHistory(revCount=LOG_SIZE)
-        # get the id of the newest log being archived
-        rotate_revid = history[-1][0]
-        # append permalink
-        log_text = log_text + (
-            "\n\n'''[%s://%s%s/index.php?title=%s&oldid=%s Older logs]'''"
-                % (self.site.protocol(),
-                   self.site.hostname(),
-                   self.site.scriptpath(),
-                   self.log_page.urlname(),
-                   rotate_revid))
+        try:
+            history = self.log_page.getVersionHistory(revCount=LOG_SIZE)
+            # get the id of the newest log being archived
+            rotate_revid = history[-1][0]
+            # append permalink
+            log_text = log_text + (
+                "\n\n'''[%s://%s%s/index.php?title=%s&oldid=%s Older logs]'''"
+                    % (self.site.protocol(),
+                       self.site.hostname(),
+                       self.site.scriptpath(),
+                       self.log_page.urlname(),
+                       rotate_revid))
+        except IndexError:
+            # don't die if getVersionHistory fails (again)
+            return all_log_text
         return log_text
 
     def run(self):
@@ -412,9 +408,9 @@ aanjepaß krijje:
 
         l = time.localtime()
         today = "%04d-%02d-%02d" % l[:3]
-        edit_request_page = wikipedia.Page(self.site,
+        edit_request_page = pywikibot.Page(self.site,
                             u"User:%(user)s/category edit requests" % locals())
-        datafile = wikipedia.config.datafilepath(
+        datafile = pywikibot.config.datafilepath(
                    "%s-catmovebot-data" % self.site.dbName())
         try:
             inp = open(datafile, "rb")
@@ -426,10 +422,9 @@ aanjepaß krijje:
             cPickle.dump(record, open(datafile + ".bak", "wb"))
 
         try:
-            template_list = self.redir_templates[self.site.family.name
-                                                ][self.site.lang]
+            template_list = self.site.family.category_redirect_templates[self.site.lang]
         except KeyError:
-            wikipedia.output(u"No redirect templates defined for %s"
+            pywikibot.output(u"No redirect templates defined for %s"
                               % self.site.sitename())
             return
         # regex to match soft category redirects
@@ -449,13 +444,13 @@ aanjepaß krijje:
 
         # check for hard-redirected categories that are not already marked
         # with an appropriate template
-        comment = wikipedia.translate(self.site.lang, self.redir_comment)
+        comment = pywikibot.translate(self.site.lang, self.redir_comment)
         for result in self.query_results(list='allpages',
                                          apnamespace='14', # Category:
                                          apfrom='!',
                                          apfilterredir='redirects',
                                          aplimit='max'):
-            gen = (wikipedia.Page(self.site, page_item['title'])
+            gen = (pywikibot.Page(self.site, page_item['title'])
                    for page_item in result['allpages'])
             # gen yields all hard redirect pages in namespace 14
             for page in pagegenerators.PreloadingGenerator(gen, 120):
@@ -473,7 +468,7 @@ aanjepaß krijje:
                         self.log_text.append(u"* Added {{tl|%s}} to %s"
                                          % (template_list[0],
                                             page.aslink(textlink=True)))
-                    except wikipedia.Error, e:
+                    except pywikibot.Error, e:
                         self.log_text.append(
                             u"* Failed to add {{tl|%s}} to %s (%s)"
                              % (template_list[0],
@@ -485,9 +480,9 @@ aanjepaß krijje:
                          % (page.aslink(textlink=True),
                             target.aslink(textlink=True)))
 
-        wikipedia.output("Done checking hard-redirect category pages.")
+        pywikibot.output("Done checking hard-redirect category pages.")
 
-        comment = wikipedia.translate(self.site.lang, self.move_comment)
+        comment = pywikibot.translate(self.site.lang, self.move_comment)
         scan_data = {
             u'action': 'query',
             u'list': 'embeddedin',
@@ -506,7 +501,7 @@ aanjepaß krijje:
                                          gcmlimit=u'max',
                                          prop='info|categoryinfo'):
             for catdata in result['pages'].values():
-                thispage = wikipedia.Page(self.site, catdata['title'])
+                thispage = pywikibot.Page(self.site, catdata['title'])
                 catpages.append(thispage)
                 if 'categoryinfo' in catdata \
                         and catdata['categoryinfo']['size'] != "0":
@@ -514,8 +509,8 @@ aanjepaß krijje:
                     nonemptypages.append(thispage)
 
         # preload the category pages for redirected categories
-        wikipedia.output(u"")
-        wikipedia.output(u"Preloading %s category redirect pages"
+        pywikibot.output(u"")
+        pywikibot.output(u"Preloading %s category redirect pages"
                          % len(catpages))
         for cat in pagegenerators.PreloadingGenerator(catpages, 120):
             cat_title = cat.titleWithoutNamespace()
@@ -525,7 +520,7 @@ aanjepaß krijje:
                 continue
             try:
                 text = cat.get(get_redirect=True)
-            except wikipedia.Error:
+            except pywikibot.Error:
                 self.log_text.append(u"* Could not load %s; ignoring"
                                       % cat.aslink(textlink=True))
                 continue
@@ -550,7 +545,7 @@ aanjepaß krijje:
 ##                    self.log_text.append(
 ##                        u"* Removed category prefix from parameter in %s"
 ##                         % cat.aslink(textlink=True))
-##                except wikipedia.Error:
+##                except pywikibot.Error:
 ##                    self.log_text.append(
 ##                        u"* Unable to save changes to %s"
 ##                         % cat.aslink(textlink=True))
@@ -561,8 +556,8 @@ aanjepaß krijje:
                                self.catprefix+cat_name) not in catmap:
                 del record[cat_name]
 
-        wikipedia.output(u"")
-        wikipedia.output(u"Checking %s destination categories" % len(destmap))
+        pywikibot.output(u"")
+        pywikibot.output(u"Checking %s destination categories" % len(destmap))
         for dest in pagegenerators.PreloadingGenerator(destmap.keys(), 120):
             if not dest.exists():
                 for d in destmap[dest]:
@@ -604,17 +599,17 @@ aanjepaß krijje:
                         newtext = newtext + oldtext.strip()
                         try:
                             d.put(newtext,
-                                  wikipedia.translate(self.site.lang,
+                                  pywikibot.translate(self.site.lang,
                                                       self.dbl_redir_comment),
                                   minorEdit=True)
-                        except wikipedia.Error, e:
+                        except pywikibot.Error, e:
                             self.log_text.append("** Failed: %s" % str(e))
 
         # only scan those pages that have contents (nonemptypages)
         # and that haven't been removed from catlist as broken redirects
         cats_to_empty = set(catlist) & set(nonemptypages)
-        wikipedia.output(u"")
-        wikipedia.output(u"Moving pages out of %s redirected categories."
+        pywikibot.output(u"")
+        pywikibot.output(u"Moving pages out of %s redirected categories."
                          % len(cats_to_empty))
 #        thread_limit = int(math.log(len(cats_to_empty), 8) + 1)
 #        threadpool = ThreadList(limit=1)    # disabling multi-threads
@@ -642,7 +637,7 @@ aanjepaß krijje:
 
         cPickle.dump(record, open(datafile, "wb"))
 
-        wikipedia.setAction(wikipedia.translate(self.site.lang,
+        pywikibot.setAction(pywikibot.translate(self.site.lang,
                                                 self.maint_comment))
         self.log_text.sort()
         self.log_page.put(u"\n==%i-%02i-%02iT%02i:%02i:%02iZ==\n"
@@ -655,11 +650,10 @@ aanjepaß krijje:
                                  % u"\n".join((self.edit_request_item % item)
                                              for item in self.edit_requests))
 
-
 def main(*args):
     global bot
     try:
-        a = wikipedia.handleArgs(*args)
+        a = pywikibot.handleArgs(*args)
         if len(a) == 1:
             raise RuntimeError('Unrecognized argument "%s"' % a[0])
         elif a:
@@ -668,8 +662,7 @@ def main(*args):
         bot = CategoryRedirectBot()
         bot.run()
     finally:
-        wikipedia.stopme()
-
+        pywikibot.stopme()
 
 if __name__ == "__main__":
     main()

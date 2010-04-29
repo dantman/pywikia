@@ -46,12 +46,12 @@ This script understands the following command-line arguments:
 
     -nologerror         - If given, this option will disable the error that is risen when the log is full.
 
----- Istructions for the real-time settings  ----
+---- Instructions for the real-time settings  ----
 * For every new block you have to add:
 
 <------- ------->
 
-In this way the Bot can understand where the block start to take the right parameter.
+In this way the Bot can understand where the block starts in order to take the right parameter.
 
 * Name= Set the name of the block
 * Find= Use it to define what search in the text of the image's description,
@@ -79,7 +79,7 @@ __version__ = '$Id$'
 #
 
 import re, time, urllib, urllib2, os, locale, sys, datetime
-import wikipedia, config, pagegenerators, catlib, query
+import wikipedia, config, pagegenerators, catlib, query, userlib
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -97,6 +97,7 @@ n_txt = {
     'de'     :u'{{Benutzer:ABF/D|~~~~}} {{Dateiüberprüfung/benachrichtigt (Kategorie)|{{subst:LOCALYEAR}}|{{subst:LOCALMONTH}}|{{subst:LOCALDAY}}}} {{Dateiüberprüfung/benachrichtigt (Text)|Lizenz|||||}} --This was added by ~~~~-- ',
     'en'     :u'\n{{subst:nld}}',
     'fr'     :u'\n{{subst:lid}}',
+    'ga'     :u'\n{{subst:Ceadúnas de dhíth}}',
     'hu'     :u'\n{{nincslicenc|~~~~~}}',
     'it'     :u'\n{{subst:unverdata}}',
     'ja'     :u'{{subst:Nld}}',
@@ -111,9 +112,10 @@ n_txt = {
 # '{{nld' --> '\{\{(?:template:|)no[ _]license ?(?:\||\n|\}) ?' (case insensitive).
 # If there's not a {{ it will work as usual (if x in Text)
 txt_find =  {
-        'commons':[u'{{no license', u'{{no license/en', u'{{nld', u'{{no permission since'],
+        'commons':[u'{{no license', u'{{no license/en', u'{{nld', u'{{no permission', u'{{no permission since'],
         'de':[u'{{DÜP', u'{{Dateiüberprüfung'],
         'en':[u'{{nld', u'{{no license'],
+        'ga':[u'{{Ceadúnas de dhíth', u'{{Ceadúnas de dhíth'],
         'hu':[u'{{nincsforrás',u'{{nincslicenc'],
         'it':[u'{{unverdata', u'{{unverified'],
         'ja':[u'{{no source', u'{{unknown', u'{{non free', u'<!--削除についての議論が終了するまで',],
@@ -128,6 +130,7 @@ comm = {
         'commons':u'Bot: Marking newly uploaded untagged file',
         'de'     :u'Bot: Markierung als Bild ohne Lizenz',
         'en'     :u'Bot: Marking newly uploaded untagged file',
+        'ga'     :u'Róbó: Ag márcáil comhad nua-uaslódáilte gan ceadúnas',
         'hu'     :u'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
         'it'     :u"Bot: Aggiungo unverified",
         'ja'     :u'ロボットによる:著作権情報なしの画像をタグ',
@@ -143,6 +146,7 @@ empty = {
         'de'     :u'{{subst:willkommen}} ~~~~',
         'en'     :u'{{welcome}}\n~~~~\n',
         'fr'     :u'{{Bienvenue nouveau\n~~~~\n',
+        'ga'     :u'{{subst:Fáilte}} - ~~~~\n',
         'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
         'it'     :u'<!-- inizio template di benvenuto -->\n{{subst:Benvebot}}\n~~~~\n<!-- fine template di benvenuto -->',
         'ja'     :u'{{subst:Welcome/intro}}\n{{subst:welcome|--~~~~}}\n',
@@ -157,6 +161,7 @@ comm2 = {
         'commons':u"Bot: Requesting source information." ,
         'de'     :u'Bot:Notify User',
         'en'     :u"Bot: Requesting source information." ,
+        'ga'     :u"Róbó: Ag iarraidh eolais foinse." ,
         'it'     :u"Bot: Notifico l'unverified",
         'hu'     :u'Robot: Forrásinformáció kérése',
         'ja'     :u"ロボットによる:著作権情報明記のお願い",
@@ -171,6 +176,7 @@ delete_immediately = {
             'commons':u"{{speedy|The file has .%s as extension. Is it ok? Please check.}}",
             'ar'     :u"{{شطب|الملف له .%s كامتداد.}}",
             'en'     :u"{{db-meta|The file has .%s as extension.}}",
+            'ga'     :u"{{scrios|Tá iarmhír .%s ar an comhad seo.}}",
             'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
             'it'     :u'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
             'ja'     :u'{{db|知らないファイルフォーマット %s}}',
@@ -184,6 +190,7 @@ delete_immediately_head = {
             'commons':u"\n== Unknown extension! ==\n",
             'ar'     :u"\n== امتداد غير معروف! ==\n",
             'en'     :u"\n== Unknown extension! ==\n",
+            'ga'     :u"\n== Iarmhír neamhaithnid! ==\n",
             'fr'     :u'\n== Extension inconnue ==\n',
             'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
             'it'     :u'\n\n== File non specificato ==\n',
@@ -197,6 +204,7 @@ delete_immediately_notification = {
                 'ar'     :u'الملف [[:File:%s]] يبدو أن امتداده خاطيء, من فضلك تحقق. ~~~~',
                 'commons':u'The [[:File:%s]] file seems to have a wrong extension, please check. ~~~~',
                 'en'     :u'The [[:File:%s]] file seems to have a wrong extension, please check. ~~~~',
+                'ga'     :u'Tá iarmhír mícheart ar an comhad [[:File:%s]], scrúdaigh le d\'thoil. ~~~~',
                 'fr'     :u'Le fichier [[:File:%s]] semble avoir une mauvaise extension, veuillez vérifier. ~~~~',
                 'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
                 'it'     :u'{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Ext|%s|__botnick__}} --~~~~',
@@ -204,11 +212,12 @@ delete_immediately_notification = {
                 'ta'     :u'[[:படிமம்:%s]] இனங்காணப்படாத கோப்பு நீட்சியை கொண்டுள்ளது தயவு செய்து ஒரு முறை சரி பார்க்கவும் ~~~~',
                 'zh'    :u'您好，你上傳的[[:File:%s]]無法被識別，請檢查您的檔案，謝謝。--~~~~',
                 }
-# Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
+# Summary of the delete immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
             'ar'     :u'بوت: إضافة %s',
             'commons':u'Bot: Adding %s',
             'en'     :u'Bot: Adding %s',
+            'ga'     :u'Róbó: Cuir %s leis',
             'fr'     :u'Robot : Ajouté %s',
             'hu'     :u'Robot:"%s" hozzáadása',
             'it'     :u'Bot: Aggiungo %s',
@@ -225,6 +234,7 @@ nothing_head = {
                 'commons':u"",# Nothing, the template has already the header inside.
                 'de'     :u"\n== Bild ohne Lizenz ==\n",
                 'en'     :u"\n== Image without license ==\n",
+                'ga'     :u"\n== Comhad gan ceadúnas ==\n",
                 'fr'     :u"\n== Fichier sans licence ==\n",
                 'hu'     :u"\n== Licenc nélküli kép ==\n",
                 'it'     :u"\n\n== File senza licenza ==\n",
@@ -241,6 +251,7 @@ nothing_notification = {
                 'ar'     :u"{{subst:مصدر الصورة|File:%s}} --~~~~",
                 'de'     :u'\n{{subst:Benutzer:ABF/D2|%s}} ~~~~ ',
                 'en'     :u"{{subst:image source|File:%s}} --~~~~",
+                'ga'     :u"{{subst:Foinse na híomhá|File:%s}} --~~~~",
                 'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
                 'it'     :u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza|%s|__botnick__}} --~~~~",
                 'ja'     :u"\n{{subst:Image copyright|File:%s}}--~~~~",
@@ -255,6 +266,7 @@ bot_list = {
             'commons':[u'Siebot', u'CommonsDelinker', u'Filbot', u'John Bot', u'Sz-iwbot', u'ABFbot'],
             'de'     :[u'ABFbot'],
             'en'     :[u'OrphanBot'],
+            'ga'     :[u'AllieBot'],
             'it'     :[u'Filbot', u'Nikbot', u'.snoopyBot.'],
             'ja'     :[u'Alexbot'],
             'ko'     :[u'Kwjbot IV'],
@@ -264,25 +276,16 @@ bot_list = {
 
 # The message that the bot will add the second time that find another license problem.
 second_message_without_license = {
-                'commons':None,
-                'de':None,
-                'en': None,
+                '_default':None,
                 'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
                 'it':u':{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Senza licenza2|%s|__botnick__}} --~~~~',
-                'ja':None,
-                'ta':None,
-                'zh':None,
                 }
-# You can add some settings to wikipedia. In this way, you can change them without touch the code.
+# You can add some settings to wikipedia. In this way, you can change them without touching the code.
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
+                    '_default':None,
                     'commons':u'User:Filbot/Settings',
-                    'de':None,
-                    'en':None,
-                    'hu':None,
                     'it':u'Progetto:Coordinamento/Immagini/Bot/Settings#Settings',
-                    'ja':None,
-                    'ta':None,
                     'zh':u"User:Alexbot/cisettings#Settings",
                     }
 # The bot can report some images (like the images that have the same name of an image on commons)
@@ -291,6 +294,7 @@ report_page = {
                 'commons':u'User:Filbot/Report',
                 'de'     :u'Benutzer:ABFbot/Report',
                 'en'     :u'User:Filnik/Report',
+                'ga'     :u'User:AllieBot/ReportImages',
                 'hu'     :u'User:Bdamokos/Report',
                 'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
                 'ja'     :u'User:Alexbot/report',
@@ -303,9 +307,10 @@ timeselected = u' ~~~~~'
 # The text added in the report
 report_text = {
             'commons':u"\n*[[:File:%s]] " + timeselected,
-            'ar':u"\n*[[:صورة:%s]] " + timeselected,
+            'ar':u"\n*[[:ملف:%s]] " + timeselected,
             'de':u"\n*[[:Bild:%s]] " + timeselected,
             'en':u"\n*[[:File:%s]] " + timeselected,
+            'ga':u"\n*[[:File:%s]] " + timeselected,
             'hu':u"\n*[[:Kép:%s]] " + timeselected,
             'it':u"\n*[[:File:%s]] " + timeselected,
             'ja':u"\n*[[:File:%s]] " + timeselected,
@@ -320,6 +325,7 @@ comm10 = {
         'de'     :u'Bot:schreibe Log',
         'en'     :u'Bot: Updating the log',
         'fr'     :u'Robot: Mise à jour du journal',
+        'ga'     :u'Róbó: Log a thabhairt suas chun dáta',
         'hu'     :u'Robot: A napló frissítése',
         'it'     :u'Bot: Aggiorno il log',
         'ja'     :u'ロボットによる:更新',
@@ -329,7 +335,7 @@ comm10 = {
         }
 
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
-# analise the image without taking care of it. (the template must be in a list)
+# analyze the image without taking care of it. (the template must be in a list)
 # Warning: Don't add template like "en, de, it" because they are already in (added in the code, below
 # Warning 2: The bot will use regex, make the names compatible, please (don't add "Template:" or {{
 # because they are already put in the regex).
@@ -340,6 +346,7 @@ HiddenTemplate = {
         'de':[u'Template:Information'],
         'en':[u'Template:Information'],
         'fr':[u'Template:Information'],
+        'ga':[u'Template:Information'],
         'hu':[u'Template:Információ', u'Template:Enwiki', u'Template:Azonnali'],
         'it':[u'Template:EDP', u'Template:Informazioni file', u'Template:Information', u'Template:Trademark', u'Template:Permissionotrs'], # Put the other in the page on the project defined below
         'ja':[u'Template:Information'],
@@ -349,35 +356,27 @@ HiddenTemplate = {
         }
 # A page where there's a list of template to skip.
 PageWithHiddenTemplates = {
+    '_default':None,
     'commons': u'User:Filbot/White_templates#White_templates',
-    'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/WhiteTemplates',
-    'ja':None,
     'ko': u'User:Kwjbot_IV/whitetemplates/list',
-    'ta':None,
-    'zh':None,
     }
 
 # A page where there's a list of template to consider as licenses.
 PageWithAllowedTemplates = {
+    '_default':None,
     'commons': u'User:Filbot/Allowed templates',
-    'en':None,
     'it':u'Progetto:Coordinamento/Immagini/Bot/AllowedTemplates',
     'ko':u'User:Kwjbot_IV/AllowedTemplates',
-    'ta':None,
     }
 
 # Template added when the bot finds only an hidden template and nothing else.
 # Note: every __botnick__ will be repleaced with your bot's nickname (feel free not to use if you don't need it)
 HiddenTemplateNotification = {
+        '_default':None,
         'commons': u"""\n{{subst:User:Filnik/whitetemplate|File:%s}}\n\n''This message was '''added automatically by [[User:__botnick__|__botnick__]]''', if you need some help about it, ask its master (~~~) or go to the [[Commons:Help desk]]''. --~~~~""",
-        'de'     : None,
-        'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Template_insufficiente|%s|__botnick__}} --~~~~",
-        'ja'     :None,
         'ko'     : u"\n{{subst:User:Kwj2772/whitetemplates|%s}} --~~~~", 
-        'ta'     :None,
-        'zh'     :None,
         }
 
 # In this part there are the parameters for the dupe images.
@@ -385,62 +384,46 @@ HiddenTemplateNotification = {
 # Put here the template that you want to put in the image to warn that it's a dupe
 # put __image__ if you want only one image, __images__ if you want the whole list
 duplicatesText = {
+        '_default':None,
         'commons': u'\n{{Dupe|__image__}}',
-        'en'     : None,
         'it'     : u'\n{{Progetto:Coordinamento/Immagini/Bot/Template duplicati|__images__}}',
-        'ja'     :None,
-        'ta'     :None,
-        'zh'     :None,
         }
 # Head of the message given to the author
 duplicate_user_talk_head = {
-        'commons': None,
-        'en'     : None, 
+        '_default':None,
         'it'     : u'\n\n== File doppio ==\n',
-        'ja'     :None,
-        'ta'     :None,
-        'zh'     :None,
         }
 # Message to put in the talk
 duplicates_user_talk_text = {
+        '_default':None,
         'commons': u'{{subst:User:Filnik/duplicates|File:%s|File:%s}}', # FIXME: it doesn't exist
-        'en'     : None,
         'it'     : u"{{subst:Progetto:Coordinamento/Immagini/Bot/Messaggi/Duplicati|%s|%s|__botnick__}} --~~~~",
-        'ja'     :None,
-        'ta'     :None,
-        'zh'     :None,
         }
 # Comment used by the bot while it reports the problem in the uploader's talk
 duplicates_comment_talk = {
+        '_default':None,
         'commons': u'Bot: Dupe file found',
-        'en'     : None,
+        'ar'     : u'بوت: ملف مكرر تم العثور عليه',
         'it'     : u"Bot: Notifico il file doppio trovato",
-        'ja'     :None,
-        'ta'     :None,
-        'zh'     :None,
         }
 # Comment used by the bot while it reports the problem in the image
 duplicates_comment_image = {
+        '_default':None,
         'commons': u'Bot: Tagging dupe file',
-        'en'     : None,
+        'ar'     : u'بوت: وسم ملف مكرر',
         'it'     : u'Bot: File doppio, da cancellare',
-        'ja'     :None,
-        'ta'     :None,
-        'zh'     :None,
         }
 # Regex to detect the template put in the image's decription to find the dupe
 duplicatesRegex = {
+        '_default':None,
         'commons': r'\{\{(?:[Tt]emplate:|)[Dd]upe[|}]',
-        'en'     : None,
         'it'     : r'\{\{(?:[Tt]emplate:|)[Pp]rogetto:[Cc]oordinamento/Immagini/Bot/Template duplicati[|}]',
-        'ja'     :None,
-        'ta'     :None,
-        'zh'     :None,
         }
 # Category with the licenses and / or with subcategories with the other licenses.
 category_with_licenses = {
         'commons': 'Category:License tags',
         'en'     : 'Category:Wikipedia image copyright templates',
+        'ga'     : 'Catagóir:Clibeanna cóipchirt d\'íomhánna',
         'it'     : 'Categoria:Template Licenze copyright',
         'ja'     : 'Category:画像の著作権表示テンプレート',
         'ko'     : '분류:그림 저작권 틀',
@@ -452,23 +435,25 @@ category_with_licenses = {
 ## is still None.
 # Page where is stored the message to send as email to the users
 emailPageWithText = {
+        '_default':None,
         'de':'Benutzer:ABF/D3',
-        'en':None,
-        'ja':None,
-        'ta':None,
-        'zh':None,
         }
 # Title of the email
 emailSubject = {
+        '_default':None,
         'de':'Problemen mit Deinem Bild auf der Deutschen Wikipedia',
-        'en':None,
-        'ja':None,
-        'ta':None,
-        'zh':None,
         }
 
+# Seems that uploaderBots aren't interested to get messages regarding the
+# files that they upload.. strange, uh?
+# Format: [[user,regex], [user,regex]...] the regex is needed to match the user where to send the warning-msg
+uploadBots = {
+        '_default':None,
+        'commons':[['File Upload Bot (Magnus Manske)', r'\|[Ss]ource=Transferred from .*?; transferred to Commons by \[\[User:(.*?)\]\]']],
+}
+
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = [u'ar', u'commons', u'de', u'en', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
+project_inserted = [u'ar', u'commons', u'de', u'en', u'ga', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
@@ -487,104 +472,81 @@ def printWithTimeZone(message):
     """ Function to print the messages followed by the TimeZone encoded correctly. """
     if message[-1] != ' ':
         message = '%s ' % unicode(message)
-    time_zone = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime())
     if locale.getlocale()[1]:
         time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()), locale.getlocale()[1])
     else:
         time_zone = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
     wikipedia.output(u"%s%s" % (message, time_zone))
 
-class EmailSender(wikipedia.Page):
-    """ Class to send emails through the Wikipedia's dedicated page. """
-    def __init__(self, site, user):
-        self.wikisite = site
-        self.user = user
-        page_special_name = u'Special:EmailUser'
-        self.page_special_name = page_special_name
-        # Special:EmailUser/Filnik
-        page = '%s/%s' % (self.page_special_name, self.user)
-        self.page = page
-        wikipedia.Page.__init__(self, site, page, None, 0)
-
-    def send(self, subject, text, prompt = True):
-        """ Send an email through wikipedia's page. """
-        host = self.site().hostname()
-        address = '/w/index.php?title=%s&target=%s&action=submit' % (self.page_special_name, self.user)
-        # Getting the token.
-        token = self.site().getToken(self)
-        # Defing the predata.
-        predata = {
-            "wpSubject" : subject,
-            "wpText" : text,
-            'wpSend' : "Send",
-            'wpCCMe' : '0',
-        }
-        predata['wpEditToken'] = token
-        if self.site().hostname() in config.authenticate.keys():
-            predata['Content-type'] = 'application/x-www-form-urlencoded'
-            predata['User-agent'] = wikipedia.useragent
-            data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
-            data = u''
-        else:
-            response, data = self.site().postForm(address, predata, sysop = False)
-        if data:
-            if 'var wgAction = "success";' in data:
-                wikipedia.output(u'Email sent')
-                return True
-            else:
-                wikipedia.output(u'Email not sent')
-                return False
-        else:
-            wikipedia.output(u'No data found.')
-            return False
-
-
+class Global(object):
+    # default environment settings
+    # Command line configurable parameters
+    repeat = True            # Restart after having check all the images?
+    limit = 80               # How many images check?
+    time_sleep = 30          # How many time sleep after the check?
+    skip_number = 0          # How many images to skip before checking?
+    waitTime = 0             # How many time sleep before the check?
+    commonsActive = False    # Check if on commons there's an image with the same name?
+    normal = False           # Check the new images or use another generator?
+    urlUsed = False          # Use the url-related function instead of the new-pages generator
+    regexGen = False         # Use the regex generator
+    untagged = False         # Use the untagged generator   
+    duplicatesActive = False # Use the duplicate option
+    duplicatesReport = False # Use the duplicate-report option
+    sendemailActive = False  # Use the send-email
+    logFullError = True      # Raise an error when the log is full
+    
+    
 # Here there is the main class.
 class main:
     def __init__(self, site, logFulNumber = 25000, sendemailActive = False,
                  duplicatesReport = False, logFullError = True):
         """ Constructor, define some global variable """
-        self.site = site
-        self.logFullError = logFullError
-        self.logFulNumber = logFulNumber
-        self.settings = wikipedia.translate(self.site, page_with_settings)
-        self.rep_page = wikipedia.translate(self.site, report_page)
-        self.rep_text = wikipedia.translate(self.site, report_text)
-        self.com = wikipedia.translate(self.site, comm10)
-        hiddentemplatesRaw = wikipedia.translate(self.site, HiddenTemplate)
-        self.hiddentemplates = list()
-        for template in hiddentemplatesRaw:
-            self.hiddentemplates.append(wikipedia.Page(self.site, template))
-        self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)
+        self.site = site       
+        self.logFullError = logFullError        
+        self.logFulNumber = logFulNumber        
+        self.rep_page = wikipedia.translate(self.site, report_page)        
+        self.rep_text = wikipedia.translate(self.site, report_text)        
+        self.com = wikipedia.translate(self.site, comm10)        
+        hiddentemplatesRaw = wikipedia.translate(self.site, HiddenTemplate)        
+        self.hiddentemplates = [wikipedia.Page(self.site, tmp) for tmp in hiddentemplatesRaw]        
+        self.pageHidden = wikipedia.translate(self.site, PageWithHiddenTemplates)        
         self.pageAllowed = wikipedia.translate(self.site, PageWithAllowedTemplates)        
         # Commento = Summary in italian
         self.commento = wikipedia.translate(self.site, comm)
         # Adding the bot's nickname at the notification text if needed.
-        botolist = wikipedia.translate(self.site, bot_list)
-        project = wikipedia.getSite().family.name
-        self.project = project
+        botolist = wikipedia.translate(self.site, bot_list)       
+        project = wikipedia.getSite().family.name        
+        self.project = project        
         bot = config.usernames[project]
         try:
             botnick = bot[self.site.lang]
         except KeyError:
             raise wikipedia.NoUsername(u"You have to specify an username for your bot in this project in the user-config.py file.")
+        
         self.botnick = botnick
         botolist.append(botnick)
+        
         self.botolist = botolist
+        
         self.sendemailActive = sendemailActive
-        self.skip_list = list() # Inizialize the skip list used below
+        # Inizialize the skip list used below
+        self.skip_list = list()
+        
         self.duplicatesReport = duplicatesReport
+        
         self.image_namespace = u"File:"
         # Load the licenses only once, so do it once
         self.list_licenses = self.load_licenses()
+    
     def setParameters(self, imageName, timestamp, uploader):
         """ Function to set parameters, now only image but maybe it can be used for others in "future" """
         self.imageName = imageName
         # Defing the image's Page Object
-        self.image = wikipedia.ImagePage(self.site, u'%s%s' % (self.image_namespace, self.imageName))
+        self.image = wikipedia.ImagePage(self.site, self.imageName)
         self.timestamp = timestamp
         self.uploader = uploader
+    
     def report(self, newtext, image_to_report, notification = None, head = None,
                notification2 = None, unver = True, commTalk = None, commImage = None):
         """ Function to make the reports easier. """
@@ -594,18 +556,22 @@ class main:
         self.head = head
         self.notification = notification
         self.notification2 = notification2
-        if self.notification != None:
+        
+        if self.notification:
             self.notification = re.sub(r'__botnick__', self.botnick, notification)
-        if self.notification2 != None:
+        
+        if self.notification2:
             self.notification2 = re.sub(r'__botnick__', self.botnick, notification2)
         self.commTalk = commTalk
-        if commImage == None:
-            self.commImage = self.commento
-        else:
+        
+        if commImage:
             self.commImage = commImage
+        else:
+            self.commImage = self.commento
+        
         # Ok, done, let's loop.
         while 1:
-            if unver == True:
+            if unver:
                 try:
                     resPutMex = self.tag_image()
                 except wikipedia.NoPage:
@@ -615,7 +581,7 @@ class main:
                     wikipedia.output(u"Edit conflict! Skip!")
                     break
                 else:
-                    if resPutMex == False:
+                    if not resPutMex:
                         break
             else:
                 try:
@@ -627,9 +593,9 @@ class main:
                     wikipedia.output(u"Edit conflict! Skip!")
                     break
                 else:
-                    if resPutMex == False:
+                    if not resPutMex:
                         break
-            if self.notification != None and self.head != None:
+            if self.notification:
                 try:
                     self.put_mex_in_talk()
                 except wikipedia.EditConflict:
@@ -643,12 +609,24 @@ class main:
                     break
             else:
                 break
-
+    
+    def uploadBotChangeFunction(self, reportPageText, upBotArray):
+        """ Detect the user that has uploaded the file through the upload bot """
+        regex = upBotArray[1]
+        results = re.findall(regex, reportPageText)
+        
+        if results:
+            luser = results[0]
+            return luser
+        else:
+            return upBotArray[0] # we can't find the user, report the problem to the bot
+    
     def tag_image(self, put = True):
         """ Function to add the template in the image and to find out
         who's the user that has uploaded the file. """
         # Get the image's description
-        reportPageObject = wikipedia.ImagePage(self.site, self.image_namespace + self.image_to_report)
+        reportPageObject = wikipedia.ImagePage(self.site, self.image_to_report)
+        
         try:
             reportPageText = reportPageObject.get()
         except wikipedia.NoPage:
@@ -658,10 +636,10 @@ class main:
         # You can use this function also to find only the user that
         # has upload the image (FixME: Rewrite a bit this part)
         if put:
-            reportPageObject.put(reportPageText + self.newtext, comment = self.commImage, minorEdit = True)
+            reportPageObject.put(reportPageText + self.newtext, comment = self.commImage)
         # paginetta it's the image page object.        
         try:
-            if reportPageObject == self.image and self.uploader != None:
+            if reportPageObject == self.image and self.uploader:
                 nick = self.uploader
             else:
                 nick = reportPageObject.getLatestUploader()[0]
@@ -671,20 +649,27 @@ class main:
             # We have a problem! Report and exit!
             self.report_image(self.image_to_report, self.rep_page, self.com, repme)
             return False
+        upBots = wikipedia.translate(self.site, uploadBots)
         luser = wikipedia.url2link(nick, self.site, self.site)
+        
+        if upBots:
+            for upBot in upBots:
+                if upBot[0] == luser:
+                    luser = self.uploadBotChangeFunction(reportPageText, upBot)
         talk_page = wikipedia.Page(self.site, u"%s:%s" % (self.site.namespace(3), luser))
         self.talk_page = talk_page
         self.luser = luser
         return True
+    
     def put_mex_in_talk(self):
         """ Function to put the warning in talk page of the uploader."""
         commento2 = wikipedia.translate(self.site, comm2)
         emailPageName = wikipedia.translate(self.site, emailPageWithText)
         emailSubj = wikipedia.translate(self.site, emailSubject)
-        if self.notification2 == None:
-            self.notification2 = self.notification
-        else:
+        if self.notification2:
             self.notification2 = self.notification2 % self.image_to_report
+        else:
+            self.notification2 = self.notification
         second_text = False
         # Getting the talk page's history, to check if there is another advise...
         # The try block is used to prevent error if you use an old wikipedia.py's version.
@@ -706,28 +691,27 @@ class main:
                 testoattuale = self.talk_page.get()
             except wikipedia.NoPage:
                 second_text = False
-                ti_es_ti = wikipedia.translate(self.site, empty)
-                testoattuale = ti_es_ti                        
+                testoattuale  = wikipedia.translate(self.site, empty)                  
         except wikipedia.NoPage:
             wikipedia.output(u'The user page is blank')
             second_text = False
-            ti_es_ti = wikipedia.translate(self.site, empty)
-            testoattuale = ti_es_ti
-        if self.commTalk == None:
-            commentox = commento2
-        else:
+            testoattuale = wikipedia.translate(self.site, empty)        
+        if self.commTalk:
             commentox = self.commTalk
-        if second_text == True:
-            try:
-                self.talk_page.put(u"%s\n\n%s" % (testoattuale, self.notification2), comment = commentox, minorEdit = False)
-            except wikipedia.LockedPage:
-                wikipedia.output(u'Talk page blocked, skip.')
-        elif second_text == False:
-            try:
-                self.talk_page.put(testoattuale + self.head + self.notification, comment = commentox, minorEdit = False)
-            except wikipedia.LockedPage:
-                wikipedia.output(u'Talk page blocked, skip.')
-        if emailPageName != None and emailSubj != None:
+        else:
+            commentox = commento2
+        
+        if second_text:
+            newText = u"%s\n\n%s" % (testoattuale, self.notification2)
+        else:
+            newText = testoattuale + self.head + self.notification
+        
+        try:
+            self.talk_page.put(newText, comment = commentox, minorEdit = False)
+        except wikipedia.LockedPage:
+            wikipedia.output(u'Talk page blocked, skip.')
+        
+        if emailPageName and emailSubj:
             emailPage = wikipedia.Page(self.site, emailPageName)
             try:
                 emailText = emailPage.get()
@@ -735,52 +719,60 @@ class main:
                 return # Exit
             if self.sendemailActive:
                 text_to_send = re.sub(r'__user-nickname__', r'%s' % self.luser, emailText)
-                emailClass = EmailSender(self.site, self.luser)
-                emailClass.send(emailSubj, text_to_send)
-
+                emailClass = userlib.User(self.site, self.luser)
+                try:
+                    emailClass.sendMail(emailSubj, text_to_send)
+                except userlib.UserActionRefuse:
+                    wikipedia.output("User is not mailable, aborted")
+                    return # exit
+    
     def untaggedGenerator(self, untaggedProject, limit):
         """ Generator that yield the files without license. It's based on a tool of the toolserver. """
         lang = untaggedProject.split('.', 1)[0]
         project = '.%s' % untaggedProject.split('.', 1)[1]
+        
         if lang == 'commons':
             link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
         else:
             link = 'http://toolserver.org/~daniel/WikiSense/UntaggedImages.php?wikilang=%s&wikifam=%s&order=img_timestamp&max=%s&ofs=0&max=%s' % (lang, project, limit, limit)
         text = self.site.getUrl(link, no_hostname = True)
-        regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
-        results = re.findall(regexp, text)
-        if results == []:
-            wikipedia.output(link)
-            raise NothingFound(u'Nothing found! Try to use the tool by yourself to be sure that it works!')
-        else:
+        results = re.findall(r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>""", text)
+        
+        if results:
             for result in results:
                 wikiPage = wikipedia.ImagePage(self.site, result)
                 yield wikiPage
-
+        else:
+            wikipedia.output(link)
+            raise NothingFound(u'Nothing found! Try to use the tool by yourself to be sure that it works!')
+    
     def regexGenerator(self, regexp, textrun):
         """ Generator used when an user use a regex parsing a page to yield the results """
         regex = re.compile(r'%s' % regexp, re.UNICODE|re.DOTALL)
         results = regex.findall(textrun)
         for image in results:
             yield wikipedia.ImagePage(self.site, image)
-
+    
     def loadHiddenTemplates(self):
         """ Function to load the white templates """
         # A template as {{en is not a license! Adding also them in the whitelist template...
         for langK in wikipedia.Family(u'wikipedia').langs.keys():
             self.hiddentemplates.append(wikipedia.Page(self.site, u'Template:%s' % langK))
+        
         # The template #if: and #switch: aren't something to care about
         #self.hiddentemplates.extend([u'#if:', u'#switch:']) FIXME
+        
         # Hidden template loading
-        if self.pageHidden != None:
+        if self.pageHidden:
             try:
                 pageHiddenText = wikipedia.Page(self.site, self.pageHidden).get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 pageHiddenText = ''
+            
             for element in self.load(pageHiddenText):
                 self.hiddentemplates.append(wikipedia.Page(self.site, element))
         return self.hiddentemplates
-
+    
     def returnOlderTime(self, listGiven, timeListGiven):
         """ Get some time and return the oldest of them """
         # print listGiven; print timeListGiven
@@ -793,54 +785,60 @@ class main:
         max_usage = 0
         for element in listGiven:
             imageName = element[1]
-            imagePage = wikipedia.ImagePage(self.site, u'File:%s' % imageName)
+            imagePage = wikipedia.ImagePage(self.site, imageName)
             imageUsage = [page for page in imagePage.usingPages()]
             if len(imageUsage) > 0 and len(imageUsage) > max_usage:
                 max_usage = len(imageUsage)
                 num_older = num
             num += 1
-        if num_older != None:
+        
+        if num_older:
             return listGiven[num_older][1]
+        
         for element in listGiven:
             time = element[0]
             imageName = element[1]
             not_the_oldest = False
+            
             for time_selected in timeListGiven:
                 if time > time_selected:
                     not_the_oldest = True
                     break
-            if not_the_oldest == False:
+            
+            if not not_the_oldest:
                 return imageName
-
+    
     def convert_to_url(self, page):
         # Function stolen from wikipedia.py
         """The name of the page this Page refers to, in a form suitable for the URL of the page."""
         title = page.replace(u" ", u"_")
         encodedTitle = title.encode(self.site.encoding())
         return urllib.quote(encodedTitle)
-
+    
     def countEdits(self, pagename, userlist):
         """ Function to count the edit of a user or a list of users in a page. """
         # self.botolist
-        if type(userlist) == type(''):
+        if type(userlist) == str:
             userlist = [userlist]
         page = wikipedia.Page(self.site, pagename)
         history = page.getVersionHistory()
         user_list = list()
+        
         for data in history:
             user_list.append(data[2])
         number_edits = 0
+        
         for username in userlist:
             number_edits += user_list.count(username)
         return number_edits
-
+    
     def checkImageOnCommons(self):
         """ Checking if the file is on commons """
         wikipedia.output(u'Checking if %s is on commons...' % self.imageName)
         commons_site = wikipedia.getSite('commons', 'commons')
         regexOnCommons = r"\[\[:File:%s\]\] is also on '''Commons''': \[\[commons:File:.*?\]\](?: \(same name\)|)$" % re.escape(self.imageName)
         hash_found = self.image.getHash()
-        if hash_found == None:
+        if not hash_found:
             return False # Problems? Yes! Image deleted, no hash found. Skip the image.
         else:
             commons_image_with_this_hash = commons_site.getFilesFromAnHash(hash_found)
@@ -867,7 +865,7 @@ class main:
             else:
                 # Problems? No, return True
                 return True
-
+    
     def checkImageDuplicated(self, duplicates_rollback):
         """ Function to check the duplicated files. """
         # {{Dupe|File:Blanche_Montel.jpg}}
@@ -880,22 +878,27 @@ class main:
         dupTalkText = wikipedia.translate(self.site, duplicates_user_talk_text)
         dupComment_talk = wikipedia.translate(self.site, duplicates_comment_talk)
         dupComment_image = wikipedia.translate(self.site, duplicates_comment_image)
-        duplicateRegex = r'(?:\[\[:File:%s\]\] has the following duplicates(?: \(\'\'\'forced mode\'\'\'\)|):|\*\[\[:File:%s\]\])$' % (re.escape(self.convert_to_url(self.imageName)), re.escape(self.convert_to_url(self.imageName)))
-        imagePage = wikipedia.ImagePage(self.site, u'File:%s' % self.imageName)
+        duplicateRegex = r'\[\[:File:%s\]\] has the following duplicates' % re.escape(self.convert_to_url(self.imageName))
+        imagePage = wikipedia.ImagePage(self.site, self.imageName)
         hash_found = imagePage.getHash()
         duplicates = self.site.getFilesFromAnHash(hash_found)
-        if duplicates == None:
+        
+        if not duplicates:
             return False # Error, image deleted, no hash found. Skip the image.
+        
         if len(duplicates) > 1:
             if len(duplicates) == 2:
                 wikipedia.output(u'%s has a duplicate! Reporting it...' % self.imageName)
             else:
                 wikipedia.output(u'%s has %s duplicates! Reporting them...' % (self.imageName, len(duplicates) - 1))
-            if not dupText == None and not dupRegex == None:
+            
+            if dupText and dupRegex:
                 time_image_list = list()
                 time_list = list()
+                
                 for duplicate in duplicates:
-                    DupePage = wikipedia.ImagePage(self.site, u'File:%s' % duplicate)
+                    DupePage = wikipedia.ImagePage(self.site, duplicate)
+                    
                     if DupePage.urlname() == self.image.urlname() and self.timestamp != None:
                         imagedata = self.timestamp
                     else:
@@ -907,20 +910,21 @@ class main:
                     time_list.append(data_seconds)
                 older_image = self.returnOlderTime(time_image_list, time_list)
                 # And if the images are more than two?
-                Page_oder_image = wikipedia.ImagePage(self.site, u'File:%s' % older_image)
+                Page_oder_image = wikipedia.ImagePage(self.site, older_image)
                 string = ''
                 images_to_tag_list = []
+                
                 for duplicate in duplicates:
-                    if wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, duplicate)) == \
-                       wikipedia.ImagePage(self.site, u'%s:%s' % (self.image_namespace, older_image)):
+                    if wikipedia.ImagePage(self.site, duplicate) == wikipedia.ImagePage(self.site, older_image):
                         continue # the older image, not report also this as duplicate
-                    DupePage = wikipedia.ImagePage(self.site, u'File:%s' % duplicate)
+                    DupePage = wikipedia.ImagePage(self.site, duplicate)
                     try:
                         DupPageText = DupePage.get()
                         older_page_text = Page_oder_image.get()
                     except wikipedia.NoPage:
                         continue # The page doesn't exists
-                    if re.findall(dupRegex, DupPageText) == [] and re.findall(dupRegex, older_page_text) == []:
+                    
+                    if not re.findall(dupRegex, DupPageText) and not re.findall(dupRegex, older_page_text):
                         wikipedia.output(u'%s is a duplicate and has to be tagged...' % duplicate)
                         images_to_tag_list.append(duplicate)
                         #if duplicate != duplicates[-1]:
@@ -932,12 +936,13 @@ class main:
                         return True # Ok - No problem. Let's continue the checking phase
                 older_image_ns = u'%s%s' % (self.image_namespace, older_image) # adding the namespace
                 only_report = False # true if the image are not to be tagged as dupes
-
+                
                 # put only one image or the whole list according to the request
                 if u'__images__' in dupText:
                     text_for_the_report = re.sub(r'__images__', r'\n%s*[[:%s]]\n' % (string, older_image_ns), dupText)
                 else:
                     text_for_the_report = re.sub(r'__image__', r'%s' % older_image_ns, dupText)
+                
                 # Two iteration: report the "problem" to the user only once (the last)
                 if len(images_to_tag_list) > 1:
                     for image_to_tag in images_to_tag_list[:-1]:
@@ -950,6 +955,7 @@ class main:
                         text_for_the_report = re.sub(r'\n\*\[\[:%s\]\]' % re.escape(self.image_namespace + image_to_tag), '', text_for_the_report)
                         self.report(text_for_the_report, image_to_tag,
                                     commImage = dupComment_image, unver = True)
+                
                 if len(images_to_tag_list) != 0 and not only_report:
                     already_reported_in_past = self.countEdits(u'File:%s' % images_to_tag_list[-1], self.botolist)
                     image_to_resub = images_to_tag_list[-1]
@@ -963,11 +969,13 @@ class main:
                         self.report(text_for_the_report, images_to_tag_list[-1],
                             dupTalkText % (older_image_ns, string), dupTalkHead, commTalk = dupComment_talk,
                                 commImage = dupComment_image, unver = True)
+            
             if self.duplicatesReport or only_report:
                 if only_report:
                     repme = u"\n*[[:File:%s]] has the following duplicates ('''forced mode'''):" % self.convert_to_url(self.imageName)
                 else:
                     repme = u"\n*[[:File:%s]] has the following duplicates:" % self.convert_to_url(self.imageName)
+                
                 for duplicate in duplicates:
                     if self.convert_to_url(duplicate) == self.convert_to_url(self.imageName):
                         continue # the image itself, not report also this as duplicate
@@ -975,58 +983,76 @@ class main:
                 result = self.report_image(self.imageName, self.rep_page, self.com, repme, addings = False, regex = duplicateRegex)
                 if not result:
                     return True # If Errors, exit (but continue the check)                
+            
             if older_image != self.imageName:
                 return False # The image is a duplicate, it will be deleted. So skip the check-part, useless
         return True # Ok - No problem. Let's continue the checking phase
-
+    
     def report_image(self, image_to_report, rep_page = None, com = None, rep_text = None, addings = True, regex = None):
-        """ Function to report the files in the report page when needed. """
-        if rep_page == None: rep_page = self.rep_page
-        if com == None: com = self.com
-        if rep_text == None: rep_text = self.rep_text
+        """ Report the files to the report page when needed. """
+        if not rep_page:
+            rep_page = self.rep_page
+        
+        if not com:
+            com = self.com
+        
+        if not rep_text:
+            rep_text = self.rep_text
+        
         another_page = wikipedia.Page(self.site, rep_page)
-        if regex == None: regex = image_to_report
+        
+        if not regex:
+            regex = image_to_report
         try:
             text_get = another_page.get()
         except wikipedia.NoPage:
             text_get = ''
         except wikipedia.IsRedirectPage:            
             text_get = another_page.getRedirectTarget().get()
+        
         if len(text_get) >= self.logFulNumber:
             if self.logFullError:
                 raise LogIsFull(u"The log page (%s) is full! Please delete the old files reported." % another_page.title())
             else:
                 wikipedia.output(u"The log page (%s) is full! Please delete the old files reported. Skip!" % another_page.title())
                 return True # Don't report, but continue with the check (we don't now if this is the first time we check this file or not)
-        pos = 0
         # The talk page includes "_" between the two names, in this way i replace them to " "
         n = re.compile(regex, re.UNICODE|re.DOTALL)
-        y = n.search(text_get, pos)
-        if y == None:
+        y = n.findall(text_get)
+        
+        if y:
+            wikipedia.output(u"%s is already in the report page." % image_to_report)
+            reported = False
+        else:
             # Adding the log
             if addings:
                 rep_text = rep_text % image_to_report # Adding the name of the image in the report if not done already
             another_page.put(text_get + rep_text, comment = com, minorEdit = False)
             wikipedia.output(u"...Reported...")
             reported = True
-        else:
-            pos = y.end()
-            wikipedia.output(u"%s is already in the report page." % image_to_report)
-            reported = False
         return reported
-
+    
     def takesettings(self):
         """ Function to take the settings from the wiki. """
+        settingsPage = wikipedia.translate(self.site, page_with_settings)
         try:
-            if self.settings == None: self.settingsData = None
+            if not settingsPage:
+                self.settingsData = None
             else:
-                wikiPage = wikipedia.Page(self.site, self.settings)
+                wikiPage = wikipedia.Page(self.site, settingsPage)
                 self.settingsData = list()
                 try:
                     testo = wikiPage.get()
-                    rxp = r"<------- ------->\n\*[Nn]ame ?= ?['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?([^\n]*?)['\"]?\n"
-                    r = re.compile(rxp, re.UNICODE|re.DOTALL)
+                    r = re.compile(r"<------- ------->\n"
+                        "\*[Nn]ame ?= ?['\"](.*?)['\"]\n"
+                        "\*([Ff]ind|[Ff]indonly)=(.*?)\n"
+                        "\*[Ii]magechanges=(.*?)\n"
+                        "\*[Ss]ummary=['\"](.*?)['\"]\n"
+                        "\*[Hh]ead=['\"](.*?)['\"]\n"
+                        "\*[Tt]ext ?= ?['\"](.*?)['\"]\n"
+                        "\*[Mm]ex ?= ?['\"]?([^\n]*?)['\"]?\n", re.UNICODE|re.DOTALL)
                     number = 1
+                    
                     for m in r.finditer(testo):
                         name = str(m.group(1))
                         find_tipe = str(m.group(2))
@@ -1039,6 +1065,7 @@ class main:
                         tupla = [number, name, find_tipe, find, imagechanges, summary, head, text, mexcatched]
                         self.settingsData += [tupla]
                         number += 1
+                    
                     if self.settingsData == list():
                         wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
                         self.settingsData = None
@@ -1050,14 +1077,18 @@ class main:
             wikipedia.output(u'Problems with loading the settigs, run without them.')
             self.settingsData = None
             self.some_problem = False
-        if self.settingsData == []:
+        
+        if not self.settingsData:
             self.settingsData = None
+        
         # Real-Time page loaded
-        if self.settingsData != None: wikipedia.output(u'\t   >> Loaded the real-time page... <<')
+        if self.settingsData:
+            wikipedia.output(u'\t   >> Loaded the real-time page... <<')
         # No settings found, No problem, continue.
-        else: wikipedia.output(u'\t   >> No additional settings found! <<')
+        else:
+            wikipedia.output(u'\t   >> No additional settings found! <<')
         return self.settingsData # Useless, but it doesn't harm..
-
+    
     def load_licenses(self):
         """ Load the list of the licenses """
         """
@@ -1074,35 +1105,41 @@ class main:
             list_licenses.extend(pages)
         """
         catName = wikipedia.translate(self.site, category_with_licenses)
-        if catName == None:
+        if not catName:
             raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
         wikipedia.output(u'\n\t...Loading the licenses allowed...\n')
         list_licenses = catlib.categoryAllPageObjectsAPI(catName)
+        if self.site.lang == 'commons':
+            no_licenses_to_skip = catlib.categoryAllPageObjectsAPI('Category:License-related tags')
+            for license_given in no_licenses_to_skip:
+                list_licenses.remove(license_given)
         wikipedia.output('') # blank line
-
+    
         # Add the licenses set in the default page as licenses
         # to check
-        if self.pageAllowed != None:
+        if self.pageAllowed:
             try:
                 pageAllowedText = wikipedia.Page(self.site, self.pageAllowed).get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 pageAllowedText = ''
+            
             for nameLicense in self.load(pageAllowedText):
                 pageLicense = wikipedia.Page(self.site, nameLicense)
                 if pageLicense not in list_licenses:
                     list_licenses.append(pageLicense) # the list has wiki-pages
         return list_licenses
-
+    
     def miniTemplateCheck(self, template):
         """
         Is the template given in the licenses allowed or in the licenses to skip?
         This function check this.
         """
         if template in self.list_licenses: # the list_licenses are loaded in the __init__ (not to load them multimple times)
-            self.license_selected = template.title().replace('Template:', '')
+            self.license_selected = template.titleWithoutNamespace()
             self.seems_ok = True
             self.license_found = self.license_selected # let the last "fake" license normally detected
             return True
+        
         if template in self.hiddentemplates:
             # if the whitetemplate is not in the images description, we don't care
             try:
@@ -1112,7 +1149,7 @@ class main:
             else:
                 self.whiteTemplatesFound = True
                 return False  
-
+    
     def templateInList(self):
         """
         The problem is the calls to the Mediawiki system because they can be pretty slow.
@@ -1123,7 +1160,7 @@ class main:
             result = self.miniTemplateCheck(template)
             if result:
                 break
-        if self.license_found == None:
+        if not self.license_found:
             for template in self.licenses_found:
                 try:
                     template.pageAPInfo()
@@ -1134,7 +1171,7 @@ class main:
                         break                        
                 except wikipedia.NoPage:
                     continue          
-                
+    
     def smartDetection(self):
         """ The bot instead of checking if there's a simple template in the
             image's description, checks also if that template is a license or
@@ -1144,16 +1181,24 @@ class main:
         self.license_found = None
         self.whiteTemplatesFound = False
         regex_find_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)[|\n<}]', re.DOTALL)
-        dummy_edit = False
+        # see below to understand the use of this regex
+        regex_are_licenses = re.compile(r'(?<!\{)\{\{(?:[Tt]emplate:|)([^{]+?)\}\}', re.DOTALL)
+        #dummy_edit = False
         while 1:
             self.hiddentemplates = self.loadHiddenTemplates()      
             self.licenses_found = self.image.getTemplates()
             templatesInTheImageRaw = regex_find_licenses.findall(self.imageCheckText)
-            if self.licenses_found == [] and templatesInTheImageRaw != []:
-                raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
+            
+            if not self.licenses_found and templatesInTheImageRaw:
+                # {{nameTemplate|something <- this is not a template, be sure that we haven't catch something like that.
+                licenses_TEST = regex_are_licenses.findall(self.imageCheckText)
+                if not self.licenses_found and licenses_TEST:
+                    raise wikipedia.Error("APIs seems down. No templates found with them but actually there are templates used in the image's page!")
             self.allLicenses = list()
-            if self.list_licenses == []:
+            
+            if not self.list_licenses:
                 raise wikipedia.Error(u'No licenses allowed provided, add that option to the code to make the script working correctly')
+            
             # Found the templates ONLY in the image's description
             for template_selected in templatesInTheImageRaw:
                 for templateReal in self.licenses_found:
@@ -1162,41 +1207,62 @@ class main:
                         if templateReal not in self.allLicenses: # don't put the same template, twice.
                             self.allLicenses.append(templateReal)
             # perform a dummy edit, sometimes there are problems with the Job queue
-            if self.allLicenses == self.licenses_found and not dummy_edit and self.licenses_found != []:
-                wikipedia.output(u"Seems that there's a problem regarding the Job queue, trying with a dummy edit to solve the problem.")
-                try:
-                    
-                    self.imageCheckText = self.image.get()
-                    self.image.put(self.imageCheckText, 'Bot: Dummy edit,if you see this comment write [[User talk:%s|here]].' % self.botnick)
-                except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                    return (None, list())
-                dummy_edit = True
-            else:
-                break
-            
-        if self.licenses_found != []:
+            # it happends that there is listed only the template used and not all the template that are in the templates used in the page
+            # for example: there's only self, and not GFDL and the other licenses.
+            #if self.allLicenses == self.licenses_found and not dummy_edit and self.licenses_found != []:
+            #    wikipedia.output(u"Seems that there's a problem regarding the Job queue, trying with a dummy edit to solve the problem.")
+            #    try:
+            #        self.imageCheckText = self.image.get()
+            #        self.image.put(self.imageCheckText, 'Bot: Dummy edit,if you see this comment write [[User talk:%s|here]].' % self.botnick)
+            #    except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+            #        return (None, list())
+            #    dummy_edit = True
+            #else:
+            break
+        
+        if self.licenses_found:
             self.templateInList()
-            if self.license_found == None and self.allLicenses != list():
+            
+            if not self.license_found and self.allLicenses:
                 # If only iterlist = self.AllLicenses if I remove something
                 # from iterlist it will be remove from self.AllLicenses too
                 iterlist = list(self.allLicenses)
+                
                 for template in iterlist:
                     try:
                         template.pageAPInfo()
                     except wikipedia.IsRedirectPage:
                         template = template.getRedirectTarget()
                     except wikipedia.NoPage:
-                        self.allLicenses.remove(template)            
-                if self.allLicenses != list():      
+                        self.allLicenses.remove(template)
+                
+                if self.allLicenses:
                     self.license_found = self.allLicenses[0].title()
         self.some_problem = False # If it has "some_problem" it must check
                   # the additional settings.
         # if self.settingsData, use addictional settings
-        if self.settingsData != None:
+        if self.settingsData:
             self.findAdditionalProblems()
 
-        if self.some_problem == False:       
-            if not self.seems_ok and self.license_found != None:
+        if self.some_problem:
+            if self.mex_used in self.imageCheckText:
+                wikipedia.output(u'File already fixed. Skip.')
+            else:
+                wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
+                if self.mex_used.lower() == 'default':
+                    self.mex_used = self.unvertext
+                if self.imagestatus_used:
+                    reported = True
+                else:
+                    reported = self.report_image(self.imageName)
+                if reported:
+                    #if self.imagestatus_used == True:
+                    self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
+                else:
+                    wikipedia.output(u"Skipping the file...")
+                self.some_problem = False
+        else:
+            if not self.seems_ok and self.license_found:
                 rep_text_license_fake = u"\n*[[:File:%s]] seems to have " % self.imageName + \
                         "a ''fake license'', license detected: <nowiki>%s</nowiki>" % self.license_found
                 regexFakeLicense = r"\* ?\[\[:File:%s\]\] seems to have " % (re.escape(self.imageName)) + \
@@ -1204,27 +1270,10 @@ class main:
                 printWithTimeZone(u"%s seems to have a fake license: %s, reporting..." % (self.imageName, self.license_found))
                 self.report_image(self.imageName, rep_text = rep_text_license_fake,
                                        addings = False, regex = regexFakeLicense)
-            elif self.license_found != None:
+            elif self.license_found:
                 printWithTimeZone(u"%s seems ok, license found: %s..." % (self.imageName, self.license_found))
-        else:
-            if self.mex_used in self.imageCheckText:
-                wikipedia.output(u'File already fixed. Skip.')
-            else:
-                wikipedia.output(u"The file's description for %s contains %s..." % (self.imageName, self.name_used))
-                if self.mex_used.lower() == 'default':
-                    self.mex_used = self.unvertext
-                if self.imagestatus_used == False:
-                    reported = self.report_image(self.imageName)
-                else:
-                    reported = True
-                if reported == True:
-                    #if self.imagestatus_used == True:
-                    self.report(self.mex_used, self.imageName, self.text_used, u"\n%s\n" % self.head_used, None, self.imagestatus_used, self.summary_used)
-                else:
-                    wikipedia.output(u"Skipping the file...")
-                self.some_problem = False
         return (self.license_found, self.whiteTemplatesFound)
-
+    
     def load(self, raw):
         """ Load a list of object from a string using regex. """
         list_loaded = list()
@@ -1248,7 +1297,7 @@ class main:
             return False
         if skip_number > limit: skip_number = limit
         # Print a starting message only if no images has been skipped
-        if self.skip_list == []:
+        if not self.skip_list:
             if skip_number == 1:
                 wikipedia.output(u'Skipping the first file:\n')
             else:
@@ -1328,23 +1377,23 @@ class main:
         else:
             wikipedia.output(u"The wait option is available only with the standard generator.")
             return generator
-     
+    
     def isTagged(self):
         """ Understand if a file is already tagged or not. """
-        TextFind = wikipedia.translate(self.site, txt_find)
         # Is the image already tagged? If yes, no need to double-check, skip
-        for i in TextFind:
+        for i in wikipedia.translate(self.site, txt_find):
             # If there are {{ use regex, otherwise no (if there's not the {{ may not be a template
             # and the regex will be wrong)
             if '{{' in i:
                 regexP = re.compile(r'\{\{(?:template|)%s ?(?:\||\n|\}|<) ?' % i.split('{{')[1].replace(u' ', u'[ _]'), re.I)
                 result = regexP.findall(self.imageCheckText)
-                if result != []:
+                if result:
                     return True
             elif i.lower() in self.imageCheckText:
                 return True
-        return False # Nothing Found? Ok: False      
-
+        
+        return False # Nothing Found
+    
     def findAdditionalProblems(self):
         # In every tupla there's a setting configuration
         for tupla in self.settingsData:
@@ -1363,8 +1412,7 @@ class main:
                 break
             summary = tupla[5]
             head_2 = tupla[6]
-            text = tupla[7]
-            text = text % self.imageName
+            text = tupla[7] % self.imageName
             mexCatched = tupla[8]
             for k in find_list:
                 if find_tipe.lower() == 'findonly':
@@ -1389,7 +1437,7 @@ class main:
                         self.summary_used = summary
                         self.mex_used = mexCatched
                         continue
-
+    
     def checkStep(self):
         # nothing = Defining an empty image description
         nothing = ['', ' ', '  ', '   ', '\n', '\n ', '\n  ', '\n\n', '\n \n', ' \n', ' \n ', ' \n \n']
@@ -1436,8 +1484,7 @@ class main:
         self.imageCheckText = regex_nowiki.sub('', self.imageCheckText); self.imageCheckText = regex_pre.sub('', self.imageCheckText)        
         # Deleting the useless template from the description (before adding something
         # in the image the original text will be reloaded, don't worry).
-        self.tagged = self.isTagged()
-        if self.tagged == True:
+        if self.isTagged():
             # Tagged? Yes, skip.
             printWithTimeZone(u'%s is already tagged...' % self.imageName)
             return True        
@@ -1459,7 +1506,7 @@ class main:
             # It works also without this... but i want only to be sure ^^
             brackets = False
             return True        
-        elif delete == True:
+        elif delete:
             wikipedia.output(u"%s is not a file!" % self.imageName)
             # Modify summary text
             wikipedia.setAction(dels)
@@ -1487,6 +1534,8 @@ class main:
             head = nh
             self.report(self.unvertext, self.imageName, notification, head, smwl)
             return True
+
+gbv = Global()
 
 def checkbot():
     """ Main function """
@@ -1553,7 +1602,7 @@ def checkbot():
                 firstPageTitle = wikipedia.input(u'From witch page do you want to start?')
             elif len(arg) > 6:
                 firstPageTitle = arg[7:]
-            firstPageTitle = firstPageTitle.replace("File:", '').replace("file:", "")
+            firstPageTitle = firstPageTitle.split(":")[1:]
             generator = wikipedia.getSite().allpages(start=firstPageTitle, namespace=6)
             repeat = False
         elif arg.startswith('-page'):
@@ -1720,9 +1769,10 @@ def checkbot():
         if repeat == True:
             printWithTimeZone(u"Waiting for %s seconds," % time_sleep)
             time.sleep(time_sleep)
-        elif repeat == False:
+        else:
             wikipedia.output(u"\t\t\t>> STOP! <<")
             break # Exit
+
 
 # Here there is the main loop. I'll take all the (name of the) images and then i'll check them.
 if __name__ == "__main__":

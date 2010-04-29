@@ -13,7 +13,8 @@ __version__ = '$Id$'
 #
 
 import os, sys, re, codecs
-import wikipedia, config, pagegenerators, query
+import wikipedia as pywikibot
+import config, pagegenerators, query
 from datetime import datetime
 from datetime import timedelta
 
@@ -246,6 +247,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'Copyrighted free use',
                     u'Copyrighted free use provided that',
                     u'Copyrighted IOC',
+                    u'CopyrightedFreeUse',
                     u'CopyrightedFreeUse-Link',
                     u'Cr',
                     u'Created by ForrestSjap',
@@ -262,6 +264,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'Cy',
                     u'Cz',
                     u'Da',
+                    u'Date',
                     u'De',
                     u'De-cc-by-sa-2.0',
                     u'Debora Cordeiro',
@@ -594,6 +597,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'OldOS',
                     u'Olessi Copyright Ogg',
                     u'Om',
+                    u'Open Beelden',
                     u'Open Font',
                     u'Openphotoreview',
                     u'Or',
@@ -604,6 +608,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'OTRS',
                     u'Otrs pending',
                     u'OTRS pending',
+                    u'Own',
                     u'Pa',
                     u'Pag',
                     u'PAGENAME',
@@ -1188,6 +1193,7 @@ ignoreTemplates = [ u'1000Bit',
                     u'Wikipedia-screenshot',
                     u'Wikiportrait',
                     u'Wikispecies',
+                    u'WLA',
                     u'Wo',
                     u'Wulfstan GFDL',
                     u'Wuu',
@@ -1232,33 +1238,16 @@ def uploadedYesterday(site = None):
     today = datetime.utcnow()
     yesterday = today + timedelta(days=-1)
 
-    params = {
-        'action'    :'query',
-        'list'      :'logevents',
-        'leprop'    :'title',
-        'letype'    :'upload',
-        'ledir'     :'newer',
-        'lelimit'   :'5000',
-        'lestart'   :yesterday.strftime(dateformat),
-        'leend'     :today.strftime(dateformat)
-        }
-
-    data = query.GetData(params, site, encodeTitle = False)
-    try:
-        for item in data['query']['logevents']:
-            result.append(item['title'])
-    except IndexError:
-        raise NoPage(u'API Error, nothing found in the APIs')
-    except KeyError:
-        raise NoPage(u'API Error, nothing found in the APIs')
-
+    for item in site.logpages( number = 5000, mode = 'upload', start = yesterday.strftime(dateformat),
+                end = today.strftime(dateformat), newer = True, dump = True):
+        result.append(item['title'])
     return pagegenerators.PagesFromTitlesGenerator(result, site)
 
-def recentChanges(site = None, delay=60, block=70):
+def recentChanges(site = None, delay=0, block=70):
     '''
     Return a pagegenerator containing all the images edited in a certain timespan.
     The delay is the amount of minutes to wait and the block is the timespan to return images in.
-    Should probably copied to somewhere else
+    Should probably be copied to somewhere else
     '''
     
     result = []
@@ -1294,14 +1283,15 @@ def isUncat(page):
     '''
     Do we want to skip this page?
 
-    If we found a category which is not in the ignore list it means that the page is categorized so skip the page.
+    If we found a category which is not in the ignore list it means
+    that the page is categorized so skip the page.
     If we found a template which is in the ignore list, skip the page.
     '''
-    wikipedia.output(u'Working on '+ page.title())
+    pywikibot.output(u'Working on '+ page.title())
 
     for category in page.categories():
         if category not in ignoreCategories:
-            wikipedia.output(u'Got category ' + category.title())
+            pywikibot.output(u'Got category ' + category.title())
             return False
 
     for templateWithTrail in page.templates():
@@ -1309,13 +1299,13 @@ def isUncat(page):
         template = templateWithTrail.rstrip('\n').rstrip()
         if template in skipTemplates:
             # Already tagged with a template, skip it
-            wikipedia.output(u'Already tagged, skip it')
+            pywikibot.output(u'Already tagged, skip it')
             return False
         elif template in ignoreTemplates:
             # template not relevant for categorization
-            wikipedia.output(u'Ignore ' + template)
+            pywikibot.output(u'Ignore ' + template)
         else:
-            wikipedia.output(u'Not ignoring ' + template)
+            pywikibot.output(u'Not ignoring ' + template)
             return False
     return True
 
@@ -1324,13 +1314,13 @@ def addUncat(page):
     Add the uncat template to the page
     '''
     newtext = page.get() + puttext
-    wikipedia.showDiff(page.get(), newtext)
+    pywikibot.showDiff(page.get(), newtext)
     try:
         page.put(newtext, putcomment)
-    except wikipedia.EditConflict:
+    except pywikibot.EditConflict:
         # Skip this page
         pass
-    except wikipedia.LockedPage:
+    except pywikibot.LockedPage:
         # Skip this page
         pass
     return
@@ -1339,27 +1329,28 @@ def main(args):
     '''
     Grab a bunch of images and tag them if they are not categorized.
     '''
-    generator = None;
+    generator = None
     genFactory = pagegenerators.GeneratorFactory()
 
-    site = wikipedia.getSite(u'commons', u'commons')
-    wikipedia.setSite(site)
-    for arg in wikipedia.handleArgs():
+    site = pywikibot.getSite(u'commons', u'commons')
+    pywikibot.setSite(site)
+    for arg in pywikibot.handleArgs():
         if arg.startswith('-yesterday'):
             generator = uploadedYesterday(site)
         elif arg.startswith('-recentchanges'):
-            generator = recentChanges(site)
+            generator = recentChanges(site=site, delay=120)
         else:
             genFactory.handleArg(arg)
-
     if not generator:
         generator = genFactory.getCombinedGenerator()
     if not generator:
-        wikipedia.output('You have to specify the generator you want to use for the program!')
+        pywikibot.output(
+          u'You have to specify the generator you want to use for the program!')
     else:
         pregenerator = pagegenerators.PreloadingGenerator(generator)
         for page in pregenerator:
-            if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
+            if page.exists() and (page.namespace() == 6) \
+                   and (not page.isRedirectPage()) :
                 if isUncat(page):
                     addUncat(page)
 
@@ -1367,4 +1358,4 @@ if __name__ == "__main__":
     try:
         main(sys.argv[1:])
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

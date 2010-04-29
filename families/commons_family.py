@@ -2,7 +2,7 @@
 
 __version__ = '$Id$'
 
-import family, config
+import family
 
 # The Wikimedia Commons family
 
@@ -13,7 +13,7 @@ class Family(family.Family):
         self.langs = {
             'commons': 'commons.wikimedia.org',
         }
-        if config.SSL_connection:
+        if family.config.SSL_connection:
             self.langs['commons'] = None
 
         self.namespaces[4] = {
@@ -23,10 +23,16 @@ class Family(family.Family):
             '_default': [u'Commons talk', 'Project talk'],
         }
         self.namespaces[100] = {
-            '_default': [u'Creator', 'Project'],
+            '_default': u'Creator',
         }
         self.namespaces[101] = {
-            '_default': [u'Creator talk', 'Project talk'],
+            '_default': u'Creator talk',
+        }
+        self.namespaces[102] = {
+            '_default': [u'TimedText'],
+        }
+        self.namespaces[103] = {
+            '_default': [u'TimedText talk'],
         }
 
         self.interwiki_forward = 'wikipedia'
@@ -43,18 +49,23 @@ class Family(family.Family):
                         u'Catredir',
                         u'Redirect category'),
         }
-        
+
         self.disambiguationTemplates = {
             'commons': [u'Disambig', u'Disambiguation', u'Razločitev',
                         u'Begriffsklärung']
         }
-        
+
         self.disambcatname = {
             'commons':  u'Disambiguation'
         }
+        self.cross_projects = [
+            'wikipedia', 'wiktionary', 'wikibooks', 'wikiquote', 'wikisource', 'wikinews', 'wikiversity',
+            'meta', 'mediawiki', 'test', 'incubator', 'species',
+        ]
+
 
     def version(self, code):
-        return '1.16alpha-wmf'
+        return '1.16wmf4'
 
     def dbName(self, code):
         return 'commonswiki_p'
@@ -62,7 +73,7 @@ class Family(family.Family):
     def shared_image_repository(self, code):
         return ('commons', 'commons')
 
-    if config.SSL_connection:
+    if family.config.SSL_connection:
         def hostname(self, code):
             return 'secure.wikimedia.org'
 

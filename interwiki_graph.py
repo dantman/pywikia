@@ -1,4 +1,9 @@
 """ Module with the graphviz drawing calls """
+#
+# (C) Pywikipedia bot team, 2006-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
 import threading
 pydotfound = True
@@ -6,7 +11,8 @@ try:
     import pydot
 except ImportError:
     pydotfound = False
-import wikipedia, config
+import wikipedia as pywikibot
+import config
 
 # for speedyshare
 import re
@@ -32,11 +38,12 @@ class GraphSavingThread(threading.Thread):
 
     def run(self):
         for format in config.interwiki_graph_formats:
-            filename = 'interwiki-graphs/' + getFilename(self.originPage, format)
+            filename = 'interwiki-graphs/' + getFilename(self.originPage,
+                                                         format)
             if self.graph.write(filename, prog = 'dot', format = format):
-                wikipedia.output(u'Graph saved as %s' % filename)
+                pywikibot.output(u'Graph saved as %s' % filename)
             else:
-                wikipedia.output(u'Graph could not be saved as %s' % filename)
+                pywikibot.output(u'Graph could not be saved as %s' % filename)
 
 class GraphDrawer:
     def __init__(self, subject):
@@ -46,11 +53,14 @@ class GraphDrawer:
         self.subject = subject
 
     def getLabel(self, page):
-        return (u'"\"%s:%s\""' % (page.site().language(), page.title())).encode('utf-8')
+        return (u'"\"%s:%s\""' % (page.site().language(),
+                                  page.title())).encode('utf-8')
 
     def addNode(self, page):
         node = pydot.Node(self.getLabel(page), shape = 'rectangle')
-        node.set_URL("\"http://%s%s\"" % (page.site().hostname(), page.site().get_address(page.urlname())))
+        node.set_URL("\"http://%s%s\""
+                     % (page.site().hostname(),
+                        page.site().get_address(page.urlname())))
         node.set_style('filled')
         node.set_fillcolor('white')
         node.set_fontsize('11')
@@ -64,7 +74,9 @@ class GraphDrawer:
             node.set_color('green')
             node.set_style('filled,bold')
         # if we found more than one valid page for this language:
-        if len(filter(lambda p: p.site() == page.site() and p.exists() and not p.isRedirectPage(), self.subject.foundIn.keys())) > 1:
+        if len(filter(lambda p: p.site() == page.site() and p.exists() \
+                      and not p.isRedirectPage(),
+                      self.subject.foundIn.keys())) > 1:
             # mark conflict by octagonal node
             node.set_shape('octagon')
         self.graph.add_node(node)
@@ -82,7 +94,9 @@ class GraphDrawer:
             # workaround for bug [ 1722739 ]: prevent duplicate edges
             # (it is unclear why duplicate edges occur)
             elif self.graph.get_edge(sourceLabel, targetLabel):
-                wikipedia.output(u'BUG: Tried to create duplicate edge from %s to %s' % (refPage.aslink(), page.aslink()))
+                pywikibot.output(
+                    u'BUG: Tried to create duplicate edge from %s to %s'
+                    % (refPage.aslink(), page.aslink()))
                 # duplicate edges would be bad because then get_edge() would
                 # give a list of edges, not a single edge when we handle the
                 # opposite edge.
@@ -109,7 +123,8 @@ class GraphDrawer:
         """
         See http://meta.wikimedia.org/wiki/Interwiki_graphs
         """
-        wikipedia.output(u'Preparing graph for %s' % self.subject.originPage.title())
+        pywikibot.output(u'Preparing graph for %s'
+                         % self.subject.originPage.title())
         # create empty graph
         self.graph = pydot.Dot()
         # self.graph.set('concentrate', 'true')
@@ -130,9 +145,11 @@ class SpeedyShareUploader:
         pass
 
     def getToken(self):
-        formR = re.compile('<form target=_top method="post" action="upload\.php\?(\d+)"')
+        formR = re.compile(
+            '<form target=_top method="post" action="upload\.php\?(\d+)"')
 
-        uploadPage = urllib2.urlopen('http://www.speedyshare.com/index_upload.php')
+        uploadPage = urllib2.urlopen(
+            'http://www.speedyshare.com/index_upload.php')
         text = uploadPage.read()
         token = formR.search(text).group(1)
         return token
@@ -141,17 +158,19 @@ class SpeedyShareUploader:
         """
         Post fields and files to an http host as multipart/form-data.
         fields is a sequence of (name, value) elements for regular form fields.
-        files is a sequence of (name, filename, value) elements for data to be uploaded as files
-        Return the server's response page.
+        files is a sequence of (name, filename, value) elements for data to be
+        uploaded as files. Return the server's response page.
         """
         content_type, body = self.encode_multipart_formdata(fields, files)
         h = httplib.HTTP(host)
         h.putrequest('POST', selector)
         h.putheader('Content-Type', content_type)
         h.putheader('Content-Length', str(len(body)))
-        h.putheader('User-Agent', 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5')
+        h.putheader('User-Agent',
+                    'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5')
         h.putheader('Referer', 'http://www.speedyshare.com/index_upload.php')
-        h.putheader('Accept', 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5')
+        h.putheader('Accept',
+                    'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5')
         h.putheader('Accept-Language', 'de-de,de;q=0.8,en-us;q=0.5,en;q=0.3')
         h.putheader('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7')
         h.putheader('Keep-Alive', '30')
@@ -165,8 +184,9 @@ class SpeedyShareUploader:
     def encode_multipart_formdata(self, fields, files):
         """
         fields is a sequence of (name, value) elements for regular form fields.
-        files is a sequence of (name, filename, value) elements for data to be uploaded as files
-        Return (content_type, body) ready for httplib.HTTP instance
+        files is a sequence of (name, filename, value) elements for data to be
+        uploaded as files. Return (content_type, body) ready for httplib.HTTP
+        instance
         """
         BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
         CRLF = '\r\n'
@@ -178,7 +198,9 @@ class SpeedyShareUploader:
             L.append(value)
         for (key, filename, value) in files:
             L.append('--' + BOUNDARY)
-            L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+            L.append(
+                'Content-Disposition: form-data; name="%s"; filename="%s"'
+                % (key, filename))
             L.append('Content-Type: %s' % self.get_content_type(filename))
             L.append('')
             L.append(value)
@@ -189,7 +211,8 @@ class SpeedyShareUploader:
         return content_type, body
 
     def get_content_type(self, filename):
-        return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+        return mimetypes.guess_type(filename)[0] \
+               or 'application/octet-stream'
 
     def upload(self, filename):
         token = self.getToken()
@@ -217,4 +240,5 @@ def getFilename(page, extension = None):
 
 if __name__ == "__main__":
     uploader = SpeedyShareUploader()
-    uploader.upload('/home/daniel/projekte/pywikipedia/interwiki-graphs/wikipedia-de-CEE.svg')
+    uploader.upload(
+        '/home/daniel/projekte/pywikipedia/interwiki-graphs/wikipedia-de-CEE.svg')

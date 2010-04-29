@@ -206,28 +206,30 @@ nowCommonsMessage = {
 moveToCommonsTemplate = {
     'ar': [u'نقل إلى كومنز'],
     'en': [u'Commons ok', u'Copy to Wikimedia Commons', u'Move to commons', u'Movetocommons', u'To commons', u'Copy to Wikimedia Commons by BotMultichill'],
-    'fi':[u'Commonsiin'],
-    'fr':[u'Image pour Commons'],
+    'fi': [u'Commonsiin'],
+    'fr': [u'Image pour Commons'],
     'hsb':[u'Kopěruj do Wikimedia Commons'],
-    'hu':[u'Commonsba'],
-    'is':[u'Færa á Commons'],
-    'ms':[u'Hantar ke Wikimedia Commons'],
+    'hu': [u'Commonsba'],
+    'is': [u'Færa á Commons'],
+    'ms': [u'Hantar ke Wikimedia Commons'],
     'nl': [u'Verplaats naar Wikimedia Commons', u'VNC'],
-    'ru':[u'На Викисклад'],
-    'sl':[u'Skopiraj v Zbirko'],
-    'sr':[u'За оставу'],
-    'sv':[u'Till Commons'],
-    'zh':[u'Copy to Wikimedia Commons'],
+    'pl': [u'Do Commons', u'NaCommons', u'Na Commons'],
+    'ru': [u'На Викисклад'],
+    'sl': [u'Skopiraj v Zbirko'],
+    'sr': [u'За оставу'],
+    'sv': [u'Till Commons'],
+    'zh': [u'Copy to Wikimedia Commons'],
 }
 
 imageMoveMessage = {
-    '_default': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
-    'ar': u'[[:File:%s|الصورة]] تم نقلها إلى [[:commons:Image:%s|كومنز]].',
-    'en': u'[[:File:%s|File]] moved to [[:commons:Image:%s|commons]].',
-    'hu': u'[[:File:%s|Kép]] átmozgatva a [[:commons:Image:%s|Commons]]ba.',
-    'nl': u'[[:File:%s|Bestand]] is verplaatst naar [[:commons:Image:%s|commons]].',
-    'ru': u'[[:File:%s|Файл]] перемещён на [[:commons:Image:%s|Викисклад]].',
-    'zh': u'[[:File:%s|本檔案]]已移至[[:commons:Image:%s|維基共享資源]]',
+    '_default': u'[[:File:%s|File]] moved to [[:commons:File:%s|commons]].',
+    'ar': u'[[:File:%s|الصورة]] تم نقلها إلى [[:commons:File:%s|كومنز]].',
+    'en': u'[[:File:%s|File]] moved to [[:commons:File:%s|commons]].',
+    'hu': u'[[:File:%s|Kép]] átmozgatva a [[:commons:File:%s|Commons]]ba.',
+    'nl': u'[[:File:%s|Bestand]] is verplaatst naar [[:commons:File:%s|commons]].',
+    'pl': u'[[:File:%s|Plik]] przeniesiona do [[:commons:File:%s|commons]].',
+    'ru': u'[[:File:%s|Файл]] перемещён на [[:commons:File:%s|Викисклад]].',
+    'zh': u'[[:File:%s|本檔案]]已移至[[:commons:File:%s|維基共享資源]]',
 }
 
 def pageTextPost(url,parameters):
@@ -245,9 +247,10 @@ def pageTextPost(url,parameters):
     
 class imageTransfer (threading.Thread):
 
-    def __init__ ( self, imagePage, newname):
+    def __init__ ( self, imagePage, newname, category):
         self.imagePage = imagePage
         self.newname = newname
+        self.category = category
         threading.Thread.__init__ ( self )
 
     def run(self):
@@ -275,7 +278,11 @@ class imageTransfer (threading.Thread):
 
         # I want every picture to be tagged with the bottemplate so i can check my contributions later.
         CH=u'\n\n{{BotMoveToCommons|'+ self.imagePage.site().language() + '.' + self.imagePage.site().family.name +'|year={{subst:CURRENTYEAR}}|month={{subst:CURRENTMONTHNAME}}|day={{subst:CURRENTDAY}}}}' + CH
-                
+
+        if self.category:
+            CH = CH.replace(u'{{subst:Unc}} <!-- Remove this line once you have added categories -->', u'')
+            CH = CH + u'[[Category:' + self.category + u']]'
+        
         bot = UploadRobot(url=self.imagePage.fileUrl(), description=CH, useFilename=self.newname, keepFilename=True, verifyDescription=False, ignoreWarning = True, targetSite = wikipedia.getSite('commons', 'commons'))
         bot.run()
 
@@ -285,17 +292,17 @@ class imageTransfer (threading.Thread):
             imtxt=self.imagePage.get(force=True)
 
             #Remove the move to commons templates
-            if moveToCommonsTemplate.has_key(self.imagePage.site().language()):
+            if self.imagePage.site().language() in moveToCommonsTemplate:
                 for moveTemplate in moveToCommonsTemplate[self.imagePage.site().language()]:
-                    imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'\}\}', u'', imtxt)
+                    imtxt = re.sub(u'(?i)\{\{' + moveTemplate + u'[^\}]*\}\}', u'', imtxt)
 
             #add {{NowCommons}}
-            if nowCommonsTemplate.has_key(self.imagePage.site().language()):
+            if self.imagePage.site().language() in nowCommonsTemplate:
                 addTemplate = nowCommonsTemplate[self.imagePage.site().language()] % self.newname
             else:
                 addTemplate = nowCommonsTemplate['_default'] % self.newname
 
-            if nowCommonsMessage.has_key(self.imagePage.site().language()):
+            if self.imagePage.site().language() in nowCommonsMessage:
                 commentText = nowCommonsMessage[self.imagePage.site().language()]
             else:
                 commentText = nowCommonsMessage['_default']
@@ -308,7 +315,7 @@ class imageTransfer (threading.Thread):
 
             #If the image is uploaded under a different name, replace all instances
             if self.imagePage.titleWithoutNamespace() != self.newname:
-                if imageMoveMessage.has_key(self.imagePage.site().language()):
+                if self.imagePage.site().language() in imageMoveMessage:
                     moveSummary = imageMoveMessage[self.imagePage.site().language()] % (self.imagePage.titleWithoutNamespace(), self.newname)
                 else:
                     moveSummary = imageMoveMessage['_default'] % (self.imagePage.titleWithoutNamespace(), self.newname)
@@ -462,12 +469,16 @@ def main(args):
     generator = None;
     #newname = "";
     imagepage = None;
+    always = False
+    category = u''
     # Load a lot of default generators
     genFactory = pagegenerators.GeneratorFactory()
 
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
+        elif arg.startswith('-cc:'):
+            category = arg [len('-cc:'):]
         else:
             genFactory.handleArg(arg)
     
@@ -478,6 +489,7 @@ def main(args):
     pregenerator = pagegenerators.PreloadingGenerator(generator)
 
     for page in pregenerator:
+        skip = False
         if page.exists() and (page.namespace() == 6) and (not page.isRedirectPage()) :
             imagepage = wikipedia.ImagePage(page.site(), page.title())
 
@@ -492,34 +504,40 @@ def main(args):
                 except NotImplementedError:
                     #No API, using the page file instead
                     (datetime, username, resolution, size, comment) = imagepage.getFileVersionHistory().pop()
-                while True:
+                if always:
+                    newname=imagepage.titleWithoutNamespace()
+                    CommonsPage=wikipedia.Page(wikipedia.getSite('commons', 'commons'), u'File:'+newname)
+                    if CommonsPage.exists():
+                        skip = True
+                else:
+                    while True:
+    
+                        # Do the Tkdialog to accept/reject and change te name
+                        (newname, skip)=Tkdialog(imagepage.titleWithoutNamespace(), imagepage.get(), username, imagepage.permalink(), imagepage.templates()).getnewname()
 
-                    # Do the Tkdialog to accept/reject and change te name
-                    (newname, skip)=Tkdialog(imagepage.titleWithoutNamespace(), imagepage.get(), username, imagepage.permalink(), imagepage.templates()).getnewname()
+                        if skip:
+                            wikipedia.output('Skipping this image')
+                            break
 
-                    if skip:
-                        wikipedia.output('Skipping this image')
-                        break
-
-                    # Did we enter a new name?
-                    if len(newname)==0:
-                        #Take the old name
-                        newname=imagepage.titleWithoutNamespace()
-                    else:
-                        newname = newname.decode('utf-8')
+                        # Did we enter a new name?
+                        if len(newname)==0:
+                            #Take the old name
+                            newname=imagepage.titleWithoutNamespace()
+                        else:
+                            newname = newname.decode('utf-8')
                         
-                    # Check if the image already exists
-                    CommonsPage=wikipedia.Page(
-                                   wikipedia.getSite('commons', 'commons'),
-                                   'Image:'+newname)
-                    if not CommonsPage.exists():
-                        break
-                    else:
-                        wikipedia.output('Image already exists, pick another name or skip this image')
-                    # We dont overwrite images, pick another name, go to the start of the loop
+                        # Check if the image already exists
+                        CommonsPage=wikipedia.Page(
+                                       wikipedia.getSite('commons', 'commons'),
+                                       u'File:'+newname)
+                        if not CommonsPage.exists():
+                            break
+                        else:
+                            wikipedia.output('Image already exists, pick another name or skip this image')
+                        # We dont overwrite images, pick another name, go to the start of the loop
 
             if not skip:
-                imageTransfer(imagepage, newname).start()
+                imageTransfer(imagepage, newname, category).start()
 
     wikipedia.output(u'Still ' + str(threading.activeCount()) + u' active threads, lets wait')
     for openthread in threading.enumerate():

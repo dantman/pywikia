@@ -38,7 +38,8 @@ Furthermore, the following command line parameters are supported:
 
 __version__='$Id$'
 
-import wikipedia, pagegenerators
+import wikipedia as pywikibot
+import pagegenerators
 import sys, re
 
 docuReplacements = {
@@ -1174,15 +1175,15 @@ class IsbnBot:
                 text = page.get(get_redirect = self.touch_redirects)
                 # convert ISBN numbers
                 page.put(text)
-            except wikipedia.NoPage:
+            except pywikibot.NoPage:
                 print "Page %s does not exist?!" % page.aslink()
-            except wikipedia.IsRedirectPage:
+            except pywikibot.IsRedirectPage:
                 print "Page %s is a redirect; skipping." % page.aslink()
-            except wikipedia.LockedPage:
+            except pywikibot.LockedPage:
                 print "Page %s is locked?!" % page.aslink()
 
 
-class InvalidIsbnException(wikipedia.Error):
+class InvalidIsbnException(pywikibot.Error):
     """Invalid ISBN"""
 
 class ISBN:
@@ -1203,6 +1204,7 @@ class ISBN:
             if rest.startswith(prefix):
                 result += prefix + '-'
                 rest = rest[len(prefix):]
+                break
 
         # Determine the group
         for groupNumber in ranges.iterkeys():
@@ -1383,6 +1385,7 @@ class IsbnBot:
         self.format = format
         self.always = always
         self.isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+[Xx]?)')
+        self.comment = pywikibot.translate(pywikibot.getSite(), msg)
 
     def treat(self, page):
         try:
@@ -1392,7 +1395,7 @@ class IsbnBot:
                 try:
                     getIsbn(code)
                 except InvalidIsbnException, e:
-                    wikipedia.output(e)
+                    pywikibot.output(e)
 
             newText = oldText
             if self.to13:
@@ -1401,21 +1404,21 @@ class IsbnBot:
             if self.format:
                 newText = self.isbnR.sub(_hyphenateIsbnNumber, newText)
             self.save(page, newText)
-        except wikipedia.NoPage:
-            wikipedia.output(u"Page %s does not exist?!" % page.aslink())
-        except wikipedia.IsRedirectPage:
-            wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
-        except wikipedia.LockedPage:
-            wikipedia.output(u"Page %s is locked?!" % page.aslink())
+        except pywikibot.NoPage:
+            pywikibot.output(u"Page %s does not exist?!" % page.aslink())
+        except pywikibot.IsRedirectPage:
+            pywikibot.output(u"Page %s is a redirect; skipping." % page.aslink())
+        except pywikibot.LockedPage:
+            pywikibot.output(u"Page %s is locked?!" % page.aslink())
 
     def save(self, page, text):
         if text != page.get():
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-            wikipedia.showDiff(page.get(), text)
+            pywikibot.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+            pywikibot.showDiff(page.get(), text)
             if not self.always:
-                choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'Always yes'], ['y', 'N', 'a'], 'N')
+                choice = pywikibot.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'Always yes'], ['y', 'N', 'a'], 'N')
                 if choice == 'n':
                     return
                 elif choice == 'a':
@@ -1423,22 +1426,19 @@ class IsbnBot:
 
             if self.always:
                 try:
-                    page.put(text)
-                except wikipedia.EditConflict:
-                    wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
-                except wikipedia.SpamfilterError, e:
-                    wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                except wikipedia.LockedPage:
-                    wikipedia.output(u'Skipping %s (locked page)' % (page.title(),))
+                    page.put(text, comment=self.comment)
+                except pywikibot.EditConflict:
+                    pywikibot.output(u'Skipping %s because of edit conflict' % (page.title(),))
+                except pywikibot.SpamfilterError, e:
+                    pywikibot.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                except pywikibot.LockedPage:
+                    pywikibot.output(u'Skipping %s (locked page)' % (page.title(),))
             else:
                 # Save the page in the background. No need to catch exceptions.
-                page.put_async(text)
+                page.put_async(text, self.comment)
 
 
     def run(self):
-        comment = wikipedia.translate(wikipedia.getSite(), msg)
-        wikipedia.setAction(comment)
-
         for page in self.generator:
             self.treat(page)
 
@@ -1461,7 +1461,7 @@ def main():
     to13 = False
     format = False
 
-    for arg in wikipedia.handleArgs():
+    for arg in pywikibot.handleArgs():
         if arg.startswith('-namespace:'):
             try:
                 namespaces.append(int(arg[11:]))
@@ -1477,13 +1477,13 @@ def main():
             if not genFactory.handleArg(arg):
                 pageTitle.append(arg)
 
+    site = pywikibot.getSite()
     if pageTitle:
-        page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
-        gen = iter([page])
+        gen = iter([pywikibot.Page(site, t) for t in pageTitle])
     if not gen:
         gen = genFactory.getCombinedGenerator()
     if not gen:
-        wikipedia.showHelp('isbn')
+        pywikibot.showHelp('isbn')
     else:
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
@@ -1495,4 +1495,4 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

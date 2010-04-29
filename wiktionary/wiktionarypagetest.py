@@ -458,7 +458,7 @@ The translations below need to be checked by native speakers and inserted into t
                 definitions=internalrepresentation[entrylang][3]
                 reftrans={}
                 for definition in definitions:
-                    if definition.has_key('trans') and definition['trans']!='':
+                    if 'trans' in definition and definition['trans']!='':
                         reftrans[definition['concisedef']] = definition['trans']
 
                 resulttrans={}
@@ -470,7 +470,7 @@ The translations below need to be checked by native speakers and inserted into t
                         resulttrans[resultmeaning.concisedef] = resultmeaning.getTranslations()
 
                 for concisedef in resulttrans.keys():
-                    if concisedef!='' and reftrans.has_key(concisedef) and resulttrans.has_key(concisedef):
+                    if concisedef != '' and concisedef in reftrans and concisedef in resulttrans:
                         print concisedef
                         print resulttrans[concisedef]
 #                        raw_input()

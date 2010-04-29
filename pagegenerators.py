@@ -13,12 +13,31 @@ These parameters are supported to specify which pages titles to print:
 
 &params;
 """
+#
+# (C) Pywikipedia bot team, 2005-2010
+#
+# Distributed under the terms of the MIT license.
+#
 __version__='$Id$'
 
-parameterHelp = """\
+import wikipedia as pywikibot
+import config
+
+import traceback
+import Queue
+import re
+import sys
+import threading
+import codecs
+
+import urllib, urllib2, time
+import date, catlib, userlib, query
+
+parameterHelp = u"""\
 -cat              Work on all pages which are in a specific category.
                   Argument can also be given as "-cat:categoryname" or
-                  as "-cat:categoryname|fromtitle".
+                  as "-cat:categoryname|fromtitle" (using # instead of |
+                  is also allowed in this one and the following)
 
 -catr             Like -cat, but also recursively includes pages in
                   subcategories, sub-subcategories etc. of the
@@ -49,22 +68,12 @@ parameterHelp = """\
 -filelinks        Work on all pages that use a certain image/media file.
                   Argument can also be given as "-filelinks:filename".
 
--yahoo            Work on all pages that are found in a Yahoo search.
-                  Depends on python module pYsearch.  See yahoo_appid in
-                  config.py for instructions.
-
 -search           Work on all pages that are found in a MediaWiki search
                   across all namespaces.
 
--google           Work on all pages that are found in a Google search.
-                  You need a Google Web API license key. Note that Google
-                  doesn't give out license keys anymore. See google_key in
-                  config.py for instructions.
-                  Argument can also be given as "-google:searchstring".
-
--namespace        Filters the page generator to only yield pages in the
+-namespace        Filter the page generator to only yield pages in the
                   specified namespaces.  Separate multiple namespace
-                  numbers with commas.
+                  numbers with commas. Example "-namespace:0,2,4"
 
 -interwiki        Work on the given page and all equivalent pages in other
                   languages. This can, for example, be used to fight
@@ -76,14 +85,19 @@ parameterHelp = """\
 -links            Work on all pages that are linked from a certain page.
                   Argument can also be given as "-links:linkingpagetitle".
 
--new              Work on the 60 newest pages. If given as -new:x, will work
-                  on the x newest pages.
-
 -imagelinks       Work on all images that are linked from a certain page.
                   Argument can also be given as "-imagelinks:linkingpagetitle".
 
 -newimages        Work on the 100 newest images. If given as -newimages:x,
                   will work on the x newest images.
+
+-new              Work on the 60 recent new pages. If given as -new:x,
+                  will work on the x newest pages.
+
+-recentchanges    Work on new and edited pages returned by
+                  [[Special:Recentchanges]]. Can also be given as
+                  "-recentchanges:n" where n is the number of pages to be
+                  returned, else 100 pages are returned.
 
 -ref              Work on all pages that link to a certain page.
                   Argument can also be given as "-ref:referredpagetitle".
@@ -112,8 +126,26 @@ parameterHelp = """\
                   Argument can be given as "-unwatched:n" where
                   n is the maximum number of articles to work on.
 
--usercontribs     Work on all articles that were edited by a certain user :
-                  Example : -usercontribs:DumZiBoT
+-usercontribs     Work on articles that were edited by a certain user.
+                  Example: -usercontribs:DumZiBoT
+                  Normally up to 250 distinct pages are given. To get an other
+                  number of pages, add the number behind the username
+                  delimited with ";"
+                  Example: -usercontribs:DumZiBoT;500
+                  returns 500 distinct pages to work on.
+                  
+-<mode>log        Work on articles that were on a specified special:log.
+                  You have options for every type of logs given by the
+                  <mode> parameter which could be one of the following:
+                      block, protect, rights, delete, upload, move, import,
+                      patrol, merge, suppress, review, stable, gblblock,
+                      renameuser, globalauth, gblrights, abusefilter, newusers
+                  Examples:
+                  -movelog gives 500 pages from move log (should be redirects)
+                  -deletelog:10 gives 10 pages from deletion log
+                  -protect:Dummy gives 500 pages from protect by user Dummy
+                  -patrol:Dummy;20 gives 20 pages patroled by user Dummy
+                  In some cases this must be written as -patrol:"Dummy;20"
 
 -weblink          Work on all articles that contain an external link to
                   a given URL; may be given as "-weblink:url"
@@ -134,10 +166,6 @@ parameterHelp = """\
 -gorandom         Specifies that the robot should starting at the random pages 
                   returned by [[Special:Random]].
 
--recentchanges    Work on new and edited pages returned by [[Special:Recentchanges]].
-                  Can also be given as "-recentchanges:n" where n is the number
-                  of pages to be returned, else 100 pages are returned.
-
 -redirectonly     Work on redirect pages only, not their target pages.
                   The robot goes alphabetically through all redirect pages
                   on the wiki, starting at the named page. The
@@ -146,23 +174,22 @@ parameterHelp = """\
                   You can also include a namespace. For example,
                   "-redirectonly:Template:!" will make the bot work on
                   all redirect pages in the template namespace.
+
+-google           Work on all pages that are found in a Google search.
+                  You need a Google Web API license key. Note that Google
+                  doesn't give out license keys anymore. See google_key in
+                  config.py for instructions.
+                  Argument can also be given as "-google:searchstring".
+
+-yahoo            Work on all pages that are found in a Yahoo search.
+                  Depends on python module pYsearch.  See yahoo_appid in
+                  config.py for instructions.
+
+-page             Work on a single page. Argument can also be given as
+                  "-page:pagetitle".
 """
 
-
-
-docuReplacements = {
-    '&params;': parameterHelp
-}
-
-
-# Standard library imports
-import re, codecs, sys
-import threading, Queue, traceback
-import urllib, urllib2, time
-
-# Application specific imports
-import wikipedia, date, catlib, query
-import config
+docuReplacements = {'&params;': parameterHelp}
 
 # For python 2.4 compatibility
 # see http://www.mail-archive.com/python-dev@python.org/msg12668.html
@@ -234,7 +261,7 @@ class ThreadedGenerator(threading.Thread):
     def stop(self):
         """Stop the background thread."""
 ##        if not self.finished.isSet():
-##            wikipedia.output("DEBUG: signalling %s to stop." % self)
+##            pywikibot.output("DEBUG: signalling %s to stop." % self)
         self.finished.set()
 
     def run(self):
@@ -243,7 +270,7 @@ class ThreadedGenerator(threading.Thread):
         for result in self.__gen:
             while True:
                 if self.finished.isSet():
-##                    wikipedia.output("DEBUG: %s received stop signal." % self)
+##                    pywikibot.output("DEBUG: %s received stop signal." % self)
                     return
                 try:
                     self.queue.put_nowait(result)
@@ -255,7 +282,7 @@ class ThreadedGenerator(threading.Thread):
         while not self.finished.isSet() and not self.queue.empty():
             time.sleep(0.25)
         self.stop()
-##        wikipedia.output("DEBUG: %s stopped because generator exhausted." % self)
+##        pywikibot.output("DEBUG: %s stopped because generator exhausted." % self)
 
 
 def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True, site = None):
@@ -266,23 +293,29 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True,
     includeredirects equals the string 'only', only redirects are added.
     """
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.allpages(start = start, namespace = namespace, includeredirects = includeredirects):
         yield page
 
 def PrefixingPageGenerator(prefix, namespace = None, includeredirects = True, site = None):
     if site is None:
-        site = wikipedia.getSite()
-    page = wikipedia.Page(site, prefix)
+        site = pywikibot.getSite()
+    page = pywikibot.Page(site, prefix)
     if namespace is None:
         namespace = page.namespace()
     title = page.titleWithoutNamespace()
     for page in site.prefixindex(prefix = title, namespace = namespace, includeredirects = includeredirects):
         yield page
 
+def LogpagesPageGenerator(number = 500, mode='', user=None, repeat = False, site = None, namespace=[]):
+    if site is None:
+        site = pywikibot.getSite()
+    for page in site.logpages(number=number, mode=mode, user=user, repeat=repeat, namespace=namespace):
+        yield page[0]
+
 def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, site = None, namespace = 0):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.newpages(number=number, get_redirect=get_redirect, repeat=repeat, namespace=namespace):
         yield page[0]
 
@@ -296,20 +329,21 @@ def ImagesPageGenerator(pageWithImages):
 
 def UnusedFilesGenerator(number = 100, repeat = False, site = None, extension = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.unusedfiles(number=number, repeat=repeat, extension=extension):
-        yield wikipedia.ImagePage(page.site(), page.title())
+        yield pywikibot.ImagePage(page.site(), page.title())
 
 def WithoutInterwikiPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.withoutinterwiki(number=number, repeat=repeat):
         yield page
 
 def InterwikiPageGenerator(page):
+    """Iterator over all interwiki (non-language) links on a page."""
     yield page
-    for iwPage in page.interwiki():
-        yield iwPage
+    for link in page.interwiki():
+        yield link
 
 def ReferringPageGenerator(referredPage, followRedirects=False,
                            withTemplateInclusion=True,
@@ -331,9 +365,10 @@ def CategorizedPageGenerator(category, recurse=False, start=None):
     If start is a string value, only pages whose title comes after start
     alphabetically are included.
     '''
-    for page in category.articles(recurse = recurse, startFrom = start):
-        if page.title() >= start:
-            yield page
+    # TODO: page generator could be modified to use cmstartsortkey ...
+    for a in category.articles(recurse = recurse, startFrom = start):
+        if start is None or a.title() >= start:
+            yield a
 
 def SubCategoriesPageGenerator(category, recurse=False, start=None):
     '''
@@ -343,67 +378,70 @@ def SubCategoriesPageGenerator(category, recurse=False, start=None):
     recurse is an int, only subcategories to that depth will be included
     (e.g., recurse=2 will get pages in subcats and sub-subcats, but will
     not go any further).
+    If start is a string value, only categories whose sortkey comes after
+    start alphabetically are included.
     '''
-    for page in category.subcategories(recurse = recurse, startFrom = start):
-        yield page
+    # TODO: page generator could be modified to use cmstartsortkey ...
+    for s in category.subcategories(recurse = recurse, startFrom = start):
+        yield s
 
 def UnCategorizedCategoryGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.uncategorizedcategories(number=number, repeat=repeat):
         yield page
 
 def UnCategorizedImageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.uncategorizedimages(number=number, repeat=repeat):
         yield page
 
 def NewimagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.newimages(number, repeat=repeat):
         yield page[0]
 
 def UnCategorizedPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.uncategorizedpages(number=number, repeat=repeat):
         yield page
 
 def LonelyPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.lonelypages(number=number, repeat=repeat):
         yield page
 
 def UnwatchedPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.unwatchedpages(number=number, repeat=repeat):
         yield page
 
 def AncientPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.ancientpages(number=number, repeat=repeat):
         yield page[0]
 
 def DeadendPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.deadendpages(number=number, repeat=repeat):
         yield page
 
 def LongPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.longpages(number=number, repeat=repeat):
         yield page[0]
 
 def ShortPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.shortpages(number=number, repeat=repeat):
         yield page[0]
 
@@ -414,19 +452,19 @@ def LinkedPageGenerator(linkingPage):
 
 def RandomPageGenerator(number = 10, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for i in range(number):
         yield site.randompage()
 
 def RandomRedirectPageGenerator(number = 10, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for i in range(number):
         yield site.randomredirectpage()
  
 def RecentchangesPageGenerator(number = 100, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.recentchanges(number=number):
         yield page[0]
 
@@ -438,9 +476,9 @@ def TextfilePageGenerator(filename=None, site=None):
     name is given, the generator prompts the user.
     '''
     if filename is None:
-        filename = wikipedia.input(u'Please enter the filename:')
+        filename = pywikibot.input(u'Please enter the filename:')
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     f = codecs.open(filename, 'r', config.textfile_encoding)
     R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # title ends either before | or before ]]
     pageTitle = None
@@ -450,30 +488,30 @@ def TextfilePageGenerator(filename=None, site=None):
         # This makes it possible to work on different wikis using a single
         # text file, but also could be dangerous because you might
         # inadvertently change pages on another wiki!
-        yield wikipedia.Page(site, pageTitle)
+        yield pywikibot.Page(site, pageTitle)
     if pageTitle is None:
         f.seek(0)
         for title in f:
             title = title.strip()
             if title:
-                yield wikipedia.Page(site, title)
+                yield pywikibot.Page(site, title)
     f.close()
 
-def PagesFromTitlesGenerator(iterable, site = None):
-    """Generates pages from the titles (unicode strings) yielded by iterable"""
+def PagesFromTitlesGenerator(iterable, site=None):
+    """Generate pages from the titles (unicode strings) yielded by iterable."""
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for title in iterable:
         if not isinstance(title, basestring):
             break
-        yield wikipedia.Page(site, title)
+        yield pywikibot.Page(site, title)
 
 def LinksearchPageGenerator(link, step=500, site=None):
     """Yields all pages that include a specified link, according to
     [[Special:Linksearch]].
     """
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.linksearch(link, limit=step):
         yield page
 
@@ -482,44 +520,18 @@ def UserContributionsGenerator(username, number = 250, namespaces = [], site = N
     Yields number unique pages edited by user:username
     namespaces : list of namespace numbers to fetch contribs from
     """
-    import urllib
     if site is None:
-        site = wikipedia.getSite()
-    if number > 500:
-        # the api does not allow more than 500 results for anonymous users
-        number = 500
-    params = {
-        'action': 'query',
-        'list': 'usercontribs',
-        'ucuser': username,
-        'ucprop': 'title',
-        'uclimit': int(number),
-        'ucdir': 'newer',
-    }
-    
-    
-    if namespaces:
-        params['ucnamespace'] = '|'.join(map(str, namespaces))
-    # An user is likely to contribute on several pages,
-    # keeping track of titles
-    titleList = []
-    while True:
-        result = query.GetData(params, site)
-        for contr in result['query']['usercontribs']:
-            if not contr['title'] in titleList:
-                titleList.append(contr['title'])
-                yield wikipedia.Page(site, contr['title'])
-        if result.has_key('query-continue'):
-            params['ucstart'] = result['query-continue']['usercontribs']['ucstart']
-        else:
-            break
+        site = pywikibot.getSite()
+    user = userlib.User(site, username)
+    for page in user.contributions(number, namespaces):
+        yield page[0]
 
 def SearchPageGenerator(query, number = 100, namespaces = None, site = None):
     """
     Provides a list of results using the internal MediaWiki search engine
     """
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for page in site.search(query, number=number, namespaces = namespaces):
         yield page[0]
 
@@ -528,10 +540,10 @@ class YahooSearchPageGenerator:
     To use this generator, install pYsearch
     '''
     def __init__(self, query = None, count = 100, site = None): # values larger than 100 fail
-        self.query = query or wikipedia.input(u'Please enter the search query:')
+        self.query = query or pywikibot.input(u'Please enter the search query:')
         self.count = count
         if site is None:
-            site = wikipedia.getSite()
+            site = pywikibot.getSite()
         self.site = site
 
     def queryYahoo(self, query):
@@ -551,7 +563,7 @@ class YahooSearchPageGenerator:
         for url in self.queryYahoo(localQuery):
             if url[:len(base)] == base:
                 title = url[len(base):]
-                page = wikipedia.Page(self.site, title)
+                page = pywikibot.Page(self.site, title)
                 yield page
 
 class GoogleSearchPageGenerator:
@@ -562,9 +574,9 @@ class GoogleSearchPageGenerator:
     license key in your configuration.
     '''
     def __init__(self, query = None, site = None):
-        self.query = query or wikipedia.input(u'Please enter the search query:')
+        self.query = query or pywikibot.input(u'Please enter the search query:')
         if site is None:
-            site = wikipedia.getSite()
+            site = pywikibot.getSite()
         self.site = site
 
     #########
@@ -573,26 +585,51 @@ class GoogleSearchPageGenerator:
     def queryGoogle(self, query):
         #if config.google_key:
         if True:
-            #try:
+            try:
                 for url in self.queryViaSoapApi(query):
                     yield url
                 return
-            #except ImportError:
-                #pass
+            except ImportError:
+                for u in self.queryViaAPI(query):
+                    yield u
+                return
         # No google license key, or pygoogle not installed. Do it the ugly way.
         #for url in self.queryViaWeb(query):
         #    yield url
 
+    def queryViaAPI(self, query):
+        import json
+        url = u'http://ajax.googleapis.com/ajax/services/search/web?'
+        params = {
+            'key': config.google_key,
+            'v':'1.0',
+            'q': query,
+        }
+        url += urllib.urlencode(params)
+        
+        while True:
+            try:
+                pywikibot.output(u'Querying Google AJAX Search API...') #, offset %i' % offset)
+                result = json.loads(self.site.getUrl(url, refer = config.google_api_refer, no_hostname=True))
+                for res in result['responseData']['results']:
+                    yield res['url']
+            except:
+                pywikibot.output(u"An error occured. Retrying in 10 seconds...")
+                time.sleep(10)
+                continue
+        
+    
     def queryViaSoapApi(self, query):
         import google
         google.LICENSE_KEY = config.google_key
         offset = 0
         estimatedTotalResultsCount = None
-        while not estimatedTotalResultsCount or offset < estimatedTotalResultsCount:
+        while not estimatedTotalResultsCount \
+              or offset < estimatedTotalResultsCount:
             while (True):
                 # Google often yields 502 errors.
                 try:
-                    wikipedia.output(u'Querying Google, offset %i' % offset)
+                    pywikibot.output(u'Querying Google, offset %i' % offset)
                     data = google.doGoogleSearch(query, start = offset, filter = False)
                     break
                 except KeyboardInterrupt:
@@ -602,7 +639,7 @@ class GoogleSearchPageGenerator:
                     # can happen here, depending on the module used. It's not easy
                     # to catch this properly because pygoogle decides which one of
                     # the soap modules to use.
-                    wikipedia.output(u"An error occured. Retrying in 10 seconds...")
+                    pywikibot.output(u"An error occured. Retrying in 10 seconds...")
                     time.sleep(10)
                     continue
 
@@ -611,7 +648,7 @@ class GoogleSearchPageGenerator:
                 yield result.URL
             # give an estimate of pages to work on, but only once.
             if not estimatedTotalResultsCount:
-                wikipedia.output(u'Estimated total result count: %i pages.' % data.meta.estimatedTotalResultsCount)
+                pywikibot.output(u'Estimated total result count: %i pages.' % data.meta.estimatedTotalResultsCount)
             estimatedTotalResultsCount = data.meta.estimatedTotalResultsCount
             #print 'estimatedTotalResultsCount: ', estimatedTotalResultsCount
             offset += 10
@@ -631,7 +668,7 @@ class GoogleSearchPageGenerator:
         #offset = 0
 
         #while True:
-            #wikipedia.output("Google: Querying page %d" % (offset / 100 + 1))
+            #pywikibot.output("Google: Querying page %d" % (offset / 100 + 1))
             #address = "http://www.google.com/search?q=%s&num=100&hl=en&start=%d" % (urllib.quote_plus(query), offset)
             ## we fake being Firefox because Google blocks unknown browsers
             #request = urllib2.Request(address, None, {'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'})
@@ -649,11 +686,12 @@ class GoogleSearchPageGenerator:
     def __iter__(self):
         # restrict query to local site
         localQuery = '%s site:%s' % (self.query, self.site.hostname())
-        base = 'http://%s%s' % (self.site.hostname(), self.site.nice_get_address(''))
+        base = 'http://%s%s' % (self.site.hostname(),
+                                self.site.nice_get_address(''))
         for url in self.queryGoogle(localQuery):
             if url[:len(base)] == base:
                 title = url[len(base):]
-                page = wikipedia.Page(self.site, title)
+                page = pywikibot.Page(self.site, title)
                 # Google contains links in the format http://de.wikipedia.org/wiki/en:Foobar
                 if page.site() == self.site:
                     yield page
@@ -661,12 +699,12 @@ class GoogleSearchPageGenerator:
 def MySQLPageGenerator(query, site = None):
     import MySQLdb as mysqldb
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     conn = mysqldb.connect(config.db_hostname, db = site.dbName(),
                            user = config.db_username,
                            passwd = config.db_password)
     cursor = conn.cursor()
-    wikipedia.output(u'Executing query:\n%s' % query)
+    pywikibot.output(u'Executing query:\n%s' % query)
     query = query.encode(site.encoding())
     cursor.execute(query)
     while True:
@@ -684,30 +722,30 @@ def MySQLPageGenerator(query, site = None):
                 pageTitle = '%s:%s' % (namespace, pageName)
             else:
                 pageTitle = pageName
-            page = wikipedia.Page(site, pageTitle)
+            page = pywikibot.Page(site, pageTitle)
             yield page
 
 def YearPageGenerator(start = 1, end = 2050, site = None):
     if site is None:
-        site = wikipedia.getSite()
-    wikipedia.output(u"Starting with year %i" % start)
+        site = pywikibot.getSite()
+    pywikibot.output(u"Starting with year %i" % start)
     for i in xrange(start, end + 1):
         if i % 100 == 0:
-            wikipedia.output(u'Preparing %i...' % i)
+            pywikibot.output(u'Preparing %i...' % i)
         # There is no year 0
         if i != 0:
             current_year = date.formatYear(site.lang, i )
-            yield wikipedia.Page(site, current_year)
+            yield pywikibot.Page(site, current_year)
 
 def DayPageGenerator(startMonth = 1, endMonth = 12, site = None):
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     fd = date.FormatDate(site)
-    firstPage = wikipedia.Page(site, fd(startMonth, 1))
-    wikipedia.output(u"Starting with %s" % firstPage.aslink())
+    firstPage = pywikibot.Page(site, fd(startMonth, 1))
+    pywikibot.output(u"Starting with %s" % firstPage.aslink())
     for month in xrange(startMonth, endMonth+1):
         for day in xrange(1, date.getNumberOfDaysInMonth(month)+1):
-            yield wikipedia.Page(site, fd(month, day))
+            yield pywikibot.Page(site, fd(month, day))
 
 def NamespaceFilterPageGenerator(generator, namespaces, site = None):
     """
@@ -719,7 +757,7 @@ def NamespaceFilterPageGenerator(generator, namespaces, site = None):
     """
     # convert namespace names to namespace numbers
     if site is None:
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
     for i in xrange(len(namespaces)):
         ns = namespaces[i]
         if isinstance(ns, unicode) or isinstance(ns, str):
@@ -729,6 +767,32 @@ def NamespaceFilterPageGenerator(generator, namespaces, site = None):
             namespaces[i] = index
     for page in generator:
         if page.namespace() in namespaces:
+            yield page
+
+def PageTitleFilterPageGenerator(generator, ignoreList):
+    """
+    Wraps around another generator. Yields only those pages are not
+    listed in the ignore list.
+
+    The ignoreList is a dictionary. Family names are mapped to
+    dictionaries in which language codes are mapped to lists of
+    page titles.
+    """
+
+    def isIgnored(page):
+        if not (page.site().family.name in ignoreList and page.site().lang in ignoreList[page.site().family.name]):
+            return False
+
+        for ig in ignoreList[page.site().family.name][page.site().lang]:
+            if re.match(ig, page.title()):
+                return True
+        return False
+
+    for page in generator:
+        if isIgnored(page):
+            if pywikibot.verbose:
+                pywikibot.output('Ignoring page %s' % page.title())
+        else:
             yield page
 
 def RedirectFilterPageGenerator(generator):
@@ -832,7 +896,7 @@ class PreloadingGenerator(object):
             pass
         except Exception, e:
             traceback.print_exc()
-            wikipedia.output(unicode(e))
+            pywikibot.output(unicode(e))
 
     def preload(self, page_list, retry=False):
         try:
@@ -845,13 +909,13 @@ class PreloadingGenerator(object):
                                       if page.site() == site]
                 page_list = [page for page in page_list
                                   if page.site() != site]
-                wikipedia.getall(site, pagesThisSite)
+                pywikibot.getall(site, pagesThisSite)
                 for page in pagesThisSite:
                     yield page
         except IndexError:
             # Can happen if the pages list is empty. Don't care.
             pass
-        except wikipedia.SaxError:
+        except pywikibot.SaxError:
             if not retry:
                 # Retry once.
                 self.preload(page_list, retry=True)
@@ -891,12 +955,12 @@ class GeneratorFactory:
         return genToReturn
 
     def getCategoryGen(self, arg, length, recurse = False):
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
         if len(arg) == length:
-            categoryname = wikipedia.input(u'Please enter the category name:')
+            categoryname = pywikibot.input(u'Please enter the category name:')
         else:
             categoryname = arg[length + 1:]
-
+        categoryname = categoryname.replace('#', '|')
         ind = categoryname.find('|')
         startfrom = None
         if ind > 0:
@@ -908,9 +972,9 @@ class GeneratorFactory:
         return CategorizedPageGenerator(cat, start=startfrom, recurse=recurse)
 
     def setSubCategoriesGen(self, arg, length, recurse = False):
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
         if len(arg) == length:
-            categoryname = wikipedia.input(u'Please enter the category name:')
+            categoryname = pywikibot.input(u'Please enter the category name:')
         else:
             categoryname = arg[length + 1:]
 
@@ -935,19 +999,19 @@ class GeneratorFactory:
         arguments have been parsed to get the final output generator.
 
         """
-        site = wikipedia.getSite()
+        site = pywikibot.getSite()
         gen = None
         if arg.startswith('-filelinks'):
             fileLinksPageTitle = arg[11:]
             if not fileLinksPageTitle:
-                fileLinksPageTitle = wikipedia.input(
+                fileLinksPageTitle = pywikibot.input(
                     u'Links to which image page should be processed?')
             if fileLinksPageTitle.startswith(site.namespace(6)
                                              + ":"):
-                fileLinksPage = wikipedia.ImagePage(site,
+                fileLinksPage = pywikibot.ImagePage(site,
                                                     fileLinksPageTitle)
             else:
-                fileLinksPage = wikipedia.ImagePage(site,
+                fileLinksPage = pywikibot.ImagePage(site,
                                                 'Image:' + fileLinksPageTitle)
             gen = FileLinksGenerator(fileLinksPage)
         elif arg.startswith('-unusedfiles'):
@@ -961,7 +1025,13 @@ class GeneratorFactory:
             else:
                 gen = UnwatchedPagesPageGenerator(number = int(arg[11:]))
         elif arg.startswith('-usercontribs'):
-            gen = UserContributionsGenerator(arg[14:])
+            args = arg[14:].split(';')
+            number = None
+            try:
+                number = int(args[1])
+            except:
+                number = 250
+            gen = UserContributionsGenerator(args[0], number)
         elif arg.startswith('-withoutinterwiki'):
             if len(arg) == 17:
                 gen = WithoutInterwikiPageGenerator()
@@ -970,8 +1040,8 @@ class GeneratorFactory:
         elif arg.startswith('-interwiki'):
             title = arg[11:]
             if not title:
-                title = wikipedia.input(u'Which page should be processed?')
-            page = wikipedia.Page(site, title)
+                title = pywikibot.input(u'Which page should be processed?')
+            page = pywikibot.Page(site, title)
             gen = InterwikiPageGenerator(page)
         elif arg.startswith('-randomredirect'):
             if len(arg) == 15:
@@ -991,12 +1061,12 @@ class GeneratorFactory:
         elif arg.startswith('-file'):
             textfilename = arg[6:]
             if not textfilename:
-                textfilename = wikipedia.input(
+                textfilename = pywikibot.input(
                     u'Please enter the local file name:')
             gen = TextfilePageGenerator(textfilename)
         elif arg.startswith('-namespace'):
             if len(arg) == len('-namespace'):
-                self.namespaces.append(wikipedia.input(u'What namespace are you filtering on?'))
+                self.namespaces.append(pywikibot.input(u'What namespace are you filtering on?'))
             else:
                 self.namespaces.extend(arg[len('-namespace:'):].split(","))
             return True
@@ -1015,11 +1085,11 @@ class GeneratorFactory:
             gen = self.getCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-page'):
             if len(arg) == len('-page'):
-                gen = [wikipedia.Page(site,
-                                      wikipedia.input(
+                gen = [pywikibot.Page(site,
+                                      pywikibot.input(
                                           u'What page do you want to use?'))]
             else:
-                gen = [wikipedia.Page(site, arg[len('-page:'):])]
+                gen = [pywikibot.Page(site, arg[len('-page:'):])]
         elif arg.startswith('-uncatfiles'):
             gen = UnCategorizedImageGenerator()
         elif arg.startswith('-uncatcat'):
@@ -1029,29 +1099,29 @@ class GeneratorFactory:
         elif arg.startswith('-ref'):
             referredPageTitle = arg[5:]
             if not referredPageTitle:
-                referredPageTitle = wikipedia.input(
+                referredPageTitle = pywikibot.input(
                     u'Links to which page should be processed?')
-            referredPage = wikipedia.Page(site, referredPageTitle)
+            referredPage = pywikibot.Page(site, referredPageTitle)
             gen = ReferringPageGenerator(referredPage)
         elif arg.startswith('-links'):
             linkingPageTitle = arg[7:]
             if not linkingPageTitle:
-                linkingPageTitle = wikipedia.input(
+                linkingPageTitle = pywikibot.input(
                     u'Links from which page should be processed?')
-            linkingPage = wikipedia.Page(site, linkingPageTitle)
+            linkingPage = pywikibot.Page(site, linkingPageTitle)
             gen = LinkedPageGenerator(linkingPage)
         elif arg.startswith('-weblink'):
             url = arg[9:]
             if not url:
-                url = wikipedia.input(
+                url = pywikibot.input(
                     u'Pages with which weblink should be processed?')
             gen = LinksearchPageGenerator(url)
         elif arg.startswith('-transcludes'):
             transclusionPageTitle = arg[len('-transcludes:'):]
             if not transclusionPageTitle:
-                transclusionPageTitle = wikipedia.input(
+                transclusionPageTitle = pywikibot.input(
                     u'Pages that transclude which page should be processed?')
-            transclusionPage = wikipedia.Page(site,
+            transclusionPage = pywikibot.Page(site,
                                    "%s:%s" % (site.namespace(10),
                                               transclusionPageTitle))
             gen = ReferringPageGenerator(transclusionPage,
@@ -1059,31 +1129,35 @@ class GeneratorFactory:
         elif arg.startswith('-gorandom'):
             for firstPage in RandomPageGenerator(number = 1):
                 firstPageTitle = firstPage.title()
-            namespace = wikipedia.Page(site, firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(site,
+            namespace = pywikibot.Page(site, firstPageTitle).namespace()
+            firstPageTitle = pywikibot.Page(site,
                                  firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
                                         includeredirects=False)
         elif arg.startswith('-start'):
             if arg.startswith('-startxml'):
-                wikipedia.output(u'-startxml : wrong parameter')
+                pywikibot.output(u'-startxml : wrong parameter')
                 sys.exit()
             firstPageTitle = arg[7:]
             if not firstPageTitle:
-                firstPageTitle = wikipedia.input(
+                firstPageTitle = pywikibot.input(
                     u'At which page do you want to start?')
-            namespace = wikipedia.Page(site, firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(site,
+            if self.namespaces != []:
+                namespace = self.namespaces[0]
+            else:
+                namespace = pywikibot.Page(site, firstPageTitle).namespace()
+            
+            firstPageTitle = pywikibot.Page(site,
                                  firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
                                         includeredirects=False)
         elif arg.startswith('-redirectonly'):
             firstPageTitle = arg[14:]
             if not firstPageTitle:
-                firstPageTitle = wikipedia.input(
+                firstPageTitle = pywikibot.input(
                     u'At which page do you want to start?')
-            namespace = wikipedia.Page(site, firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(site,
+            namespace = pywikibot.Page(site, firstPageTitle).namespace()
+            firstPageTitle = pywikibot.Page(site,
                                  firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace,
                                         includeredirects='only')
@@ -1091,14 +1165,14 @@ class GeneratorFactory:
             prefix = arg[13:]
             namespace = None
             if not prefix:
-                prefix = wikipedia.input(
+                prefix = pywikibot.input(
                     u'What page names are you looking for?')
             gen = PrefixingPageGenerator(prefix = prefix)
         elif arg.startswith('-newimages'):
-            limit = arg[11:] or wikipedia.input(
+            limit = arg[11:] or pywikibot.input(
                 u'How many images do you want to load?')
             gen = NewimagesPageGenerator(number = int(limit))
-        elif arg.startswith('-new'):
+        elif arg == ('-new') or arg.startswith('-new:'):
             if len(arg) >=5:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
             else:
@@ -1106,29 +1180,47 @@ class GeneratorFactory:
         elif arg.startswith('-imagelinks'):
             imagelinkstitle = arg[len('-imagelinks:'):]
             if not imagelinkstitle:
-                imagelinkstitle = wikipedia.input(
+                imagelinkstitle = pywikibot.input(
                     u'Images on which page should be processed?')
-            imagelinksPage = wikipedia.Page(site, imagelinkstitle)
+            imagelinksPage = pywikibot.Page(site, imagelinkstitle)
             gen = ImagesPageGenerator(imagelinksPage)
         elif arg.startswith('-search'):
             mediawikiQuery = arg[8:]
             if not mediawikiQuery:
-                mediawikiQuery = wikipedia.input(
+                mediawikiQuery = pywikibot.input(
                     u'What do you want to search for?')
             # In order to be useful, all namespaces are required
             gen = SearchPageGenerator(mediawikiQuery, namespaces = [])
         elif arg.startswith('-google'):
             gen = GoogleSearchPageGenerator(arg[8:])
         elif arg.startswith('-titleregex'):
-            if len(arg) == 6:
-                regex = wikipedia.input(u'What page names are you looking for?')
+            if len(arg) == 11:
+                regex = pywikibot.input(u'What page names are you looking for?')
             else:
-                regex = arg[7:]
+                regex = arg[12:]
             gen = RegexFilterPageGenerator(site.allpages(), regex)
         elif arg.startswith('-yahoo'):
             gen = YahooSearchPageGenerator(arg[7:])
-        else:
-            pass
+        elif arg.startswith('-'):
+            mode, log, user = arg.partition('log')
+            if log == 'log' and mode not in ['-', '-no']: #exclude -log, -nolog
+                number = 500
+                if not user:
+                    user = None
+                else:
+                    try:
+                        number = int(user[1:])
+                        user = None
+                    except ValueError:
+                        user = user[1:]
+                if user:
+                    result = user.split(';')
+                    user = result[0]
+                    try:
+                        number = int(result[1])
+                    except:
+                        pass
+                gen = LogpagesPageGenerator(number, mode[1:], user)
         if gen:
             self.gens.append(gen)
             return self.getCombinedGenerator()
@@ -1138,16 +1230,16 @@ class GeneratorFactory:
 if __name__ == "__main__":
     try:
         genFactory = GeneratorFactory()
-        for arg in wikipedia.handleArgs():
+        for arg in pywikibot.handleArgs():
             if not genFactory.handleArg(arg):
-                wikipedia.showHelp('pagegenerators')
+                pywikibot.showHelp('pagegenerators')
                 break
         else:
             gen = genFactory.getCombinedGenerator()
             if gen:
                 for page in gen:
-                    wikipedia.output(page.title(), toStdout = True)
+                    pywikibot.output(page.title(), toStdout = True)
             else:
-                wikipedia.showHelp('pagegenerators')
+                pywikibot.showHelp('pagegenerators')
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()

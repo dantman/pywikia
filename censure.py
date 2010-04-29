@@ -32,7 +32,7 @@ badWordList = {
     }
 
 site = wikipedia.getSite()
-if not badWordList.has_key(site.language() + '.' + site.family.name) or not logPages.has_key(site.language() + '.' + site.family.name):
+if not (site.language() + '.' + site.family.name) in badWordList or not (site.language() + '.' + site.family.name) in logPages:
     wikipedia.output('Error: your language isn\'t supported, see the source code for further details')
     sys.exit(1)
 ownWordPage = wikipedia.Page(site, badWordList[site.language() + '.' + site.family.name])
@@ -68,22 +68,26 @@ def seekepos(str1, str2, bpos):
 def checkPage(title, onlyLastDiff = False):
     if title == logPages[site.language() + '.' + site.family.name]:
         return
-    wikipedia.output('Checking ' + title + ' for bad word list')
+    wikipedia.output(u'Checking %s for bad word list' %title)
     page = wikipedia.Page(site, title)
     try:
         text = page.get()
         if onlyLastDiff:
-            oldver = page.getOldVersion(page.previousRevision())
+            try:
+                oldver = page.getOldVersion(page.previousRevision())
+            except IndexError:
+                wikipedia.output(u'Page %s has no version history, skipping' %title)
+                return
             if len(text) > len(oldver):
                 bpos = seekbpos(oldver, text) 
                 epos = seekepos(oldver, text, bpos)
                 diff = text[bpos:epos]
                 text = diff
     except wikipedia.NoPage:
-        wikipedia.output('Page ' + title + ' doesn\'t exist, skipping')
+        wikipedia.output(u'Page %s doesn\'t exist, skipping' %title)
         return
     except wikipedia.IsRedirectPage:
-        wikipedia.output('Page ' + title + ' is a redirect, skipping')
+        wikipedia.output(u'Page %s is a redirect, skipping' %title)
         return
 
     report = False
@@ -98,11 +102,11 @@ def checkPage(title, onlyLastDiff = False):
             log = logPage.get()
         except:
             pass
-        wikipedia.output(title + ' matches the bad word list')
+        wikipedia.output(u'%s matches the bad word list' %title)
         log = '* [' + page.permalink()+ ' ' + title + '] - ' + ' '.join(wordsIn) + '\n' + log
         logPage.put(log, title)
     else:
-        wikipedia.output(title + ' doesn\'t match any of the bad word list')
+        wikipedia.output(u'%s doesn\'t match any of the bad word list' %title)
 
 def main():
     wikipedia.output('Warning: this script should not be run manually/directly, but automatically by maintainer.py')

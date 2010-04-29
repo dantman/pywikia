@@ -50,6 +50,7 @@ docuReplacements = {
 
 summary={
     'ar': u'روبوت: نقل الصفحة',
+    'cs': u'Robot přesunul stránku',
     'en': u'Robot: Moved page',
     'de': u'Bot: Seite verschoben',
     'el': u'Μετακίνηση σελίδων με bot',

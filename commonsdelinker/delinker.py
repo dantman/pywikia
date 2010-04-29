@@ -477,7 +477,8 @@ class CheckUsage(threadpool.Thread):
                 mysql_kwargs = config['sql_config'],
                 use_autoconn = True, 
                 http_callback = wait_callback,
-                mysql_callback = wait_callback)
+                mysql_callback = wait_callback,
+                mysql_host_suffix = '-fast')
         else:
             self.CheckUsage = checkusage.CheckUsage(sys.maxint,
                 http_callback = wait_callback, no_db = True)

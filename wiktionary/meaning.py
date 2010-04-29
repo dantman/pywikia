@@ -104,9 +104,9 @@ class Meaning:
             trans = translationswikiline[colon+1:]
             # Look up lang and convert to an ISO abbreviation
             isolang=''
-            if structs.langnames.has_key(lang):
+            if lang in structs.langnames:
                 isolang=lang
-            elif structs.invertedlangnames.has_key(lang):
+            elif lang in structs.invertedlangnames:
                 isolang=structs.invertedlangnames[lang]
 
             # We need to prepare the line a bit to make it more easily parseable

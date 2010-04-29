@@ -1,9 +1,10 @@
-import wikipedia, query
+import wikipedia, query, userlib
 
 __version__ = '$Id$'
 
 """
-    Copyright 2008 - Bryan Tong Minh
+    (c) Bryan Tong Minh, 2008
+    (c) Pywikipedia team, 2008-2010
     Licensed under the terms of the MIT license.
 """
 
@@ -22,9 +23,8 @@ class BaseRevertBot(object):
             'list': 'usercontribs',
             'uclimit': '500',
             'ucuser': self.site.username(),
-            'format': 'json'
         }
-        if ns is not None: predata['ucnamespace'] = ns
+        if ns: predata['ucnamespace'] = ns
         if max < 500 and max != -1: predata['uclimit'] = str(max)
 
         count = 0
@@ -35,10 +35,10 @@ class BaseRevertBot(object):
                 item = iterator.next()
             except StopIteration:
                 self.log(u'Fetching new batch of contributions')
-                response, data = query.GetData(predata, self.site, back_response = True)
-                if data.has_key('error'):
+                data = query.GetData(predata, self.site)
+                if 'error' in data:
                     raise RuntimeError(data['error'])
-                if data.has_key('query-continue'):
+                if 'query-continue' in data:
                     predata['uccontinue'] = data['query-continue']['usercontribs']
                 else:
                     never_continue = True
@@ -62,6 +62,8 @@ class BaseRevertBot(object):
                         self.log(u'%s: %s' % (item['title'], result))
                     else:
                         self.log(u'Skipped %s' % item['title'])
+                else:
+                    self.log(u'Skipped %s by callback' % item['title'])
             except StopIteration:
                 return
 
@@ -76,11 +78,10 @@ class BaseRevertBot(object):
             'rvprop': 'ids|timestamp|user|content',
             'rvlimit': '2',
             'rvstart': item['timestamp'],
-            'format': 'json'
         }
-        response, data = query.GetData(predata, self.site, back_response = True)
+        data = query.GetData(predata, self.site)
 
-        if data.has_key('error'):
+        if 'error' in data:
             raise RuntimeError(data['error'])
 
         pages = data['query'].get('pages', ())
@@ -94,9 +95,37 @@ class BaseRevertBot(object):
         if self.comment: comment += ': ' + self.comment
 
         page = wikipedia.Page(self.site, item['title'])
-        page.put(rev['*'], comment)
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.aslink(True, True))
+        old = page.get()
+        new = rev['*']
+        wikipedia.showDiff(old, new)
+        page.put(new, comment)
         return comment
 
     def log(self, msg):
         wikipedia.output(msg)
 
+import re
+
+class myRevertBot(BaseRevertBot):
+        
+    def callback(self, item):
+        if 'top' in item:
+            page = wikipedia.Page(self.site, item['title'])
+            text=page.get()
+            pattern = re.compile(u'\[\[.+?:.+?\..+?\]\]', re.UNICODE)
+            return pattern.search(text) >= 0
+        return False
+
+def main():
+    item = None
+    for arg in wikipedia.handleArgs():
+        continue
+    bot = myRevertBot(site = wikipedia.getSite())
+    bot.revert_contribs()
+
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()

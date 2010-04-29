@@ -251,7 +251,7 @@ class SpeedyRobot:
     deletion_messages = {
         'wikipedia':{
             'ar': {
-                u'_default': u'حذف مرشح للحذف السريع حسب [[ويكيبيديا:حذف سريع|معايير الحذف السريع]]',
+                u'_default': u'حذف مرشح للحذف السريع حسب [[وProject:حذف سريع|معايير الحذف السريع]]',
                 },
             'cs': {
                 u'_default': u'Bylo označeno k [[Wikipedie:Rychlé smazání|rychlému smazání]]',
@@ -299,6 +299,7 @@ class SpeedyRobot:
                 },
             'zh':{
                 u'_default':u'[[WP:CSD]]',
+                u'Advert': 'ad',
                 u'Db-blanked': 'auth',
                 u'Db-spam':u'[[WP:CSD#G11|CSD G11]]: 廣告、宣傳頁面',
                 u'Db-rediruser':u'[[WP:CSD#O1|CSD O6]] 沒有在使用的討論頁',
@@ -312,10 +313,9 @@ class SpeedyRobot:
                 u'No license':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
                 u'Unknown':u'[[WP:CSD#I3|CSD I3]]: 沒有版權模板，無法確認版權資訊',
                 u'TempPage':u'[[WP:CSD]]: 臨時頁面',
-                u'NowCommons':u'[[WP:CSD#I7|CSD I7]]: 此圖片已存在於[[:commons:|維基共享資源]]',
-                u'Nowcommons':u'[[WP:CSD#I7|CSD I7]]: 此圖片已存在於[[:commons:|維基共享資源]]',
-                u'RoughTranslation':u'[[WP:CSD#G7|CSD G7]]: 機器翻譯',
-                u'Advert':u'[[WP:CSD#G11|CSD G11]]: [[WP:NOT#維基百科不是宣傳工具|廣告、宣傳頁面]]',
+                u'NowCommons':'commons',
+                u'Nowcommons':'commons',
+                u'RoughTranslation':'mactra',
                 },
         },
         'wikinews':{
@@ -397,20 +397,23 @@ class SpeedyRobot:
                 'empty':u'[[WP:CSD#G1]]: 沒有實際內容或歷史記錄的文章。',
                 'test':u'[[WP:CSD#G2]]: 測試頁',
                 'vand':u'[[WP:CSD#G3]]: 純粹破壞',
-                'cont':u'[[WP:CSD#G4]]: 非常短，而且沒有定義或內容。',
-                'rep':u'[[WP:CSD#G5]]: 重複的條目或是重新建立的內容',
+                'rep':u'[[WP:CSD#G5]]: 經討論被刪除後又重新創建的內容',
+                'repa':u'[[WP:CSD#G5]]: 重複的文章',
                 'oprj':u'[[WP:CSD#G7]]: 內容來自其他中文計劃',
-                'text':u'[[WP:CSD#G9]]: 只有相關連結、項目的頁面',
+                'move':u'[[WP:CSD#G8]]: 依[[Wikipedia:移動請求]]暫時刪除以進行移動或合併頁面之工作',
                 'auth':u'[[WP:CSD#G10]]: 原作者請求',
                 'ad':u'[[WP:CSD#G11]]: 明顯的以廣告宣傳為目而建立的頁面',
                 'adc':u'[[WP:CSD#G11]]: 只有條目名稱中的人物或團體之聯絡資訊',
                 'bio':u'[[WP:CSD#G12]]: 未列明來源及語調負面的生者傳記',
                 'mactra':u'[[WP:CSD#G13]]: 明顯的機器翻譯',
-                'notrans': u'[[WP:CSD#G14]]: 超過2周沒有做任何翻譯的非現代標準漢語條目',
+                'notrans': u'[[WP:CSD#G14]]: 未翻譯的頁面',
                 'isol':u'[[WP:CSD#G15]]: 孤立頁面',
                 'isol-f':u'[[WP:CSD#G15]]: 孤立頁面-沒有對應檔案的檔案頁面',
                 'isol-sub':u'[[WP:CSD#G15]]: 孤立頁面-沒有對應母頁面的子頁面',
-                'br':u'[[WP:CSD#R1]]: 損壞的重定向',
+                'cont':u'[[WP:CSD#A1]]: 非常短，而且沒有定義或內容。',
+                'nocont':u'[[WP:CSD#A2]]: 沒有內容',
+                'nc':u'[[WP:CSD#A3]]: 跨計劃內容',
+                'cn':u'[[WP:CSD#R2]]: 跨空間重定向',
                 'wr':u'[[WP:CSD#R3]]: 錯誤重定向',
                 'vdr':u'[[WP:CSD#R4]]: 故意破壞的結果',
                 'slr':u'[[WP:CSD#R5]]: 指向本身的重定向或循環的重定向',
@@ -419,9 +422,10 @@ class SpeedyRobot:
                 'nls':u'[[WP:CSD#I3]]: 沒有版權模板，無法確認版權資訊',
                 'svg':u'[[WP:CSD#I5]]: 被高解析度與SVG檔案取代的圖片',
                 'ui':u'[[WP:CSD#I6]]: 圖片未使用且不自由',
+                'commons':u'[[WP:CSD#I7]]: 此圖片已存在於[[:commons:|維基共享資源]]',
                 'urs':u'[[WP:CSD#O1]]: 用戶請求刪除自己的用戶頁子頁面',
                 'anou':u'[[WP:CSD#O3]]: 匿名用戶的用戶討論頁，其中的內容不再有用',
-                'uc':u'[[WP:CSD#O4]]: 空類別',
+                'uc':u'[[WP:CSD#O5]]: 空類別',
                 'tmp':u'[[WP:CSD]]: 臨時頁面',
                 },
         },
@@ -446,7 +450,7 @@ class SpeedyRobot:
         """
         self.mySite = wikipedia.getSite()
         self.csdCat = catlib.Category(self.mySite, wikipedia.translate(self.mySite, self.csd_cat))
-        self.savedProgress = '!'
+        self.savedProgress = None
         self.preloadingGen = None
 
     def guessReasonForDeletion(self, page):
@@ -462,7 +466,7 @@ class SpeedyRobot:
             reasons = wikipedia.translate(self.mySite, self.deletion_messages)
 
             for templateName in templateNames:
-                if reasons.has_key(templateName):
+                if templateName in reasons:
                     if type(reasons[templateName]) is not unicode:
                         #Make alias to delete_reasons
                         reason = wikipedia.translate(self.mySite, self.delete_reasons)[reasons[templateName]]
@@ -480,15 +484,17 @@ class SpeedyRobot:
 
         # We don't use wikipedia.translate() here because for some languages the
         # entry is intentionally left out.
-        if self.delete_reasons.has_key(self.mySite.family.name):
-            if self.delete_reasons[self.mySite.family.name].has_key(page.site().lang):
+        if self.mySite.family.name in self.delete_reasons:
+            if page.site().lang in self.delete_reasons[self.mySite.family.name]:
                 localReasons = wikipedia.translate(page.site().lang, self.delete_reasons)
                 wikipedia.output(u'')
-                for key, reason in     localReasons.iteritems():
-                    wikipedia.output((key + ':').ljust(8) + reason)
+                localReasoneKey = localReasons.keys()
+                localReasoneKey.sort()
+                for key in localReasoneKey:
+                    wikipedia.output((key + ':').ljust(8) + localReasons[key])
                 wikipedia.output(u'')
                 reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
-                if localReasons.has_key(reason.strip()):
+                if reason.strip() in localReasons:
                     reason = localReasons[reason]
             else:
                 reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the suggested message:')
@@ -508,12 +514,12 @@ class SpeedyRobot:
         startFromBeginning = True
         while keepGoing:
             if startFromBeginning:
-                self.savedProgress = '!'
+                self.savedProgress = None
             self.refreshGenerator()
             count = 0
             for page in self.preloadingGen:
                 try:
-                    pageText = page.get(get_redirect = True)
+                    pageText = page.get(get_redirect = True).split("\n")
                     count += 1
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page %s does not exist or has already been deleted, skipping.' % page.aslink())
@@ -522,7 +528,12 @@ class SpeedyRobot:
                 # Highlight the title in purple.
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
-                wikipedia.output(pageText)
+                if len(pageText) > 75:
+                    wikipedia.output('The page detail is too many lines, only output first 50 lines:')
+                    wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
+                    wikipedia.output(u'\n'.join(pageText[:50]))
+                else:
+                    wikipedia.output(u'\n'.join(pageText))
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
                 choice = wikipedia.inputChoice(u'Input action?', ['delete', 'skip', 'update', 'quit'], ['d', 'S', 'u', 'q'], 'S')
                 if choice == 'q':

@@ -47,7 +47,7 @@ gdab_namespaces = {}
 account_global = False
 
 # Solve captchas in the webbrowser. Setting this to False will result in the
-# exception CaptchaError be thrown if a captcha is encountered.
+# exception CaptchaError being thrown if a captcha is encountered.
 solve_captcha = True
 
 # Some sites will require password identication to access the HTML pages at
@@ -64,7 +64,9 @@ solve_captcha = True
 # 2. You must use the hostname of the site, not its family/language pair
 authenticate = {}
 
+#
 #    Security Connection for Wikimedia Projects
+#
 SSL_connection = False
     
 # password_file = ".passwd"
@@ -74,11 +76,11 @@ SSL_connection = False
 password_file = None
 
 # Login using the API. This is less likely to break.
-use_api_login = False
+use_api_login = True
 
 # Enable data recieve from all avalible API.
 
-use_api = False
+use_api = True
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
@@ -130,7 +132,7 @@ userinterface = 'terminal'
 # Currently only works if interface 'terminal' is set.
 transliterate = True
 
-# Should the system bell be rung if the bot expects user input?
+# Should the system bell ring if the bot expects user input?
 ring_bell = False
 
 # Colorization can be used to markup important text parts of the output.
@@ -155,7 +157,7 @@ tkvertsize = 1000
 # The command for the editor you want to use. If set to None, a simple Tkinter
 # editor will be used.
 # On Windows systems, this script tries to determine the default text editor.
-if __sys.platform=='win32':
+if __sys.platform == 'win32':
     try:
         import _winreg
         _key1 = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.txt\OpenWithProgids')
@@ -163,11 +165,12 @@ if __sys.platform=='win32':
         _key2 = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '%s\shell\open\command' % _progID)
         _cmd = _winreg.QueryValueEx(_key2, None)[0]
         editor = _cmd.replace('%1', '')
-        # Notepad is even worse than our Tkinter editor. Nobody has
-        # deserved to use it.
+        # Notepad is even worse than our Tkinter editor.
+        # Nobody has deserved to use it.
         if editor.lower().endswith('notepad.exe'):
             editor = None
     except:
+        # XXX what are we catching here?
         #raise
         editor = None
 else:
@@ -267,19 +270,21 @@ upload_to_commons = False
 # but never more than 'maxthrottle' seconds. However - if you are running
 # more than one bot in parallel the times are lengthened.
 minthrottle = 1
-maxthrottle = 10
+maxthrottle = 60
 
-# Slow down the robot such that it never makes a second change within
+# Slow down the robot such that it never makes a second page edit within
 # 'put_throttle' seconds.
 put_throttle = 10
+
 # Sometimes you want to know when a delay is inserted. If a delay is larger
 # than 'noisysleep' seconds, it is logged on the screen.
 noisysleep = 3.0
 
 # Defer bot edits during periods of database server lag.  For details, see
 # http://www.mediawiki.org/wiki/Maxlag_parameter
-# You can set this variable to a number of seconds, or to None to disable
-# this behavior.
+# You can set this variable to a number of seconds, or to None (or 0) to
+# disable this behavior. Higher values are more aggressive in seeking
+# access to the wiki.
 # It is recommended that you do not change this parameter unless you know
 # what you are doing and have a good reason for it!
 maxlag = 5
@@ -324,7 +329,15 @@ db_password = ''
 # you must install the pyGoogle module from http://pygoogle.sf.net/ and have a
 # Google Web API license key. Note that Google doesn't give out license keys
 # anymore.
+# --------------------
+# Google web API is obsoleted for long time, now we can use Google AJAX Search API,
+# You can signup an API key from http://code.google.com/apis/ajaxsearch/signup.html.
 google_key = ''
+
+
+# using Google AJAX Search API, it require the refer website, this variable save the refer web address
+# when you sign up the Key.
+google_api_refer = ''
 
 # Some scripts allow using the Yahoo! Search Web Services. To use this feature,
 # you must install the pYsearch module from http://pysearch.sourceforge.net/
@@ -341,6 +354,14 @@ flickr = {
     'review': False,  # Do we use automatically make our uploads reviewed?
     'reviewer': None, # If so, under what reviewer name?
     }
+
+# for all connection proxy handle
+# to use it, proxy['host'] have to support HTTP and include port number (e.g. localhost:8080)
+# if proxy server neen authentication, set ('ID', 'PASSWORD') to proxy['auth'].
+proxy = {
+    'host': None,
+    'auth': None,
+}
 
 ############## COPYRIGHT SETTINGS ##############
 
@@ -425,7 +446,19 @@ cosmetic_changes = False
 # If you want the bot to also do cosmetic changes when editing a page on a
 # foreign wiki, set cosmetic_changes_mylang_only to False, but be careful!
 cosmetic_changes_mylang_only = True
-
+# The dictionary cosmetic_changes_enable should contain a tuple of languages
+# for each site where you wish to enable in addition to your own langlanguage
+# (if cosmetic_changes_mylang_only is set)
+# Please set your dictionary by adding such lines to your user-config.py:
+# cosmetic_changes_enable['wikipedia'] = ('de', 'en', 'fr')
+cosmetic_changes_enable = {}
+# The dictionary cosmetic_changes_disable should contain a tuple of languages
+# for each site where you wish to disable cosmetic changes. You may use it with
+# cosmetic_changes_mylang_only is False, but you can also disable your own
+# language. This also overrides the settings in the cosmetic_changes_enable
+# dictionary. Please set your dict by adding such lines to your user-config.py:
+# cosmetic_changes_disable['wikipedia'] = ('de', 'en', 'fr')
+cosmetic_changes_disable = {}
 # Use the experimental disk cache to prevent huge memory usage
 use_diskcache = False
 
@@ -433,29 +466,35 @@ use_diskcache = False
 # up to 30 minutes)
 retry_on_fail = True
 
+# How many pages should be put to a queue in asynchroneous mode.
+# If maxsize is <= 0, the queue size is infinite.
+# Increasing this value will increase memory space but could speed up
+# processing. As higher this value this effect will decrease.
+max_queue_size = 64
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.
 # Store current variables and their types.
-_glv={}
+_glv = {}
 _glv.update(globals())
-_gl=_glv.keys()
-_tp={}
+_gl = _glv.keys()
+_tp = {}
 for _key in _gl:
-    if _key[0]!='_':
-        _tp[_key]=type(globals()[_key])
+    if _key[0] != '_':
+        _tp[_key] = type(globals()[_key])
 
 # Get the user files
-_thislevel=0
-_fns=[os.path.join(_base_dir, "user-config.py")]
+_thislevel = 0
+_fns = [os.path.join(_base_dir, "user-config.py")]
 for _filename in _fns:
     _thislevel += 1
     if os.path.exists(_filename):
-        _filestatus=os.stat(_filename)
-        _filemode=_filestatus[0]
-        _fileuid=_filestatus[4]
-        if (__sys.platform=='win32' or _fileuid==os.getuid() or _fileuid==0):
-            if __sys.platform=='win32' or _filemode&002==0:
+        _filestatus = os.stat(_filename)
+        _filemode = _filestatus[0]
+        _fileuid = _filestatus[4]
+        if __sys.platform == 'win32' or _fileuid in [os.getuid(), 0]:
+            if __sys.platform == 'win32' or _filemode & 002 == 0:
                 execfile(_filename)
             else:
                 print "WARNING: Skipped '%s': writeable by others."%_filename
@@ -479,13 +518,13 @@ for _key, _val in globals().items():
             print "WARNING: Type of '%s' changed"%_key
             print "       Was: ",ot
             print "       Now: ",nt
-        del nt,ot
+        del nt, ot
     else:
         print "WARNING: Configuration variable %r is defined but unknown. Misspelled?" %_key
 
 # Fix up default console_encoding
 if console_encoding is None:
-    if __sys.platform=='win32':
+    if __sys.platform == 'win32':
         console_encoding = 'cp850'
     else:
         console_encoding = 'iso-8859-1'
@@ -534,22 +573,21 @@ def shortpath(path):
 #
 # When called as main program, list all configuration variables
 #
-if __name__=="__main__":
+if __name__ == "__main__":
     import types
-    _all=1
+    _all = 1
     for _arg in __sys.argv[1:]:
-        if _arg=="modified":
-            _all=0
+        if _arg == "modified":
+            _all = 0
         else:
             print "Unknown arg %s ignored"%_arg
-    _k=globals().keys()
+    _k = globals().keys()
     _k.sort()
     for _name in _k:
-        if _name[0]!='_':
+        if _name[0] != '_':
             if not type(globals()[_name]) in [types.FunctionType, types.ModuleType]:
-                if _all or _glv[_name]!=globals()[_name]:
-                    print _name,"=",repr(globals()[_name])
-
+                if _all or _glv[_name] != globals()[_name]:
+                    print _name, "=", repr(globals()[_name])
 
 # cleanup all locally-defined variables
 

@@ -7,14 +7,18 @@ to the working page by an administrator) and performs them.
 Syntax: python cfd.py
 
 """
-
+#
 # (C) Ben McIlwain, 2008
+# (C) Pywikipedia bot team, 2009-2010
 #
 # Distributed under the terms of the MIT license.
 
 import wikipedia
 import re
 import category
+
+# The locateion of the CFD working page.
+cfdPage = 'Wikipedia:Categories for discussion/Working'
 
 # Regular expression declarations
 # See the en-wiki CFD working page at [[Wikipedia:Categories for discussion/Working]]
@@ -42,7 +46,7 @@ class ReCheck:
 def main():
     wikipedia.handleArgs();
 
-    page = wikipedia.Page(wikipedia.getSite(), 'Wikipedia:Categories for discussion/Working')
+    page = wikipedia.Page(wikipedia.getSite(), cfdPage)
 
     # Variable declarations
     day = "None"
@@ -88,9 +92,19 @@ def main():
                 summary = "Robot - Speedily moving category " + src + " to " + dest + " per [[WP:CFD|CFD]]."
             else:
                 continue
-            robot = category.CategoryMoveRobot(oldCatTitle=src, newCatTitle=dest, batchMode=True,
-                                      editSummary=summary, inPlace=True, moveCatPage=True,
-                                      deleteEmptySourceCat=True)
+            # If the category is redirect, we do NOT want to move articles to
+            # it. The safest thing to do here is abort and wait for human
+            # intervention.
+            destpage = wikipedia.Page(
+                wikipedia.getSite(), dest, defaultNamespace=14)
+            if destpage.isCategoryRedirect():
+                summary = 'CANCELED. Destination is redirect: ' + summary
+                wikipedia.output(summary, toStdout=True)
+                robot = None
+            else:
+                robot = category.CategoryMoveRobot(oldCatTitle=src, newCatTitle=dest, batchMode=True,
+                                                   editSummary=summary, inPlace=True, moveCatPage=True,
+                                                   deleteEmptySourceCat=True)
         elif (m.check(deletecat, line)):
             src = m.result.group(1)
             # I currently don't see any reason to handle these two cases separately, though
@@ -134,9 +148,6 @@ def findDay(pageTitle, oldDay):
 if __name__ == "__main__":
     try:
         main()
-    except:
-        wikipedia.stopme()
-        raise
-    else:
+    finally:
         wikipedia.stopme()
 

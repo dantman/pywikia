@@ -297,6 +297,9 @@ def saveImagePage(imagepage, newcats, usage, galleries, onlyFilter):
     if not(onlyFilter):
         newtext = removeTemplates(newtext)
         newtext = newtext + getCheckCategoriesTemplate(usage, galleries, len(newcats))
+
+    newtext = newtext + u'\n'
+    
     for category in newcats:
         newtext = newtext + u'[[Category:' + category + u']]\n'
 

@@ -189,7 +189,7 @@ class NowCommonsDeleteBot:
         self.nowCommonsTemplate = wikipedia.Page(self.site, 'Template:' + ncList[0])
 
     def ncTemplates(self):
-        if nowCommons.has_key(self.site.lang):
+        if self.site.lang in nowCommons:
             return nowCommons[self.site.lang]
         else:
             return nowCommons['_default']

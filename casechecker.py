@@ -64,6 +64,7 @@ import sys, query, wikipedia, re, codecs
 
 class CaseChecker( object ):
     msgRename = {
+        'ar': u'تغيير اسم لحالة مخلوطة',
         'en': u'mixed case rename',
         'ru': u'[[ВП:КЛ]]',
     }
@@ -207,7 +208,7 @@ class CaseChecker( object ):
                 'indexpageids' : '',
             }
 
-            data = query.GetData(wlparams, wikipedia.getSite(self.site.lang), wikipedia.verbose, encodeTitle=False)
+            data = query.GetData(wlparams, wikipedia.getSite(self.site.lang), encodeTitle=False)
             if len(data['query']['pageids']) == 1:
                 pageid = data['query']['pageids'][0]
                 links = data['query']['pages'][pageid]['links']
@@ -232,7 +233,7 @@ class CaseChecker( object ):
                 while True:
                     # Get data
                     self.params['gapfrom'] = self.apfrom
-                    data = query.GetData(self.params, self.site, wikipedia.verbose, True)
+                    data = query.GetData(self.params, self.site)
                     try:
                         self.apfrom = data['query-continue']['allpages']['gapfrom']
                     except:

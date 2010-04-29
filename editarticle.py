@@ -1,10 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+Edit a Wikipedia article with your favourite editor.
+"""
 
-# Edit a Wikipedia article with your favourite editor.
 #
 # (C) Gerrit Holl 2004
+# (C) Pywikipedia team, 2004-2010
+#
+__version__ = "$Id$"
+#
 # Distributed under the terms of the MIT license.
+#
 
 # Version 0.4.
 #
@@ -15,14 +22,13 @@
 #       - ...
 
 __metaclass__ = type
-__version__ = "$Id$"
 import sys
 import os
 import string
 import optparse
 import tempfile
 
-import wikipedia
+import wikipedia as pywikibot
 import config
 
 msg = {
@@ -44,15 +50,16 @@ class TextEditor:
     def command(self, tempFilename, text, jumpIndex = None):
         command = config.editor
         if jumpIndex:
-            # Some editors make it possible to mark occurences of substrings, or
-            # to jump to the line of the first occurence.
+            # Some editors make it possible to mark occurences of substrings,
+            # or to jump to the line of the first occurence.
             # TODO: Find a better solution than hardcoding these, e.g. a config
             # option.
             line = text[:jumpIndex].count('\n')
             column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
         else:
             line = column = 0
-        # Linux editors. We use startswith() because some users might use parameters.
+        # Linux editors. We use startswith() because some users might use
+        # parameters.
         if config.editor.startswith('kate'):
             command += " -l %i -c %i" % (line + 1, column + 1)
         elif config.editor.startswith('gedit'):
@@ -102,7 +109,8 @@ class TextEditor:
         """
         text = self.convertLinebreaks(text)
         if config.editor:
-            tempFilename = '%s.%s' % (tempfile.mktemp(), config.editor_filename_extension)
+            tempFilename = '%s.%s' % (tempfile.mktemp(),
+                                      config.editor_filename_extension)
             tempFile = open(tempFilename, 'w')
             tempFile.write(text.encode(config.editor_encoding))
             tempFile.close()
@@ -114,30 +122,37 @@ class TextEditor:
                 # Nothing changed
                 return None
             else:
-                newcontent = open(tempFilename).read().decode(config.editor_encoding)
+                newcontent = open(tempFilename).read().decode(
+                                            config.editor_encoding)
                 os.unlink(tempFilename)
                 return self.restoreLinebreaks(newcontent)
         else:
-            return self.restoreLinebreaks(wikipedia.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight))
+            return self.restoreLinebreaks(
+                pywikibot.ui.editText(text, jumpIndex=jumpIndex,
+                                      highlight=highlight))
 
 class ArticleEditor:
-    joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones
+    # join lines if line starts with this ones
+    joinchars = string.letters + '[]' + string.digits
 
-    def __init__(self):
-        self.set_options()
+    def __init__(self, *args):
+        self.set_options(*args)
         self.setpage()
-        self.site = wikipedia.getSite()
+        self.site = pywikibot.getSite()
 
-    def set_options(self):
+    def set_options(self, *args):
         """Parse commandline and set options attribute"""
         my_args = []
-        for arg in wikipedia.handleArgs():
+        for arg in pywikibot.handleArgs(*args):
             my_args.append(arg)
         parser = optparse.OptionParser()
-        parser.add_option("-r", "--edit_redirect", action="store_true", default=False, help="Ignore/edit redirects")
+        parser.add_option("-r", "--edit_redirect", action="store_true",
+                          default=False, help="Ignore/edit redirects")
         parser.add_option("-p", "--page", help="Page to edit")
-        parser.add_option("-w", "--watch", action="store_true", default=False, help="Watch article after edit")
-        #parser.add_option("-n", "--new_data", default="", help="Automatically generated content")
+        parser.add_option("-w", "--watch", action="store_true", default=False,
+                          help="Watch article after edit")
+        #parser.add_option("-n", "--new_data", default="",
+        #                  help="Automatically generated content")
         (self.options, args) = parser.parse_args(args=my_args)
 
         # for convenience, if we have an arg, stuff it into the opt, so we
@@ -147,9 +162,9 @@ class ArticleEditor:
 
     def setpage(self):
         """Sets page and page title"""
-        site = wikipedia.getSite()
-        pageTitle = self.options.page or wikipedia.input(u"Page to edit:")
-        self.page = wikipedia.Page(site, pageTitle)
+        site = pywikibot.getSite()
+        pageTitle = self.options.page or pywikibot.input(u"Page to edit:")
+        self.page = pywikibot.Page(site, pageTitle)
         if not self.options.edit_redirect and self.page.isRedirectPage():
             self.page = self.page.getRedirectTarget()
 
@@ -158,33 +173,36 @@ class ArticleEditor:
         fp = open(fn, 'w')
         fp.write(new)
         fp.close()
-        wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
+        pywikibot.output(
+            u"An edit conflict has arisen. Your edit has been saved to %s. Please try again."
+            % fn)
 
     def run(self):
         try:
             old = self.page.get(get_redirect = self.options.edit_redirect)
-        except wikipedia.NoPage:
+        except pywikibot.NoPage:
             old = ""
         textEditor = TextEditor()
         new = textEditor.edit(old)
         if new and old != new:
-            wikipedia.showDiff(old, new)
-            changes = wikipedia.input(u"What did you change?")
-            comment = wikipedia.translate(wikipedia.getSite(), msg) % changes
+            pywikibot.showDiff(old, new)
+            changes = pywikibot.input(u"What did you change?")
+            comment = pywikibot.translate(pywikibot.getSite(), msg) % changes
             try:
-                self.page.put(new, comment = comment, minorEdit = False, watchArticle=self.options.watch)
-            except wikipedia.EditConflict:
+                self.page.put(new, comment=comment, minorEdit=False,
+                              watchArticle=self.options.watch)
+            except pywikibot.EditConflict:
                 self.handle_edit_conflict(new)
         else:
-            wikipedia.output(u"Nothing changed")
+            pywikibot.output(u"Nothing changed")
 
-def main():
-    app = ArticleEditor()
+def main(*args):
+    app = ArticleEditor(*args)
     app.run()
 
 if __name__ == "__main__":
     try:
         main()
     finally:
-        wikipedia.stopme()
+        pywikibot.stopme()
 

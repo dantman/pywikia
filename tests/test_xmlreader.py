@@ -14,6 +14,7 @@ class XmlReaderTestCase(unittest.TestCase):
         self.assertEquals(u"24278", pages[0].id)
         self.assertTrue(pages[0].text.startswith('Pears are [[tree]]s of'))
         self.assertEquals(u"Quercusrobur", pages[1].username)
+        self.assertEquals(u"Pear", pages[0].title)
 
     def test_XmlDumpFirstRev(self):
         pages = [r for r in xmlreader.XmlDump("data/article-pear.xml").parse()]
@@ -22,6 +23,11 @@ class XmlReaderTestCase(unittest.TestCase):
         self.assertEquals(u"Pear", pages[0].title)
         self.assertEquals(u"24278", pages[0].id)
         self.assertTrue(pages[0].text.startswith('Pears are [[tree]]s of'))
+        self.assertTrue(not pages[0].isredirect)
+
+    def test_XmlDumpRedirect(self):
+        pages = [r for r in xmlreader.XmlDump("data/article-pyrus.xml").parse()]
+        self.assertTrue(pages[0].isredirect)
 
     def test_MediaWikiXmlHandler(self):
         handler = xmlreader.MediaWikiXmlHandler()
@@ -30,9 +36,9 @@ class XmlReaderTestCase(unittest.TestCase):
             pages.append(page)
         handler.setCallback(pageDone)
         xml.sax.parse("data/article-pear.xml", handler)
+        self.assertEquals(u"Pear", pages[0].title)
         self.assertEquals(4, len(pages))
         self.assertNotEquals("", pages[0].comment)
-
 
 if __name__ == '__main__':
     unittest.main()

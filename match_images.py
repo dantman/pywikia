@@ -80,7 +80,7 @@ def getImageFromImagePage(imagePage):
     Get the image object to work based on an imagePage object
     '''
     imageURL=imagePage.fileUrl()
-    imageURLopener= wikipedia.MyURLopener()
+    imageURLopener= wikipedia.MyURLopener
     imageWebFile = imageURLopener.open(imageURL)
     imageBuffer = StringIO.StringIO(imageWebFile.read())
     image = Image.open(imageBuffer)

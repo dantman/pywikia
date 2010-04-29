@@ -59,7 +59,7 @@ class Family(family.Family):
             'ru': u'Обсуждение Memory Alpha - A Wikia wiki',
             'sr': u'Разговор о Успомене Алфе',
             'sv': u'Memory Alphadiskussion',
-            'zh-cn': u'阿尔法记忆 talk',
+            'zh-cn': u'阿尔法记忆讨论',
         }
         self.namespaces[6]['pt'] = u'Arquivo'
 
@@ -97,11 +97,13 @@ class Family(family.Family):
         }
         self.namespaces[400] = {
             '_default': u'Video',
+            'ru': u'Видео',
         }
         self.namespaces[401] = {
             '_default': u'Video talk',
-            'de': u'Video Diskussion',
-            'pl': u'Dyskusja Video',
+            'de': u'Video talk',
+            'pl': u'Video talk',
+            'ru': u'Обсуждение видео',
         }
         self.namespaces[402] = {
             '_default': u'Video Template',
@@ -109,17 +111,21 @@ class Family(family.Family):
         self.namespaces[500] = {
             '_default': u'User blog',
             'de': u'Benutzer Blog',
+            'ru': u'Блог участника',
         }
         self.namespaces[501] = {
             '_default': u'User blog comment',
             'de': u'Benutzer Blog Kommentare',
+            'ru': u'Комментарий блога участника',
         }
         self.namespaces[502] = {
             '_default': u'Blog',
+            'ru': u'Блог',
         }
         self.namespaces[503] = {
             '_default': u'Blog talk',
             'de': u'Blog Diskussion',
+            'ru': u'Обсуждение блога',
         }
 
         # A few selected big languages for things that we do not want to loop over
