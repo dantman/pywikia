@@ -24,7 +24,7 @@ class Family(family.Family):
         # Override defaults
         self.namespaces[2]['cs'] = u'Redaktor'
         self.namespaces[2]['pl'] = u'Wikireporter'
-        self.namespaces[3]['cs'] = u'Redaktor diskuse'
+        self.namespaces[3]['cs'] = u'Diskuse s redaktorem'
         self.namespaces[3]['pl'] = u'Dyskusja Wikireportera'
 
 
