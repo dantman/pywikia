@@ -2165,7 +2165,7 @@ not supported by PyWikipediaBot!"""
 
 
 
-    def categories(self, get_redirect=False,api=False):
+    def categories(self, get_redirect=False, api=False):
         """Return a list of categories that the article is in.
 
         This will retrieve the page text to do its work, so it can raise
@@ -2174,13 +2174,12 @@ not supported by PyWikipediaBot!"""
         The return value is a list of Category objects, one for each of the
         category links in the page text.
         """
-#  New add API query.
-
-#   api.php?action=query&prop=categories&titles=Albert%20Einstein
-# fixed bug 2995320 & 2995997. 
-        apitest=False
-#
-        if apitest == api:
+        # New add API query.
+        # api.php?action=query&prop=categories&titles=Albert%20Einstein
+        # Note: This needs an additional api call instead of collecting
+        #       these informations from page content
+        #       api param could be omitted in future!
+        if not (api and self.site().has_api()):
             try:
                 category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
             except NoPage:
@@ -2188,6 +2187,7 @@ not supported by PyWikipediaBot!"""
             return category_links_to_return
 
         else:
+            import catlib
             params = {
                 'action': 'query',
                 'prop'  : 'categories',
@@ -2200,14 +2200,13 @@ not supported by PyWikipediaBot!"""
             allDone = False
             cats=[]
             while not allDone:
-                
-
                 datas = query.GetData(params, self.site())
                 data=datas['query']['pages'].values()[0]
                 if "categories" in data:
                     for c in data['categories']:
-                        cpage=Page(self.site(), c['title'])
-                        cats.append(cpage)
+                        if c['ns'] is 14:
+                            cat = catlib.Category(self.site(), c['title'])
+                            cats.append(cat)
 #            if len(data) == 2:
 #                data = data[0] + data[1]
 #            else:
@@ -2219,7 +2218,6 @@ not supported by PyWikipediaBot!"""
                 
                 else:
                     allDone = True
-                print cats
                 return cats
 
     def __cmp__(self, other):
