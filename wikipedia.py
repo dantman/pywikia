@@ -2177,7 +2177,7 @@ not supported by PyWikipediaBot!"""
 #  New add API query.
 
 #   api.php?action=query&prop=categories&titles=Albert%20Einstein
-# Plese solving bug 2995320 & 2995997. 
+# fixed bug 2995320 & 2995997. 
         apitest=False
 #
         if apitest == api:
