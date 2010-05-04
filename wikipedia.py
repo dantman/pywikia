@@ -2173,12 +2173,10 @@ not supported by PyWikipediaBot!"""
         category links in the page text.
 
         """
-#  New add API query.
-
-#   api.php?action=query&prop=categories&titles=Albert%20Einstein
-
-#
-        if not self.site().has_api():
+        # New API query.
+        # api.php?action=query&prop=categories&titles=Albert%20Einstein
+        # deactivated due to bug 2995320 & 2995997
+        if not self.site().has_api() or True:
             try:
                 category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
             except NoPage:
