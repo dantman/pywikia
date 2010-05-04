@@ -2163,7 +2163,9 @@ not supported by PyWikipediaBot!"""
         self._interwikis = result
         return result
 
-    def categories(self, get_redirect=False):
+
+
+    def categories(self, get_redirect=False,api=False):
         """Return a list of categories that the article is in.
 
         This will retrieve the page text to do its work, so it can raise
@@ -2171,49 +2173,52 @@ not supported by PyWikipediaBot!"""
 
         The return value is a list of Category objects, one for each of the
         category links in the page text.
-
         """
-        # New API query.
-        # api.php?action=query&prop=categories&titles=Albert%20Einstein
-        # deactivated due to bug 2995320 & 2995997
-        if not self.site().has_api() or True:
+#  New add API query.
+
+#   api.php?action=query&prop=categories&titles=Albert%20Einstein
+# Plese solving bug 2995320 & 2995997. 
+        apitest=False
+#
+        if apitest == api:
             try:
                 category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
             except NoPage:
                 category_links_to_return = []
             return category_links_to_return
 
-        params = {
-            'action': 'query',
-            'prop'  : 'categories',
-            'titles' : self.title(),
-        }
-        if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
-            params['cllimit'] = 500
+        else:
+            params = {
+                'action': 'query',
+                'prop'  : 'categories',
+                'titles' : self.title(),
+            }
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+                params['cllimit'] = 500
         
-
-        allDone = False
-        cats=[]
-        while not allDone:
             output(u'Getting categories in %s via API...' % self.aslink())
+            allDone = False
+            cats=[]
+            while not allDone:
+                
 
-            datas = query.GetData(params, self.site())
-            data=datas['query']['pages'].values()[0]
-            if "categories" in data:
-                for c in data['categories']:
-                    cats.append(c['title'])
+                datas = query.GetData(params, self.site())
+                data=datas['query']['pages'].values()[0]
+                if "categories" in data:
+                    for c in data['categories']:
+                        cats.append(c['title'])
 #            if len(data) == 2:
 #                data = data[0] + data[1]
 #            else:
 #                data = data[0]
             
-            if 'query-continue' in datas:
-                if 'categories' in datas['query-continue']:
-                    params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
+                if 'query-continue' in datas:
+                    if 'categories' in datas['query-continue']:
+                        params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
                 
-            else:
-                allDone = True
-        return cats
+                else:
+                    allDone = True
+                return cats
 
     def __cmp__(self, other):
         """Test for equality and inequality of Page objects"""
