@@ -2206,7 +2206,8 @@ not supported by PyWikipediaBot!"""
                 data=datas['query']['pages'].values()[0]
                 if "categories" in data:
                     for c in data['categories']:
-                        cats.append(c['title'])
+                        cpage=Page(self.site(), c['title'])
+                        cats.append(cpage)
 #            if len(data) == 2:
 #                data = data[0] + data[1]
 #            else:
@@ -2218,6 +2219,7 @@ not supported by PyWikipediaBot!"""
                 
                 else:
                     allDone = True
+                print cats
                 return cats
 
     def __cmp__(self, other):
