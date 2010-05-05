@@ -2165,7 +2165,7 @@ not supported by PyWikipediaBot!"""
 
 
 
-    def categories(self, get_redirect=False, api=False):
+    def categories(self, get_redirect=False, force_api=False):
         """Return a list of categories that the article is in.
 
         This will retrieve the page text to do its work, so it can raise
@@ -2174,12 +2174,10 @@ not supported by PyWikipediaBot!"""
         The return value is a list of Category objects, one for each of the
         category links in the page text.
         """
-        # New add API query.
-        # api.php?action=query&prop=categories&titles=Albert%20Einstein
-        # Note: This needs an additional api call instead of collecting
-        #       these informations from page content
-        #       api param could be omitted in future!
-        if not (api and self.site().has_api()):
+        # Note: This reads via api call if there is not page content
+        #       or page content already exist and force_api=True
+        if not self.site().has_api() or \
+           hasattr(self, '_contents') and not force_api:
             try:
                 category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
             except NoPage:
@@ -2207,15 +2205,10 @@ not supported by PyWikipediaBot!"""
                         if c['ns'] is 14:
                             cat = catlib.Category(self.site(), c['title'])
                             cats.append(cat)
-#            if len(data) == 2:
-#                data = data[0] + data[1]
-#            else:
-#                data = data[0]
-            
+
                 if 'query-continue' in datas:
                     if 'categories' in datas['query-continue']:
                         params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
-                
                 else:
                     allDone = True
                 return cats
