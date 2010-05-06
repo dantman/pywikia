@@ -5683,8 +5683,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             
             self._getUserDataOld(text, sysop = sysop, force = force)
 
-    
-    def search(self, query, number = 10, namespaces = None):
+    def search(self, key, number = 10, namespaces = None):
         """
         Yield search results for query.
         Use API when enabled use_api and version >= 1.11,
@@ -5695,7 +5694,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             params = {
                 'action': 'query',
                 'list': 'search',
-                'srsearch': q,
+                'srsearch': key,
                 'srlimit': number
             }
             if namespaces:
@@ -5716,7 +5715,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         else:
             #Yield search results (using Special:Search page) for query.
             throttle = True
-            path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
+            path = self.search_address(urllib.quote_plus(key.encode('utf-8')),
                                        n=number, ns=namespaces)
             get_throttle()
             html = self.getUrl(path)
