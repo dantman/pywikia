@@ -2165,19 +2165,14 @@ not supported by PyWikipediaBot!"""
 
 
 
-    def categories(self, get_redirect=False, force_api=False):
-        """Return a list of categories that the article is in.
-
-        This will retrieve the page text to do its work, so it can raise
-        the same exceptions that are raised by the get() method.
-
-        The return value is a list of Category objects, one for each of the
-        category links in the page text.
+    def categories(self, get_redirect=False, api=True):
+        """Return a list of Category objects that the article is in.
+        Please be aware: the api call returns also categies which are included
+        by templates. This differs to the old non-api code. If you need only
+        these categories which are in the page text please use getCategoryLinks
+        (or set api=False but this could be deprecated in future).
         """
-        # Note: This reads via api call if there is not page content
-        #       or page content already exist and force_api=True
-        if not self.site().has_api() or \
-           hasattr(self, '_contents') and not force_api:
+        if not (self.site().has_api() and api):
             try:
                 category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
             except NoPage:
@@ -5701,7 +5696,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
                 params['srnamespace'] = namespaces
 
             offset = 0
-            while True:
+            while offset < number:
                 params['sroffset'] = offset
                 data = query.GetData(params, self)['query']
                 if 'error' in data:
