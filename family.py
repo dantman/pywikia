@@ -782,7 +782,7 @@ class Family:
                 'ch': u'Kombetsasion ni muna\'sesetbi',
                 'ckb': u'لێدوانی بەکارھێنەر',
                 'crh': [u'Qullanıcı muzakeresi', u'Къулланыджы музакереси'],
-                'cs': u'Diskuse s wikipedistou',
+                'cs': u'Diskuse s uživatelem',
                 'csb': u'Diskùsëjô brëkòwnika',
                 'cu': u'По́льꙃєватєлꙗ бєсѣ́да',
                 'cv': u'Хутшăнаканăн канашлу страници',

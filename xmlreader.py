@@ -62,7 +62,9 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid, comment, redirect):
+    def __init__(self, title, id, text, username, ipedit, timestamp,
+                 editRestriction, moveRestriction, revisionid, comment,
+                 redirect):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
@@ -172,7 +174,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         if name == 'contributor':
             self.inContributorTag = False
         elif name == 'restrictions':
-            self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
+            self.editRestriction, self.moveRestriction \
+                                  = parseRestrictions(self.restrictions)
         elif name == 'redirect':
             self.isredirect = True
         elif name == 'revision':
@@ -318,18 +321,18 @@ Consider installing the python-celementtree package.''')
         """Parser that yields only the latest revision"""
         if event == "end" and elem.tag == "{%s}page" % self.uri:
             self._headers(elem)
-
             revision = elem.find("{%s}revision" % self.uri)
             yield self._create_revision(revision)
+            elem.clear()
             self.root.clear()
 
     def _parse_all(self, event, elem):
         """Parser that yields all revisions"""
         if event == "start" and elem.tag == "{%s}page" % self.uri:
             self._headers(elem)
-
         if event == "end" and elem.tag == "{%s}revision" % self.uri:
             yield self._create_revision(elem)
+            elem.clear()
             self.root.clear()
     
     def _headers(self, elem):
@@ -337,6 +340,9 @@ Consider installing the python-celementtree package.''')
         self.pageid = elem.findtext("{%s}id" % self.uri)
         self.restrictions = elem.findtext("{%s}restrictions" % self.uri)
         self.isredirect = elem.findtext("{%s}redirect" % self.uri) is not None
+        self.editRestriction, self.moveRestriction \
+                              = parseRestrictions(self.restrictions)
+
 
     def _create_revision(self, revision):
         """Creates a Single revision"""
@@ -348,16 +354,14 @@ Consider installing the python-celementtree package.''')
         username = ipeditor or contributor.findtext("{%s}username" % self.uri)
         # could get comment, minor as well
         text = revision.findtext("{%s}text" % self.uri)
-        editRestriction, moveRestriction \
-                = parseRestrictions(self.restrictions)
         return XmlEntry(title=self.title,
                         id=self.pageid,
                         text=text or u'',
                         username=username or u'', #username might be deleted
                         ipedit=bool(ipeditor),
                         timestamp=timestamp,
-                        editRestriction=editRestriction,
-                        moveRestriction=moveRestriction,
+                        editRestriction=self.editRestriction,
+                        moveRestriction=self.moveRestriction,
                         revisionid=revisionid,
                         comment=comment,
                         redirect=self.isredirect
@@ -414,7 +418,8 @@ Consider installing the python-celementtree package.''')
                     lines = u''
                     text = m.group('text') or u''
                     restrictions = m.group('restrictions')
-                    editRestriction, moveRestriction = parseRestrictions(restrictions)
+                    editRestriction, moveRestriction \
+                                     = parseRestrictions(restrictions)
 
                     if m.group('username'):
                         username = m.group('username')

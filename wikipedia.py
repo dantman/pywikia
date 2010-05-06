@@ -2163,59 +2163,50 @@ not supported by PyWikipediaBot!"""
         self._interwikis = result
         return result
 
-    def categories(self, get_redirect=False):
-        """Return a list of categories that the article is in.
 
-        This will retrieve the page text to do its work, so it can raise
-        the same exceptions that are raised by the get() method.
 
-        The return value is a list of Category objects, one for each of the
-        category links in the page text.
-
+    def categories(self, get_redirect=False, api=True):
+        """Return a list of Category objects that the article is in.
+        Please be aware: the api call returns also categies which are included
+        by templates. This differs to the old non-api code. If you need only
+        these categories which are in the page text please use getCategoryLinks
+        (or set api=False but this could be deprecated in future).
         """
-#  New add API query.
-
-#   api.php?action=query&prop=categories&titles=Albert%20Einstein
-
-#
-        if not self.site().has_api():
+        if not (self.site().has_api() and api):
             try:
                 category_links_to_return = getCategoryLinks(self.get(get_redirect=get_redirect), self.site())
             except NoPage:
                 category_links_to_return = []
             return category_links_to_return
 
-        params = {
-            'action': 'query',
-            'prop'  : 'categories',
-            'titles' : self.title(),
-        }
-        if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
-            params['cllimit'] = 500
+        else:
+            import catlib
+            params = {
+                'action': 'query',
+                'prop'  : 'categories',
+                'titles' : self.title(),
+            }
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
+                params['cllimit'] = 500
         
-
-        allDone = False
-        cats=[]
-        while not allDone:
             output(u'Getting categories in %s via API...' % self.aslink())
+            allDone = False
+            cats=[]
+            while not allDone:
+                datas = query.GetData(params, self.site())
+                data=datas['query']['pages'].values()[0]
+                if "categories" in data:
+                    for c in data['categories']:
+                        if c['ns'] is 14:
+                            cat = catlib.Category(self.site(), c['title'])
+                            cats.append(cat)
 
-            datas = query.GetData(params, self.site())
-            data=datas['query']['pages'].values()[0]
-            if "categories" in data:
-                for c in data['categories']:
-                    cats.append(c['title'])
-#            if len(data) == 2:
-#                data = data[0] + data[1]
-#            else:
-#                data = data[0]
-            
-            if 'query-continue' in datas:
-                if 'categories' in datas['query-continue']:
-                    params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
-                
-            else:
-                allDone = True
-        return cats
+                if 'query-continue' in datas:
+                    if 'categories' in datas['query-continue']:
+                        params['clcontinue'] = datas['query-continue']['categories']['clcontinue']
+                else:
+                    allDone = True
+                return cats
 
     def __cmp__(self, other):
         """Test for equality and inequality of Page objects"""
@@ -5687,8 +5678,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             
             self._getUserDataOld(text, sysop = sysop, force = force)
 
-    
-    def search(self, query, number = 10, namespaces = None):
+    def search(self, key, number = 10, namespaces = None):
         """
         Yield search results for query.
         Use API when enabled use_api and version >= 1.11,
@@ -5699,14 +5689,14 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             params = {
                 'action': 'query',
                 'list': 'search',
-                'srsearch': q,
+                'srsearch': key,
                 'srlimit': number
             }
             if namespaces:
                 params['srnamespace'] = namespaces
 
             offset = 0
-            while True:
+            while offset < number:
                 params['sroffset'] = offset
                 data = query.GetData(params, self)['query']
                 if 'error' in data:
@@ -5720,7 +5710,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         else:
             #Yield search results (using Special:Search page) for query.
             throttle = True
-            path = self.search_address(urllib.quote_plus(query.encode('utf-8')),
+            path = self.search_address(urllib.quote_plus(key.encode('utf-8')),
                                        n=number, ns=namespaces)
             get_throttle()
             html = self.getUrl(path)
