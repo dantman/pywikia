@@ -335,7 +335,8 @@ except NameError:
         return seq2
 
 import wikipedia as pywikibot
-import config, catlib
+import config
+import catlib
 import pagegenerators
 import titletranslate, interwiki_graph
 import webbrowser
@@ -1836,7 +1837,8 @@ class Subject(object):
                     else:
                         status, reason, data = page.put(newtext, comment = mcomment)
                 except pywikibot.LockedPage:
-                    pywikibot.output(u'Page %s is locked. Skipping.' % (page.title(),))
+                    pywikibot.output(u'Page %s is locked. Skipping.'
+                                     % page.aslink(True))
                     raise SaveError
                 except pywikibot.EditConflict:
                     pywikibot.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
