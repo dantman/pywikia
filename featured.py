@@ -148,6 +148,7 @@ template = {
     'ca': [u'Enllaç AD', 'Destacat'],
     'cy': ['Cyswllt erthygl ddethol', 'Dolen ED'],
     'eo': ['LigoElstara'],
+    'en': ['Link FA', 'FA link'],
     'es': ['Destacado'],
     'eu': ['NA lotura'],
     'fr': ['Lien AdQ'],
