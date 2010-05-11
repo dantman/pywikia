@@ -1329,12 +1329,16 @@ class main:
                     if normal:
                         imageData = image
                         image = imageData[0]
-                        timestamp = imageData[1]
+                        #20100511133318L --- 15:33, 11 mag 2010 e 18 sec
+                        b = str(imageData[1]) # use b as variable to make smaller the timestamp-formula used below..
+                        # fixing the timestamp to the format that we normally use..
+                        timestamp = "%s-%s-%sT%s:%s:%sZ" % (b[0:4], b[4:6], b[6:8], b[8:10], b[10:12], b[12:14])
                     else:
+                        #http://pytz.sourceforge.net/ <- maybe useful?
+                        # '2008-06-18T08:04:29Z'
                         timestamp = image.getLatestUploader()[1]
-                    #http://pytz.sourceforge.net/ <- maybe useful?
-                    # '2008-06-18T08:04:29Z'
                     img_time = datetime.datetime.strptime(timestamp, u"%Y-%m-%dT%H:%M:%SZ") #not relative to localtime
+
                     now = datetime.datetime.strptime(str(datetime.datetime.utcnow()).split('.')[0], "%Y-%m-%d %H:%M:%S") #timezones are UTC
                     # + seconds to be sure that now > img_time
                     while now < img_time:
