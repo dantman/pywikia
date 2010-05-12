@@ -7505,20 +7505,19 @@ def async_put():
             # if callback is provided, it is responsible for exception handling
             continue
         if isinstance(error, SpamfilterError):
-            output(u"Saving page [[%s]] prevented by spam filter: %s"
-                       % (page.title(), error.url))
+            output(u"Saving page %s prevented by spam filter: %s"
+                   % (page.aslink(True), error.url))
         elif isinstance(error, PageNotSaved):
-            output(u"Saving page [[%s]] failed: %s"
-                       % (page.title(), error))
+            output(u"Saving page %s failed: %s" % (page.aslink(True), error))
         elif isinstance(error, LockedPage):
-            output(u"Page [[%s]] is locked; not saved." % page.title())
+            output(u"Page %s is locked; not saved." % page.aslink(True))
         elif isinstance(error, NoUsername):
-            output(u"Page [[%s]] not saved; sysop privileges required."
-                       % page.title())
+            output(u"Page %s not saved; sysop privileges required."
+                   % page.aslink(True))
         elif error is not None:
             tb = traceback.format_exception(*sys.exc_info())
-            output(u"Saving page [[%s]] failed:\n%s"
-                    % (page.title(), "".join(tb)))
+            output(u"Saving page %s failed:\n%s"
+                   % (page.aslink(True), "".join(tb)))
 
 _putthread = threading.Thread(target=async_put)
 # identification for debugging purposes
