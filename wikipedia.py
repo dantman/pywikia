@@ -241,6 +241,7 @@ class Page(object):
     getReferences         : List of pages linking to the page
     canBeEdited (*)       : True if page is unprotected or user has edit
                             privileges
+    protection(*)         : This page protection level
     botMayEdit (*)        : True if bot is allowed to edit page
     put(newtext)          : Saves the page
     put_async(newtext)    : Queues the page to be saved asynchronously
@@ -2114,6 +2115,25 @@ not supported by PyWikipediaBot!"""
             # We don't have a user account for that wiki, or the
             # page is locked and we don't have a sysop account.
             return False
+
+    def protection(self):
+        """Return list of dicts of this page protection level. like:
+        [{u'expiry': u'2010-05-26T14:41:51Z', u'type': u'edit', u'level': u'autoconfirmed'}, {u'expiry': u'2010-05-26T14:41:51Z', u'type': u'move', u'level': u'sysop'}]
+
+        if the page non protection, return []
+        """
+
+        params = {
+            'action': 'query',
+            'prop'  : 'info',
+            'inprop': 'protection',
+            'titles' : self.title(),
+            }
+
+        datas = query.GetData(params, self.site())
+        data=datas['query']['pages'].values()[0]['protection']
+        return data
+
 
     def toggleTalkPage(self):
         """Return the other member of the article-talk page pair for this Page.
