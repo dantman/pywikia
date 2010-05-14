@@ -13,7 +13,7 @@ class Family(family.Family):
         self.languages_by_size = [
             'en', 'zh', 'ru', 'pt', 'fr', 'de', 'es', 'it', 'he', 'ar', 'hu',
             'fa', 'pl', 'th', 'cs', 'ro', 'hr', 'te', 'fi', 'tr', 'nl', 'sv',
-            'sl', 'uk', 'ko', 'vi', 'sr', 'ja', 'el', 'la', 'bn', 'li', 'yi',
+            'sl', 'uk', 'ko', 'vi', 'sr', 'ja', 'bn', 'el', 'la', 'li', 'yi',
             'ml', 'az', 'is', 'bs', 'hy', 'ca', 'id', 'mk', 'no', 'da', 'ta',
             'et', 'bg', 'lt', 'gl', 'kn', 'cy', 'sk', 'zh-min-nan', 'fo',
         ]
@@ -278,6 +278,7 @@ class Family(family.Family):
             'ar': u'فهرس',
             'en': u'Index',
             'et': u'Autor',
+            'fr': u'Portail',
             'he': u'ביאור',
             'hu': u'Index',
             'hy': u'Ինդեքս',
@@ -296,6 +297,7 @@ class Family(family.Family):
             'ar': u'نقاش الفهرس',
             'en': u'Index talk',
             'et': u'Autori arutelu',
+            'fr': u'Discussion Portail',
             'he': u'שיחת ביאור',
             'hu': u'Index vita',
             'hy': u'Ինդեքսի քննարկում',
