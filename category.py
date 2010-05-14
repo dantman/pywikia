@@ -207,7 +207,7 @@ deletion_reason_move = {
     'sk':u'Kategória bola presunutá na [[:Kategória:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[:Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[:Category:%s|%s]]',
-    'uk':u'Робот: категорію перейменовано на [[Категорія:%s]]',
+    'uk':u'Робот: категорію перейменовано на [[Категорія:%s|%s]]',
     'zh':u'機器人:移動目錄至 [[:Category:%s|%s]]',
     }
 
