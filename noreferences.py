@@ -50,6 +50,7 @@ msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'eo':u'Roboto: Aldono de "<references />"',
+    'fa':u'ربات:تگ رفرنسز فراموش شده‌است',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
     'hu':u'Hiányzó {{Források}} pótlása',
