@@ -102,6 +102,7 @@ msg_add={
     'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
     'id':u'Bot: Menambahkan [[Kategori:%s]]',
+    'fa':u'ربات: افزودن [[رده:%s]]',
     'fi':u'Botti lisäsi luokkaan [[Luokka:%s]]',
     'fr':u'Robot : ajoute [[Catégorie:%s]]',
     'he':u'בוט: מוסיף [[קטגוריה:%s]]',
@@ -140,6 +141,7 @@ msg_change={
     'en':u'Robot: Changing %s',
     'es':u'Bot: Cambiada %s',
     'id':u'Bot: Mengganti %s',
+    'fa':u'ربات:تغییر %s',
     'fi':u'Botti muutti luokan %s',
     'fr':u'Robot : modifie [[%s]]',
     'he':u'בוט: משנה %s',
@@ -171,6 +173,7 @@ msg_replace={
     'cs':u'Robot nahradil kategorii %(oldcat)s za %(newcat)s',
     'de':u'Bot: Ersetze Kategorie %(oldcat)s durch %(newcat)s',
     'en':u'Robot: Replacing category %(oldcat)s with %(newcat)s',
+    'fa':u'ربات جایگزینی رده‌های %(oldcat) با %(newcat)',
     'sk':u'Robot nahradil kategóriu %(oldcat)s za %(newcat)s', 
     }
 
@@ -184,6 +187,7 @@ deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
     'es':u'Robot: La categoría ha sido movida a [[:Category:%s|%s]]',
+    'fa':u'ربات:رده به رده  [[:رده:%s|%s]] منتقل شده‌است',
     'fi':u'Botti siirsi luokan nimelle [[:Luokka:%s|%s]]',
     'fr':u'Robot : catégorie déplacée sur [[:Category:%s|%s]]',
     'he':u'בוט: הקטגוריה הועברה לשם [[:קטגוריה:%s|%s]]',
