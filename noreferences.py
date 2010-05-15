@@ -105,6 +105,11 @@ placeBeforeSections = {
         u'Véase también',
         u'Notas',
     ],
+    'fa': [
+        u'پیوند به بیرون',
+        u'پانویس',
+        u'جستارهای وابسته'
+    ],
     'fi': [
         u'Kirjallisuutta',
         u'Aiheesta muualla',
@@ -200,6 +205,10 @@ referencesSections = {
         u'Referencias',
         u'Notas',
     ],
+    'fa': [
+        u'منابع',
+        u'منبع'
+    ],
     'fi': [
         u'Lähteet',
         u'Viitteet',
@@ -285,6 +294,7 @@ referencesTemplates = {
                u'Footnotes',u'FootnotesSmall'],
         'eo': [u'Referencoj'],
         'es': ['Listaref', 'Reflist', 'muchasref'],
+        'fa': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',u'پانویس',u'Reflist',u'پانویس‌ها ',u'پانویس ۲',u'پانویس۲'],
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'hu': [u'reflist',u'források'],
