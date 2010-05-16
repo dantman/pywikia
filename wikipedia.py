@@ -2185,7 +2185,7 @@ not supported by PyWikipediaBot!"""
 
 
 
-    def categories(self, get_redirect=False, api=True):
+    def categories(self, get_redirect=False, api=False):
         """Return a list of Category objects that the article is in.
         Please be aware: the api call returns also categies which are included
         by templates. This differs to the old non-api code. If you need only
