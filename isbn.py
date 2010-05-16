@@ -51,6 +51,7 @@ msg = {
     'ar': u'روبوت: تهيئة ISBN',
     'de': 'Bot: Formatiere ISBN',
     'en': 'Robot: Formatting ISBN',
+    'fa': u'ربات:استانداردسازی شابک',
     'he': u'בוט: מעצב ISBN',
     'ja': u'ロボットによる ISBN の書式化',
     'nl': 'Bot: ISBN opgemaakt',
