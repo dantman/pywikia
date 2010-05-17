@@ -306,7 +306,7 @@ report_page = {
                 'commons':u'User:Filbot/Report',
                 'de'     :u'Benutzer:ABFbot/Report',
                 'en'     :u'User:Filnik/Report',
-                'fa'     :u'کاربر:Amirobot/گزارش تصویر'
+                'fa'     :u'کاربر:Amirobot/گزارش تصویر',
                 'ga'     :u'User:AllieBot/ReportImages',
                 'hu'     :u'User:Bdamokos/Report',
                 'it'     :u'Progetto:Coordinamento/Immagini/Bot/Report',
