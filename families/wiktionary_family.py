@@ -17,7 +17,7 @@ class Family(family.Family):
             'uk', 'ca', 'li', 'vo', 'fa', 'is', 'scn', 'sr', 'af', 'cs', 'th',
             'simple', 'fy', 'sw', 'oc', 'br', 'he', 'hr', 'sl', 'hy', 'sq',
             'tt', 'la', 'zh-min-nan', 'da', 'wa', 'ne', 'tk', 'ast', 'ur',
-            'hsb', 'kk', 'ky', 'mg', 'eo', 'lv', 'wo', 'my', 'ang', 'ka', 'co',
+            'hsb', 'kk', 'mg', 'ky', 'eo', 'lv', 'wo', 'my', 'ang', 'ka', 'co',
             'hi', 'ga', 'gn', 'az', 'ia', 'eu', 'sk', 'csb', 'ms', 'st', 'tl',
             'mr', 'cy', 'nds', 'kl', 'be', 'sd', 'ug', 'ti', 'mk', 'sh', 'ps',
             'an', 'bn', 'gu', 'km', 'ss', 'ts', 'qu', 'bs', 'fo', 'am', 'rw',
@@ -153,7 +153,7 @@ class Family(family.Family):
             'io': u'Wikivortaro Debato',
             'is': [u'Wikiorðabókarspjall', u'Wikiorðabókspjall'],
             'it': u'Discussioni Wikizionario',
-            'ja': u'Wiktionary‐ノート',
+            'ja': u'Wiktionary・トーク',
             'jv': u'Dhiskusi Wiktionary',
             'ka': u'ვიქსიკონი განხილვა',
             'kk': u'Уикисөздік талқылауы',
@@ -222,6 +222,22 @@ class Family(family.Family):
             'yi': [u'װיקיװערטערבוך רעדן', u'וויקיווערטערבוך רעדן'],
             'za': u'Wiktionary讨论',
             'zh': [u'Wiktionary talk', u'维基词典讨论'],
+        }
+
+        self.namespaces[90] = {
+            'en': u'Thread',
+        }
+
+        self.namespaces[91] = {
+            'en': u'Thread talk',
+        }
+
+        self.namespaces[92] = {
+            'en': u'Summary',
+        }
+
+        self.namespaces[93] = {
+            'en': u'Summary talk',
         }
 
         self.namespaces[100] = {

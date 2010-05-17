@@ -102,7 +102,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Wikiquote',
             'is': u'Wikivitnunspjall',
             'it': u'Discussioni Wikiquote',
-            'ja': u'Wikiquote‐ノート',
+            'ja': u'Wikiquote・トーク',
             'ka': [u'ვიკიციტატა განხილვა', u'Wikiquote განხილვა'],
             'kk': u'Уикидәйек талқылауы',
             'kn': u'Wikiquote ಚರ್ಚೆ',

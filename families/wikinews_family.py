@@ -69,7 +69,7 @@ class Family(family.Family):
             'he': u'שיחת ויקיחדשות',
             'hu': u'Wikihírek-vita',
             'it': u'Discussioni Wikinotizie',
-            'ja': u'ウィキニュース‐ノート',
+            'ja': u'ウィキニュース・トーク',
             'nl': u'Overleg Wikinews',
             'no': u'Wikinytt-diskusjon',
             'pl': u'Dyskusja Wikinews',

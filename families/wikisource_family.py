@@ -13,7 +13,7 @@ class Family(family.Family):
         self.languages_by_size = [
             'en', 'zh', 'ru', 'pt', 'fr', 'de', 'es', 'it', 'he', 'ar', 'hu',
             'fa', 'pl', 'th', 'cs', 'ro', 'hr', 'te', 'fi', 'tr', 'nl', 'sv',
-            'sl', 'uk', 'ko', 'vi', 'sr', 'ja', 'bn', 'el', 'la', 'li', 'yi',
+            'sl', 'uk', 'ko', 'vi', 'bn', 'sr', 'ja', 'el', 'la', 'li', 'yi',
             'ml', 'az', 'is', 'bs', 'hy', 'ca', 'id', 'mk', 'no', 'da', 'ta',
             'et', 'bg', 'lt', 'gl', 'kn', 'cy', 'sk', 'zh-min-nan', 'fo',
         ]
@@ -102,7 +102,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Wikisource',
             'is': u'Wikiheimildspjall',
             'it': u'Discussioni Wikisource',
-            'ja': u'Wikisource‐ノート',
+            'ja': u'Wikisource・トーク',
             'kn': u'Wikisource ಚರ್ಚೆ',
             'ko': u'위키문헌토론',
             'la': u'Disputatio Vicifontis',
