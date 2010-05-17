@@ -30,6 +30,8 @@ This script understands various command-line arguments:
 
 -good             use this script for good articles.
 
+-former           use this script for removing {{Link FA|xx}} from former fearured articles
+
 -quiet            no corresponding pages are displayed.
 
 -dry              for debug purposes. No changes will be made.
@@ -135,6 +137,10 @@ msg_lists = {
     'fi': u'Botti: [[%s:%s]] on suositeltu luettelo',
     'ksh':u'bot: [[%s:%s]] ess_en joode Leß',
     'sv': u'Bot: [[%s:%s]] är en utmärkt list',
+}
+msg_former = {
+    'en': u'Bot: [[%s:%s]] is a former featured article',
+    'fa': u'ربات:نوشتار [[%s:%s]] یک نوشتار برگزیده پیشین است.',
 }
 
 # ALL wikis use 'Link FA', and sometimes other localized templates.
@@ -352,6 +358,17 @@ lists_name = {
     'zh': (BACK, u'Featured list'),
     'da': (BACK, u'FremragendeListe'),
 }
+former_name = {
+    'th': (CAT, u"บทความคัดสรรในอดีต"),
+    'pt': (CAT,u"!Ex-Artigos_destacados"),
+    'es': (CAT,u"Wikipedia:Artículos anteriormente destacados"),
+    'hu': (CAT,u"Korábbi kiemelt cikkek"),
+    'ru': (CAT, u"Википедия:Устаревшие избранные статьи"),
+    'ca': (CAT, u"Arxiu de propostes de la retirada de la distinció"),
+    'es': (CAT, u"Wikipedia:Artículos anteriormente destacados"),
+    'tr': (CAT, u"Vikipedi eski seçkin maddeler"),
+    'zh': (CAT, u"Wikipedia_former_featured_articles"),
+}
 
 # globals
 interactive=0
@@ -364,6 +381,8 @@ def featuredArticles(site, pType):
     try:
         if pType == 'good':
             method=good_name[site.lang][0]
+        elif pType == 'former':
+            method=former_name[site.lang][0]
         elif pType == 'list':
             method=lists_name[site.lang][0]
         else:
@@ -373,6 +392,8 @@ def featuredArticles(site, pType):
         return arts
     if pType == 'good':
         name=good_name[site.lang][1]
+    elif pType == 'former':
+        name=former_name[site.lang][1]   
     elif pType == 'list':
         name=lists_name[site.lang][1]
     else:
@@ -450,6 +471,12 @@ def getTemplateList (lang, pType):
             templates+= template_good['_default']
         except KeyError:
             templates = template_good['_default']
+    elif pType == 'former':
+        try:
+            templates = template[lang]
+            templates+= template['_default']
+        except KeyError:
+            templates = template['_default']
     elif pType == 'list':
         try:
             templates = template_lists[lang]
@@ -497,52 +524,77 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet, dry =
                 wikipedia.output(u"source page doesn't exist: %s" % a.title())
                 continue
             atrans = findTranslated(a, tosite, quiet)
-            if atrans:
-                text=atrans.get()
-                m=re_Link_FA.search(text)
-                if m:
-                    wikipedia.output(u"(already done)")
-                else:
-                    # insert just before interwiki
-                    if (not interactive or
-                        wikipedia.input(u'Connecting %s -> %s. Proceed? [Y/N]'%(a.title(), atrans.title())) in ['Y','y']
-                        ):
-                        m=re_this_iw.search(text)
-                        if not m:
-                            wikipedia.output(u"no interwiki record, very strange")
-                            continue
-                        site = wikipedia.getSite()
-                        if pType == 'good':
-                            comment = wikipedia.setAction(wikipedia.translate(site, msg_good) % (fromsite.lang, a.title()))
-                        elif pType == 'list':
-                            comment = wikipedia.setAction(wikipedia.translate(site, msg_lists) % (fromsite.lang, a.title()))
-                        else:
-                            comment = wikipedia.setAction(wikipedia.translate(site, msg) % (fromsite.lang, a.title()))
+            if pType!='former':
+                if atrans:
+                    text=atrans.get()
+                    m=re_Link_FA.search(text)
+                    if m:
+                        wikipedia.output(u"(already done)")
+                    else:
+                        # insert just before interwiki
+                        if (not interactive or
+                            wikipedia.input(u'Connecting %s -> %s. Proceed? [Y/N]'%(a.title(), atrans.title())) in ['Y','y']
+                            ):
+                            m=re_this_iw.search(text)
+                            if not m:
+                                wikipedia.output(u"no interwiki record, very strange")
+                                continue
+                            site = wikipedia.getSite()
+                            if pType == 'good':
+                                comment = wikipedia.setAction(wikipedia.translate(site, msg_good) % (fromsite.lang, a.title()))
+                            elif pType == 'list':
+                                comment = wikipedia.setAction(wikipedia.translate(site, msg_lists) % (fromsite.lang, a.title()))
+                            else:
+                                comment = wikipedia.setAction(wikipedia.translate(site, msg) % (fromsite.lang, a.title()))
+                            ### Moving {{Link FA|xx}} to top of interwikis ###
+                            if template_on_top == True:
+                                # Getting the interwiki
+                                iw = wikipedia.getLanguageLinks(text, site)
+                                # Removing the interwiki
+                                text = wikipedia.removeLanguageLinks(text, site)
+                                text += u"\r\n{{%s|%s}}\r\n"%(templatelist[0], fromsite.lang)
+                                # Adding the interwiki
+                                text = wikipedia.replaceLanguageLinks(text, iw, site)
 
-                        ### Moving {{Link FA|xx}} to top of interwikis ###
-                        if template_on_top == True:
-                            # Getting the interwiki
-                            iw = wikipedia.getLanguageLinks(text, site)
-                            # Removing the interwiki
-                            text = wikipedia.removeLanguageLinks(text, site)
-                            text += u"\r\n{{%s|%s}}\r\n"%(templatelist[0], fromsite.lang)
-                            # Adding the interwiki
-                            text = wikipedia.replaceLanguageLinks(text, iw, site)
-
-                        ### Placing {{Link FA|xx}} right next to corresponding interwiki ###
-                        else:
-                            text=(text[:m.end()]
-                                  + (u" {{%s|%s}}" % (templatelist[0], fromsite.lang))
-                                  + text[m.end():])
-                        if not dry:
-                            try:
-                                atrans.put(text, comment)
-                            except wikipedia.LockedPage:
-                                wikipedia.output(u'Page %s is locked!' % atrans.title())
-
-                cc[a.title()]=atrans.title()
+                            ### Placing {{Link FA|xx}} right next to corresponding interwiki ###
+                            else:
+                                text=(text[:m.end()]
+                                      + (u" {{%s|%s}}" % (templatelist[0], fromsite.lang))
+                                      + text[m.end():])
+                            if not dry:
+                                try:
+                                    atrans.put(text, comment)
+                                except wikipedia.LockedPage:
+                                    wikipedia.output(u'Page %s is locked!' % atrans.title())
+                    cc[a.title()]=atrans.title()
+            else:
+                if atrans:
+                    text=atrans.get()
+                    m=re_Link_FA.search(text)
+                    if m:
+                        # insert just before interwiki
+                        if (not interactive or
+                            wikipedia.input(u'Connecting %s -> %s. Proceed? [Y/N]'%(a.title(), atrans.title())) in ['Y','y']
+                            ):
+                            m=re_this_iw.search(text)
+                            if not m:
+                                wikipedia.output(u"no interwiki record, very strange")
+                                continue
+                            site = wikipedia.getSite()
+                            comment = wikipedia.setAction(wikipedia.translate(site, msg_former) % (fromsite.lang, a.title()))
+                            text=text.replace(u"{{%s|%s}}" % (templatelist[0], fromsite.lang),'',1)
+                            if not dry:
+                                try:
+                                    atrans.put(text, comment)
+                                except wikipedia.LockedPage:
+                                    wikipedia.output(u'Page %s is locked!' % atrans.title())
+                    else:
+                        wikipedia.output(u"(already done)")
+                    cc[a.title()]=atrans.title()
         except wikipedia.PageNotSaved, e:
             wikipedia.output(u"Page not saved")
+                        
+
 
 if __name__=="__main__":
     template_on_top = False
@@ -573,6 +625,8 @@ if __name__=="__main__":
             processType = 'good'
         elif arg == '-lists':
             processType = 'list'
+        elif arg == '-former':
+            processType = 'former'
         elif arg == '-quiet':
             quiet = True
         elif arg == '-dry':
@@ -589,6 +643,8 @@ if __name__=="__main__":
                     fromlang=[ll for ll in good_name.keys() if ll>=ll1 and ll<=ll2]
                 elif processType == 'list':
                     fromlang=[ll for ll in good_lists.keys() if ll>=ll1 and ll<=ll2]
+                elif processType == 'former':
+                    fromlang=[ll for ll in former_lists.keys() if ll>=ll1 and ll<=ll2]
                 else:
                     fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
         except:
@@ -599,6 +655,8 @@ if __name__=="__main__":
             fromlang=good_name.keys()
         elif processType == 'list':
             fromlang=lists_name.keys()
+        elif processType == 'former':
+            fromlang=former_name.keys()
         else:
             fromlang=featured_name.keys()
 
