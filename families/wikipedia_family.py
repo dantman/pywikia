@@ -462,7 +462,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Portal',
             'is': u'Gáttaspjall',
             'it': u'Discussioni portale',
-            'ja': u'Portal‐ノート',
+            'ja': [u'Portal・トーク', u'Portal‐ノート'],
             'ka': u'პორტალი განხილვა',
             'kk': u'Портал талқылауы',
             'ko': u'들머리토론',
