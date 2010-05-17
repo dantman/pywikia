@@ -182,6 +182,7 @@ class Family(family.Family):
             'id': u'Resep',
             'it': u'Progetto',
             'ja': u'Transwiki',
+            'ml': u'പാചകപുസ്തകം',
             'ms': u'Resipi',
             'ro': u'Raft',
             'ru': u'Полка',
@@ -195,6 +196,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Resep',
             'it': u'Discussioni progetto',
             'ja': u'Transwiki‐ノート',
+            'ml': u'പാചകപുസ്തകസം‌വാദം',
             'ms': u'Perbualan Resipi',
             'ro': u'Discuţie Raft',
             'ru': u'Обсуждение полки',
@@ -210,6 +212,7 @@ class Family(family.Family):
             'es': u'Wikiversidad',
             'id': u'Wisata',
             'it': u'Ripiano',
+            'ml': u'വിഷയം',
             'nl': u'Transwiki',
             'ro': u'Wikijunior',
             'ru': u'Импортировано',
@@ -225,6 +228,7 @@ class Family(family.Family):
             'es': u'Wikiversidad Discusión',
             'id': u'Pembicaraan Wisata',
             'it': u'Discussioni ripiano',
+            'ml': u'വിഷയസം‌വാദം',
             'nl': u'Overleg transwiki',
             'ro': u'Discuţie Wikijunior',
             'ru': u'Обсуждение импортированного',
@@ -268,18 +272,22 @@ class Family(family.Family):
 
         self.namespaces[110] = {
             'en': u'Wikijunior',
+            'tr': u'Vikiçocuk',
         }
 
         self.namespaces[111] = {
             'en': u'Wikijunior talk',
+            'tr': u'Vikiçocuk tartışma',
         }
 
         self.namespaces[112] = {
             'en': u'Subject',
+            'tr': u'Kitaplık',
         }
 
         self.namespaces[113] = {
             'en': u'Subject talk',
+            'tr': u'Kitaplık tartışma',
         }
 
         # Which languages have a special order for putting interlanguage links,

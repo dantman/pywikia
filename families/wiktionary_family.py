@@ -349,6 +349,7 @@ class Family(family.Family):
 
         self.namespaces[106] = {
             'en': u'Rhymes',
+            'fr': u'Thésaurus',
             'is': u'Viðauki',
             'pt': u'Portal',
             'ru': [u'Рифмы', u'Rhymes'],
@@ -357,6 +358,7 @@ class Family(family.Family):
 
         self.namespaces[107] = {
             'en': u'Rhymes talk',
+            'fr': u'Discussion Thésaurus',
             'is': u'Viðaukaspjall',
             'pt': u'Portal Discussão',
             'ru': [u'Обсуждение рифм', u'Rhymes talk'],

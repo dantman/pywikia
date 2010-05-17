@@ -128,7 +128,7 @@ class Family(family.Family):
             'es': u'Comentarios Discusión',
             'he': u'שיחת פורטל',
             'it': u'Discussioni portale',
-            'ja': u'ポータル‐ノート',
+            'ja': [u'ポータル・トーク', u'ポータル‐ノート'],
             'no': u'Kommentarer-diskusjon',
             'pl': u'Dyskusja portalu',
             'pt': u'Portal Discussão',
