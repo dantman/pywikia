@@ -583,8 +583,9 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top, pType, quiet, dry =
                             site = wikipedia.getSite()
                             comment = wikipedia.setAction(wikipedia.translate(site, msg_former) % (fromsite.lang, a.title()))
                             name=templatelist[0]
+                            name2=name[0].lower()+name[1:]
                             text=text.replace(u"{{%s|%s}}" %(name, fromsite.lang),'',1)
-                            text=text.replace(u"{{%s|%s}}" %(name.lower(), fromsite.lang),'',1)
+                            text=text.replace(u"{{%s|%s}}" %(name2, fromsite.lang),'',1)
                             if not dry:
                                 try:
                                     atrans.put(text, comment)
