@@ -1251,7 +1251,7 @@ not supported by PyWikipediaBot!"""
             datas = query.GetData(params, self.site())
             data = datas['query'].values()
             if len(data) == 2:
-                data = data[0] + data[1]
+                data = list(set(data[0] + data[1]))
             else:
                 data = data[0]
             
@@ -6489,12 +6489,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
-        api = self.has_api()
         urlsToRetrieve = [siteurl]
         if not siteurl.startswith('*.'):
             urlsToRetrieve.append('*.' + siteurl)
 
-        if api and self.versionnumber() >= 11:
+        if self.has_api() and self.versionnumber() >= 11:
             output(u'Querying API exturlusage...')
             for url in urlsToRetrieve:
                 params = {

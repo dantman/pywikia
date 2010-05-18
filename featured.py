@@ -54,13 +54,11 @@ import sys, re, pickle, os.path
 import wikipedia, catlib, config
 
 def CAT(site,name):
-    name = site.namespace(14) + ':' + name
-    cat=catlib.Category(site, name)
+    cat = catlib.Category(site, name)
     return cat.articles()
 
 def BACK(site,name):
-    name = site.namespace(10) + ':' + name
-    p=wikipedia.Page(site, name)
+    p = wikipedia.Page(site, name, defaultNamespace=10)
     return [page for page in p.getReferences(follow_redirects = False, onlyTemplateInclusion=True)]
 
 msg = {

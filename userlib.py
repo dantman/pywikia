@@ -281,8 +281,8 @@ class User(object):
 
     def uploadedImages(self, number = 10):
         if not self.site().has_api() or self.site().versionnumber() < 11:
-            for p,t,c,a in self._uploadedImagesOld(number):
-                yield p,t,c,a
+            for c in self._uploadedImagesOld(number):
+                yield c
             return
 
         for s in self.site().logpages(number, mode = 'upload', user = self.name(), dump = True):
