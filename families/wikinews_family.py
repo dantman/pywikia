@@ -74,7 +74,7 @@ class Family(family.Family):
             'no': u'Wikinytt-diskusjon',
             'pl': u'Dyskusja Wikinews',
             'pt': u'Wikinotícias Discussão',
-            'ro': u'Discuţie Wikiştiri',
+            'ro': u'Discuție Wikiştiri',
             'ru': u'Обсуждение Викиновостей',
             'sd': u'Wikinews بحث',
             'sr': u'Разговор о Викивестима',

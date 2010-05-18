@@ -121,7 +121,7 @@ class Family(family.Family):
             'pl': u'Dyskusja Wikicytatów',
             'pt': u'Wikiquote Discussão',
             'qu': u'Wikiquote rimanakuy',
-            'ro': u'Discuţie Wikicitat',
+            'ro': u'Discuție Wikicitat',
             'ru': u'Обсуждение Викицитатника',
             'sk': u'Diskusia k Wikicitátom',
             'sl': u'Pogovor o Wikinavedku',
