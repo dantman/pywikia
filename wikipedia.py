@@ -1251,7 +1251,7 @@ not supported by PyWikipediaBot!"""
             datas = query.GetData(params, self.site())
             data = datas['query'].values()
             if len(data) == 2:
-                data = list(set(data[0] + data[1]))
+                data = data[0] + data[1]
             else:
                 data = data[0]
             
