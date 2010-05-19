@@ -840,7 +840,7 @@ class WelcomeBot(object):
                                 pass
                             else:
                                 welcome_text += timeselected
-                        else:
+                        elif (self.site.family != 'wikinews' and self.site.lang != 'it'):
                             welcome_text = welcome_text % globalvar.defaultSign
                         if self.site.lang in final_new_text_additions:
                             welcome_text += wikipedia.translate(self.site, final_new_text_additions)
