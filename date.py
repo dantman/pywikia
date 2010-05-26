@@ -518,6 +518,7 @@ formats = {
         'cs' :      lambda v: dh_number( v, u'%d (číslo)' ),
         'da' :      lambda v: dh_number( v, u'%d (tal)' ),
         'en' :      lambda v: dh_number( v, u'%d (number)' ),
+        'fa' :      lambda v: dh_number( v, u'%d (عدد)' ),
         'fi' :      lambda v: dh_number( v, u'%d (luku)' ),
         'fr' :      lambda v: dh_number( v, u'%d (nombre)' ),
         'he' :      lambda v: dh_number( v, u'%d (מספר)' ),
@@ -677,6 +678,7 @@ formats = {
         'es' :      lambda v: dh_yearBC( v, u'%d a. C.' ),
         'et' :      lambda v: dh_yearBC( v, u'%d eKr' ),
         'eu' :      lambda v: dh_yearBC( v, u'K. a. %d' ),
+        'fa' :      lambda v: dh_yearBC( v, u'%d (پیش از میلاد)' ),
         'fi' :      lambda v: dh_yearBC( v, u'%d eaa.' ),
         'fo' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
         'fr' :      lambda v: dh_yearBC( v, u'-%d' ),
@@ -753,6 +755,7 @@ formats = {
         'eo' :      lambda v: dh_decAD( v, u'%d-aj jaroj' ),
         'es' :      lambda v: dh_decAD( v, u'Años %d' ),
         'et' :      lambda v: dh_decAD( v, u'%d. aastad' ),
+        'fa' :      lambda v: dh_decAD( v, u'دهه %d (میلادی)' ),
 
         # decades ending in 00 are spelled differently
         'fi' :      lambda m: multi( m, [
@@ -947,7 +950,7 @@ formats = {
         'fa' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 20, u'سده ۲۰ (میلادی)'),     lambda p: p == 20),
             # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
-            (lambda v: dh_centuryAD( v, u'%dth century' ), alwaysTrue)]),        # ********** ERROR!!!
+            (lambda v: dh_centuryAD( v, u'سده %d (میلادی)' ), alwaysTrue)]),        # ********** ERROR!!!
         'fi' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosisata'),  lambda p: p == 1),
             (lambda v: dh( v, u'%d00-luku', lambda i: i-1, lambda ii: ii[0]+1 ),     alwaysTrue)]),
@@ -1117,6 +1120,7 @@ formats = {
             (lambda v: dh_millenniumAD( v, u'%dth millennium' ),                alwaysTrue)]),
         'es' :      lambda v: dh_millenniumAD( v, u'%R milenio' ),
 
+        'fa' :      lambda v: dh_millenniumAD( v, u'هزاره %R (میلادی)' ),
         'fi' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'Ensimmäinen vuosituhat'),                       lambda p: p == 1),
             (lambda v: dh_constVal( v, 2, u'Toinen vuosituhat'),                       lambda p: p == 2),
@@ -1208,6 +1212,7 @@ formats = {
     'Cat_Year_MusicAlbums': {
         'cs' :      lambda v: dh_yearAD( v, u'Alba roku %d' ),
         'en' :      lambda v: dh_yearAD( v, u'%d albums' ),
+        'fa' :      lambda v: dh_yearAD( v, u'آلبوم‌های %d (میلادی)'),
         'fi' :      lambda v: dh_yearAD( v, u'Vuoden %d albumit' ),
         'fr' :      lambda v: dh_yearAD( v, u'Album musical sorti en %d' ),
         'he' :      lambda v: dh_yearAD( v, u'אלבומי %d' ),
@@ -1231,7 +1236,7 @@ formats = {
         'eo' :      lambda v: dh_singVal( v, u'Aktualaĵoj' ),
         'es' :      lambda v: dh_singVal( v, u'Actualidad' ),
         'et' :      lambda v: dh_singVal( v, u'Current events' ),
-        'fa' :      lambda v: dh_singVal( v, u'وقایع کنونی' ), # There is another fa:بهمن ۱۳۸۴  but i am not sure what it is.
+        'fa' :      lambda v: dh_singVal( v, u'رویدادهای کنونی'),
         'fi' :      lambda v: dh_singVal( v, u'Ajankohtaista' ),
         'fr' :      lambda v: dh_singVal( v, u'Actualités' ),
         'gl' :      lambda v: dh_singVal( v, u'Novas' ),
@@ -1354,6 +1359,7 @@ addFmt2('eo', False, u"%%d-a de %s", False )
 addFmt2('es', False, u"%%d de %s", False )
 addFmt2('et', False, u"%%d. %s", False )
 addFmt2('eu', False, u"%saren %%d", True )
+addFmt2('fa', False, [u"%d ژانویه", u"%d فوریه", u"%d مارس", u"%d آوریل", u"%d مه", u"%d ژوئن", u"%d ژوئیه", u"%d اوت", u"%d سپتامبر", u"%d اکتبر", u"%d نوامبر", u"%d دسامبر"] )
 addFmt2('fi', False, u"%%d. %sta", False )
 addFmt2('fo', False, u"%%d. %s", False )
 addFmt ('fr', False,       [ u"%d janvier", u"%d février", u"%d mars", u"%d avril", u"%d mai", u"%d juin", u"%d juillet", u"%d août", u"%d septembre", u"%d octobre", u"%d novembre", u"%d décembre" ])
