@@ -37,7 +37,7 @@ msg_simple_delete = {
     'ar': u'بوت: حذف قائمة من الملفات.',
     'cs': u'Robot smazal podle seznamu',
     'en': u'Bot: Deleting a list of files.',
-    'fa': u'ربات:حذف فهرستی از پرونده‌ها',
+    'fa': u'ربات:حذف فهرستی از صفحه‌ها',
     'fr': u'Robot: Suppression d’une liste de fichiers.',
     'he': u'בוט: מוחק רשימת דפים מתוך קובץ.',
     'nl': u'Bot: verwijdert een lijst met pagina\'s.',
