@@ -470,7 +470,7 @@ uploadBots = {
 }
 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = [u'ar', u'commons', u'de', u'en', u'ga', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
+project_inserted = [u'ar', u'commons', u'de', u'en', u'fa', u'ga', u'hu', u'it', u'ja', u'ko', u'ta', u'zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
