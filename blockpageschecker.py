@@ -211,6 +211,9 @@ def main():
     moveBlockCheck = False; genFactory = pagegenerators.GeneratorFactory()
     # To prevent Infinite loops
     errorCount = 0
+
+    site = pywikibot.getSite()
+
     # Loading the default options.
     for arg in pywikibot.handleArgs():
         if arg == '-always':
@@ -232,9 +235,9 @@ def main():
                                                 type = 'move')
         elif arg.startswith('-page'):
             if len(arg) == 5:
-                generator = [pywikibot.Page(pywikibot.getSite(), pywikibot.input(u'What page do you want to use?'))]
+                generator = [pywikibot.Page(site, pywikibot.input(u'What page do you want to use?'))]
             else:
-                generator = [pywikibot.Page(pywikibot.getSite(), arg[6:])]
+                generator = [pywikibot.Page(site, arg[6:])]
         else:
             genFactory.handleArg(arg)
 
@@ -242,8 +245,6 @@ def main():
         pywikibot.output(u"Your project is not supported by this script.\nYou have to edit the script and add it!")
         return
 
-    # Load the right site
-    site = pywikibot.getSite()
 
     # Take the right templates to use, the category and the comment
     TSP = pywikibot.translate(site, templateSemiProtection)
