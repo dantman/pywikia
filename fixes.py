@@ -5,7 +5,7 @@ File containing all standard fixes
 """
 
 #
-# (C) Pywikipedia team, 2008-2009
+# (C) Pywikipedia team, 2008-2010
 #
 __version__ = '$Id$'
 #
@@ -37,7 +37,7 @@ help = u"""
                   * fckeditor   - Try to convert FCKeditor HTML tags to wiki
                                   syntax.
                                   http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
-                                  
+
                                     **) NOTE: these fixes are part of the
                                         cosmetic_changes.py. You may use
                                         that script instead.
