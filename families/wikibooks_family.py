@@ -11,12 +11,12 @@ class Family(family.Family):
         self.name = 'wikibooks'
 
         self.languages_by_size = [
-            'en', 'de', 'fr', 'ja', 'pt', 'hu', 'es', 'nl', 'pl', 'it', 'he',
-            'sq', 'fi', 'vi', 'ru', 'cs', 'hr', 'ca', 'zh', 'sv', 'da', 'th',
-            'tr', 'mk', 'sr', 'tl', 'fa', 'ar', 'id', 'gl', 'is', 'no', 'ta',
-            'ko', 'ka', 'eo', 'lt', 'bg', 'ro', 'sk', 'el', 'la', 'si', 'ia',
-            'ang', 'cv', 'sl', 'et', 'mr', 'uk', 'ur', 'ml', 'az', 'oc', 'ms',
-            'eu', 'hi', 'fy', 'ie', 'tg', 'bn', 'hy', 'af', 'pa', 'te', 'bs',
+            'en', 'de', 'fr', 'ja', 'pt', 'hu', 'nl', 'es', 'pl', 'it', 'he',
+            'sq', 'fi', 'ru', 'vi', 'cs', 'hr', 'ca', 'sv', 'zh', 'da', 'tr',
+            'th', 'mk', 'ko', 'sr', 'fa', 'tl', 'ar', 'id', 'gl', 'is', 'no',
+            'ta', 'ka', 'lt', 'eo', 'bg', 'ro', 'sk', 'el', 'la', 'si', 'ia',
+            'ang', 'cv', 'sl', 'et', 'uk', 'mr', 'ur', 'az', 'oc', 'ml', 'ms',
+            'eu', 'hi', 'fy', 'ie', 'tg', 'bn', 'af', 'hy', 'pa', 'te', 'bs',
             'sa', 'ky', 'be', 'ast', 'tt', 'zh-min-nan', 'cy', 'mg', 'ne', 'ku',
             'co', 'sw', 'tk', 'su', 'als', 'vo', 'uz', 'na', 'mn', 'kk', 'nds',
             'zu', 'my',
@@ -119,7 +119,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Wikibooks',
             'is': u'Wikibækurspjall',
             'it': u'Discussioni Wikibooks',
-            'ja': u'Wikibooks‐ノート',
+            'ja': u'Wikibooks・トーク',
             'ka': u'ვიკიწიგნები განხილვა',
             'kk': u'Уикикітап талқылауы',
             'km': u'ការពិភាក្សាអំពីWikibooks',
@@ -147,7 +147,7 @@ class Family(family.Family):
             'ps': u'د ويکيتابونه خبرې اترې',
             'pt': u'Wikilivros Discussão',
             'qu': u'Wikibooks rimanakuy',
-            'ro': u'Discuţie Wikimanuale',
+            'ro': u'Discuție Wikimanuale',
             'ru': u'Обсуждение Викиучебника',
             'sa': u'Wikibooksसंभाषणं',
             'si': u'Wikibooks සාකච්ඡාව',
@@ -182,6 +182,7 @@ class Family(family.Family):
             'id': u'Resep',
             'it': u'Progetto',
             'ja': u'Transwiki',
+            'ml': u'പാചകപുസ്തകം',
             'ms': u'Resipi',
             'ro': u'Raft',
             'ru': u'Полка',
@@ -195,6 +196,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Resep',
             'it': u'Discussioni progetto',
             'ja': u'Transwiki‐ノート',
+            'ml': u'പാചകപുസ്തകസം‌വാദം',
             'ms': u'Perbualan Resipi',
             'ro': u'Discuţie Raft',
             'ru': u'Обсуждение полки',
@@ -210,6 +212,7 @@ class Family(family.Family):
             'es': u'Wikiversidad',
             'id': u'Wisata',
             'it': u'Ripiano',
+            'ml': u'വിഷയം',
             'nl': u'Transwiki',
             'ro': u'Wikijunior',
             'ru': u'Импортировано',
@@ -225,6 +228,7 @@ class Family(family.Family):
             'es': u'Wikiversidad Discusión',
             'id': u'Pembicaraan Wisata',
             'it': u'Discussioni ripiano',
+            'ml': u'വിഷയസം‌വാദം',
             'nl': u'Overleg transwiki',
             'ro': u'Discuţie Wikijunior',
             'ru': u'Обсуждение импортированного',
@@ -268,18 +272,22 @@ class Family(family.Family):
 
         self.namespaces[110] = {
             'en': u'Wikijunior',
+            'tr': u'Vikiçocuk',
         }
 
         self.namespaces[111] = {
             'en': u'Wikijunior talk',
+            'tr': u'Vikiçocuk tartışma',
         }
 
         self.namespaces[112] = {
             'en': u'Subject',
+            'tr': u'Kitaplık',
         }
 
         self.namespaces[113] = {
             'en': u'Subject talk',
+            'tr': u'Kitaplık tartışma',
         }
 
         # Which languages have a special order for putting interlanguage links,

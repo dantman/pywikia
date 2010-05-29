@@ -51,6 +51,7 @@ msg = {
     'ar': u'روبوت: تهيئة ISBN',
     'de': 'Bot: Formatiere ISBN',
     'en': 'Robot: Formatting ISBN',
+    'fa': u'ربات:استانداردسازی شابک',
     'he': u'בוט: מעצב ISBN',
     'ja': u'ロボットによる ISBN の書式化',
     'nl': 'Bot: ISBN opgemaakt',
@@ -1176,11 +1177,14 @@ class IsbnBot:
                 # convert ISBN numbers
                 page.put(text)
             except pywikibot.NoPage:
-                print "Page %s does not exist?!" % page.aslink()
+                pywikibot.output(u"Page %s does not exist?!"
+                                 % page.aslink())
             except pywikibot.IsRedirectPage:
-                print "Page %s is a redirect; skipping." % page.aslink()
+                pywikibot.output(u"Page %s is a redirect; skipping."
+                                 % page.aslink())
             except pywikibot.LockedPage:
-                print "Page %s is locked?!" % page.aslink()
+                pywikibot.output(u"Page %s is locked?!"
+                                 % page.aslink())
 
 
 class InvalidIsbnException(pywikibot.Error):

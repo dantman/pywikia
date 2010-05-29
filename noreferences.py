@@ -50,6 +50,7 @@ msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'eo':u'Roboto: Aldono de "<references />"',
+    'fa':u'ربات:تگ رفرنسز فراموش شده‌است',
     'fi':u'Botti lisäsi puuttuvan {{viitteet}}-mallineen',
     'he':u'בוט: מוסיף תגית <references /> חסרה',
     'hu':u'Hiányzó {{Források}} pótlása',
@@ -103,6 +104,11 @@ placeBeforeSections = {
         u'Enlaces externos',
         u'Véase también',
         u'Notas',
+    ],
+    'fa': [
+        u'پیوند به بیرون',
+        u'پانویس',
+        u'جستارهای وابسته'
     ],
     'fi': [
         u'Kirjallisuutta',
@@ -199,6 +205,10 @@ referencesSections = {
         u'Referencias',
         u'Notas',
     ],
+    'fa': [
+        u'منابع',
+        u'منبع'
+    ],
     'fi': [
         u'Lähteet',
         u'Viitteet',
@@ -284,6 +294,7 @@ referencesTemplates = {
                u'Footnotes',u'FootnotesSmall'],
         'eo': [u'Referencoj'],
         'es': ['Listaref', 'Reflist', 'muchasref'],
+        'fa': [u'Reflist',u'Refs',u'FootnotesSmall',u'Reference',u'پانویس',u'Reflist',u'پانویس‌ها ',u'پانویس ۲',u'پانویس۲'],
         'fi': [u'Viitteet', u'Reflist'],
         'fr': [u'Références',u'Notes', u'References', u'Reflist'],
         'hu': [u'reflist',u'források'],

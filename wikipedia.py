@@ -241,6 +241,7 @@ class Page(object):
     getReferences         : List of pages linking to the page
     canBeEdited (*)       : True if page is unprotected or user has edit
                             privileges
+    protection(*)         : This page protection level
     botMayEdit (*)        : True if bot is allowed to edit page
     put(newtext)          : Saves the page
     put_async(newtext)    : Queues the page to be saved asynchronously
@@ -2115,6 +2116,25 @@ not supported by PyWikipediaBot!"""
             # page is locked and we don't have a sysop account.
             return False
 
+    def protection(self):
+        """Return list of dicts of this page protection level. like:
+        [{u'expiry': u'2010-05-26T14:41:51Z', u'type': u'edit', u'level': u'autoconfirmed'}, {u'expiry': u'2010-05-26T14:41:51Z', u'type': u'move', u'level': u'sysop'}]
+
+        if the page non protection, return []
+        """
+
+        params = {
+            'action': 'query',
+            'prop'  : 'info',
+            'inprop': 'protection',
+            'titles' : self.title(),
+            }
+
+        datas = query.GetData(params, self.site())
+        data=datas['query']['pages'].values()[0]['protection']
+        return data
+
+
     def toggleTalkPage(self):
         """Return the other member of the article-talk page pair for this Page.
 
@@ -2165,7 +2185,7 @@ not supported by PyWikipediaBot!"""
 
 
 
-    def categories(self, get_redirect=False, api=True):
+    def categories(self, get_redirect=False, api=False):
         """Return a list of Category objects that the article is in.
         Please be aware: the api call returns also categies which are included
         by templates. This differs to the old non-api code. If you need only
@@ -6469,12 +6489,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
-        api = self.has_api()
         urlsToRetrieve = [siteurl]
         if not siteurl.startswith('*.'):
             urlsToRetrieve.append('*.' + siteurl)
 
-        if api and self.versionnumber() >= 11:
+        if self.has_api() and self.versionnumber() >= 11:
             output(u'Querying API exturlusage...')
             for url in urlsToRetrieve:
                 params = {
@@ -7505,20 +7524,19 @@ def async_put():
             # if callback is provided, it is responsible for exception handling
             continue
         if isinstance(error, SpamfilterError):
-            output(u"Saving page [[%s]] prevented by spam filter: %s"
-                       % (page.title(), error.url))
+            output(u"Saving page %s prevented by spam filter: %s"
+                   % (page.aslink(True), error.url))
         elif isinstance(error, PageNotSaved):
-            output(u"Saving page [[%s]] failed: %s"
-                       % (page.title(), error))
+            output(u"Saving page %s failed: %s" % (page.aslink(True), error))
         elif isinstance(error, LockedPage):
-            output(u"Page [[%s]] is locked; not saved." % page.title())
+            output(u"Page %s is locked; not saved." % page.aslink(True))
         elif isinstance(error, NoUsername):
-            output(u"Page [[%s]] not saved; sysop privileges required."
-                       % page.title())
+            output(u"Page %s not saved; sysop privileges required."
+                   % page.aslink(True))
         elif error is not None:
             tb = traceback.format_exception(*sys.exc_info())
-            output(u"Saving page [[%s]] failed:\n%s"
-                    % (page.title(), "".join(tb)))
+            output(u"Saving page %s failed:\n%s"
+                   % (page.aslink(True), "".join(tb)))
 
 _putthread = threading.Thread(target=async_put)
 # identification for debugging purposes

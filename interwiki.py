@@ -335,7 +335,8 @@ except NameError:
         return seq2
 
 import wikipedia as pywikibot
-import config, catlib
+import config
+import catlib
 import pagegenerators
 import titletranslate, interwiki_graph
 import webbrowser
@@ -517,6 +518,11 @@ moved_links = {
              u'documentation, template'], u'/doc'),
     'es' : ([u'documentación', u'documentación de plantilla'], u'/doc'),
     'eu' : (u'txantiloi dokumentazioa', u'/dok'),
+    'fa' : ([u'documentation',
+             u'template documentation',
+             u'template doc',
+             u'doc',
+             u'توضیحات'], u'/doc'),
     # fi: no idea how to handle this type of subpage at :Metasivu:
     'fi' : (u'mallineohje', None),
     'fr' : ([u'/documentation', u'documentation', u'doc_modèle',
@@ -1836,7 +1842,8 @@ class Subject(object):
                     else:
                         status, reason, data = page.put(newtext, comment = mcomment)
                 except pywikibot.LockedPage:
-                    pywikibot.output(u'Page %s is locked. Skipping.' % (page.title(),))
+                    pywikibot.output(u'Page %s is locked. Skipping.'
+                                     % page.aslink(True))
                     raise SaveError
                 except pywikibot.EditConflict:
                     pywikibot.output(u'ERROR putting page: An edit conflict occurred. Giving up.')

@@ -81,6 +81,7 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
+
 import os, re, pickle, bz2
 import wikipedia as pywikibot
 import catlib, config, pagegenerators
@@ -102,6 +103,7 @@ msg_add={
     'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
     'id':u'Bot: Menambahkan [[Kategori:%s]]',
+    'fa':u'ربات: افزودن [[رده:%s]]',
     'fi':u'Botti lisäsi luokkaan [[Luokka:%s]]',
     'fr':u'Robot : ajoute [[Catégorie:%s]]',
     'he':u'בוט: מוסיף [[קטגוריה:%s]]',
@@ -140,6 +142,7 @@ msg_change={
     'en':u'Robot: Changing %s',
     'es':u'Bot: Cambiada %s',
     'id':u'Bot: Mengganti %s',
+    'fa':u'ربات:تغییر %s',
     'fi':u'Botti muutti luokan %s',
     'fr':u'Robot : modifie [[%s]]',
     'he':u'בוט: משנה %s',
@@ -171,6 +174,7 @@ msg_replace={
     'cs':u'Robot nahradil kategorii %(oldcat)s za %(newcat)s',
     'de':u'Bot: Ersetze Kategorie %(oldcat)s durch %(newcat)s',
     'en':u'Robot: Replacing category %(oldcat)s with %(newcat)s',
+    'fa':u'ربات جایگزینی رده‌های %(oldcat) با %(newcat)',
     'sk':u'Robot nahradil kategóriu %(oldcat)s za %(newcat)s', 
     }
 
@@ -184,6 +188,7 @@ deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach [[:Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[:Category:%s|%s]]',
     'es':u'Robot: La categoría ha sido movida a [[:Category:%s|%s]]',
+    'fa':u'ربات:رده به رده  [[:رده:%s|%s]] منتقل شده‌است',
     'fi':u'Botti siirsi luokan nimelle [[:Luokka:%s|%s]]',
     'fr':u'Robot : catégorie déplacée sur [[:Category:%s|%s]]',
     'he':u'בוט: הקטגוריה הועברה לשם [[:קטגוריה:%s|%s]]',
@@ -207,7 +212,7 @@ deletion_reason_move = {
     'sk':u'Kategória bola presunutá na [[:Kategória:%s|%s]]',
     'sr':u'Бот: Категорија премештена у [[:Category:%s|%s]]',
     'sv':u'Robot: Kategori flyttades till [[:Category:%s|%s]]',
-    'uk':u'Робот: категорію перейменовано на [[Категорія:%s]]',
+    'uk':u'Робот: категорію перейменовано на [[Категорія:%s|%s]]',
     'zh':u'機器人:移動目錄至 [[:Category:%s|%s]]',
     }
 
@@ -514,6 +519,7 @@ class CategoryListifyRobot:
         'ar':u'روبوت: عرض من %s (%d مدخلة)',
         'ca':u'Robot: Llistant de %s (%d entrades)',
         'en':u'Robot: Listifying from %s (%d entries)',
+        'fa':u'ربات:لیست کردن اعضای رده %s(%d عضو)',
         'fi':u'Botti listasi luokan %s (%d jäsentä)',
         'he':u'בוט: יוצר רשימה מהקטגוריה %s (%d דפים)',
         'kk':u'Бот: %s дегеннен (%d буын) тізімдеді',
@@ -600,6 +606,7 @@ class CategoryRemoveRobot:
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
         'es':u'Bot: Eliminada de la %s',
+        'fa':u'ربات:حذف رده %s',
         'fi':u'Botti poisti luokasta %s',
         'fr':u'Robot : Retiré depuis %s',
         'he':u'בוט: מסיר את הדף מהקטגוריה %s',
@@ -864,6 +871,7 @@ class CategoryTreeRobot:
             'de': u'(auch in %s)',
             'en': u'(also in %s)',
             'es': u'(también en %s)',
+            'fa': u'(همچنین در %s)',
             'fi': u'(myös luokassa %s)',
             'fr': u'(également dans %s)',
             'he': u'(גם בקטגוריות %s)',

@@ -47,6 +47,7 @@ msg = {
     'de':u'Bot: Entferne Selbstlinks',
     'en':u'Robot: Removing selflinks',
     'es':u'Bot: Eliminando enlaces al mismo artículo',
+    'fa':u'ربات:برداشتن پیوند به خود',
     'fr':u'Robot: Enlève autoliens',
     'he':u'בוט: מסיר קישורים של הדף לעצמו',
     'hu':u'Bot: Önmagukra mutató hivatkozások eltávolítása',

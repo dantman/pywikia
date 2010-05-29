@@ -12,8 +12,8 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'en', 'it', 'pl', 'de', 'pt', 'ru', 'sk', 'es', 'bg', 'bs', 'sl',
-            'tr', 'fr', 'he', 'cs', 'lt', 'zh', 'el', 'hu', 'fa', 'uk', 'eo',
-            'id', 'sv', 'nl', 'no', 'ja', 'fi', 'hy', 'nn', 'et', 'ca', 'ar',
+            'tr', 'fr', 'he', 'cs', 'lt', 'zh', 'id', 'el', 'hu', 'fa', 'uk',
+            'eo', 'sv', 'nl', 'no', 'ja', 'fi', 'hy', 'nn', 'et', 'ca', 'ar',
             'ka', 'ko', 'ku', 'hr', 'gl', 'sr', 'ro', 'cy', 'ml', 'li', 'is',
             'th', 'te', 'af', 'da', 'az', 'eu', 'sq', 'vi', 'la', 'br', 'hi',
             'be', 'ast', 'uz', 'ta', 'ang', 'mr', 'zh-min-nan', 'gu', 'lb',
@@ -102,7 +102,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Wikiquote',
             'is': u'Wikivitnunspjall',
             'it': u'Discussioni Wikiquote',
-            'ja': u'Wikiquote‐ノート',
+            'ja': u'Wikiquote・トーク',
             'ka': [u'ვიკიციტატა განხილვა', u'Wikiquote განხილვა'],
             'kk': u'Уикидәйек талқылауы',
             'kn': u'Wikiquote ಚರ್ಚೆ',
@@ -121,7 +121,7 @@ class Family(family.Family):
             'pl': u'Dyskusja Wikicytatów',
             'pt': u'Wikiquote Discussão',
             'qu': u'Wikiquote rimanakuy',
-            'ro': u'Discuţie Wikicitat',
+            'ro': u'Discuție Wikicitat',
             'ru': u'Обсуждение Викицитатника',
             'sk': u'Diskusia k Wikicitátom',
             'sl': u'Pogovor o Wikinavedku',

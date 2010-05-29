@@ -12,7 +12,7 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'sr', 'en', 'pl', 'de', 'fr', 'it', 'pt', 'es', 'zh', 'ja', 'sv',
-            'ru', 'fi', 'he', 'cs', 'ar', 'bg', 'ro', 'sd', 'hu', 'ta', 'no',
+            'ru', 'fi', 'he', 'cs', 'bg', 'ar', 'ro', 'sd', 'ta', 'hu', 'no',
             'uk', 'ca', 'tr', 'bs', 'th',
         ]
 
@@ -69,12 +69,12 @@ class Family(family.Family):
             'he': u'שיחת ויקיחדשות',
             'hu': u'Wikihírek-vita',
             'it': u'Discussioni Wikinotizie',
-            'ja': u'ウィキニュース‐ノート',
+            'ja': u'ウィキニュース・トーク',
             'nl': u'Overleg Wikinews',
             'no': u'Wikinytt-diskusjon',
             'pl': u'Dyskusja Wikinews',
             'pt': u'Wikinotícias Discussão',
-            'ro': u'Discuţie Wikiştiri',
+            'ro': u'Discuție Wikiştiri',
             'ru': u'Обсуждение Викиновостей',
             'sd': u'Wikinews بحث',
             'sr': u'Разговор о Викивестима',
@@ -128,7 +128,7 @@ class Family(family.Family):
             'es': u'Comentarios Discusión',
             'he': u'שיחת פורטל',
             'it': u'Discussioni portale',
-            'ja': u'ポータル‐ノート',
+            'ja': [u'ポータル・トーク', u'ポータル‐ノート'],
             'no': u'Kommentarer-diskusjon',
             'pl': u'Dyskusja portalu',
             'pt': u'Portal Discussão',

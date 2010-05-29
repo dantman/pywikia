@@ -110,7 +110,7 @@ templates = {
 
         u'{{ébauche}}' : {
             'msg': u'à l\'aide du robot: cet article est une ébauche',
-            'pos': 'bottom'},
+            'pos': 'top'},
     },
     'he':{
         u'{{מחק}}': {

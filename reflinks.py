@@ -45,6 +45,7 @@ import subprocess, tempfile, os, gzip, StringIO
 
 stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
             'de':u'Benutzer:DumZiBoT/EditThisPageToStopMe',
+            'fa':u'کاربر:Amirobot/EditThisPageToStopMe',
             'it':u'Utente:Marco27Bot/EditThisPageToStopMe',
             'ko':u'사용자:GrassnBreadRefBot/EditThisPageToStopMe1',
             'hu':'User:Damibot/EditThisPageToStopMe',
@@ -55,6 +56,7 @@ stopPage = {'fr':u'Utilisateur:DumZiBoT/EditezCettePagePourMeStopper',
 
 msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en utilisant des références nommées (cf. [[Utilisateur:DumZiBoT/liensRefs|explications]])',
         'de':u'Bot: Korrektes Referenzformat (siehe [[:en:User:DumZiBoT/refLinks]])',
+        'fa':u'ربات:تصحیح پيوند به بيرون يا عنوان پيوند. [[:en:User:DumZiBoT/refLinks|اطلاعات بیشتر]]',
         'hu':u'Robot: Forráshivatkozások kibővítése a hivatkozott oldal címével',
         'ko':u'봇: url만 있는 주석을 보강, (영문)[[:en:User:DumZiBoT/refLinks]] 참조',
         'es':u'Formateando las referencias que no tuvieran títulos (FAQ : [[:en:User:DumZiBoT/refLinks]] )',
@@ -65,6 +67,7 @@ msg = { 'fr':u'Bot: Correction des refs. mal formatées, suppression doublons en
 
 deadLinkTag = {'fr':u'[%s] {{lien mort}}',
                'de':u'',
+               'fa':u'[%s] {{پیوند مرده}}',
                'hu':u'[%s] {{halott link}}',
                'ko':u'[%s] {{죽은 바깥 고리}}',
                'es':u'{{enlace roto2|%s}}',
@@ -81,6 +84,7 @@ comment = {'ar':u'عنوان مولد بالبوت',
            'pl':u'Tytuł wygenerowany przez bota',
            'es':u'Título generado por un bot',
            'en':u'Bot generated title',
+           'fa':u'عنوان تصحیح شده توسط ربات',
            'it':u'Titolo generato automaticamente',
            }
 

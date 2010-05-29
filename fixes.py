@@ -5,7 +5,7 @@ File containing all standard fixes
 """
 
 #
-# (C) Pywikipedia team, 2008-2009
+# (C) Pywikipedia team, 2008-2010
 #
 __version__ = '$Id$'
 #
@@ -37,7 +37,7 @@ help = u"""
                   * fckeditor   - Try to convert FCKeditor HTML tags to wiki
                                   syntax.
                                   http://lists.wikimedia.org/pipermail/wikibots-l/2009-February/000290.html
-                                  
+
                                     **) NOTE: these fixes are part of the
                                         cosmetic_changes.py. You may use
                                         that script instead.
@@ -55,6 +55,7 @@ fixes = {
             'cs':u'převod/oprava HTML',
             'en':u'Robot: Converting/fixing HTML',
             'eo':u'Bot: koredtado de HTMLa teksto',
+            'fa':u'ربات:تصحیح/فیکس کدهای اچ‌تی‌ام‌ال',
             'de':u'Bot: konvertiere/korrigiere HTML',
             'fr':u'Robot: convertit/fixe HTML',
             'he':u'בוט: ממיר/מתקן HTML',
@@ -196,6 +197,7 @@ fixes = {
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'eo':u'Bot: Korektado de vikia sintakso',
+            'fa':u'ربات:تصحیح قالب ویکی‌نویسی',
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
@@ -271,6 +273,7 @@ fixes = {
             'de':u'Bot: Korrigiere Wiki-Syntax',
             'en':u'Bot: Fixing wiki syntax',
             'eo':u'Bot: Korektado de vikia sintakso',
+            'fa':u'ربات:تصحیح قالب ویکی‌نویسی',
             'fr':u'Bot: Corrige wiki-syntaxe',
             'he':u'בוט: מתקן תחביר ויקי',
             'ia':u'Robot: Reparation de syntaxe wiki',
@@ -427,6 +430,7 @@ fixes = {
             'en': u'Robot: Fixing ISBN format',
             'es': u'Arreglando formato ISBN',
             'eo': u'Bot: Korekto de teksto en ISBN-formato',
+            'fa': u'ربات:تصحیح شابک',
             'he': u'בוט: מתקן פורמט ISBN',
             'ja': u'ロボットによる: ISBNフォーマット修正',
             'ru': u'Бот: Коррекция ISBN формата',

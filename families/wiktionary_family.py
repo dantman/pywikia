@@ -12,18 +12,18 @@ class Family(family.Family):
 
         self.languages_by_size = [
             'fr', 'en', 'lt', 'tr', 'zh', 'ru', 'vi', 'io', 'pl', 'pt', 'fi',
-            'hu', 'el', 'no', 'ta', 'de', 'it', 'sv', 'ko', 'nl', 'kn', 'lo',
+            'hu', 'el', 'no', 'ta', 'de', 'sv', 'it', 'ko', 'nl', 'kn', 'lo',
             'ml', 'ja', 'ku', 'ar', 'es', 'ro', 'et', 'id', 'te', 'gl', 'bg',
-            'uk', 'ca', 'vo', 'li', 'fa', 'is', 'scn', 'sr', 'af', 'cs', 'th',
-            'simple', 'sw', 'fy', 'oc', 'br', 'he', 'hr', 'sl', 'hy', 'sq',
+            'uk', 'ca', 'li', 'vo', 'fa', 'is', 'scn', 'sr', 'af', 'cs', 'th',
+            'simple', 'fy', 'sw', 'oc', 'br', 'he', 'hr', 'sl', 'hy', 'sq',
             'tt', 'la', 'zh-min-nan', 'da', 'wa', 'ne', 'tk', 'ast', 'ur',
-            'hsb', 'kk', 'ky', 'eo', 'lv', 'wo', 'ang', 'ka', 'hi', 'my', 'co',
-            'ga', 'gn', 'az', 'ia', 'mg', 'eu', 'sk', 'csb', 'ms', 'st', 'tl',
-            'mr', 'cy', 'nds', 'kl', 'sd', 'ug', 'ti', 'mk', 'be', 'ps', 'an',
-            'sh', 'bn', 'gu', 'km', 'ss', 'ts', 'qu', 'bs', 'fo', 'am', 'rw',
-            'chr', 'su', 'om', 'mn', 'nah', 'ie', 'yi', 'iu', 'mt', 'gv', 'gd',
-            'kw', 'tg', 'si', 'nn', 'zu', 'dv', 'pa', 'tpi', 'sg', 'roa-rup',
-            'uz', 'mi', 'jv', 'ik', 'so', 'ha', 'ay', 'sa', 'na', 'lb', 'jbo',
+            'hsb', 'mg', 'kk', 'ky', 'eo', 'lv', 'my', 'wo', 'ang', 'ka', 'co',
+            'hi', 'ga', 'gn', 'az', 'ia', 'eu', 'sk', 'csb', 'ms', 'st', 'tl',
+            'cy', 'mr', 'nds', 'kl', 'be', 'sd', 'ug', 'ps', 'ti', 'sh', 'mk',
+            'an', 'bn', 'gu', 'km', 'ss', 'ts', 'qu', 'bs', 'fo', 'am', 'rw',
+            'chr', 'su', 'om', 'mn', 'nah', 'ie', 'iu', 'yi', 'mt', 'gv', 'kw',
+            'gd', 'si', 'tg', 'nn', 'zu', 'dv', 'tpi', 'pa', 'roa-rup', 'jv',
+            'sg', 'uz', 'mi', 'ik', 'so', 'ha', 'ay', 'lb', 'sa', 'na', 'jbo',
             'tn', 'sm', 'ks', 'fj', 'ln', 'za', 'dz', 'als',
         ]
 
@@ -79,6 +79,7 @@ class Family(family.Family):
             'lt': u'Vikižodynas',
             'ml': u'വിക്കിനിഘണ്ടു',
             'ms': u'Wiktionary',
+            'mt': u'Wikizzjunarju',
             'nl': u'WikiWoordenboek',
             'oc': u'Wikiccionari',
             'pl': u'Wikisłownik',
@@ -152,7 +153,7 @@ class Family(family.Family):
             'io': u'Wikivortaro Debato',
             'is': [u'Wikiorðabókarspjall', u'Wikiorðabókspjall'],
             'it': u'Discussioni Wikizionario',
-            'ja': u'Wiktionary‐ノート',
+            'ja': u'Wiktionary・トーク',
             'jv': u'Dhiskusi Wiktionary',
             'ka': u'ვიქსიკონი განხილვა',
             'kk': u'Уикисөздік талқылауы',
@@ -175,7 +176,7 @@ class Family(family.Family):
             'mn': u'Wiktionary-н хэлэлцүүлэг',
             'mr': u'Wiktionary चर्चा',
             'ms': u'Perbincangan Wiktionary',
-            'mt': [u'Diskussjoni Wiktionary', u'Wiktionary diskussjoni'],
+            'mt': u'Diskussjoni Wikizzjunarju',
             'nah': u'Wiktionary tēixnāmiquiliztli',
             'nap': [u'Wiktionary chiàcchiera', u'Discussioni Wiktionary'],
             'nds': u'Wiktionary Diskuschoon',
@@ -188,7 +189,7 @@ class Family(family.Family):
             'ps': u'د ويکيسيند خبرې اترې',
             'pt': u'Wikcionário Discussão',
             'qu': u'Wiktionary rimanakuy',
-            'ro': u'Discuţie Wikţionar',
+            'ro': u'Discuție Wikţionar',
             'ru': u'Обсуждение Викисловаря',
             'sa': u'Wiktionaryसंभाषणं',
             'sc': u'Wiktionary discussioni',
@@ -221,6 +222,22 @@ class Family(family.Family):
             'yi': [u'װיקיװערטערבוך רעדן', u'וויקיווערטערבוך רעדן'],
             'za': u'Wiktionary讨论',
             'zh': [u'Wiktionary talk', u'维基词典讨论'],
+        }
+
+        self.namespaces[90] = {
+            'en': u'Thread',
+        }
+
+        self.namespaces[91] = {
+            'en': u'Thread talk',
+        }
+
+        self.namespaces[92] = {
+            'en': u'Summary',
+        }
+
+        self.namespaces[93] = {
+            'en': u'Summary talk',
         }
 
         self.namespaces[100] = {
@@ -332,6 +349,7 @@ class Family(family.Family):
 
         self.namespaces[106] = {
             'en': u'Rhymes',
+            'fr': u'Thésaurus',
             'is': u'Viðauki',
             'pt': u'Portal',
             'ru': [u'Рифмы', u'Rhymes'],
@@ -340,6 +358,7 @@ class Family(family.Family):
 
         self.namespaces[107] = {
             'en': u'Rhymes talk',
+            'fr': u'Discussion Thésaurus',
             'is': u'Viðaukaspjall',
             'pt': u'Portal Discussão',
             'ru': [u'Обсуждение рифм', u'Rhymes talk'],
