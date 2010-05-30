@@ -5,8 +5,9 @@ This script has the intention to correct all redirect
 links in featured pages or only one page of each wiki.
 
 Can be using with:
--featured      Run over featured pages
--page:XXX      Run over only one page
+&params;
+
+-featured         Run over featured pages
 
 Run fixing_redirects.py -help to see all the command-line
 options -file, -ref, -links, ...
@@ -186,7 +187,6 @@ def workon(page):
 def main():
     start = '!'
     featured = False
-    title = None
     namespace = None
     gen = None
 
@@ -198,11 +198,6 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg == '-featured':
             featured = True
-        elif arg.startswith('-page'):
-            if len(arg) == 5:
-                title = wikipedia.input(u'Which page should be processed?')
-            else:
-                title = arg[6:]
         elif arg.startswith('-namespace'):
             if len(arg) == 10:
                 namespace = int(wikipedia.input(u'Which namespace should be processed?'))
@@ -226,9 +221,6 @@ def main():
         generator = pagegenerators.NamespaceFilterPageGenerator(gen, [0])
         for page in generator:
             workon(page)
-    elif title is not None:
-        page = wikipedia.Page(wikipedia.getSite(), title)
-        workon(page)
     elif namespace is not None:
         for page in pagegenerators.AllpagesPageGenerator(start=start, namespace=namespace, includeredirects=False):
             workon(page)
