@@ -4787,7 +4787,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """read login cookie file and return a dictionary."""
         try:
             f = open( config.datafilepath('login-data', filename), 'r')
-            ck = re.compile("(.*?)=(.*?)\n")
+            ck = re.compile("(.*?)=(.*?)\r?\n")
             data = dict([(x[0],x[1]) for x in ck.findall(f.read())])
             #data = dict(ck.findall(f.read()))
             f.close()
